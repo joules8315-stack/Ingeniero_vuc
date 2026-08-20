@@ -27,7 +27,28 @@ AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, AQUI)
 
 # Donde buscar copias gemelas. Se busca por NOMBRE de carpeta, que es como se cuelan.
-DONDE_BUSCAR = [r"C:\MVP", r"C:\Users\USER\dev", r"C:\Users\USER", r"C:\\"]
+# El Escritorio de esta PC esta redirigido DENTRO de OneDrive: el Explorador dice "Escritorio"
+# pero fisicamente es OneDrive, y ahi vivia el repo antes de moverlo a dev. Sin mirar ahi, el
+# buscador de gemelos se dejaba una copia ENTERA fuera (fallo real 2026-08-20).
+DONDE_BUSCAR = [r"C:\MVP", r"C:\Users\USER\dev", r"C:\Users\USER",
+                r"C:\Users\USER\OneDrive", r"C:\Users\USER\OneDrive\Desktop",
+                r"C:\Users\USER\Documents", r"C:\\"]
+
+
+def _respaldos():
+    """Copias que Julio guarda A PROPOSITO (respaldo congelado). No bloquean, pero se avisan
+    para que nadie las edite por error y las dos versiones se separen.
+    Se declaran en `arnes/respaldos.config`, una ruta por linea."""
+    r = os.path.join(AQUI, "arnes", "respaldos.config")
+    out = []
+    try:
+        for ln in open(r, encoding="utf-8").read().splitlines():
+            ln = ln.strip()
+            if ln and not ln.startswith("#"):
+                out.append(os.path.normcase(os.path.abspath(ln)))
+    except Exception:
+        pass
+    return out
 
 
 def _git(ruta, *args):
@@ -112,7 +133,11 @@ def revisar(apodo, ruta, rama_declarada):
         mio = fecha or "0000-00-00"
         mas_nuevo, fecha_nuevo = None, mio
         detalle = []
+        congelados = _respaldos()
         for o in otros:
+            if os.path.normcase(os.path.abspath(o)) in congelados:
+                detalle.append(f"      {o}  [RESPALDO CONGELADO declarado — no se edita]")
+                continue
             ho, fo = ultimo_commit(o)
             ro = rama_de(o)
             n = len([x for x in os.listdir(o)]) if os.path.isdir(o) else 0
@@ -126,8 +151,11 @@ def revisar(apodo, ruta, rama_declarada):
             avisos.append(f"  *** LA COPIA DECLARADA ES MAS VIEJA ({mio}) que {mas_nuevo} ({fecha_nuevo})")
             avisos.append("  *** Reparar aqui seria arreglar una version que nadie usa.")
             avisos.append(f"  *** Decide cual es la buena y ponla en proyectos.config: {apodo} = <ruta> | <rama> | <marca>")
+        elif len(detalle) == sum(1 for d in detalle if "RESPALDO CONGELADO" in d):
+            avisos.append("  (todas las copias son respaldos declarados: bien, no se tocan)")
         else:
-            avisos.append("  (la declarada es la mas nueva: bien, pero conviene borrar las copias)")
+            avisos.append("  (la declarada es la mas nueva: bien, pero conviene borrar las copias"
+                          " o declararlas en arnes/respaldos.config)")
 
     if hay_cambios_sin_guardar(ruta) and rama != "SIN-GIT":
         avisos.append("hay cambios SIN GUARDAR aqui (git status no esta limpio)")
