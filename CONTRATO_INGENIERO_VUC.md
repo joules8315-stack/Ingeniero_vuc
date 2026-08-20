@@ -127,3 +127,35 @@ El propio Ingeniero apuntaba a `C:\MVP\Foto_informe--main` (rama `main`, ultimo 
 **28 de mayo**, 57 archivos) habiendo en `C:\Users\USER\dev\Foto_info_repo\Foto_informe--main`
 la version del **23 de julio** con 253 archivos. **Todas las pruebas del router se hicieron
 contra una copia dos meses vieja.** Nadie se dio cuenta hasta que Julio pidio esta ley.
+
+## LEY 15 — LO QUE NO SE PUEDE COMPROBAR, NO ESTA GARANTIZADO (Julio, 2026-08-20)
+> "Como hacemos para que lo que no se garantiza ahora, sea una garantia?"
+
+**El principio:** una regla escrita se ignora; una comprobacion que BLOQUEA, no. Para convertir
+una promesa en garantia hay que encontrarle una comprobacion mecanica que la haga cumplir.
+Si no se le encuentra, **se dice que NO esta garantizada**. No se promete.
+
+### Las garantias, y donde vive cada una
+| Promesa | Candado que la hace cumplir | Puesto |
+|---|---|---|
+| No leer archivos grandes | `arnes/read_gate.py` | PreToolUse:Read |
+| No tocar codigo a ciegas, en NINGUN proyecto | `arnes/edit_gate_universal.py` | PreToolUse:Edit\|Write |
+| No terminar con pasos saltados | `arnes/candado_cierre.py` | **Stop** |
+| No seguir a ciegas tras perder el hilo | `arnes/candado_contexto.py` | **PostCompact** |
+| No trabajar en la copia o rama equivocada | `arnes/via_canonica.py` | mando + cada mensaje |
+| No sellar con una vigia roja | `sellar.sh` | al sellar |
+
+### Reglas de todo candado (sin excepcion)
+1. **Tiene que morder:** se sabotea a proposito y se comprueba que se pone ROJO.
+2. **No puede dejar atrapado a Julio:** todo candado que bloquea lleva salida (tope de bloqueos
+   seguidos) y el interruptor `INGENIERO_OFF=1`.
+3. **No estorba lo que debe fluir:** documentos, contratos y vigias se escriben siempre libres.
+4. **Comprueba el HECHO, no la palabra:** se mira el disco, no se cree lo que alguien diga.
+
+### LO QUE SIGUE SIN GARANTIA (y se dice, no se disimula)
+- **Rapidez de los cerebros gratis:** es de servidores ajenos (5 a 305 s medidos). Lo unico
+  garantizable es que **no hagan esperar a Julio** (proceso aparte, `subagentes.lanzar_al_fondo`).
+- **Entender al 100%:** ninguna IA puede garantizarlo. Lo que si se hace: preguntar cuando el
+  contrato no decide, y que el candado de cierre no deje terminar con la pregunta sin hacer.
+- **Que la reparacion sea la correcta:** por eso existen los 4 ojos, el juez y la Ley 5
+  (vigia verde NO es prueba; la prueba es que Julio lo vea).

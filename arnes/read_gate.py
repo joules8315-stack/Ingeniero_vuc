@@ -17,6 +17,7 @@ solo un candado que FRENA se cumple.
 import json, os, sys, glob, time, re
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+AQUI_ARNES = os.path.join(AQUI, "arnes")
 PAQUETES = os.path.join(AQUI, "memoria", "paquetes")
 CFG = os.path.join(AQUI, "arnes", "lectura.config")
 
@@ -74,6 +75,21 @@ def main():
     fp = str(ti.get("file_path") or "")
     if not fp or not os.path.exists(fp):
         return 0
+
+    # ── CONTEXTO PERDIDO: no se sigue a ciegas ────────────────────────────────
+    # Si venimos de una compactacion, TODO esta bloqueado hasta leer AL_VOLVER.md.
+    # Y el propio acto de leerlo es lo que desbloquea: no hay atajo.
+    try:
+        sys.path.insert(0, os.path.join(AQUI_ARNES))
+        import candado_contexto as _cc
+        if _cc.hay_marca():
+            if os.path.normcase(os.path.abspath(fp)) == os.path.normcase(os.path.abspath(_cc.AL_VOLVER)):
+                _cc.quitar_marca()
+                return 0          # justo lo que habia que hacer: adelante
+            sys.stderr.write(_cc.aviso())
+            return 2
+    except Exception:
+        pass
 
     c = cfg()
     # Leer un pedazo declarado (offset+limit) SIEMPRE se permite: eso es justo lo que se quiere.
