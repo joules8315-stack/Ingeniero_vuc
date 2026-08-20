@@ -60,6 +60,9 @@ T3.9 | Que busque las piezas dentro de los repositorios | funcion:cerebro.router
 T3.10 | Memoria de fallos que se actualice constantemente | archivo:cuerpo/fallos.py
 T3.11 | Verificar qué existe y qué falta, sin asumir | archivo:verificar.py
 
+T3.12 | Otros modelos como CONSEJEROS que me revisen a mi | funcion:cuerpo.consejeros:consultar
+T3.13 | El consejo nunca puede decir lo contrario de lo que votaron | vigia:test_vigia_consejeros.py
+
 ## LO QUE SOLO JULIO PUEDE DAR POR BUENO (ley 5: vigía verde NO es prueba)
 
 M.1 | Julio probó el Ingeniero con sus ojos y le sirve | manual:que Julio corra `python ingeniero.py trabaja` y diga si el paquete le sirve
