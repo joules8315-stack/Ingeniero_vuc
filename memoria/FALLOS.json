@@ -216,5 +216,33 @@
   ],
   "quien_lo_caza": "el propio interprete de Python al importar",
   "veces": 1
+ },
+ {
+  "id": 16,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "El buscador decia NO_ENCONTRADO sobre medidor.py, cuyo titulo literal es MEDIDOR de tokens",
+  "causa_raiz": "el indice guarda las palabras CON tilde (economico) y las consultas van sin ella: nunca coinciden. Degradaba TODO el grafo en silencio",
+  "cura": "normalizar tildes en _palabras() y en el filtro exigir, con la misma funcion para indexar y para consultar",
+  "no_volver_a": "filtrar las palabras de la consulta con criterios distintos a los del indice",
+  "piezas": [
+   "cerebro/trozos.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_buscador.py",
+  "veces": 1
+ },
+ {
+  "id": 17,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "El candado de edicion impidio reparar el propio Ingeniero cuando estaba roto",
+  "causa_raiz": "exigia un paquete minimo, pero el generador de paquetes no arrancaba por el mismo archivo roto",
+  "cura": "si el generador de paquetes no importa, el candado deja pasar y avisa",
+  "no_volver_a": "escribir un candado que dependa del sistema que protege sin salida para repararlo",
+  "piezas": [
+   "arnes/edit_gate_universal.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_candados_duros.py",
+  "veces": 1
  }
 ]

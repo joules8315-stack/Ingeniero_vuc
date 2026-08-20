@@ -20,8 +20,20 @@ RUIDO = {"the", "and", "for", "que", "con", "por", "los", "las", "del", "una", "
          "import", "from", "return", "def", "class", "if", "else", "not", "none", "true", "false"}
 
 
+# Tabla para quitar tildes. Julio escribe "economico" y el codigo dice "económico": si no se
+# igualan, NUNCA coinciden. Fallo real 2026-08-20: `medidor.py`, cuyo titulo literal es
+# "MEDIDOR de tokens del CICLO ECONOMICO", salia NO_ENCONTRADO al buscar justo esas palabras.
+# Esto degradaba TODO el grafo en silencio, no solo una busqueda.
+_TILDES = str.maketrans('áéíóúüàèìòùâêîôûäëïöñç', 'aeiouuaeiouaeiouaeionc')
+
+
+def _sin_tildes(t):
+    return t.translate(_TILDES)
+
+
 def _palabras(txt):
-    return [w for w in re.findall(r"[a-záéíóúñ_]{3,}", txt.lower()) if w not in RUIDO]
+    return [w for w in re.findall('[a-záéíóúüàèìòùâêîôûäëïöñç_]{3,}', _sin_tildes(txt.lower()))
+            if w not in RUIDO]
 
 
 def cortar(texto, tam=TAM, solape=SOLAPE):
@@ -86,8 +98,12 @@ class Buscador:
         Las dos veces la causa fue la misma: cualquier texto "se parece" si no se exige la palabra
         clave. Decir que se tiene la respuesta sin tenerla es peor que no responder.
         """
-        claves = [w for w in re.split(r"[^\wáéíóúñ]+", consulta.lower())
-                  if len(w) >= 3 and w not in self.COMUNES]
+        # Las claves salen de la MISMA funcion que indexa (`_palabras`). Si se filtran a mano,
+        # entran palabras que el indice nunca guardo ("del", "un", "que"): su cuenta es 0, parecen
+        # rarisimas, ganan como "la mas distintiva" y tumban la busqueda entera.
+        # Fallo real 2026-08-20, cometido DOS veces: primero con "un", luego con "del", que hizo
+        # que `medidor.py` —cuyo titulo literal es "MEDIDOR de tokens"— saliera NO_ENCONTRADO.
+        claves = [w for w in _palabras(consulta) if w not in self.COMUNES]
         if not claves:
             return []                     # nada que distinga -> no se afirma nada
         raras = sorted(claves, key=lambda w: self.en_cuantos.get(w, 0))[:1]
@@ -106,7 +122,8 @@ class Buscador:
         for t in self.trozos:
             if solo_piezas and t["pieza"] not in solo_piezas:
                 continue
-            if exigir and not any(e.lower() in t["texto"].lower() for e in exigir):
+            if exigir and not any(_sin_tildes(e.lower()) in _sin_tildes(t["texto"].lower())
+                                  for e in exigir):
                 continue
             p = 0.0
             for w in q:

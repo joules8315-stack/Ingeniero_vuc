@@ -110,6 +110,18 @@ def main():
     if not apodo:
         return 0                       # no es de un proyecto declarado: no es asunto nuestro
 
+    # PUNTO MUERTO (fallo real 2026-08-20): si el propio Ingeniero esta roto, el generador de
+    # paquetes no arranca... y este candado exige un paquete para poder arreglarlo. Se bloquea
+    # la reparacion de si mismo. Un candado NUNCA puede impedir que se le repare.
+    # Cura: si el generador de paquetes no arranca, se deja pasar y se avisa.
+    try:
+        from cerebro import router as _r        # noqa: F401
+    except Exception as e:
+        sys.stderr.write("AVISO: el generador de paquetes esta roto (%s).\n"
+                         "  Se permite la edicion para poder REPARARLO.\n"
+                         "  Corre las vigias en cuanto lo arregles.\n" % str(e)[:100])
+        return 0
+
     ruta_pk, txt = _paquete_vigente()
     if txt and _declarado_en(txt, fp):
         return 0                       # esta en el paquete: adelante
