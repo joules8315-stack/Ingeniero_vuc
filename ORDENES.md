@@ -80,6 +80,9 @@ T4.7 | Evaluar si la respuesta de Julio fue correcta | funcion:cuerpo.respuestas
 T4.8 | Si Julio repite, la respuesta anterior no sirvio | vigia:test_vigia_respuestas.py
 T4.9 | Poder cerrar una pregunta ya respondida | funcion:cuerpo.estado:respondida
 
+T4.10 | Distinguir "hay que aclararlo" de "no sirvio" | funcion:cuerpo.respuestas:evaluar
+T4.11 | Medir aparte cuando el Ingeniero se explica mal | vigia:test_vigia_respuestas.py
+
 ## LO QUE SOLO JULIO PUEDE DAR POR BUENO (ley 5: vigía verde NO es prueba)
 
 M.1 | Julio probó el Ingeniero con sus ojos y le sirve | manual:que Julio corra `python ingeniero.py trabaja` y diga si el paquete le sirve

@@ -62,3 +62,35 @@ def test_el_contador_de_repeticiones_es_el_termometro():
 
 def test_sin_datos_no_se_inventa_un_porcentaje():
     assert "todavia no" in respuestas.texto().lower()
+
+
+# ─── ACLARAR no es NO_SIRVIO (Julio, 2026-08-20) ────────────────────────────────
+def test_aclarar_NO_cuenta_como_respuesta_equivocada():
+    """Julio: 'no lo marques como una respuesta que no sirvio, sino como una que debe ser
+    aclarada, que es muy diferente; se trata solo de argumentar de manera diferente'.
+
+    Si se confunden, el sistema aprende mal: daria por erroneo el CONTENIDO cuando lo que
+    fallo fue la FORMA, y se acabaria cambiando algo que ya estaba bien."""
+    respuestas.apuntar("una explicacion correcta pero enrevesada", "la respuesta buena")
+    respuestas.evaluar("una explicacion correcta pero enrevesada", "ACLARAR")
+    r = respuestas.resumen()
+    assert r["equivocadas"] == 0, "conto como equivocada una que solo habia que explicar mejor"
+    assert r["hubo_que_aclarar"] == 1
+    assert r["acierto"] == 100.0, "el CONTENIDO era correcto: el acierto no puede bajar"
+
+
+def test_se_mide_aparte_cuando_el_ingeniero_se_explica_mal():
+    """Es un problema distinto y se arregla distinto: uno cambia la respuesta, otro la explicacion."""
+    respuestas.apuntar("algo que se explico fatal pero era correcto", "x")
+    respuestas.evaluar("algo que se explico fatal pero era correcto", "ACLARAR")
+    assert respuestas.resumen()["me_explique_mal"] == 100.0
+
+
+def test_una_respuesta_equivocada_SI_baja_el_acierto():
+    """La otra mitad: lo que de verdad estaba mal tiene que notarse."""
+    respuestas.apuntar("primera cosa bien contestada del todo", "a")
+    respuestas.evaluar("primera cosa bien contestada del todo", "SIRVIO")
+    respuestas.apuntar("segunda cosa contestada al reves", "b")
+    respuestas.evaluar("segunda cosa contestada al reves", "NO_SIRVIO")
+    r = respuestas.resumen()
+    assert r["equivocadas"] == 1 and r["acierto"] == 50.0, r

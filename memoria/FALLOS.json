@@ -259,5 +259,47 @@
   ],
   "quien_lo_caza": "el propio candado de cierre",
   "veces": 1
+ },
+ {
+  "id": 19,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "Se marco como NO_SIRVIO una explicacion cuyo contenido era CORRECTO: solo habia que argumentarla de otra manera",
+  "causa_raiz": "el sistema solo tenia dos estados (sirvio / no sirvio) y metia en el mismo saco un error de fondo y uno de forma",
+  "cura": "tercer estado ACLARAR, que NO baja el acierto de contenido y se mide aparte como me_explique_mal",
+  "no_volver_a": "confundir que la respuesta este mal con que este mal explicada: se arreglan de forma distinta",
+  "piezas": [
+   "cuerpo/respuestas.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_respuestas.py",
+  "veces": 1
+ },
+ {
+  "id": 20,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "Las vigias de dudas se ponian rojas sin que el codigo cambiara",
+  "causa_raiz": "dependian de una llamada real a un cerebro, y un cerebro no contesta siempre igual",
+  "cura": "se prueba el sistema COMPLETO pero con un juez de mentira que contesta siempre lo mismo",
+  "no_volver_a": "escribir una vigia que dependa de algo no determinista: una vigia inestable no vale para nada",
+  "piezas": [
+   "vigias/test_vigia_dudas.py"
+  ],
+  "quien_lo_caza": "ella misma",
+  "veces": 1
+ },
+ {
+  "id": 21,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "Se creyo que el juez del cerebro era opcional y se intento quitar de las pruebas",
+  "causa_raiz": "sin el, contar palabras da falsos positivos: cuantos empleados tiene la empresa traia un fallo del onboarding",
+  "cura": "el juez es imprescindible; lo que se hace es volverlo predecible en las pruebas, no quitarlo",
+  "no_volver_a": "asumir que un filtro es adorno sin probar el sistema sin el",
+  "piezas": [
+   "cuerpo/dudas.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_dudas.py",
+  "veces": 1
  }
 ]

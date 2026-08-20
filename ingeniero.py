@@ -237,9 +237,12 @@ def main():
             for x in n["repitio_a"]:
                 print("      - " + x[:90])
         return 0
-    if cmd in ("respuesta-ok", "respuesta-mal") and len(sys.argv) >= 3:
+    if cmd in ("respuesta-ok", "respuesta-mal", "respuesta-aclarar") and len(sys.argv) >= 3:
         from cuerpo import respuestas
-        res = "SIRVIO" if cmd == "respuesta-ok" else "NO_SIRVIO"
+        # ACLARAR no es NO_SIRVIO (Julio, 2026-08-20): la respuesta era CORRECTA, solo hay que
+        # argumentarla de otra manera. Confundirlas hace que se cambie lo que ya estaba bien.
+        res = {"respuesta-ok": "SIRVIO", "respuesta-mal": "NO_SIRVIO",
+               "respuesta-aclarar": "ACLARAR"}[cmd]
         r = respuestas.evaluar(" ".join(sys.argv[2:]), res, "lo dijo Julio")
         print(("marcada como " + res) if r else "NO_ENCONTRADO: no hay ninguna respuesta asi")
         return 0

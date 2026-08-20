@@ -75,7 +75,18 @@ def apuntar(pregunta, respuesta, proyecto=""):
 
 
 def evaluar(texto_pregunta, resultado, por_que=""):
-    """resultado: SIRVIO | NO_SIRVIO. Lo pone Julio (o el trabajo, si quedo demostrado)."""
+    """resultado: SIRVIO | ACLARAR | NO_SIRVIO. Lo pone Julio.
+
+    LOS TRES SON COSAS DISTINTAS (Julio, 2026-08-20, corrigiendo al Ingeniero):
+      SIRVIO     — la respuesta era correcta y se entendio.
+      ACLARAR    — **la respuesta era CORRECTA, pero mal explicada.** No hay que cambiar el
+                   fondo: hay que argumentarlo de otra manera. NO cuenta como fallo de contenido.
+      NO_SIRVIO  — la respuesta era equivocada o no resolvia el problema.
+
+    Confundir ACLARAR con NO_SIRVIO hace que el sistema aprenda mal: daria por erroneo algo que
+    era correcto, y se cambiaria lo que ya estaba bien. Son problemas distintos y se arreglan
+    de forma distinta: uno cambiando la respuesta, otro cambiando la explicacion.
+    """
     rs = _leer()
     for r in reversed(rs):
         if texto_pregunta.lower() in r["pregunta"].lower() or _parecidas(r["pregunta"], texto_pregunta):
@@ -96,10 +107,15 @@ def resumen():
         return {"total": 0}
     ev = [r for r in rs if r["evaluacion"] != "PENDIENTE"]
     ok = [r for r in ev if r["evaluacion"] == "SIRVIO"]
+    aclarar = [r for r in ev if r["evaluacion"] == "ACLARAR"]
+    mal = [r for r in ev if r["evaluacion"] == "NO_SIRVIO"]
     repeticiones = sum(len(r.get("repitio_a", [])) for r in rs)
+    # El acierto mide el CONTENIDO: las que solo habia que explicar mejor eran correctas,
+    # asi que cuentan como acertadas. Lo que falla ahi es la explicacion, y se mide aparte.
     return {"total": len(rs), "evaluadas": len(ev),
-            "sirvieron": len(ok),
-            "acierto": round(len(ok) * 100 / len(ev), 1) if ev else None,
+            "sirvieron": len(ok), "hubo_que_aclarar": len(aclarar), "equivocadas": len(mal),
+            "acierto": round((len(ok) + len(aclarar)) * 100 / len(ev), 1) if ev else None,
+            "me_explique_mal": round(len(aclarar) * 100 / len(ev), 1) if ev else None,
             "veces_que_julio_repitio": repeticiones,
             "pendientes": len(rs) - len(ev)}
 
@@ -109,11 +125,17 @@ def texto():
     if not r["total"]:
         return ("RESPUESTAS: todavia no se ha apuntado ninguna.\n"
                 "  Se apuntan solas cuando el Ingeniero pregunta y Julio contesta.")
-    L = ["¿LAS RESPUESTAS DE JULIO SIRVIERON? (memoria/RESPUESTAS.json)"]
+    L = ["¿SIRVIERON LAS RESPUESTAS? (memoria/RESPUESTAS.json)"]
     L.append("  preguntas hechas       : %d" % r["total"])
     if r["evaluadas"]:
-        L.append("  respuestas que SIRVIERON: %s%%  (%d de %d evaluadas)"
-                 % (r["acierto"], r["sirvieron"], r["evaluadas"]))
+        L.append("  CONTENIDO acertado     : %s%%  (%d bien + %d correctas pero mal explicadas,"
+                 " de %d evaluadas)"
+                 % (r["acierto"], r["sirvieron"], r["hubo_que_aclarar"], r["evaluadas"]))
+        L.append("  ME EXPLIQUE MAL        : %s%%  (%d)   <- el fondo era correcto, la forma no"
+                 % (r["me_explique_mal"], r["hubo_que_aclarar"]))
+        if r["equivocadas"]:
+            L.append("  respuestas EQUIVOCADAS : %d   <- estas si eran incorrectas de fondo"
+                     % r["equivocadas"])
     L.append("  VECES QUE JULIO REPITIO : %d   <- si esto sube, el sistema esta fallando"
              % r["veces_que_julio_repitio"])
     if r["pendientes"]:

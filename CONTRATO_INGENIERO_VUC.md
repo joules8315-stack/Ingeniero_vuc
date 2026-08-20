@@ -263,3 +263,26 @@ a aparecer una pregunta parecida, la anterior queda marcada `NO_SIRVIO` **sola**
 El candado de cierre bloqueaba por preguntas YA respondidas, y no habia forma honrada de
 cerrarlas salvo apagar el candado entero. **Un candado sin manera legitima de satisfacerlo
 empuja a saltarselo, y eso es peor que no tenerlo.** Cura: `cuerpo/estado.respondida()`.
+
+### LEY 18-bis — "HAY QUE ACLARARLO" NO ES "NO SIRVIO" (Julio, 2026-08-20)
+> "No lo marques como una respuesta que no sirvio, sino como una que debe ser aclarada, que es
+>  muy diferente: se trata solo de argumentar de manera diferente, no que no sirva."
+
+Son **tres cosas distintas** y se arreglan de forma distinta:
+
+| Estado | Que paso | Que hay que cambiar |
+|---|---|---|
+| `SIRVIO` | correcta y entendida | nada |
+| `ACLARAR` | **correcta, pero mal explicada** | la EXPLICACION, no el fondo |
+| `NO_SIRVIO` | equivocada o no resolvia | la RESPUESTA |
+
+**Confundir ACLARAR con NO_SIRVIO hace que el sistema aprenda al reves:** daria por erroneo algo
+que era correcto, y se acabaria cambiando lo que ya estaba bien.
+
+Por eso el informe separa dos numeros que antes iban juntos:
+- **CONTENIDO acertado** — las de `ACLARAR` cuentan como acertadas: el fondo era bueno.
+- **ME EXPLIQUE MAL** — mide solo la forma. **Este numero es del Ingeniero, no de Julio.**
+
+- **Comando:** `python ingeniero.py respuesta-aclarar "<la pregunta>"`
+- **Vigia:** `test_vigia_respuestas.py` — comprueba que `ACLARAR` no baja el acierto y que
+  `NO_SIRVIO` si lo baja.
