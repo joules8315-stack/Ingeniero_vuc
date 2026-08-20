@@ -1,0 +1,70 @@
+{
+  "model": "opus",
+  "syntaxHighlightingDisabled": false,
+  "theme": "dark",
+  "effortLevel": "high",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"C:\\Users\\USER\\dev\\Foto_info_repo\\Foto_informe--main\\.venv\\Scripts\\python.exe\" \"C:\\Users\\USER\\dev\\Foto_info_repo\\Foto_informe--main\\.claude\\hooks\\edit_gate.py\""
+          },
+          {
+            "type": "command",
+            "command": "\"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python310\\python.exe\" \"C:\\Users\\USER\\dev\\Asesor Marketing\\arnes\\edit_gate.py\""
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python310\\python.exe\" \"C:\\Ingeniero_VUC\\arnes\\read_gate.py\""
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python310\\python.exe\" \"C:\\Users\\USER\\dev\\Asesor Marketing\\arnes\\recordatorio_arranque.py\""
+          },
+          {
+            "type": "command",
+            "command": "\"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python310\\python.exe\" \"C:\\Ingeniero_VUC\\arnes\\modo_ingeniero.py\" sesion"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"PROTOCOLO DMM (Asesor Marketing): antes de actuar consulta MAPA_CANONICO.md (donde esta cada cosa) y PROTOCOLO_DEL_CHAT.md (legislar cada mejora, no duplicar, revisar candado+arnes, aplicar con boton Aplicar, sellar con sellar.sh). Fin: que Julio no repita.\"}}'"
+          },
+          {
+            "type": "command",
+            "command": "\"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python310\\python.exe\" \"C:\\Ingeniero_VUC\\arnes\\modo_ingeniero.py\" prompt"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python310\\python.exe\" \"C:\\Ingeniero_VUC\\arnes\\modo_ingeniero.py\" compactar"
+          }
+        ]
+      }
+    ]
+  }
+}

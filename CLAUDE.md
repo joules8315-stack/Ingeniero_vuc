@@ -1,0 +1,67 @@
+# INGENIERO VUC — instrucciones fijas
+
+Herramienta de Julio para **crear y reparar cualquier proyecto sin gastar tokens de mas**.
+Vive en `C:\Ingeniero_VUC`, no pertenece a ningun proyecto, atiende a los de `proyectos.config`.
+
+## LA REGLA QUE MANDA SOBRE TODAS
+**No se lee el proyecto. Se lee el PAQUETE MINIMO.**
+
+Ante cualquier problema, lo PRIMERO es:
+```
+cd C:\Ingeniero_VUC; python ingeniero.py trabaja <proyecto> "<el problema en palabras de Julio>"
+```
+Eso deja un paquete en `memoria/paquetes/`. Ese paquete es TODO el material permitido.
+Si falta algo, se PIDE (formato `NECESITO_LEER` al final del paquete). No se abre por cuenta propia.
+
+## LAS 5 LEYES DE JULIO (no se negocian)
+1. **Nunca asumir.** Si el contrato no lo dice, se escribe `PREGUNTA_REQUERIDA:` y se le pregunta a Julio.
+2. **Nunca inventar.** Si un archivo/funcion/linea no existe, se escribe `NO_ENCONTRADO`. Jamas se rellena.
+3. **Vigia verde NO es prueba.** La prueba es que Julio lo vea funcionar con sus ojos.
+4. **No romper vecinos.** Antes de tocar, se lee la seccion "A QUIEN PUEDE DANAR" del paquete.
+5. **Hablarle en simple.** Julio no es tecnico. Nada de jerga; el comando siempre listo para PowerShell (`;`, no `&&`).
+
+## COMO SE TRABAJA (el protocolo, no hay que repetirselo a nadie)
+```
+python ingeniero.py arranca                 # donde ibamos (el estado NO vive en el chat)
+python ingeniero.py trabaja <proy> "<problema>"
+python ingeniero.py vigias <proy> antes     # de que color estan ANTES
+   ... reparar SOLO con el paquete ...
+python ingeniero.py vigias <proy> despues   # no romper nada
+   ... Julio prueba con sus ojos ...        # sin esto no se sella
+```
+
+## LO QUE ESTA PROHIBIDO
+- Abrir un archivo entero de mas de 300 lineas (el candado `arnes/read_gate.py` lo frena).
+- Reparar sin paquete vigente.
+- Sellar con una vigia roja.
+- Crear una pieza nueva que duplique una existente: primero se busca en el mapa.
+
+## DONDE ESTA CADA COSA
+- `cerebro/` — piezas, enlaces, flujos, trozos, grafo, router. El grafo tipo Obsidian.
+- `arnes/`   — los candados (`read_gate.py` = candado de LECTURA, el que cuida el dinero).
+- `vigias/`  — las pruebas del propio Ingeniero. Se corren con `python -m pytest -q vigias/`.
+- `memoria/` — ESTADO.json (donde ibamos), paquetes/, grafos/, rescate/.
+- `mapa/`    — el inventario de TODOS los proyectos. Se regenera, no se edita a mano.
+
+<!-- INGENIERO_VUC:INICIO -->
+## AHORRO DE TOKENS — lo pone el Ingeniero VUC (C:\Ingeniero_VUC)
+
+**No se lee este proyecto entero. Se pide el paquete minimo.**
+
+Ante cualquier problema, PRIMERO:
+```
+cd C:\Ingeniero_VUC; python ingeniero.py trabaja ingeniero "<el problema en palabras de Julio>"
+```
+Eso entrega la ley que manda, las piezas con su boca, los trozos exactos (`archivo:linea-linea`),
+las vigias que protegen y a quien se puede danar. Ese paquete es TODO el material permitido.
+
+Si falta algo, se PIDE asi (no se abre por cuenta propia):
+```
+NECESITO_LEER:
+  archivo: <ruta>   motivo: <que responde>   decide: <que desbloquea>   riesgo: <si no lo leo>
+```
+
+Leyes: nunca asumir · nunca inventar (`NO_ENCONTRADO`) · vigia verde NO es prueba (la prueba es
+que Julio lo vea) · no romper vecinos · hablarle simple y con el comando listo para PowerShell.
+<!-- INGENIERO_VUC:FIN -->
+
