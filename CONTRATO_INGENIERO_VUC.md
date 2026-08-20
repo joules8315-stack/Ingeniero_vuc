@@ -286,3 +286,74 @@ Por eso el informe separa dos numeros que antes iban juntos:
 - **Comando:** `python ingeniero.py respuesta-aclarar "<la pregunta>"`
 - **Vigia:** `test_vigia_respuestas.py` — comprueba que `ACLARAR` no baja el acierto y que
   `NO_SIRVIO` si lo baja.
+
+## LEY 19 — EL PROTOCOLO DE JULIO SE CUMPLE SOLO, NO DE MEMORIA (2026-08-20)
+> "Falta que actues segun protocolos, ya eso lo he dicho miles de veces... crea los putos
+>  disparadores, lo que tengas que hacer."
+
+**El protocolo YA existia** (`PROTOCOLO_DEL_CHAT.md`, Julio 2026-07-28) y aun asi se incumplio
+todo el dia. El fallo no era que faltara la ley: era que **nada obligaba a cumplirla**.
+
+### La leccion del dia, en una linea
+**Lo que se ejecuta solo, se cumple. Lo que depende de que alguien se acuerde, no se cumple.**
+Quedo demostrado con las dos mitades del mismo dia:
+| Se ejecuta solo (disparadores) | Depende de acordarse |
+|---|---|
+| lectura, edicion, contexto, via canonica | buscar en el contrato antes de preguntar |
+| **frenaron 4 veces, funcionaron** | **se incumplio 3 veces** |
+
+### Los disparadores del protocolo (`arnes/candado_protocolo.py`)
+1. **¿Julio esta repitiendo?** — en cada mensaje suyo se compara con lo que ya habia dicho. Si
+   repite, avisa EN EL MOMENTO y lo cuenta solo. Antes el contador marcaba **CERO habiendo
+   repetido cuatro veces el mismo dia**, porque habia que subirlo a mano.
+2. **Jerga prohibida** — se revisa la respuesta ANTES de que le llegue a Julio. Si lleva nombres
+   de archivos o palabras de informatica, no se puede terminar. (LEY DURA de lenguaje simple:
+   Julio no es tecnico y lo ha repetido muchas veces, con enojo.)
+3. **Confirmar el objetivo antes de construir** — no se crea nada nuevo sin haberle repetido con
+   palabras propias el RESULTADO que quiere y haber esperado su "si".
+4. **No preguntarle lo que ya escribio** (`arnes/candado_preguntar.py`) — antes de que le llegue
+   una pregunta, se busca en sus contratos. Si esta escrito, bloquea y manda a leerlo.
+
+- **Vigia:** `test_vigia_protocolo.py` (11 pruebas). Comprueba que muerden Y que no atrapan:
+  ninguno bloquea mas de dos veces seguidas y todos se apagan con `INGENIERO_OFF=1`.
+- **Regla dura:** toda ley nueva nace con su disparador. **Una ley sin disparador no es una ley,
+  es un deseo.**
+
+## LEY 20 — HAY UN SOLO PROTOCOLO, Y CADA PASO LLEVA CANDADO (Julio, 2026-08-20)
+> "Busca en DMM el metodo de trabajo completo... ahora lo del protocolo del MVP, comparalos y
+>  haz uno solo unificado, mapa de la forma de trabajo, legislala y pon los candados, de manera
+>  que en tu vida los vuelvas a violar."
+
+El documento es `PROTOCOLO_UNICO.md`. Une lo que ya estaba escrito y disperso:
+| Fuente | Aporta |
+|---|---|
+| `PROTOCOLO_DEL_CHAT.md` (DMM, 2026-07-28) | como se responde |
+| `PROTOCOLO_MVP.md` (= "protocolo rv3:") | como se repara |
+| `CLAUDE.md` § "protocolo rv2:" | el NORTE: consolidar a una sola version |
+| `CLAUDE.md` § punto de retomada | donde ibamos |
+**RV1 no existe escrito** (se busco el 2026-08-20). No se inventa: si Julio se referia a algo
+anterior, se le pregunta.
+
+### Los 8 pasos y su candado (ninguno se salta)
+| Paso | Candado |
+|---|---|
+| 1 ¿Estoy donde debo? | `arnes/via_canonica.py` |
+| 2 Buscar solo lo necesario, en orden | `arnes/read_gate.py` |
+| 3 Causa raiz, nunca sintoma | `arnes/candado_diagnostico.py` |
+| 4 Agotar las fuentes antes de preguntar | `arnes/candado_preguntar.py` |
+| 5 Confirmar el objetivo antes de construir | `arnes/candado_protocolo.py construir` |
+| 6 Plan cerrado y reparacion minima | `arnes/edit_gate_universal.py` |
+| 7 La prueba la manda la realidad | `arnes/candado_cierre.py` + `cuerpo/cruzado.py` |
+| 8 Legislar, sellar y aprender | `sellar.sh` |
+
+### El paso 3 es el que faltaba y el que mas dolio
+Del PROTOCOLO_MVP § 6, escrito hace tiempo: *"Causa declarada exige archivo, funcion, linea,
+flujo reproducido y evidencia. Sin eso = INFERIDO, y lo inferido NO SE REPARA."*
+El 2026-08-20 se iba a **indexar el MVP entero sin saber donde estaba lento**. La regla existia
+y no la hacia cumplir nadie. Ahora: `python ingeniero.py causa <proyecto> --archivo ... --funcion
+... --linea ... --evidencia "lo que se midio"`. Sin eso, el candado no deja tocar codigo.
+
+### Comprobarlo
+`python ingeniero.py protocolo` — dice paso por paso cual tiene candado.
+**Regla dura: una ley sin candado es un deseo.** Quedo demostrado el 2026-08-20, con los dos
+protocolos escritos, delante, y violados los dos.

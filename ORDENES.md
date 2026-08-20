@@ -83,6 +83,19 @@ T4.9 | Poder cerrar una pregunta ya respondida | funcion:cuerpo.estado:respondid
 T4.10 | Distinguir "hay que aclararlo" de "no sirvio" | funcion:cuerpo.respuestas:evaluar
 T4.11 | Medir aparte cuando el Ingeniero se explica mal | vigia:test_vigia_respuestas.py
 
+## TANDA 5 (que el protocolo se cumpla solo)
+
+T5.1 | Actuar SIEMPRE segun los protocolos ya escritos | archivo:arnes/candado_protocolo.py
+T5.2 | Darse cuenta SOLO de que Julio esta repitiendo | funcion:arnes.candado_protocolo:repite
+T5.3 | Nada de jerga tecnica con Julio (ley dura) | funcion:arnes.candado_protocolo:salida
+T5.4 | Confirmar el objetivo antes de construir (ley dura) | funcion:arnes.candado_protocolo:construir
+T5.5 | No preguntarle lo que ya dejo escrito | archivo:arnes/candado_preguntar.py
+T5.6 | Que los disparadores muerdan y no atrapen | vigia:test_vigia_protocolo.py
+
+T5.7 | Un solo protocolo unificado (DMM + MVP + rv2) | archivo:PROTOCOLO_UNICO.md
+T5.8 | Causa raiz probada antes de reparar (lo inferido no se repara) | archivo:arnes/candado_diagnostico.py
+T5.9 | Cada paso del protocolo con su candado | funcion:cuerpo.estado:leer
+
 ## LO QUE SOLO JULIO PUEDE DAR POR BUENO (ley 5: vigía verde NO es prueba)
 
 M.1 | Julio probó el Ingeniero con sus ojos y le sirve | manual:que Julio corra `python ingeniero.py trabaja` y diga si el paquete le sirve

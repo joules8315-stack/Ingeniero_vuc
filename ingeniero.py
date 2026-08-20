@@ -219,6 +219,44 @@ def main():
             print(dudas.formular(d, r))
             print("  (apuntada: el candado de cierre no deja terminar hasta hacersela a Julio)")
         return 0
+    if cmd == "causa" and len(sys.argv) >= 3:
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        import candado_diagnostico as cd
+        a = sys.argv[2:]
+        def _v(n):
+            return a[a.index(n) + 1] if n in a and len(a) > a.index(n) + 1 else ""
+        r = cd.declarar(a[0], _v("--archivo"), _v("--funcion"), _v("--linea"),
+                        _v("--evidencia"), _v("--sintoma"))
+        print(r["_error"] if "_error" in r else "CAUSA RAIZ declarada. Ya se puede reparar.")
+        return 1 if "_error" in r else 0
+    if cmd == "protocolo":
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        import candado_diagnostico as cd
+        print(open(os.path.join(AQUI, "PROTOCOLO_UNICO.md"), encoding="utf-8")
+              .read().split("## LOS 8 PASOS")[0])
+        pasos = [
+            ("1 ¿Estoy donde debo?", "via_canonica.py"),
+            ("2 Buscar solo lo necesario", "read_gate.py"),
+            ("3 Causa raiz, no sintoma", "candado_diagnostico.py"),
+            ("4 Agotar las fuentes antes de preguntar", "candado_preguntar.py"),
+            ("5 Confirmar el objetivo antes de construir", "candado_protocolo.py"),
+            ("6 Plan cerrado y reparacion minima", "edit_gate_universal.py"),
+            ("7 La prueba la manda la realidad", "candado_cierre.py"),
+            ("8 Legislar, sellar y aprender", "../sellar.sh"),
+        ]
+        print("LOS 8 PASOS Y SU CANDADO:")
+        falta = 0
+        for nombre, arch in pasos:
+            hay = os.path.exists(os.path.join(AQUI, "arnes", arch))
+            if not hay:
+                falta += 1
+            print("  [%s] %-44s %s" % ("OK " if hay else "FALTA", nombre, arch))
+        print()
+        print(cd.texto())
+        if falta:
+            print()
+            print("*** %d paso(s) SIN candado. Un paso sin candado es un paso que se salta." % falta)
+        return 0 if not falta else 2
     if cmd == "medir":
         from cuerpo import medidor, respuestas
         print(medidor.texto(sys.argv[2] if len(sys.argv) > 2 else None))

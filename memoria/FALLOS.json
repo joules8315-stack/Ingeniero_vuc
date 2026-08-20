@@ -301,5 +301,76 @@
   ],
   "quien_lo_caza": "vigias/test_vigia_dudas.py",
   "veces": 1
+ },
+ {
+  "id": 22,
+  "fecha": "2026-08-20",
+  "proyecto": "foto_informe",
+  "que_paso": "Se iba a INDEXAR el MVP como si eso fuera la reparacion, sin saber DONDE esta lento",
+  "causa_raiz": "se salto el orden: actuar antes de buscar el origen del fallo y tener elementos de juicio",
+  "cura": "ORDEN OBLIGATORIO: 1 via canonica, 2 buscar el ORIGEN del fallo, 3 analizar, 4 recien entonces proponer como lograrlo",
+  "no_volver_a": "proponer una solucion antes de haber localizado y medido el fallo",
+  "piezas": [
+   "ingeniero.py"
+  ],
+  "quien_lo_caza": "PENDIENTE de vigia",
+  "veces": 1
+ },
+ {
+  "id": 23,
+  "fecha": "2026-08-20",
+  "proyecto": "foto_informe",
+  "que_paso": "Se dijo que la LENTITUD y el MODO OFFLINE eran el mismo problema",
+  "causa_raiz": "una nota de memoria decia que la cura de la latencia era el offline, y se salto de ahi a que eran lo mismo",
+  "cura": "son DOS objetivos distintos y se tratan por separado; el offline puede estar lento por su cuenta. Se corrigio la nota que inducia al error",
+  "no_volver_a": "juntar dos problemas porque una solucion toque a los dos; que A ayude a B no hace que A y B sean lo mismo",
+  "piezas": [
+   "memoria latencia-supabase-canal-lento"
+  ],
+  "quien_lo_caza": "PENDIENTE de vigia",
+  "veces": 1
+ },
+ {
+  "id": 24,
+  "fecha": "2026-08-20",
+  "proyecto": "foto_informe",
+  "que_paso": "Julio entendio que se le iba a BORRAR el boton Organizador de tareas con IA, que el habia pedido",
+  "causa_raiz": "se uso la palabra DESCARTADO sin decir que se descartaba como CAUSA del fallo, no como funcionalidad",
+  "cura": "al investigar, decir siempre ESTOY LEYENDO, NO TOCANDO, y nombrar que se descarta exactamente",
+  "no_volver_a": "usar palabras como descartado, quitar o eliminar mientras se investiga: asustan y parecen acciones",
+  "piezas": [
+   "comunicacion"
+  ],
+  "quien_lo_caza": "PENDIENTE de vigia",
+  "veces": 1
+ },
+ {
+  "id": 25,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "Se incumplio el PROTOCOLO_DEL_CHAT de Julio durante todo el dia, estando escrito desde el 2026-07-28",
+  "causa_raiz": "el protocolo existia pero NADA obligaba a cumplirlo: era un documento, no un candado",
+  "cura": "tres disparadores: detectar que Julio repite, frenar la jerga prohibida antes de que le llegue, y exigir confirmar el objetivo antes de construir",
+  "no_volver_a": "dejar una ley escrita sin un disparador que la haga cumplir; lo que depende de acordarse, no se cumple",
+  "piezas": [
+   "arnes/candado_protocolo.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_protocolo.py",
+  "veces": 1
+ },
+ {
+  "id": 26,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "El contador de veces que Julio repite marcaba CERO habiendo repetido cuatro veces el mismo dia",
+  "causa_raiz": "solo subia si alguien lo apuntaba a mano; el termometro del sistema entero dependia de que el Ingeniero se acordara",
+  "cura": "se dispara solo en cada mensaje de Julio comparandolo con lo que ya habia dicho antes",
+  "no_volver_a": "medir algo importante con un contador que hay que subir a mano",
+  "piezas": [
+   "cuerpo/respuestas.py",
+   "arnes/candado_protocolo.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_protocolo.py",
+  "veces": 1
  }
 ]

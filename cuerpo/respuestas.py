@@ -144,3 +144,27 @@ def texto():
             L.append("     - %s" % x["pregunta"][:90])
         L.append("  (evaluarlas: python ingeniero.py respuesta-ok / respuesta-mal \"<la pregunta>\")")
     return "\n".join(L)
+
+
+def apuntar_repeticion(texto_nuevo, texto_viejo):
+    """Se dispara SOLO cuando Julio repite algo (lo detecta el candado del protocolo).
+
+    Antes esto se contaba a mano y por eso el termometro marcaba CERO habiendo repetido cuatro
+    veces el mismo dia. El fin del Ingeniero es que Julio no repita: si el contador depende de
+    que alguien se acuerde de subirlo, no mide nada.
+    """
+    rs = _leer()
+    for r in reversed(rs):
+        if r["evaluacion"] == "PENDIENTE" or _parecidas(r.get("pregunta", ""), texto_viejo):
+            r.setdefault("repitio_a", []).append(texto_nuevo[:200])
+            if r["evaluacion"] == "PENDIENTE":
+                r["evaluacion"] = "NO_SIRVIO"
+                r["por_que"] = "Julio tuvo que repetirlo"
+            _guardar(rs)
+            return r
+    rs.append({"id": len(rs) + 1,
+               "cuando": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), "pregunta": texto_viejo[:200],
+               "respuesta": "", "evaluacion": "NO_SIRVIO",
+               "por_que": "Julio tuvo que repetirlo", "repitio_a": [texto_nuevo[:200]]})
+    _guardar(rs)
+    return rs[-1]
