@@ -16,6 +16,7 @@ Formato de cada línea:
 - `vigia:<archivo>` — existe esa vigía Y está verde
 - `texto:<archivo>:<palabra>` — ese archivo contiene esa palabra
 - `manual:<que tiene que ver Julio>` — SOLO Julio puede darlo por bueno (ley 5)
+- `hooks_puestos` — los hooks del Ingeniero estan de verdad en el settings de Julio
 
 ---
 
@@ -42,7 +43,7 @@ T2.7 | Usar subagentes para eso | archivo:cuerpo/subagentes.py
 T2.8 | Buscador y creador de skills | archivo:cuerpo/skills.py
 T2.9 | Que busque en las librerías respectivas | texto:cuerpo/skills.py:CONOCIDAS
 T2.10 | Y si no existe, que cree las propias | funcion:cuerpo.skills:crear
-T2.11 | Siempre modo ingeniero, nunca IA suelta | archivo:arnes/instalar_global.py
+T2.11 | Siempre modo ingeniero, nunca IA suelta | hooks_puestos
 T2.12 | Gastar Qwen, luego Gemini, y VOLVER a Qwen al reponer | vigia:test_vigia_relevo_cuotas.py
 
 ## TANDA 3 (vigía cruzada y calidad del trabajo)

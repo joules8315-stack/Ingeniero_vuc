@@ -103,3 +103,27 @@
 - El trabajo pesado corre en proceso APARTE (`cuerpo/subagentes.py`): se traga las 20.000 letras
   del paquete y devuelve ~600 de veredicto. Claude decide igual de bien viendo el 3%.
 - Si el proceso aparte se cuelga, NO se lleva por delante la sesion de Julio.
+
+## LEY 14 — LA VIA CANONICA ES LO PRIMERO (Julio, 2026-08-20)
+> "que todas las rutas, ramas, vias canonicas, siempre se cumplan, que sea lo primero que
+>  verifique el ingeniero, que este trabajando donde debe, no en una version equivoca,
+>  y que guarde alli sus commit"
+
+- **Antes de tocar nada** se comprueba: la ruta declarada existe · esta en la RAMA declarada ·
+  no hay copias mas nuevas del mismo proyecto por el disco · no quedan cambios sin guardar.
+- **Una ruta y una rama por proyecto**, declaradas en `proyectos.config`. Sin rama declarada,
+  no se trabaja: los commits acabarian en cualquier parte.
+- **Si la copia declarada es mas VIEJA que otra que hay en el disco -> BLOQUEO.** Reparar en la
+  copia equivocada es tirar el trabajo a la basura.
+- **Pieza:** `arnes/via_canonica.py` · **Vigia:** `test_vigia_via_canonica.py` (meta-probada:
+  al apuntar a la copia vieja se pone ROJA).
+- **Donde actua:** en el mando (antes de `trabaja`, `resolver`, `cruzado`, `vigias`, skills),
+  en `ingeniero.py arranca`, y en el hook que se mete en CADA mensaje de Julio.
+- **Comando:** `python ingeniero.py via`
+- **Los commits se guardan en la rama canonica**, y `sellar.sh` lo hace cumplir.
+
+### FALLO REAL que la motiva (2026-08-20)
+El propio Ingeniero apuntaba a `C:\MVP\Foto_informe--main` (rama `main`, ultimo commit
+**28 de mayo**, 57 archivos) habiendo en `C:\Users\USER\dev\Foto_info_repo\Foto_informe--main`
+la version del **23 de julio** con 253 archivos. **Todas las pruebas del router se hicieron
+contra una copia dos meses vieja.** Nadie se dio cuenta hasta que Julio pidio esta ley.

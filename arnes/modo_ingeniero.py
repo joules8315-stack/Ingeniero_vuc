@@ -69,9 +69,25 @@ def _paquete_vigente(horas=8):
     return ""
 
 
+def _via():
+    """Ley 14: lo primero de lo primero. Si se esta en la copia equivocada, todo lo demas sobra."""
+    try:
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        import via_canonica
+        if via_canonica.esta_limpio():
+            return ""
+        return via_canonica.texto() + "\n*** NO SE TOCA CODIGO hasta arreglar esto. ***"
+    except Exception:
+        return ""
+
+
 def _donde_ibamos():
     d, txt = _estado()
     L = []
+    via = _via()
+    if via:
+        L.append(via)
+        L.append("")
     if txt:
         L.append(txt)
     pk = _paquete_vigente()

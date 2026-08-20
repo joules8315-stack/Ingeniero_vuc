@@ -74,6 +74,21 @@ def _comprobar(c, correr_vigias=False):
         return ("HECHO", resto.strip() + " VERDE") if p.returncode == 0 else \
                ("ROTO", resto.strip() + " ROJA")
 
+    if tipo == "hooks_puestos":
+        # Se comprueba el HECHO, no si existe un instalador. Julio puede haberlo puesto a mano.
+        sj = os.path.join(os.path.expanduser("~"), ".claude", "settings.json")
+        if not os.path.exists(sj):
+            return "FALTA", "no hay ~/.claude/settings.json"
+        txt = open(sj, encoding="utf-8", errors="ignore").read()
+        faltan = [h for h in ("modo_ingeniero.py", "read_gate.py") if h not in txt]
+        if faltan:
+            return "FALTA", "no estan enganchados: " + ", ".join(faltan)
+        eventos = [e for e in ("UserPromptSubmit", "SessionStart", "PreCompact", "PreToolUse")
+                   if e not in txt]
+        if eventos:
+            return "FALTA", "faltan los puestos: " + ", ".join(eventos)
+        return "HECHO", "los 4 puestos estan en el settings de Julio"
+
     if tipo == "manual":
         return "JULIO", resto.strip()
 

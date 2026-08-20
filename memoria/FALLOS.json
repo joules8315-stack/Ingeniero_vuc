@@ -143,5 +143,20 @@
   ],
   "quien_lo_caza": "vigias/test_vigia_nada_lento.py",
   "veces": 1
+ },
+ {
+  "id": 11,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "El Ingeniero apuntaba a una copia de Foto Informe de MAYO habiendo una de JULIO con 253 archivos",
+  "causa_raiz": "proyectos.config se lleno a ojo, sin comprobar cual copia era la viva ni en que rama estaba",
+  "cura": "arnes/via_canonica.py: comprueba ruta+rama+gemelos ANTES de nada y BLOQUEA si la declarada es mas vieja",
+  "no_volver_a": "declarar una ruta sin comprobar si hay copias del mismo proyecto y cual tiene el commit mas nuevo",
+  "piezas": [
+   "proyectos.config",
+   "arnes/via_canonica.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_via_canonica.py",
+  "veces": 1
  }
 ]

@@ -3,6 +3,7 @@
 
 Julio no repite instrucciones: dice el problema y el Ingeniero hace el resto del protocolo.
 
+    python ingeniero.py via                          -> ¿estoy en la ruta y rama correctas? (LO PRIMERO)
     python ingeniero.py arranca                      -> donde ibamos
     python ingeniero.py trabaja dmm "el onboarding no guarda el perfil"
     python ingeniero.py resolver dmm "<problema>"    -> lo resuelve el cerebro GRATIS (Qwen+Gemini)
@@ -23,9 +24,14 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 from cerebro import router, grafo          # noqa: E402
 from cuerpo import estado, obrero, cuotas, fallos, subagentes, skills as hab  # noqa: E402
+sys.path.insert(0, os.path.join(AQUI, 'arnes'))
+import via_canonica                        # noqa: E402
 
 
 def arranca():
+    # LO PRIMERO SIEMPRE: ¿estoy donde debo? (Ley 14)
+    print(via_canonica.texto())
+    print()
     print(estado.texto())
     print()
     d = estado.leer()
@@ -118,11 +124,35 @@ def resolver(apodo, problema):
     return 0
 
 
+# Comandos que TOCAN un proyecto: antes de nada, hay que estar donde se debe.
+TOCAN_PROYECTO = ("trabaja", "resolver", "cruzado", "vigias", "buscar-skill", "crear-skill")
+
+
+def _via_ok(cmd, apodo=None):
+    """LO PRIMERO (Ley 14): ¿estoy en la ruta y la rama que mandan? Si no, no se toca nada.
+    Reparar en la copia equivocada es tirar el trabajo a la basura (fallo real 2026-08-20:
+    el Ingeniero apuntaba a una copia de Foto Informe de MAYO habiendo una de JULIO)."""
+    if cmd not in TOCAN_PROYECTO:
+        return True
+    if not via_canonica.esta_limpio(apodo):
+        print(via_canonica.texto(apodo))
+        print()
+        print("PARADO: primero se arregla la via canonica. No se trabaja en la version equivocada.")
+        return False
+    return True
+
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__)
         return 1
     cmd = sys.argv[1]
+    apodo = sys.argv[2] if len(sys.argv) > 2 and cmd in TOCAN_PROYECTO else None
+    if not _via_ok(cmd, apodo):
+        return 2
+    if cmd == "via":
+        print(via_canonica.texto(sys.argv[2] if len(sys.argv) > 2 else None))
+        return 0 if via_canonica.esta_limpio() else 2
     if cmd == "arranca":
         return arranca()
     if cmd == "trabaja" and len(sys.argv) >= 4:
