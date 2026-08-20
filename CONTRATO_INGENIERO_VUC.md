@@ -231,3 +231,35 @@ buscador de palabras (1 llamada). Con cache: un texto se paga UNA vez.
 ### 5. Cobertura — ya estaba hecha
 El candado global cubre TODOS los proyectos declarados. Comprobado el 2026-08-20: DMM y Foto
 Informe protegidos para editar; los archivos de mas de 300 lineas, tambien para leer.
+
+## LEY 18 — NO BASTA CON RESPONDER: HAY QUE EVALUAR SI LA RESPUESTA SIRVIO
+> Julio, 2026-08-20: "No solo que se respondio, despues falta evaluar si fue correcta la
+>  respuesta, de lo contrario de nada sirve"
+
+Es el error de siempre con otra cara: dar por buena una respuesta **solo porque existe** es lo
+mismo que dar por probada una reparacion **solo porque la vigia esta verde**.
+
+**LA SEÑAL OBJETIVA** (la que Julio lleva repitiendo desde el primer dia):
+> **Si Julio tiene que repetir la instruccion, la respuesta NO sirvio.**
+
+Eso se mide sin opinar. Cada pregunta se guarda con su respuesta y nace `PENDIENTE`. Si vuelve
+a aparecer una pregunta parecida, la anterior queda marcada `NO_SIRVIO` **sola**.
+
+| Forma de evaluar | Fiabilidad |
+|---|---|
+| Automatica: la pregunta vuelve -> NO_SIRVIO | objetiva |
+| Por el trabajo: se hizo y las vigias quedaron verdes | probable |
+| **De Julio**: `respuesta-ok` / `respuesta-mal` | **la unica que zanja** (Ley 5) |
+
+- **Pieza:** `cuerpo/respuestas.py` -> `memoria/RESPUESTAS.json`
+- **Comandos:** `python ingeniero.py respondio "<pregunta>" :: "<lo que dijo Julio>"` ·
+  `respuesta-ok` / `respuesta-mal` · se ve todo con `python ingeniero.py medir`
+- **Vigia:** `test_vigia_respuestas.py`, meta-probada (al desactivar la deteccion de
+  repeticion se pone ROJA).
+- **EL NUMERO QUE IMPORTA:** *"veces que Julio repitio"*. **Si ese numero sube, el sistema esta
+  fallando**, por muchas vigias verdes que haya.
+
+### Y el hueco que lo destapo
+El candado de cierre bloqueaba por preguntas YA respondidas, y no habia forma honrada de
+cerrarlas salvo apagar el candado entero. **Un candado sin manera legitima de satisfacerlo
+empuja a saltarselo, y eso es peor que no tenerlo.** Cura: `cuerpo/estado.respondida()`.

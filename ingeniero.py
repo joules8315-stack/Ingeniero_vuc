@@ -220,8 +220,28 @@ def main():
             print("  (apuntada: el candado de cierre no deja terminar hasta hacersela a Julio)")
         return 0
     if cmd == "medir":
-        from cuerpo import medidor
+        from cuerpo import medidor, respuestas
         print(medidor.texto(sys.argv[2] if len(sys.argv) > 2 else None))
+        print()
+        print(respuestas.texto())
+        return 0
+    if cmd == "respondio" and len(sys.argv) >= 3:
+        # se apunta QUE se pregunto y QUE contesto Julio; nace SIN EVALUAR
+        from cuerpo import respuestas, estado
+        p, _, r = " ".join(sys.argv[2:]).partition("::")
+        n = respuestas.apuntar(p.strip(), r.strip())
+        estado.respondida(p.strip())
+        print("apuntada la respuesta #%d (SIN evaluar todavia)" % n["id"])
+        if n["repitio_a"]:
+            print("  *** OJO: Julio ya habia explicado esto. Las anteriores quedan NO_SIRVIO:")
+            for x in n["repitio_a"]:
+                print("      - " + x[:90])
+        return 0
+    if cmd in ("respuesta-ok", "respuesta-mal") and len(sys.argv) >= 3:
+        from cuerpo import respuestas
+        res = "SIRVIO" if cmd == "respuesta-ok" else "NO_SIRVIO"
+        r = respuestas.evaluar(" ".join(sys.argv[2:]), res, "lo dijo Julio")
+        print(("marcada como " + res) if r else "NO_ENCONTRADO: no hay ninguna respuesta asi")
         return 0
     if cmd == "probado" and len(sys.argv) >= 4:
         # SOLO Julio marca esto (Ley 5): ninguna IA puede darlo por bueno

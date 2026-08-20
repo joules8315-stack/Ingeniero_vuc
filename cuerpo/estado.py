@@ -44,6 +44,27 @@ def apuntar(**cambios):
     return guardar(d)
 
 
+def respondida(texto_pregunta=None):
+    """Marca una pregunta como YA CONTESTADA por Julio.
+
+    Hacia falta (fallo real 2026-08-20): el candado de cierre no dejaba terminar por preguntas
+    que ya estaban respondidas, y no habia forma legitima de cerrarlas salvo apagar el candado
+    entero. Un candado sin forma honrada de satisfacerlo empuja a saltarselo, y eso es peor
+    que no tenerlo.
+
+    Sin argumento las cierra todas. Con argumento, solo la que coincida.
+    """
+    d = leer()
+    actual = d.get("decision_pendiente", "")
+    if not actual:
+        return d
+    if not texto_pregunta:
+        return apuntar(decision_pendiente="")
+    quedan = [p.strip() for p in actual.split("|")
+              if p.strip() and texto_pregunta.lower() not in p.lower()]
+    return apuntar(decision_pendiente=" | ".join(quedan))
+
+
 def texto():
     d = leer()
     L = ["ESTADO DEL TRABAJO (memoria/ESTADO.json)"]

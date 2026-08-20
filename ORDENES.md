@@ -76,6 +76,10 @@ T4.4 | Buscar por significado, no solo por letras | archivo:cerebro/semantico.py
 T4.5 | Que el medidor no se automienta | vigia:test_vigia_medidor.py
 T4.6 | Que el significado no deje al Ingeniero sin buscador | vigia:test_vigia_semantico.py
 
+T4.7 | Evaluar si la respuesta de Julio fue correcta | funcion:cuerpo.respuestas:evaluar
+T4.8 | Si Julio repite, la respuesta anterior no sirvio | vigia:test_vigia_respuestas.py
+T4.9 | Poder cerrar una pregunta ya respondida | funcion:cuerpo.estado:respondida
+
 ## LO QUE SOLO JULIO PUEDE DAR POR BUENO (ley 5: vigía verde NO es prueba)
 
 M.1 | Julio probó el Ingeniero con sus ojos y le sirve | manual:que Julio corra `python ingeniero.py trabaja` y diga si el paquete le sirve
