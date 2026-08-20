@@ -63,6 +63,10 @@ T3.11 | Verificar qué existe y qué falta, sin asumir | archivo:verificar.py
 T3.12 | Otros modelos como CONSEJEROS que me revisen a mi | funcion:cuerpo.consejeros:consultar
 T3.13 | El consejo nunca puede decir lo contrario de lo que votaron | vigia:test_vigia_consejeros.py
 
+T3.14 | Buscar en los repositorios ANTES de preguntar | funcion:cuerpo.dudas:resolver
+T3.15 | Pero preguntar SIEMPRE lo que no este escrito | vigia:test_vigia_dudas.py
+T3.16 | La pregunta no se puede olvidar (bloquea el cierre) | funcion:cuerpo.dudas:apuntar_pregunta
+
 ## LO QUE SOLO JULIO PUEDE DAR POR BUENO (ley 5: vigía verde NO es prueba)
 
 M.1 | Julio probó el Ingeniero con sus ojos y le sirve | manual:que Julio corra `python ingeniero.py trabaja` y diga si el paquete le sirve

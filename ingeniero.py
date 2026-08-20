@@ -12,6 +12,8 @@ Julio no repite instrucciones: dice el problema y el Ingeniero hace el resto del
     python ingeniero.py verificar                    -> que esta hecho y que falta (sin asumir)
     python ingeniero.py consejo "<decision>" --proyecto dmm --porque "<tu razon>"
                                                      -> que opinan OTROS modelos de tu decision
+    python ingeniero.py duda "<lo que no se>" --proyecto dmm
+                                                     -> busca la respuesta ANTES de preguntar
     python ingeniero.py fallos                       -> lo que ya nos paso, para no repetirlo
     python ingeniero.py cuotas                       -> a que cerebro le toca ahora
     python ingeniero.py buscar-skill "<que necesitas>"     -> ¿ya existe? (propia/proyectos/libreria)
@@ -25,7 +27,7 @@ import os, sys, subprocess
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 from cerebro import router, grafo          # noqa: E402
-from cuerpo import estado, obrero, cuotas, fallos, subagentes, consejeros, skills as hab  # noqa: E402
+from cuerpo import estado, obrero, cuotas, fallos, subagentes, consejeros, dudas, skills as hab  # noqa: E402
 sys.path.insert(0, os.path.join(AQUI, 'arnes'))
 import via_canonica                        # noqa: E402
 
@@ -203,6 +205,19 @@ def main():
         if "--porque" in args:
             i = args.index("--porque"); porque = " ".join(args[i+1:]); args = args[:i]
         print(consejeros.informe(consejeros.consultar(" ".join(args), porque or "", proy)))
+        return 0
+    if cmd == "duda" and len(sys.argv) >= 3:
+        args = sys.argv[2:]; proy = None
+        if "--proyecto" in args:
+            i = args.index("--proyecto"); proy = args[i+1]; args = args[:i] + args[i+2:]
+        d = " ".join(args)
+        r = dudas.resolver(d, proy)
+        print(dudas.informe(r))
+        if r["hay_que_preguntar"]:
+            dudas.apuntar_pregunta(d, proy)
+            print()
+            print(dudas.formular(d, r))
+            print("  (apuntada: el candado de cierre no deja terminar hasta hacersela a Julio)")
         return 0
     if cmd == "fallos":
         print(fallos.texto()); return 0

@@ -159,3 +159,35 @@ Si no se le encuentra, **se dice que NO esta garantizada**. No se promete.
   contrato no decide, y que el candado de cierre no deje terminar con la pregunta sin hacer.
 - **Que la reparacion sea la correcta:** por eso existen los 4 ojos, el juez y la Ley 5
   (vigia verde NO es prueba; la prueba es que Julio lo vea).
+
+## LEY 16 — BUSCAR PRIMERO, PREGUNTAR SIEMPRE (Julio, 2026-08-20)
+> "No me puedes entender al 100%, pero si puedes hacer preguntas que te lleven a esa
+>  comprension. Legisla que siempre las hagas, pero que primero busque en los repositorios
+>  la respuesta; solo cuando no la halle, pregunte. Siempre debe hacerlas, aun mas si pierde
+>  el contexto."
+
+**El orden no se salta:**
+1. **Contratos** — ¿ya esta legislado? Si lo dice la ley, no se pregunta.
+2. **Memoria de fallos** — ¿ya tropezamos aqui? Lo aprendido vale mas que una opinion nueva.
+3. **Codigo** — ¿lo responde una pieza que ya existe?
+4. **Estado** — ¿lo decidimos hace un rato y se olvido?
+5. **Y SOLO ENTONCES** — se le pregunta a Julio, en palabras simples, diciendole **donde se
+   busco ya**. Preguntar sin haber buscado le hace perder el tiempo; callarse la duda es peor,
+   porque ahi es donde se asume.
+
+**El ultimo filtro es un JUEZ, no un buscador.** Un buscador por palabras no puede saber si un
+texto RESPONDE una pregunta: solo sabe si las palabras aparecen. Por eso, tras encontrar
+candidatos, un cerebro GRATIS dice cual responde de verdad (~3 s, cero dinero, poco material).
+**Si no hay cerebro disponible, se elige el lado seguro: preguntarle a Julio.**
+
+- **Pieza:** `cuerpo/dudas.py` · **Comando:** `python ingeniero.py duda "<lo que no se>"`
+- **Vigia:** `test_vigia_dudas.py` — prueba sobre todo que **NO de por resuelta** una duda que
+  no esta escrita. Dar por buena una respuesta que no lo es es peor que preguntar de mas.
+- **Candado:** la pregunta se apunta en `ESTADO.json` y `arnes/candado_cierre.py` **no deja
+  terminar el turno** mientras siga sin hacerse. Asi no se pierde ni "se olvida".
+- **Tras perder el contexto se pregunta mas, no menos** (Ley 15 + esta).
+
+### El error que se cometio TRES veces el mismo dia
+Buscador de habilidades, buscador de trozos y buscador de dudas: los tres dijeron "ya existe"
+sobre algo que no existia. **Causa unica: cualquier texto "se parece" si no se exige la palabra
+que de verdad distingue.** Cura unica y ya compartida: `Buscador.buscar_estricto()`.

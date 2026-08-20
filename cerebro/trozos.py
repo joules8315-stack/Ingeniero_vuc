@@ -71,6 +71,30 @@ class Buscador:
             for w in t["bolsa"]:
                 self.en_cuantos[w] += 1
 
+    COMUNES = {"mandar", "crear", "hacer", "leer", "poner", "sacar", "generar", "usar", "para",
+               "mensaje", "mensajes", "archivo", "archivos", "datos", "codigo", "canal", "canales",
+               "sistema", "cuando", "quiere", "quiero", "color", "boton", "cosa", "algo", "esta",
+               "este", "como", "donde", "porque", "cual", "cuales", "hace", "sobre", "todo"}
+
+    def buscar_estricto(self, consulta, k=6, minimo=5.0):
+        """Como buscar(), pero SOLO devuelve algo si aparece la palabra que de verdad distingue
+        la consulta. Si esa palabra no esta en ningun trozo, devuelve VACIO.
+
+        Existe por un fallo que ya se cometio DOS veces (2026-08-20):
+          · el buscador de habilidades decia "ya lo escribiste" sobre cosas que Julio nunca hizo
+          · el buscador de dudas decia "RESUELTA" sobre algo que no estaba escrito en ningun sitio
+        Las dos veces la causa fue la misma: cualquier texto "se parece" si no se exige la palabra
+        clave. Decir que se tiene la respuesta sin tenerla es peor que no responder.
+        """
+        claves = [w for w in re.split(r"[^\wáéíóúñ]+", consulta.lower())
+                  if len(w) >= 3 and w not in self.COMUNES]
+        if not claves:
+            return []                     # nada que distinga -> no se afirma nada
+        raras = sorted(claves, key=lambda w: self.en_cuantos.get(w, 0))[:1]
+        if self.en_cuantos.get(raras[0], 0) == 0:
+            return []                     # la palabra clave no aparece: NO esta escrito aqui
+        return [r for r in self.buscar(consulta, k=k, exigir=raras) if r["puntaje"] >= minimo]
+
     def buscar(self, consulta, k=6, solo_piezas=None, exigir=None):
         """exigir = palabras del ASUNTO (el flujo). Si se pasan, el trozo que no hable del
         asunto se descarta aunque comparta palabras sueltas. Sin esto, buscar "no persiste la
