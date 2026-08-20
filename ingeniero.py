@@ -219,6 +219,16 @@ def main():
             print(dudas.formular(d, r))
             print("  (apuntada: el candado de cierre no deja terminar hasta hacersela a Julio)")
         return 0
+    if cmd == "medir":
+        from cuerpo import medidor
+        print(medidor.texto(sys.argv[2] if len(sys.argv) > 2 else None))
+        return 0
+    if cmd == "probado" and len(sys.argv) >= 4:
+        # SOLO Julio marca esto (Ley 5): ninguna IA puede darlo por bueno
+        from cuerpo import medidor
+        m = medidor.marcar_prueba_humana(sys.argv[2], " ".join(sys.argv[3:]))
+        print("marcado como PROBADO POR JULIO" if m else "NO_ENCONTRADO: no hay medicion de eso")
+        return 0
     if cmd == "fallos":
         print(fallos.texto()); return 0
     if cmd == "verificar":

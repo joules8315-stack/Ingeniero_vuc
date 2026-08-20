@@ -33,7 +33,11 @@ def test_la_copia_vieja_de_vigias_sigue_desechada():
 
 def test_cada_capa_del_cerebro_existe_una_sola_vez():
     """Ley 2: las capas no se eliminan... ni se duplican en otro nombre."""
-    capas = ["piezas.py", "enlaces.py", "flujos.py", "trozos.py", "grafo.py", "router.py"]
+    # `semantico.py` se declaro el 2026-08-20 (LEY 17): busca por significado, no por letras.
+    # Esta vigia se puso ROJA en cuanto la pieza aparecio sin declarar, que es justo su trabajo:
+    # que no crezca el cerebro con piezas que nadie legislo.
+    capas = ["piezas.py", "enlaces.py", "flujos.py", "trozos.py", "grafo.py", "router.py",
+             "semantico.py"]
     hay = os.listdir(os.path.join(AQUI, "cerebro"))
     for c in capas:
         assert c in hay, f"falta la capa {c} (Ley 2: ninguna capa se elimina)"

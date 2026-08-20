@@ -75,11 +75,49 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
         if f not in fichas:
             fichas.append(f)
 
+    # EL ROUTER SE CORRIGE SOLO (orden 3 de Julio, 2026-08-20).
+    # Si en un problema del mismo flujo el paquete se quedo CORTO, el medidor apunto QUE falto.
+    # Aqui se lee ese apunte y se mete esa pieza, para no repetir el mismo hueco dos veces.
+    # Es lo que convierte el medidor en aprendizaje: medir sin corregir no sirve de nada.
+    try:
+        import re as _re
+        sys.path.insert(0, AQUI)
+        from cuerpo import medidor as _med
+        for f in _med.lo_que_falto(apodo):
+            if not (set(f.get("flujos", [])) & set(nombres)):
+                continue
+            for texto_falto in f.get("falto", []):
+                for pieza in _re.findall(r"[\w/]+\.(?:py|html|js)", str(texto_falto)):
+                    base = pieza.split("/")[-1]
+                    extra = grafo.ficha(g, pieza) or next(
+                        (p for p in g["piezas"] if p["id"].split("/")[-1] == base), None)
+                    if extra and extra not in codigo:
+                        codigo.append(extra)
+                        if extra not in fichas:
+                            fichas.append(extra)
+    except Exception:
+        pass
+
     claves = _claves_de(g, nombres)
     b = trozos.Buscador(codigo)
-    pedazos = b.buscar(problema, k=k_trozos, exigir=claves or None)
+    # Se piden MAS candidatos de los que se van a entregar: los sobrantes son la materia prima
+    # del re-ordenado por significado. Contar palabras es gratis; el significado se paga.
+    pedazos = b.buscar(problema, k=k_trozos * 2, exigir=claves or None)
     if not pedazos:                       # el filtro de asunto puede ser muy duro: se afloja
-        pedazos = b.buscar(problema, k=k_trozos)
+        pedazos = b.buscar(problema, k=k_trozos * 2)
+
+    # POR SIGNIFICADO, NO SOLO POR LETRAS (orden 4 de Julio, 2026-08-20).
+    # Contar palabras no entiende sinonimos: el contrato dice "perfil" y el codigo "onboarding".
+    # Se reordenan SOLO los candidatos que ya trajo el buscador (1 llamada, no 600), y si no
+    # hay llave o cuota se queda el orden de siempre: nunca deja al Ingeniero sin buscador.
+    if os.environ.get("INGENIERO_SIN_SIGNIFICADO", "").strip():
+        pedazos = pedazos[:k_trozos]
+    else:
+        try:
+            from . import semantico
+            pedazos = semantico.reordenar(problema, pedazos, campo="texto", k=k_trozos)
+        except Exception:
+            pedazos = pedazos[:k_trozos]
 
     leyes = sorted([f for f in fichas if f["rol"] in ("CONTRATO", "MATRIZ", "PROTOCOLO")],
                    key=lambda x: x["id"])

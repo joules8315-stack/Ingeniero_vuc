@@ -67,6 +67,15 @@ T3.14 | Buscar en los repositorios ANTES de preguntar | funcion:cuerpo.dudas:res
 T3.15 | Pero preguntar SIEMPRE lo que no este escrito | vigia:test_vigia_dudas.py
 T3.16 | La pregunta no se puede olvidar (bloquea el cierre) | funcion:cuerpo.dudas:apuntar_pregunta
 
+## TANDA 4 (medir para mejorar)
+
+T4.1 | Medir el acierto, no solo el ahorro | funcion:cuerpo.medidor:juzgar
+T4.2 | Aprender de los aciertos y los errores | funcion:cuerpo.medidor:lo_que_falto
+T4.3 | Que el router se corrija solo | texto:cerebro/router.py:lo_que_falto
+T4.4 | Buscar por significado, no solo por letras | archivo:cerebro/semantico.py
+T4.5 | Que el medidor no se automienta | vigia:test_vigia_medidor.py
+T4.6 | Que el significado no deje al Ingeniero sin buscador | vigia:test_vigia_semantico.py
+
 ## LO QUE SOLO JULIO PUEDE DAR POR BUENO (ley 5: vigía verde NO es prueba)
 
 M.1 | Julio probó el Ingeniero con sus ojos y le sirve | manual:que Julio corra `python ingeniero.py trabaja` y diga si el paquete le sirve

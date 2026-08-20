@@ -191,3 +191,43 @@ candidatos, un cerebro GRATIS dice cual responde de verdad (~3 s, cero dinero, p
 Buscador de habilidades, buscador de trozos y buscador de dudas: los tres dijeron "ya existe"
 sobre algo que no existia. **Causa unica: cualquier texto "se parece" si no se exige la palabra
 que de verdad distingue.** Cura unica y ya compartida: `Buscador.buscar_estricto()`.
+
+## LEY 17 — MEDIR EL ACIERTO, NO SOLO EL AHORRO (Julio, 2026-08-20)
+
+Se podia decir "ahorra el 99%" porque se conto. **No se podia decir "acierta el X%" porque nunca
+se midio.** Y el paquete FALLABA: traia el motor y no la pantalla, y lo cazaron dos modelos
+gratis, no las 26 vigias verdes. Sin medir, todo lo demas es fe.
+
+### 1. Medir el acierto — `cuerpo/medidor.py`
+Cada paquete queda apuntado con lo que trajo. Despues se deduce si SIRVIO, **sin molestar a
+Julio**, por las señales que deja el propio trabajo:
+| Señal | Veredicto |
+|---|---|
+| el obrero pidio `NECESITO_LEER` | **CORTO** (el paquete no traia lo necesario) |
+| el obrero contesto `NO_ENCONTRADO` | **CORTO** |
+| el juez APROBO | **SIRVIO** |
+| el obrero se invento algo | **SOSPECHOSO** |
+| falto que Julio decidiera | **FALTO_DECISION** (no es culpa del paquete: no cuenta) |
+| Julio marco la prueba humana | **el unico acierto que vale** (Ley 5) |
+- Comando: `python ingeniero.py medir` · Solo Julio: `python ingeniero.py probado <proy> "<problema>"`
+- **Vigia:** `test_vigia_medidor.py`, meta-probada: al hacer que un paquete CORTO se apunte como
+  que SIRVIO, se pone ROJA. Un medidor que siempre dice "bien" da tranquilidad falsa.
+
+### 2. Aprender — el medidor apunta **QUE** falto, no solo que fallo
+### 3. El router se corrige solo — `cerebro/router.py` lee `medidor.lo_que_falto()` y mete esa
+pieza en los paquetes del mismo flujo. **Medir sin corregir no sirve de nada.**
+
+### 4. Buscar por SIGNIFICADO — `cerebro/semantico.py`
+Contar palabras no entiende sinonimos: el contrato dice "perfil" y el codigo "onboarding".
+Medido con dos frases que dicen lo mismo con otras palabras, contra una que no viene al caso:
+- LM Studio (nomic-embed local): **0.022** de diferencia -> NO distingue. **Descartado.**
+- `gemini-embedding-001`: **0.202** de diferencia -> SI distingue. **Elegido.**
+No se indexa el proyecto entero (600 llamadas): se **re-ordenan** los candidatos que ya trajo el
+buscador de palabras (1 llamada). Con cache: un texto se paga UNA vez.
+- Apagarlo sin tocar codigo: `$env:INGENIERO_SIN_SIGNIFICADO=1`
+- **Vigia:** `test_vigia_semantico.py` — vigila sobre todo que **sin llave, sin cuota o sin
+  internet el Ingeniero siga funcionando**. Una mejora que puede dejarlo sin buscador no es mejora.
+
+### 5. Cobertura — ya estaba hecha
+El candado global cubre TODOS los proyectos declarados. Comprobado el 2026-08-20: DMM y Foto
+Informe protegidos para editar; los archivos de mas de 300 lineas, tambien para leer.

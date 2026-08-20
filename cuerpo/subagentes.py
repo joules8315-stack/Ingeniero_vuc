@@ -35,9 +35,15 @@ def _trabajar(proyecto, problema, destino):
     from cerebro import router
     from cuerpo import cruzado
 
+    from cuerpo import medidor
+
     pk = router.armar(proyecto, problema)
     texto = router.a_texto(pk)
+    medidor.apuntar_paquete(pk, texto)          # se apunta QUE trajo, para poder juzgarlo
     r = cruzado.resolver(texto, problema, proyecto=proyecto)
+    m = medidor.juzgar(proyecto, problema, r)   # y si SIRVIO o se quedo CORTO
+    if m:
+        r["acierto"] = {"veredicto": m["veredicto"], "por_que": m["por_que"], "falto": m["falto"]}
     r["paquete_lineas"] = len(texto.splitlines())
     r["paquete_chars"] = len(texto)
     r["proyecto_lineas"] = pk["total_proyecto"]
