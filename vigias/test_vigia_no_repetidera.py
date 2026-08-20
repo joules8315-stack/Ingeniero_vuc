@@ -36,8 +36,11 @@ def test_cada_capa_del_cerebro_existe_una_sola_vez():
     # `semantico.py` se declaro el 2026-08-20 (LEY 17): busca por significado, no por letras.
     # Esta vigia se puso ROJA en cuanto la pieza aparecio sin declarar, que es justo su trabajo:
     # que no crezca el cerebro con piezas que nadie legislo.
+    # `protocolo.py` se declaro el 2026-08-20 (LEY 20): es el grafo de la FORMA DE TRABAJO
+    # (los 8 pasos y sus candados), no del codigo. Esta vigia se puso ROJA en cuanto aparecio
+    # sin declarar, que es exactamente su trabajo.
     capas = ["piezas.py", "enlaces.py", "flujos.py", "trozos.py", "grafo.py", "router.py",
-             "semantico.py"]
+             "semantico.py", "protocolo.py"]
     hay = os.listdir(os.path.join(AQUI, "cerebro"))
     for c in capas:
         assert c in hay, f"falta la capa {c} (Ley 2: ninguna capa se elimina)"

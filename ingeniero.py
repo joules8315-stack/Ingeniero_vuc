@@ -219,6 +219,19 @@ def main():
             print(dudas.formular(d, r))
             print("  (apuntada: el candado de cierre no deja terminar hasta hacersela a Julio)")
         return 0
+    if cmd in ("ruta", "mapa-trabajo"):
+        from cerebro import protocolo
+        print(protocolo.mapa())
+        return 0
+    if cmd == "paso":
+        from cerebro import protocolo
+        print(protocolo.ahora())
+        return 0
+    if cmd == "metodo" and len(sys.argv) >= 3:
+        from cerebro import protocolo
+        for r in protocolo.buscar_en_el_metodo(" ".join(sys.argv[2:])):
+            print("  [%s] %-34s %s" % (r["proyecto"], r["donde"], r["titulo"][:70]))
+        return 0
     if cmd == "causa" and len(sys.argv) >= 3:
         sys.path.insert(0, os.path.join(AQUI, "arnes"))
         import candado_diagnostico as cd

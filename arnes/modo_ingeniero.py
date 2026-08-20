@@ -81,9 +81,24 @@ def _via():
         return ""
 
 
+def _paso():
+    """EL GRAFO DE LA FORMA DE TRABAJO: en que paso estamos y que esta prohibido AHORA.
+    Un metodo que hay que recordar no se sigue; uno que el sistema recuerda por ti, si."""
+    try:
+        sys.path.insert(0, AQUI)
+        from cerebro import protocolo
+        return protocolo.ahora()
+    except Exception:
+        return ""
+
+
 def _donde_ibamos():
     d, txt = _estado()
     L = []
+    paso = _paso()
+    if paso:
+        L.append(paso)
+        L.append("")
     via = _via()
     if via:
         L.append(via)
