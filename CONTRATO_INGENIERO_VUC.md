@@ -451,3 +451,42 @@ sellado ya las estuviera corriendo**.
 - **Ninguna comprobacion escribe en los archivos de memoria reales.** Se desvia su ruta.
 - **Antes de dar por arreglada una intermitencia, se reproduce a proposito.** Aqui se lanzaron
   dos corridas simultaneas hasta verlas fallar, y luego hasta verlas pasar las dos.
+
+---
+
+## LEY 24 — LO YA REPARADO NO SE VUELVE A ROMPER: TECHO Y PISO (Julio, 2026-08-21)
+
+> "crea el guardia de lo ya reparado, fuerte, con candado, ultra blindado, que siempre este
+> pendiente, de extremo a extremo, y que sirva de techo y piso, que nada se le escape, que tenga
+> siempre presente los fallos pasados para que no los cometa, y que siempre tenga el grafo del
+> pedazo, para que tambien sea eficiente."
+
+**EL PROBLEMA DE SIEMPRE:** arreglar una cosa y tumbar otra que YA funcionaba. Es el dano que mas
+caro sale, porque lo que se cae es justo lo que ya se habia dado por bueno y nadie vuelve a mirar.
+El guardia de dano cruzado mira a los VECINOS de ahora; este mira al PASADO.
+
+**TECHO** — antes de tocar: se avisa que reparaciones pasadas puede afectar lo que se va a tocar,
+con su causa, su cura y su "no volver a".
+
+**PISO** — antes de guardar: se corren las pruebas de ESAS reparaciones. Si una cae, NO SE GUARDA.
+
+**EFICIENTE POR EL GRAFO:** se corren SOLO las pruebas de lo que se toco y sus vecinos, no las 150.
+Medido: tocar una pieza son 5 pruebas, no 150. El guardia hace el trabajo MAS rapido, no mas lento.
+
+**LO QUE SE DESCUBRIO AL PONERLO (y es la mitad de la ley):** al sabotear a proposito reparaciones
+para comprobar que el piso mordia, **dos de ellas siguieron verdes**: 31 comprobaciones en verde
+con el arreglo de tildes eliminado, y 6 en verde con el filtro de asunto anulado. La memoria decia
+"protegido" y no lo estaba. De ahi sale la parte dura de esta ley:
+
+> **Una reparacion solo esta protegida si su vigia NACE ROJA al sabotear la cura.**
+> Apuntar un nombre de vigia en la memoria no protege nada. Se comprueba rompiendo, no leyendo.
+
+**POR QUE NO LO COMPRUEBAN VARIOS AYUDANTES** (opinion de ingeniero dada a Julio ese dia): lo ya
+reparado no se comprueba opinando, se comprueba PROBANDO. La prueba es instantanea, gratis y
+siempre da el mismo resultado; un ayudante tarda entre 3 y 300 segundos (medido) y puede
+equivocarse. Los ayudantes entran DESPUES, solo cuando algo se pone rojo, para explicar que se
+rompio: ahi si hace falta juicio, no comprobacion.
+
+**CANDADO:** `arnes/guard_pasado.py`, enganchado al cierre en `arnes/candado_cierre.py`.
+**VIGIAS:** `test_vigia_lo_ya_reparado.py` (10), `test_vigia_el_trozo_habla_del_asunto.py` (4),
+`test_vigia_las_tildes_no_rompen_la_busqueda.py` (10). Las tres comprobadas por sabotaje.

@@ -169,7 +169,7 @@ SEMILLA = [
          cura="filtro `exigir`: el trozo debe hablar del asunto, no compartir una palabra suelta",
          no_volver_a="buscar por palabras sueltas sin exigir el asunto",
          proyecto="foto_informe", piezas=["cerebro/trozos.py"],
-         quien_lo_caza="vigias/test_vigia_trae_la_pieza_correcta.py",
+         quien_lo_caza="vigias/test_vigia_el_trozo_habla_del_asunto.py",
          disparador=r'''trozos\.Buscador|exigir='''),
     dict(que_paso="Import del cerebro de DMM agarraba el paquete equivocado",
          causa_raiz="el Ingeniero y DMM tienen los dos un paquete llamado `cuerpo`",

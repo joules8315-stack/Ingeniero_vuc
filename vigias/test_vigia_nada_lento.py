@@ -19,6 +19,25 @@ from cerebro import router, grafo
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOPE_PAQUETE = 12.0   # segundos para armar un paquete (con el grafo ya en cache)
+
+# Cuanto tarda una vuelta suelta con la maquina tranquila (medido en la de Julio, 2026-08-21).
+# Sirve para saber si la maquina esta ocupada y no confundir "ocupada" con "lento".
+REFERENCIA = 0.217
+
+
+def _carga_de_la_maquina():
+    """Cuantas veces mas lenta va la maquina ahora que estando tranquila.
+
+    Ley 23: una comprobacion que falla a veces es peor que ninguna. Esta media SEGUNDOS DE RELOJ,
+    asi que con la maquina ocupada se ponia roja sin que nada fuera lento: se cazo corriendo tres
+    tandas a la vez (fallo real 2026-08-21). Un rojo falso ensena a ignorar los rojos, y asi es
+    como se cuela un rojo de verdad. Ahora el tope se estira con la carga: un rojo aqui significa
+    SIEMPRE que va lento de verdad, no que la maquina estuviera liada."""
+    t0 = time.time()
+    x = 0
+    for i in range(3000000):
+        x += i * i
+    return max(1.0, (time.time() - t0) / REFERENCIA)
 LENTOS_CONOCIDOS = ("qwen3.6-27b", "qwen3-32b", "compound-mini", "gpt-oss-20b")
 
 
@@ -31,10 +50,14 @@ def test_armar_un_paquete_es_rapido():
     if not _hay("dmm"):
         pytest.skip("dmm no esta")
     grafo.cargar("dmm")                      # calentar la cache, como en el uso real
+    carga = _carga_de_la_maquina()
     t0 = time.time()
     router.armar("dmm", "el onboarding no guarda el perfil")
     tardo = time.time() - t0
-    assert tardo < TOPE_PAQUETE, f"armar el paquete tardo {tardo:.1f}s (tope {TOPE_PAQUETE}s)"
+    tope = TOPE_PAQUETE * carga
+    assert tardo < tope, (
+        f"armar el paquete tardo {tardo:.1f}s (tope {tope:.1f}s; la maquina va {carga:.1f} "
+        f"veces mas lenta de lo normal, asi que esto es lentitud DE VERDAD)")
 
 
 def test_el_grafo_en_cache_es_casi_instantaneo():

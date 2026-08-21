@@ -88,7 +88,14 @@ def main():
     if not fp:
         return 0
 
-    # contexto perdido: no se toca nada hasta recuperar el hilo
+    ext = os.path.splitext(fp)[1].lower()
+    if ext not in CODIGO:
+        return 0                       # documentos y contratos: libres, SIEMPRE
+
+    # contexto perdido: no se toca CODIGO hasta recuperar el hilo.
+    # Va DESPUES de los documentos a proposito: escribir la ley y las notas es justo COMO se
+    # recupera el hilo. Bloquear tambien eso dejaba a Julio sin poder ni apuntar lo que pasaba,
+    # y contradecia la regla escrita arriba en este mismo archivo (fallo real 2026-08-21).
     try:
         import candado_contexto as _cc
         if _cc.hay_marca():
@@ -96,10 +103,6 @@ def main():
             return 2
     except Exception:
         pass
-
-    ext = os.path.splitext(fp)[1].lower()
-    if ext not in CODIGO:
-        return 0                       # documentos y contratos: libres
     rel = fp.replace("\\", "/").lower()
     if "/vigias/" in rel or os.path.basename(fp).startswith("test_"):
         return 0                       # test-first: la vigia se escribe ANTES

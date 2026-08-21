@@ -22,23 +22,33 @@ import json, os, sys, datetime
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MARCA = os.path.join(AQUI, "memoria", ".contexto_perdido")
+
+
+def _marca():
+    """La marca de verdad, o una de prueba.
+
+    Ley 23: la marca era un archivo COMPARTIDO. Una comprobacion la ponia y otra, corriendo a la
+    vez, se la encontraba puesta y se ponia roja sin que nada estuviera roto: el candado de
+    edicion bloqueaba un contrato que debe poder escribirse siempre. Sola, verde; en tanda, roja.
+    Fallo real 2026-08-21, el mismo patron que ya se curo en la memoria y en los apagones."""
+    return os.environ.get("INGENIERO_CONTEXTO_TEST") or MARCA
 AL_VOLVER = os.path.join(AQUI, "memoria", "AL_VOLVER.md")
 
 
 def poner_marca(motivo="la conversacion se resumio"):
-    os.makedirs(os.path.dirname(MARCA), exist_ok=True)
-    open(MARCA, "w", encoding="utf-8").write(
+    os.makedirs(os.path.dirname(_marca()), exist_ok=True)
+    open(_marca(), "w", encoding="utf-8").write(
         json.dumps({"cuando": datetime.datetime.now().isoformat(), "motivo": motivo},
                    ensure_ascii=False))
 
 
 def hay_marca():
-    return os.path.exists(MARCA)
+    return os.path.exists(_marca())
 
 
 def quitar_marca():
     try:
-        os.remove(MARCA)
+        os.remove(_marca())
         return True
     except Exception:
         return False

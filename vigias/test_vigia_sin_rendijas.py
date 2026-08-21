@@ -25,6 +25,8 @@ def _correr(payload, entorno=None):
     env = dict(os.environ)
     env.pop("PYTEST_CURRENT_TEST", None)
     env["INGENIERO_SIN_PAQUETE_TEST"] = "1"      # se simula que NO hay paquete vigente
+    import tempfile
+    env["INGENIERO_APAGONES_TEST"] = os.path.join(tempfile.gettempdir(), "apagones_prueba.log")
     if entorno:
         env.update(entorno)
     p = subprocess.run([sys.executable, os.path.join(AQUI, "arnes", "candado_terminal.py")],

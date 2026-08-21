@@ -41,6 +41,15 @@ sys.path.insert(0, AQUI)
 CUENTA = os.path.join(AQUI, "memoria", ".lecturas_sueltas")
 APAGONES = os.path.join(AQUI, "memoria", "APAGONES.log")
 
+
+def _apagones():
+    """El registro de verdad, o uno de prueba.
+
+    Las pruebas del interruptor apuntaban en el registro REAL y salieron 41 apagones falsos, que
+    parecian que el arnes se habia apagado 41 veces. Un registro con ruido no sirve para vigilar
+    nada (fallo real 2026-08-21, el mismo patron por tercera vez)."""
+    return os.environ.get("INGENIERO_APAGONES_TEST") or APAGONES
+
 TOPE_SIN_PAQUETE = 0          # CERO: siempre el paquete (orden de Julio, repetida)
 VENTANA_MIN = 30
 
@@ -128,8 +137,8 @@ def _que_se_pide(data):
 def _apuntar_apagon(texto):
     """El apagon deja RASTRO: inviolable no es que no haya salida, es que no se use a escondidas."""
     try:
-        os.makedirs(os.path.dirname(APAGONES), exist_ok=True)
-        with open(APAGONES, "a", encoding="utf-8") as f:
+        os.makedirs(os.path.dirname(_apagones()), exist_ok=True)
+        with open(_apagones(), "a", encoding="utf-8") as f:
             f.write(time.strftime("%Y-%m-%d %H:%M") +
                     "  se leyo con el arnes APAGADO: " + texto[:150] + "\n")
     except Exception:

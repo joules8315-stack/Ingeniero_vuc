@@ -172,7 +172,21 @@ def main():
     except Exception:
         pass
 
-    # 3) VIGIAS, si se toco codigo
+    # 3) EL PISO: ¿sigue en pie lo que YA se reparo antes? (Julio, 2026-08-21)
+    # El problema historico: arreglar una cosa y tumbar otra que ya iba. Se corren SOLO las
+    # pruebas de lo que se toco y sus vecinos, no las 150: por eso es rapido.
+    tocados_pasado = _toco_codigo()
+    if tocados_pasado:
+        try:
+            import guard_pasado
+            piezas = [f.replace("\\", "/") for _, f in tocados_pasado]
+            en_pie, caidas = guard_pasado.siguen_en_pie(piezas)
+            if not en_pie:
+                faltas.append(guard_pasado.aviso_piso(caidas))
+        except Exception:
+            pass
+
+    # 4) VIGIAS, si se toco codigo
     tocados = _toco_codigo()
     if tocados:
         raices = {r for r, _ in tocados}

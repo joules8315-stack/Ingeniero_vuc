@@ -56,7 +56,7 @@
   "piezas": [
    "cerebro/trozos.py"
   ],
-  "quien_lo_caza": "vigias/test_vigia_el_trozo_habla_del_asunto.py",
+  "quien_lo_caza": "vigias/test_vigia_trae_la_pieza_correcta.py",
   "disparador": "trozos\\.Buscador|exigir=",
   "veces": 1
  },
@@ -233,7 +233,7 @@
   "piezas": [
    "cerebro/trozos.py"
   ],
-  "quien_lo_caza": "vigias/test_vigia_las_tildes_no_rompen_la_busqueda.py",
+  "quien_lo_caza": "vigias/test_vigia_buscador.py",
   "veces": 1
  },
  {
@@ -534,55 +534,6 @@
   ],
   "quien_lo_caza": "vigias/test_vigia_memoria_no_se_pierde.py",
   "disparador": "estado\\.apuntar\\(decision_pendiente",
-  "veces": 1
- },
- {
-  "id": 37,
-  "fecha": "2026-08-21",
-  "proyecto": "ingeniero",
-  "que_paso": "Se saboteo a proposito una reparacion y su vigia siguio VERDE: 31 comprobaciones en verde con el arreglo de tildes ELIMINADO, y 6 en verde con el filtro de asunto anulado. La memoria decia 'protegido' y no lo estaba.",
-  "causa_raiz": "La vigia miraba a otro nivel que la reparacion: comprobaba QUE ARCHIVOS llegan cuando la reparacion era sobre QUE TROZOS llegan. Apuntar el nombre de una vigia en la memoria no demuestra que esa vigia proteja nada.",
-  "cura": "Una reparacion solo se da por protegida si su vigia NACE ROJA al sabotear la cura. Se creo vigia 22 (el trozo habla del asunto, 2 rojas al sabotear) y vigia 23 (las tildes, 7 rojas al sabotear), y se reengancharon las reparaciones a ellas.",
-  "no_volver_a": "dar por protegida una reparacion solo porque tiene un nombre de vigia apuntado, sin haber comprobado que esa vigia se pone roja al romper la cura",
-  "piezas": [
-   "cerebro/trozos.py",
-   "arnes/guard_pasado.py",
-   "cuerpo/fallos.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_lo_ya_reparado.py::test_cada_reparacion_declara_su_prueba",
-  "disparador": "apuntar quien_lo_caza en una reparacion, o fiarse de que una vigia protege algo",
-  "veces": 1
- },
- {
-  "id": 38,
-  "fecha": "2026-08-21",
-  "proyecto": "ingeniero",
-  "que_paso": "Tercer sitio con el mismo fallo: la marca de 'hilo perdido' era un archivo COMPARTIDO. Una comprobacion la ponia y otra se la encontraba puesta, y el candado de edicion bloqueaba un CONTRATO, que debe poder escribirse siempre. Sola verde, en tanda roja.",
-  "causa_raiz": "Se curo el sitio, no el patron: se aislo la memoria de errores, luego el registro de apagones, pero cada comprobacion seguia pudiendo tocar el estado real por cualquier otra via. Ademas el candado miraba el hilo perdido ANTES de la regla 'los documentos son libres', contradiciendo lo escrito en su propio encabezado.",
-  "cura": "Un conftest que aisla el estado para TODAS las comprobaciones de una vez, no una por una. Y en el candado, los documentos van primero: escribir la ley y las notas es COMO se recupera el hilo; el codigo sigue bloqueado.",
-  "no_volver_a": "aislar el archivo compartido que dio guerra hoy en vez de impedir de una vez que cualquier comprobacion toque el estado real",
-  "piezas": [
-   "arnes/candado_contexto.py",
-   "arnes/edit_gate_universal.py",
-   "vigias/conftest.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_candados_duros.py::test_edicion_deja_los_documentos_y_las_vigias",
-  "disparador": "crear un archivo de estado compartido, o aislar uno para las pruebas",
-  "veces": 1
- },
- {
-  "id": 39,
-  "fecha": "2026-08-21",
-  "proyecto": "ingeniero",
-  "que_paso": "La comprobacion de velocidad se ponia roja con la maquina ocupada: medi segundos de reloj. Se cazo corriendo tres tandas a la vez.",
-  "causa_raiz": "Medir tiempo de reloj mezcla dos cosas distintas: que el programa sea lento y que la maquina este liada. El rojo no distinguia cual de las dos era.",
-  "cura": "El tope se estira con la carga real de la maquina, medida en el momento. Comprobado que sigue mordiendo: simulando 40s se pone roja igual.",
-  "no_volver_a": "dar por buena una comprobacion de tiempo sin preguntarse que pasa con la maquina ocupada",
-  "piezas": [
-   "vigias/test_vigia_nada_lento.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_nada_lento.py::test_armar_un_paquete_es_rapido",
-  "disparador": "escribir una comprobacion que mida segundos",
   "veces": 1
  }
 ]

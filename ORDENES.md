@@ -108,3 +108,9 @@ T5.14 | El aviso salta por lo que la accion HACE, no por su nombre | vigia:test_
 M.1 | Julio probó el Ingeniero con sus ojos y le sirve | manual:que Julio corra `python ingeniero.py trabaja` y diga si el paquete le sirve
 M.2 | Julio autorizó el candado global en todas sus sesiones | manual:que Julio corra el instalador global
 M.3 | Julio autorizó enchufar el candado a DMM y Foto Informe | manual:que Julio diga que sí
+
+T5.15 | Lo ya reparado no se vuelve a romper (techo y piso) | archivo:arnes/guard_pasado.py
+T5.16 | El piso esta enganchado al cierre, no suelto | vigia:test_vigia_lo_ya_reparado.py
+T5.17 | El trozo que llega habla del asunto pedido | vigia:test_vigia_el_trozo_habla_del_asunto.py
+T5.18 | Una tilde no puede esconder el codigo | vigia:test_vigia_las_tildes_no_rompen_la_busqueda.py
+T5.19 | Una reparacion se da por protegida solo si su vigia nace ROJA al sabotearla | manual:sabotear la cura y ver la vigia en rojo
