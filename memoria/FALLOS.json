@@ -372,5 +372,39 @@
   ],
   "quien_lo_caza": "vigias/test_vigia_protocolo.py",
   "veces": 1
+ },
+ {
+  "id": 27,
+  "fecha": "2026-08-20",
+  "proyecto": "foto_informe",
+  "que_paso": "LENTITUD DEL MVP: causa raiz localizada y medida",
+  "causa_raiz": "el servidor responde en 3 ms (no es lento). Cada viaje a la nube cuesta ~550 ms y cada accion hace varios SEGUIDOS: crear informe 4, anadir diario 3, subir foto 3, asignar 2, generar 2. Ademas la pantalla llama al servidor desde 50 sitios, 16 al mismo",
+  "cura": "PENDIENTE de reparar: agrupar los viajes por accion en vez de hacerlos uno detras de otro",
+  "no_volver_a": "culpar al codigo de la lentitud: el codigo es rapido, lo caro es el numero de idas y vueltas a la nube",
+  "piezas": [
+   "app.py:13616",
+   "app.py:14282",
+   "app.py:14705",
+   "app.py:14919",
+   "app.py:16427"
+  ],
+  "quien_lo_caza": "PENDIENTE de vigia",
+  "veces": 1
+ },
+ {
+  "id": 28,
+  "fecha": "2026-08-20",
+  "proyecto": "foto_informe",
+  "que_paso": "MODO SIN INTERNET: en la pantalla de inicio NO existe ningun boton para entrar sin internet",
+  "causa_raiz": "circulo vicioso: para entrar sin internet hace falta el complemento descargado; para descargarlo hay que entrar al MVP; para entrar hace falta login; para el login hace falta internet. Ademas el manifiesto no tiene campo id y la direccion de arranque apunta a la raiz (el MVP con login), lo que crea DOS aplicaciones instaladas",
+  "cura": "PENDIENTE: boton de modo sin internet EN LA PANTALLA DE INICIO + campo id en el manifiesto",
+  "no_volver_a": "dejar la entrada al modo sin internet detras del login",
+  "piezas": [
+   "app_web.html:376",
+   "app.py:10216 (manifiesto)",
+   "offline.html"
+  ],
+  "quien_lo_caza": "PENDIENTE de vigia",
+  "veces": 1
  }
 ]

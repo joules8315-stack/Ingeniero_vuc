@@ -95,7 +95,11 @@ def test_el_candado_de_salida_no_estorba_lo_bien_escrito():
 
 
 # ─── 3) ¿EXIGE CONFIRMAR EL OBJETIVO ANTES DE CONSTRUIR? ───────────────────────
-def test_no_deja_construir_algo_nuevo_sin_confirmar_el_objetivo(tmp_path):
+def test_no_deja_construir_algo_nuevo_sin_confirmar_el_objetivo(tmp_path, monkeypatch):
+    """OJO: si Julio ya dijo "si" hace poco, el semaforo esta puesto y el candado NO bloquea
+    (correctamente). La prueba tiene que mirar el caso en que NO hay "si", asi que se aparta
+    el semaforo real. Fallo de la propia prueba, detectado el 2026-08-20."""
+    monkeypatch.setenv("INGENIERO_SEMAFORO_TEST", str(tmp_path / "no_existe"))
     nuevo = str(tmp_path / "cosa_nueva.py")
     code, txt = _correr("construir", {"tool_input": {"file_path": nuevo}})
     assert code == 2, "dejo construir algo nuevo sin haber confirmado el objetivo con Julio"

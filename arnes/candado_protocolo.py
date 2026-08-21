@@ -187,6 +187,12 @@ def salida():
 SEMAFORO = os.path.join(AQUI, "memoria", ".objetivo_confirmado")
 
 
+def _semaforo():
+    """La ruta del semaforo. Se puede desviar SOLO para que la vigia pueda probar el caso
+    'Julio todavia no ha dicho que si' sin borrar el semaforo de verdad."""
+    return os.environ.get("INGENIERO_SEMAFORO_TEST") or SEMAFORO
+
+
 def construir():
     if os.environ.get("INGENIERO_OFF", "").strip():
         return 0
@@ -199,9 +205,10 @@ def construir():
         return 0                      # solo vigila la creacion de cosas NUEVAS
     if os.path.splitext(fp)[1].lower() not in (".py", ".html", ".js"):
         return 0
-    if os.path.exists(SEMAFORO):
+    sem = _semaforo()
+    if os.path.exists(sem):
         try:
-            if time.time() - os.path.getmtime(SEMAFORO) < 3 * 3600:
+            if time.time() - os.path.getmtime(sem) < 3 * 3600:
                 return 0
         except Exception:
             return 0
