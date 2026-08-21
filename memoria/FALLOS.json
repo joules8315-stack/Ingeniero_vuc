@@ -519,5 +519,21 @@
   "quien_lo_caza": "vigias/test_vigia_memoria_no_se_pierde.py",
   "disparador": "INGENIERO_FALLOS_TEST|FALLOS\\.json",
   "veces": 1
+ },
+ {
+  "id": 36,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Una prueba escribio una pregunta de mentira en el registro real y el guardia de cierre la tomo por una pregunta de verdad sin hacer",
+  "causa_raiz": "las pruebas escribian en el registro de trabajo real en vez de en una copia propia",
+  "cura": "cada prueba con su copia del registro; ademas hay un guardia que comprueba que ninguna escriba en los archivos de verdad",
+  "no_volver_a": "dejar que una prueba escriba en el registro o la memoria reales: ensucia el trabajo de verdad",
+  "piezas": [
+   "vigias/test_vigia_dudas.py",
+   "cuerpo/estado.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_memoria_no_se_pierde.py",
+  "disparador": "estado\\.apuntar\\(decision_pendiente",
+  "veces": 1
  }
 ]

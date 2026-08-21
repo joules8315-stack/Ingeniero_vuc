@@ -33,6 +33,15 @@ def _hay(a):
     return a in p and os.path.isdir(p[a]["ruta"])
 
 
+@pytest.fixture(autouse=True)
+def _registro_aparte(tmp_path, monkeypatch):
+    """Cada prueba con SU registro. Antes escribian preguntas de mentira en el registro de
+    verdad, y despues el guardia de cierre las tomaba por preguntas reales sin hacer y no
+    dejaba terminar (fallo real 2026-08-21)."""
+    monkeypatch.setenv("INGENIERO_ESTADO_TEST", str(tmp_path / "ESTADO.json"))
+    yield
+
+
 @pytest.fixture
 def juez_severo(monkeypatch):
     """Juez de mentira: dice que NINGUN candidato responde. Es el caso 'no esta escrito'."""
