@@ -12,7 +12,8 @@
    "web/servidor.py"
   ],
   "quien_lo_caza": "vigias/test_vigia_paquete_trae_la_cara.py",
-  "veces": 1
+  "veces": 1,
+  "disparador": "router\\.armar|paquete minimo|flujos\\.detectar"
  },
  {
   "id": 2,
@@ -26,7 +27,8 @@
    "arnes/read_gate.py"
   ],
   "quien_lo_caza": "prueba manual de los 3 casos del candado",
-  "veces": 1
+  "veces": 1,
+  "disparador": "read_gate|declarado_en"
  },
  {
   "id": 3,
@@ -40,7 +42,8 @@
    "cuerpo/skills.py"
   ],
   "quien_lo_caza": "vigias/test_vigia_skills_no_miente.py",
-  "veces": 1
+  "veces": 1,
+  "disparador": "buscar_estricto|skills\\.buscar|ya lo escribiste"
  },
  {
   "id": 4,
@@ -54,7 +57,8 @@
    "cerebro/trozos.py"
   ],
   "quien_lo_caza": "vigias/test_vigia_trae_la_pieza_correcta.py",
-  "veces": 1
+  "veces": 1,
+  "disparador": "trozos\\.Buscador|exigir="
  },
  {
   "id": 5,
@@ -68,7 +72,8 @@
    "cuerpo/obrero.py"
   ],
   "quien_lo_caza": "cuerpo/obrero.py::disponible()",
-  "veces": 1
+  "veces": 1,
+  "disparador": "from cuerpo import cerebro|prestar_cerebro"
  },
  {
   "id": 6,
@@ -419,6 +424,36 @@
    "arnes/edit_gate_universal.py"
   ],
   "quien_lo_caza": "vigias/test_vigia_sin_rendijas.py",
+  "veces": 1
+ },
+ {
+  "id": 30,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Escribir codigo con saltos de linea dentro de una orden de terminal lo corrompe en silencio",
+  "causa_raiz": "los saltos de linea y las barras se convierten en caracteres reales y parten el codigo",
+  "cura": "usar SIEMPRE la herramienta de escribir archivos, nunca meter codigo dentro de una orden de terminal",
+  "no_volver_a": "meter codigo con saltos de linea o barras dentro de una orden de terminal",
+  "piezas": [
+   "todos los archivos escritos asi"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_memoria_avisa.py",
+  "disparador": "<<\\s*.?[A-Z]{2,}|cat\\s*>.*<<|python\\s+-\\s*<<",
+  "veces": 1
+ },
+ {
+  "id": 31,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Parchear codigo buscando texto suelto rompio el archivo: la busqueda del parentesis de cierre encontro uno que estaba DENTRO de un texto",
+  "causa_raiz": "se edita el codigo con find y replace sobre trozos de texto, sin entender la estructura; un parentesis dentro de una frase parece el final de la instruccion",
+  "cura": "para tocar codigo se usa la herramienta de edicion con el trozo exacto y unico, o se reescribe el archivo entero; nunca find de un caracter suelto",
+  "no_volver_a": "parchear codigo buscando un caracter suelto como parentesis o coma: rompe en silencio",
+  "piezas": [
+   "cuerpo/fallos.py"
+  ],
+  "quien_lo_caza": "el interprete al importar el archivo",
+  "disparador": "\\.find\\([\"\\x27][)\\](,;][\"\\x27]|s\\.replace\\(.{0,30}[)\\](,;]",
   "veces": 1
  }
 ]

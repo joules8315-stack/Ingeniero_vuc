@@ -17,22 +17,40 @@ AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUTA = os.path.join(AQUI, "memoria", "FALLOS.json")
 
 
+def _ruta():
+    """La ruta real, o una de prueba. Asi las vigias no ensucian la memoria de verdad."""
+    return os.environ.get("INGENIERO_FALLOS_TEST") or RUTA
+
+
 def _leer():
     try:
-        d = json.load(open(RUTA, encoding="utf-8"))
+        d = json.load(open(_ruta(), encoding="utf-8"))
         return d if isinstance(d, list) else d.get("fallos", [])
     except Exception:
         return []
 
 
 def _guardar(fallos):
-    os.makedirs(os.path.dirname(RUTA), exist_ok=True)
-    json.dump(fallos, open(RUTA, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    os.makedirs(os.path.dirname(_ruta()), exist_ok=True)
+    json.dump(fallos, open(_ruta(), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 
 def apuntar(que_paso, causa_raiz, cura, no_volver_a, proyecto="", piezas=None,
-            quien_lo_caza="", contar=True):
-    """Apunta un fallo REAL. `no_volver_a` es lo mas valioso: la leccion en una frase."""
+            quien_lo_caza="", contar=True, disparador=""):
+    """Apunta un fallo REAL. `no_volver_a` es lo mas valioso: la leccion en una frase.
+
+    `disparador` = QUE HACE la accion que revive este fallo (Julio, 2026-08-21):
+      "en vez de buscar por nombre, se busca por funcion, por lo que hace,
+       asi es mas dificil equivocarse."
+
+    No se pone el NOMBRE de una herramienta ni de un archivo —eso cambia y envejece—, sino la
+    huella de lo que la accion HACE. Ejemplo: un fallo al escribir codigo desde la terminal se
+    dispara con la marca de "meter texto largo dentro de una orden", no con el nombre del
+    programa que se use.
+
+    Sin disparador, el fallo se guarda pero NUNCA avisa: eso es justo lo que se descubrio el
+    2026-08-21, con 29 fallos guardados y ninguno que frenara nada.
+    """
     fallos = _leer()
     nuevo = {
         "id": len(fallos) + 1,
@@ -44,6 +62,8 @@ def apuntar(que_paso, causa_raiz, cura, no_volver_a, proyecto="", piezas=None,
         "no_volver_a": no_volver_a,
         "piezas": piezas or [],
         "quien_lo_caza": quien_lo_caza,   # que vigia/agente lo detecta ahora
+        "disparador": disparador,         # QUE HACE la accion que lo revive
+
         "veces": 1,
     }
     # si ya estaba apuntado el mismo, se sube el contador en vez de duplicar (Ley 6)
@@ -57,6 +77,8 @@ def apuntar(que_paso, causa_raiz, cura, no_volver_a, proyecto="", piezas=None,
                 f["fecha"] = nuevo["fecha"]
             if quien_lo_caza and not f.get("quien_lo_caza"):
                 f["quien_lo_caza"] = quien_lo_caza
+            if disparador and not f.get("disparador"):
+                f["disparador"] = disparador
             _guardar(fallos)
             return f
     fallos.append(nuevo)
@@ -122,7 +144,8 @@ SEMILLA = [
          cura="quien IMPORTA una pieza del flujo pertenece al flujo (llamadores por el grafo)",
          no_volver_a="armar un flujo mirando solo nombres de archivo; hay que seguir los hilos",
          proyecto="dmm", piezas=["cerebro/router.py", "web/servidor.py"],
-         quien_lo_caza="vigias/test_vigia_paquete_trae_la_cara.py"),
+         quien_lo_caza="vigias/test_vigia_paquete_trae_la_cara.py",
+         disparador=r'''router\.armar|paquete minimo|flujos\.detectar'''),
     dict(que_paso="El candado de lectura dejaba abrir app.py entero (10.818 lineas)",
          causa_raiz="bastaba que el nombre del archivo apareciera 'de pasada' en un comentario "
                     "del paquete para darlo por declarado",
@@ -130,7 +153,8 @@ SEMILLA = [
          no_volver_a="comprobar pertenencia con 'esta el nombre en el texto'; hay que exigir "
                      "la declaracion formal",
          proyecto="ingeniero", piezas=["arnes/read_gate.py"],
-         quien_lo_caza="prueba manual de los 3 casos del candado"),
+         quien_lo_caza="prueba manual de los 3 casos del candado",
+         disparador=r'''read_gate|declarado_en'''),
     dict(que_paso="El buscador de habilidades decia 'ya lo escribiste' sobre cosas que Julio "
                   "nunca escribio (telegram, QR)",
          causa_raiz="se exigia 'cualquiera' de las palabras y las cortas (qr) o comunes (canal) "
@@ -138,19 +162,22 @@ SEMILLA = [
          cura="exigir SOLO la palabra mas rara, y si no queda ninguna que distinga, devolver vacio",
          no_volver_a="afirmar que algo existe sin una palabra que de verdad lo distinga",
          proyecto="ingeniero", piezas=["cuerpo/skills.py"],
-         quien_lo_caza="vigias/test_vigia_skills_no_miente.py"),
+         quien_lo_caza="vigias/test_vigia_skills_no_miente.py",
+         disparador=r'''buscar_estricto|skills\.buscar|ya lo escribiste'''),
     dict(que_paso="Un trozo de un problema de PLANTILLA traia el codigo del LOGIN",
          causa_raiz="la palabra 'sesion' aparecia en los dos asuntos",
          cura="filtro `exigir`: el trozo debe hablar del asunto, no compartir una palabra suelta",
          no_volver_a="buscar por palabras sueltas sin exigir el asunto",
          proyecto="foto_informe", piezas=["cerebro/trozos.py"],
-         quien_lo_caza="vigias/test_vigia_trae_la_pieza_correcta.py"),
+         quien_lo_caza="vigias/test_vigia_trae_la_pieza_correcta.py",
+         disparador=r'''trozos\.Buscador|exigir='''),
     dict(que_paso="Import del cerebro de DMM agarraba el paquete equivocado",
          causa_raiz="el Ingeniero y DMM tienen los dos un paquete llamado `cuerpo`",
          cura="cargar por RUTA con importlib y nombre propio (dmm_cerebro)",
          no_volver_a="importar por nombre cuando dos proyectos comparten nombre de paquete",
          proyecto="ingeniero", piezas=["cuerpo/obrero.py"],
-         quien_lo_caza="cuerpo/obrero.py::disponible()"),
+         quien_lo_caza="cuerpo/obrero.py::disponible",
+         disparador=r"from cuerpo import cerebro|prestar_cerebro"),
 ]
 
 

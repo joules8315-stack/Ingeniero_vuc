@@ -396,3 +396,34 @@ que ofrece una llave inexistente obliga a apagar el arnes entero. Ahora existe:
 `python ingeniero.py necesito-editar <archivo> --motivo "..." --vigia "..." --dana "..."`
 Permite UN archivo, 30 minutos, con la justificacion por escrito y apuntada.
 **Regla nueva: un mensaje de bloqueo NUNCA ofrece una salida que no este implementada.**
+
+## LEY 22 — GUARDAR UN FALLO NO ES APRENDER (Julio, 2026-08-21)
+> "Verifica que se esten guardando los errores y que estes aprendiendo de ellos, no veo que te
+>  llegue ningun paquete recordandote el error... otra vez estas confiando de tu memoria y es
+>  justo lo que debemos combatir."
+
+### LO QUE SE DESCUBRIO
+Habia **31 fallos guardados y NINGUNO avisaba jamas**. La memoria solo se consultaba al pedir un
+paquete, y solo si las palabras del problema coincidian. Pero hay fallos que no son "un problema
+con nombre" sino **una accion** —escribir codigo desde la terminal, por ejemplo—. Ese no coincidia
+con nada y **se repitio SEIS veces el mismo dia**.
+
+**La prueba definitiva:** el apunte de ese fallo decia *"NO VOLVER A: meter codigo con \n o rutas
+con \a dentro de un heredoc"* y **el propio apunte estaba corrompido por el fallo que describia**.
+
+### LA REGLA
+**Aprender no es guardar el fallo: es que el fallo te FRENE la proxima vez.** Por eso cada fallo
+lleva un **DISPARADOR**, y el candado `arnes/candado_memoria.py` lo revisa ANTES de cada accion.
+
+### EL DISPARADOR SE ESCRIBE POR LO QUE LA ACCION *HACE*, NO POR SU NOMBRE
+Regla de Julio, que ya estaba en su protocolo del MVP y volvio a recordar:
+> "en vez de buscar por nombre, se busca por funcion, por lo que hace, asi es mas dificil
+>  equivocarse."
+
+Nada de nombres de herramientas ni de archivos —eso cambia y envejece—: la huella de lo que la
+accion hace. Asi el aviso salta aunque manana se use otro programa para lo mismo.
+
+- **Pieza:** `arnes/candado_memoria.py` · **Vigia:** `test_vigia_memoria_avisa.py` (7 pruebas)
+- **No estorba:** solo avisa de lo que viene al caso. Si avisara de todo se volveria ruido y se
+  ignoraria, que es exactamente como estaba antes.
+- **Siempre dice QUE HACER en su lugar**, no solo que esta mal.

@@ -100,6 +100,9 @@ T5.10 | Siempre el paquete minimo, por todas las vias | archivo:arnes/candado_te
 T5.11 | Ninguna rendija para leer sin control (7 vias) | vigia:test_vigia_sin_rendijas.py
 T5.12 | La llave NECESITO_EDITAR existe de verdad | archivo:arnes/permiso_editar.py
 
+T5.13 | Que el fallo avise ANTES de repetirlo, no solo se guarde | archivo:arnes/candado_memoria.py
+T5.14 | El aviso salta por lo que la accion HACE, no por su nombre | vigia:test_vigia_memoria_avisa.py
+
 ## LO QUE SOLO JULIO PUEDE DAR POR BUENO (ley 5: vigía verde NO es prueba)
 
 M.1 | Julio probó el Ingeniero con sus ojos y le sirve | manual:que Julio corra `python ingeniero.py trabaja` y diga si el paquete le sirve
