@@ -23,12 +23,19 @@ import json, os, sys, subprocess, time
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONTADOR = os.path.join(AQUI, "memoria", ".cierres_bloqueados")
+
+
+def _contador():
+    """El de verdad, o uno de prueba. Dos corridas simultaneas se pisaban este contador y una
+    creia que ya habia bloqueado dos veces, asi que dejaba pasar y la prueba salia roja sin
+    estar nada roto (fallo real 2026-08-21)."""
+    return os.environ.get("INGENIERO_CONTADOR_TEST") or CONTADOR
 TOPE_BLOQUEOS = 2
 
 
 def _veces_seguidas():
     try:
-        cuando, n = open(CONTADOR, encoding="utf-8").read().split("|")
+        cuando, n = open(_contador(), encoding="utf-8").read().split("|")
         # si paso mas de 10 minutos, es otro trabajo: se reinicia la cuenta
         if time.time() - float(cuando) > 600:
             return 0
@@ -38,8 +45,8 @@ def _veces_seguidas():
 
 
 def _apuntar(n):
-    os.makedirs(os.path.dirname(CONTADOR), exist_ok=True)
-    open(CONTADOR, "w", encoding="utf-8").write(f"{time.time()}|{n}")
+    os.makedirs(os.path.dirname(_contador()), exist_ok=True)
+    open(_contador(), "w", encoding="utf-8").write(f"{time.time()}|{n}")
 
 
 def _toco_codigo(minutos=25):
@@ -71,6 +78,41 @@ def _toco_codigo(minutos=25):
     return tocados
 
 
+CERROJO = os.path.join(AQUI, "memoria", ".vigias_corriendo")
+
+
+def _ya_hay_otra_corrida():
+    """¿Ya se estan corriendo las comprobaciones ahora mismo?
+
+    CAUSA RAIZ MEDIDA (2026-08-21): con DOS corridas a la vez salen rojas; solas, siempre verdes.
+    Se pisan entre ellas porque varias escriben en los mismos archivos de memoria. El guardia de
+    cierre las lanzaba aunque el sellado ya las estuviera corriendo, y daba un rojo FALSO que no
+    dejaba terminar. Reproducido a proposito: 2 y 3 rojas de 144.
+    """
+    try:
+        if not os.path.exists(CERROJO):
+            return False
+        # un cerrojo viejo (mas de 10 min) es basura de una corrida que se corto
+        return (time.time() - os.path.getmtime(CERROJO)) < 600
+    except Exception:
+        return False
+
+
+def _poner_cerrojo():
+    try:
+        os.makedirs(os.path.dirname(CERROJO), exist_ok=True)
+        open(CERROJO, "w", encoding="utf-8").write(str(time.time()))
+    except Exception:
+        pass
+
+
+def _quitar_cerrojo():
+    try:
+        os.remove(CERROJO)
+    except Exception:
+        pass
+
+
 def _vigias_verdes(raiz):
     """Se CORREN de verdad. Creer que estan verdes no vale.
 
@@ -79,9 +121,12 @@ def _vigias_verdes(raiz):
     no se corren vigias: se comprueba la logica, que es lo que se esta probando."""
     if os.environ.get("PYTEST_CURRENT_TEST"):
         return None, "dentro de una vigia no se corren vigias (evita pytest dentro de pytest)"
+    if _ya_hay_otra_corrida():
+        return None, "ya hay otra corrida en marcha: no se lanzan dos a la vez (se pisan)"
     carpeta = os.path.join(raiz, "vigias")
     if not os.path.isdir(carpeta):
         return None, "ese proyecto no tiene vigias"
+    _poner_cerrojo()
     try:
         r = subprocess.run([sys.executable, "-m", "pytest", "-q", "vigias/"],
                            cwd=raiz, capture_output=True, text=True, timeout=300)
@@ -91,6 +136,8 @@ def _vigias_verdes(raiz):
         return None, "las vigias tardaron demasiado"
     except Exception as e:
         return None, str(e)[:80]
+    finally:
+        _quitar_cerrojo()
 
 
 def main():

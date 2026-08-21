@@ -15,6 +15,16 @@ sys.path.insert(0, os.path.join(AQUI, "arnes"))
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def _memoria_aparte(tmp_path, monkeypatch):
+    """Cada prueba con SU copia de la memoria. Antes tocaban la de verdad y, si dos corridas
+    coincidian, se pisaban y salian rojas sin que nada estuviera roto (fallo real 2026-08-21)."""
+    monkeypatch.setenv("INGENIERO_FALLOS_TEST", str(tmp_path / "FALLOS.json"))
+    monkeypatch.setenv("INGENIERO_ESTADO_TEST", str(tmp_path / "ESTADO.json"))
+    monkeypatch.setenv("INGENIERO_CONTADOR_TEST", str(tmp_path / "contador"))
+    yield
+
+
 def _correr(script, payload, entorno=None):
     env = dict(os.environ)
     if entorno:
@@ -91,7 +101,7 @@ def test_contexto_perdido_bloquea_y_solo_lo_abre_al_volver():
 def test_cierre_bloquea_si_hay_pregunta_sin_hacer():
     from cuerpo import estado
     antes = estado.leer().get("decision_pendiente", "")
-    cont = os.path.join(AQUI, "memoria", ".cierres_bloqueados")
+    cont = os.environ["INGENIERO_CONTADOR_TEST"]
     try:
         if os.path.exists(cont):
             os.remove(cont)
@@ -109,7 +119,7 @@ def test_cierre_NO_deja_a_julio_atrapado():
     """Lo mas importante de un candado que bloquea: que tenga salida."""
     from cuerpo import estado
     antes = estado.leer().get("decision_pendiente", "")
-    cont = os.path.join(AQUI, "memoria", ".cierres_bloqueados")
+    cont = os.environ["INGENIERO_CONTADOR_TEST"]
     try:
         if os.path.exists(cont):
             os.remove(cont)

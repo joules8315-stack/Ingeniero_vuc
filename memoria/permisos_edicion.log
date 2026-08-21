@@ -1,3 +1,9 @@
 2026-08-21 06:03  candado_terminal.py  ->  el archivo quedo roto al escribirlo desde la terminal: las expresiones de busqueda perdieron sus delimitadores
 2026-08-21 06:10  fallos.py  ->  los fallos necesitan un campo disparador: la accion que los revive, para poder avisar ANTES de repetirlos
 2026-08-21 06:11  fallos.py  ->  los fallos ya vividos no tienen disparador y la ruta no se puede desviar para probar
+2026-08-21 06:30  test_vigia_candados_duros.py  ->  usa los archivos de memoria REALES y se pisa con otra corrida simultanea: rojo falso
+2026-08-21 06:30  test_vigia_paquete_trae_la_cara.py  ->  igual: toca la memoria real de fallos
+2026-08-21 06:31  estado.py  ->  las pruebas escriben en el estado REAL y se pisan entre corridas simultaneas
+2026-08-21 06:33  candado_cierre.py  ->  lanza las comprobaciones aunque ya haya otra corrida en marcha, y se pisan dando rojos falsos
+2026-08-21 06:33  test_vigia_paquete_trae_la_cara.py  ->  al aislar la memoria de fallos, esta prueba se quedo sin fallos que leer y sale roja
+2026-08-21 06:36  candado_cierre.py  ->  el contador de bloqueos es compartido y dos corridas simultaneas se lo pisan

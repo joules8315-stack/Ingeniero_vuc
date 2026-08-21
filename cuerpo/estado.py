@@ -17,9 +17,19 @@ VACIO = {
 }
 
 
+def _ruta():
+    """La de verdad, o una de prueba.
+
+    Las comprobaciones escribian en el estado REAL, y cuando dos corridas coincidian se pisaban
+    entre ellas: salian rojas sin que nada estuviera roto, y el guardia de cierre no dejaba
+    terminar por un susto falso (fallo real 2026-08-21). Ahora cada prueba usa su copia.
+    """
+    return os.environ.get("INGENIERO_ESTADO_TEST") or RUTA
+
+
 def leer():
     try:
-        d = json.load(open(RUTA, encoding="utf-8"))
+        d = json.load(open(_ruta(), encoding="utf-8"))
         for k, v in VACIO.items():
             d.setdefault(k, v)
         return d
@@ -28,8 +38,8 @@ def leer():
 
 
 def guardar(d):
-    os.makedirs(os.path.dirname(RUTA), exist_ok=True)
-    json.dump(d, open(RUTA, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    os.makedirs(os.path.dirname(_ruta()), exist_ok=True)
+    json.dump(d, open(_ruta(), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     return d
 
 

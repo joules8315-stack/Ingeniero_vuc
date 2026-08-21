@@ -1,38 +1,7 @@
 [
  {
   "id": 1,
-  "fecha": "2026-08-20",
-  "proyecto": "dmm",
-  "que_paso": "El paquete traia el motor (cuerpo/perfil.py) pero NO la cara (web/), donde esta el formulario que de verdad guarda",
-  "causa_raiz": "el flujo se armaba solo por el NOMBRE del archivo, y web/servidor.py no se llama 'onboarding'",
-  "cura": "quien IMPORTA una pieza del flujo pertenece al flujo (llamadores por el grafo)",
-  "no_volver_a": "armar un flujo mirando solo nombres de archivo; hay que seguir los hilos",
-  "piezas": [
-   "cerebro/router.py",
-   "web/servidor.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_paquete_trae_la_cara.py",
-  "veces": 1,
-  "disparador": "router\\.armar|paquete minimo|flujos\\.detectar"
- },
- {
-  "id": 2,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "El candado de lectura dejaba abrir app.py entero (10.818 lineas)",
-  "causa_raiz": "bastaba que el nombre del archivo apareciera 'de pasada' en un comentario del paquete para darlo por declarado",
-  "cura": "solo vale lo declarado como cabecera `### `pieza`` en el paquete",
-  "no_volver_a": "comprobar pertenencia con 'esta el nombre en el texto'; hay que exigir la declaracion formal",
-  "piezas": [
-   "arnes/read_gate.py"
-  ],
-  "quien_lo_caza": "prueba manual de los 3 casos del candado",
-  "veces": 1,
-  "disparador": "read_gate|declarado_en"
- },
- {
-  "id": 3,
-  "fecha": "2026-08-20",
+  "fecha": "2026-08-21",
   "proyecto": "ingeniero",
   "que_paso": "El buscador de habilidades decia 'ya lo escribiste' sobre cosas que Julio nunca escribio (telegram, QR)",
   "causa_raiz": "se exigia 'cualquiera' de las palabras y las cortas (qr) o comunes (canal) colaban cualquier trozo; ademas las no indexadas parecian rarisimas",
@@ -42,12 +11,12 @@
    "cuerpo/skills.py"
   ],
   "quien_lo_caza": "vigias/test_vigia_skills_no_miente.py",
-  "veces": 1,
-  "disparador": "buscar_estricto|skills\\.buscar|ya lo escribiste"
+  "disparador": "buscar_estricto|skills\\.buscar|ya lo escribiste",
+  "veces": 1
  },
  {
-  "id": 4,
-  "fecha": "2026-08-20",
+  "id": 2,
+  "fecha": "2026-08-21",
   "proyecto": "foto_informe",
   "que_paso": "Un trozo de un problema de PLANTILLA traia el codigo del LOGIN",
   "causa_raiz": "la palabra 'sesion' aparecia en los dos asuntos",
@@ -57,12 +26,12 @@
    "cerebro/trozos.py"
   ],
   "quien_lo_caza": "vigias/test_vigia_trae_la_pieza_correcta.py",
-  "veces": 1,
-  "disparador": "trozos\\.Buscador|exigir="
+  "disparador": "trozos\\.Buscador|exigir=",
+  "veces": 1
  },
  {
-  "id": 5,
-  "fecha": "2026-08-20",
+  "id": 3,
+  "fecha": "2026-08-21",
   "proyecto": "ingeniero",
   "que_paso": "Import del cerebro de DMM agarraba el paquete equivocado",
   "causa_raiz": "el Ingeniero y DMM tienen los dos un paquete llamado `cuerpo`",
@@ -71,404 +40,41 @@
   "piezas": [
    "cuerpo/obrero.py"
   ],
-  "quien_lo_caza": "cuerpo/obrero.py::disponible()",
-  "veces": 1,
-  "disparador": "from cuerpo import cerebro|prestar_cerebro"
- },
- {
-  "id": 6,
-  "fecha": "2026-08-20",
-  "proyecto": "dmm",
-  "que_paso": "el onboarding no guarda el perfil de la empresa en la web",
-  "causa_raiz": "El servidor procesa el onboarding pero no persiste las respuestas crudas en perfil_datos.py",
-  "cura": "Importar guardar de perfil_datos y llamarlo en procesar_onboarding con la empresa y los campos",
-  "no_volver_a": "Si la prueba pasa porque se modifica `perfil_datos.cargar` para devolver datos falsos, o si se modifica `procesar_onboarding` para llamar a `guardar` pero se hace de forma incorrecta (ej. guardando datos vacios), la prueba no seria valida. La prueba debe verificar que los datos ESPECIFICOS enviados ",
-  "piezas": [
-   "web/servidor.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_onboarding_guarda_perfil.py",
+  "quien_lo_caza": "cuerpo/obrero.py::disponible",
+  "disparador": "from cuerpo import cerebro|prestar_cerebro",
   "veces": 1
  },
  {
-  "id": 7,
-  "fecha": "2026-08-20",
+  "id": 4,
+  "fecha": "2026-08-21",
   "proyecto": "ingeniero",
-  "que_paso": "El ciclo cruzado se quedaba sin cerebros y tardaba 10+ minutos",
-  "causa_raiz": "DOS cosas: (1) el cerebro de DMM esconde el tope de cuota detras del mensaje generico \"pon GEMINI_API_KEY\", asi que el relevo no lo veia como agote; (2) la latencia de los cerebros gratis es IMPREDECIBLE (18s a 300s) y NO depende del tamano del material: medido, un paquete de 14k tardo 123s y uno de 20k tardo 34s",
-  "cura": "reconocer ese mensaje generico como agote + tope por llamada (120s) que releva al otro cerebro + tope de ciclo (300s) + el trabajo corre en proceso APARTE para que Julio no espere",
-  "no_volver_a": "intentar acelerar recortando el material: no es el tamano, es el servidor. Y no fiarse del texto del error para saber que paso",
+  "que_paso": "Comprobaciones en rojo solo cuando corren dos a la vez: solas salen siempre verdes",
+  "causa_raiz": "varias comprobaciones escriben en los MISMOS archivos de memoria (preguntas pendientes, errores) y se pisan entre ellas",
+  "cura": "cada comprobacion usa su propia copia desviando la ruta; nunca toca la memoria de verdad",
+  "no_volver_a": "escribir una comprobacion que toque los archivos de memoria reales: da rojos falsos y sustos",
   "piezas": [
-   "cuerpo/cuotas.py",
-   "cuerpo/cruzado.py",
-   "arnes/velocidad.config"
+   "vigias/test_vigia_candados_duros.py",
+   "vigias/test_vigia_paquete_trae_la_cara.py"
   ],
-  "quien_lo_caza": "vigias/test_vigia_nada_lento.py",
+  "quien_lo_caza": "correrlas dos veces a la vez",
+  "disparador": "estado\\.apuntar\\(|fallos\\.apuntar\\(|fallos\\.sembrar\\(",
   "veces": 1
  },
  {
-  "id": 8,
-  "fecha": "2026-08-20",
+  "id": 5,
+  "fecha": "2026-08-21",
   "proyecto": "ingeniero",
-  "que_paso": "LM Studio estaba encendido y el Ingeniero no lo veia; y forzar=local del cerebro de DMM se iba a Gemini",
-  "causa_raiz": "se exigia una variable de entorno en vez de comprobar el puerto; y el forzar=local del cerebro prestado no funciona",
-  "cura": "detectar LM Studio probando localhost:1234/models + via DIRECTA propia (obrero.preguntar_local)",
-  "no_volver_a": "dar por ausente un servicio sin comprobarlo, ni depender del cerebro prestado para la red de seguridad",
+  "que_paso": "Comprobaciones en rojo solo al correr dos a la vez; reproducido: 2 y 3 rojas de 144",
+  "causa_raiz": "varias escribian en los MISMOS archivos de memoria y el guardia las lanzaba aunque el sellado ya las estuviera corriendo",
+  "cura": "cerrojo para no lanzar dos corridas a la vez, y cada comprobacion con SU copia de memoria, estado y contador",
+  "no_volver_a": "escribir una comprobacion que toque los archivos de memoria reales, ni lanzar dos corridas a la vez",
   "piezas": [
-   "cuerpo/obrero.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_nada_lento.py",
-  "veces": 1
- },
- {
-  "id": 9,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "El modelo local (qwen2.5-coder-1.5b) dijo que perfil.py no tiene guardar_perfil, y SI la tiene (linea 202)",
-  "causa_raiz": "es un modelo de 1.5B: rapido y gratis, pero alucina sobre material largo",
-  "cura": "el local va SIEMPRE el ultimo y nunca se acepta su palabra sin que otro cerebro la audite",
-  "no_volver_a": "fiarse del modelo local sin auditor; es red de seguridad, no juez",
-  "piezas": [
-   "cuerpo/obrero.py",
-   "cuerpo/cruzado.py"
-  ],
-  "quien_lo_caza": "cuerpo/cruzado.py (el juez)",
-  "veces": 1
- },
- {
-  "id": 10,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "El subagente se cortaba a si mismo y soltaba un traceback de Python en la cara de Julio",
-  "causa_raiz": "topes incoherentes: 300s por llamada x2 llamadas por ronda = 600s, pero el subproceso solo esperaba 450s; y el TimeoutExpired no se capturaba",
-  "cura": "topes coherentes (700s) + capturar el timeout con mensaje en palabras simples + comando cruzado que NO bloquea (lanzar_al_fondo + ingeniero.py resultado)",
-  "no_volver_a": "poner topes sin comprobar que el de fuera sea mayor que la suma de los de dentro; ni dejar que un traceback llegue a Julio",
-  "piezas": [
-   "cuerpo/subagentes.py",
-   "ingeniero.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_nada_lento.py",
-  "veces": 1
- },
- {
-  "id": 11,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "El Ingeniero apuntaba a una copia de Foto Informe de MAYO habiendo una de JULIO con 253 archivos",
-  "causa_raiz": "proyectos.config se lleno a ojo, sin comprobar cual copia era la viva ni en que rama estaba",
-  "cura": "arnes/via_canonica.py: comprueba ruta+rama+gemelos ANTES de nada y BLOQUEA si la declarada es mas vieja",
-  "no_volver_a": "declarar una ruta sin comprobar si hay copias del mismo proyecto y cual tiene el commit mas nuevo",
-  "piezas": [
-   "proyectos.config",
-   "arnes/via_canonica.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_via_canonica.py",
-  "veces": 1
- },
- {
-  "id": 12,
-  "fecha": "2026-08-20",
-  "proyecto": "foto_informe",
-  "que_paso": "Habia 3 copias de Foto Informe en el disco y se trabajaba en la de mayo",
-  "causa_raiz": "nunca se declaro una via canonica unica; las copias se fueron acumulando sin que nadie las mirara",
-  "cura": "Julio confirmo la buena (dev/Foto_info_repo, 23-jul); las otras dos se respaldaron y se borraron el 2026-08-20",
-  "no_volver_a": "dejar copias de un proyecto vivas en el disco: confunden y se acaba reparando la equivocada",
-  "piezas": [
-   "proyectos.config"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_via_canonica.py",
-  "veces": 1
- },
- {
-  "id": 13,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "Los dos consejeros RECHAZARON una decision y el resumen decia que tenia buena pinta",
-  "causa_raiz": "se confundio COINCIDIR con APROBAR: coincidian, pero en decir que NO",
-  "cura": "veredicto explicito APRUEBAN/RECHAZAN/DISCREPAN en vez de un booleano de coincidencia",
-  "no_volver_a": "resumir un voto sin decir en que sentido voto; un resumen que dice lo contrario de lo que paso es peor que no tenerlo",
-  "piezas": [
-   "cuerpo/consejeros.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_consejeros.py",
-  "veces": 1
- },
- {
-  "id": 14,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "La vigia de los candados duros se colgo 8 minutos",
-  "causa_raiz": "el candado de cierre corre las vigias, y al llamarlo DESDE una vigia arrancaba pytest dentro de pytest",
-  "cura": "si detecta PYTEST_CURRENT_TEST no corre vigias: dentro de una vigia se prueba la logica, no se relanza todo",
-  "no_volver_a": "escribir un candado que ejecute pytest sin comprobar si ya esta dentro de pytest",
-  "piezas": [
-   "arnes/candado_cierre.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_candados_duros.py",
-  "veces": 1
- },
- {
-  "id": 15,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "Escribir codigo Python con \n dentro de un heredoc de bash corrompio el archivo TRES veces",
-  "causa_raiz": "el heredoc convierte \n en salto de linea real y parte los strings del codigo",
-  "cura": "para codigo con escapes se usa la herramienta Write o Edit, nunca heredoc de bash",
-  "no_volver_a": "meter codigo con \n o rutas con \u0007 dentro de un heredoc; se corrompe en silencio",
-  "piezas": [
-   "cuerpo/dudas.py",
-   "arnes/modo_ingeniero.py",
-   "arnes/settings_propuesto.json"
-  ],
-  "quien_lo_caza": "el propio interprete de Python al importar",
-  "veces": 1
- },
- {
-  "id": 16,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "El buscador decia NO_ENCONTRADO sobre medidor.py, cuyo titulo literal es MEDIDOR de tokens",
-  "causa_raiz": "el indice guarda las palabras CON tilde (economico) y las consultas van sin ella: nunca coinciden. Degradaba TODO el grafo en silencio",
-  "cura": "normalizar tildes en _palabras() y en el filtro exigir, con la misma funcion para indexar y para consultar",
-  "no_volver_a": "filtrar las palabras de la consulta con criterios distintos a los del indice",
-  "piezas": [
-   "cerebro/trozos.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_buscador.py",
-  "veces": 1
- },
- {
-  "id": 17,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "El candado de edicion impidio reparar el propio Ingeniero cuando estaba roto",
-  "causa_raiz": "exigia un paquete minimo, pero el generador de paquetes no arrancaba por el mismo archivo roto",
-  "cura": "si el generador de paquetes no importa, el candado deja pasar y avisa",
-  "no_volver_a": "escribir un candado que dependa del sistema que protege sin salida para repararlo",
-  "piezas": [
-   "arnes/edit_gate_universal.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_candados_duros.py",
-  "veces": 1
- },
- {
-  "id": 18,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "El candado de cierre bloqueaba por preguntas YA respondidas y no habia forma de cerrarlas",
-  "causa_raiz": "probar el comando duda apuntaba preguntas de mentira en el estado, y no existia manera de marcarlas como contestadas",
-  "cura": "cuerpo/estado.respondida() + comando ingeniero.py respondida",
-  "no_volver_a": "hacer un candado sin una forma honrada de satisfacerlo: empuja a saltarselo, y eso es peor que no tenerlo",
-  "piezas": [
+   "arnes/candado_cierre.py",
    "cuerpo/estado.py",
-   "arnes/candado_cierre.py"
-  ],
-  "quien_lo_caza": "el propio candado de cierre",
-  "veces": 1
- },
- {
-  "id": 19,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "Se marco como NO_SIRVIO una explicacion cuyo contenido era CORRECTO: solo habia que argumentarla de otra manera",
-  "causa_raiz": "el sistema solo tenia dos estados (sirvio / no sirvio) y metia en el mismo saco un error de fondo y uno de forma",
-  "cura": "tercer estado ACLARAR, que NO baja el acierto de contenido y se mide aparte como me_explique_mal",
-  "no_volver_a": "confundir que la respuesta este mal con que este mal explicada: se arreglan de forma distinta",
-  "piezas": [
-   "cuerpo/respuestas.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_respuestas.py",
-  "veces": 1
- },
- {
-  "id": 20,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "Las vigias de dudas se ponian rojas sin que el codigo cambiara",
-  "causa_raiz": "dependian de una llamada real a un cerebro, y un cerebro no contesta siempre igual",
-  "cura": "se prueba el sistema COMPLETO pero con un juez de mentira que contesta siempre lo mismo",
-  "no_volver_a": "escribir una vigia que dependa de algo no determinista: una vigia inestable no vale para nada",
-  "piezas": [
-   "vigias/test_vigia_dudas.py"
-  ],
-  "quien_lo_caza": "ella misma",
-  "veces": 1
- },
- {
-  "id": 21,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "Se creyo que el juez del cerebro era opcional y se intento quitar de las pruebas",
-  "causa_raiz": "sin el, contar palabras da falsos positivos: cuantos empleados tiene la empresa traia un fallo del onboarding",
-  "cura": "el juez es imprescindible; lo que se hace es volverlo predecible en las pruebas, no quitarlo",
-  "no_volver_a": "asumir que un filtro es adorno sin probar el sistema sin el",
-  "piezas": [
-   "cuerpo/dudas.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_dudas.py",
-  "veces": 1
- },
- {
-  "id": 22,
-  "fecha": "2026-08-20",
-  "proyecto": "foto_informe",
-  "que_paso": "Se iba a INDEXAR el MVP como si eso fuera la reparacion, sin saber DONDE esta lento",
-  "causa_raiz": "se salto el orden: actuar antes de buscar el origen del fallo y tener elementos de juicio",
-  "cura": "ORDEN OBLIGATORIO: 1 via canonica, 2 buscar el ORIGEN del fallo, 3 analizar, 4 recien entonces proponer como lograrlo",
-  "no_volver_a": "proponer una solucion antes de haber localizado y medido el fallo",
-  "piezas": [
-   "ingeniero.py"
-  ],
-  "quien_lo_caza": "PENDIENTE de vigia",
-  "veces": 1
- },
- {
-  "id": 23,
-  "fecha": "2026-08-20",
-  "proyecto": "foto_informe",
-  "que_paso": "Se dijo que la LENTITUD y el MODO OFFLINE eran el mismo problema",
-  "causa_raiz": "una nota de memoria decia que la cura de la latencia era el offline, y se salto de ahi a que eran lo mismo",
-  "cura": "son DOS objetivos distintos y se tratan por separado; el offline puede estar lento por su cuenta. Se corrigio la nota que inducia al error",
-  "no_volver_a": "juntar dos problemas porque una solucion toque a los dos; que A ayude a B no hace que A y B sean lo mismo",
-  "piezas": [
-   "memoria latencia-supabase-canal-lento"
-  ],
-  "quien_lo_caza": "PENDIENTE de vigia",
-  "veces": 1
- },
- {
-  "id": 24,
-  "fecha": "2026-08-20",
-  "proyecto": "foto_informe",
-  "que_paso": "Julio entendio que se le iba a BORRAR el boton Organizador de tareas con IA, que el habia pedido",
-  "causa_raiz": "se uso la palabra DESCARTADO sin decir que se descartaba como CAUSA del fallo, no como funcionalidad",
-  "cura": "al investigar, decir siempre ESTOY LEYENDO, NO TOCANDO, y nombrar que se descarta exactamente",
-  "no_volver_a": "usar palabras como descartado, quitar o eliminar mientras se investiga: asustan y parecen acciones",
-  "piezas": [
-   "comunicacion"
-  ],
-  "quien_lo_caza": "PENDIENTE de vigia",
-  "veces": 1
- },
- {
-  "id": 25,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "Se incumplio el PROTOCOLO_DEL_CHAT de Julio durante todo el dia, estando escrito desde el 2026-07-28",
-  "causa_raiz": "el protocolo existia pero NADA obligaba a cumplirlo: era un documento, no un candado",
-  "cura": "tres disparadores: detectar que Julio repite, frenar la jerga prohibida antes de que le llegue, y exigir confirmar el objetivo antes de construir",
-  "no_volver_a": "dejar una ley escrita sin un disparador que la haga cumplir; lo que depende de acordarse, no se cumple",
-  "piezas": [
-   "arnes/candado_protocolo.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_protocolo.py",
-  "veces": 1
- },
- {
-  "id": 26,
-  "fecha": "2026-08-20",
-  "proyecto": "ingeniero",
-  "que_paso": "El contador de veces que Julio repite marcaba CERO habiendo repetido cuatro veces el mismo dia",
-  "causa_raiz": "solo subia si alguien lo apuntaba a mano; el termometro del sistema entero dependia de que el Ingeniero se acordara",
-  "cura": "se dispara solo en cada mensaje de Julio comparandolo con lo que ya habia dicho antes",
-  "no_volver_a": "medir algo importante con un contador que hay que subir a mano",
-  "piezas": [
-   "cuerpo/respuestas.py",
-   "arnes/candado_protocolo.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_protocolo.py",
-  "veces": 1
- },
- {
-  "id": 27,
-  "fecha": "2026-08-20",
-  "proyecto": "foto_informe",
-  "que_paso": "LENTITUD DEL MVP: causa raiz localizada y medida",
-  "causa_raiz": "el servidor responde en 3 ms (no es lento). Cada viaje a la nube cuesta ~550 ms y cada accion hace varios SEGUIDOS: crear informe 4, anadir diario 3, subir foto 3, asignar 2, generar 2. Ademas la pantalla llama al servidor desde 50 sitios, 16 al mismo",
-  "cura": "PENDIENTE de reparar: agrupar los viajes por accion en vez de hacerlos uno detras de otro",
-  "no_volver_a": "culpar al codigo de la lentitud: el codigo es rapido, lo caro es el numero de idas y vueltas a la nube",
-  "piezas": [
-   "app.py:13616",
-   "app.py:14282",
-   "app.py:14705",
-   "app.py:14919",
-   "app.py:16427"
-  ],
-  "quien_lo_caza": "PENDIENTE de vigia",
-  "veces": 1
- },
- {
-  "id": 28,
-  "fecha": "2026-08-20",
-  "proyecto": "foto_informe",
-  "que_paso": "MODO SIN INTERNET: en la pantalla de inicio NO existe ningun boton para entrar sin internet",
-  "causa_raiz": "circulo vicioso: para entrar sin internet hace falta el complemento descargado; para descargarlo hay que entrar al MVP; para entrar hace falta login; para el login hace falta internet. Ademas el manifiesto no tiene campo id y la direccion de arranque apunta a la raiz (el MVP con login), lo que crea DOS aplicaciones instaladas",
-  "cura": "PENDIENTE: boton de modo sin internet EN LA PANTALLA DE INICIO + campo id en el manifiesto",
-  "no_volver_a": "dejar la entrada al modo sin internet detras del login",
-  "piezas": [
-   "app_web.html:376",
-   "app.py:10216 (manifiesto)",
-   "offline.html"
-  ],
-  "quien_lo_caza": "PENDIENTE de vigia",
-  "veces": 1
- },
- {
-  "id": 29,
-  "fecha": "2026-08-21",
-  "proyecto": "ingeniero",
-  "que_paso": "El candado de edicion ofrece la salida NECESITO_EDITAR y esa salida NO EXISTE en ningun sitio",
-  "causa_raiz": "se escribio el mensaje de ayuda antes que el mecanismo; un candado que ofrece una llave inexistente obliga a usar el apagon general",
-  "cura": "crear el comando para justificar una edicion puntual, que quede apuntado y permita ese archivo concreto",
-  "no_volver_a": "ofrecer en un mensaje de bloqueo una salida que no esta implementada: obliga a apagar el arnes entero",
-  "piezas": [
-   "arnes/edit_gate_universal.py"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_sin_rendijas.py",
-  "veces": 1
- },
- {
-  "id": 30,
-  "fecha": "2026-08-21",
-  "proyecto": "ingeniero",
-  "que_paso": "Escribir codigo con saltos de linea dentro de una orden de terminal lo corrompe en silencio",
-  "causa_raiz": "los saltos de linea y las barras se convierten en caracteres reales y parten el codigo",
-  "cura": "usar SIEMPRE la herramienta de escribir archivos, nunca meter codigo dentro de una orden de terminal",
-  "no_volver_a": "meter codigo con saltos de linea o barras dentro de una orden de terminal",
-  "piezas": [
-   "todos los archivos escritos asi"
-  ],
-  "quien_lo_caza": "vigias/test_vigia_memoria_avisa.py",
-  "disparador": "<<\\s*.?[A-Z]{2,}|cat\\s*>.*<<|python\\s+-\\s*<<",
-  "veces": 1
- },
- {
-  "id": 31,
-  "fecha": "2026-08-21",
-  "proyecto": "ingeniero",
-  "que_paso": "Parchear codigo buscando texto suelto rompio el archivo: la busqueda del parentesis de cierre encontro uno que estaba DENTRO de un texto",
-  "causa_raiz": "se edita el codigo con find y replace sobre trozos de texto, sin entender la estructura; un parentesis dentro de una frase parece el final de la instruccion",
-  "cura": "para tocar codigo se usa la herramienta de edicion con el trozo exacto y unico, o se reescribe el archivo entero; nunca find de un caracter suelto",
-  "no_volver_a": "parchear codigo buscando un caracter suelto como parentesis o coma: rompe en silencio",
-  "piezas": [
    "cuerpo/fallos.py"
   ],
-  "quien_lo_caza": "el interprete al importar el archivo",
-  "disparador": "\\.find\\([\"\\x27][)\\](,;][\"\\x27]|s\\.replace\\(.{0,30}[)\\](,;]",
-  "veces": 1
- },
- {
-  "id": 32,
-  "fecha": "2026-08-21",
-  "proyecto": "ingeniero",
-  "que_paso": "Una comprobacion salio en rojo y a los segundos las mismas 144 salieron en verde tres veces seguidas",
-  "causa_raiz": "el guardia de cierre corrio las comprobaciones mientras todavia se estaban escribiendo archivos: las probo a medio escribir",
-  "cura": "antes de dar un rojo por bueno, repetirlo; un rojo que no se repite es ruido, no un fallo",
-  "no_volver_a": "dar por rota una comprobacion que solo fallo una vez mientras se escribia el archivo",
-  "piezas": [
-   "arnes/candado_cierre.py"
-  ],
-  "quien_lo_caza": "PENDIENTE",
-  "disparador": "1 failed|2 failed",
+  "quien_lo_caza": "lanzar dos corridas simultaneas a proposito",
+  "disparador": "estado\\.apuntar\\(|fallos\\.sembrar\\(|\\.cierres_bloqueados",
   "veces": 1
  }
 ]

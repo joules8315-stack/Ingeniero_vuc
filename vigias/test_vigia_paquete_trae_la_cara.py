@@ -52,9 +52,21 @@ def test_el_paquete_avisa_de_los_fallos_ya_vividos():
     if not _hay("dmm"):
         pytest.skip("dmm no esta")
     from cuerpo import fallos
-    fallos.sembrar()
-    txt = router.a_texto(router.armar("dmm", "el onboarding no guarda el perfil en la web"))
-    assert "LO QUE YA NOS PASO AQUI" in txt, "el paquete no lleva la memoria de fallos"
+    # Se siembra en una copia APARTE: escribir en la memoria de verdad hacia que dos corridas
+    # simultaneas se pisaran y salieran rojas sin estar nada roto (fallo real 2026-08-21).
+    import tempfile
+    aparte = os.path.join(tempfile.mkdtemp(), "FALLOS.json")
+    viejo = os.environ.get("INGENIERO_FALLOS_TEST")
+    os.environ["INGENIERO_FALLOS_TEST"] = aparte
+    try:
+        fallos.sembrar()
+        txt = router.a_texto(router.armar("dmm", "el onboarding no guarda el perfil en la web"))
+        assert "LO QUE YA NOS PASO AQUI" in txt, "el paquete no lleva la memoria de fallos"
+    finally:
+        if viejo:
+            os.environ["INGENIERO_FALLOS_TEST"] = viejo
+        else:
+            os.environ.pop("INGENIERO_FALLOS_TEST", None)
 
 
 def test_sigue_siendo_barato_despues_de_traer_la_cara():

@@ -427,3 +427,27 @@ accion hace. Asi el aviso salta aunque manana se use otro programa para lo mismo
 - **No estorba:** solo avisa de lo que viene al caso. Si avisara de todo se volveria ruido y se
   ignoraria, que es exactamente como estaba antes.
 - **Siempre dice QUE HACER en su lugar**, no solo que esta mal.
+
+## LEY 23 — UNA COMPROBACION QUE FALLA A VECES ES PEOR QUE NINGUNA (2026-08-21)
+
+El guardia de cierre dio ROJO y, segundos despues, las mismas 144 salieron VERDES **doce veces
+seguidas** sin tocar nada. Un rojo que no se repite no es un fallo: es ruido. Y una comprobacion
+que a veces falla se acaba ignorando, que es la peor forma de perderlas todas.
+
+### La causa raiz, reproducida a proposito
+Se lanzaron DOS corridas a la vez: **2 y 3 rojas de 144**. Solas, siempre verdes.
+Varias comprobaciones escribian en los MISMOS archivos de memoria (el estado, los errores, el
+contador de bloqueos) y se pisaban entre ellas. El guardia de cierre las lanzaba **aunque el
+sellado ya las estuviera corriendo**.
+
+### La cura, en dos partes
+1. **No se lanzan dos corridas a la vez.** El guardia pone un cerrojo mientras corre; si ya hay
+   otra en marcha, no lanza la suya.
+2. **Cada comprobacion usa SU copia** de la memoria, del estado y del contador. Ninguna toca los
+   archivos de verdad.
+
+### Reglas que quedan
+- **Un rojo se repite antes de darlo por bueno.** Si no se repite, es ruido.
+- **Ninguna comprobacion escribe en los archivos de memoria reales.** Se desvia su ruta.
+- **Antes de dar por arreglada una intermitencia, se reproduce a proposito.** Aqui se lanzaron
+  dos corridas simultaneas hasta verlas fallar, y luego hasta verlas pasar las dos.
