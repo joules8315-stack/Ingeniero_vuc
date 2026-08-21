@@ -1,9 +1,9 @@
 {
- "cuando": 1787269115.7051823,
- "proyecto": "foto_informe",
- "archivo": "app.py",
- "funcion": "los endpoints de reports/daily/attachments",
- "linea": "13616, 14282, 14705, 14919, 16427",
- "evidencia": "MEDIDO 2026-08-20: el servidor local responde en 3 ms (no es lento). Cada viaje a la nube cuesta ~550 ms (medicion 2026-07-10). Crear informe hace 4 viajes seguidos (2.2s), anadir diario 3 (1.7s), subir foto 3 (1.7s), asignar 2 (1.1s), generar 2 (1.1s). Ademas la pantalla llama al servidor desde 50 sitios, 16 de ellos a /reports/. La lentitud NO es el codigo: es el numero de viajes seguidos a la nube, cada uno de medio segundo.",
- "sintoma": "todo el MVP es lento: guardar, asignar, fotos y generar el informe final"
+ "cuando": 1787310293.1666098,
+ "proyecto": "ingeniero",
+ "archivo": "arnes/candado_terminal.py",
+ "funcion": "LECTORAS y PYTHON_LECTOR (las expresiones que reconocen una lectura)",
+ "linea": "48",
+ "evidencia": "MEDIDO: al escribir el archivo desde la terminal, las expresiones perdieron sus delimitadores de palabra. Comprobado: LECTORAS.search('cat C:/.../offline.html') devuelve False cuando deberia devolver True, y por eso el candado dejaba pasar TODAS las lecturas",
+ "sintoma": "el candado no bloquea ninguna lectura: 7 de 12 pruebas en rojo"
 }

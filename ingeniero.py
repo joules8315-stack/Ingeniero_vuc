@@ -270,6 +270,20 @@ def main():
             print()
             print("*** %d paso(s) SIN candado. Un paso sin candado es un paso que se salta." % falta)
         return 0 if not falta else 2
+    if cmd == "necesito-editar" and len(sys.argv) >= 3:
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        import permiso_editar
+        a = sys.argv[2:]
+        def _v(n):
+            return a[a.index(n) + 1] if n in a and len(a) > a.index(n) + 1 else ""
+        r = permiso_editar.dar(a[0], _v("--motivo"), _v("--vigia"), _v("--dana"))
+        print(r["_error"] if "_error" in r else
+              "PERMISO dado para " + r["nombre"] + " (30 min). Queda apuntado.")
+        return 1 if "_error" in r else 0
+    if cmd == "permisos":
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        import permiso_editar
+        print(permiso_editar.texto()); return 0
     if cmd == "medir":
         from cuerpo import medidor, respuestas
         print(medidor.texto(sys.argv[2] if len(sys.argv) > 2 else None))

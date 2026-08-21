@@ -96,6 +96,10 @@ T5.7 | Un solo protocolo unificado (DMM + MVP + rv2) | archivo:PROTOCOLO_UNICO.m
 T5.8 | Causa raiz probada antes de reparar (lo inferido no se repara) | archivo:arnes/candado_diagnostico.py
 T5.9 | Cada paso del protocolo con su candado | funcion:cuerpo.estado:leer
 
+T5.10 | Siempre el paquete minimo, por todas las vias | archivo:arnes/candado_terminal.py
+T5.11 | Ninguna rendija para leer sin control (7 vias) | vigia:test_vigia_sin_rendijas.py
+T5.12 | La llave NECESITO_EDITAR existe de verdad | archivo:arnes/permiso_editar.py
+
 ## LO QUE SOLO JULIO PUEDE DAR POR BUENO (ley 5: vigía verde NO es prueba)
 
 M.1 | Julio probó el Ingeniero con sus ojos y le sirve | manual:que Julio corra `python ingeniero.py trabaja` y diga si el paquete le sirve

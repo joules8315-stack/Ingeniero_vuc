@@ -357,3 +357,42 @@ y no la hacia cumplir nadie. Ahora: `python ingeniero.py causa <proyecto> --arch
 `python ingeniero.py protocolo` — dice paso por paso cual tiene candado.
 **Regla dura: una ley sin candado es un deseo.** Quedo demostrado el 2026-08-20, con los dos
 protocolos escritos, delante, y violados los dos.
+
+## LEY 21 — SIEMPRE EL PAQUETE MINIMO, POR TODAS LAS VIAS (Julio, 2026-08-20)
+> "No solo tapa la ventana, sino cada rendija por donde te puedas colar; no sirve de nada gastar
+>  mi tiempo en una IA que no me va a ayudar, por el contrario me hace perder tiempo."
+> "pon el arnes para que siempre pida el paquete minimo y sea inviolable, no lo vuelvas a pasar
+>  por alto, crea vigia."
+
+### EL AGUJERO, medido
+La auditoria del trabajo sobre el MVP dio esto: **CERO paquetes minimos pedidos**. Todo el
+diagnostico se hizo con busquedas sueltas sobre un archivo de 16.845 lineas. **El arnes vigilaba
+TRES puertas y habia SIETE formas de leer sin control.** Vigilaba la puerta principal mientras
+se entraba por la ventana.
+
+### LA REGLA, sin excepciones
+**SIEMPRE el paquete primero. CERO lecturas de cortesia.** No hace falta buscar antes: el paquete
+se pide solo con el problema en palabras normales. Si se queda corto, se pide otro mas concreto
+o se justifica con `NECESITO_LEER`.
+
+### Las siete vias, todas vigiladas (`arnes/candado_terminal.py`)
+| Via | Antes | Ahora |
+|---|---|---|
+| terminal: grep, sed, head, tail, cat, awk | libre | vigilada |
+| python suelto: `python -c "open(...)"` | libre | vigilada |
+| PowerShell: Get-Content, Select-String | libre | vigilada |
+| buscar dentro del codigo | libre | vigilada |
+| listar archivos | libre | vigilada |
+| mandar a otro agente a leer | libre | vigilada |
+| abrir el archivo entero | vigilada | vigilada |
+
+- **Vigia:** `test_vigia_sin_rendijas.py` (12 pruebas, una por via).
+- **INVIOLABLE** no es que no haya salida: es que **no se pueda usar a escondidas**. Cada apagon
+  queda apuntado en `memoria/APAGONES.log`, con fecha y que se leyo.
+
+### LA LLAVE QUE FALTABA (`arnes/permiso_editar.py`)
+El candado de edicion ofrecia la salida `NECESITO_EDITAR` **y esa salida no existia**. Un candado
+que ofrece una llave inexistente obliga a apagar el arnes entero. Ahora existe:
+`python ingeniero.py necesito-editar <archivo> --motivo "..." --vigia "..." --dana "..."`
+Permite UN archivo, 30 minutos, con la justificacion por escrito y apuntada.
+**Regla nueva: un mensaje de bloqueo NUNCA ofrece una salida que no este implementada.**
