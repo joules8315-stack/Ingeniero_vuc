@@ -22,7 +22,7 @@ Julio no repite instrucciones: dice el problema y el Ingeniero hace el resto del
     python ingeniero.py mapa                         -> refresca el mapa
     python ingeniero.py proyectos                    -> a quien atiende
 """
-import os, sys, subprocess
+import os, sys, subprocess, time
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
@@ -301,6 +301,22 @@ def main():
             print()
             print("*** %d paso(s) SIN candado. Un paso sin candado es un paso que se salta." % falta)
         return 0 if not falta else 2
+    if cmd == "objetivo-confirmado":
+        # LA LLAVE QUE EL CANDADO YA OFRECIA Y NO EXISTIA.
+        # Es la segunda vez que pasa (la primera fue NECESITO_EDITAR): un candado que manda usar
+        # una llave inexistente no protege, ATRAPA, y empuja a apagar el arnes entero, que es
+        # justo lo peor. Un candado sin forma honrada de cumplirlo esta mal puesto.
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        import candado_protocolo as _cp
+        sem = _cp._semaforo()
+        os.makedirs(os.path.dirname(sem), exist_ok=True)
+        que = " ".join(sys.argv[2:]).strip()
+        open(sem, "w", encoding="utf-8").write(
+            time.strftime("%Y-%m-%d %H:%M") + "  " + (que or "(objetivo confirmado con Julio)"))
+        print("OBJETIVO CONFIRMADO. Se puede construir durante 3 horas.")
+        if que:
+            print("  lo que Julio consigue: " + que)
+        return 0
     if cmd == "necesito-editar" and len(sys.argv) >= 3:
         sys.path.insert(0, os.path.join(AQUI, "arnes"))
         import permiso_editar

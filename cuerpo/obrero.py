@@ -167,13 +167,14 @@ def quienes_hay():
     # fila NUNCA entraban: se quedaban de adorno. Por eso, con Groq agotado, no quedaba un
     # segundo cerebro para AUDITAR y el que proponia se aprobaba solo (fallo real 2026-08-21).
     vel = _velocidad()
-    llaves = {"groq": "GROQ_API_KEY", "gemini": "GEMINI_API_KEY"}
+    llaves = {"groq": "GROQ_API_KEY", "gemini": "GEMINI_API_KEY",
+              "router": "OPENROUTER_API_KEY"}
     hay = []
     for quien in cuotas.ORDEN:
         if quien == "local":
             continue
-        puerta = "gemini" if quien.startswith("gemini") else "groq"
-        if not os.environ.get(llaves[puerta], "").strip():
+        puerta = next((p for p in llaves if quien.startswith(p)), None)
+        if not puerta or not os.environ.get(llaves[puerta], "").strip():
             continue
         if vel.get("modelo_" + quien):
             hay.append(quien)
@@ -294,6 +295,29 @@ def _gemini_directo(prompt, temperatura, modelo):
     return d["candidates"][0]["content"]["parts"][0]["text"]
 
 
+def _openrouter_directo(prompt, temperatura, modelo):
+    """La puerta de OpenRouter, que Julio pidio el 2026-08-21 para traer DeepSeek y los que quiera.
+
+    Es UNA puerta con MUCHOS cerebros detras, que es justo lo que el pedia: "tu debes ser el
+    ultimo recurso, cuando se agoten los modelos gratis, o sea nunca, porque existen cientos".
+    La llave va SOLA en el .env privado (OPENROUTER_API_KEY): nunca se le pide a Julio que la
+    escriba en el chat. Sin llave, este cerebro no entra en la fila y no estorba."""
+    import json as _j, os as _o, urllib.request as _u
+    k = _o.environ.get("OPENROUTER_API_KEY", "").strip()
+    if not k:
+        raise RuntimeError("no hay llave de OpenRouter en el .env")
+    if not modelo:
+        raise RuntimeError("no hay modelo de OpenRouter configurado")
+    body = _j.dumps({"model": modelo, "temperature": temperatura,
+                     "messages": [{"role": "user", "content": prompt}]}).encode("utf-8")
+    req = _u.Request("https://openrouter.ai/api/v1/chat/completions", data=body, method="POST")
+    req.add_header("Content-Type", "application/json")
+    req.add_header("Authorization", "Bearer " + k)
+    with _u.urlopen(req, timeout=300) as r:
+        d = _j.load(r)
+    return d["choices"][0]["message"]["content"]
+
+
 def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None):
     """Pregunta respetando el orden de Julio: Qwen -> Gemini -> local, y VOLVIENDO a Qwen
     en cuanto despierte. Si uno se agota (429/cuota), se le marca la siesta y sigue el de al lado.
@@ -311,10 +335,25 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None):
     modelos = {"groq": vel["modelo_groq"], "groq20b": vel.get("modelo_groq20b"),
                "gemini": vel["modelo_gemini"], "gemini2": vel.get("modelo_gemini2"),
                "gemini3": vel.get("modelo_gemini3"), "local": None}
+    for k in vel:
+        if k.startswith("modelo_router"):
+            modelos[k[len("modelo_"):]] = vel[k]
     tope = float(vel.get("tope_segundos", 75))
 
+    # SOLO CODIGO A LA NUBE (Julio, 2026-08-21). Se tapa AQUI, en el unico sitio por donde sale
+    # todo, y no en cada sitio que llama: si depende de acordarse, un dia no se acuerda.
+    # El cerebro de tu PC no cuenta: ahi no sale nada del ordenador.
+    try:
+        from cuerpo import privacidad as _pv
+        prompt_nube, _tapados = _pv.limpiar(prompt)
+        if _tapados:
+            avisos.append(_pv.aviso(_tapados))
+    except Exception:
+        prompt_nube, _tapados = prompt, 0
+
     def _pedirle_a(quien):
-        """Le habla a UN cerebro. Directo, con su modelo, sin red que tape errores."""
+        """Le habla a UN cerebro. Directo, con su modelo, sin red que tape errores.
+        A la nube va el encargo LIMPIO; al de tu PC va entero, porque no sale de casa."""
         if quien == "local":
             # El de casa es un modelo pequeno: con un encargo largo devuelve error 400 porque no
             # le cabe. Fallaba 8 de cada 9 veces por esto. Se le dan los cortos, que si atiende.
@@ -322,9 +361,12 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None):
                 raise ValueError("encargo demasiado largo para el cerebro de tu PC "
                                  "(%d letras): no le cabe" % len(prompt))
             return preguntar_local(prompt, temperatura)
+        # De aqui para abajo el encargo SALE DE CASA: va el limpio, sin datos de clientes.
         if quien.startswith("gemini"):
-            return _gemini_directo(prompt, temperatura, modelos.get(quien))
-        return c._preguntar_groq(prompt, modelos.get(quien), temperatura)
+            return _gemini_directo(prompt_nube, temperatura, modelos.get(quien))
+        if quien.startswith("router"):
+            return _openrouter_directo(prompt_nube, temperatura, modelos.get(quien))
+        return c._preguntar_groq(prompt_nube, modelos.get(quien), temperatura)
 
     # GANA EL PRIMERO QUE CONTESTE, no el reloj (Julio, 2026-08-21):
     #   "en vez de usar temporizador con los cerebros, pon mejor disparador, cuando responda, y un
@@ -376,21 +418,11 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None):
 
     for quien in turnos:
         try:
-            # SE LLAMA A CADA CEREBRO DIRECTO, a proposito.
-            # Fallo real 2026-08-21, el que mas dinero le costo a Julio: la puerta comoda
-            # (`preguntar(forzar=...)`) hacia DOS cosas a escondidas. Uno: a Gemini le quitaba el
-            # modelo pedido y usaba siempre el suyo. Dos: si el modelo pedido no existia, en vez
-            # de avisar caia CALLANDO en otro cerebro y contestaba como si tal cosa. Resultado:
-            # se creia estar midiendo y eligiendo cerebros, y siempre contestaba el mismo. Se
-            # descubrio porque un modelo inventado, "pepito-grillo-9000", contesto tan tranquilo.
-            if quien == "local":
-                txt = _con_tope(lambda: preguntar_local(prompt, temperatura), tope)
-            elif quien == "gemini":
-                gm = modelos.get("gemini")
-                txt = _con_tope(lambda: _gemini_directo(prompt, temperatura, gm), tope)
-            else:
-                mod = modelos.get(quien)
-                txt = _con_tope(lambda: c._preguntar_groq(prompt, mod, temperatura), tope)
+            # UNA SOLA PUERTA para hablar con los cerebros: `_pedirle_a`.
+            # Antes esto era una copia de aquella logica, y las copias se desincronizan: la ley de
+            # privacidad de Julio se engancho arriba y por AQUI seguian saliendo los datos sin
+            # tapar. Un camino duplicado es un agujero esperando su turno.
+            txt = _con_tope(lambda: _pedirle_a(quien), max(tope, cuotas.cuanto_esperarle(quien)))
             if not (txt or "").strip():
                 raise ValueError("contesto vacio")
             cuotas.apuntar_uso(quien, ok=True)

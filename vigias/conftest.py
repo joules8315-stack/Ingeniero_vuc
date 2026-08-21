@@ -23,6 +23,11 @@ sys.path.insert(0, os.path.join(AQUI, "arnes"))
 
 @pytest.fixture(autouse=True)
 def _nada_toca_lo_real(tmp_path, monkeypatch):
-    """La marca de hilo perdido, aparte para cada prueba. Se hereda a los programas que lance."""
+    """Cada prueba, con su propia copia. Se hereda a los programas que la prueba lance."""
     monkeypatch.setenv("INGENIERO_CONTEXTO_TEST", str(tmp_path / ".contexto_perdido"))
+    # El contador de bloqueos del protocolo: tras 2 bloqueos seguidos se abre una valvula de
+    # escape para no atascar a Julio. Era compartido, asi que un bloqueo DE VERDAD dejaba la
+    # valvula ya abierta y la comprobacion salia roja sin que nada estuviera roto (cuarto sitio
+    # con este mismo patron, 2026-08-21).
+    monkeypatch.setenv("INGENIERO_CONTADOR_TEST", str(tmp_path / ".protocolo_bloqueos"))
     yield

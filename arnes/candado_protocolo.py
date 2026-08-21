@@ -29,6 +29,15 @@ AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, AQUI)
 DICHO = os.path.join(AQUI, "memoria", "LO_QUE_JULIO_YA_DIJO.json")
 CONTADOR = os.path.join(AQUI, "memoria", ".protocolo_bloqueos")
+
+
+def _contador():
+    """El contador de verdad, o uno de prueba.
+
+    Ley 23, CUARTO sitio con el mismo patron: era un archivo COMPARTIDO. Un bloqueo de verdad
+    gastaba las oportunidades y la comprobacion se encontraba la valvula de escape ya abierta:
+    salia roja sin que nada estuviera roto. Cada prueba usa su copia."""
+    return os.environ.get("INGENIERO_CONTADOR_TEST") or CONTADOR
 TOPE_BLOQUEOS = 2
 
 # Jerga PROHIBIDA por la LEY DURA de lenguaje simple del PROTOCOLO_DEL_CHAT.md.
@@ -44,7 +53,7 @@ JERGA = [
 
 def _bloqueos_seguidos():
     try:
-        cuando, n = open(CONTADOR, encoding="utf-8").read().split("|")
+        cuando, n = open(_contador(), encoding="utf-8").read().split("|")
         if time.time() - float(cuando) > 600:
             return 0
         return int(n)
@@ -53,8 +62,8 @@ def _bloqueos_seguidos():
 
 
 def _apuntar_bloqueo(n):
-    os.makedirs(os.path.dirname(CONTADOR), exist_ok=True)
-    open(CONTADOR, "w", encoding="utf-8").write("%f|%d" % (time.time(), n))
+    os.makedirs(os.path.dirname(_contador()), exist_ok=True)
+    open(_contador(), "w", encoding="utf-8").write("%f|%d" % (time.time(), n))
 
 
 # ─── 1) ¿JULIO ESTA REPITIENDO? (UserPromptSubmit) ─────────────────────────────

@@ -617,5 +617,36 @@
   "quien_lo_caza": "vigias/test_vigia_siempre_con_equipo.py",
   "disparador": "ir a escribir o reparar codigo",
   "veces": 1
+ },
+ {
+  "id": 42,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Cuarto sitio con el MISMO patron: el contador de bloqueos del protocolo era un archivo compartido, y un bloqueo de verdad dejaba la valvula de escape ya abierta, asi que la comprobacion salia roja sin que nada estuviera roto.",
+  "causa_raiz": "El conftest aislaba lo que ya habia dado guerra, no TODO lo que una prueba puede tocar. Cada vez que se anade un archivo de estado nuevo, nace otro rojo falso.",
+  "cura": "Aislado tambien el contador. La regla: cualquier archivo de estado nuevo nace con su desvio de prueba y su linea en el conftest, el mismo dia que se crea.",
+  "no_volver_a": "crear un archivo de estado compartido sin darle a la vez su desvio de prueba",
+  "piezas": [
+   "arnes/candado_protocolo.py",
+   "vigias/conftest.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_protocolo.py::test_el_candado_de_salida_bloquea_de_verdad",
+  "disparador": "crear un archivo de estado, un contador o un semaforo nuevo",
+  "veces": 1
+ },
+ {
+  "id": 43,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Julio tuvo que decir TRES veces que se trabaja en equipo, y me dijo 'por no trabajar en equipo ya has gastado 19'. El arnes solo guarda UN permiso de edicion a la vez, asi que pedir el segundo borra el primero y hay que repetir la peticion.",
+  "causa_raiz": "El permiso se guarda en un solo hueco. Con un trabajo que toca dos archivos, obliga a pedir permiso una y otra vez y empuja a apagar el arnes.",
+  "cura": "APUNTADO, no reparado aun: hace falta que el permiso guarde varios archivos a la vez.",
+  "no_volver_a": "pedir dos permisos seguidos creyendo que valen los dos",
+  "piezas": [
+   "arnes/permiso_editar.py"
+  ],
+  "quien_lo_caza": "",
+  "disparador": "pedir permiso para editar mas de un archivo",
+  "veces": 1
  }
 ]

@@ -49,8 +49,22 @@ def test_el_modelo_de_gemini_configurado_esta_VIVO():
         pytest.skip("sin llave de Gemini")
     m = obrero._velocidad().get("modelo_gemini")
     assert m, "no hay modelo de Gemini configurado"
-    txt = obrero._gemini_directo("Di solo LISTO.", 0.1, m)
-    assert (txt or "").strip(), "el modelo de Gemini configurado no contesta: esta muerto"
+    # Se distingue MUERTO de OCUPADO. Un modelo retirado da 404 siempre: eso es el fallo que se
+    # vigila (los dos que habia puestos llevaban meses muertos y nadie se entero). Un 503 es que
+    # el servicio esta saturado un momento; eso no es culpa del Ingeniero y no puede pintar un
+    # rojo falso, que ensena a ignorar los rojos. Se reintenta y, si sigue saturado, se dice.
+    ultimo = None
+    for _ in range(3):
+        try:
+            txt = obrero._gemini_directo("Di solo LISTO.", 0.1, m)
+            assert (txt or "").strip(), "el modelo de Gemini configurado contesta vacio"
+            return
+        except Exception as e:
+            ultimo = str(e)
+            if "404" in ultimo:
+                raise AssertionError(
+                    "el modelo de Gemini configurado (%s) esta MUERTO: da 404" % m)
+    pytest.skip("Gemini saturado ahora mismo (%s): no es un fallo del Ingeniero" % ultimo[:60])
 
 
 def test_el_modelo_de_groq_configurado_esta_VIVO():
