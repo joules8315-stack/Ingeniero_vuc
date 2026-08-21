@@ -62,12 +62,18 @@ def test_el_modelo_de_groq_configurado_esta_VIVO():
         "el modelo de Groq configurado no contesta"
 
 
-def test_no_se_apunta_un_cerebro_sin_comprobarlo():
+def test_cada_cerebro_de_la_fila_tiene_modelo_configurado():
     """Se llegaron a meter Kimi y Llama en la fila sin comprobarlos: dan 404 en su llave.
-    Un cerebro apuntado que no existe hace perder el turno y frena el trabajo."""
+    Un cerebro apuntado que no existe hace perder el turno y frena el trabajo.
+    Se comprueba lo que importa —que cada uno tenga con que contestar— y no una lista cerrada,
+    porque la lista tiene que poder crecer: Julio quiere muchos cerebros gratis, no tres."""
+    vel = obrero._velocidad()
     for quien in cuotas.ORDEN:
-        assert quien in ("groq", "groq20b", "gemini", "local"), (
-            "hay un cerebro en la fila que no se comprobo contra la llave real: %s" % quien)
+        if quien == "local":
+            continue          # el de casa no lleva modelo: lo elige LM Studio
+        assert vel.get("modelo_" + quien), (
+            "'%s' esta en la fila pero no tiene modelo configurado: perdera el turno siempre"
+            % quien)
 
 
 def test_el_auditor_nunca_es_el_mismo_que_genero():

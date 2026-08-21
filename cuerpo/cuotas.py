@@ -28,9 +28,15 @@ RUTA = os.path.join(AQUI, "memoria", "CUOTAS.json")
 # tiene. Lo que antes parecia que funcionaba era Gemini contestando disfrazado.
 #   openai/gpt-oss-120b  0.9 s     openai/gpt-oss-20b  0.9 s     gemini  (el suyo fijo)
 # gpt-oss-120b y gpt-oss-20b son DOS cupos gratis distintos: Groq reparte por modelo.
-ORDEN = ["groq", "groq20b", "gemini", "local"]
+ORDEN = ["groq", "groq20b", "gemini", "gemini2", "gemini3", "local"]
 APODO = {"groq": "GPT-OSS 120B (Groq)", "groq20b": "GPT-OSS 20B (Groq)",
-         "gemini": "Gemini", "local": "LM Studio (tu PC)"}
+         "gemini": "Gemini 3.5", "gemini2": "Gemini 3 preview",
+         "gemini3": "Gemini flash-latest", "local": "LM Studio (tu PC)"}
+# Julio, 2026-08-21: "tu debes ser el ultimo recurso, cuando se agoten los modelos gratis, o sea
+# nunca, porque existen cientos". Su llave de Gemini tiene 37 modelos vivos. Se anaden los que se
+# COMPROBARON uno por uno (3.5-flash 2.1s | 3-flash-preview 3.9s | flash-latest 3.2s; el 3.7 dio
+# 503). Hacia falta de verdad: con Groq agotado y LM Studio dando error, no quedaba un segundo
+# cerebro para AUDITAR, y sin segundo cerebro no hay 4 ojos: el que propone se aprueba solo.
 
 # Cuanto duerme un cerebro agotado antes de volver a probarlo.
 # Groq reparte por minuto y por dia; Gemini por minuto y por dia. Se prueba pronto y seguido:

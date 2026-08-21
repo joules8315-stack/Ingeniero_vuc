@@ -70,11 +70,23 @@ def test_si_se_agota_toda_la_nube_queda_el_local():
     assert cuotas.turno() == "local", "con toda la nube agotada debe quedar LM Studio"
 
 
-def test_nunca_se_cae_en_la_IA_de_pago():
-    """Julio: 'tu debes ser el ultimo recurso... o sea nunca'. Ninguno de la fila se paga."""
+GRATIS = ("groq", "gemini", "local")          # las tres puertas sin coste
+
+
+def test_nunca_se_cae_en_la_IA_DE_PAGO():
+    """Julio: 'tu debes ser el ultimo recurso, cuando se agoten los modelos gratis, o sea nunca,
+    porque existen cientos'. Ninguno de la fila puede costar dinero. Se comprueba por la PUERTA
+    que usa, no por una lista cerrada de nombres: la fila tiene que poder crecer."""
     for q in cuotas.ORDEN:
-        assert q in ("groq", "groq20b", "gemini", "local"), \
-            "entro en la fila un cerebro que no consta como gratis: %s" % q
+        assert any(q.startswith(p) for p in GRATIS), \
+            "entro en la fila un cerebro que no va por una puerta gratis: %s" % q
+
+
+def test_hay_cerebros_de_sobra_para_los_CUATRO_OJOS():
+    """Con uno solo, el que propone se aprueba a si mismo. Paso de verdad el 2026-08-21: con Groq
+    agotado y el de casa fallando, quedaba UN cerebro y la auditoria se quedo sin hacer."""
+    assert len(cuotas.ORDEN) >= 4, (
+        "quedan %d cerebros: si se agota uno no hay segundo par de ojos" % len(cuotas.ORDEN))
 
 
 def test_distingue_agote_de_fallo_normal():

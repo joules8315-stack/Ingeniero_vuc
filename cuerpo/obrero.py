@@ -125,15 +125,36 @@ def _json_de(texto):
     if not texto:
         return {"_error": "el cerebro no contesto nada"}
     m = re.search(r"\{.*\}", texto, re.S)
-    if not m:
-        return {"_error": "el cerebro no devolvio JSON", "_crudo": texto[:400]}
-    try:
-        return json.loads(m.group(0))
-    except Exception:
+    crudo = m.group(0) if m else None
+    if crudo is None:
+        # Puede venir CORTADO por el limite de salida: empieza pero no cierra. Antes se tiraba
+        # entero, o sea que se perdia trabajo bueno ya hecho. Se intenta cerrar lo que llego.
+        i = texto.find("{")
+        if i < 0:
+            return {"_error": "el cerebro no devolvio JSON", "_crudo": texto[:400]}
+        crudo = texto[i:]
+    for intento in _maneras_de_leerlo(crudo):
         try:
-            return json.loads(re.sub(r",\s*([}\]])", r"\1", m.group(0)))
-        except Exception as e:
-            return {"_error": f"JSON roto: {e}", "_crudo": m.group(0)[:400]}
+            return json.loads(intento)
+        except Exception:
+            continue
+    return {"_error": "JSON roto o cortado", "_crudo": crudo[:400]}
+
+
+def _maneras_de_leerlo(crudo):
+    """El mismo texto, en varias formas, de la mas fiel a la mas apanada.
+    Nunca se INVENTA contenido: solo se cierran llaves y se quitan comas sobrantes."""
+    yield crudo
+    yield re.sub(r",\s*([}\]])", r"\1", crudo)          # coma de mas antes de cerrar
+    # cortado a medio camino: se recorta hasta el ultimo campo entero y se cierra
+    corte = max(crudo.rfind('",'), crudo.rfind('"]'), crudo.rfind("},"))
+    if corte > 0:
+        tronco = crudo[:corte + 1]
+        faltan = tronco.count("[") - tronco.count("]")
+        yield tronco + "]" * max(0, faltan) + "}" * max(0, tronco.count("{") - tronco.count("}"))
+
+
+TOPE_LOCAL = 6000     # letras que le caben al cerebro de tu PC (qwen2.5-coder-1.5b)
 
 
 def quienes_hay():
@@ -141,11 +162,21 @@ def quienes_hay():
     c, cf = prestar_cerebro()
     if not c:
         return []
+    # Cada cerebro de la fila entra si su PUERTA tiene llave y el tiene modelo configurado.
+    # Antes solo se reconocian tres nombres sueltos, asi que los cerebros que se anadian a la
+    # fila NUNCA entraban: se quedaban de adorno. Por eso, con Groq agotado, no quedaba un
+    # segundo cerebro para AUDITAR y el que proponia se aprobaba solo (fallo real 2026-08-21).
+    vel = _velocidad()
+    llaves = {"groq": "GROQ_API_KEY", "gemini": "GEMINI_API_KEY"}
     hay = []
-    if os.environ.get("GROQ_API_KEY", "").strip():
-        hay.append("groq")
-    if os.environ.get("GEMINI_API_KEY", "").strip():
-        hay.append("gemini")
+    for quien in cuotas.ORDEN:
+        if quien == "local":
+            continue
+        puerta = "gemini" if quien.startswith("gemini") else "groq"
+        if not os.environ.get(llaves[puerta], "").strip():
+            continue
+        if vel.get("modelo_" + quien):
+            hay.append(quien)
     # LM Studio se DETECTA, no se declara. Fallo real 2026-08-20: estaba encendido y
     # sirviendo qwen2.5-coder, pero como no habia variable de entorno el Ingeniero no lo veia,
     # y se quedaba sin cerebro cuando los de la nube tardaban. El local no tiene cuota ni
@@ -249,9 +280,11 @@ def _gemini_directo(prompt, temperatura, modelo):
     k = _o.environ.get("GEMINI_API_KEY", "").strip()
     if not k:
         raise RuntimeError("no hay llave de Gemini")
+    # 2000 era MUY corto: la propuesta llega con codigo dentro y se cortaba a medio JSON, asi
+    # que el motor la tiraba entera por "ilegible". Se tiraba trabajo BUENO ya hecho y pagado.
     body = _j.dumps({"contents": [{"parts": [{"text": prompt}]}],
                      "generationConfig": {"temperature": temperatura,
-                                          "maxOutputTokens": 2000}}).encode("utf-8")
+                                          "maxOutputTokens": 8192}}).encode("utf-8")
     url = ("https://generativelanguage.googleapis.com/v1beta/models/" + modelo +
            ":generateContent?key=" + _up.quote(k))
     req = _u.Request(url, data=body, method="POST")
@@ -276,15 +309,21 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None):
     vel = _velocidad()
     # Cada modelo de Groq es un cupo gratis distinto: Groq reparte POR MODELO, no por llave.
     modelos = {"groq": vel["modelo_groq"], "groq20b": vel.get("modelo_groq20b"),
-               "gemini": vel["modelo_gemini"], "local": None}
+               "gemini": vel["modelo_gemini"], "gemini2": vel.get("modelo_gemini2"),
+               "gemini3": vel.get("modelo_gemini3"), "local": None}
     tope = float(vel.get("tope_segundos", 75))
 
     def _pedirle_a(quien):
         """Le habla a UN cerebro. Directo, con su modelo, sin red que tape errores."""
         if quien == "local":
+            # El de casa es un modelo pequeno: con un encargo largo devuelve error 400 porque no
+            # le cabe. Fallaba 8 de cada 9 veces por esto. Se le dan los cortos, que si atiende.
+            if len(prompt) > TOPE_LOCAL:
+                raise ValueError("encargo demasiado largo para el cerebro de tu PC "
+                                 "(%d letras): no le cabe" % len(prompt))
             return preguntar_local(prompt, temperatura)
-        if quien == "gemini":
-            return _gemini_directo(prompt, temperatura, modelos.get("gemini"))
+        if quien.startswith("gemini"):
+            return _gemini_directo(prompt, temperatura, modelos.get(quien))
         return c._preguntar_groq(prompt, modelos.get(quien), temperatura)
 
     # GANA EL PRIMERO QUE CONTESTE, no el reloj (Julio, 2026-08-21):
