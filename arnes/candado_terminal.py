@@ -134,6 +134,35 @@ def _que_se_pide(data):
     return "", False
 
 
+AVISO_HEREDOC = (
+    "BLOQUEADO: NO SE ESCRIBE CODIGO DESDE LA TERMINAL\n\n"
+    "  Julio, 2026-08-21: \"por que mierdas sigues usando heredoc, si siempre te dana el\n"
+    "  proceso; si no te sirve desechala y busca otra\".\n\n"
+    "  Ha roto archivos SIETE veces. La terminal se come las barras invertidas antes de que el\n"
+    "  texto llegue a su sitio: un \\n se convierte en un salto de linea de verdad y parte el\n"
+    "  archivo por la mitad. No avisa: el archivo queda roto y parece bien.\n\n"
+    "  Se escribe SIEMPRE con la herramienta de escribir o de editar archivos. Punto.\n"
+    "  La terminal es para MIRAR y para EJECUTAR, no para escribir codigo.\n")
+
+
+def _es_heredoc_con_codigo(data):
+    """¿Va a escribir codigo desde la terminal? Eso rompe archivos y ya paso siete veces.
+
+    Se caza por lo que la orden HACE, no por como se llame: da igual heredoc, echo, printf o
+    python -c; si mete texto con barras invertidas dentro de un archivo, rompe."""
+    if str(data.get("tool_name") or "") not in ("Bash", "PowerShell"):
+        return False
+    cmd = str((data.get("tool_input") or {}).get("command") or "")
+    if not cmd:
+        return False
+    escribe = re.search(r"<<\s*'?\w+'?|>\s*\S+\.(py|js|html|ts|json|md)\b"
+                        r"|\becho\b.*>|\bprintf\b.*>", cmd, re.I)
+    if not escribe:
+        return False
+    # lo peligroso es la barra invertida: es lo que la terminal se come
+    return "\\" in cmd.replace("\\\\", "")
+
+
 def _apuntar_apagon(texto):
     """El apagon deja RASTRO: inviolable no es que no haya salida, es que no se use a escondidas."""
     try:
@@ -159,6 +188,10 @@ def main():
         data = json.load(sys.stdin)
     except Exception:
         return 0
+
+    if _es_heredoc_con_codigo(data):
+        sys.stderr.write(AVISO_HEREDOC)
+        return 2
 
     texto, es_lectura = _que_se_pide(data)
     if not es_lectura or not texto:

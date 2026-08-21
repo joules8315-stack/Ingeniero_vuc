@@ -22,20 +22,40 @@ def _limpio(tmp_path, monkeypatch):
 
 
 def test_el_orden_es_el_de_julio():
+    """Se comprueba lo que la ley QUIERE, no un puesto fijo en la fila.
+
+    El 2026-08-21 se anadio un cuarto cerebro gratis (gpt-oss-20b: Groq reparte cupo POR MODELO,
+    asi que cada modelo mas es cupo gratis de mas). Eso NO contradice la ley de Julio —usar hasta
+    el final lo gratis y no tocar lo caro—, pero si movia de sitio a Gemini. Julio, ese mismo dia:
+    "tu debes ser el ultimo recurso, cuando se agoten los modelos gratis, o sea nunca, porque
+    existen cientos". Atar la ley a un puesto fijo impedia anadir cerebros, que es justo lo que
+    la ley pide. Lo que NO se afloja: primero Groq, el de casa el ultimo, y nada de pago."""
     assert cuotas.ORDEN[0] == "groq", "el primero SIEMPRE es Qwen (Groq)"
-    assert cuotas.ORDEN[1] == "gemini", "el segundo es Gemini"
+    assert "gemini" in cuotas.ORDEN, "Gemini tiene que seguir en la fila"
+    assert cuotas.ORDEN[-1] == "local", "el de tu PC es el ultimo: se usa cuando no queda nube"
+    assert cuotas.ORDEN.index("gemini") < cuotas.ORDEN.index("local"), \
+        "Gemini va antes que el de casa"
+    assert len(cuotas.ORDEN) >= 3, "se perdieron cerebros de la fila"
 
 
-def test_al_agotarse_qwen_pasa_a_gemini():
+def _el_siguiente_gratis(dormidos):
+    for q in dormidos:
+        cuotas.dormir(q, "429 rate limit exceeded")
+    return cuotas.turno()
+
+
+def test_al_agotarse_uno_pasa_al_siguiente_GRATIS():
     assert cuotas.turno() == "groq"
-    cuotas.dormir("groq", "429 rate limit exceeded")
-    assert cuotas.turno() == "gemini", "con Qwen agotado le toca a Gemini"
+    siguiente = _el_siguiente_gratis(["groq"])
+    assert siguiente in cuotas.ORDEN and siguiente != "groq", \
+        "con el primero agotado no paso a ningun otro cerebro gratis"
+    assert siguiente != "local", "salto al de casa teniendo nube libre: se desperdicia lo gratis"
 
 
-def test_cuando_qwen_repone_SE_VUELVE_A_EL():
+def test_cuando_repone_SE_VUELVE_A_EL():
     """La parte critica. Si esto falla, Julio se queda gastando el segundo cerebro de gusto."""
     cuotas.dormir("groq", "429 rate limit exceeded")
-    assert cuotas.turno() == "gemini"
+    assert cuotas.turno() != "groq"
     # se simula que paso la siesta
     d = cuotas._leer()
     d["dormidos"]["groq"]["hasta"] = time.time() - 1
@@ -43,10 +63,18 @@ def test_cuando_qwen_repone_SE_VUELVE_A_EL():
     assert cuotas.turno() == "groq", "Qwen repuso y NO se volvio a el: se desperdicia el gratis"
 
 
-def test_si_los_dos_se_agotan_queda_el_local():
-    cuotas.dormir("groq", "429 quota")
-    cuotas.dormir("gemini", "429 quota")
-    assert cuotas.turno() == "local", "con los dos de nube agotados debe quedar LM Studio"
+def test_si_se_agota_toda_la_nube_queda_el_local():
+    for q in cuotas.ORDEN:
+        if q != "local":
+            cuotas.dormir(q, "429 quota")
+    assert cuotas.turno() == "local", "con toda la nube agotada debe quedar LM Studio"
+
+
+def test_nunca_se_cae_en_la_IA_de_pago():
+    """Julio: 'tu debes ser el ultimo recurso... o sea nunca'. Ninguno de la fila se paga."""
+    for q in cuotas.ORDEN:
+        assert q in ("groq", "groq20b", "gemini", "local"), \
+            "entro en la fila un cerebro que no consta como gratis: %s" % q
 
 
 def test_distingue_agote_de_fallo_normal():
@@ -64,4 +92,4 @@ def test_el_tope_por_dia_duerme_mas_que_el_del_minuto():
 def test_el_estado_sobrevive_a_cerrar_la_sesion():
     cuotas.dormir("groq", "429 rate limit")
     assert os.path.exists(cuotas.RUTA), "las cuotas deben quedar en disco, no en memoria"
-    assert cuotas.turno() == "gemini"
+    assert cuotas.turno() != "groq", "se olvido que estaba agotado al releerlo del disco"

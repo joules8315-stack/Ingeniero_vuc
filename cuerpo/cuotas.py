@@ -19,8 +19,18 @@ import os, json, time, datetime, re
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUTA = os.path.join(AQUI, "memoria", "CUOTAS.json")
 
-ORDEN = ["groq", "gemini", "local"]          # groq = Qwen (Frente 2 = el Ingeniero)
-APODO = {"groq": "Qwen (Groq)", "gemini": "Gemini", "local": "LM Studio (tu PC)"}
+# MEDIDO el 2026-08-21: Groq reparte el cupo POR MODELO, no por llave. O sea que cada modelo
+# que se anade es cupo gratis DE MAS sobre la misma llave, sin pagar ni registrarse en nada.
+# Julio: "por eso necesito a kimi, y a otros modelos que no duerman tanto". Kimi K2 ya venia
+# incluido en su llave de Groq: 7 segundos con el paquete grande. No habia que descargar nada.
+# COMPROBADO uno por uno el 2026-08-21 llamando a cada proveedor DIRECTO (sin la red que tapaba
+# los errores). En la llave de Julio SOLO viven estos. Kimi (K2 y K3) y los Llama dan 404: no los
+# tiene. Lo que antes parecia que funcionaba era Gemini contestando disfrazado.
+#   openai/gpt-oss-120b  0.9 s     openai/gpt-oss-20b  0.9 s     gemini  (el suyo fijo)
+# gpt-oss-120b y gpt-oss-20b son DOS cupos gratis distintos: Groq reparte por modelo.
+ORDEN = ["groq", "groq20b", "gemini", "local"]
+APODO = {"groq": "GPT-OSS 120B (Groq)", "groq20b": "GPT-OSS 20B (Groq)",
+         "gemini": "Gemini", "local": "LM Studio (tu PC)"}
 
 # Cuanto duerme un cerebro agotado antes de volver a probarlo.
 # Groq reparte por minuto y por dia; Gemini por minuto y por dia. Se prueba pronto y seguido:
@@ -100,13 +110,45 @@ def desperto(quien):
     return False
 
 
-def apuntar_uso(quien, ok=True):
+def apuntar_uso(quien, ok=True, segundos=None):
     d = _leer()
     g = d.setdefault("gasto", {}).setdefault(quien, {"llamadas": 0, "fallos": 0})
     g["llamadas"] += 1
     if not ok:
         g["fallos"] += 1
+    if ok and segundos is not None:
+        # Se guarda lo que TARDO DE VERDAD, no lo que se supone que tarda.
+        g["ultimo_seg"] = round(float(segundos), 1)
+        g["record_seg"] = max(round(float(segundos), 1), float(g.get("record_seg", 0)))
     _guardar(d)
+
+
+MARGEN = 1.5          # se le da la mitad mas de su propio record antes de descartarlo
+MINIMO_ESPERA = 60    # Julio: "puedo ser un poco flexible con el tiempo, solo un poco"
+
+
+def cuanto_esperarle(quien):
+    """CUANTO SE LE AGUANTA A ESTE CEREBRO, segun lo que EL ha tardado de verdad.
+
+    Julio, 2026-08-21: "mira cual es el mayor tiempo de respuesta registrado y que esa sea la
+    base: si responde en ese rango se sigue trabajando con el, si se pasa lo descartamos y
+    buscamos otros. Y que el disparador sea la respuesta del modelo, no un temporizador, porque
+    ante cualquier demora te envia a ti, y tu debes ser el ULTIMO recurso, cuando se agoten los
+    modelos gratis, o sea nunca, porque existen cientos."
+
+    Un tope inventado, igual para todos, hacia dos destrozos: descartaba a uno que iba a contestar
+    bien, y mandaba el trabajo a la IA cara, que la paga Julio. Ahora el tope sale de su propio
+    historial: cada cerebro se mide contra si mismo."""
+    g = _leer().get("gasto", {}).get(quien, {})
+    record = float(g.get("record_seg", 0))
+    if record <= 0:
+        return float(MINIMO_ESPERA * 3)      # aun no se sabe lo que tarda: margen ancho
+    return max(float(MINIMO_ESPERA), record * MARGEN)
+
+
+def se_paso_de_su_marca(quien, segundos):
+    """¿Tardo MAS de lo que el mismo ha tardado nunca? Entonces se descarta y se busca otro."""
+    return float(segundos) > cuanto_esperarle(quien)
 
 
 def turno(disponibles=None):

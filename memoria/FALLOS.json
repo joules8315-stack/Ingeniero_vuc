@@ -584,5 +584,38 @@
   "quien_lo_caza": "vigias/test_vigia_nada_lento.py::test_armar_un_paquete_es_rapido",
   "disparador": "escribir una comprobacion que mida segundos",
   "veces": 1
+ },
+ {
+  "id": 40,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "El Ingeniero creia elegir cerebro y SIEMPRE contestaba el mismo. Un modelo inventado, 'pepito-grillo-9000', contesto tan tranquilo (y en italiano). Kimi K2 y K3 'funcionaban' a 7 segundos: era mentira, era Gemini disfrazado. Julio pidio Kimi creyendo que hacia falta descargarlo, y ni siquiera esta en su llave.",
+  "causa_raiz": "La puerta comoda del cerebro prestado hacia DOS cosas a escondidas: a Gemini le quitaba el modelo pedido y usaba el suyo fijo; y si el modelo no existia, en vez de avisar caia CALLANDO en otro proveedor. Un error tapado es peor que un error: hace tomar decisiones sobre datos falsos. Encima los dos modelos fijos de Gemini (2.0-flash y respaldo 1.5-flash) llevaban MUERTOS: 404 los dos. Por eso Gemini fallaba 4 de 7 veces y el trabajo caia en la IA cara, o sea Julio pagando.",
+  "cura": "El Ingeniero llama a cada cerebro DIRECTO, con el modelo que el elige, y un modelo que no existe da error a la vista. Se comprobo uno por uno contra la llave real: en Groq solo viven gpt-oss-120b y gpt-oss-20b (0.9s); en Gemini el bueno es gemini-3.5-flash (3.3s). Kimi y los Llama dan 404: no estan en su llave.",
+  "no_volver_a": "fiarse de una medida de velocidad o de disponibilidad sin comprobar QUIEN contesto de verdad; y dejar que un fallo de modelo caiga callando en otro",
+  "piezas": [
+   "cuerpo/obrero.py",
+   "cuerpo/cuotas.py",
+   "arnes/velocidad.config"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+  "disparador": "medir velocidad de un modelo, elegir cerebro, o anadir un modelo nuevo",
+  "veces": 1
+ },
+ {
+  "id": 41,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Julio tuvo que repetir TRES veces que se trabaja en equipo, y me dijo: 'por no trabajar en equipo ya has gastado 19'. Se escribio a solas un guardia entero, tres vigias y cuatro reparaciones, teniendo los cerebros gratis disponibles.",
+  "causa_raiz": "La regla estaba escrita en la memoria y en el protocolo, pero escrita no es cumplida: dependia de que la IA se acordara. Ademas el equipo estaba AVERIADO (modelos muertos), asi que cada vez que se intentaba fallaba y era mas comodo hacerlo a solas. Una herramienta rota empuja a saltarse la regla.",
+  "cura": "Candado arnes/candado_equipo.py: no se escribe codigo sin veredicto del equipo. Y se reparo el equipo, que era la mitad del problema.",
+  "no_volver_a": "escribir codigo a solas teniendo cerebros gratis, y dar por buena una regla solo porque este escrita",
+  "piezas": [
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_siempre_con_equipo.py",
+  "disparador": "ir a escribir o reparar codigo",
+  "veces": 1
  }
 ]

@@ -10,7 +10,7 @@ Aqui no se duplica el cerebro (Ley 6, no repetidera): se TOMA PRESTADO el de DMM
 (`cuerpo/cerebro.py` + `cuerpo/config.py`), que ya esta probado y ya sabe leer el `.env`.
 Si DMM no esta en la maquina, se dice NO_ENCONTRADO. No se inventa un cerebro de repuesto.
 """
-import os, sys, json, re, threading
+import os, sys, json, re, threading, time
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, AQUI)
@@ -236,6 +236,31 @@ def _con_tope(fn, segundos):
     return caja.get("r", "")
 
 
+def _gemini_directo(prompt, temperatura, modelo):
+    """Le habla a Gemini con EL MODELO QUE ELIGE EL INGENIERO.
+
+    Hacia falta porque el cerebro prestado tenia quemados dos modelos que YA NO EXISTEN
+    (gemini-2.0-flash y de respaldo gemini-1.5-flash): los dos daban 404. Por eso Gemini fallaba
+    4 de cada 7 veces y el trabajo nunca acababa en el cerebro gratis, sino en la IA cara, o sea
+    Julio pagando. Fallo real 2026-08-21, el que mas dinero le costo.
+    MEDIDO ese dia con el paquete grande: 3.5-flash 3.3s | 3-flash-preview 3.4s | latest 9.3s |
+    3.7-flash 29.1s | 3.6-flash 62.8s | 2.5-flash y 2.0-flash: 404, muertos."""
+    import json as _j, os as _o, urllib.request as _u, urllib.parse as _up
+    k = _o.environ.get("GEMINI_API_KEY", "").strip()
+    if not k:
+        raise RuntimeError("no hay llave de Gemini")
+    body = _j.dumps({"contents": [{"parts": [{"text": prompt}]}],
+                     "generationConfig": {"temperature": temperatura,
+                                          "maxOutputTokens": 2000}}).encode("utf-8")
+    url = ("https://generativelanguage.googleapis.com/v1beta/models/" + modelo +
+           ":generateContent?key=" + _up.quote(k))
+    req = _u.Request(url, data=body, method="POST")
+    req.add_header("Content-Type", "application/json")
+    with _u.urlopen(req, timeout=300) as r:
+        d = _j.load(r)
+    return d["candidates"][0]["content"]["parts"][0]["text"]
+
+
 def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None):
     """Pregunta respetando el orden de Julio: Qwen -> Gemini -> local, y VOLVIENDO a Qwen
     en cuanto despierte. Si uno se agota (429/cuota), se le marca la siesta y sigue el de al lado.
@@ -249,15 +274,84 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None):
         turnos = [primero] + [q for q in turnos if q != primero]
     avisos = []
     vel = _velocidad()
-    modelos = {"groq": vel["modelo_groq"], "gemini": vel["modelo_gemini"], "local": None}
+    # Cada modelo de Groq es un cupo gratis distinto: Groq reparte POR MODELO, no por llave.
+    modelos = {"groq": vel["modelo_groq"], "groq20b": vel.get("modelo_groq20b"),
+               "gemini": vel["modelo_gemini"], "local": None}
     tope = float(vel.get("tope_segundos", 75))
+
+    def _pedirle_a(quien):
+        """Le habla a UN cerebro. Directo, con su modelo, sin red que tape errores."""
+        if quien == "local":
+            return preguntar_local(prompt, temperatura)
+        if quien == "gemini":
+            return _gemini_directo(prompt, temperatura, modelos.get("gemini"))
+        return c._preguntar_groq(prompt, modelos.get(quien), temperatura)
+
+    # GANA EL PRIMERO QUE CONTESTE, no el reloj (Julio, 2026-08-21):
+    #   "en vez de usar temporizador con los cerebros, pon mejor disparador, cuando responda, y un
+    #    temporizador mas amplio. Puedo ser un poco flexible con el tiempo, solo un poco, mas no
+    #    con la precision: aqui si es clave ser implacable."
+    # Antes se preguntaba de uno en uno y se cortaba por reloj: si el primero tardaba, se perdia
+    # ese tiempo ENTERO antes de probar el siguiente, y a veces se descartaba a uno que iba a
+    # contestar bien. Ahora se les pregunta A LA VEZ —son todos gratis, preguntar no cuesta— y se
+    # coge la primera respuesta VALIDA. Flexible con el tiempo, implacable con la precision: una
+    # respuesta vacia NO vale, y un modelo que no existe da error a la vista, no se disimula.
+    if len(turnos) > 1:
+        import concurrent.futures as _cf
+        # Se le aguanta a CADA UNO segun su propio record. Se espera al mas paciente de los que
+        # hay: descartar antes de tiempo es lo que mandaba el trabajo a la IA cara.
+        espera = max(cuotas.cuanto_esperarle(q) for q in turnos)
+        arranque = time.time()
+        with _cf.ThreadPoolExecutor(max_workers=len(turnos)) as pool:
+            pendientes = {pool.submit(_pedirle_a, q): q for q in turnos}
+            try:
+                for fut in _cf.as_completed(pendientes, timeout=espera):
+                    quien = pendientes[fut]
+                    tardo = time.time() - arranque
+                    try:
+                        txt = fut.result()
+                    except Exception as e:
+                        cuotas.apuntar_uso(quien, ok=False)
+                        msg = str(e)
+                        if cuotas.es_agote(msg):
+                            cuotas.dormir(quien, msg)
+                            avisos.append(f"{cuotas.APODO[quien]} se agoto")
+                        else:
+                            avisos.append(f"{cuotas.APODO[quien]} fallo: {msg[:90]}")
+                        continue
+                    if not (txt or "").strip():        # implacable con la precision
+                        cuotas.apuntar_uso(quien, ok=False)
+                        avisos.append(f"{cuotas.APODO[quien]} contesto vacio -> no vale")
+                        continue
+                    if cuotas.se_paso_de_su_marca(quien, tardo):
+                        # Contesto, pero mucho peor que su propia marca: se sigue usando su
+                        # respuesta (ya esta pagada y es buena) y queda apuntado que va lento.
+                        avisos.append("%s tardo %.0fs, mas de su marca (%.0fs)"
+                                      % (cuotas.APODO[quien], tardo,
+                                         cuotas.cuanto_esperarle(quien)))
+                    cuotas.apuntar_uso(quien, ok=True, segundos=tardo)
+                    return txt, quien, avisos
+            except _cf.TimeoutError:
+                avisos.append(f"ninguno de los {len(turnos)} contesto en {int(espera)}s")
+        return "", "", avisos + ["NO_ENCONTRADO: ningun cerebro gratis pudo atender"]
+
     for quien in turnos:
         try:
+            # SE LLAMA A CADA CEREBRO DIRECTO, a proposito.
+            # Fallo real 2026-08-21, el que mas dinero le costo a Julio: la puerta comoda
+            # (`preguntar(forzar=...)`) hacia DOS cosas a escondidas. Uno: a Gemini le quitaba el
+            # modelo pedido y usaba siempre el suyo. Dos: si el modelo pedido no existia, en vez
+            # de avisar caia CALLANDO en otro cerebro y contestaba como si tal cosa. Resultado:
+            # se creia estar midiendo y eligiendo cerebros, y siempre contestaba el mismo. Se
+            # descubrio porque un modelo inventado, "pepito-grillo-9000", contesto tan tranquilo.
             if quien == "local":
                 txt = _con_tope(lambda: preguntar_local(prompt, temperatura), tope)
+            elif quien == "gemini":
+                gm = modelos.get("gemini")
+                txt = _con_tope(lambda: _gemini_directo(prompt, temperatura, gm), tope)
             else:
-                txt = _con_tope(lambda: c.preguntar(prompt, modelo=modelos.get(quien),
-                                                    temperatura=temperatura, forzar=quien), tope)
+                mod = modelos.get(quien)
+                txt = _con_tope(lambda: c._preguntar_groq(prompt, mod, temperatura), tope)
             if not (txt or "").strip():
                 raise ValueError("contesto vacio")
             cuotas.apuntar_uso(quien, ok=True)
@@ -312,8 +406,10 @@ def veredicto_corto(r):
         return f"NO SE PUDO: {r['_error']}"
     p, a = r.get("propuesta", {}), r.get("auditoria", {})
     L = [f"OBRERO {r['obrero']} -> AUDITOR {r['auditor']}"]
-    for a in (r.get("avisos") or [])[:3]:
-        L.append(f"  aviso       : {a}")
+    # OJO: no llamar 'a' a esto. Antes se llamaba 'a' y PISABA la auditoria de arriba, asi que
+    # leer el veredicto reventaba justo cuando habia avisos, que es cuando mas falta hace leerlo.
+    for aviso in (r.get("avisos") or [])[:3]:
+        L.append(f"  aviso       : {aviso}")
     if "_error" in p:
         L.append(f"  propuesta ILEGIBLE: {p['_error']}")
         return "\n".join(L)

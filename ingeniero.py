@@ -161,6 +161,37 @@ def main():
         return arranca()
     if cmd == "trabaja" and len(sys.argv) >= 4:
         return trabaja(sys.argv[2], " ".join(sys.argv[3:]))
+    if cmd == "equipo" and len(sys.argv) >= 4:
+        # SIEMPRE EL EQUIPO (Julio, 2026-08-21, tras repetirlo tres veces y pagarlo).
+        # Uno genera, OTRO distinto audita. Claude dirige y lee el veredicto: nada mas.
+        # Deja la llave que abre el candado de escribir codigo.
+        import sys as _s
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        from cerebro import router as _r
+        from cuerpo import obrero as _o
+        import candado_equipo as _ce
+        proy, tarea = sys.argv[2], " ".join(sys.argv[3:])
+        paq = _r.armar(proy, tarea)
+        res = _o.trabajar(paq, tarea)
+        print(_o.veredicto_corto(res))
+        if "_error" in res:
+            return 1
+        prop = res.get("propuesta") or {}
+        tocados = prop.get("archivo") or prop.get("archivos") or []
+        if isinstance(tocados, str):
+            tocados = [tocados]
+        # tambien valen las piezas que el paquete trajo: es lo que el equipo tuvo delante
+        for pz in (paq.get("piezas") if isinstance(paq, dict) else []) or []:
+            pid = pz.get("id") if isinstance(pz, dict) else str(pz)
+            if pid and pid not in tocados:
+                tocados.append(pid)
+        _ce.guardar_veredicto(tarea, tocados, res.get("obrero"), res.get("auditor"),
+                              (res.get("auditoria") or {}).get("veredicto", "?"))
+        print()
+        print("LLAVE GUARDADA: se puede escribir en %d archivo(s) durante %d min."
+              % (len(tocados), _ce.VIGENCIA_MIN))
+        return 0
+
     if cmd == "resolver" and len(sys.argv) >= 4:
         return resolver(sys.argv[2], " ".join(sys.argv[3:]))
     if cmd == "buscar-skill" and len(sys.argv) >= 3:
