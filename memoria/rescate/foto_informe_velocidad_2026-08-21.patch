@@ -1,0 +1,391 @@
+﻿diff --git a/app_web.html b/app_web.html
+index 43d1317..4175268 100644
+--- a/app_web.html
++++ b/app_web.html
+@@ -382,7 +382,7 @@ try{
+     }
+   }
+ }catch(_){}
+-const SESSION_KEY="foto_informe_session_v3",UI_KEY="foto_informe_ui_v3",TPL_KEY="foto_informe_template_v3",DRAFTS_KEY="foto_informe_daily_drafts_v2",LEGACY_DRAFT_KEY="foto_informe_daily_draft_v1",HIDDEN_REPORTS_KEY="foto_informe_hidden_reports_v1",ARCHIVED_REPORTS_KEY="foto_informe_archived_reports_v1",WATCHDOG_KEY="foto_informe_watchdog_v1",REVIEW_VISUAL_CACHE_KEY="foto_informe_review_visual_cache_v1",AUTH_FAILURE_KEY="foto_informe_auth_failure_v1",MAX_PHOTOS=4,API_TIMEOUT_MS=25000,API_DEDUPE_MS=10000,RUNTIME_VALIDATE_TIMEOUT_MS=5000,HYDRATION_TIMEOUT_MS=45000,WATCHDOG_RENDER_DEFER_MS=80,UPLOAD_TIMEOUT_MS=60000,GENERATE_TIMEOUT_MS=120000,AUTO_SYNC_MS=12000,MANUAL_WRITE_AUTOSAVE_MS=2000,MAX_PHOTOS_MESSAGE="Máximo 4 fotos, elimine una foto, si desea generar una nueva imagen",EMPTY_DAILY_CONFIRM_MESSAGE="¿estás seguro de guardar este informe sin título u observaciones?",DELETE_PHOTO_CONFIRM_MESSAGE="¿está seguro de querer eliminar esta foto?",FINAL_GENERATION_WARNING_MESSAGE="Recuerde guardar este informe en un disco local, ya que se eliminará el registro en 15 días hábiles",TABLE_SEARCH_ROW_MISMATCH_DETAIL="Revisa encabezados y total de filas: deben coincidir con los de la tabla del documento adjunto.",GEMINI_TASKS_URL="https://gemini.google.com/gem/1vuhg65J86KpV-u3KxAc08SPqWDPskIqQ?usp=sharing";
++const SESSION_KEY="foto_informe_session_v3",UI_KEY="foto_informe_ui_v3",TPL_KEY="foto_informe_template_v3",DRAFTS_KEY="foto_informe_daily_drafts_v2",LEGACY_DRAFT_KEY="foto_informe_daily_draft_v1",HIDDEN_REPORTS_KEY="foto_informe_hidden_reports_v1",ARCHIVED_REPORTS_KEY="foto_informe_archived_reports_v1",WATCHDOG_KEY="foto_informe_watchdog_v1",REVIEW_VISUAL_CACHE_KEY="foto_informe_review_visual_cache_v1",AUTH_FAILURE_KEY="foto_informe_auth_failure_v1",MAX_PHOTOS=4,API_TIMEOUT_MS=25000,API_LECTURA_TIMEOUT_MS=10000,API_DEDUPE_MS=10000,RUNTIME_VALIDATE_TIMEOUT_MS=5000,HYDRATION_TIMEOUT_MS=45000,WATCHDOG_RENDER_DEFER_MS=80,UPLOAD_TIMEOUT_MS=60000,GENERATE_TIMEOUT_MS=120000,AUTO_SYNC_MS=5000,MANUAL_WRITE_AUTOSAVE_MS=2000,MAX_PHOTOS_MESSAGE="Máximo 4 fotos, elimine una foto, si desea generar una nueva imagen",EMPTY_DAILY_CONFIRM_MESSAGE="¿estás seguro de guardar este informe sin título u observaciones?",DELETE_PHOTO_CONFIRM_MESSAGE="¿está seguro de querer eliminar esta foto?",FINAL_GENERATION_WARNING_MESSAGE="Recuerde guardar este informe en un disco local, ya que se eliminará el registro en 15 días hábiles",TABLE_SEARCH_ROW_MISMATCH_DETAIL="Revisa encabezados y total de filas: deben coincidir con los de la tabla del documento adjunto.",GEMINI_TASKS_URL="https://gemini.google.com/gem/1vuhg65J86KpV-u3KxAc08SPqWDPskIqQ?usp=sharing";
+     const CANONICAL_REPO_ROOT="C:\\Users\\USER\\Desktop\\Foto_info_repo\\Foto_informe--main"; const WATCHDOG_LEGACY_LABELS="repo_root recibido de /health: | cwd recibido de /health: | hash servido: | table_total_rows:"; const SINGLE_APPLY_LEGACY_TEST_MARKER="if(hasValidAdvancedReviewColumns(next)){await saveAdvancedReviewConfigToServer(next)}";
+     const TABLECFG_META_PREFIX="__FOTO_INFORME_CFG__::";
+     const emptyLinks=()=>({docx:"",pdf:"",reportId:"",generatedAt:"",generationId:""});
+@@ -717,7 +717,11 @@ const SESSION_KEY="foto_informe_session_v3",UI_KEY="foto_informe_ui_v3",TPL_KEY=
+     function syncDetailDraftFromInputs(){const entry=getSelectedEntry(),titleInput=el("detailDailyTitle"),objectiveInput=el("detailDailyObjective");if(!entry||!titleInput||!objectiveInput)return;const dailyId=getEntryDailyId(entry);if(!dailyId)return;if(!detailDraftMatchesEntry(entry))resetDetailDraft(entry);const titulo=String(titleInput.value||""),objetivo=String(objectiveInput.value||"");state.detailDraft={dailyId,titulo,objetivo,dirty:titulo!==String(entry.titulo||"")||objetivo!==String(entry.objetivo||"")};persistUi()}
+     function isDetailDraftDirty(){return !!(state.page===7&&state.detailDraft&&state.detailDraft.dirty&&detailDraftDailyId())}
+     function stopAutoSync(){if(state.syncTimer){clearTimeout(state.syncTimer);state.syncTimer=null}}
+-    function scheduleAutoSync(){stopAutoSync();if(!state.session.accessToken)return;state.syncTimer=setTimeout(runAutoSync,AUTO_SYNC_MS)}
++    // VELOCIDAD (Julio, 2026-08-21): el reloj SOLO corre en la pantalla 4 (fotos) y SOLO con la
++    // ventana a la vista. Antes despertaba cada 12 s en TODAS las pantallas, se mirara o no: unas
++    // 300 llamadas por hora que ademas competian con las que si hacen falta. Se deja en la 4
++    // porque las fotos entran desde el celular mientras el informe se arma en el computador.
++    function scheduleAutoSync(){stopAutoSync();if(!state.session.accessToken)return;if(Number(state.page)!==4)return;if(document.hidden)return;state.syncTimer=setTimeout(runAutoSync,AUTO_SYNC_MS)}
+     async function navigateWithDraftProtection(page,options){const cfg=Object.assign({message:"Guardando borrador diario..."},options||{});if(state.page!==page&&hasDraftContent()){try{stopVoiceDictation({keepText:true,notify:true});await runWithUiLock(cfg.message,async()=>{await persistDraftToStorage({throwOnError:true,silentError:true})})}catch(err){toast(err.message||"No se pudo guardar el borrador diario antes de cambiar de pantalla.","err");return false}}go(page);if([4,5,6].includes(Number(page))){ensureCanonicalRuntimeForDailyFlow(true).then(ok=>{if(!ok&&Number(page)!==4){toast("Primero configura la plantilla en Adjuntar plantilla.","warn");return}if(Number(page)===4||Number(page)===5)return refreshDailyEntriesOnly(true)}).catch(err=>toast(err.message||"No se pudo confirmar la plantilla guardada.","err"));return true}if(Number(page)===4||Number(page)===5)try{await refreshDailyEntriesOnly(true)}catch(_){}return true}
+     function go(page){if(page!==1&&page!=="menu"&&!state.session.accessToken)page=1;if(page==="menu"&&!state.session.accessToken)page=1;stopVoiceDictation({keepText:true,notify:true});if(page!==5)clearDeleteDailyConfirmation(false);state.page=page;rememberWatchdogPageChange(page);["page1","pageMenu","page2","page4","page5","page6","page7","page8"].forEach(x=>{const node=el(x);if(node)node.classList.remove("active")});if(page!==4)closeDesktopCamera();if(page===1){el("page1").classList.remove("hidden");el("page1").classList.add("active");el("appShell").classList.add("hidden")}else{const screenId=page==="menu"?"pageMenu":"page"+page;el("page1").classList.add("hidden");el("appShell").classList.remove("hidden");if(el(screenId))el(screenId).classList.add("active")}if(page==="menu"){renderMenuStatus();prewarmPhotoGeolocation();startGeoRefreshEveryHour();}if(page===2){prepareTemplateScreen();renderCurrentReportBox()}if(page===4){renderDailyRuntimeGuard();prewarmPhotoGeolocation();if(!isRuntimeSnapshotReady())ensureSessionRuntimeSnapshot("daily-page").then(()=>renderDailyRuntimeGuard()).catch(()=>renderDailyRuntimeGuard())}if(page===5){hydrateReviewPage({source:"go"})}if(page===6){renderFinalSummary();renderLinks();prepareFinalGenerationPage().catch(err=>{toast(err.message||"No se pudo confirmar informes diarios.","warn");renderFinalSummary();scheduleWatchdogRender()})}if(page===7){renderOpenedReportSummary();renderDetailPhotos()}if(page===8){renderAgentePage()}/* C11: al abrir la pagina del informe final, si no hay enlace en memoria, recuperarlo del servidor. El documento SIEMPRE estuvo alli; el MVP simplemente no iba a buscarlo tras reloguear (contrato OBJETIVO_MVP.md:437: permanece hasta que lo reemplace el siguiente). */if(page===6&&state.currentReportId&&!(state.links&&state.links.docx))rehidratarInformeFinalDesdeBackend(state.currentReportId).catch(()=>{});scheduleWatchdogRender();refreshVisibleRuntimeWatchdog().catch(()=>{});renderDiagnosticTools();updateVoiceUi();window.scrollTo({top:0,behavior:"smooth"})}
+     function normalizeBackendDetail(detail){const text=String(detail||"").trim();if(/tipo debe ser evidencia o anexo/i.test(text))return"El backend activo sigue usando una regla heredada para la Columna escritura manual. Reinicia la aplicación y vuelve a cargar la página para usar texto libre.";return text}
+@@ -788,9 +792,23 @@ const SESSION_KEY="foto_informe_session_v3",UI_KEY="foto_informe_ui_v3",TPL_KEY=
+     function recordApiHistoryEntry(entry){const data=entry&&typeof entry==="object"?entry:{};const item={ts:new Date().toISOString(),method:String(data.method||"GET"),path:safePathForDiagnostic(data.path),status:Number(data.status||0),called:data.called!==false,trace_id:String(data.traceId||""),report_id:String(data.report_id||""),base_storage_path:String(data.base_storage_path||""),duration_ms:data.duration_ms!=null?Number(data.duration_ms):null,cache_hit:!!data.cache_hit,response_summary:data.response_summary||{},error:String(data.error||"").slice(0,240)};state.apiHistory=[item].concat(Array.isArray(state.apiHistory)?state.apiHistory:[]).slice(0,40);try{scheduleWatchdogRender()}catch(_){}}
+     function diagnosticModeEnabled(){try{const qs=new URLSearchParams(location.search||"");return qs.get("diagnostico")==="1"||qs.get("debug")==="1"||localStorage.getItem("foto_informe_diagnostic_tools_v1")==="1"}catch(_){return false}}
+     function renderDiagnosticTools(){document.querySelectorAll(".diagnostic-tool").forEach(node=>node.classList.add("hidden"))}
++    // VELOCIDAD (Julio, 2026-08-21). Olvida SOLO lo que ese guardado toca, no la libreta entera.
++    // Las claves tienen la forma "GET /reports?x=1". Se olvida la ruta exacta Y la lista que la
++    // contiene: si se guarda /reports/123, la lista /reports tambien cambio.
++    function invalidarLibretaDeEsaRuta(ruta){
++      if(!state.apiResponseCache)return;
++      const limpia=String(ruta||"").split("?")[0].replace(/\/+$/,"");
++      if(!limpia)return;
++      const padre=limpia.indexOf("/",1)>0?limpia.slice(0,limpia.indexOf("/",1)):"";
++      Object.keys(state.apiResponseCache).forEach(clave=>{
++        const suRuta=clave.slice(clave.indexOf(" ")+1).split("?")[0].replace(/\/+$/,"");
++        if(suRuta===limpia||suRuta.startsWith(limpia+"/")||(padre&&suRuta===padre))
++          delete state.apiResponseCache[clave];
++      });
++    }
+     async function apiFetch(path,opt){
+       opt=Object.assign({method:"GET",headers:{},auth:true,dedupe:true},opt||{});
+-      const method=String(opt.method||"GET").toUpperCase(),timeoutMs=Number(opt.timeoutMs)||API_TIMEOUT_MS,ctrl=new AbortController(),tid=setTimeout(()=>ctrl.abort(),timeoutMs),authRequired=opt.auth!==false,startedAt=(performance&&performance.now)?performance.now():Date.now();
++      const method=String(opt.method||"GET").toUpperCase(),timeoutMs=Number(opt.timeoutMs)||(method==="GET"?API_LECTURA_TIMEOUT_MS:API_TIMEOUT_MS),ctrl=new AbortController(),tid=setTimeout(()=>ctrl.abort(),timeoutMs),authRequired=opt.auth!==false,startedAt=(performance&&performance.now)?performance.now():Date.now();
+       if(authRequired&&!String(state.session&&state.session.accessToken||"").trim()){const authErr=new Error("Token inválido o expirado. Inicia sesión de nuevo.");authErr.authFailure=true;authErr.endpoint=String(path||"");recordApiHistoryEntry({method,path,status:0,traceId:"",duration_ms:0,report_id:pickReportIdFromPayload(path,null),base_storage_path:pickBasePathFromPayload(path,null),response_summary:summarizeApiResponse(path,null,0,authErr.message),error:authErr.message});throw authErr}
+       const cacheKey=method+" "+safePathForDiagnostic(path),dedupeGet=!!(opt.dedupe&&authRequired&&method==="GET"&&/^(\/reports|\/template\/config|\/table-config)/.test(safePathForDiagnostic(path))),cached=dedupeGet&&state.apiResponseCache?state.apiResponseCache[cacheKey]:null,now=Date.now();
+       if(cached&&cached.data!==undefined&&now-Number(cached.at||0)<API_DEDUPE_MS){recordApiHistoryEntry({method,path,status:cached.status||200,traceId:String(cached.traceId||""),duration_ms:0,cache_hit:true,report_id:pickReportIdFromPayload(path,cached.data),base_storage_path:pickBasePathFromPayload(path,cached.data),response_summary:cached.summary||summarizeApiResponse(path,cached.data,cached.status||200,"")});return cloneApiData(cached.data)}
+@@ -824,7 +842,13 @@ const SESSION_KEY="foto_informe_session_v3",UI_KEY="foto_informe_ui_v3",TPL_KEY=
+         }
+         const summary=summarizeApiResponse(path,data,res.status,""),payload=data!==null?data:text;
+         recordApiHistoryEntry({method,path,status:res.status,traceId,duration_ms:durationMs,report_id:pickReportIdFromPayload(path,data),base_storage_path:pickBasePathFromPayload(path,data),response_summary:summary});
+-        if(method!=="GET"){if(state.apiResponseCache)state.apiResponseCache={};state.lastReportsFetchAt=0;state.lastDailyFetchAt=0}
++        // VELOCIDAD (Julio, 2026-08-21): "que borre lo que se pide borrar, unica y exclusivamente".
++        // Antes CUALQUIER guardado tiraba la libreta ENTERA, aunque lo guardado no tuviera nada que
++        // ver: guardabas un titulo y se olvidaba hasta la lista de informes, y la pantalla siguiente
++        // volvia a preguntarlo todo desde cero. Era la peor de las cuatro fugas.
++        // Los otros tres sitios que la borran entera SI se quedan como estan (al entrar, al salir y
++        // cuando el usuario pide limpiar): ahi borrarlo todo es lo correcto.
++        if(method!=="GET"){invalidarLibretaDeEsaRuta(path);state.lastReportsFetchAt=0;state.lastDailyFetchAt=0}
+         if(dedupeGet&&state.apiResponseCache)state.apiResponseCache[cacheKey]={at:Date.now(),status:res.status,traceId,data:cloneApiData(payload),summary};
+         return payload
+       }catch(err){
+@@ -2271,7 +2295,7 @@ async function deleteDailyPhoto(attachmentId){const entry=getSelectedEntry();con
+       el("dailyTitle").oninput=()=>persistDraftToStorage().catch(()=>{});
+       el("dailyObjective").oninput=()=>persistDraftToStorage().catch(()=>{});
+       document.addEventListener("click",event=>{const bulkMenu=el("bulkTypeMenu"),target=event.target;if(state.bulkType.expanded&&bulkMenu&&target instanceof Node&&!bulkMenu.contains(target))collapseBulkTypeMenu();if(target&&typeof target.closest==="function"){const button=target.closest("button");if(button){const label=String(button.getAttribute("aria-label")||button.textContent||"").replace(/\s+/g," ").trim();if(label)rememberWatchdogAction(label)}}});
+-      document.addEventListener("visibilitychange",()=>{if(document.hidden){stopVoiceDictation({keepText:true,notify:true});persistDraftToStorage({silentError:true}).catch(()=>{});if(isDetailDraftDirty())persistUi();stopAutoSync();closeDesktopCamera()}else{scheduleAutoSync();updateVoiceUi();if([4,5,6,7].includes(Number(state.page)))ensureCanonicalRuntimeForDailyFlow(true).then(()=>retryPendingDraftPhotoSync(true)).catch(()=>{})}});
++      document.addEventListener("visibilitychange",()=>{if(document.hidden){stopVoiceDictation({keepText:true,notify:true});persistDraftToStorage({silentError:true}).catch(()=>{});if(isDetailDraftDirty())persistUi();stopAutoSync();closeDesktopCamera()}else{if(Number(state.page)===4)scheduleAutoSync();updateVoiceUi();if([4,5,6,7].includes(Number(state.page)))ensureCanonicalRuntimeForDailyFlow(true).then(()=>retryPendingDraftPhotoSync(true)).catch(()=>{})}});
+       window.addEventListener("beforeunload",event=>{const hasUnsavedDailyDraft=hasDraftContent(),hasUnsavedDetailDraft=isDetailDraftDirty();if(!hasUnsavedDailyDraft&&!hasUnsavedDetailDraft)return;stopVoiceDictation({keepText:true,notify:true});if(hasUnsavedDailyDraft)persistDraftToStorage({silentError:true}).catch(()=>{});if(hasUnsavedDetailDraft)persistUi();event.preventDefault();event.returnValue=""});
+       el("password").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();login()}};
+     }
+diff --git a/rv3_prueba_real_velocidad.py b/rv3_prueba_real_velocidad.py
+new file mode 100644
+index 0000000..30a7a3e
+--- /dev/null
++++ b/rv3_prueba_real_velocidad.py
+@@ -0,0 +1,176 @@
++# -*- coding: utf-8 -*-
++"""PRUEBA REAL CON NAVEGADOR — cuenta las llamadas a la nube de verdad.
++
++Julio, 2026-08-21: "que haga solo las llamadas que necesite, nada mas, en el tiempo que
++necesite, para esperar respuesta."
++
++Ley: CONTRATO_VELOCIDAD_LLAMADAS.md
++La otra vigia (test_vigia_solo_las_llamadas_necesarias.py) mira el codigo. Esta ABRE UN NAVEGADOR
++DE VERDAD y CUENTA las llamadas. Es la que demuestra que la reparacion sirve.
++
++QUE COMPRUEBA
++  1. Quieto en el menu 20 segundos -> CERO llamadas de reloj. (Antes eran ~100 por hora.)
++  2. En la pantalla de las FOTOS 20 segundos -> SI llama, cada 5 segundos.
++  3. Con la ventana escondida 15 segundos, en la pantalla de fotos -> CERO llamadas.
++  4. Al guardar algo, no se vacia la libreta entera: lo que no tiene que ver se sigue recordando.
++
++CANDADO: se niega a correr con la cuenta REAL de Julio. Solo cuenta de prueba.
++NUNCA se escribe aqui una clave: se leen de las variables de Windows.
++
++COMO SE CORRE (PowerShell). Julio pone sus datos de PRUEBA, no los reales:
++
++    $env:FOTO_INFORME_TEST_EMAIL = "tu-correo-de-prueba"
++    $s = Read-Host "Clave de la cuenta de PRUEBA (no se vera)" -AsSecureString
++    $b = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($s)
++    $env:FOTO_INFORME_TEST_PASSWORD = [Runtime.InteropServices.Marshal]::PtrToStringAuto($b)
++    [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b)
++    cd "C:/Users/USER/dev/Foto_info_repo/Foto_informe--main"; python rv3_prueba_real_velocidad.py
++
++(Las barras van del derecho a proposito: dentro del texto de Python, una barra invertida seguida
++ de U se lee como un codigo raro y parte el archivo entero. Ya paso aqui, el mismo dia.
++ PowerShell acepta las dos formas, asi que el comando funciona igual.)
++"""
++from __future__ import annotations
++
++import json
++import os
++import sys
++import time
++
++BASE_URL = os.environ.get("FOTO_INFORME_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
++EMAIL = os.environ.get("FOTO_INFORME_TEST_EMAIL", "").strip()
++PASSWORD = os.environ.get("FOTO_INFORME_TEST_PASSWORD", "")
++CUENTA_REAL_PROHIBIDA = "joules8315@gmail.com"
++
++QUIETO_MENU_S = 20
++QUIETO_FOTOS_S = 20
++ESCONDIDA_S = 15
++
++
++def fin(estado, mensaje, **extra):
++    print(json.dumps({"estado": estado, "mensaje": mensaje, **extra},
++                     ensure_ascii=False, indent=2))
++    raise SystemExit(0 if estado == "VERDE" else 1)
++
++
++def _comprobar_entrada():
++    if not EMAIL or not PASSWORD:
++        fin("NO_SE_PUDO",
++            "Faltan los datos de la cuenta de PRUEBA. Mira el comando en la cabecera de este "
++            "archivo. La clave nunca se escribe aqui: se lee de las variables de Windows.")
++    if EMAIL.lower() == CUENTA_REAL_PROHIBIDA:
++        fin("BLOQUEADO",
++            "Esta es la cuenta REAL de Julio. Esta prueba entra y navega: solo con cuenta de "
++            "prueba. Cambia FOTO_INFORME_TEST_EMAIL.")
++
++
++def main() -> None:
++    _comprobar_entrada()
++    try:
++        from playwright.sync_api import sync_playwright
++    except Exception as exc:
++        fin("NO_SE_PUDO", "No esta el navegador automatico: %s" % str(exc)[:120])
++
++    llamadas: list = []
++
++    with sync_playwright() as p:
++        navegador = p.chromium.launch()
++        pagina = navegador.new_page()
++        pagina.on("request", lambda r: llamadas.append(
++            {"cuando": time.time(), "metodo": r.method, "url": r.url}))
++
++        def contar(desde: float, hasta: float) -> int:
++            """Llamadas al servidor (no imagenes ni estilos) en esa ventana de tiempo."""
++            return len([c for c in llamadas
++                        if desde <= c["cuando"] <= hasta
++                        and c["url"].startswith(BASE_URL)
++                        and not c["url"].endswith((".css", ".js", ".png", ".jpg", ".ico"))])
++
++        try:
++            pagina.goto(BASE_URL, timeout=60000)
++        except Exception as exc:
++            navegador.close()
++            fin("NO_SE_PUDO",
++                "El MVP no responde en %s. Arrancalo primero y vuelve a correr esto. (%s)"
++                % (BASE_URL, str(exc)[:100]))
++
++        # ── entrar ────────────────────────────────────────────────────────────
++        try:
++            pagina.fill("#loginEmail", EMAIL)
++            pagina.fill("#loginPassword", PASSWORD)
++            pagina.click("#loginBtn")
++            pagina.wait_for_timeout(6000)
++        except Exception as exc:
++            navegador.close()
++            fin("NO_SE_PUDO", "No se pudo entrar: %s" % str(exc)[:150])
++
++        resultados = {}
++
++        # ── 1. quieto en el menu: CERO ────────────────────────────────────────
++        t0 = time.time()
++        pagina.wait_for_timeout(QUIETO_MENU_S * 1000)
++        resultados["quieto_en_el_menu"] = contar(t0 + 1, time.time())
++
++        # ── 2. en la pantalla de las fotos: SI llama ───────────────────────────
++        try:
++            pagina.evaluate("go(4)")
++            pagina.wait_for_timeout(1500)
++        except Exception as exc:
++            navegador.close()
++            fin("NO_SE_PUDO", "No se pudo abrir la pantalla de fotos: %s" % str(exc)[:120])
++        t1 = time.time()
++        pagina.wait_for_timeout(QUIETO_FOTOS_S * 1000)
++        resultados["en_la_pantalla_de_fotos"] = contar(t1 + 1, time.time())
++
++        # ── 3. ventana escondida, en la de fotos: CERO ────────────────────────
++        pagina.evaluate(
++            "Object.defineProperty(document,'hidden',{get:()=>true,configurable:true});"
++            "document.dispatchEvent(new Event('visibilitychange'))")
++        t2 = time.time()
++        pagina.wait_for_timeout(ESCONDIDA_S * 1000)
++        resultados["con_la_ventana_escondida"] = contar(t2 + 1, time.time())
++
++        # ── 4. la libreta no se vacia entera al guardar ────────────────────────
++        try:
++            resultados["libreta_selectiva"] = pagina.evaluate("""() => {
++                if(!state.apiResponseCache) state.apiResponseCache = {};
++                state.apiResponseCache["GET /template/config"] = {at:Date.now(),data:{},status:200};
++                state.apiResponseCache["GET /reports"] = {at:Date.now(),data:{},status:200};
++                invalidarLibretaDeEsaRuta("/reports");
++                return {
++                    la_lista_se_olvido: !state.apiResponseCache["GET /reports"],
++                    lo_demas_se_recuerda: !!state.apiResponseCache["GET /template/config"]
++                };
++            }""")
++        except Exception as exc:
++            resultados["libreta_selectiva"] = {"error": str(exc)[:120]}
++
++        navegador.close()
++
++    # ── veredicto ─────────────────────────────────────────────────────────────
++    fallos = []
++    if resultados["quieto_en_el_menu"] > 0:
++        fallos.append("quieto en el menu hizo %d llamada(s): deberian ser CERO"
++                      % resultados["quieto_en_el_menu"])
++    if resultados["en_la_pantalla_de_fotos"] < 2:
++        fallos.append("en la pantalla de fotos solo hizo %d llamada(s) en %d s: deberia mirar "
++                      "cada 5 segundos, o las fotos del celular no apareceran"
++                      % (resultados["en_la_pantalla_de_fotos"], QUIETO_FOTOS_S))
++    if resultados["con_la_ventana_escondida"] > 0:
++        fallos.append("con la ventana escondida hizo %d llamada(s): deberian ser CERO"
++                      % resultados["con_la_ventana_escondida"])
++    sel = resultados.get("libreta_selectiva") or {}
++    if not sel.get("la_lista_se_olvido"):
++        fallos.append("al guardar no olvido lo que tenia que olvidar")
++    if not sel.get("lo_demas_se_recuerda"):
++        fallos.append("al guardar borro la libreta ENTERA: la fuga sigue ahi")
++
++    if fallos:
++        fin("ROJO", "la reparacion NO quedo", fallos=fallos, medido=resultados)
++    fin("VERDE",
++        "Solo llama cuando hace falta. Falta que Julio lo vea con sus ojos: vigia verde NO es "
++        "prueba.", medido=resultados)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/test_vigia_solo_las_llamadas_necesarias.py b/test_vigia_solo_las_llamadas_necesarias.py
+new file mode 100644
+index 0000000..c9ff0b8
+--- /dev/null
++++ b/test_vigia_solo_las_llamadas_necesarias.py
+@@ -0,0 +1,128 @@
++# -*- coding: utf-8 -*-
++"""VIGIA — SOLO LAS LLAMADAS QUE HACEN FALTA.
++
++Julio, 2026-08-21: "que haga solo las llamadas que necesite, nada mas, en el tiempo que
++necesite, para esperar respuesta."
++
++Ley que la manda: CONTRATO_VELOCIDAD_LLAMADAS.md
++
++QUE PASA HOY (medido, no supuesto):
++  - El servidor contesta en 3 milesimas de segundo. NO es lento.
++  - Cada viaje a la nube cuesta algo mas de medio segundo, y cada accion dispara VARIOS EN FILA:
++    crear informe 4, anadir diario 3, subir foto 3, asignar 2, generar 2.
++  - La pantalla pide desde unos 48 sitios distintos; 16 piden lo mismo.
++
++LAS CUATRO FUGAS QUE ESTA VIGIA REPRODUCE:
++  1. Al guardar CUALQUIER cosa se borra la libreta de respuestas ENTERA, aunque lo guardado no
++     tenga nada que ver.
++  2. El reloj despierta cada 12 segundos en TODAS las pantallas, se mire o no.
++  3. Al esconder la ventana solo se calla el dictado por voz: el reloj sigue llamando.
++  4. Todas las esperas son la misma (25 s), hasta para una lectura que tarda medio segundo.
++
++NACE ROJA a proposito. Esa es su razon de ser: una vigia que no se pone roja con el fallo
++delante no protege nada, solo lo aparenta.
++
++DECIDIDO POR JULIO (2026-08-21):
++  - La pantalla 4 (fotos) mira cada 5 segundos y SOLO con la ventana a la vista, porque las
++    fotos entran desde el celular mientras el informe se arma en el computador.
++  - En las demas pantallas, CERO reloj.
++  - La espera de LEER baja a 10 segundos. Las de SUBIR (60 s) y GENERAR (120 s) NO se tocan:
++    acortarlas corta un guardado por la mitad y Julio pierde el borrador.
++"""
++import os
++import re
++
++AQUI = os.path.dirname(os.path.abspath(__file__))
++PANTALLA = os.path.join(AQUI, "app_web.html")
++
++
++def _pantalla():
++    with open(PANTALLA, encoding="utf-8") as f:
++        return f.read()
++
++
++def _numero(texto, nombre):
++    m = re.search(nombre + r"\s*=\s*(\d+)", texto)
++    return int(m.group(1)) if m else None
++
++
++# ─── FUGA 4: cada espera dura lo que necesita ─────────────────────────────────
++def test_leer_no_espera_lo_mismo_que_guardar():
++    """Una lectura tarda medio segundo. Esperarla 25 s es lo contrario de 'el tiempo que necesite'."""
++    t = _pantalla()
++    lectura = _numero(t, "API_LECTURA_TIMEOUT_MS")
++    assert lectura is not None, \
++        "no existe una espera propia para LEER: todo espera lo mismo que guardar"
++    assert lectura <= 10000, "la espera de leer sigue siendo demasiado larga: %s" % lectura
++
++
++def test_las_esperas_largas_siguen_intactas():
++    """LO PROHIBIDO. Acortar subir o generar corta el guardado y Julio PIERDE EL BORRADOR."""
++    t = _pantalla()
++    assert _numero(t, "UPLOAD_TIMEOUT_MS") == 60000, \
++        "se acorto la espera de SUBIR: Julio puede perder el borrador de una foto"
++    assert _numero(t, "GENERATE_TIMEOUT_MS") == 120000, \
++        "se acorto la espera de GENERAR: el informe se puede cortar por la mitad"
++    assert _numero(t, "API_TIMEOUT_MS") >= 25000, \
++        "se acorto la espera general: alcanza tambien a los guardados"
++
++
++# ─── FUGA 2: el reloj solo donde hace falta ───────────────────────────────────
++def test_el_reloj_solo_corre_en_la_pantalla_de_fotos():
++    """Hoy despierta en todas las pantallas. Solo hace falta donde entran las fotos del celular."""
++    t = _pantalla()
++    m = re.search(r"function scheduleAutoSync\(\)\{(.*?)\}", t, re.S)
++    assert m, "NO_ENCONTRADO: no esta la funcion que programa el reloj"
++    cuerpo = m.group(1)
++    assert re.search(r"state\.page\s*\)?\s*!==?\s*4|!==\s*4", cuerpo), \
++        "el reloj sigue despertando en TODAS las pantallas: llama unas 300 veces por hora sin que nadie mire"
++
++
++def test_el_reloj_de_fotos_es_de_cinco_segundos():
++    """Decidido por Julio: 5 segundos, y solo en la pantalla de las fotos."""
++    t = _pantalla()
++    assert _numero(t, "AUTO_SYNC_MS") == 5000, \
++        "el reloj no esta en los 5 segundos que decidio Julio: %s" % _numero(t, "AUTO_SYNC_MS")
++
++
++# ─── FUGA 3: si no la miras, no pregunta ──────────────────────────────────────
++def test_al_esconder_la_ventana_se_calla_el_reloj():
++    """Comprobado en vivo: hoy al esconderla solo se calla el dictado por voz."""
++    t = _pantalla()
++    i = t.find("visibilitychange")
++    assert i > 0, "NO_ENCONTRADO: no se hace nada al esconder la ventana"
++    trozo = t[i:i + 1200]
++    assert "stopAutoSync()" in trozo, \
++        "al esconder la ventana el reloj sigue llamando a la nube"
++
++
++def test_al_volver_a_la_ventana_el_reloj_solo_revive_en_la_pantalla_de_fotos():
++    """Volver no puede encender el reloj en cualquier pantalla: eso deshace la reparacion."""
++    t = _pantalla()
++    i = t.find("visibilitychange")
++    trozo = t[i:i + 1200]
++    j = trozo.find("else")
++    assert j > 0, "NO_ENCONTRADO: no se hace nada al volver a la ventana"
++    al_volver = trozo[j:]
++    if "scheduleAutoSync()" in al_volver:
++        assert re.search(r"page\s*\)?\s*===?\s*4", al_volver), \
++            "al volver enciende el reloj sin mirar en que pantalla esta"
++
++
++# ─── FUGA 1: guardar no borra la libreta entera ───────────────────────────────
++def test_guardar_no_borra_la_libreta_entera():
++    """LA PEOR DE LAS CUATRO. Hoy guardas un titulo y se le olvida hasta la lista de informes."""
++    t = _pantalla()
++    m = re.search(r'if\(method!=="GET"\)\{(.*?)\}\s*(?:if|const|state|return)', t, re.S)
++    assert m, "NO_ENCONTRADO: no esta el trozo que limpia la libreta al guardar"
++    trozo = m.group(1)
++    assert "apiResponseCache={}" not in trozo.replace(" ", ""), \
++        ("al guardar se sigue borrando la libreta ENTERA: la pantalla vuelve a preguntarlo todo "
++         "desde cero en la siguiente accion")
++
++
++def test_hay_borrado_selectivo():
++    """Regla 1 de Julio: que borre lo que se pide borrar, unica y exclusivamente."""
++    t = _pantalla()
++    assert "invalidarLibretaDeEsaRuta" in t or "invalidateCacheForPath" in t, \
++        "no existe ninguna forma de olvidar SOLO lo que el guardado toca"
