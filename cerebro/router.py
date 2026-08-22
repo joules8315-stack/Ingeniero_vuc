@@ -31,6 +31,40 @@ def _claves_de(g, nombres_flujo):
     return sorted(set(cl))
 
 
+def _las_que_hablan_del_problema(g, problema, cuantas=4):
+    """Las piezas de CODIGO que mas tienen que ver con el problema, sin abrir un solo archivo.
+
+    Se mira solo la FICHA de cada pieza —su nombre, su resumen y lo que ofrece— que es barato y
+    ya esta en el indice. Abrir 1.089 archivos para decidir cual abrir seria absurdo y lento.
+
+    Se prefiere el codigo de VERDAD antes que las pruebas: las pruebas hablan muchisimo del
+    asunto (lo describen palabra por palabra) y por eso ganaban sitio y dejaban fuera al archivo
+    donde esta el fallo. Una prueba cuenta lo que deberia pasar; el codigo es donde pasa.
+    """
+    palabras = set(trozos._palabras(problema))
+    if not palabras:
+        return sorted([p for p in g["piezas"] if p["rol"] in ("CODIGO", "WEB", "CUERPO")],
+                      key=lambda x: -x["lineas"])[:cuantas]
+    puntuadas = []
+    for p in g["piezas"]:
+        if p["rol"] not in ("CODIGO", "WEB", "CUERPO", "CEREBRO"):
+            continue
+        api_nombres = " ".join(a["nombre"] for a in (p.get("api", []) or []))
+        ficha = " ".join([p["id"], p.get("resumen", "") or "", api_nombres])
+        suyas = set(trozos._palabras(ficha))
+        punto = float(len(palabras & suyas))
+        nombre = p["id"].lower()
+        if "test" in nombre or "prueba" in nombre or "vigia" in nombre:
+            punto *= 0.4          # la prueba describe; el codigo hace
+        if p["rol"] == "WEB":
+            punto += 0.5          # la cara es donde Julio ve el fallo con sus ojos
+        puntuadas.append((punto, p["lineas"], p))
+    puntuadas.sort(key=lambda t: (-t[0], -t[1]))
+    elegidas = [p for punto, _, p in puntuadas[:cuantas] if punto > 0]
+    # Si nada casa, se vuelve a lo de antes: mejor las grandes que nada.
+    return elegidas or [p for _, _, p in puntuadas[:cuantas]]
+
+
 def armar(apodo, problema, k_trozos=6, saltos=1):
     g = grafo.cargar(apodo)
     hits = flujos.buscar(g["flujos"], problema)[:3]
@@ -43,14 +77,19 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
     ids = sorted(set(ids))
     fichas = [p for p in g["piezas"] if p["id"] in ids]
 
-    # si el flujo no toco ningun codigo, se abre a las piezas grandes del proyecto
-    # (caso app.py: el problema es de plantilla pero el codigo esta en un solo monstruo)
+    # Si el flujo no toco ningun codigo, se buscan las piezas que HABLAN DEL PROBLEMA.
+    #
+    # Antes se cogian las TRES MAS GRANDES, por numero de lineas. Eso es elegir por tamano, y el
+    # archivo mas gordo no es el que tiene el fallo: en el MVP, un problema de LA PANTALLA traia
+    # el servidor (16.845 lineas) y la pantalla (2.349) no entraba NUNCA. El equipo lo dijo tres
+    # veces seguidas: "el archivo app_web.html no esta en el material". Fallo real 2026-08-21.
+    # Es ademas lo contrario de la regla de Julio: se busca por lo que la cosa HACE, no por como
+    # de grande es.
     codigo = [f for f in fichas if f["rol"] in ("CUERPO", "CODIGO", "WEB", "CEREBRO")]
     if not codigo:
-        monstruos = sorted([p for p in g["piezas"] if p["rol"] in ("CODIGO", "WEB", "CUERPO")],
-                           key=lambda x: -x["lineas"])[:3]
-        fichas += monstruos
-        codigo = monstruos
+        candidatas = _las_que_hablan_del_problema(g, problema)
+        fichas += candidatas
+        codigo = candidatas
 
     # LA CARA TAMBIEN ES DEL FLUJO (fallo real 2026-08-20, cazado por Qwen y Gemini).
     # El paquete del onboarding traia `cuerpo/perfil.py` (el motor) pero NO `web/` (la cara,

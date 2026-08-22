@@ -14,17 +14,27 @@ Julio lo pago de su bolsillo. Una regla que depende de que yo me acuerde NO es u
 LO QUE EXIGE: para tocar CODIGO tiene que haber un veredicto del equipo RECIENTE que cubra ese
 archivo. Uno genera, OTRO distinto audita (4 ojos: nadie se aprueba a si mismo).
 
-  cd C:\Ingeniero_VUC; python ingeniero.py equipo <proyecto> "<la tarea>"
+  cd C:\\Ingeniero_VUC; python ingeniero.py equipo <proyecto> "<la tarea>"
 
 LO QUE NO ESTORBA (o el candado se vuelve un muro y se acaba apagando, que es peor):
   · los documentos .md          — escribir la ley no es programar
   · archivo nuevo que no existe — crear no es reescribir
   · el propio arnes             — si el candado se rompe, hay que poder arreglarlo
-  · si NO hay ningun cerebro    — no se deja a Julio atrapado por una cuota agotada; se deja
-                                  pasar y queda APUNTADO, para que se vea que se paso sin equipo
 
-INVIOLABLE no es que no haya salida: es que la salida deje rastro. Cada vez que se escribe codigo
-sin equipo queda en memoria/SIN_EQUIPO.log, y una vigia lo cuenta.
+FORTALECIDO (Julio, 2026-08-21): ya NO se deja pasar cuando no hay cerebros. Antes, si los
+cerebros estaban agotados, se podia escribir a solas (quedaba apuntado en SIN_EQUIPO.log) y eso
+dejaba a foto_informe y a cualquier proyecto SIN VIGILAR. Ahora SIEMPRE se exige el veredicto del
+equipo para tocar codigo; si no hay, se BLOQUEA y Julio decide si aprueba. No se escribe a solas,
+jamas, en ningun proyecto.
+
+LA LIBRETA, AL REVES (Julio, 2026-08-21): antes se apuntaba lo que se COLABA sin equipo. Con la
+puerta de escape cerrada ya no se cuela nada, asi que esa libreta se quedaria vacia para siempre
+y no serviria de nada (medido: el archivo no llego a existir NUNCA). Ahora se apunta lo
+contrario: CADA VEZ QUE EL CANDADO FRENA. Queda el dia, la hora, el archivo y por que se freno.
+Asi Julio ve al final de la semana cuantas veces hubo que pararse y por que, en vez de creerselo.
+
+INVIOLABLE no es que no haya salida: es que TODO deje rastro. La salida a mano sigue siendo suya
+(INGENIERO_OFF) y hay una vigia que comprueba que nunca se la quiten.
 """
 import json
 import os
@@ -87,7 +97,16 @@ def _hay_cerebros():
         return False
 
 
-def _apuntar_sin_equipo(fp, por_que):
+def _apuntar_frenada(fp, por_que):
+    """La libreta AL REVES (Julio, 2026-08-21): se apunta cada vez que el candado FRENA.
+
+    Antes se apuntaba lo que se colaba sin equipo; con la puerta de escape cerrada eso ya no
+    pasa nunca y la libreta quedaba vacia. Lo util ahora es lo contrario: que Julio pueda ver
+    cuantas veces hubo que pararse y por que.
+
+    A prueba de fallos a proposito: si la libreta no se puede escribir, el candado NO se cae.
+    Frenar es lo importante; apuntarlo es la prueba, pero no puede tumbar al guardia.
+    """
     try:
         os.makedirs(os.path.dirname(_ruta_sin_equipo()), exist_ok=True)
         with open(_ruta_sin_equipo(), "a", encoding="utf-8") as f:
@@ -102,7 +121,7 @@ MENSAJE = (
     "  Julio tuvo que repetirlo tres veces y le costo dinero. Uno GENERA, otro distinto AUDITA;\n"
     "  yo dirijo y leo el veredicto. Escribirlo yo mismo gasta lo caro para hacer lo barato.\n\n"
     "  Que hacer:\n"
-    "     cd C:\Ingeniero_VUC; python ingeniero.py equipo <proyecto> \"<la tarea>\"\n\n"
+    "     cd C:\\Ingeniero_VUC; python ingeniero.py equipo <proyecto> \"<la tarea>\"\n\n"
     "  Eso deja el veredicto, y con el veredicto este archivo se abre. Los documentos .md,\n"
     "  los archivos nuevos y el propio arnes se pueden tocar siempre.\n")
 
@@ -124,12 +143,15 @@ def main():
     rel = fp.replace("\\", "/").lower()
     if "/arnes/" in rel:
         return 0                                    # hay que poder arreglar el propio candado
-    if not _hay_cerebros():
-        _apuntar_sin_equipo(fp, "no habia ningun cerebro disponible")
-        return 0                                    # nunca dejar a Julio atrapado
+    # FORTALECIDO (Julio, 2026-08-21): ya NO se deja pasar sin veredicto aunque no haya cerebros.
+    # Antes se escapaba por aqui y dejaba a foto_informe y a cualquier proyecto SIN VIGILAR.
+    # Ahora SIEMPRE se exige el veredicto del equipo; si no hay, se BLOQUEA y Julio decide.
     d = veredicto_vigente()
     if cubre(d, fp):
         return 0                                    # el equipo ya lo miro: adelante
+    # LA LIBRETA, AL REVES: queda constancia de CADA frenada, con el motivo exacto.
+    _apuntar_frenada(fp, "sin veredicto del equipo" if not d else
+                     "el veredicto vigente no habla de este archivo")
     sys.stderr.write(MENSAJE.format(fp=fp))
     return 2
 

@@ -113,16 +113,64 @@ def test_el_propio_arnes_se_puede_arreglar():
     assert code == 0, "si el candado se rompe hay que poder arreglarlo o se queda todo parado"
 
 
-# ─── NUNCA DEJA A JULIO ATRAPADO, PERO DEJA RASTRO ────────────────────────────
-def test_sin_cerebros_deja_pasar_pero_lo_apunta(tmp_path, monkeypatch):
+# ─── SIN CEREBROS TAMPOCO SE PASA: LA PUERTA DE ESCAPE ESTA CERRADA ───────────
+def test_sin_cerebros_bloquea_igual(tmp_path, monkeypatch):
+    """LEY NUEVA (Julio, 2026-08-21): se CERRO la puerta de escape.
+
+    Antes, si los cerebros estaban agotados, se podia escribir a solas y quedaba apuntado.
+    Julio la cerro porque esa rendija dejaba a foto_informe y a cualquier proyecto SIN VIGILAR:
+    bastaba con que las cuotas se agotaran para colar codigo sin que nadie lo auditara.
+
+    Ahora, sin veredicto del equipo NO se toca codigo, haya cerebros o no. Si no hay ninguno
+    libre, se BLOQUEA y decide Julio. Esta vigia es la que impide que la rendija vuelva a
+    abrirse sin que el se entere.
+    """
     import candado_equipo as ce
-    monkeypatch.setattr(ce, "_hay_cerebros", lambda: False)
+    monkeypatch.setattr(ce, "_hay_cerebros", lambda: False)     # cuotas agotadas: ni uno libre
+    monkeypatch.setattr(ce, "veredicto_vigente", lambda: None)  # y el equipo no ha dicho nada
     f = _un_codigo(tmp_path)
     import io
     monkeypatch.setattr("sys.stdin", io.StringIO(json.dumps({"tool_input": {"file_path": f}})))
-    assert ce.main() == 0, "dejo a Julio atrapado por una cuota agotada"
-    assert os.path.exists(os.environ["INGENIERO_SIN_EQUIPO_TEST"]), \
-        "paso sin equipo y no quedo rastro: asi no se puede ver si se cumple"
+    assert ce.main() == 2, \
+        "se colo codigo sin equipo: la puerta de escape volvio a abrirse"
+
+
+def test_cada_frenada_queda_apuntada(tmp_path, monkeypatch):
+    """LA LIBRETA AL REVES (Julio, 2026-08-21): "Si, que apunte al reves."
+
+    Antes se apuntaba lo que se COLABA sin equipo. Como ya no se cuela nada, esa libreta se
+    quedaba vacia para siempre (medido: el archivo no llego a existir nunca). Ahora se apunta
+    cada vez que el candado FRENA, con el motivo. Asi Julio puede ver al final de la semana
+    cuantas veces hubo que pararse, en vez de tener que creerselo.
+    """
+    import candado_equipo as ce
+    monkeypatch.setattr(ce, "veredicto_vigente", lambda: None)
+    f = _un_codigo(tmp_path)
+    import io
+    monkeypatch.setattr("sys.stdin", io.StringIO(json.dumps({"tool_input": {"file_path": f}})))
+    assert ce.main() == 2, "no freno: sin esto no hay nada que apuntar"
+    libreta = os.environ["INGENIERO_SIN_EQUIPO_TEST"]
+    assert os.path.exists(libreta), "freno y no dejo rastro: Julio no puede ver cuantas veces fue"
+    escrito = open(libreta, encoding="utf-8").read()
+    assert os.path.basename(f) in escrito, "no apunto QUE archivo se freno"
+    assert "veredicto" in escrito.lower(), "no apunto POR QUE se freno"
+
+
+def test_la_salida_de_emergencia_sigue_siendo_de_julio(tmp_path, monkeypatch):
+    """Cerrar la puerta no puede significar dejar a Julio encerrado.
+
+    La ley dura dice que SIEMPRE tiene que haber una salida y que la salida deje rastro. Con la
+    puerta de escape cerrada, la unica salida que queda es la que Julio maneja a mano
+    (INGENIERO_OFF). Si un dia tambien desapareciera, el candado dejaria de ser un candado y
+    pasaria a ser un muro: se acabaria apagando entero, que es peor que el problema.
+    """
+    import candado_equipo as ce
+    monkeypatch.setattr(ce, "veredicto_vigente", lambda: None)
+    monkeypatch.setenv("INGENIERO_OFF", "1")
+    f = _un_codigo(tmp_path)
+    import io
+    monkeypatch.setattr("sys.stdin", io.StringIO(json.dumps({"tool_input": {"file_path": f}})))
+    assert ce.main() == 0, "Julio se quedo encerrado: ni con su propio interruptor puede salir"
 
 
 def test_tiene_interruptor_de_emergencia():

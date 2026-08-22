@@ -28,10 +28,20 @@ RUTA = os.path.join(AQUI, "memoria", "CUOTAS.json")
 # tiene. Lo que antes parecia que funcionaba era Gemini contestando disfrazado.
 #   openai/gpt-oss-120b  0.9 s     openai/gpt-oss-20b  0.9 s     gemini  (el suyo fijo)
 # gpt-oss-120b y gpt-oss-20b son DOS cupos gratis distintos: Groq reparte por modelo.
-ORDEN = ["groq", "groq20b", "gemini", "gemini2", "gemini3", "local"]
+ORDEN = ["groq", "groq20b", "gemini", "gemini2", "gemini3", "local", "deepseek"]
 APODO = {"groq": "GPT-OSS 120B (Groq)", "groq20b": "GPT-OSS 20B (Groq)",
          "gemini": "Gemini 3.5", "gemini2": "Gemini 3 preview",
-         "gemini3": "Gemini flash-latest", "local": "LM Studio (tu PC)"}
+         "gemini3": "Gemini flash-latest", "local": "LM Studio (tu PC)",
+         "deepseek": "DeepSeek (SE PAGA)"}
+
+# LOS QUE CUESTAN DINERO. Todos los de arriba son gratis menos estos.
+# Julio, 2026-08-21, ordeno meter a DeepSeek en el equipo (es el mismo "4 ojos" que le contesta
+# por el canal interno). Pero DeepSeek va con saldo, y a los cerebros se les pregunta A TODOS A
+# LA VEZ porque "son todos gratis, preguntar no cuesta". Esa frase deja de ser verdad en cuanto
+# entra uno de pago: se pagaria una llamada en CADA pregunta aunque contestase antes uno gratis.
+# Lo cazo el propio DeepSeek auditando esta reparacion. Por eso quien esta aqui NO entra en la
+# pregunta a la vez: se le llama A SOLAS y solo cuando ningun gratis pudo atender.
+DE_PAGO = {"deepseek"}
 # Julio, 2026-08-21: "tu debes ser el ultimo recurso, cuando se agoten los modelos gratis, o sea
 # nunca, porque existen cientos". Su llave de Gemini tiene 37 modelos vivos. Se anaden los que se
 # COMPROBARON uno por uno (3.5-flash 2.1s | 3-flash-preview 3.9s | flash-latest 3.2s; el 3.7 dio
@@ -76,6 +86,13 @@ def es_agote(error_txt):
     if any(x in t for x in ("429", "quota", "rate limit", "rate_limit",
                             "resource_exhausted", "too many requests", "exceeded")):
         return True
+    # QUEDARSE SIN SALDO ES AGOTARSE, NO UN FALLO DE CODIGO (DeepSeek, 2026-08-21).
+    # DeepSeek es el unico de la fila que se paga. Si se le acaba el saldo y esto no lo reconoce,
+    # no se le manda a dormir y se le vuelve a llamar una y otra vez en balde. Un cerebro de pago
+    # mal tratado sale MAS caro que no tenerlo.
+    if any(x in t for x in ("insufficient balance", "insufficient_quota",
+                            "payment required", "402")):
+        return True
     # El cerebro de DMM esconde el error real detras de un mensaje generico
     # ("Ningun cerebro respondio: pon GEMINI_API_KEY o GROQ_API_KEY") INCLUSO cuando la llave
     # esta puesta y lo que paso fue un tope de cuota. Fallo real 2026-08-20: por eso el relevo
@@ -116,7 +133,7 @@ def desperto(quien):
     return False
 
 
-def apuntar_uso(quien, ok=True, segundos=None):
+def apuntar_uso(quien, ok=True, segundos=None, tamano=None):
     d = _leer()
     g = d.setdefault("gasto", {}).setdefault(quien, {"llamadas": 0, "fallos": 0})
     g["llamadas"] += 1
@@ -126,7 +143,60 @@ def apuntar_uso(quien, ok=True, segundos=None):
         # Se guarda lo que TARDO DE VERDAD, no lo que se supone que tarda.
         g["ultimo_seg"] = round(float(segundos), 1)
         g["record_seg"] = max(round(float(segundos), 1), float(g.get("record_seg", 0)))
+    if ok and tamano is not None:
+        # Se guarda el TAMANO mas grande que este cerebro manejo bien: asi no se le vuelve a dar
+        # un encargo que se sabe que no va a aguantar (Julio, 2026-08-21: repartir por metricas).
+        g["mayor_ok"] = max(int(g.get("mayor_ok", 0)), int(tamano))
     _guardar(d)
+
+
+# Capacidad documentada (letras de encargo aprox) de cada cerebro, SEGUN LOS PROVEEDORES.
+# OJO (Julio, 2026-08-21): esto es lo que DICEN los proveedores, pero Claude midio que los gratis
+# se caen ~21k letras aunque su contexto sea enorme. Por eso NO se legisla con esto: `medir_capacidad.py`
+# mide la capacidad REAL y la guarda en memoria/CAPACIDADES.json, que es lo que manda de verdad.
+CAPACIDAD = {"local": 26000, "groq": 500000, "groq20b": 500000,
+             "gemini": 4000000, "gemini2": 4000000, "gemini3": 4000000, "deepseek": 250000}
+
+
+def _medidas():
+    """Capacidad MEDIDA de verdad (memoria/CAPACIDADES.json), hecha con medir_capacidad.py.
+    Formato: {quien: {"max": letras, "tipo": OK/LENTO/CAPACIDAD/RATE, "detalle": {...}}}."""
+    try:
+        d = json.load(open(os.path.join(AQUI, "memoria", "CAPACIDADES.json"), encoding="utf-8"))
+    except Exception:
+        return {}
+    return {k: (v.get("max", 0) if isinstance(v, dict) else int(v)) for k, v in d.items()}
+
+
+def _capacidad(quien):
+    """Cuanto aguanta de verdad: lo MEDIDO (CAPACIDADES.json o mayor_ok) o la estimacion,
+    lo que sea mayor. La estimacion es solo hasta que se mida de verdad (Julio, 2026-08-21:
+    legislar con datos, no con suposiciones)."""
+    g = _leer().get("gasto", {}).get(quien, {})
+    medido = max(int(g.get("mayor_ok", 0)), int(_medidas().get(quien, 0)))
+    return max(int(CAPACIDAD.get(quien, 0)), medido)
+
+
+def rankear(disponibles, tamano):
+    """Del MAS eficiente al MENOS, entre los que aguantan este tamano.
+
+    Julio, 2026-08-21: "donde veas cual es mas eficiente, del mayor al menor, y asi se asignen
+    las tareas... es estupido darle una tarea a una IA que sabes que no va a soportar."
+    Antes se les preguntaba a TODOS a la vez y gana el primero: eso gastaba tokens en todos y les
+    mandaba trabajo que no aguantan. Ahora se ordena por fiabilidad x rapidez y se SALTAN los
+    que no soportan el encargo.
+    """
+    elegibles = [q for q in disponibles if tamano <= _capacidad(q)]
+
+    def score(q):
+        g = _leer().get("gasto", {}).get(q, {})
+        llam = float(g.get("llamadas", 0))
+        fall = float(g.get("fallos", 0))
+        conf = (llam - fall) / llam if llam > 0 else 0.0     # fiabilidad (sin fallos)
+        vel = 1.0 / (1.0 + float(g.get("record_seg", 0)))    # rapidez (mas lento = menos)
+        return round(conf * vel, 6)
+
+    return sorted(elegibles, key=score, reverse=True)
 
 
 MARGEN = 1.5          # se le da la mitad mas de su propio record antes de descartarlo

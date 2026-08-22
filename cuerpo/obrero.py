@@ -154,7 +154,8 @@ def _maneras_de_leerlo(crudo):
         yield tronco + "]" * max(0, faltan) + "}" * max(0, tronco.count("{") - tronco.count("}"))
 
 
-TOPE_LOCAL = 6000     # letras que le caben al cerebro de tu PC (qwen2.5-coder-1.5b)
+TOPE_LOCAL = 26000    # MEDIDO 2026-08-21: 3/3 hasta 26.000; 28.000/30.000/35.000/40.000 = 0/3 (RECHAZA)
+TOPE_PESADO = 15000   # letras a partir de las cuales los gratis se caen y el de pago va primero
 
 
 def quienes_hay():
@@ -168,7 +169,7 @@ def quienes_hay():
     # segundo cerebro para AUDITAR y el que proponia se aprobaba solo (fallo real 2026-08-21).
     vel = _velocidad()
     llaves = {"groq": "GROQ_API_KEY", "gemini": "GEMINI_API_KEY",
-              "router": "OPENROUTER_API_KEY"}
+              "router": "OPENROUTER_API_KEY", "deepseek": "DEEPSEEK_API_KEY"}
     hay = []
     for quien in cuotas.ORDEN:
         if quien == "local":
@@ -318,7 +319,35 @@ def _openrouter_directo(prompt, temperatura, modelo):
     return d["choices"][0]["message"]["content"]
 
 
-def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None):
+def _deepseek_directo(prompt, temperatura, modelo):
+    """La puerta PROPIA de DeepSeek. Julio, 2026-08-21: "no es openrouter, es deepseek".
+
+    Se le habla a SU casa (api.deepseek.com), no a traves de otra empresa que hace de
+    intermediaria. Habla el mismo idioma que Groq (formato OpenAI), asi que lo unico que cambia
+    es la direccion y la llave: DEEPSEEK_API_KEY, que va SOLA en las variables de Windows y no se
+    le pide nunca a Julio por el chat.
+
+    Es el mismo al que Julio llama "4 ojos" en el canal interno, y el que el quiere de supervisor
+    por defecto: si Claude son las manos, DeepSeek supervisa; y al reves.
+
+    LO QUE LO SEPARA DE TODOS LOS DEMAS: DeepSeek NO ES GRATIS, va con saldo. Por eso esta en
+    `cuotas.DE_PAGO` y no se le pregunta a la vez que a los gratis, sino a solas y de ultimo.
+    Sin llave no entra en la fila y no estorba a nadie."""
+    import json as _j, os as _o, urllib.request as _u
+    k = _o.environ.get("DEEPSEEK_API_KEY", "").strip()
+    if not k:
+        raise RuntimeError("no hay llave de DeepSeek en las variables de Windows")
+    body = _j.dumps({"model": modelo or "deepseek-chat", "temperature": temperatura,
+                     "messages": [{"role": "user", "content": prompt}]}).encode("utf-8")
+    req = _u.Request("https://api.deepseek.com/chat/completions", data=body, method="POST")
+    req.add_header("Content-Type", "application/json")
+    req.add_header("Authorization", "Bearer " + k)
+    with _u.urlopen(req, timeout=300) as r:
+        d = _j.load(r)
+    return d["choices"][0]["message"]["content"]
+
+
+def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False):
     """Pregunta respetando el orden de Julio: Qwen -> Gemini -> local, y VOLVIENDO a Qwen
     en cuanto despierte. Si uno se agota (429/cuota), se le marca la siesta y sigue el de al lado.
     Devuelve (texto, quien_contesto, avisos)."""
@@ -334,11 +363,62 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None):
     # Cada modelo de Groq es un cupo gratis distinto: Groq reparte POR MODELO, no por llave.
     modelos = {"groq": vel["modelo_groq"], "groq20b": vel.get("modelo_groq20b"),
                "gemini": vel["modelo_gemini"], "gemini2": vel.get("modelo_gemini2"),
-               "gemini3": vel.get("modelo_gemini3"), "local": None}
+               "gemini3": vel.get("modelo_gemini3"), "local": None,
+               "deepseek": vel.get("modelo_deepseek")}
     for k in vel:
         if k.startswith("modelo_router"):
             modelos[k[len("modelo_"):]] = vel[k]
     tope = float(vel.get("tope_segundos", 75))
+
+    # EL DE PAGO NO ENTRA EN LA PREGUNTA A LA VEZ (auditoria de DeepSeek, 2026-08-21).
+    # Abajo se les pregunta a TODOS A LA VEZ porque "son todos gratis, preguntar no cuesta".
+    # Con DeepSeek dentro esa frase deja de ser cierta: se le pagaria una llamada en CADA
+    # pregunta aunque contestase antes uno gratis. Lo cazo el propio DeepSeek al auditar esto.
+    # Asi que se le aparta aqui y se le guarda para el ULTIMO RECURSO, a solas.
+    de_pago = [q for q in turnos if q in cuotas.DE_PAGO]
+    turnos = [q for q in turnos if q not in cuotas.DE_PAGO]
+    # Salvo cuando el encargo es PESADO: ahi los gratis no aguantan y el de pago si entra.
+    # SIEMPRE LO PESADO A DEEPSEEK (Julio, 2026-08-21): "el equipo que haga siempre lo pesado
+    # deepseek, no lo olvides nunca." Repartir por TAMANO no bastaba: medido tres veces el mismo
+    # dia, con encargos POR DEBAJO de TOPE_PESADO, los gratis devolvieron propuesta vacia, un 413
+    # y texto ilegible. Se rendian igual. Por eso GENERAR (lo pesado) ya no se reparte por letras:
+    # va a DeepSeek. AUDITAR (lo ligero) sigue siendo gratis, que es donde la ley de coste manda.
+    if len(prompt) > TOPE_PESADO or pesado:
+        turnos = de_pago + turnos
+        de_pago = []
+    # REPARTIDOR POR METRICAS (Julio, 2026-08-21): se asigna por eficiencia, no preguntando a
+    # todos a la vez. `cuotas.rankear` ordena del mas eficiente al menos y SALTA a los que no
+    # soportan el tamano. Asi no se gasta tokens en preguntar a quien no va a poder.
+    turnos = cuotas.rankear(turnos, len(prompt))
+    # DESPUES de rankear, nunca antes: rankear ordena por eficiencia y volveria a hundir al de
+    # pago, deshaciendo la orden de Julio sin que se notara.
+    # SI NO HAY LLAVE DE DEEPSEEK no pasa nada: no estara en `turnos`, esto no hace nada y el
+    # relevo sigue con los gratis. Julio no se queda atrapado por no tener saldo.
+    # SI DEEPSEEK FALLA tampoco pasa nada: comprobado en el bucle de abajo, cualquier fallo cae
+    # en el `except` y PASA EL TURNO al siguiente. (Los dos cerebros avisaron de que aqui se
+    # colgaria; se fue a mirar el codigo y los dos se equivocaban.)
+    if pesado and "deepseek" in turnos:
+        turnos = ["deepseek"] + [q for q in turnos if q != "deepseek"]
+
+    def _ultimo_recurso(avisos):
+        """Se llama SOLO cuando ningun cerebro gratis pudo. Aqui empieza a costar dinero."""
+        for quien in de_pago:
+            try:
+                txt = _con_tope(lambda: _pedirle_a(quien),
+                                max(tope, cuotas.cuanto_esperarle(quien)))
+                if not (txt or "").strip():
+                    raise ValueError("contesto vacio")
+                cuotas.apuntar_uso(quien, ok=True)
+                avisos.append("no quedaba ningun cerebro gratis: contesto %s, que SE PAGA"
+                              % cuotas.APODO[quien])
+                return txt, quien, avisos
+            except Exception as e:
+                msg = str(e)
+                cuotas.apuntar_uso(quien, ok=False)
+                if cuotas.es_agote(msg):      # sin saldo cuenta como agotado: a dormir, no insistir
+                    cuotas.dormir(quien, msg)
+                avisos.append("%s fallo: %s" % (cuotas.APODO[quien], msg[:90]))
+        return "", "", avisos + ["NO_ENCONTRADO: ningun cerebro pudo atender"]
 
     # SOLO CODIGO A LA NUBE (Julio, 2026-08-21). Se tapa AQUI, en el unico sitio por donde sale
     # todo, y no en cada sitio que llama: si depende de acordarse, un dia no se acuerda.
@@ -362,60 +442,22 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None):
                                  "(%d letras): no le cabe" % len(prompt))
             return preguntar_local(prompt, temperatura)
         # De aqui para abajo el encargo SALE DE CASA: va el limpio, sin datos de clientes.
+        # DeepSeek va el PRIMERO de los desvios, como pidio el en su auditoria: asi se ve de un
+        # vistazo que el unico de pago tiene su camino propio y no se cuela por el de nadie.
+        if quien.startswith("deepseek"):
+            return _deepseek_directo(prompt_nube, temperatura, modelos.get(quien))
         if quien.startswith("gemini"):
             return _gemini_directo(prompt_nube, temperatura, modelos.get(quien))
         if quien.startswith("router"):
             return _openrouter_directo(prompt_nube, temperatura, modelos.get(quien))
         return c._preguntar_groq(prompt_nube, modelos.get(quien), temperatura)
 
-    # GANA EL PRIMERO QUE CONTESTE, no el reloj (Julio, 2026-08-21):
-    #   "en vez de usar temporizador con los cerebros, pon mejor disparador, cuando responda, y un
-    #    temporizador mas amplio. Puedo ser un poco flexible con el tiempo, solo un poco, mas no
-    #    con la precision: aqui si es clave ser implacable."
-    # Antes se preguntaba de uno en uno y se cortaba por reloj: si el primero tardaba, se perdia
-    # ese tiempo ENTERO antes de probar el siguiente, y a veces se descartaba a uno que iba a
-    # contestar bien. Ahora se les pregunta A LA VEZ —son todos gratis, preguntar no cuesta— y se
-    # coge la primera respuesta VALIDA. Flexible con el tiempo, implacable con la precision: una
+    # REPARTIDOR POR CAPACIDAD Y EFICIENCIA (Julio, 2026-08-21). Antes se les preguntaba a TODOS
+    # A LA VEZ y ganaba el primero: eso gastaba tokens en todos, los desgastaba y les mandaba
+    # trabajo que no aguantan. Ahora `turnos` ya viene ordenado por `cuotas.rankear` (del mas
+    # eficiente al menos, SALTANDO a los que no soportan el tamano), y se pregunta de UNO EN UNO
+    # con su propio tope de tiempo. Flexible con el tiempo, implacable con la precision: una
     # respuesta vacia NO vale, y un modelo que no existe da error a la vista, no se disimula.
-    if len(turnos) > 1:
-        import concurrent.futures as _cf
-        # Se le aguanta a CADA UNO segun su propio record. Se espera al mas paciente de los que
-        # hay: descartar antes de tiempo es lo que mandaba el trabajo a la IA cara.
-        espera = max(cuotas.cuanto_esperarle(q) for q in turnos)
-        arranque = time.time()
-        with _cf.ThreadPoolExecutor(max_workers=len(turnos)) as pool:
-            pendientes = {pool.submit(_pedirle_a, q): q for q in turnos}
-            try:
-                for fut in _cf.as_completed(pendientes, timeout=espera):
-                    quien = pendientes[fut]
-                    tardo = time.time() - arranque
-                    try:
-                        txt = fut.result()
-                    except Exception as e:
-                        cuotas.apuntar_uso(quien, ok=False)
-                        msg = str(e)
-                        if cuotas.es_agote(msg):
-                            cuotas.dormir(quien, msg)
-                            avisos.append(f"{cuotas.APODO[quien]} se agoto")
-                        else:
-                            avisos.append(f"{cuotas.APODO[quien]} fallo: {msg[:90]}")
-                        continue
-                    if not (txt or "").strip():        # implacable con la precision
-                        cuotas.apuntar_uso(quien, ok=False)
-                        avisos.append(f"{cuotas.APODO[quien]} contesto vacio -> no vale")
-                        continue
-                    if cuotas.se_paso_de_su_marca(quien, tardo):
-                        # Contesto, pero mucho peor que su propia marca: se sigue usando su
-                        # respuesta (ya esta pagada y es buena) y queda apuntado que va lento.
-                        avisos.append("%s tardo %.0fs, mas de su marca (%.0fs)"
-                                      % (cuotas.APODO[quien], tardo,
-                                         cuotas.cuanto_esperarle(quien)))
-                    cuotas.apuntar_uso(quien, ok=True, segundos=tardo)
-                    return txt, quien, avisos
-            except _cf.TimeoutError:
-                avisos.append(f"ninguno de los {len(turnos)} contesto en {int(espera)}s")
-        return "", "", avisos + ["NO_ENCONTRADO: ningun cerebro gratis pudo atender"]
-
     for quien in turnos:
         try:
             # UNA SOLA PUERTA para hablar con los cerebros: `_pedirle_a`.
@@ -425,7 +467,7 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None):
             txt = _con_tope(lambda: _pedirle_a(quien), max(tope, cuotas.cuanto_esperarle(quien)))
             if not (txt or "").strip():
                 raise ValueError("contesto vacio")
-            cuotas.apuntar_uso(quien, ok=True)
+            cuotas.apuntar_uso(quien, ok=True, tamano=len(prompt_nube))
             return txt, quien, avisos
         except TimeoutError as e:
             cuotas.apuntar_uso(quien, ok=False)
@@ -440,7 +482,7 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None):
                 avisos.append(f"{cuotas.APODO[quien]} se agoto -> pasa el turno")
             else:
                 avisos.append(f"{cuotas.APODO[quien]} fallo (no es cuota): {msg[:90]}")
-    return "", "", avisos + ["NO_ENCONTRADO: ningun cerebro gratis pudo atender"]
+    return _ultimo_recurso(avisos)          # ningun gratis pudo: ahora si, el de pago
 
 
 def trabajar(paquete, tarea, generador=None, auditor=None):
@@ -452,7 +494,8 @@ def trabajar(paquete, tarea, generador=None, auditor=None):
     if not quienes_hay():
         return {"_error": "NO_ENCONTRADO: no hay llave ni modelo local (revisa el .env de DMM)"}
 
-    crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(paquete, tarea), 0.2)
+    # GENERAR es lo pesado -> DeepSeek (orden de Julio). AUDITAR es lo ligero -> gratis, abajo.
+    crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(paquete, tarea), 0.2, pesado=True)
     if not crudo:
         return {"_error": "; ".join(av1)}
     propuesta = _json_de(crudo)

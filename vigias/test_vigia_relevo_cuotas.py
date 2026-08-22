@@ -29,13 +29,26 @@ def test_el_orden_es_el_de_julio():
     el final lo gratis y no tocar lo caro—, pero si movia de sitio a Gemini. Julio, ese mismo dia:
     "tu debes ser el ultimo recurso, cuando se agoten los modelos gratis, o sea nunca, porque
     existen cientos". Atar la ley a un puesto fijo impedia anadir cerebros, que es justo lo que
-    la ley pide. Lo que NO se afloja: primero Groq, el de casa el ultimo, y nada de pago."""
+    la ley pide. Lo que NO se afloja: primero Groq y el de casa el ultimo de los gratis.
+
+    El 2026-08-21 Julio ordeno meter a DeepSeek, que SE PAGA ("es una orden implementa el puto
+    deepseek"). Eso no afloja la ley: la precisa. Lo de pago puede estar en la fila, pero DETRAS
+    de todo lo gratis y sin entrar nunca en la pregunta a la vez. Por eso "el ultimo" deja de
+    medirse sobre la fila entera y se mide sobre LOS GRATIS, que es lo que la ley protegia.
+    """
+    gratis = [q for q in cuotas.ORDEN if q not in cuotas.DE_PAGO]
+    pago = [q for q in cuotas.ORDEN if q in cuotas.DE_PAGO]
     assert cuotas.ORDEN[0] == "groq", "el primero SIEMPRE es Qwen (Groq)"
     assert "gemini" in cuotas.ORDEN, "Gemini tiene que seguir en la fila"
-    assert cuotas.ORDEN[-1] == "local", "el de tu PC es el ultimo: se usa cuando no queda nube"
-    assert cuotas.ORDEN.index("gemini") < cuotas.ORDEN.index("local"), \
-        "Gemini va antes que el de casa"
-    assert len(cuotas.ORDEN) >= 3, "se perdieron cerebros de la fila"
+    assert gratis[-1] == "local", "el de tu PC es el ultimo GRATIS: se usa cuando no queda nube"
+    assert gratis.index("gemini") < gratis.index("local"), "Gemini va antes que el de casa"
+    assert len(gratis) >= 3, "se perdieron cerebros gratis de la fila"
+    # lo de pago, SIEMPRE detras de todo lo gratis
+    sitio = {q: i for i, q in enumerate(cuotas.ORDEN)}
+    for p in pago:
+        for g in gratis:
+            assert sitio[p] > sitio[g], \
+                "%s se paga y va por delante de %s, que es gratis" % (p, g)
 
 
 def _el_siguiente_gratis(dormidos):
@@ -73,13 +86,20 @@ def test_si_se_agota_toda_la_nube_queda_el_local():
 GRATIS = ("groq", "gemini", "local")          # las tres puertas sin coste
 
 
-def test_nunca_se_cae_en_la_IA_DE_PAGO():
-    """Julio: 'tu debes ser el ultimo recurso, cuando se agoten los modelos gratis, o sea nunca,
-    porque existen cientos'. Ninguno de la fila puede costar dinero. Se comprueba por la PUERTA
-    que usa, no por una lista cerrada de nombres: la fila tiene que poder crecer."""
+def test_lo_que_cuesta_DINERO_esta_declarado():
+    """Julio: 'tu debes ser el ultimo recurso, cuando se agoten los modelos gratis'.
+
+    Antes esto prohibia que hubiera NINGUNO de pago en la fila. El 2026-08-21 Julio ordeno meter
+    a DeepSeek, que se paga. La ley no se afloja, se aprieta donde importa: lo que protege su
+    dinero no es que no exista lo de pago, es que lo de pago este DECLARADO y no se pueda colar
+    ninguno de tapadillo. Un cerebro de pago sin declarar entraria en la pregunta a la vez que
+    los gratis y le cobraria a Julio en cada pregunta."""
     for q in cuotas.ORDEN:
-        assert any(q.startswith(p) for p in GRATIS), \
-            "entro en la fila un cerebro que no va por una puerta gratis: %s" % q
+        if any(q.startswith(p) for p in GRATIS):
+            continue
+        assert q in cuotas.DE_PAGO, \
+            ("entro en la fila '%s', que no va por ninguna puerta gratis y NO esta declarado "
+             "como de pago: se le cobraria a Julio sin que nadie lo sepa" % q)
 
 
 def test_hay_cerebros_de_sobra_para_los_CUATRO_OJOS():
