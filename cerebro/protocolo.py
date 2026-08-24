@@ -94,9 +94,10 @@ PASOS = [
                   "probarla metiendole el fallo a proposito", "abrirlo de verdad y mirarlo"],
         "prohibe": ["dar algo por bueno porque la prueba este verde",
                     "que el que repara escriba su propia prueba",
-                    "fingir que una prueba cubre lo que el usuario ve cuando no lo cubre"],
-        "candado": "arnes/candado_cierre.py + cuerpo/cruzado.py",
-        "comando": "python ingeniero.py vigias <proyecto> despues",
+                    "fingir que una prueba cubre lo que el usuario ve cuando no lo cubre",
+                    "pedirle a Julio que pruebe sin haber corrido la prueba real interna (con equipo, Playwright)"],
+        "candado": "arnes/candado_cierre.py + cuerpo/cruzado.py + arnes/candado_prueba_real.py",
+        "comando": "python ingeniero.py pedir-prueba",
         "fuente": "PROTOCOLO_MVP § 10 y § 19 + Ley 5 (vigia verde NO es prueba)",
         "listo_si": lambda e: e.get("prueba_humana") == "HECHA",
     },
@@ -128,6 +129,9 @@ LEYES_DURAS = [
     ("No romper lo de al lado", "antes de tocar, mirar a quien se puede danar"),
     ("No duplicar", "antes de crear, buscar; lo viejo se migra o se borra, nunca queda suelto"),
     ("El volumen lo hacen los ayudantes gratis", "aqui solo se dirige y se leen veredictos"),
+    ("Siempre en equipo, sin salto", "aplica a TODAS las IA (Claude, Cline, ChatGPT); para saltarlo se pide permiso y la respuesta es SIEMPRE denegado"),
+    ("Probar de verdad antes de pedir a Julio", "con el equipo, Playwright; si se logro se avisa a Julio, si no se aprende y se reinicia el ciclo"),
+    ("Solo se pregunta despues de buscar", "repo, objetivos, legislacion, tablas de verdad, matriz y errores, todo indexado; nunca antes"),
 ]
 
 
@@ -215,7 +219,8 @@ DOCS_METODO = {
     "foto_informe": ["PROTOCOLO_MVP.md", "CLAUDE.md", "OBJETIVO_MVP.md",
                      "CONTRATO_UNICO_RUTA_P2.md", "CONTRATO_RV2_NO_ASUMIR_CRITERIOS.md",
                      "HISTORICO_RV2_FALLOS_Y_REPARACIONES.md"],
-    "ingeniero": ["PROTOCOLO_UNICO.md", "CONTRATO_INGENIERO_VUC.md", "ORDENES.md"],
+    "ingeniero": ["PROTOCOLO_UNICO.md", "CONTRATO_INGENIERO_VUC.md", "ORDENES.md",
+                  "CONTRATO_LEGISLACION_2026-08-24.md", "MATRIZ_LEGISLACION.md"],
 }
 INDICE = os.path.join(AQUI, "memoria", "INDICE_METODO.json")
 

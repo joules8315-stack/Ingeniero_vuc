@@ -29,16 +29,21 @@ sys.path.insert(0, AQUI)
 RUTA = os.path.join(AQUI, "memoria", "MEDICIONES.json")
 
 
+def _ruta():
+    """La de verdad, o una de prueba. Cada comprobacion usa su copia (ley 23)."""
+    return os.environ.get("INGENIERO_MEDICIONES_TEST") or RUTA
+
+
 def _leer():
     try:
-        return json.load(open(RUTA, encoding="utf-8"))
+        return json.load(open(_ruta(), encoding="utf-8"))
     except Exception:
         return []
 
 
 def _guardar(d):
-    os.makedirs(os.path.dirname(RUTA), exist_ok=True)
-    json.dump(d, open(RUTA, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    os.makedirs(os.path.dirname(_ruta()), exist_ok=True)
+    json.dump(d, open(_ruta(), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 
 def apuntar_paquete(pk, texto):
@@ -93,6 +98,7 @@ def juzgar(proyecto, problema, resultado):
 
     if "NECESITO_LEER" in crudo:
         veredicto, por_que = "CORTO", "el obrero tuvo que pedir mas material"
+        falto = [str(x) for x in (p.get("preguntas") or [])][:3]
     elif str(p.get("diagnostico", "")).strip().upper() == "NO_ENCONTRADO":
         veredicto, por_que = "CORTO", "el obrero no encontro en el paquete con que responder"
         falto = [str(x) for x in (p.get("preguntas") or [])][:3]

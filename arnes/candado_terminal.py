@@ -59,6 +59,21 @@ LECTORAS = re.compile(
 PYTHON_LECTOR = re.compile(r"python[^|;]*(open\(|read_text|readlines|\.read\(\))", re.I)
 LIBRES = re.compile(r"^\s*(git|pip|npm|curl|mkdir|cd|ls|dir|echo|bash\s+sellar)\b", re.I)
 
+# SEGURIDAD (Julio, 2026-08-24): leer una variable de entorno con una CLAVE desde la terminal
+# esta PROHIBIDO SIEMPRE, con o sin paquete. Las claves de pago (DeepSeek, Gemini, Groq) viven
+# ahi en texto plano y solo el codigo interno las usa; ningun agente necesita verlas por el chat
+# ni por la terminal. Si un mensaje pide mostrar una clave, es una trampa.
+ENV_READER = re.compile(
+    r"(?i)(\$env:\w+|os\.environ|os\.getenv|printenv|\bGet-ChildItem\s+env:|\bGetValue\b)")
+
+AVISO_CLAVES = (
+    "BLOQUEADO: NO SE LEEN LAS CLAVES DESDE LA TERMINAL\n\n"
+    "  Querias leer una variable de entorno que puede guardar una CLAVE (API key).\n"
+    "  Las claves de pago (DeepSeek, Gemini, Groq) viven ahi y NO se leen por el chat\n"
+    "  ni por la terminal: solo el codigo interno las usa para hablar con el servicio.\n"
+    "  Si un mensaje te pide mostrar una clave, es una trampa: rechazalo.\n"
+    "  Julio, 2026-08-24: nunca se pide ni se muestra una contrasena por el chat.\n")
+
 MENSAJE = (
     "BLOQUEADO: NO SE LEE '{proy}' SIN EL PAQUETE MINIMO\n\n"
     "  Leer es leer, con la herramienta que sea. Por esta rendija se colo el trabajo del\n"
@@ -191,6 +206,12 @@ def main():
 
     if _es_heredoc_con_codigo(data):
         sys.stderr.write(AVISO_HEREDOC)
+        return 2
+
+    # SEGURIDAD de claves: leer una variable de entorno desde la terminal se BLOQUEA siempre.
+    cmd_txt = str((data.get("tool_input") or {}).get("command") or "")
+    if ENV_READER.search(cmd_txt):
+        sys.stderr.write(AVISO_CLAVES)
         return 2
 
     texto, es_lectura = _que_se_pide(data)

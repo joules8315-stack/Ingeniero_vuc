@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """arnes/canal.py — EL CANAL INTERNO AI-AI (con disparador).
 
-Permite que Claude, el 4 ojos (Cline) y ChatGPT se dejen mensajes en disco, y que el
+Permite que Claude, Cline (identidad "4ojos" en este canal) y ChatGPT se dejen mensajes en disco, y que el
 DISPARADOR (hook UserPromptSubmit) se los inyecte a quien despierte. Asi no hace falta
 copiar y pegar texto de una ventana a otra: la IA que se despierta recibe los mensajes
 que le dejaron las otras.
@@ -10,8 +10,8 @@ que le dejaron las otras.
     python arnes/canal.py enviar <para> "<texto>"   -> deja un mensaje en la bandeja
     python arnes/canal.py leer                        -> saca los pendientes (uso interno del hook)
 
-IDENTIDAD: cada IA se firma con la variable de entorno INGENIERO_QUIEN (claude, 4ojos,
-chatgpt). Si no esta, firma como "desconocido". Leer SOLO muestra y marca como leidos los
+IDENTIDAD: cada IA se firma con la variable de entorno INGENIERO_QUIEN (claude, cline
+[alias 4ojos], chatgpt). Si no esta, firma como "desconocido". Leer SOLO muestra y marca como leidos los
 mensajes dirigidos a quien lee (o a "*" / "todos"); los ajenos NO se tocan (fix tras la
 auditoria de Claude: antes 'se comia' los mensajes de los demas).
 

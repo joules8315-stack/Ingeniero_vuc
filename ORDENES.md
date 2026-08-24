@@ -114,3 +114,12 @@ T5.16 | El piso esta enganchado al cierre, no suelto | vigia:test_vigia_lo_ya_re
 T5.17 | El trozo que llega habla del asunto pedido | vigia:test_vigia_el_trozo_habla_del_asunto.py
 T5.18 | Una tilde no puede esconder el codigo | vigia:test_vigia_las_tildes_no_rompen_la_busqueda.py
 T5.19 | Una reparacion se da por protegida solo si su vigia nace ROJA al sabotearla | manual:sabotear la cura y ver la vigia en rojo
+
+## TANDA 6 (2026-08-24 — equipo total + probar de verdad antes de pedir a Julio)
+
+T6.1 | El candado de equipo aplica a TODAS las IA y el salto se responde SIEMPRE denegado | vigia:test_vigia_equipo_total.py
+T6.2 | Antes de pedirle a Julio que pruebe, prueba real interna (con equipo, Playwright) en verde | vigia:test_vigia_prueba_real.py
+T6.3 | Cada instruccion de Julio se legisla (analizar->legislar->tabla/matriz->bloques->indexar->vigias->arnes) | vigia:test_vigia_legislacion_ciclo.py
+T6.4 | Solo se pregunta despues de haber buscado (todo indexado) | vigia:test_vigia_dudas.py
+T6.5 | Cline queda obligado a lo mismo que Claude (regla propia en .clinerules) | vigia:test_vigia_equipo_total.py
+T6.6 | Si el resultado se logro, avisar a Julio; si no, aprender y reiniciar, sin excusas | vigia:test_vigia_legislacion_ciclo.py

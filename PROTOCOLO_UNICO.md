@@ -75,8 +75,13 @@ Bloque mínimo: **un fallo, máximo dos funciones**. Si necesita más: detenerse
 - **El juez es el navegador**: se abre y se comprueba de verdad.
 - **Y el juez final es Julio.** Solo él da algo por bueno.
 - Toda reparación lleva **su prueba nueva**, y esa prueba la escribe **otro**, no el que reparó.
+- **ANTES de pedirle a Julio que pruebe** (Ley H, 2026-08-24): se corre, **con el equipo**, una
+  **prueba real interna (Playwright)** que toca la pantalla y demuestra que el objetivo se cumple.
+  Solo si esa prueba está en verde y con equipo se le pide a Julio.
 - **Candado:** `arnes/candado_cierre.py` — no deja terminar con pruebas rojas ni con preguntas
-  sin hacer. Y `cuerpo/cruzado.py` — el que repara nunca escribe su propia prueba.
+  sin hacer. `cuerpo/cruzado.py` — el que repara nunca escribe su propia prueba. Y
+  `arnes/candado_prueba_real.py` — no deja pedirle a Julio que pruebe sin prueba real fresca,
+  verde y con equipo.
 
 ### PASO 8 — LEGISLAR, SELLAR Y APRENDER
 - Cada instrucción de Julio **se legisla**: contrato + prueba + aplicar.
@@ -118,6 +123,28 @@ queda suelto. Y **siempre se pregunta antes de borrar** algo histórico.
 Los ayudantes gratis hacen el trabajo pesado; aquí solo se dirige y se leen los veredictos.
 Nunca se lee el proyecto entero: se pide el paquete.
 - **Candado:** `arnes/read_gate.py` + el reparto de ayudantes por turnos.
+
+### LEY G — SIEMPRE EN EQUIPO, SIN SALTO (2026-08-24)
+El candado de equipo aplica a **TODAS las IA** (Claude, Cline, ChatGPT). Para saltarlo se pide
+permiso y la respuesta es **SIEMPRE "denegado"**. Se trabaja siempre en equipo.
+- **Candado:** `arnes/candado_equipo.py` (no ofrece salto) + `arnes/edit_gate_universal.py`.
+
+### LEY H — PROBAR DE VERDAD ANTES DE PEDIRLE A JULIO (2026-08-24)
+Antes de pedirle a Julio que pruebe con sus ojos se corre, **con el equipo**, una **prueba real
+interna (Playwright)** que demuestre que el objetivo se cumple. Se verifica si el resultado se
+logró o fue **autovalidación** (una autovalidación no abre la puerta).
+- **Si se logró** → avisarle a Julio para sus pruebas reales.
+- **Si NO se logró** → aprender del error y **reiniciar el ciclo** para reparar y lograr el
+  resultado, sin excusas.
+- **Candado:** `arnes/candado_prueba_real.py` — no deja pedirle a Julio que pruebe sin evidencia
+  fresca, verde y con equipo.
+
+### LEY I — SOLO SE PREGUNTA DESPUÉS DE HABER BUSCADO (2026-08-24)
+Nunca se pregunta a Julio antes de buscar. Se busca primero en: el repositorio, los objetivos, la
+legislación, las tablas de verdad, la matriz y la tabla de errores — **todo debe estar indexado**.
+Solo si allí no está la respuesta, se pregunta. Nunca antes.
+- **Candado:** `arnes/candado_preguntar.py` (PASO 4) — bloquea la pregunta si la respuesta ya
+  estaba escrita y buscable.
 
 ---
 

@@ -74,6 +74,9 @@ REGLAS DURAS (si las rompes, tu trabajo se descarta):
 2. NO decidas lo que el contrato no dice. Escribe PREGUNTA_REQUERIDA: <la pregunta en palabras simples>.
 3. Cambia lo MINIMO. Nombra el archivo y la linea exacta de cada cambio.
 4. Antes de terminar, di a quien puedes danar (mira la seccion "A QUIEN PUEDE DANAR").
+5. Trabaja SOLO con la memoria del PAQUETE de abajo (la informacion indexada). Si te falta material
+   para responder, pidelo asi y nada mas: NECESITO_LEER: archivo / motivo / que decide / riesgo.
+   No rechaces el trabajo ni te inventes excusas: el material es el suficiente para lo que se te pide.
 
 TAREA: {tarea}
 
@@ -327,8 +330,9 @@ def _deepseek_directo(prompt, temperatura, modelo):
     es la direccion y la llave: DEEPSEEK_API_KEY, que va SOLA en las variables de Windows y no se
     le pide nunca a Julio por el chat.
 
-    Es el mismo al que Julio llama "4 ojos" en el canal interno, y el que el quiere de supervisor
-    por defecto: si Claude son las manos, DeepSeek supervisa; y al reves.
+    Es el supervisor de pago que Julio quiere por defecto (si Claude son las manos, DeepSeek supervisa;
+    y al reves). OJO: NO es el "4ojos" del canal — en el canal "4ojos" es Cline, el encargado de la
+    ventana de VS Code. DeepSeek es el CEREBRO de pago; Cline es el ENCARGADO; son dos cosas distintas.
 
     LO QUE LO SEPARA DE TODOS LOS DEMAS: DeepSeek NO ES GRATIS, va con saldo. Por eso esta en
     `cuotas.DE_PAGO` y no se le pregunta a la vez que a los gratis, sino a solas y de ultimo.
@@ -485,6 +489,32 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
     return _ultimo_recurso(avisos)          # ningun gratis pudo: ahora si, el de pago
 
 
+def _validar_en_paquete(paquete, propuesta):
+    """FRENO (2026-08-24): que el modelo use SOLO la memoria del paquete, no invente.
+
+    Julio: "que usen la memoria indexada, los paquetes, para que no vuelvan a rechazar trabajo
+    o hacer lo que se les de la gana." Esto comprueba que todo archivo que el modelo nombra
+    (archivo, codigo, puede_danar) esta DECLARADO en el paquete. Si inventa uno, se le marca
+    para que el auditor y el bucle lo atajen; no se le deja pasar como si valiera.
+    """
+    declarados = set()
+    for m in re.finditer(r"^### `([^`]+?)`", paquete or "", re.M):
+        declarados.add(m.group(1).split(":")[0].split("/")[-1].strip())
+    p = propuesta or {}
+    inventados = []
+    arch = str(p.get("archivo") or "")
+    if arch:
+        b = arch.split("/")[-1]
+        if b and b not in declarados:
+            inventados.append(b)
+    for campo in ("codigo", "cambio", "puede_danar"):
+        for m in re.findall(r"[\w/]+\.(?:py|html|js|ts|css|sql)", str(p.get(campo) or "")):
+            b = m.split("/")[-1]
+            if b and b not in declarados:
+                inventados.append(b)
+    return sorted(set(inventados))
+
+
 def trabajar(paquete, tarea, generador=None, auditor=None):
     """Un cerebro GENERA, OTRO distinto AUDITA (4 ojos). Quien es cada uno lo decide el relevo
     de cuotas, no una lista fija: asi nunca se para el trabajo por una cuota agotada."""
@@ -499,6 +529,9 @@ def trabajar(paquete, tarea, generador=None, auditor=None):
     if not crudo:
         return {"_error": "; ".join(av1)}
     propuesta = _json_de(crudo)
+    inventados = _validar_en_paquete(paquete, propuesta)
+    if inventados:
+        propuesta["_fuera_del_paquete"] = inventados   # marco: no se deja pasar como valido
 
     # el auditor NUNCA puede ser el mismo que genero: si no, se aprueba a si mismo.
     crudo_a, quien_aud, av2 = _preguntar_con_relevo(

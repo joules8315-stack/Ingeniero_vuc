@@ -20,6 +20,10 @@ Si falta algo, se PIDE (formato `NECESITO_LEER` al final del paquete). No se abr
 4. **No romper vecinos.** Antes de tocar, se lee la seccion "A QUIEN PUEDE DANAR" del paquete.
 5. **Hablarle en simple.** Julio no es tecnico. Nada de jerga; el comando siempre listo para PowerShell (`;`, no `&&`).
 
+## LAS 2 LEYES DEL 2026-08-24 (se suman a las 5, no se negocian)
+6. **Siempre en equipo, sin salto, en TODAS las IA** (Claude, Cline, ChatGPT). Para saltar el candado de equipo se pide permiso y la respuesta es SIEMPRE **denegado**.
+7. **Probar de verdad antes de pedirle a Julio.** Antes de pedirle que pruebe con sus ojos se corre, con el equipo, una prueba real interna (Playwright) que demuestre que el objetivo se cumple. Si se logro, se le avisa; si no, se aprende del error y se reinicia el ciclo para lograr el resultado, sin excusas.
+
 ## COMO SE TRABAJA (el protocolo, no hay que repetirselo a nadie)
 ```
 python ingeniero.py arranca                 # donde ibamos (el estado NO vive en el chat)

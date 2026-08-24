@@ -50,7 +50,19 @@ def arranca():
         print("SIGUIENTE PASO: reparar SOLO con el paquete vigente (no abrir nada mas),")
         print(f"   y despues: python ingeniero.py vigias {d['proyecto']} despues")
     elif d["prueba_humana"] == "PENDIENTE":
-        print("SIGUIENTE PASO: que Julio lo pruebe CON SUS OJOS. Una vigia verde NO cuenta.")
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        try:
+            import candado_prueba_real as _pr
+            _ev = _pr.hay_prueba_real(d.get("proyecto"), d.get("problema"))
+        except Exception:
+            _ev = None
+        if not _ev:
+            print("PARADO: falta la PRUEBA REAL interna (con el equipo, con Playwright) que")
+            print("       demuestre que el objetivo se cumple. NO se le pide a Julio que pruebe todavia.")
+            print("       Cuando este lista y en verde: python arnes/candado_prueba_real.py marcar <proyecto> \"<objetivo>\"")
+        else:
+            print("SIGUIENTE PASO: la prueba real interna esta en verde y con equipo. Pedirle a")
+            print("   Julio que pruebe CON SUS OJOS: python ingeniero.py pedir-prueba")
     else:
         print("SIGUIENTE PASO: sellar el cambio y limpiar el estado.")
     return 0
@@ -59,6 +71,14 @@ def arranca():
 def trabaja(apodo, problema):
     pk = router.armar(apodo, problema)
     txt = router.a_texto(pk)
+    # INDEXACION (reparacion 2026-08-24): cada paquete se apunta en el cuaderno de acierto.
+    # Sin esto el router nunca aprende que le falta, y se repiten las instrucciones y se pierde
+    # contexto. Antes esto solo lo hacia el subagente, no este comando (fallo real 2026-08-24).
+    try:
+        from cuerpo import medidor
+        medidor.apuntar_paquete(pk, txt)
+    except Exception:
+        pass
     os.makedirs(router.PAQUETES, exist_ok=True)
     slug = "".join(c if c.isalnum() else "_" for c in problema.lower())[:40]
     destino = os.path.join(router.PAQUETES, f"{apodo}__{slug}.md")
@@ -363,6 +383,22 @@ def main():
         from cuerpo import medidor
         m = medidor.marcar_prueba_humana(sys.argv[2], " ".join(sys.argv[3:]))
         print("marcado como PROBADO POR JULIO" if m else "NO_ENCONTRADO: no hay medicion de eso")
+        return 0
+    if cmd == "pruebareal":
+        # B2 (legislacion 2026-08-24): deja la evidencia de una prueba real interna.
+        return subprocess.call([sys.executable,
+                                os.path.join(AQUI, "arnes", "candado_prueba_real.py"),
+                                "marcar"] + sys.argv[2:])
+    if cmd == "pedir-prueba":
+        # B2: pedirle a Julio que pruebe con sus ojos SOLO si hay prueba real fresca, verde y con equipo.
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        import candado_prueba_real as _pr
+        from cuerpo import estado as _estado
+        d = _estado.leer()
+        if not _pr.hay_prueba_real(d.get("proyecto"), d.get("problema")):
+            sys.stderr.write(_pr.MENSAJE)
+            return 2
+        print("LISTO: la prueba real interna esta en verde y con equipo. Pedirle a Julio que pruebe con sus ojos.")
         return 0
     if cmd == "fallos":
         print(fallos.texto()); return 0
