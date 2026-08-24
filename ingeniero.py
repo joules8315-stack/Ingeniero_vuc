@@ -109,11 +109,24 @@ def vigias(apodo, cuando="antes"):
         print(f"NO_ENCONTRADO: {apodo}")
         return 1
     raiz = prs[apodo]["ruta"]
+    # FALLO REAL (2026-08-24): si el proyecto no tenia carpeta `vigias/`, esto se rendia y el
+    # paso "vigias antes/despues" del protocolo quedaba EN BLANCO. Foto Informe las tiene
+    # sueltas en la raiz (test_vigia_*.py), asi que en todo un dia de reparaciones nunca se
+    # supo de que color estaban antes ni despues. Un paso del protocolo que no se puede
+    # cumplir no se cumple: se salta y nadie lo nota.
     carpeta = os.path.join(raiz, "vigias")
-    if not os.path.isdir(carpeta):
-        print(f"NO_ENCONTRADO: {apodo} no tiene carpeta vigias/")
-        return 1
-    r = subprocess.run([sys.executable, "-m", "pytest", "-q", "vigias/"],
+    if os.path.isdir(carpeta):
+        objetivo = ["vigias/"]
+    else:
+        objetivo = sorted(f for f in os.listdir(raiz)
+                          if f.startswith("test_vigia_") and f.endswith(".py"))
+        if not objetivo:
+            print(f"NO_ENCONTRADO: {apodo} no tiene vigias (ni carpeta vigias/ ni "
+                  f"test_vigia_*.py en la raiz)")
+            return 1
+        print(f"  ({apodo} no tiene carpeta vigias/: se corren sus {len(objetivo)} "
+              f"test_vigia_*.py de la raiz)")
+    r = subprocess.run([sys.executable, "-m", "pytest", "-q"] + objetivo,
                        cwd=raiz, capture_output=True, text=True)
     ultima = [l for l in (r.stdout or "").splitlines() if l.strip()][-1:]
     resumen = ultima[0] if ultima else "sin salida"

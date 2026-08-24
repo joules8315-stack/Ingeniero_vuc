@@ -84,18 +84,63 @@ def reparaciones_que_tocas(piezas):
                 "no_volver_a": f["no_volver_a"],
                 "cura": f.get("cura", ""),
                 "prueba": f["quien_lo_caza"],
+                "proyecto": f.get("proyecto", ""),
                 "cuando": f.get("fecha", ""),
             })
     return salen
 
 
+def raiz_del_proyecto(apodo):
+    """Donde vive ese proyecto. Si no se sabe, la casa del Ingeniero.
+
+    FALLO REAL (2026-08-24): esto no existia y las pruebas se buscaban SIEMPRE dentro del
+    Ingeniero. Como la mayoria de reparaciones son de OTROS proyectos, sus vigias salian como
+    "NO_EXISTE esa prueba: la reparacion quedo sin nada que la proteja" aunque existieran y
+    corrieran verdes. Se comprobo con el vigia del onboarding, que vive en Asesor Marketing.
+    Un aviso que grita "esto esta desprotegido" cuando no lo esta acaba ignorandose, y entonces
+    ya no avisa de las que si lo estan.
+    """
+    apodo = str(apodo or "").strip()
+    if not apodo or apodo == "ingeniero":
+        return AQUI
+    try:
+        sys.path.insert(0, AQUI)
+        from cerebro import grafo
+        d = (grafo.proyectos() or {}).get(apodo) or {}
+        ruta = str(d.get("ruta") or "").strip()
+        if ruta and os.path.isdir(ruta):
+            return ruta
+    except Exception:
+        pass
+    return AQUI
+
+
 def pruebas_a_correr(piezas):
-    """Solo las pruebas de lo que se toco. Esto es lo que lo hace rapido."""
+    """Solo las pruebas de lo que se toco, CADA UNA con la casa donde vive.
+
+    Devuelve [(prueba, raiz), ...]. La raiz importa: una prueba de otro proyecto no esta —ni
+    corre— dentro del Ingeniero.
+    """
     cuales = []
+    vistas = set()
     for r in reparaciones_que_tocas(piezas):
         p = str(r["prueba"]).strip()
-        if p.endswith(".py") and p not in cuales:
-            cuales.append(p)
+        if not p.endswith(".py"):
+            continue
+        # Se mira en LOS DOS SITIOS. El sintoma puede vivir en un proyecto y la cura —y por
+        # tanto su vigia— en el Ingeniero: paso de verdad con la reparacion del paquete, que
+        # es de marketing pero se arreglo y se vigila aqui. Se queda la casa donde el archivo
+        # ESTA; si no esta en ninguna, la del proyecto, para que el aviso senale su sitio.
+        posibles = [raiz_del_proyecto(r.get("proyecto")), AQUI]
+        raiz = posibles[0]
+        for casa in posibles:
+            if os.path.exists(os.path.join(casa, p.replace("/", os.sep))):
+                raiz = casa
+                break
+        if (p, raiz) in vistas:
+            continue
+        vistas.add((p, raiz))
+        cuales.append((p, raiz))
     return cuales
 
 
@@ -105,15 +150,15 @@ def siguen_en_pie(piezas):
     if not cuales:
         return True, []
     caidas = []
-    for prueba in cuales:
-        ruta = os.path.join(AQUI, prueba.replace("/", os.sep))
+    for prueba, raiz in cuales:
+        ruta = os.path.join(raiz, prueba.replace("/", os.sep))
         if not os.path.exists(ruta):
             caidas.append({"prueba": prueba, "por_que": "NO_EXISTE esa prueba: la reparacion "
                                                         "quedo sin nada que la proteja"})
             continue
         try:
             r = subprocess.run([sys.executable, "-m", "pytest", "-q", prueba],
-                               cwd=AQUI, capture_output=True, text=True, timeout=240)
+                               cwd=raiz, capture_output=True, text=True, timeout=240)
             if r.returncode != 0:
                 ultima = [l for l in (r.stdout or "").splitlines() if l.strip()][-1:]
                 caidas.append({"prueba": prueba,

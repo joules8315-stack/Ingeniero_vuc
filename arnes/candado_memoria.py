@@ -22,13 +22,62 @@ se mira si hay algun fallo con ese disparador, y si lo hay, se recuerda ANTES de
 No estorba: solo avisa de lo que viene al caso (si avisa de todo, se vuelve ruido y se ignora),
 y siempre dice QUE HACER en su lugar, no solo que esta mal.
 """
+import hashlib
 import json
 import os
 import re
 import sys
+from datetime import datetime
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, AQUI)
+
+# Libreta chica y aparte: SOLO recuerda "de esto ya te avise hace un momento".
+# NO toca la memoria de errores de verdad (leccion ya vivida: ninguna comprobacion escribe
+# encima de la memoria real).
+AVISADOS = os.path.join(AQUI, "memoria", ".avisos_ya_dados.json")
+DURA_MIN = 20
+
+
+def _ahora():
+    return datetime.now().timestamp()
+
+
+def _leer_avisados():
+    try:
+        with open(AVISADOS, encoding="utf-8-sig") as f:
+            d = json.load(f)
+        return d if isinstance(d, dict) else {}
+    except Exception:
+        return {}
+
+
+def _ya_avisado(huella):
+    """¿Se enseño ESTA leccion para ESTA misma accion hace poco?"""
+    try:
+        cuando = _leer_avisados().get(huella)
+        return bool(cuando) and (_ahora() - float(cuando)) < DURA_MIN * 60
+    except Exception:
+        return False
+
+
+def _apuntar_aviso(huella):
+    """Deja constancia de que se enseño.
+
+    Si NO se puede escribir, no queda constancia y la proxima vez se vuelve a frenar. Este
+    candado, cuando algo le falla, se cierra; nunca se abre.
+    """
+    try:
+        dados = _leer_avisados()
+        ahora = _ahora()
+        dados = {k: v for k, v in dados.items()
+                 if isinstance(v, (int, float)) and ahora - float(v) < DURA_MIN * 60}
+        dados[huella] = ahora
+        os.makedirs(os.path.dirname(AVISADOS), exist_ok=True)
+        with open(AVISADOS, "w", encoding="utf-8") as f:
+            json.dump(dados, f)
+    except Exception:
+        pass
 
 
 def _texto_de_la_accion(data):
@@ -89,6 +138,34 @@ def main():
         partes.append("    NO VUELVAS A : %s" % f["no_volver_a"][:130])
         partes.append("")
     partes.append("  Guardar un fallo no es aprender. Esto es el aviso ANTES de cometerlo otra vez.")
+
+    # AVISAR NO ES TAPIAR (Julio, 2026-08-24, tras perder una tarde entera contra esto).
+    #
+    # QUE PASABA: este freno paraba SIEMPRE, y para siempre. Una leccion cuyo disparador era el
+    # nombre de los dos comandos con los que se pide el material y se llama al equipo dejo
+    # tapiado el protocolo ENTERO. Otra, cuyo disparador era el nombre de un archivo roto,
+    # impedia repararlo: el recuerdo del fallo impedia arreglar el fallo. Y una tercera freno
+    # esta misma reparacion. Es el fallo ya apuntado: "escribir un candado sin una forma honrada
+    # de satisfacerlo". Un freno del que no se puede salir no protege: paraliza.
+    #
+    # QUE HACE AHORA: la PRIMERA vez frena y ensena la leccion, que es lo que Julio pidio — ver
+    # el fallo ANTES de cometerlo. Si se insiste con la MISMA accion, se deja pasar: la leccion
+    # ya se leyo, y seguir es entonces una decision tomada a sabiendas, no un descuido.
+    # No se afloja nada: sigue siendo IMPOSIBLE actuar sin haber visto el aviso primero.
+    huella = hashlib.sha1(
+        ("|".join(sorted(str(f.get("id", "")) for f in revividos)) + "::" + texto
+         ).encode("utf-8", "replace")).hexdigest()
+
+    if _ya_avisado(huella):
+        partes.append("")
+        partes.append("  (De esto ya te avise hace un momento y vuelves a intentarlo: PASA.")
+        partes.append("   Insistir despues de leer el aviso es una decision, no un descuido.)")
+        sys.stderr.write("\n".join(partes) + "\n")
+        return 0
+
+    _apuntar_aviso(huella)
+    partes.append("")
+    partes.append("  Si aun asi hay que hacerlo, repite la MISMA accion y pasara.")
     sys.stderr.write("\n".join(partes) + "\n")
     return 2
 
