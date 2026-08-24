@@ -132,6 +132,9 @@ LEYES_DURAS = [
     ("Siempre en equipo, sin salto", "aplica a TODAS las IA (Claude, Cline, ChatGPT); para saltarlo se pide permiso y la respuesta es SIEMPRE denegado"),
     ("Probar de verdad antes de pedir a Julio", "con el equipo, Playwright; si se logro se avisa a Julio, si no se aprende y se reinicia el ciclo"),
     ("Solo se pregunta despues de buscar", "repo, objetivos, legislacion, tablas de verdad, matriz y errores, todo indexado; nunca antes"),
+    ("Todo lo que se habla se legisla", "candado + vigia, sin romper lo que sirve"),
+    ("Todo queda limpio y en commit", "lo nuevo se indexa; el guardia lo exige"),
+    ("Pruebas reales, no autovalidacion", "Playwright abre el navegador y comprueba de verdad"),
 ]
 
 
@@ -220,7 +223,8 @@ DOCS_METODO = {
                      "CONTRATO_UNICO_RUTA_P2.md", "CONTRATO_RV2_NO_ASUMIR_CRITERIOS.md",
                      "HISTORICO_RV2_FALLOS_Y_REPARACIONES.md", "CONTRATO_FILAS_ASIGNADAS.md"],
     "ingeniero": ["PROTOCOLO_UNICO.md", "CONTRATO_INGENIERO_VUC.md", "ORDENES.md",
-                  "CONTRATO_LEGISLACION_2026-08-24.md", "MATRIZ_LEGISLACION.md"],
+                  "CONTRATO_LEGISLACION_2026-08-24.md", "MATRIZ_LEGISLACION.md",
+                  "CONTRATO_LEGISLACION_TOTAL.md"],
 }
 INDICE = os.path.join(AQUI, "memoria", "INDICE_METODO.json")
 
