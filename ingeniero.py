@@ -192,7 +192,8 @@ def main():
         import candado_equipo as _ce
         proy, tarea = sys.argv[2], " ".join(sys.argv[3:])
         paq = _r.armar(proy, tarea)
-        res = _o.trabajar(paq, tarea)
+        # el TEXTO, no la caja: trabajar espera el texto del paquete (fix 2026-08-24)
+        res = _o.trabajar(_r.a_texto(paq), tarea)
         print(_o.veredicto_corto(res))
         if "_error" in res:
             return 1

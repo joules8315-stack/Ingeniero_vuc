@@ -496,7 +496,13 @@ def _validar_en_paquete(paquete, propuesta):
     o hacer lo que se les de la gana." Esto comprueba que todo archivo que el modelo nombra
     (archivo, codigo, puede_danar) esta DECLARADO en el paquete. Si inventa uno, se le marca
     para que el auditor y el bucle lo atajen; no se le deja pasar como si valiera.
+
+    SEGURIDAD (2026-08-24): si le llega la CAJA (dict del paquete) en vez del texto, se normaliza.
+    Antes esto se caia con TypeError y el freno no protegia nada (fallo real 2026-08-24).
     """
+    if not isinstance(paquete, str):
+        from cerebro import router as _r
+        paquete = _r.a_texto(paquete)
     declarados = set()
     for m in re.finditer(r"^### `([^`]+?)`", paquete or "", re.M):
         declarados.add(m.group(1).split(":")[0].split("/")[-1].strip())
@@ -517,7 +523,14 @@ def _validar_en_paquete(paquete, propuesta):
 
 def trabajar(paquete, tarea, generador=None, auditor=None):
     """Un cerebro GENERA, OTRO distinto AUDITA (4 ojos). Quien es cada uno lo decide el relevo
-    de cuotas, no una lista fija: asi nunca se para el trabajo por una cuota agotada."""
+    de cuotas, no una lista fija: asi nunca se para el trabajo por una cuota agotada.
+
+    SEGURIDAD (2026-08-24): el que llama a veces manda la CAJA (dict) en vez del texto. Se
+    normaliza a texto aqui para que ni el generador, ni el freno, ni el auditor vean basura
+    (fallo real: el comando 'equipo' pasaba el dict y se caia tras pagar a DeepSeek)."""
+    if not isinstance(paquete, str):
+        from cerebro import router as _r
+        paquete = _r.a_texto(paquete)
     c, _ = prestar_cerebro()
     if not c:
         return {"_error": "NO_ENCONTRADO: no se pudo tomar prestado el cerebro de DMM"}
