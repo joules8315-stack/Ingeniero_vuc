@@ -214,11 +214,17 @@ def main():
         tocados = prop.get("archivo") or prop.get("archivos") or []
         if isinstance(tocados, str):
             tocados = [tocados]
-        # tambien valen las piezas que el paquete trajo: es lo que el equipo tuvo delante
-        for pz in (paq.get("piezas") if isinstance(paq, dict) else []) or []:
-            pid = pz.get("id") if isinstance(pz, dict) else str(pz)
-            if pid and pid not in tocados:
-                tocados.append(pid)
+        # tambien valen las piezas que el paquete trajo: es lo que el equipo tuvo delante.
+        # FALLO REAL (2026-08-24): esto buscaba "piezas" y el paquete NO usa ese nombre, usa
+        # "fichas" (medido: fichas=39, piezas=None). Como el obrero gratis casi siempre devuelve
+        # NO_ENCONTRADO en proyectos grandes, la llave quedaba en ['NO_ENCONTRADO'] y no abria
+        # nada: no se podia tocar ni una vigia recien escrita del mismo proyecto. El candado del
+        # equipo se volvia un muro en vez de una puerta con llave.
+        for clave in ("fichas", "piezas"):
+            for pz in (paq.get(clave) if isinstance(paq, dict) else []) or []:
+                pid = pz.get("id") if isinstance(pz, dict) else str(pz)
+                if pid and pid not in tocados:
+                    tocados.append(pid)
         _ce.guardar_veredicto(tarea, tocados, res.get("obrero"), res.get("auditor"),
                               (res.get("auditoria") or {}).get("veredicto", "?"))
         print()

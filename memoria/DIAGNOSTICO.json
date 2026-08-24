@@ -1,9 +1,9 @@
 {
- "cuando": 1787584334.9569743,
- "proyecto": "foto_informe",
- "archivo": "rv3_prueba_real_velocidad.py",
- "funcion": "main",
- "linea": "130",
- "evidencia": "Medido con navegador: tras entrar, la pantalla hace 2 llamadas (a /template/config y /table-config) en el segundo +1.3, y DESPUES CERO durante 24 segundos seguidos. No es un reloj: es el arranque terminando de cargar su configuracion, una sola vez. La prueba empieza a contar en t0+1 segundo y por eso pilla esa cola y da ROJO sin que haya nada mal en la aplicacion.",
+ "cuando": 1787613278.7935774,
+ "proyecto": "ingeniero",
+ "archivo": "ingeniero.py",
+ "funcion": "main (comando equipo)",
+ "linea": "219",
+ "evidencia": "Medido a mano: router.armar('foto_informe', ...) devuelve un paquete con claves apodo, raiz, problema, flujos, claves, fichas, codigo, trozos, leyes, vigias, dana, total_proyecto. fichas trae 39 elementos con su id; piezas es None. El comando equipo lee paq.get('piezas'), asi que nunca anade nada a la llave. Leido en .veredicto_equipo.json tras correr el comando: archivos = ['NO_ENCONTRADO']. Consecuencia reproducida hoy: con esa llave, candado_equipo bloqueo editar dos vigias recien escritas del mismo proyecto.",
  "sintoma": ""
 }
