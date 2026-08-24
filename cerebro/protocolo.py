@@ -218,7 +218,7 @@ DOCS_METODO = {
             "CONTRATO_MEMORIA.md", "CONTRATO_MAESTRO_AHORRO.md"],
     "foto_informe": ["PROTOCOLO_MVP.md", "CLAUDE.md", "OBJETIVO_MVP.md",
                      "CONTRATO_UNICO_RUTA_P2.md", "CONTRATO_RV2_NO_ASUMIR_CRITERIOS.md",
-                     "HISTORICO_RV2_FALLOS_Y_REPARACIONES.md"],
+                     "HISTORICO_RV2_FALLOS_Y_REPARACIONES.md", "CONTRATO_FILAS_ASIGNADAS.md"],
     "ingeniero": ["PROTOCOLO_UNICO.md", "CONTRATO_INGENIERO_VUC.md", "ORDENES.md",
                   "CONTRATO_LEGISLACION_2026-08-24.md", "MATRIZ_LEGISLACION.md"],
 }

@@ -69,11 +69,31 @@ def test_NI_UNA_lectura_sin_paquete():
 
 
 def test_con_paquete_vigente_no_estorba(monkeypatch):
-    """Si se esta trabajando bien (con paquete), no se cuenta nada."""
-    from candado_terminal import _guardar_cuenta, TOPE_SIN_PAQUETE
-    _guardar_cuenta(TOPE_SIN_PAQUETE + 5)
-    code, _ = _correr(_orden('grep -n "x" "%s/app.py"' % MVP), {"INGENIERO_SIN_PAQUETE_TEST": ""})
-    assert code == 0, "estorba aun teniendo el paquete vigente"
+    """Si se esta trabajando bien (con paquete), no se cuenta nada.
+
+    SE PONIA EN ROJO SOLA (fallo real 2026-08-22): el candado mira si hay algun paquete de menos
+    de 8 horas, y esta prueba no creaba ninguno. Pasaba si alguien habia trabajado hace poco y
+    fallaba al dia siguiente sin que nadie tocara una linea. Es el patron ya apuntado de la
+    prueba que depende del reloj. Ahora se fabrica SU PROPIO paquete y lo borra al terminar:
+    nace con la hora de hoy, asi que ya no depende de lo que hiciera nadie ayer.
+    """
+    import os as _os
+    from candado_terminal import _guardar_cuenta, TOPE_SIN_PAQUETE, AQUI
+    carpeta = _os.path.join(AQUI, "memoria", "paquetes")
+    _os.makedirs(carpeta, exist_ok=True)
+    mio = _os.path.join(carpeta, "_paquete_de_prueba_sin_rendijas.md")
+    with open(mio, "w", encoding="utf-8") as f:
+        f.write("# paquete de prueba, se borra solo\n")
+    try:
+        _guardar_cuenta(TOPE_SIN_PAQUETE + 5)
+        code, _ = _correr(_orden('grep -n "x" "%s/app.py"' % MVP),
+                          {"INGENIERO_SIN_PAQUETE_TEST": ""})
+        assert code == 0, "estorba aun teniendo el paquete vigente"
+    finally:
+        try:
+            _os.remove(mio)
+        except OSError:
+            pass
 
 
 def test_no_estorba_lo_que_no_lee_proyectos():

@@ -1,97 +1,142 @@
-# DONDE QUEDAMOS — cierre del 2026-08-21
+# DONDE QUEDAMOS — cierre del 2026-08-24
 
-> Julio: **"guarda todo para manana"**.
-> Esto es lo primero que hay que leer al volver. No hace falta que Julio cuente nada otra vez.
+> Esto es lo PRIMERO que hay que leer al volver. Julio no tiene que contar nada otra vez.
 
 ---
 
-## LO PRIMERO QUE HAY QUE HACER MANANA (por orden)
+## LO PRIMERO AL VOLVER
 
-**1. Julio corre la prueba integral de Foto Informe.** Es lo unico que falta para poder guardar
-la reparacion. Su propio arnes la exige y la ultima verde es de hace un mes.
-
-Ventana 1, el motor:
+**1. Encender Foto Informe** (si no esta ya):
 ```powershell
-cd "C:\Users\USER\dev\Foto_info_repo\Foto_informe--main"; .\start_backend_8000.bat
+cd "C:\Users\USER\dev\Foto_info_repo\Foto_informe--main"; .\.venv\Scripts\python.exe run_backend.py
 ```
+Se comprueba abriendo `http://127.0.0.1:8000/` — tiene que responder.
 
-Ventana 2, la prueba (la clave nunca se ve ni se guarda):
-```powershell
-cd "C:\Users\USER\dev\Foto_info_repo\Foto_informe--main"
-$env:FOTO_INFORME_TEST_EMAIL = "tu-correo-de-PRUEBA"
-$s = Read-Host "Clave de la cuenta de PRUEBA (no se vera)" -AsSecureString
-$b = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($s)
-$env:FOTO_INFORME_TEST_PASSWORD = [Runtime.InteropServices.Marshal]::PtrToStringAuto($b)
-[Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b)
-.\.venv\Scripts\python.exe rv3_prueba_integral.py
-.\.venv\Scripts\python.exe rv3_prueba_real_velocidad.py
-```
+**2. La base de Supabase se DUERME sola.** Si el MVP dice "no autorizado" al entrar, no es la
+clave: es que el proyecto de Supabase esta pausado. Julio entra y le da a reanudar. Costo media
+hora descubrirlo el 2026-08-24.
 
-**2. Con esa verde, se guarda la reparacion de Foto Informe** (hoy quedo preparada pero el arnes
-la retuvo).
+**3. Las credenciales de prueba ya estan guardadas** en las variables de usuario de Windows
+(`FOTO_INFORME_TEST_EMAIL`, `FOTO_INFORME_TEST_PASSWORD`, `FOTO_INFORME_TEST_BEARER`).
+Julio pidio **dejarlas hasta terminar las pruebas**. Al acabar, se le ofrece borrarlas: su
+propia regla dice "nada de larga vida".
+El pase (`BEARER`) caduca; se renueva entrando con correo y clave y guardando el nuevo.
 
-**3. Julio lo ve con sus ojos.** Vigia verde NO es prueba. Abre Foto Informe, toma fotos con el
-celular con el informe abierto en el computador, y comprueba que aparecen y que la pantalla
-responde de una vez.
+**4. El siguiente paso tecnico:** desatascar el guardado de la reparacion de velocidad.
 
 ---
 
-## LO QUE QUEDO HECHO HOY
+## FOTO INFORME — reparacion de velocidad: HECHA y PROBADA, pero SIN GUARDAR
 
-### Foto Informe — las 4 fugas de velocidad, tapadas (SIN GUARDAR todavia)
-Lo escribio DeepSeek, lo audito otro cerebro distinto (caza una variable fuera de sitio que
-habria tumbado la pantalla), y se comprobo renglon a renglon antes de aplicar.
+### Lo que quedo reparado (4 fugas)
+1. Al guardar ya no se borra la libreta entera: se olvida **solo lo que ese guardado toca**.
+2. El reloj corre **solo en la pantalla 4 (fotos), cada 5 segundos**. En las demas, cero.
+3. Con la ventana escondida no llama. Al volver, revive solo si estas en la 4.
+4. Leer espera **10 segundos**; guardar (25), subir (60) y generar (120) **intactos**.
 
-1. **Guardar ya no borra la memoria entera.** Olvida solo lo que ese guardado toca. Los otros
-   tres sitios que si borran todo se quedan igual (al entrar, al salir, al pedir limpiar).
-2. **El reloj corre solo en la pantalla de las fotos, cada 5 segundos.** En las demas, cero.
-   Antes despertaba cada 12 segundos en todas, se mirara o no.
-3. **Con la ventana escondida no llama.** Al volver, revive solo si estas en la de fotos.
-4. **Leer espera 10 segundos** en vez de 25. Guardar, subir (60 s) y generar (120 s) NO se
-   tocaron: acortarlas cortaria un guardado y Julio perderia el borrador.
+### Probado de verdad, con navegador
+| | Pantalla vieja | Reparada |
+|---|---|---|
+| Quieto en el menu | 1 llamada | **0** |
+| Pantalla de fotos | 2 en 20 s | **4** (una cada 5) |
+| Ventana escondida | 0 | **0** |
+| Al guardar | borra la libreta entera | **olvida solo lo tocado** |
+| Resultado | **ROJO, 3 fallos** | **VERDE** |
 
-**Comprobado:** la vigia nacio ROJA con 6 fallos antes de tocar y quedo verde. 19 vigias verdes.
-El codigo de la pantalla sigue siendo valido (comprobado aparte: un error ahi la dejaria en
-blanco sin avisar).
+La misma prueba, sin tocarla, contra las dos versiones. **Con la vieja se pone roja**: eso
+demuestra que no es autovalidacion.
 
-**COPIA DE SEGURIDAD** (por si algo se pierde), en `memoria/rescate/`:
-- `foto_informe_velocidad_2026-08-21.patch` — el cambio entero, se puede volver a aplicar
-- `app_web_reparada_2026-08-21.html` — la pantalla ya reparada
-- la vigia y la prueba de navegador, copiadas tambien
+**La prueba con navegador CAZO UN FALLO GRAVE** que la de texto no vio: en la pantalla de fotos
+se hacian 0 llamadas, o sea que las fotos del celular NO habrian aparecido en el computador.
+Se reparo (nadie encendia el reloj al ENTRAR en la 4) y quedo verde.
 
-### El taller — GUARDADO (punto de reparacion `c3f65a8`)
-- **Lo pesado siempre lo hace DeepSeek.** Generar va a el; auditar sigue gratis. Repartir por
-  tamano no bastaba: tres veces el mismo dia los gratis se rindieron por debajo del tope.
-- **La libreta del candado, al reves:** ahora apunta cada vez que FRENA, con el motivo.
-- **Los 51 fallos ya avisan de verdad.** Habia 24 mudos y otros 7 con el aviso escrito como
-  frase (que no coincide con nada). Cero mudos ahora.
-- **Las llaves, protegidas.** El archivo de llaves estaba sin proteger.
-- 250 vigias verdes.
+### POR QUE NO ESTA GUARDADO
+El guardian del propio proyecto lo rechaza: exige una **prueba integral verde reciente** y la
+ultima es de hace un mes. Hace bien su trabajo. Para desatascarlo hay que hacer que la cadena de
+pruebas 8 → 9 termine.
 
----
-
-## LO QUE ESTA PENDIENTE Y ES DECISION DE JULIO
-
-**1. Las credenciales estan dentro del repositorio de Foto Informe Y SUBIDAS a internet.**
-Comprobado: estan en la rama principal y en la rama de trabajo. El repositorio parece privado
-(no responde a quien no tenga permiso), asi que no esta a la vista de cualquiera. Pero **esta en
-el historial**: borrar el archivo hoy no lo quita. Hay que reescribir el historial, y eso es
-delicado. **No se ha tocado nada.** Se trata aparte, con su ley y su prueba.
-
-**2. El aviso de fallos no distingue** entre cometer un fallo y trabajar sobre el propio
-registro de fallos. Freno varias veces al escribir su propia ley. No es grave, pero es el mismo
-patron que ya esta apuntado dos veces (un candado que depende de lo que protege).
-
-**3. Hay una copia congelada de Foto Informe** en el Escritorio de OneDrive, declarada como
-respaldo. No se toca. Si algun dia se abre esa por error, se estaria reparando la equivocada.
+### TODO A SALVO en `memoria/rescate/`
+- `foto_informe_velocidad_2026-08-24.patch` — el cambio entero, se puede volver a aplicar
+- `app_web_reparada_2026-08-24.html` — la pantalla ya reparada
+- `rv3_prueba_real_velocidad.py` — la prueba con navegador que mide las llamadas
+- `test_vigia_solo_las_llamadas_necesarias.py` — la vigia de texto
+- `rv3_prueba_8_reporte_2026-08-24.json` — los hallazgos de la prueba 8
 
 ---
 
-## LO QUE JULIO DIJO HOY Y NO SE OLVIDA
+## LO QUE PREGUNTO JULIO: al borrar asignaciones, ¿queda algun registro?
 
-- "el equipo que haga siempre lo pesado deepseek, no lo olvides nunca" — **ya es ley del codigo**
+**SI, y esta MEDIDO** (prueba 8, corrida el 2026-08-24):
+
+- **"Hay texto manual atado a un informe que no existe"** — **2 casos**. Se borra un informe
+  diario y su texto escrito a mano se queda colgado. Nadie lo ve, nadie lo limpia.
+- **Los textos no cuadran con su fila.** La prueba escribio "Fila 3 · Julio" y la base tiene
+  "Fila 6 · Prueba Real".
+- **Lo que bloquea todo:** la pantalla rechaza el guardado con
+  *"Completa Nº Fila y Anexos/Evidencias/Otros para todos los grupos antes de guardar"*.
+  Ese es el primer hilo del que tirar.
+
+**La prueba 9 NO llego a correr**: exige que la 8 termine bien, y la 8 fallo con 11 hallazgos.
+
+**OJO, error que ya se cometio:** al leer el estado de la cuenta, `/reports` devuelve **1** — ese
+es el informe CONTENEDOR, y siempre hay uno solo por diseno. Los informes diarios van dentro y
+son **25**. Se le dijo a Julio que se habian borrado 24 y era **falso**. Antes de alarmarle, se
+mira `daily_entries_count`.
+
+---
+
+## EL TALLER — lo que se construyo hoy
+
+**EL GUARDIA DE GUARDADO** (`arnes/guardia_de_guardado.py`), orden de Julio: *"que cline use el
+candado, que no se pueda salir por ningun lado"*.
+- **No lo ejecuta la IA: lo ejecuta git.** Da igual quien escriba.
+- Pruebas rojas → no guarda. Archivo con llaves → no guarda. Cada frenada queda apuntada.
+- **Probado saboteandolo**: cazo unas rojas de verdad y cazo un archivo de llaves colado a mano.
+- Instalado en **los tres proyectos** (antes solo Foto Informe tenia algo asi).
+- **Unica salida:** `--no-verify`, que es de git y no se puede quitar. Se nota porque no aparece
+  el apunte en la libreta.
+
+**REGLAS DE CLINE** (`.clinerules/modo_ingeniero.md`) en los tres proyectos.
+
+**CONTRATO DE CREDENCIALES PARA PRUEBAS** — como se piden sin que Julio sufra: se le ABRE la
+ventana y se le dicen dos lineas. Nunca un bloque de ordenes largo.
+
+---
+
+## REVISION DEL TRABAJO DE CLINE EN DMM (2026-08-24)
+
+**Bien:** las 7 piezas nuevas tienen vigia (4 a 7 pruebas cada una), y **las vigias sirven**
+(al romper una pieza a proposito, 5 de 7 se pusieron rojas). **No duplica**: sigue un contrato
+con tareas numeradas y hacen cosas distintas de sus hermanas.
+
+**Mal:** **5 de las 7 piezas no las usa nadie** — existen, estan probadas y no estan conectadas
+a nada, asi que Julio no ve ningun resultado. Y deja el proyecto en rojo mientras trabaja: cada
+pieza nueva rompia dos comprobaciones del mapa (hubo que recompilarlo 5 veces).
+
+**No ha visto:** que una pieza sin conectar no vale nada todavia; que hay que recompilar el mapa
+en el mismo momento de crearla; y que hay otro trabajando a la vez y sus rojas bloquean al otro.
+
+---
+
+## PENDIENTE, DECISION DE JULIO
+
+1. **Las credenciales estan en el historial del repositorio de Foto Informe y subidas.** El
+   proyecto parece privado. **La clave de ese archivo esta MUERTA** (comprobado: el servidor la
+   rechaza), asi que el riesgo real es bajo. Sacarla del historial es delicado. Sin tocar.
+2. **Los 10 segundos de espera al leer no se han probado con conexion lenta de celular.** Es el
+   mejor aviso que dio Cline y sigue sin medir.
+3. **La pantalla de Foto Informe es un solo archivo enorme** (598.377 letras). Partirla es un
+   proyecto en si.
+
+---
+
+## LO QUE JULIO YA DIJO Y NO SE OLVIDA
+
+- "el equipo que haga siempre lo pesado deepseek, no lo olvides nunca" — **es ley del codigo**
 - "repara usando tu equipo, ellos reparan, tu vigilas, no seas tonto"
-- "que todo quede en un commit, cosa que si lo danan, se pueda reparar"
+- "el siguiente paso siempre es que realices pruebas con playwright" — **antes** de pedirle a el
 - "siempre protegiendo contrasena" — nunca se pide ni se escribe una clave por el chat
+- "no inventes ni mierda, solo via oficial"
 - Trabaja **mixto**: fotos desde el celular, informe desde el computador, a la vez
-- "que haga solo las llamadas que necesite, nada mas, en el tiempo que necesite"
+- **No es tecnico.** Nada de jerga, nada de nombres de archivo, nada de bloques largos de
+  ordenes. Se le ABRE lo que necesite y se le dicen dos lineas.

@@ -1,0 +1,5 @@
+#!/bin/sh
+# EL GUARDIA DE GUARDADO. Lo ejecuta GIT, no la IA.
+# Da igual quien escriba: Claude, Cline, otra IA o Julio a mano. Para guardar se pasa por aqui.
+cd "$(git rev-parse --show-toplevel)" || exit 1
+python arnes/guardia_de_guardado.py

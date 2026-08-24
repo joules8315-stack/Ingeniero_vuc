@@ -41,7 +41,9 @@ BASE_URL = os.environ.get("FOTO_INFORME_BASE_URL", "http://127.0.0.1:8000").rstr
 EMAIL = os.environ.get("FOTO_INFORME_TEST_EMAIL", "").strip()
 PASSWORD = os.environ.get("FOTO_INFORME_TEST_PASSWORD", "")
 CUENTA_REAL_PROHIBIDA = "joules8315@gmail.com"
+AUTORIZADA_POR_JULIO = True   # Julio, 2026-08-22: "eso es de prueba". Es su cuenta de pruebas.
 
+ESPERA_ENTRAR_MS = 45000   # lo que se le da a la nube para dejarnos entrar, de sobra
 QUIETO_MENU_S = 20
 QUIETO_FOTOS_S = 20
 ESCONDIDA_S = 15
@@ -58,10 +60,14 @@ def _comprobar_entrada():
         fin("NO_SE_PUDO",
             "Faltan los datos de la cuenta de PRUEBA. Mira el comando en la cabecera de este "
             "archivo. La clave nunca se escribe aqui: se lee de las variables de Windows.")
-    if EMAIL.lower() == CUENTA_REAL_PROHIBIDA:
+    # JULIO LO AUTORIZO EXPRESAMENTE (2026-08-22): "no importa que trabajes en el que te di,
+    # eso es de prueba". Esa cuenta es la SUYA DE PRUEBAS, no la de trabajo. Se levanta el
+    # bloqueo porque lo decide el dueno de los datos, no yo. Queda escrito aqui para que nadie
+    # lo vuelva a bloquear "por precaucion" sin saber que ya se pregunto y se contesto.
+    if EMAIL.lower() == CUENTA_REAL_PROHIBIDA and not AUTORIZADA_POR_JULIO:
         fin("BLOQUEADO",
-            "Esta es la cuenta REAL de Julio. Esta prueba entra y navega: solo con cuenta de "
-            "prueba. Cambia FOTO_INFORME_TEST_EMAIL.")
+            "Esta cuenta esta marcada como de trabajo. Esta prueba entra y navega. Si es de "
+            "prueba de verdad, dilo y se levanta el bloqueo.")
 
 
 def main() -> None:
@@ -96,17 +102,51 @@ def main() -> None:
 
         # ── entrar ────────────────────────────────────────────────────────────
         try:
-            pagina.fill("#loginEmail", EMAIL)
-            pagina.fill("#loginPassword", PASSWORD)
+            # Los nombres de los campos se MIRARON en la pantalla, no se adivinaron. La primera
+            # version invento dos que no existen y la prueba murio esperandolos 30 segundos
+            # (fallo real 2026-08-22). Los de verdad son estos.
+            pagina.fill("#email", EMAIL)
+            pagina.fill("#password", PASSWORD)
             pagina.click("#loginBtn")
-            pagina.wait_for_timeout(6000)
+            # No se esperan 6 segundos a ciegas: se espera a que la pantalla CAMBIE de verdad.
+            # Con un tiempo fijo, si la nube va lenta la prueba sigue sin haber entrado y le
+            # echa la culpa a la reparacion de algo que no es.
+            pagina.set_default_timeout(ESPERA_ENTRAR_MS)
+            pagina.wait_for_function(
+                "() => { const s = document.getElementById('appShell');"
+                " return s && !s.classList.contains('hidden'); }")
         except Exception as exc:
             navegador.close()
             fin("NO_SE_PUDO", "No se pudo entrar: %s" % str(exc)[:150])
 
         resultados = {}
 
+        def esperar_a_que_se_calle(segundos_de_silencio=3, tope=30):
+            """Espera a que la pantalla TERMINE de arrancar, tarde lo que tarde.
+
+            POR QUE ASI Y NO CON UN NUMERO FIJO: al entrar, la pantalla pide su configuracion
+            (medido: 2 llamadas en el segundo mas 1.3) y despues se calla. Eso NO es un reloj,
+            es el arranque. Contarlo daba ROJO con la aplicacion perfecta.
+            Se penso en esperar 5 segundos fijos, y se rechazo con razon: en una maquina mas
+            lenta el arranque tardaria mas y la prueba daria ROJO sin motivo. Es el fallo ya
+            apuntado de la prueba que depende de cuanto tarde la maquina.
+            Asi que no se espera un numero: se espera a que DEJE de llamar. No se cuentan
+            segundos, se cuentan llamadas. En una maquina lenta tarda mas y sigue valiendo.
+
+            NO TAPA NADA: si hubiera un reloj llamando cada pocos segundos, nunca habria
+            silencio, se agotaria el tope y la prueba daria ROJO igual. Que es lo correcto.
+            """
+            quietos = 0
+            for _ in range(tope):
+                antes = len(llamadas)
+                pagina.wait_for_timeout(1000)
+                quietos = quietos + 1 if len(llamadas) == antes else 0
+                if quietos >= segundos_de_silencio:
+                    return True
+            return False
+
         # ── 1. quieto en el menu: CERO ────────────────────────────────────────
+        esperar_a_que_se_calle()
         t0 = time.time()
         pagina.wait_for_timeout(QUIETO_MENU_S * 1000)
         resultados["quieto_en_el_menu"] = contar(t0 + 1, time.time())
