@@ -65,6 +65,25 @@ def _las_que_hablan_del_problema(g, problema, cuantas=4):
     return elegidas or [p for _, _, p in puntuadas[:cuantas]]
 
 
+def _leyes_que_hablan_del_problema(g, problema, cuantas=4):
+    """Contratos/matriz/protocolo de TODO el grafo que hablen del problema, aunque no esten en un
+    flujo. 2026-08-24: sin esto, un contrato NUEVO no entraba al paquete y el equipo no podia
+    construir el modulo que legisla (no veia el material y, correctamente, no inventaba)."""
+    palabras = set(trozos._palabras(problema))
+    if not palabras:
+        return []
+    puntuadas = []
+    for p in g["piezas"]:
+        if p["rol"] not in ("CONTRATO", "MATRIZ", "PROTOCOLO"):
+            continue
+        ficha = " ".join([p["id"], p.get("resumen", "") or ""])
+        comunes = len(palabras & set(trozos._palabras(ficha)))
+        if comunes:
+            puntuadas.append((comunes, p))
+    puntuadas.sort(key=lambda t: -t[0])
+    return [p for _, p in puntuadas[:cuantas]]
+
+
 def armar(apodo, problema, k_trozos=6, saltos=1):
     g = grafo.cargar(apodo)
     hits = flujos.buscar(g["flujos"], problema)[:3]
@@ -160,6 +179,11 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
 
     leyes = sorted([f for f in fichas if f["rol"] in ("CONTRATO", "MATRIZ", "PROTOCOLO")],
                    key=lambda x: x["id"])
+    # 2026-08-24: incluir los contratos que HABLAN del problema aunque no esten en un flujo.
+    # Sin esto el equipo no veia un contrato nuevo y no podia construir lo que legisla.
+    for f in _leyes_que_hablan_del_problema(g, problema):
+        if f not in leyes:
+            leyes.append(f)
     vigias = sorted([f for f in fichas if f["rol"] == "VIGIA"], key=lambda x: x["id"])
 
     # cross-flow: a quien puede danar tocar esto
