@@ -21,6 +21,12 @@ no se inventa.
 Cada ley de aquí lleva **su candado**. Una ley sin candado es un deseo, no una ley: quedó
 demostrado el 2026-08-20, cuando ambos protocolos estaban escritos y se violaron los dos.
 
+## ÁMBITO — ESTE PROTOCOLO APLICA A TODO TIPO DE TRABAJO (Julio, 2026-08-24)
+Este protocolo NO es "para el MVP": **aplica SIEMPRE, a todo tipo de trabajo y a todo proyecto**:
+**Ingeniero VUC, MVP, DMM, Foto Informe y cualquier proyecto que se cree mañana.** No hay un proyecto
+ni un tipo de tarea "exento" de estos pasos. Las referencias históricas a "MVP", "rv2" y "rv3" de abajo
+solo explican DE DÓNDE salió cada método; su uso NO queda limitado a esos proyectos.
+
 ---
 
 ## LOS 8 PASOS, EN ESTE ORDEN. NO SE SALTA NINGUNO.
