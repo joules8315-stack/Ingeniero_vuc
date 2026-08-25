@@ -168,13 +168,65 @@ def _medidas():
     return {k: (v.get("max", 0) if isinstance(v, dict) else int(v)) for k, v in d.items()}
 
 
+def es_no_cupo(msg):
+    """¿Este fallo es 'no me cabe el material'? (y no cuota, ni servicio caido, ni sin llave).
+
+    Las frases son las REALES que devolvieron los cerebros el 2026-08-24 trabajando sobre Foto
+    Informe, no inventadas: 413 Payload Too Large una y otra vez, todo el dia.
+    Distinguirlo importa: a un agote se le manda a dormir un rato, pero a quien NO LE CABE hay
+    que bajarle el techo, porque dormir no le va a hacer mas grande.
+    """
+    t = str(msg or "").lower()
+    if not t:
+        return False
+    señales = ("413", "payload too large", "request entity too large", "request too large",
+               "too large for model", "maximum context length", "context length exceeded",
+               "context_length_exceeded", "input is too long", "prompt is too long")
+    return any(s in t for s in señales)
+
+
+def apuntar_no_cupo(quien, tamano):
+    """A este cerebro NO LE CUPO un encargo de este tamaño. Se le baja el techo.
+
+    Es el UNICO numero del sistema que puede bajar, y tiene que poder bajar: bajarlo ES la
+    leccion. Se queda con la evidencia mas dura (el tamaño MAS PEQUENO que ya reviento), para
+    que un fallo posterior mas grande no borre lo que ya se sabe.
+
+    Ley: CONTRATO_EQUIPO_QUE_AGUANTA.md
+    """
+    try:
+        tamano = int(tamano)
+    except Exception:
+        return
+    if tamano <= 0:
+        return
+    d = _leer()
+    g = d.setdefault("gasto", {}).setdefault(quien, {"llamadas": 0, "fallos": 0})
+    anterior = int(g.get("no_cupo", 0) or 0)
+    g["no_cupo"] = tamano if anterior <= 0 else min(anterior, tamano)
+    _guardar(d)
+
+
 def _capacidad(quien):
-    """Cuanto aguanta de verdad: lo MEDIDO (CAPACIDADES.json o mayor_ok) o la estimacion,
-    lo que sea mayor. La estimacion es solo hasta que se mida de verdad (Julio, 2026-08-21:
-    legislar con datos, no con suposiciones)."""
+    """Cuanto aguanta DE VERDAD.
+
+    Antes era: lo medido o la promesa del proveedor, lo que sea MAYOR. Y ahi estaba el fallo
+    (2026-08-24): la promesa siempre ganaba y nunca bajaba. Groq figuraba con 500.000 letras
+    mientras devolvia 413 Payload Too Large en TODAS las llamadas sobre Foto Informe, y se le
+    seguia eligiendo en cada intento. Asi el equipo no podia auditar ese proyecto, y "auditado"
+    acabo significando "alguien dijo que si sin haber visto nada" — que es como llego a manos de
+    Julio una prueba con cinco fallos, uno de ellos capaz de borrarle textos suyos.
+
+    Ahora manda la EVIDENCIA sobre la promesa: si ya reviento con un tamaño, el techo se queda
+    POR DEBAJO de ese tamaño (no en el, o volveria a admitirse el mismo encargo).
+    """
     g = _leer().get("gasto", {}).get(quien, {})
     medido = max(int(g.get("mayor_ok", 0)), int(_medidas().get(quien, 0)))
-    return max(int(CAPACIDAD.get(quien, 0)), medido)
+    cabe = max(int(CAPACIDAD.get(quien, 0)), medido)
+    no_cupo = int(g.get("no_cupo", 0) or 0)
+    if no_cupo > 0:
+        cabe = min(cabe, no_cupo - 1)
+    return max(0, cabe)
 
 
 def rankear(disponibles, tamano):

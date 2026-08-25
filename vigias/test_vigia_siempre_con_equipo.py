@@ -164,12 +164,29 @@ def test_la_salida_de_emergencia_sigue_siendo_de_julio(tmp_path, monkeypatch):
     (INGENIERO_OFF). Si un dia tambien desapareciera, el candado dejaria de ser un candado y
     pasaria a ser un muro: se acabaria apagando entero, que es peor que el problema.
     """
+    import io
     import candado_equipo as ce
+    import autorizacion as aut
     monkeypatch.setattr(ce, "veredicto_vigente", lambda: None)
     monkeypatch.setenv("INGENIERO_OFF", "1")
     f = _un_codigo(tmp_path)
-    import io
-    monkeypatch.setattr("sys.stdin", io.StringIO(json.dumps({"tool_input": {"file_path": f}})))
+    entrada = json.dumps({"tool_input": {"file_path": f}})
+
+    # LEY NUEVA (Julio, 2026-08-24): "que solo pueda quitarlos yo, por medio de comando, en ps,
+    # y debe ser con previa autorizacion". Antes bastaba prender la variable y los candados se
+    # apagaban EN SILENCIO: cualquiera podia y no quedaba rastro. La salida sigue existiendo,
+    # pero ahora es SUYA y deja constancia.
+    monkeypatch.setenv("INGENIERO_AUTORIZACION_TEST", str(tmp_path / "aut_de_mentira"))
+
+    # 1) La variable A SOLAS no abre nada.
+    monkeypatch.setattr("sys.stdin", io.StringIO(entrada))
+    assert ce.main() != 0, ("prender la variable a solas apago el candado: cualquiera podria "
+                            "apagarlo, y sin dejar rastro")
+
+    # 2) Con la autorizacion de Julio, SI abre. Un candado sin salida no es candado, es un muro,
+    #    y acaba con Julio apagandolo todo, que es peor que el problema.
+    aut.autorizar("prueba: comprobar que la salida de Julio sigue existiendo")
+    monkeypatch.setattr("sys.stdin", io.StringIO(entrada))
     assert ce.main() == 0, "Julio se quedo encerrado: ni con su propio interruptor puede salir"
 
 

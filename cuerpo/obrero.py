@@ -484,6 +484,16 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
             if cuotas.es_agote(msg):
                 cuotas.dormir(quien, msg)
                 avisos.append(f"{cuotas.APODO[quien]} se agoto -> pasa el turno")
+            elif cuotas.es_no_cupo(msg):
+                # NO LE CABE (CONTRATO_EQUIPO_QUE_AGUANTA, 2026-08-24). Mandarle a dormir no
+                # sirve de nada: no se va a hacer mas grande. Se le BAJA EL TECHO para no
+                # volver a pedirle algo de este tamano.
+                # Sin esto, los dos gratis devolvieron 413 en TODAS las llamadas del dia sobre
+                # Foto Informe y se les siguio eligiendo en cada intento: el equipo no podia
+                # auditar ese proyecto y "auditado" acabo significando "nadie lo vio".
+                cuotas.apuntar_no_cupo(quien, len(prompt_nube))
+                avisos.append(f"{cuotas.APODO[quien]} NO LE CUPO ({len(prompt_nube)} letras) "
+                              f"-> se le baja el techo y no se le vuelve a pedir de este tamano")
             else:
                 avisos.append(f"{cuotas.APODO[quien]} fallo (no es cuota): {msg[:90]}")
     return _ultimo_recurso(avisos)          # ningun gratis pudo: ahora si, el de pago

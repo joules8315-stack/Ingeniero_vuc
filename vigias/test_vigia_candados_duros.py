@@ -62,8 +62,12 @@ def test_edicion_deja_los_documentos_y_las_vigias():
         assert code == 0, f"estorba: bloqueo {rel}, que debe poder editarse siempre"
 
 
-def test_el_interruptor_de_emergencia_apaga_los_candados():
-    """Ningun candado puede dejar a Julio sin poder trabajar."""
+def test_el_interruptor_de_emergencia_apaga_los_candados(tmp_path):
+    """Ningun candado deja a Julio atrapado. La salida es SOLO suya: el comando `autorizar-off`.
+
+    (2026-08-24): antes bastaba prender INGENIERO_OFF=1 y cualquiera apagaba los candados en
+    silencio. Ahora INGENIERO_OFF solo NO apaga: hace falta la AUTORIZACION ESCRITA de Julio.
+    """
     from cerebro import grafo
     d = grafo.proyectos().get("dmm")
     if not d or not os.path.isdir(d["ruta"]):
@@ -71,9 +75,23 @@ def test_el_interruptor_de_emergencia_apaga_los_candados():
     f = os.path.join(d["ruta"], "cuerpo", "precios.py")
     if not os.path.exists(f):
         pytest.skip("no existe precios.py")
-    code, _ = _correr("edit_gate_universal.py", {"tool_input": {"file_path": f}},
-                      {"INGENIERO_OFF": "1"})
-    assert code == 0, "el interruptor de emergencia no apaga el candado de edicion"
+    import autorizacion as aut
+    marca = str(tmp_path / "aut_off")
+    os.environ["INGENIERO_AUTORIZACION_TEST"] = marca
+    try:
+        # INGENIERO_OFF prendido SIN autorizacion -> NO apaga (bloquea).
+        code, _ = _correr("edit_gate_universal.py", {"tool_input": {"file_path": f}},
+                          {"INGENIERO_OFF": "1"})
+        assert code == 2, "INGENIERO_OFF apago los candados sin autorizacion previa de Julio"
+        # con la autorizacion escrita (el comando autorizar-off) si apaga.
+        aut.autorizar("prueba: interruptor de emergencia")
+        code, _ = _correr("edit_gate_universal.py", {"tool_input": {"file_path": f}},
+                          {"INGENIERO_OFF": "1"})
+        assert code == 0, "la autorizacion de Julio no abrio el candado"
+    finally:
+        os.environ.pop("INGENIERO_AUTORIZACION_TEST", None)
+        if os.path.exists(marca):
+            os.remove(marca)
 
 
 # ─── candado de CONTEXTO PERDIDO ────────────────────────────────────────────────

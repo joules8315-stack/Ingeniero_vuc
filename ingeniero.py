@@ -367,6 +367,17 @@ def main():
         print(r["_error"] if "_error" in r else
               "PERMISO dado para " + r["nombre"] + " (30 min). Queda apuntado.")
         return 1 if "_error" in r else 0
+    if cmd == "autorizar-off":
+        # SOLO Julio apaga los candados, por este comando y con autorizacion escrita (2026-08-24).
+        # Antes bastaba prender INGENIERO_OFF y cualquiera los apagaba en silencio.
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        import autorizacion
+        motivo = " ".join(sys.argv[2:]).strip() or "autorizado por Julio"
+        marca = autorizacion.autorizar(motivo)
+        print("CANDADOS APAGADOS por autorizacion de Julio (vigente 24h).")
+        print("  motivo: " + motivo)
+        print("  evidencia: " + marca)
+        return 0
     if cmd == "permisos":
         sys.path.insert(0, os.path.join(AQUI, "arnes"))
         import permiso_editar

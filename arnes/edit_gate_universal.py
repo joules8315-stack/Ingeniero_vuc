@@ -77,7 +77,10 @@ def _declarado_en(txt, fp):
 
 
 def main():
-    if os.environ.get("INGENIERO_OFF", "").strip():
+    import autorizacion
+    # Solo Julio apaga, por comando (autorizar-off) y con autorizacion escrita. INGENIERO_OFF ya no
+    # basta para apagar: sin autorizacion de Julio, el candado sigue bloqueando (Julio, 2026-08-24).
+    if autorizacion.autorizada():
         return 0
     try:
         data = json.load(sys.stdin)

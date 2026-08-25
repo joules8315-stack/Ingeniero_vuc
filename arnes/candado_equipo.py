@@ -127,8 +127,14 @@ MENSAJE = (
 
 
 def main():
-    if os.environ.get("INGENIERO_OFF", "").strip():
+    import autorizacion
+    # Solo Julio apaga, por comando (autorizar-off) y con autorizacion escrita: candados abiertos.
+    if autorizacion.autorizada():
         return 0
+    # El interruptor viejo INGENIERO_OFF ya NO basta para apagar: sin autorizacion de Julio,
+    # se deja constancia y se sigue bloqueando (Julio, 2026-08-24).
+    if os.environ.get("INGENIERO_OFF", "").strip():
+        _apuntar_frenada("(INGENIERO_OFF)", "interruptor encendido sin autorizacion previa de Julio")
     try:
         data = json.load(sys.stdin)
     except Exception:
