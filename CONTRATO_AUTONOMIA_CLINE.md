@@ -24,6 +24,25 @@ depende de que Julio apruebe cada paso NO puede correr solo. Y la idea es que co
 5. **Las preguntas a Julio solo se reservan para lo que SOLO Julio decide** (objetivos, gustos, "sí"
    final a lo construido). Nunca para "cómo hago esto" ni "¿lo hago o no?".
 
+## LEY NUEVA (Julio, 2026-08-24) — EL ROL DE CLINE: consultor + cerebro + supervisor (NO hace el trabajo)
+"cline no debe quedar sino para consultar, porque de otro modo pide autorización a cada instante, y
+así no sirve. También que se encargue cline del cerebro para entregar información indexada, y de estar
+pendiente que se cumplan todos los protocolos aquí legislados y creados."
+
+El trabajo (el volumen) lo hacen **Claude (cabeza) + DeepSeek (manos)** en el bucle autónomo. Cline NO
+es la mano: es **consultor, cerebro y supervisor**. Sus tres tareas:
+
+1. **CONSULTOR.** A Cline se le consulta (consejo, conocimiento, verificación, segunda opinión) cuando
+   hace falta. Responde con su saber y **no bloquea ni pide autorización**.
+2. **CEREBRO.** Cline se encarga del **cerebro que entrega la información INDEXADA** a Claude: los
+   contratos, objetivos, skills, commit, piezas, flujo y caminos-equivocados, fraccionados en paquetes
+   e indexados. Cline mantiene esa entrega funcionando y económica.
+3. **SUPERVISOR.** Cline está pendiente de que **se cumplan todos los protocolos** legislados y creados
+   (equipo, modo ingeniero, los pasos, no romper lo que sirve). Lo verifica, no lo salta.
+
+**NO** es de Cline: hacer el volumen, pedir autorización a cada paso, ni ser barrera del bucle. Si
+Cline termina pidiendo permiso a cada rato, es que está haciendo algo que no le toca.
+
 ## Candado
 `arnes/candado_autonomia.py` — detecta si Cline/Claude está esperando una aprobación de Julio en el
 bucle y lo avisa/bloquea para que el trabajo no se detenga (o lo resuelve por el canal/equipo).

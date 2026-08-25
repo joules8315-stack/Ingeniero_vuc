@@ -22,6 +22,14 @@ def test_la_ley_de_autonomia_esta_escrita():
     assert "prueba humana" in t or "ojos" in t, "falta que Julio entra al final (prueba humana)"
 
 
+def test_el_rol_de_cline_es_consultor_cerebro_supervisor():
+    t = _leer(os.path.join(AQUI, "CONTRATO_AUTONOMIA_CLINE.md")).lower()
+    assert "consultor" in t, "falta el rol de consultor"
+    assert "cerebro" in t, "falta el rol de cerebro (info indexada)"
+    assert "supervisor" in t, "falta el rol de supervisor"
+    assert "no es la mano" in t or "no hace el trabajo" in t, "no deja claro que Cline no hace el volumen"
+
+
 def test_el_canal_esta_conectado_a_claude_para_comunicarse_sin_julio():
     s = json.load(open(os.path.join(AQUI, ".claude", "settings.json"), encoding="utf-8"))
     ups = s.get("hooks", {}).get("UserPromptSubmit", [])
