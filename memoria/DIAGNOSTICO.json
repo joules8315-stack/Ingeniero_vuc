@@ -1,9 +1,9 @@
 {
- "cuando": 1787688217.1055238,
+ "cuando": 1787697400.5113325,
  "proyecto": "ingeniero",
- "archivo": "cerebro/trozos.py",
- "funcion": "buscar",
- "linea": "128",
- "evidencia": "Medido: router.armar('foto_informe','al arrancar no se piden los informes diarios y la lista sale vacia') devuelve 3 trozos y los TRES son de vigias que yo acababa de escribir (rv3_vigia_al_arrancar_cargan_los_informes.py y rv3_vigia_generar_con_informes_sin_asignar.py). Del programa app_web.html: cero. La puntuacion es solo parecido de palabras, y una vigia escribe el problema con las palabras de Julio en su cabecera, asi que gana siempre. Consecuencia reproducida: el candado de equipo no abre app_web.html porque el equipo nunca lo tuvo delante, y la reparacion de una sola linea quedo bloqueada.",
+ "archivo": "ingeniero.py",
+ "funcion": "main (comando equipo), al imprimir el veredicto",
+ "linea": "210",
+ "evidencia": "Reproducido: 'python ingeniero.py equipo foto_informe ...' murio con UnicodeEncodeError: charmap codec can't encode character u202f in position 1178, en print(_o.veredicto_corto(res)). El equipo SI contesto; lo que fallo fue mostrarlo, porque la consola de Windows usa cp1252 y la respuesta traia un espacio fino (u202f). Dos danos: un traceback en la cara de Julio, que ya esta apuntado como fallo, y la perdida del trabajo, porque guardar_veredicto va DESPUES del print y nunca se ejecuto: la llave no se guardo y hubo que pagar la llamada otra vez.",
  "sintoma": ""
 }

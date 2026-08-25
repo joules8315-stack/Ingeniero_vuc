@@ -26,6 +26,20 @@ import os, sys, subprocess, time
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
+
+# MOSTRAR NO PUEDE TUMBAR UN TRABAJO YA HECHO (fallo real 2026-08-25).
+# Se lanzo al equipo, el equipo CONTESTO, y el mando murio al IMPRIMIR la respuesta:
+#   UnicodeEncodeError: 'charmap' codec can't encode character ' ' in position 1178
+# La consola de Windows usa cp1252 y la respuesta traia un espacio fino, que ahi no existe.
+# Dos danos, y el segundo es el caro: un traceback en la cara de Julio (fallo ya apuntado), y
+# SE PERDIO EL TRABAJO, porque la llave del equipo se guarda DESPUES de imprimir. Un caracter
+# invisible costo la llamada entera y hubo que pagarla otra vez.
+# Ahora, si un caracter no se puede dibujar, se dibuja como se pueda; pero no se tira lo hecho.
+for _salida in ("stdout", "stderr"):
+    try:
+        getattr(sys, _salida).reconfigure(errors="replace")
+    except Exception:
+        pass
 from cerebro import router, grafo          # noqa: E402
 from cuerpo import estado, obrero, cuotas, fallos, subagentes, consejeros, dudas, skills as hab  # noqa: E402
 sys.path.insert(0, os.path.join(AQUI, 'arnes'))
@@ -207,8 +221,13 @@ def main():
         paq = _r.armar(proy, tarea)
         # el TEXTO, no la caja: trabajar espera el texto del paquete (fix 2026-08-24)
         res = _o.trabajar(_r.a_texto(paq), tarea)
-        print(_o.veredicto_corto(res))
+        # PRIMERO SE GUARDA, DESPUES SE ENSENA (fallo real 2026-08-25).
+        # Antes se imprimia justo aqui y la llave se guardaba al final. El equipo contesto, el
+        # print murio por un caracter que la consola de Windows no sabia dibujar, y el trabajo YA
+        # PAGADO se perdio entero: no se guardo nada y hubo que volver a llamar. Lo que cuesta
+        # dinero se asegura ANTES de ensenarlo. Mostrar es lo ultimo y ya no puede tumbar nada.
         if "_error" in res:
+            print(_o.veredicto_corto(res))
             return 1
         prop = res.get("propuesta") or {}
         tocados = prop.get("archivo") or prop.get("archivos") or []
@@ -227,6 +246,12 @@ def main():
                     tocados.append(pid)
         _ce.guardar_veredicto(tarea, tocados, res.get("obrero"), res.get("auditor"),
                               (res.get("auditoria") or {}).get("veredicto", "?"))
+        # Ya esta a salvo. AHORA se ensena, y si mostrar falla, no se pierde nada.
+        try:
+            print(_o.veredicto_corto(res))
+        except Exception as _e:
+            print("(el veredicto llego y quedo guardado, pero no se pudo mostrar entero: %s)"
+                  % str(_e)[:90])
         print()
         print("LLAVE GUARDADA: se puede escribir en %d archivo(s) durante %d min."
               % (len(tocados), _ce.VIGENCIA_MIN))
