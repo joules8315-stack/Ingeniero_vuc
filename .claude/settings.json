@@ -1,5 +1,16 @@
 {
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:/Ingeniero_VUC/arnes/canal.py\""
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Read",
@@ -20,6 +31,17 @@
           {
             "type": "command",
             "command": "python \"C:/Ingeniero_VUC/arnes/candado_equipo.py\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:/Ingeniero_VUC/arnes/candado_comunicacion.py\""
           }
         ]
       }

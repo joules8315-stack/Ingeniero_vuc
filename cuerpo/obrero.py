@@ -403,6 +403,12 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
     # colgaria; se fue a mirar el codigo y los dos se equivocaban.)
     if pesado and "deepseek" in turnos:
         turnos = ["deepseek"] + [q for q in turnos if q != "deepseek"]
+    # F2 (Julio 2026-08-24): NUNCA trabajar solo. Si la tarea es de VOLUMEN y DeepSeek (la mano
+    # de pago) NO esta disponible, se BLOQUEA: no se cae a qwen/gemini para llenar el hueco.
+    if pesado and "deepseek" not in [q for q in quienes_hay()]:
+        return ("", "", [
+            "BLOQUEADO F2 (Julio 2026-08-24): tarea de VOLUMEN y DeepSeek (la mano) no esta "
+            "disponible. No se usa qwen/gemini para lo pesado. Habilita DeepSeek o reduce la tarea."])
 
     def _ultimo_recurso(avisos):
         """Se llama SOLO cuando ningun cerebro gratis pudo. Aqui empieza a costar dinero."""

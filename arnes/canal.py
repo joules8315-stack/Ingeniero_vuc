@@ -26,14 +26,18 @@ AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BANDEJA = os.path.join(AQUI, "memoria", "canal")
 
 
+def _bandeja():
+    return os.environ.get("INGENIERO_CANAL_TEST") or BANDEJA
+
+
 def _quien():
     return (os.environ.get("INGENIERO_QUIEN", "") or "desconocido").strip() or "desconocido"
 
 
 def enviar(para, texto, de=None):
     de = de or _quien()
-    os.makedirs(BANDEJA, exist_ok=True)
-    ruta = os.path.join(BANDEJA, "%s.json" % int(time.time() * 1000))
+    os.makedirs(_bandeja(), exist_ok=True)
+    ruta = os.path.join(_bandeja(), "%s.json" % int(time.time() * 1000))
     json.dump({"de": de, "para": para, "texto": texto,
                "cuando": time.strftime("%Y-%m-%d %H:%M"), "leido": False},
               open(ruta, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
@@ -59,9 +63,9 @@ def leer(para=None):
     de Claude: antes leer 'se comia' los mensajes de todos)."""
     para = para or _quien()
     salida = []
-    if not os.path.isdir(BANDEJA):
+    if not os.path.isdir(_bandeja()):
         return salida
-    for ruta in sorted(glob.glob(os.path.join(BANDEJA, "*.json"))):
+    for ruta in sorted(glob.glob(os.path.join(_bandeja(), "*.json"))):
         try:
             m = json.load(open(ruta, encoding="utf-8"))
         except Exception:
