@@ -45,6 +45,7 @@ def test_candado_comunicacion_bloquea_con_pendientes(tmp_path, monkeypatch):
     b = str(tmp_path / "bandeja")
     os.makedirs(b, exist_ok=True)
     monkeypatch.setattr(cc, "BANDEJA", b)
+    monkeypatch.setenv("INGENIERO_COMUNICACION_CONTADOR", str(tmp_path / "cont"))
     # un mensaje dirigido a 'desconocido' (quien cuando no hay INGENIERO_QUIEN) sin responder
     json.dump({"de": "cline", "para": "desconocido", "texto": "responde esto", "leido": False,
                "respondido": False},
