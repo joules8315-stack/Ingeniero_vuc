@@ -1,9 +1,9 @@
 {
- "cuando": 1787615138.1119406,
- "proyecto": "ingeniero",
- "archivo": "cuerpo/cuotas.py",
- "funcion": "_capacidad y apuntar_uso",
- "linea": "171",
- "evidencia": "CAPACIDAD declara groq y groq20b en 500000 letras y gemini en 4000000, que es lo que dicen los proveedores. _capacidad devuelve el MAXIMO entre esa promesa y lo medido, asi que la promesa siempre gana. apuntar_uso solo sube mayor_ok cuando el cerebro ACIERTA; cuando falla por tamano no apunta ningun techo. Medido hoy en Foto Informe: GPT-OSS 20B y 120B de Groq devolvieron HTTP 413 Payload Too Large en TODAS las llamadas del dia, y se les siguio eligiendo en cada intento. Consecuencia: el equipo no puede auditar Foto Informe y se da por auditado lo que nadie vio.",
+ "cuando": 1787683071.0293498,
+ "proyecto": "foto_informe",
+ "archivo": "app_web.html",
+ "funcion": "checkAssignments / resetRowAssignmentsBtn (mis dos curas del 2026-08-24)",
+ "linea": "2299",
+ "evidencia": "Medido dos veces con la prueba integral rv3_prueba_integral.py: SIN mis cambios (app_web.html apartado con git stash) el resultado fue VERDE y paso el paso 2c 'botones de Revisar (L16)'. CON mis cambios el resultado fue ROJO en ese mismo paso, con Page.wait_for_function Timeout 90000ms exceeded esperando que carguen los informes tras recargar la pagina. Dos corridas, mismo sitio. Falta saber cual de las dos curas es: se quita una y se vuelve a correr.",
  "sintoma": ""
 }

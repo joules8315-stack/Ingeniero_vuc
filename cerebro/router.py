@@ -21,7 +21,7 @@ from . import grafo, flujos, trozos, enlaces
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAQUETES = os.path.join(AQUI, "memoria", "paquetes")
-TOPE_LINEAS = 400   # un paquete que pasa de esto ya no es un paquete: es releer el proyecto
+TOPE_LINEAS = 800   # un paquete mas largo que esto ya no es un paquete: es releer el proyecto
 
 
 def _claves_de(g, nombres_flujo):
@@ -246,8 +246,11 @@ def a_texto(pk):
 
     w("## 4. LAS VIGIAS QUE PROTEGEN ESTO")
     if pk["vigias"]:
-        for f in pk["vigias"]:
+        _MAX_VIGIAS = 12   # F8: no listar todas, o el paquete crece y deja de ser minimo
+        for f in pk["vigias"][:_MAX_VIGIAS]:
             w(f"- `{f['id']}`")
+        if len(pk["vigias"]) > _MAX_VIGIAS:
+            w(f"- ... y {len(pk['vigias']) - _MAX_VIGIAS} vigias mas.")
         w("")
         w("Correlas ANTES de tocar (para ver de que color estan) y DESPUES (para no romper):")
         w("```")

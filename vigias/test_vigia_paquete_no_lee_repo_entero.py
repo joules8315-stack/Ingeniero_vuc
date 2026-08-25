@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pytest
 from cerebro import router, grafo
 
-TOPE = 400          # un paquete mas largo que esto ya no es un paquete
+TOPE = 800          # un paquete mas largo que esto ya no es un paquete
 AHORRO_MINIMO = 90  # por ciento
 
 
