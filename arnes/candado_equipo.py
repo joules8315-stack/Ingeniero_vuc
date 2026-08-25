@@ -43,6 +43,7 @@ import time
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, AQUI)
+sys.path.insert(0, os.path.join(AQUI, "arnes"))  # para importar autorizacion.py (Julio, 2026-08-24)
 
 VEREDICTO = os.path.join(AQUI, "memoria", ".veredicto_equipo.json")
 SIN_EQUIPO = os.path.join(AQUI, "memoria", "SIN_EQUIPO.log")
