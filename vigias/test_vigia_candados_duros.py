@@ -155,4 +155,5 @@ def test_todos_los_candados_tienen_interruptor():
     for s in ("read_gate.py", "edit_gate_universal.py", "candado_cierre.py",
               "candado_contexto.py", "modo_ingeniero.py"):
         txt = open(os.path.join(AQUI, "arnes", s), encoding="utf-8").read()
-        assert "INGENIERO_OFF" in txt, f"{s} no tiene interruptor de emergencia"
+        assert "autorizacion" in txt or "INGENIERO_OFF" in txt, \
+            f"{s} no tiene salida de emergencia (autorizacion de Julio)"

@@ -190,7 +190,8 @@ def _apuntar_apagon(texto):
 
 
 def main():
-    if os.environ.get("INGENIERO_OFF", "").strip():
+    import autorizacion
+    if autorizacion.autorizada():  # F7: solo Julio apaga, por comando autorizar-off (con autorizacion)
         try:
             d = json.load(sys.stdin)
             t, es = _que_se_pide(d)

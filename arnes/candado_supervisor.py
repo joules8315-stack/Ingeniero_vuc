@@ -89,7 +89,8 @@ def verificar():
 
 
 def main():
-    if os.environ.get("INGENIERO_OFF", "").strip():
+    import autorizacion
+    if autorizacion.autorizada():  # F7: solo Julio apaga (autorizar-off)
         return 0
     faltas = verificar()
     if not faltas:

@@ -190,8 +190,9 @@ def compactar():
 
 
 if __name__ == "__main__":
-    # INTERRUPTOR DE EMERGENCIA: INGENIERO_OFF=1 apaga el modo sin desinstalar nada.
-    if os.environ.get("INGENIERO_OFF", "").strip():
+    # SOLO JULIO apaga (F7, 2026-08-24): el comando autorizar-off deja la autorizacion escrita.
+    import autorizacion
+    if autorizacion.autorizada():
         sys.exit(0)
     q = sys.argv[1] if len(sys.argv) > 1 else "prompt"
     sys.exit({"prompt": prompt, "sesion": sesion, "compactar": compactar}.get(q, prompt)())

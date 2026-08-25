@@ -91,7 +91,8 @@ def main():
         p = pendientes()
         sys.stdout.write(("\n".join("- " + e["texto"][:120] for e in p)) or "sin pendientes\n")
         return 0
-    if os.environ.get("INGENIERO_OFF", "").strip():
+    import autorizacion
+    if autorizacion.autorizada():  # F7: solo Julio apaga (comando autorizar-off)
         return 0
     # modo HOOK de cierre: si hay instrucciones sin legislar, bloquea.
     p = pendientes()

@@ -122,4 +122,4 @@ def test_esta_enganchado_de_verdad():
 
 def test_tiene_interruptor_de_emergencia():
     txt = open(os.path.join(AQUI, "arnes", "guard_pasado.py"), encoding="utf-8").read()
-    assert "INGENIERO_OFF" in txt
+    assert "autorizacion" in txt or "INGENIERO_OFF" in txt, "guard_pasado sin salida de emergencia"

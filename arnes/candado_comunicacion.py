@@ -91,7 +91,8 @@ def _escribio_a(quien, destino, minutos=90):
 
 
 def main():
-    if os.environ.get("INGENIERO_OFF", "").strip():
+    import autorizacion
+    if autorizacion.autorizada():  # F7: solo Julio apaga (autorizar-off)
         return 0
     qu = _quien()
     pend = mensajes_pendientes(qu)

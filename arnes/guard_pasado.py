@@ -197,7 +197,8 @@ def aviso_piso(caidas):
 
 # ─── como hook: avisa antes de tocar ──────────────────────────────────────────
 def main():
-    if os.environ.get("INGENIERO_OFF", "").strip():
+    import autorizacion
+    if autorizacion.autorizada():  # F7: solo Julio apaga (comando autorizar-off)
         return 0
     try:
         data = json.load(sys.stdin)

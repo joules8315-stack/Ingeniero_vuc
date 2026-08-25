@@ -66,15 +66,22 @@ def test_esta_conectado_al_candado_de_cierre():
 
 
 def test_no_deja_a_julio_atrapado(tmp_path, monkeypatch):
-    """El candado tiene salida: INGENIERO_OFF lo apaga (Julio) y marcar resuelve."""
+    """El candado tiene salida: SOLO Julio la abre con su autorizacion (autorizar-off)."""
     _ledger_aparte(tmp_path, monkeypatch)
     cl.apuntar("x")
-    env = dict(os.environ)
-    env["INGENIERO_LEGISLAR_TEST"] = str(tmp_path / "leg.json")
-    env["INGENIERO_OFF"] = "1"
-    r = subprocess.run([sys.executable, os.path.join(AQUI, "arnes", "candado_legislar.py")],
-                       capture_output=True, text=True, env=env)
-    assert r.returncode == 0, "con INGENIERO_OFF debe dejar pasar (no encerrar a Julio)"
+    import autorizacion as aut
+    marca = str(tmp_path / "aut_off")
+    os.environ["INGENIERO_AUTORIZACION_TEST"] = marca
+    try:
+        aut.autorizar("prueba: salida de emergencia")
+        env = dict(os.environ)
+        env["INGENIERO_LEGISLAR_TEST"] = str(tmp_path / "leg.json")
+        env["INGENIERO_AUTORIZACION_TEST"] = marca
+        r = subprocess.run([sys.executable, os.path.join(AQUI, "arnes", "candado_legislar.py")],
+                           capture_output=True, text=True, env=env)
+        assert r.returncode == 0, "la autorizacion de Julio no abrio el candado (encerrado)"
+    finally:
+        os.environ.pop("INGENIERO_AUTORIZACION_TEST", None)
 
 
 if __name__ == "__main__":

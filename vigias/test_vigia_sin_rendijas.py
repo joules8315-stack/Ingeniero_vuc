@@ -115,11 +115,15 @@ def test_no_estorba_trabajar_en_el_propio_ingeniero():
     assert code == 0, "bloqueo trabajar en el propio Ingeniero"
 
 
-def test_el_interruptor_de_emergencia_lo_apaga():
+def test_el_interruptor_de_emergencia_lo_apaga(monkeypatch):
     from candado_terminal import _guardar_cuenta, TOPE_SIN_PAQUETE
     _guardar_cuenta(TOPE_SIN_PAQUETE + 5)
-    code, _ = _correr(_orden('grep -n "x" "%s/app.py"' % MVP), {"INGENIERO_OFF": "1"})
-    assert code == 0, "el interruptor de emergencia no lo apaga"
+    import tempfile
+    marca = os.path.join(tempfile.gettempdir(), "aut_off_f7.log")
+    open(marca, "w", encoding="utf-8").close()           # autorizacion de Julio (fecha fresca)
+    monkeypatch.setenv("INGENIERO_AUTORIZACION_TEST", marca)   # auto-restaura al terminar
+    code, _ = _correr(_orden('grep -n "x" "%s/app.py"' % MVP), {})
+    assert code == 0, "la autorizacion de Julio no apago el candado"
 
 
 # ─── que TODAS las vias esten declaradas y vigiladas ──────────────────────────

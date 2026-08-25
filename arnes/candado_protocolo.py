@@ -162,7 +162,8 @@ def _jerga_en(texto):
 
 
 def salida():
-    if os.environ.get("INGENIERO_OFF", "").strip():
+    import autorizacion
+    if autorizacion.autorizada():  # F7: solo Julio apaga (autorizar-off)
         return 0
     try:
         data = json.load(sys.stdin)
@@ -203,7 +204,8 @@ def _semaforo():
 
 
 def construir():
-    if os.environ.get("INGENIERO_OFF", "").strip():
+    import autorizacion
+    if autorizacion.autorizada():  # F7: solo Julio apaga (autorizar-off)
         return 0
     try:
         data = json.load(sys.stdin)

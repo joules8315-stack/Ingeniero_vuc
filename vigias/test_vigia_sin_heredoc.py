@@ -79,4 +79,4 @@ def test_deja_pasar_lo_que_no_rompe():
 
 def test_tiene_interruptor_de_emergencia():
     txt = open(os.path.join(AQUI, "arnes", "candado_terminal.py"), encoding="utf-8").read()
-    assert "INGENIERO_OFF" in txt
+    assert "autorizacion" in txt or "INGENIERO_OFF" in txt, "candado_terminal sin salida de emergencia"

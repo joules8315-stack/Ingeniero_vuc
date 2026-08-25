@@ -116,9 +116,11 @@ def test_no_estorba_al_reparar_algo_que_ya_existe():
 # ─── 4) NINGUN CANDADO PUEDE DEJAR A JULIO ATRAPADO ────────────────────────────
 def test_el_interruptor_de_emergencia_los_apaga(tmp_path):
     nuevo = str(tmp_path / "otra_cosa.py")
+    marca = str(tmp_path / "aut_off")
+    open(marca, "w", encoding="utf-8").close()           # autorizacion de Julio (fecha fresca)
     code, _ = _correr("construir", {"tool_input": {"file_path": nuevo}},
-                      {"INGENIERO_OFF": "1"})
-    assert code == 0, "el interruptor de emergencia no apaga el candado del protocolo"
+                      {"INGENIERO_AUTORIZACION_TEST": marca})
+    assert code == 0, "la autorizacion de Julio no apago el candado del protocolo"
 
 
 def test_no_bloquea_mas_de_dos_veces_seguidas():

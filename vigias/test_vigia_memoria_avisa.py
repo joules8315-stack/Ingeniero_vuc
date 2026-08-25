@@ -105,7 +105,10 @@ def test_el_interruptor_de_emergencia_lo_apaga():
     fallos.apuntar(que_paso="x", causa_raiz="y", cura="z", no_volver_a="w",
                    disparador=r"<<\s*'?\w+'?")
     env = dict(os.environ)
-    env["INGENIERO_OFF"] = "1"
+    import tempfile
+    marca = os.path.join(tempfile.gettempdir(), "aut_off_f7.log")
+    open(marca, "w", encoding="utf-8").close()           # autorizacion de Julio (fecha fresca)
+    env["INGENIERO_AUTORIZACION_TEST"] = marca
     env.pop("PYTEST_CURRENT_TEST", None)
     p = subprocess.run([sys.executable, os.path.join(AQUI, "arnes", "candado_memoria.py")],
                        input=json.dumps({"tool_name": "Bash",

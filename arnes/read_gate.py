@@ -65,7 +65,8 @@ def lineas_de(ruta):
 def main():
     # INTERRUPTOR DE EMERGENCIA: INGENIERO_OFF=1 aparta el candado.
     # Ningun candado debe poder dejar a Julio atrapado sin salida.
-    if os.environ.get("INGENIERO_OFF", "").strip():
+    import autorizacion
+    if autorizacion.autorizada():  # F7: solo Julio apaga (comando autorizar-off)
         return 0
     try:
         data = json.load(sys.stdin)
