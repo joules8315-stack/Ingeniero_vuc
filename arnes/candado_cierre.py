@@ -198,6 +198,19 @@ def main():
                               f"   y las VIGIAS estan ROJAS: {detalle}\n"
                               "   No se termina dejando algo roto.")
 
+    # 5) F5 / punto a de Julio: toda instruccion debe quedar legislada (o justificada).
+    try:
+        import candado_legislar as _cl
+        pend = _cl.pendientes()
+        if pend:
+            faltas.append("Hay instrucciones de Julio SIN LEGISLAR (F5, punto a):\n"
+                          + "\n".join("   - " + e["texto"][:120] for e in pend[:5])
+                          + "\n   Cada una debe legislarse (contrato+tabla+matriz+vigia) o "
+                            "marcarse 'ya existe'/'no aplica'.\n"
+                            "   cd C:\\Ingeniero_VUC; python arnes/candado_legislar.py listar")
+    except Exception:
+        pass
+
     if not faltas:
         _apuntar(0)
         return 0
