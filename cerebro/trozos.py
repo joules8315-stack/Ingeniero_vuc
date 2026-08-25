@@ -16,6 +16,21 @@ from collections import Counter, defaultdict
 
 TAM = 40          # lineas por trozo
 SOLAPE = 8        # lineas repetidas entre trozo y trozo (para no cortar una funcion en seco)
+
+# Cuanto pesa un pedazo que viene de una PRUEBA (vigia, prueba real, sonda de aislar).
+# No es cero: una prueba dice que ya se probo y como, y eso es contexto util. Pero no puede
+# ganarle al codigo, porque las pruebas llevan el problema de Julio COPIADO en su cabecera y
+# entonces se llevan el paquete entero. Ver `_es_prueba` y el fallo del 2026-08-25.
+_PESO_PRUEBA = 0.25
+
+
+def _es_prueba(pieza):
+    """¿Este pedazo viene de una prueba, y no del programa?"""
+    n = str(pieza or "").replace("\\", "/").lower()
+    base = n.rsplit("/", 1)[-1]
+    return ("/vigias/" in n or base.startswith("test_") or base.endswith("_test.py")
+            or base.startswith("rv3_vigia") or base.startswith("rv3_prueba")
+            or base.startswith("rv3_aislar"))
 RUIDO = {"the", "and", "for", "que", "con", "por", "los", "las", "del", "una", "self",
          "import", "from", "return", "def", "class", "if", "else", "not", "none", "true", "false"}
 
@@ -132,6 +147,17 @@ class Buscador:
                     idf = math.log(self.docs / (1 + self.en_cuantos[w]))
                     p += (1 + math.log(c)) * max(idf, 0.1)
             if p > 0:
+                # UNA PRUEBA QUE DESCRIBE UN FALLO NO ES DONDE VIVE EL FALLO (2026-08-25).
+                # Julio lo cazo con una pregunta: "¿y por que vas a tocar 16 mil lineas? si ese
+                # no es el contrato, solo un pedazo". Tenia razon: hacian falta ~10 lineas del
+                # programa. Pero el paquete traia TRES pedazos y los tres eran de las vigias
+                # recien escritas, que llevan el problema de Julio COPIADO en su cabecera y por
+                # eso ganaban siempre. El repartidor se devolvia su propio texto y el codigo no
+                # aparecia; sin el codigo delante, el candado de equipo no abria el archivo y la
+                # reparacion de una sola linea quedaba bloqueada.
+                # No se les echa: siguen entrando como contexto (dicen que ya se probo y como).
+                # Solo dejan de TAPAR al codigo.
+                p *= _PESO_PRUEBA if _es_prueba(t["pieza"]) else 1.0
                 res.append((p, t))
         res.sort(key=lambda x: -x[0])
         vistos, out = set(), []
