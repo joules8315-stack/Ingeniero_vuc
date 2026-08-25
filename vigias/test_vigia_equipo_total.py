@@ -37,10 +37,17 @@ def test_ley_escrita_donde_la_leen_todas_las_ia():
 
 
 def test_candado_equipo_no_ofrece_salto():
-    """El candado de equipo no debe tener ninguna llave de permiso: solo veredicto lo abre."""
+    """Solo veredicto (o la VIA HONRADA de permiso con causa probada) abren el candado. Sin salto en silencio."""
     txt = _leer(os.path.join(AQUI, "arnes", "candado_equipo.py"))
     assert "veredicto" in txt, "el candado de equipo no exige veredicto"
-    assert "permiso_editar" not in txt, "el candado de equipo tiene un salto por permiso"
+    # VIA HONRADA (fallo de Claude, 2026-08-24): un archivo de 16.000 lineas nunca cabe en el paquete,
+    # asi que la llave del equipo jamas lo nombra -> era un candado sin forma honrada de cumplirse.
+    # La salida es el permiso_editar: declara archivo exacto + motivo + vigia + a quien dana, es de UN
+    # archivo y caduca en 30 min. NO es un salto en silencio: sin causa probada, sigue cerrado.
+    assert "permiso_editar" in txt, "falta la via honrada (permiso_editar) para archivos grandes"
+    pr = _leer(os.path.join(AQUI, "arnes", "permiso_editar.py"))
+    assert "motivo" in pr and "vigia" in pr and "dana" in pr, \
+        "el permiso no exige justificacion (motivo + vigia + dana)"
 
 
 def test_cline_queda_obligado_por_regla_propia():
