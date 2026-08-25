@@ -52,7 +52,7 @@ def _llamar(para, texto):
         _sys.path.insert(0, os.path.join(AQUI, "arnes"))
         subprocess.Popen(
             [_sys.executable, os.path.join(AQUI, "arnes", "llamar.py"), str(para), texto[:120]],
-            creationflags=0x00000008 if os.name == "nt" else 0)
+            creationflags=0x08000000 if os.name == "nt" else 0)  # CREATE_NO_WINDOW: no abrir consola
     except Exception:
         pass
 

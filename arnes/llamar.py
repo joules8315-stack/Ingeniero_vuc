@@ -42,7 +42,7 @@ def _toast(para, asunto):
           "$n.ShowBalloonTip(6000);"
           "Start-Sleep -Seconds 6;$n.Dispose()")
     try:
-        flags = 0x00000008 if os.name == "nt" else 0   # DETACHED_PROCESS: no bloquear
+        flags = 0x08000000 if os.name == "nt" else 0   # CREATE_NO_WINDOW: no abrir consola al notificar
         subprocess.Popen(["powershell", "-NoProfile", "-Command", ps],
                          creationflags=flags, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL)
