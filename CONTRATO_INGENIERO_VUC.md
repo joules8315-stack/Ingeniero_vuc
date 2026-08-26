@@ -390,12 +390,15 @@ o se justifica con `NECESITO_LEER`.
 - **INVIOLABLE** no es que no haya salida: es que **no se pueda usar a escondidas**. Cada apagon
   queda apuntado en `memoria/APAGONES.log`, con fecha y que se leyo.
 
-### LA LLAVE QUE FALTABA (`arnes/permiso_editar.py`)
-El candado de edicion ofrecia la salida `NECESITO_EDITAR` **y esa salida no existia**. Un candado
-que ofrece una llave inexistente obliga a apagar el arnes entero. Ahora existe:
-`python ingeniero.py necesito-editar <archivo> --motivo "..." --vigia "..." --dana "..."`
-Permite UN archivo, 30 minutos, con la justificacion por escrito y apuntada.
-**Regla nueva: un mensaje de bloqueo NUNCA ofrece una salida que no este implementada.**
+### LA LLAVE `NECESITO_EDITAR` — RETIRADA (Julio, 2026-08-26)
+La salida de emergencia `NECESITO_EDITAR` / `arnes/permiso_editar.py` se habia abierto para poder
+tocar el archivo de 16.000 lineas que no cabe en el paquete. Se volvio la ENTRADA PRINCIPAL: TODAS
+las reparaciones de un dia pasaron por ahi, y se trabajo a solas con el candado de equipo verde.
+Julio lo cerro de raiz. **El unico que autoriza tocar codigo a solas es Julio, o el veredicto del
+equipo.** No existe ninguna llave: `candado_equipo` y `edit_gate_universal` ya no la honran,
+`permiso_editar` quedo RETIRADO (jamas abre) y no hay comando `necesito-editar`.
+Si un archivo grande no cabe en el paquete, la cura es arreglar el repartidor (diccionario/router),
+no volver a abrir una puerta.
 
 ## LEY 22 — GUARDAR UN FALLO NO ES APRENDER (Julio, 2026-08-21)
 > "Verifica que se esten guardando los errores y que estes aprendiendo de ellos, no veo que te
