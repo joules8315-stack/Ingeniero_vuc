@@ -92,5 +92,36 @@ Marcado como pendiente conocido: el dia que se arregle, la vigia avisa.
 
 ---
 
+---
+
+## AGREGADO AL CIERRE (2026-08-25, tarde) — CAPACIDAD, PRECISION y el modelo local
+
+**Capacidad real medida** (`memoria/CAPACIDADES.json`): la cuota GRATIS de Groq es **8.000 tokens/min
+y 200.000/día POR MODELO** (doc oficial de Groq, confirmado en vivo). Los de Groq (groq/groq20b/qwen)
+aguantan ~8.000 letras por tarea y luego la cuota los frena. gemini2 (3-flash-preview) ~16.000 letras
+(el más capaz gratis hoy). gemini (3.5) agotado hoy; gemini3 inestable; deepseek >=80.000 (pago, sin cuota).
+
+**Precisión real EN TERRENO** (`arnes/medir_precision.py`, `memoria/PRECISION.json`): tarea de análisis
+de campañas con los datos reales de SolarDemo, 4 comprobaciones objetivas (usa_datos, detecta_problema,
+canales_marca, medible). Sirven (4/4): groq20b, qwen, gemini2, deepseek; groq 3/4 (no detectó las 0 ventas).
+A descansar para análisis: gemini (agotado), gemini3 (inestable), local (1.5b, alucina). Regla: se asigna
+por capacidad + precisión, y CADA tarea va con su vigía que la verifica (la vigía es la que los hace
+precisos). Vigía: `test_vigia_precision.py`.
+
+**El modelo local**: se descargó Qwen2.5-7B-Instruct (4.4 GB, listo en LM Studio) para que sea el cerebro
+local de análisis, pero **NO carga en 8 GB de RAM** (el motor se cae por falta de memoria: exitCode 322).
+Necesita 16 GB. El 1.5B queda de red de seguridad. Opción para hoy con 8 GB: bajar un 3B/4B que sí cabe.
+
+**Fallo 45 (la señal de Claude)**: confirmado que la señal mira el comando y no el proyecto; Claude lo va
+a arreglar (legislar -> alarma primero -> reparar); yo superviso.
+
+**MAÑANA (por orden):**
+1. Probar un 3B/4B local (si Julio lo quiere) con `python arnes/medir_precision.py local`.
+2. Revisar lo de Claude (fallo 45) cuando avise.
+3. Re-medir Gemini cuando su cuota se refresque.
+4. Opcional: subir a 16 GB de RAM y activar el 7B.
+
+---
+
 **Estado de la cuenta de Julio al cerrar:** 25 informes diarios, 19 colocados, 6 sueltos,
 68 fotos. Igual que como se encontro.
