@@ -1,8 +1,8 @@
 {
- "archivo": "c:\\ingeniero_vuc\\arnes\\candado_diagnostico.py",
- "nombre": "candado_diagnostico.py",
- "motivo": "Conectar la cosecha del diccionario. Al declarar una causa ya se escriben las dos mitades probadas (el problema en palabras de Julio y el archivo/funcion/linea exactos), pero nadie las empareja y se pierden. Medido hoy: DIAGNOSTICO.json guarda UNA sola causa y se sobrescribe; de las cuatro declaradas hoy quedaba una. Sin cosecha el diccionario nace vacio para siempre, y un diccionario que hay que llenar a mano no se llena.",
- "vigia": "vigias/test_vigia_diccionario_de_julio.py (6 verdes) mas la comprobacion de que declarar una causa deja la pareja aprendida",
- "dana": "a nadie: solo AÑADE un apunte al declarar; no cambia lo que el candado exige ni lo que responde",
- "cuando": 1787716480.0450594
+ "archivo": "c:\\users\\user\\dev\\foto_info_repo\\foto_informe--main\\rv3_prueba_4_roles.py",
+ "nombre": "rv3_prueba_4_roles.py",
+ "motivo": "CAUSA PROBADA: linea 187, updateTemplateRoleColumn('evidence','0') no borra: app_web.html:944 hace normalizedIndex = Math.max(1, Number(columnIndex)||1), asi que el 0 pasa a 1 y MUEVE evidencia a la columna 1. De ahi sale el falso 'tras borrar, el servidor lo sigue teniendo', que salio hoy al correrla. Ya estaba investigado y escrito en la cabecera de rv3_prueba_4_1_borrar_rol.py, pero la prueba vieja sigue gritando. Cura: pulsar el boton real de borrar, como hace la 4.1.",
+ "vigia": "la propia prueba: al pulsar el boton de verdad debe dejar de acusar en falso, y rv3_prueba_4_1_borrar_rol.py sigue cubriendo el borrado a fondo",
+ "dana": "a nadie: es una prueba, no toca el MVP",
+ "cuando": 1787765100.9432962
 }

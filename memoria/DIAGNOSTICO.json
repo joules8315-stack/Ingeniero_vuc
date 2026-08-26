@@ -1,10 +1,10 @@
 {
- "cuando": 1787716511.903126,
+ "cuando": 1787765159.29117,
  "proyecto": "foto_informe",
- "archivo": "app_web.html",
- "funcion": "enterApp",
- "linea": "2092",
- "evidencia": "Medido con navegador tres veces: al entrar a Revisar cargan 25 informes; al recargar, 0 durante 90s y de nueve llamadas ninguna pide los diarios. Con el archivo guardado en su dia cargan solos.",
- "cambio": "la mejora de velocidad dejo el reloj corriendo solo en la pantalla de las fotos",
- "sintoma": "al abrir el programa la lista de informes diarios sale vacia"
+ "archivo": "rv3_prueba_4_roles.py",
+ "funcion": "main (PASO 3: borrar un rol)",
+ "linea": "187",
+ "evidencia": "Corrida hoy: devolvio 'Tras borrar el rol de evidencia, el servidor lo sigue teniendo'. Leido en app_web.html:944, updateTemplateRoleColumn hace normalizedIndex = Math.max(1, Number(columnIndex)||1): el cero pasa a 1, asi que no borra sino que mueve evidencia a la columna 1. La cabecera de rv3_prueba_4_1_borrar_rol.py ya lo dejo escrito el 2026-07-16 y la prueba vieja sigue gritando igual.",
+ "cambio": "el PASO 3 borra el rol llamando a una funcion con un cero en vez de pulsar el boton de borrar",
+ "sintoma": "una alarma grita en falso y ensena a ignorar todas las demas"
 }
