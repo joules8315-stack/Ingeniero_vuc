@@ -115,3 +115,39 @@ def test_el_interruptor_de_emergencia_lo_apaga():
                                          "tool_input": {"command": "cat > a.py <<'EOF'\nx\nEOF"}}),
                        capture_output=True, text=True, env=env, timeout=60)
     assert p.returncode == 0
+
+
+def _apuntar_con_mira_proyecto():
+    """Fallo tipo 45: 'trabajar en un proyecto que no esta en la libreta'. MIRA EL PELIGRO."""
+    fallos.apuntar(
+        que_paso="trabajar en un proyecto equivocado",
+        causa_raiz="se asumio el proyecto sin mirar la libreta",
+        cura="preguntar el apodo de la libreta antes de trabajar",
+        no_volver_a="trabajar en un proyecto que no este en la libreta",
+        disparador=r"py trabaja|py equipo")
+    fs = fallos._leer()
+    fs[-1]["mira_proyecto"] = True
+    fallos._guardar(fs)
+
+
+def test_aviso_mira_el_peligro_no_el_comando_proyecto_conocido():
+    """Fallo 45: 'py equipo foto_informe' NO avisa: el proyecto SI esta en la libreta.
+
+    El aviso no suena por el NOMBRE del comando (que era el fallo medido: saltaba ~20 veces al
+    dia) sino por el PELIGRO real: que el proyecto que se nombra NO exista en la libreta.
+    """
+    _apuntar_con_mira_proyecto()
+    _, txt = _correr({"tool_name": "Bash",
+                      "tool_input": {"command": "python ingeniero.py equipo foto_informe \"tarea\""}})
+    assert "YA TE PASO" not in txt.upper(), (
+        "aviso en falso: foto_informe SI esta en la libreta de direcciones")
+
+
+def test_aviso_mira_el_peligro_no_el_comando_proyecto_inexistente():
+    """Fallo 45: 'py trabaja <nombre_que_no_existe>' SI avisa: ese es el peligro real."""
+    _apuntar_con_mira_proyecto()
+    _, txt = _correr({"tool_name": "Bash",
+                      "tool_input": {"command": "python ingeniero.py trabaja asesor_de_marketing \"x\""}})
+    assert "YA TE PASO" in txt.upper(), (
+        "no aviso del peligro real: el proyecto 'asesor_de_marketing' NO esta en la libreta")
+

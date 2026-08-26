@@ -93,6 +93,21 @@ def _texto_de_la_accion(data):
     return "\n".join(partes)
 
 
+def _proyecto_que_nombra(texto):
+    """El apodo de proyecto que esta por trabajar/consultar en esta accion, o None."""
+    m = re.search(r"\b(?:trabaja|equipo|trabajar)\s+([A-Za-z0-9_\.\-]+)", texto, re.I)
+    return m.group(1) if m else None
+
+
+def _en_libreta(nombre):
+    """¿El nombre es un apodo de la libreta de direcciones (proyectos.config)?"""
+    try:
+        from cerebro import grafo
+        return str(nombre).lower() in {a.lower() for a in grafo.proyectos()}
+    except Exception:
+        return False
+
+
 def revisar(texto):
     """Los fallos ya vividos que esta accion puede revivir."""
     try:
@@ -106,10 +121,19 @@ def revisar(texto):
         if not disp:
             continue
         try:
-            if re.search(disp, texto, re.I | re.S):
-                salen.append(f)
+            if not re.search(disp, texto, re.I | re.S):
+                continue
         except re.error:
             continue
+        # AVISOS QUE MIRAN EL PELIGRO, NO EL COMANDO (fallo 45, 2026-08-21):
+        # un aviso no debe sonar por el NOMBRE del comando sino por el riesgo real.
+        # Este aviso es 'trabajar en un proyecto cuyo nombre NO esta en la libreta':
+        # si el proyecto que se nombra SI existe, el peligro de este fallo no aplica.
+        if f.get("mira_proyecto"):
+            nombre = _proyecto_que_nombra(texto)
+            if not nombre or _en_libreta(nombre):
+                continue
+        salen.append(f)
     return salen[:3]
 
 
