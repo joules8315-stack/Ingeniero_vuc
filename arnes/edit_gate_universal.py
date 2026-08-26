@@ -132,15 +132,6 @@ def main():
     if txt and _declarado_en(txt, fp):
         return 0                       # esta en el paquete: adelante
 
-    # LA LLAVE QUE ESTE CANDADO OFRECE ABAJO (NECESITO_EDITAR). Antes no existia y obligaba a
-    # apagar el arnes entero para arreglar un archivo roto. Fallo real 2026-08-20.
-    try:
-        import permiso_editar
-        if permiso_editar.hay_permiso(fp):
-            return 0
-    except Exception:
-        pass
-
     base = os.path.basename(fp)
     sys.stderr.write(
         "BLOQUEADO POR EL CANDADO DE EDICION (Ingeniero VUC)\n"
@@ -150,8 +141,8 @@ def main():
         + "\n  Tocar codigo sin haber mirado el contexto es como se rompen los vecinos.\n"
           "  Pide el paquete del asunto (trae la ley, las piezas, los trozos y a quien danas):\n"
           f'     cd C:\\Ingeniero_VUC; python ingeniero.py trabaja {apodo} "<el problema>"\n'
-          "\n  Si de verdad hace falta tocarlo y no sale en el paquete, justificalo:\n"
-          "     NECESITO_EDITAR: archivo / motivo / que vigia lo protege / a quien puede danar\n")
+          "\n  No hay atajo: si el paquete no trae el archivo, es que falta arreglar el\n"
+          "  repartidor, no una llave. Y el candado de equipo, aparte, exige el veredicto.\n")
     return 2
 
 

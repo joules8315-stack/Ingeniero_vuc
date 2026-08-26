@@ -156,17 +156,12 @@ def main():
     d = veredicto_vigente()
     if cubre(d, fp):
         return 0                                    # el equipo ya lo miro: adelante
-    # VIA HONRADA (fallo de Claude, 2026-08-24): un archivo de 16.000 lineas NUNCA cabe en el
-    # paquete, asi que la llave del equipo jamas lo nombra -> candado sin forma honrada de
-    # cumplirse. El permiso_editar (NECESITO_EDITAR) declara archivo exacto + motivo + vigia +
-    # a quien dana, es de UN solo archivo y caduca en 30 min. Con eso se repara el PEDAZO con
-    # causa probada, sin tocar las miles de lineas.
-    try:
-        import permiso_editar
-        if permiso_editar.hay_permiso(fp):
-            return 0
-    except Exception:
-        pass
+    # SIN PUERTA (Julio, 2026-08-26): la salida de emergencia NECESITO_EDITAR / permiso_editar
+    # se volvio la ENTRADA PRINCIPAL — todas las IA se salieron por ahi y trabajaron a solas,
+    # que es justo lo que este candado existe para impedir. Se quito de raiz. El UNICO que
+    # autoriza tocar codigo a solas es Julio (autorizacion), o el veredicto del equipo.
+    # Si un archivo grande no cabe en el paquete, la cura NO es una llave: es arreglar el
+    # repartidor (diccionario/router) para que el veredicto SI nombre el archivo.
     # LA LIBRETA, AL REVES: queda constancia de CADA frenada, con el motivo exacto.
     _apuntar_frenada(fp, "sin veredicto del equipo" if not d else
                      "el veredicto vigente no habla de este archivo")
