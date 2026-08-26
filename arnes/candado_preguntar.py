@@ -98,6 +98,12 @@ def main():
     partes.append("  Si de verdad el contrato NO lo resuelve, di en que se queda corto y")
     partes.append("  pregunta lo que falta, no lo que ya esta.")
     sys.stderr.write("\n".join(partes) + "\n")
+    # MEDICION (Julio, 2026-08-25): freno la pregunta que ya estaba respondida por Julio.
+    try:
+        import candados_medicion
+        candados_medicion.cazado("preguntar")
+    except Exception:
+        pass
     return 2
 
 

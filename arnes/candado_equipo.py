@@ -171,6 +171,12 @@ def main():
     _apuntar_frenada(fp, "sin veredicto del equipo" if not d else
                      "el veredicto vigente no habla de este archivo")
     sys.stderr.write(MENSAJE.format(fp=fp))
+    # MEDICION (Julio, 2026-08-25): este candado cazo algo real: freno escribir a solas.
+    try:
+        import candados_medicion
+        candados_medicion.cazado("equipo")
+    except Exception:
+        pass
     return 2
 
 

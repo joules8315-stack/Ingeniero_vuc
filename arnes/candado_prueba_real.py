@@ -160,6 +160,12 @@ def main():
             print("OK: hay evidencia fresca, verde y con equipo. Ya se puede pedirle a Julio que pruebe.")
             return 0
         sys.stderr.write(MENSAJE)
+        # MEDICION (Julio, 2026-08-25): freno pedirle a Julio que pruebe sin evidencia real.
+        try:
+            import candados_medicion
+            candados_medicion.cazado("prueba_real")
+        except Exception:
+            pass
         return 2
     print(__doc__)
     return 1

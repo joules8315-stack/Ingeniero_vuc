@@ -207,12 +207,14 @@ def main():
 
     if _es_heredoc_con_codigo(data):
         sys.stderr.write(AVISO_HEREDOC)
+        _cazado_terminal()
         return 2
 
     # SEGURIDAD de claves: leer una variable de entorno desde la terminal se BLOQUEA siempre.
     cmd_txt = str((data.get("tool_input") or {}).get("command") or "")
     if ENV_READER.search(cmd_txt):
         sys.stderr.write(AVISO_CLAVES)
+        _cazado_terminal()
         return 2
 
     texto, es_lectura = _que_se_pide(data)
@@ -230,7 +232,17 @@ def main():
     if n <= TOPE_SIN_PAQUETE:
         return 0
     sys.stderr.write(MENSAJE.format(proy=apodo))
+    _cazado_terminal()
     return 2
+
+
+def _cazado_terminal():
+    """MEDICION (Julio, 2026-08-25): este candado freno algo de verdad. Nunca lanza."""
+    try:
+        import candados_medicion
+        candados_medicion.cazado("terminal")
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":

@@ -75,6 +75,12 @@ def revisar_veredicto(veredicto, archivo_reparado, archivos_del_encargo):
         return veredicto, ""
     motivo = se_equivoco_de_archivo(archivo_reparado, archivos_del_encargo)
     if motivo:
+        # MEDICION (Julio, 2026-08-25): freno un APROBADO sobre el archivo equivocado.
+        try:
+            import candados_medicion
+            candados_medicion.cazado("archivo_del_veredicto")
+        except Exception:
+            pass
         return "RECHAZADO_ARCHIVO_EQUIVOCADO", motivo
     return APROBADO, ""
 

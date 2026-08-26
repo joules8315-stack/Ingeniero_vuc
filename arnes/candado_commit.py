@@ -71,7 +71,7 @@ def main():
     # no vea una tabla de ceros.
     try:
         import candados_medicion
-        candados_medicion.apuntar("commit", "cazo")
+        candados_medicion.cazado("commit")
     except Exception:
         pass
     sys.stderr.write(

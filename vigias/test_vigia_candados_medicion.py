@@ -98,17 +98,37 @@ def test_ALGUIEN_lo_llama():
     Ya esta apuntado en la memoria de fallos: un contador que solo sube si alguien se acuerda de
     subirlo marca CERO aunque la cosa haya pasado cuatro veces. Si ningun candado lo llama, la
     revision de los 8 dias vera una tabla de ceros y concluira que ningun candado sirve.
+
+    Y NO BASTA con que lo llame uno (debilidad apuntada 2026-08-25): los candados que de verdad
+    frenan deben apuntar su cazada justo donde bloquean. Si uno queda sin cablear, la tabla de
+    los 8 dias vuelve a mentir (deja de contar lo que ese candado caza) y nadie lo nota.
     """
-    quienes = []
-    for nombre in sorted(os.listdir(ARNES)):
-        if not nombre.endswith(".py") or nombre == "candados_medicion.py":
+    OBLIGATORIOS = [
+        ("candado_commit.py", "commit"),
+        ("candado_equipo.py", "equipo"),
+        ("candado_memoria.py", "memoria"),
+        ("candado_prueba_real.py", "prueba_real"),
+        ("candado_preguntar.py", "preguntar"),
+        ("candado_legislar.py", "legislar"),
+        ("candado_cierre.py", "cierre"),
+        ("candado_terminal.py", "terminal"),
+        ("candado_archivo_del_veredicto.py", "archivo_del_veredicto"),
+    ]
+    fallan = []
+    for nombre, clave in OBLIGATORIOS:
+        ruta = os.path.join(ARNES, nombre)
+        if not os.path.isfile(ruta):
+            fallan.append("%s (no existe)" % nombre)
             continue
         try:
-            with open(os.path.join(ARNES, nombre), encoding="utf-8", errors="replace") as f:
-                if "candados_medicion" in f.read():
-                    quienes.append(nombre)
+            with open(ruta, encoding="utf-8", errors="replace") as f:
+                contenido = f.read()
         except Exception:
+            fallan.append("%s (no se puede leer)" % nombre)
             continue
-    assert quienes, (
-        "NINGUN candado apunta lo que caza ni lo que frena en falso. El contador existe y se "
-        "queda en cero para siempre: eso no mide, adorna.")
+        if ('cazado("%s")' % clave) not in contenido:
+            fallan.append("%s no llama cazado(%r)" % (nombre, clave))
+    assert not fallan, (
+        "el contador de candados miente si un candado que frena no apunta su cazada justo donde "
+        "bloquea. Sin eso la revision de los 8 dias deja de contar lo que ese candado caza y "
+        "nadie lo nota. Estos no estan cableados: %s" % "; ".join(fallan))

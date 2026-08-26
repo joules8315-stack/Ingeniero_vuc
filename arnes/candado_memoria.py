@@ -168,6 +168,12 @@ def main():
     partes.append("")
     partes.append("  Si aun asi hay que hacerlo, repite la MISMA accion y pasara.")
     sys.stderr.write("\n".join(partes) + "\n")
+    # MEDICION (Julio, 2026-08-25): freno y ensene una leccion ya vivida antes de repetirla.
+    try:
+        import candados_medicion
+        candados_medicion.cazado("memoria")
+    except Exception:
+        pass
     return 2
 
 

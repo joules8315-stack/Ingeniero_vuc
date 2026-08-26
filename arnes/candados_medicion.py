@@ -2,8 +2,8 @@
 """arnes/candados_medicion.py — MIDE a los candados, como Julio mide todo lo demas.
 
 Claude, 2026-08-25 (punto final): "Cada candado deberia llevar cuenta de cuantas veces ha cazado
-algo de verdad. Al mes se mira: el que no ha cazado nada, o su senal esta mal puesta, o ya no hace
-falta. Tu mides todo lo demas. Ellos tambien deberian medirse."
+algo de verdad. Cada 8 dias se mira (Julio, 2026-08-25): el que no ha cazado nada, o su senal
+esta mal puesta, o ya no hace falta. Tu mides todo lo demas. Ellos tambien deberian medirse."
 
 Y su anadido: "cuenta tambien cuantas veces FRENO ALGO LEGITIMO. Un candado con muchas frenadas en
 falso es peor que no tenerlo, porque ensena a ignorarlos todos. Con las dos cuentas, al mes se ve
@@ -52,6 +52,16 @@ def apuntar(quien, tipo):
     return e
 
 
+def cazado(quien):
+    """Registra una cazada real del candado `quien`. NUNCA lanza: medir no puede tumbar al
+    guardia. Cada candado que bloquea lo llama justo donde frena, para que la revision de los
+    8 dias no vea una tabla de ceros (Julio, 2026-08-25)."""
+    try:
+        apuntar(quien, "cazo")
+    except Exception:
+        pass
+
+
 def resumen():
     """Tabla de cada candado: cuantas veces cazo y cuantas freno en falso. Marca los que sobran."""
     d = _leer()
@@ -71,7 +81,8 @@ def resumen():
             flag = "  (sin actividad)"
         L.append("  %-16s %-9d %-12d%s" % (quien, cazo, falso, flag))
     L.append("")
-    L.append("Regla: al mes, el que no cazo nada o tiene muchas frenadas en falso se revisa o se apaga.")
+    L.append("Regla: cada 8 dias (Julio, 2026-08-25), el que no cazo nada o tiene muchas frenadas "
+             "en falso se revisa o se apaga.")
     return "\n".join(L)
 
 

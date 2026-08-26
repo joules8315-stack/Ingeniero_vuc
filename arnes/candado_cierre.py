@@ -230,6 +230,12 @@ def main():
         "NO SE PUEDE TERMINAR TODAVIA — el candado de cierre encontro pasos saltados:\n\n"
         + "\n\n".join(f"  {i}. {f}" for i, f in enumerate(faltas, 1))
         + "\n\nHaz eso y vuelve a terminar. (Si te bloquea sin razon: $env:INGENIERO_OFF=1)\n")
+    # MEDICION (Julio, 2026-08-25): freno terminar con pasos saltados.
+    try:
+        import candados_medicion
+        candados_medicion.cazado("cierre")
+    except Exception:
+        pass
     return 2
 
 

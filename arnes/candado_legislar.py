@@ -104,6 +104,12 @@ def main():
         + "\n\n  Cada una debe quedar legislada (contrato + tabla de verdad + matriz + vigia)\n"
           "  o marcarse 'ya existe' / 'no aplica' con su motivo:\n"
           "     cd C:\\Ingeniero_VUC; python arnes/candado_legislar.py hecho \"<texto>\" legislado\n")
+    # MEDICION (Julio, 2026-08-25): freno cerrar con instrucciones de Julio sin legislar.
+    try:
+        import candados_medicion
+        candados_medicion.cazado("legislar")
+    except Exception:
+        pass
     return 2
 
 
