@@ -133,6 +133,30 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
         if f not in fichas:
             fichas.append(f)
 
+    # EL DICCIONARIO (Claude + Cline, 2026-08-25): si este problema YA se reparo antes, aqui esta
+    # el sitio exacto del codigo, dicho en palabras de Julio. Es justo lo que la busqueda por
+    # letras nunca logra (Julio habla espanol y de negocio; el codigo, ingles y comprimido). Se
+    # agregan esos sitios PROBADOS al material, para que el paquete traiga el programa y no solo
+    # las vigias recien escritas.
+    diccionario_sitios = []
+    try:
+        sys.path.insert(0, AQUI)
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        from arnes import diccionario as _dic
+        diccionario_sitios = _dic.buscar(problema, apodo)[:4]
+        for sitio in diccionario_sitios:
+            sufijo = str(sitio.get("archivo") or "").replace("\\", "/")
+            if not sufijo:
+                continue
+            ficha = next((p for p in g["piezas"]
+                          if p["id"].replace("\\", "/").endswith(sufijo)), None)
+            if ficha and ficha not in codigo:
+                codigo.append(ficha)
+                if ficha not in fichas:
+                    fichas.append(ficha)
+    except Exception:
+        pass
+
     # EL ROUTER SE CORRIGE SOLO (orden 3 de Julio, 2026-08-20).
     # Si en un problema del mismo flujo el paquete se quedo CORTO, el medidor apunto QUE falto.
     # Aqui se lee ese apunte y se mete esa pieza, para no repetir el mismo hueco dos veces.
@@ -197,6 +221,7 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
     return {"apodo": apodo, "raiz": g["raiz"], "problema": problema, "flujos": hits,
             "claves": claves, "fichas": fichas, "codigo": codigo, "trozos": pedazos,
             "leyes": leyes, "vigias": vigias, "dana": dana,
+            "diccionario": diccionario_sitios,
             "total_proyecto": g["resumen"]["lineas"]}
 
 
@@ -214,6 +239,13 @@ def a_texto(pk):
     w("**REGLA DE ESTE PAQUETE:** esto es TODO lo que hace falta. No abras nada mas.")
     w("Si de verdad necesitas otra cosa, PIDELA con el formato del final. No la leas por tu cuenta.")
     w("")
+
+    if pk.get("diccionario"):
+        w("## 0. ESTO YA SE REPARO ANTES (no lo re-descubras)")
+        for s in pk["diccionario"][:3]:
+            w(f"- `{s.get('archivo')}` ({s.get('funcion')}, linea {s.get('linea')}) "
+              f"— cuando pasaba: {str(s.get('problema'))[:70]}")
+        w("")
 
     w("## 1. LA LEY QUE MANDA AQUI")
     if pk["leyes"]:
