@@ -28,19 +28,8 @@ def _feed(monkeypatch, fp, veredicto=None):
                   open(ruta_ver, "w", encoding="utf-8"))
     monkeypatch.setenv("INGENIERO_VEREDICTO_TEST", ruta_ver)
     monkeypatch.setenv("INGENIERO_SIN_EQUIPO_TEST", os.path.join(d, "sin.log"))
-    # AISLADA DEL PERMISO DE VERDAD (2026-08-25). El candado tiene ahora una via honrada: con un
-    # NECESITO_EDITAR vigente para ESE archivo, abre. Es correcto. Pero esta vigia usa app.py de
-    # Foto Informe, y si alguien tiene un permiso vivo para app.py (por ejemplo probando el propio
-    # candado), la vigia se pone ROJA sin que nada este mal. Medido ese dia: "PERMISO VIGENTE para
-    # app.py (quedan 23 min)". Una vigia que depende de lo que haya vivo en la maquina no vale:
-    # es la leccion de las vigias inestables. Aqui se le da un permiso DE MENTIRA, vacio, para que
-    # siempre mida lo mismo. La exigencia no se afloja: sin veredicto sigue teniendo que bloquear.
-    try:
-        import permiso_editar
-        monkeypatch.setattr(permiso_editar, "RUTA", os.path.join(d, "permiso_de_mentira.json"),
-                            raising=False)
-    except Exception:
-        pass
+    # (2026-08-26): el permiso de edicion (NECESITO_EDITAR) esta RETIRADO por orden de Julio — ya
+    # no hay via honrada que abra sin veredicto. Esta vigia ya no tiene que aislar ninguna llave.
     monkeypatch.setattr(sys, "stdin", io.StringIO(
         json.dumps({"tool_input": {"file_path": fp}})))
     return candado_equipo.main()
