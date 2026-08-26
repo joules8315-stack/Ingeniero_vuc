@@ -1,9 +1,11 @@
 {
- "cuando": 1787702415.929716,
- "proyecto": "foto_informe",
- "archivo": "app.py",
- "funcion": "generate_report (seleccion de informes que entran)",
- "linea": "16483",
- "evidencia": "Medido abriendo el Word recien generado: con 19 informes escogidos y 6 sueltos salieron los 25, con 27 tablas y 68 fotos. Julio pidio que salga 'con el numero de informes escogidos'. En app.py:16483 el servidor mete en pending_entries a todo el que no tenga fila, orden o tipo y luego lanza 400 'Faltan asignaciones finales antes de generar el informe': rechaza EN BLOQUE en vez de saltarselos. Por eso la pantalla, al aceptar Continuar, llama a buildDefaultAssignments y les inventa fila a todos: es su unica forma de esquivar ese rechazo.",
- "sintoma": ""
+ "cuando": 1787715777.960592,
+ "proyecto": "ingeniero",
+ "archivo": "ingeniero.py",
+ "funcion": "main (comando causa)",
+ "linea": "331",
+ "evidencia": "Reproducido hoy dos veces. Caso 1: aparte app_web.html con git creyendo aislar mi cura y aparte tambien los cambios de Cline sin guardar en el mismo archivo; medi con y sin, salio distinto y declare 'lo rompi yo'. Falso. Caso 2: conte la fila de encabezado como fila 1 y declare que el MVP desplazaba los 19 informes; era mi contador, y se delataba solo porque los 19 fallaban IGUAL y por lo mismo. Las dos pasaron por todos los candados sin que ninguno pestaneara.",
+ "cambio": "el comando causa exige archivo, funcion, linea y evidencia, pero NO exige decir QUE CAMBIO entre la medicion de antes y la de despues",
+ "sintoma": "se declaran causas falsas con toda seguridad y ningun candado avisa",
+ "coincidencia": true
 }
