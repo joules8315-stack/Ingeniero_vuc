@@ -66,6 +66,14 @@ def main():
         sys.stderr.write("AVISO (commit, ya no bloquea): hay trabajo sin commitear. Guárdalo pronto.\n")
         return 0
     _apuntar(veces + 1)
+    # MEDICION DE CANDADOS (Claude, 2026-08-25): apuntar lo que este candado cazo de verdad
+    # (bloquear trabajo sin commitear = evito que se pierda). Para que la revision de los 8 dias
+    # no vea una tabla de ceros.
+    try:
+        import candados_medicion
+        candados_medicion.apuntar("commit", "cazo")
+    except Exception:
+        pass
     sys.stderr.write(
         "NO SE PUEDE TERMINAR — F8 (punto i): hay trabajo sin commitear (se puede perder).\n"
         "  Guárdalo ahora y vuelve a terminar.\n"

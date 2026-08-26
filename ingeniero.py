@@ -469,6 +469,10 @@ def main():
                                + [a for a in sys.argv[2:]])
     if cmd == "cuotas":
         print(cuotas.estado_texto()); return 0
+    if cmd in ("candados-medicion", "medir-candados"):
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        import candados_medicion
+        print(candados_medicion.resumen()); return 0
     if cmd == "vigias" and len(sys.argv) >= 3:
         return vigias(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else "antes")
     if cmd == "proyectos":

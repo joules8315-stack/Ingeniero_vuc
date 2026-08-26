@@ -92,12 +92,6 @@ def test_el_resumen_se_puede_leer_sin_datos(tmp_path, monkeypatch):
         "el resumen revienta cuando todavia no hay nada apuntado")
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="ABIERTO 2026-08-25: NADIE llama al contador todavia. Es la parte de Cline y esta en "
-           "curso; queda marcado para que el dia que lo enganche esta vigia avise y se quite la "
-           "marca. Mientras, la cuenta es de ceros y la revision de los 8 dias miraria datos "
-           "falsos.")
 def test_ALGUIEN_lo_llama():
     """La comprobacion que de verdad decide si esto mide o adorna.
 
