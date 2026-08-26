@@ -22,7 +22,7 @@ COMO FUNCIONA: antes de tocar codigo de un proyecto hay que haber DECLARADO la c
 Sin esa declaracion, o si esta rancia (mas de 8 horas), no se toca nada.
 No estorba a los documentos ni a las pruebas: solo al codigo.
 """
-import json, os, sys, time
+import json, os, re, sys, time
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUTA = os.path.join(AQUI, "memoria", "DIAGNOSTICO.json")
@@ -30,15 +30,40 @@ VIGENCIA_HORAS = 8
 CODIGO = (".py", ".html", ".js", ".css", ".ts", ".jsx", ".tsx")
 
 
-def declarar(proyecto, archivo, funcion, linea, evidencia, sintoma=""):
-    """Guarda la causa raiz. Exige las cinco cosas: sin una sola, no vale."""
+def _es_coincidencia(cambio):
+    """La causa no aisló UNA cosa: enumera varias (separadores de listas / "y").
+
+    Pregunta de criterio (Claude, 2026-08-25): al declarar una causa hay que responder
+    "¿qué cambió entre la medición de antes y la de después?" Si son DOS o más cosas, eso no es
+    aislar, es una coincidencia. Es un AVISO, no un candado: no frena, pero obliga a mirarlo.
+    """
+    c = (cambio or "").lower()
+    return any(p in c for p in (",", ";", "+", " y ", " y ademas ", " y tambien ",
+                                " ademas ", " ademas de ", " y despues "))
+
+
+def declarar(proyecto, archivo, funcion, linea, evidencia, cambio, sintoma=""):
+    """Guarda la causa raiz. Exige las cinco cosas, MAS la PREGUNTA DE CRITERIO: 'cambio'.
+
+    `cambio` responde "¿qué cambió entre la medición de antes y la de después?" y debe nombrar UNA
+    cosa. Si enumera varias, no es aislar: es una coincidencia, y se devuelve un `_aviso` (no
+    bloquea, pero hay que verlo antes de reparar).
+    """
     faltan = [n for n, v in (("archivo", archivo), ("funcion", funcion),
-                             ("linea", linea), ("evidencia", evidencia)) if not v]
+                             ("linea", linea), ("evidencia", evidencia),
+                             ("cambio", cambio)) if not v]
     if faltan:
         return {"_error": "falta declarar: " + ", ".join(faltan) +
                           ". Sin eso es INFERIDO, y lo inferido no se repara."}
     d = {"cuando": time.time(), "proyecto": proyecto, "archivo": archivo, "funcion": funcion,
-         "linea": str(linea), "evidencia": evidencia, "sintoma": sintoma}
+         "linea": str(linea), "evidencia": evidencia, "cambio": cambio, "sintoma": sintoma}
+    if _es_coincidencia(cambio):
+        d["coincidencia"] = True
+        os.makedirs(os.path.dirname(RUTA), exist_ok=True)
+        json.dump(d, open(RUTA, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        return {**d, "_aviso": ("OJO: 'cambio' nombra mas de una cosa. Eso no es aislar la causa: "
+                                "es una coincidencia. Aisla UNA sola cosa, o la reparacion prueba "
+                                "de mas y por eso puede fallar.")}
     os.makedirs(os.path.dirname(RUTA), exist_ok=True)
     json.dump(d, open(RUTA, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     return d
@@ -59,9 +84,10 @@ def texto():
     if not d:
         return ("CAUSA RAIZ: no hay ninguna declarada (o esta rancia).\n"
                 "  Sin causa raiz probada no se toca codigo: lo inferido no se repara.")
-    return ("CAUSA RAIZ DECLARADA (%s)\n"
-            "  archivo  : %s\n  funcion  : %s\n  linea    : %s\n  evidencia: %s"
-            % (d["proyecto"], d["archivo"], d["funcion"], d["linea"], d["evidencia"][:160]))
+    return ("CAUSA RAIZ DECLARADA (%s)%s\n"
+            "  archivo  : %s\n  funcion  : %s\n  linea    : %s\n  evidencia: %s\n  cambio   : %s"
+            % (d["proyecto"], "  [OJO: coincidencia, aisla UNA cosa]" if d.get("coincidencia") else "",
+               d["archivo"], d["funcion"], d["linea"], d["evidencia"][:160], str(d.get("cambio"))[:160]))
 
 
 def main():

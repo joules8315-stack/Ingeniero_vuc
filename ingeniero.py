@@ -335,9 +335,15 @@ def main():
         def _v(n):
             return a[a.index(n) + 1] if n in a and len(a) > a.index(n) + 1 else ""
         r = cd.declarar(a[0], _v("--archivo"), _v("--funcion"), _v("--linea"),
-                        _v("--evidencia"), _v("--sintoma"))
-        print(r["_error"] if "_error" in r else "CAUSA RAIZ declarada. Ya se puede reparar.")
-        return 1 if "_error" in r else 0
+                        _v("--evidencia"), _v("--cambio"), _v("--sintoma"))
+        if "_error" in r:
+            print(r["_error"])
+            return 1
+        if "_aviso" in r:
+            print("CAUSA RAIZ declarada, PERO:\n  " + r["_aviso"])
+        else:
+            print("CAUSA RAIZ declarada. Ya se puede reparar.")
+        return 0
     if cmd == "protocolo":
         sys.path.insert(0, os.path.join(AQUI, "arnes"))
         import candado_diagnostico as cd
