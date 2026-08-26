@@ -28,8 +28,8 @@ def _textos_vigias():
 def test_todo_candado_tiene_vigia():
     """Cada candado del arnes debe estar referenciado en el CONTENIDO de al menos una vigia."""
     textos = _textos_vigias()
-    biblioteca = {"medir_capacidad", "settings_propuesto", "instalar", "llamar", "canal",
-                  "supervisor", "permiso_editar", "via_canonica", "velocidad", "respaldos",
+    biblioteca = {"medir_capacidad", "medir_precision", "settings_propuesto", "instalar", "llamar",
+                  "canal", "supervisor", "permiso_editar", "via_canonica", "velocidad", "respaldos",
                   "candado_diagnostico", "candado_preguntar"}
     faltan = []
     for f in sorted(os.listdir(ARNES)):

@@ -1,0 +1,22 @@
+{
+ "ingeniero": {
+  "cuerpo/cuotas.py": [
+   {
+    "leccion": "La cuota GRATIS de Groq es 8.000 tokens/min y 200.000 tokens/dia POR MODELO (doc de Groq; confirmado con prueba real). La capacidad documentada de 500K es ficticia frente a la cuota real: el limite para asignar tareas es la cuota diaria, no el contexto. Los gratis son para tareas chicas; lo pesado va a DeepSeek (pago, sin cuota gratis, >=80.000 letras).",
+    "cuando": "2026-08-25 18:37"
+   }
+  ],
+  "arnes/medir_capacidad.py": [
+   {
+    "leccion": "Alcance REAL medido en vivo: los de Groq (groq, groq20b, qwen) aguantan hasta ~8000 letras por tarea y luego la cuota gratis (8K tokens/min, 200K/dia por modelo) los frena (RATE). Gemini2 (3-flash-preview) aguanta ~16000 letras (el mas capaz hoy). Gemini 3.5 agotado (RATE) y gemini3 inestable (OTRO). Para economizar: encargos chicos a los gratis y repartir entre modelos; lo pesado a DeepSeek (pago, sin cuota).",
+    "cuando": "2026-08-25 19:03"
+   }
+  ],
+  "arnes/medir_precision.py": [
+   {
+    "leccion": "Regla de asignacion por PRECISION en terreno (SolarDemo, analisis de campanas): usan para analisis los con 4/4 (groq20b, qwen, gemini2, deepseek) y 3/4 groq (no detecta 0 ventas). A descansar para analisis: gemini (cuota agotada), gemini3 (inestable) y local (1.5b muy pequeno). La vigia es la que los hace precisos: asignar por capacidad + precision y verificar el output con vigia.",
+    "cuando": "2026-08-25 19:29"
+   }
+  ]
+ }
+}
