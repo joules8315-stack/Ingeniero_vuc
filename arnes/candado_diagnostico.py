@@ -66,7 +66,37 @@ def declarar(proyecto, archivo, funcion, linea, evidencia, cambio, sintoma=""):
                                 "de mas y por eso puede fallar.")}
     os.makedirs(os.path.dirname(RUTA), exist_ok=True)
     json.dump(d, open(RUTA, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    _cosechar_para_el_diccionario(proyecto, sintoma, archivo, funcion, linea)
     return d
+
+
+def _cosechar_para_el_diccionario(proyecto, sintoma, archivo, funcion, linea):
+    """Aqui, y solo aqui, existen ya las DOS mitades probadas: lo que dijo Julio y el sitio exacto.
+
+    Se aprovecha para llenar el diccionario que traduce sus palabras al codigo. Se cosecha del
+    trabajo; no hay que sentarse a escribirlo, y por eso se llena de verdad. Un diccionario que
+    hay que llenar a mano no se llena.
+
+    De donde sale el problema en palabras de Julio: `sintoma` si se declaro, y si no, lo que el
+    dijo y quedo apuntado en el ESTADO. Nunca se inventa: si no hay ninguno de los dos, no se
+    guarda nada.
+
+    Si algo falla aqui, NO pasa nada: declarar la causa ya quedo hecho arriba. Cosechar no puede
+    tumbar el trabajo ya hecho (leccion del 2026-08-25: primero se guarda, despues lo demas).
+    """
+    try:
+        import diccionario
+        dicho = str(sintoma or "").strip()
+        if not dicho:
+            try:
+                from cuerpo import estado
+                dicho = str((estado.leer() or {}).get("problema") or "").strip()
+            except Exception:
+                dicho = ""
+        if dicho:
+            diccionario.aprender(dicho, archivo, funcion, linea, proyecto)
+    except Exception:
+        pass
 
 
 def vigente():
