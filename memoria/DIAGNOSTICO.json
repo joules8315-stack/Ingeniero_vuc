@@ -1,9 +1,9 @@
 {
- "cuando": 1787697400.5113325,
- "proyecto": "ingeniero",
- "archivo": "ingeniero.py",
- "funcion": "main (comando equipo), al imprimir el veredicto",
- "linea": "210",
- "evidencia": "Reproducido: 'python ingeniero.py equipo foto_informe ...' murio con UnicodeEncodeError: charmap codec can't encode character u202f in position 1178, en print(_o.veredicto_corto(res)). El equipo SI contesto; lo que fallo fue mostrarlo, porque la consola de Windows usa cp1252 y la respuesta traia un espacio fino (u202f). Dos danos: un traceback en la cara de Julio, que ya esta apuntado como fallo, y la perdida del trabajo, porque guardar_veredicto va DESPUES del print y nunca se ejecuto: la llave no se guardo y hubo que pagar la llamada otra vez.",
+ "cuando": 1787702415.929716,
+ "proyecto": "foto_informe",
+ "archivo": "app.py",
+ "funcion": "generate_report (seleccion de informes que entran)",
+ "linea": "16483",
+ "evidencia": "Medido abriendo el Word recien generado: con 19 informes escogidos y 6 sueltos salieron los 25, con 27 tablas y 68 fotos. Julio pidio que salga 'con el numero de informes escogidos'. En app.py:16483 el servidor mete en pending_entries a todo el que no tenga fila, orden o tipo y luego lanza 400 'Faltan asignaciones finales antes de generar el informe': rechaza EN BLOQUE en vez de saltarselos. Por eso la pantalla, al aceptar Continuar, llama a buildDefaultAssignments y les inventa fila a todos: es su unica forma de esquivar ese rechazo.",
  "sintoma": ""
 }
