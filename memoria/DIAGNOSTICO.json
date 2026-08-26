@@ -1,10 +1,10 @@
 {
- "cuando": 1787765159.29117,
+ "cuando": 1787766158.0689685,
  "proyecto": "foto_informe",
- "archivo": "rv3_prueba_4_roles.py",
- "funcion": "main (PASO 3: borrar un rol)",
- "linea": "187",
- "evidencia": "Corrida hoy: devolvio 'Tras borrar el rol de evidencia, el servidor lo sigue teniendo'. Leido en app_web.html:944, updateTemplateRoleColumn hace normalizedIndex = Math.max(1, Number(columnIndex)||1): el cero pasa a 1, asi que no borra sino que mueve evidencia a la columna 1. La cabecera de rv3_prueba_4_1_borrar_rol.py ya lo dejo escrito el 2026-07-16 y la prueba vieja sigue gritando igual.",
- "cambio": "el PASO 3 borra el rol llamando a una funcion con un cero en vez de pulsar el boton de borrar",
- "sintoma": "una alarma grita en falso y ensena a ignorar todas las demas"
+ "archivo": "rv3_prueba_matriz_de_roles.py",
+ "funcion": "ROLES",
+ "linea": "40",
+ "evidencia": "Corrida: 'SALTADA: no hay columnas suficientes'. La base devuelve reading, writing, name y evidence; yo puse reading, manual_write, objectives_write y evidence. Dos nombres inventados, asi que dos roles no se encontraban y la prueba creia que faltaban columnas. Los nombres reales estan en ETIQUETA de rv3_prueba_4_1_borrar_rol.py:42.",
+ "cambio": "la lista de roles se escribio de memoria en vez de leerla del proyecto",
+ "sintoma": "la matriz de roles se salta sin probar nada"
 }

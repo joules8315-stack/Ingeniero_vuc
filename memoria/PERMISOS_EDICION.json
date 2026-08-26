@@ -1,8 +1,8 @@
 {
- "archivo": "c:\\users\\user\\dev\\foto_info_repo\\foto_informe--main\\rv3_prueba_4_roles.py",
- "nombre": "rv3_prueba_4_roles.py",
- "motivo": "CAUSA PROBADA: linea 187, updateTemplateRoleColumn('evidence','0') no borra: app_web.html:944 hace normalizedIndex = Math.max(1, Number(columnIndex)||1), asi que el 0 pasa a 1 y MUEVE evidencia a la columna 1. De ahi sale el falso 'tras borrar, el servidor lo sigue teniendo', que salio hoy al correrla. Ya estaba investigado y escrito en la cabecera de rv3_prueba_4_1_borrar_rol.py, pero la prueba vieja sigue gritando. Cura: pulsar el boton real de borrar, como hace la 4.1.",
- "vigia": "la propia prueba: al pulsar el boton de verdad debe dejar de acusar en falso, y rv3_prueba_4_1_borrar_rol.py sigue cubriendo el borrado a fondo",
- "dana": "a nadie: es una prueba, no toca el MVP",
- "cuando": 1787765100.9432962
+ "archivo": "c:\\users\\user\\dev\\foto_info_repo\\foto_informe--main\\rv3_prueba_matriz_de_roles.py",
+ "nombre": "rv3_prueba_matriz_de_roles.py",
+ "motivo": "CAUSA PROBADA: escribi la lista de roles de memoria (reading, manual_write, objectives_write, evidence) y los reales son reading, writing, name, evidence, como dice ETIQUETA en rv3_prueba_4_1_borrar_rol.py:42 y confirma la base. Por eso la prueba se salto sin probar nada. Cura: usar los nombres reales, tomandolos de ETIQUETA en vez de repetirlos.",
+ "vigia": "la propia prueba: si vuelve a saltarse, es que sigue sin encontrar los roles",
+ "dana": "a nadie: es una prueba",
+ "cuando": 1787766169.7822309
 }
