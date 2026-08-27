@@ -33,13 +33,18 @@ def _dir(monkeypatch, tmp_path):
     return ruta
 
 
-def _causa(cambio):
-    return cd.declarar("p", "a.py", "f", "1", "mide 5 -> 2", cambio)
+def _causa(cambio, alcance="3 de 10"):
+    return cd.declarar("p", "a.py", "f", "1", "mide 5 -> 2", cambio, "", alcance)
 
 
 def test_sin_cambio_no_se_declara(_dir):
     r = cd.declarar("p", "a.py", "f", "1", "evi", "")
     assert "_error" in r, "declarar sin --cambio debe fallar: la causa exige responder QUE cambio"
+
+
+def test_sin_alcance_no_se_declara(_dir):
+    r = cd.declarar("p", "a.py", "f", "1", "evi", "cambie una sola cosa", "")
+    assert "_error" in r, "declarar sin --alcance debe fallar: hay que decir CUANTOS de cuantos"
 
 
 def test_una_sola_cosa_no_da_aviso(_dir):
@@ -57,8 +62,27 @@ def test_varias_cosas_con_coma_da_aviso(_dir):
     assert "_aviso" in r, "con coma / 'y' enumera varias cosas: debe avisar"
 
 
-def test_el_mando_pasa_cambio():
+def test_el_mando_pasa_cambio_y_alcance():
     txt = io.open(os.path.join(AQUI, "ingeniero.py"), encoding="utf-8", errors="ignore").read()
     assert "--cambio" in txt, "el comando 'causa' debe aceptar --cambio"
-    assert "declarar(a[0]" in txt and "--cambio" in txt.split("declarar(a[0]")[1][:200], \
-        "causa debe pasarle --cambio a declarar"
+    assert "--alcance" in txt, "el comando 'causa' debe aceptar --alcance"
+    assert "declarar(a[0]" in txt and "--alcance" in txt.split("declarar(a[0]")[1][:220], \
+        "causa debe pasarle --alcance a declarar"
+
+
+def test_alcance_parcial_con_conclusion_absoluta_avisa(_dir):
+    """Medida correcta, conclusion equivocada (Claude, 2026-08-26): '11 de 23 limpios' y concluye
+    'todos rotos'. Nadie preguntaba si la explicacion se sostenia. Ahora se avisa."""
+    r = cd.declarar("p", "a.py", "f", "1",
+                    "11 de 23 informes limpios, solo 2 celdas sueltas", "cambie una funcion",
+                    "todos los informes estan rotos", "11 de 23 informes")
+    assert "_aviso" in r and "se pasa" in r["_aviso"], \
+        "alcance parcial + conclusion absoluta: la conclusion no se sostiene, debe avisar"
+
+
+def test_alcance_parcial_con_conclusion_proporcional_no_avisa(_dir):
+    r = cd.declarar("p", "a.py", "f", "1",
+                    "11 de 23 informes limpios, 2 celdas sueltas", "cambie una funcion",
+                    "algunos informes tienen celdas sueltas", "11 de 23 informes")
+    assert "_aviso" not in r or "se pasa" not in r.get("_aviso", ""), \
+        "conclusion proporcional al alcance: no debe sonar la alarma de 'se pasa'"

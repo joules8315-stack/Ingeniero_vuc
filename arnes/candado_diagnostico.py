@@ -42,31 +42,65 @@ def _es_coincidencia(cambio):
                                 " ademas ", " ademas de ", " y despues "))
 
 
-def declarar(proyecto, archivo, funcion, linea, evidencia, cambio, sintoma=""):
-    """Guarda la causa raiz. Exige las cinco cosas, MAS la PREGUNTA DE CRITERIO: 'cambio'.
+def _conclusion_se_pasa(alcance, evidencia, sintoma):
+    """¿La medida dice una PARTE y la conclusion describe el TODO?
+
+    Patron medido 3 veces en 2 dias (Claude, 2026-08-26): '11 de 23 informes limpios, 1-2 celdas
+    sueltas' y aun asi se concluyo 'todos rotos' o 'tus 22 informes rotos'. Medida correcta,
+    conclusion equivocada. Nadie preguntaba si la explicacion se sostiene.
+    Aviso, no candado: no frena, pero obliga a mirarlo (como la coincidencia de 'cambio').
+    """
+    a = str(alcance or "").lower()
+    if not a:
+        return False
+    # el alcance dice una PARTE: N de M con N<M, o palabras de parte.
+    m = re.search(r"(\d+)\s*de\s*(\d+)", a)
+    parcial = bool(m and int(m.group(1)) < int(m.group(2)))
+    if not parcial and not any(w in a for w in ("algun", "unos", "un par", "pocos", "una parte")):
+        return False
+    texto = " ".join([str(evidencia or ""), str(sintoma or "")]).lower()
+    absoluto = any(w in texto for w in
+                   ("todos los", "todas las", "todos", "todas", "todo el", "todo lo", "nada",
+                    "ningun", "ninguna", "ninguno", "entero", "completo", "100%", "siempre",
+                    "nunca"))
+    return absoluto
+
+
+def declarar(proyecto, archivo, funcion, linea, evidencia, cambio, sintoma="", alcance=""):
+    """Guarda la causa raiz. Exige las seis cosas, MAS dos preguntas de criterio.
 
     `cambio` responde "¿qué cambió entre la medición de antes y la de después?" y debe nombrar UNA
-    cosa. Si enumera varias, no es aislar: es una coincidencia, y se devuelve un `_aviso` (no
-    bloquea, pero hay que verlo antes de reparar).
+    cosa (si enumera varias, es una coincidencia).
+    `alcance` responde "¿cuántos de cuántos?" (p. ej. '1 de 23 informes') para que la conclusion
+    sea PROPORCIONAL a la medida. Si la medida dice una parte y se describe el todo, se avisa:
+    la conclusion no se sostiene (medida correcta, conclusion equivocada).
+
+    Ambos son AVISO, no candado: no frenan, pero hay que verlos antes de reparar.
     """
     faltan = [n for n, v in (("archivo", archivo), ("funcion", funcion),
                              ("linea", linea), ("evidencia", evidencia),
-                             ("cambio", cambio)) if not v]
+                             ("cambio", cambio), ("alcance", alcance)) if not v]
     if faltan:
         return {"_error": "falta declarar: " + ", ".join(faltan) +
                           ". Sin eso es INFERIDO, y lo inferido no se repara."}
     d = {"cuando": time.time(), "proyecto": proyecto, "archivo": archivo, "funcion": funcion,
-         "linea": str(linea), "evidencia": evidencia, "cambio": cambio, "sintoma": sintoma}
+         "linea": str(linea), "evidencia": evidencia, "cambio": cambio, "sintoma": sintoma,
+         "alcance": alcance}
+    avisos = []
     if _es_coincidencia(cambio):
         d["coincidencia"] = True
-        os.makedirs(os.path.dirname(RUTA), exist_ok=True)
-        json.dump(d, open(RUTA, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-        return {**d, "_aviso": ("OJO: 'cambio' nombra mas de una cosa. Eso no es aislar la causa: "
-                                "es una coincidencia. Aisla UNA sola cosa, o la reparacion prueba "
-                                "de mas y por eso puede fallar.")}
+        avisos.append("'cambio' nombra mas de una cosa: no es aislar la causa, es una "
+                      "coincidencia. Aisla UNA sola cosa.")
+    if _conclusion_se_pasa(alcance, evidencia, sintoma):
+        d["se_pasa"] = True
+        avisos.append("tu conclusion se pasa de tu medida: el alcance dice '%s' pero describes "
+                      "el todo como afectado. O se ajusta la conclusion, o se mide de nuevo."
+                      % str(alcance)[:80])
     os.makedirs(os.path.dirname(RUTA), exist_ok=True)
     json.dump(d, open(RUTA, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     _cosechar_para_el_diccionario(proyecto, sintoma, archivo, funcion, linea)
+    if avisos:
+        return {**d, "_aviso": "OJO: " + " | ".join(avisos)}
     return d
 
 
@@ -115,9 +149,12 @@ def texto():
         return ("CAUSA RAIZ: no hay ninguna declarada (o esta rancia).\n"
                 "  Sin causa raiz probada no se toca codigo: lo inferido no se repara.")
     return ("CAUSA RAIZ DECLARADA (%s)%s\n"
-            "  archivo  : %s\n  funcion  : %s\n  linea    : %s\n  evidencia: %s\n  cambio   : %s"
-            % (d["proyecto"], "  [OJO: coincidencia, aisla UNA cosa]" if d.get("coincidencia") else "",
-               d["archivo"], d["funcion"], d["linea"], d["evidencia"][:160], str(d.get("cambio"))[:160]))
+            "  archivo  : %s\n  funcion  : %s\n  linea    : %s\n  evidencia: %s\n  cambio   : %s\n"
+            "  alcance  : %s"
+            % (d["proyecto"],
+               "  [OJO: aisla UNA cosa]" if d.get("coincidencia") else "",
+               d["archivo"], d["funcion"], d["linea"], d["evidencia"][:160],
+               str(d.get("cambio"))[:160], str(d.get("alcance"))[:160]))
 
 
 def main():
@@ -162,7 +199,8 @@ def main():
         "    'Se repara a quien VIOLA el contrato, no a quien sufre la violacion.'\n\n"
         "  Primero localiza y MIDE el fallo. Cuando lo tengas probado, declaralo:\n"
         "     cd C:\\Ingeniero_VUC; python ingeniero.py causa <proyecto> --archivo <ruta> "
-        "--funcion <nombre> --linea <n> --evidencia \"lo que mediste o viste\"\n"
+        "--funcion <nombre> --linea <n> --evidencia \"lo que mediste\" --cambio \"que cambio\" "
+        "--alcance \"cuantos de cuantos\"\n"
         % os.path.basename(fp))
     return 2
 

@@ -335,7 +335,7 @@ def main():
         def _v(n):
             return a[a.index(n) + 1] if n in a and len(a) > a.index(n) + 1 else ""
         r = cd.declarar(a[0], _v("--archivo"), _v("--funcion"), _v("--linea"),
-                        _v("--evidencia"), _v("--cambio"), _v("--sintoma"))
+                        _v("--evidencia"), _v("--cambio"), _v("--sintoma"), _v("--alcance"))
         if "_error" in r:
             print(r["_error"])
             return 1
