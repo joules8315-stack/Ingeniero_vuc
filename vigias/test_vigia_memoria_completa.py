@@ -140,3 +140,15 @@ def test_el_obrero_confirma_la_linea_con_su_texto():
     assert "COPIAS el texto literal" in src, "el prompt no exige copiar el texto de la linea"
     assert "COMPRUEBA EL TEXTO DE LA LINEA" in src, \
         "el auditor no verifica que el texto de la linea coincida con el material"
+
+
+def test_el_juez_ilegible_se_vuelve_a_preguntar():
+    """Julio, 2026-08-27 (Claude): 'el juez contesta y el sistema no entiende su respuesta, la da por
+    perdida y no le pregunta a nadie mas'. Si el juez devuelve JSON roto/cortado, se le pide de nuevo
+    en vez de darlo por perdido (que dejaba el equipo trabado aunque hubiera cerebros).
+    """
+    src = _leer(os.path.join(AQUI, "cuerpo", "cruzado.py"))
+    assert "intento_juez" in src, "el sistema no reintenta al juez cuando responde ilegible"
+    assert "se le pide de nuevo" in src, \
+        "el sistema da por perdida la respuesta ilegible del juez (fallo de Claude, 2026-08-27)"
+    assert "SIN_JUEZ" in src, "no hay veredicto SIN_JUEZ para cuando el juez no contesta legible"

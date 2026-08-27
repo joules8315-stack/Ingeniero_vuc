@@ -157,11 +157,21 @@ def resolver(paquete, problema, proyecto="", rondas=RONDAS_MAX, al_vuelo=None):
 
         # 2) JUEZ: distinto del reparador, ve las dos cosas.
         _decir(f"Ronda {ronda}: el juez compara la reparacion contra la vigia...")
-        txt_juez, quien_juez, av_juez = obrero._preguntar_con_relevo(
-            _prompt_juez(paquete, json.dumps(propuesta, ensure_ascii=False),
-                         json.dumps(vigia, ensure_ascii=False)), 0.1, evitar=quien_rep)
-        juez = (obrero._json_de(txt_juez) if txt_juez
-                else {"veredicto": "SIN_JUEZ", "_error": "; ".join(av_juez)})
+        juez = None
+        txt_juez, quien_juez, av_juez = "", "", []
+        for intento_juez in range(2):   # el juez puede devolver JSON roto: se le pide de nuevo
+            txt_juez, quien_juez, av_juez = obrero._preguntar_con_relevo(
+                _prompt_juez(paquete, json.dumps(propuesta, ensure_ascii=False),
+                             json.dumps(vigia, ensure_ascii=False)), 0.1, evitar=quien_rep)
+            juez = (obrero._json_de(txt_juez) if txt_juez
+                    else {"veredicto": "SIN_JUEZ", "_error": "; ".join(av_juez)})
+            if "_error" not in juez:
+                break    # se entendio: listo
+            # JSON roto/cortado: no se da por perdido, se le pide de nuevo (Julio, 2026-08-27).
+            _decir(f"  el juez respondio ilegible ({juez.get('_error')[:40]}); se le pide de nuevo")
+        if "_error" in juez:
+            juez = {"veredicto": "SIN_JUEZ", "_error": juez.get("_error"),
+                    "_crudo": juez.get("_crudo", "")}
 
         historial.append({"ronda": ronda, "reparador": quien_rep, "juez": quien_juez,
                           "veredicto": juez.get("veredicto"),
