@@ -9,10 +9,9 @@ AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def _settings():
-    try:
-        return json.load(open(os.path.join(AQUI, ".claude", "settings.json"), encoding="utf-8"))
-    except Exception:
-        return {}
+    import _config
+    return {"hooks": {t: [{"matcher": m, "hooks": [{"command": c}]} for m, c in _config.comandos(t)]
+                      for t in ("PreToolUse", "Stop", "UserPromptSubmit", "SessionStart")}}
 
 
 def _comandos(tipo):

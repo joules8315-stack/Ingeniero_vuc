@@ -16,31 +16,59 @@ sys.path.insert(0, os.path.join(AQUI, "arnes"))
 
 
 def _settings():
-    for n in (".claude/settings.json", ".claude/settings.local.json"):
-        p = os.path.join(AQUI, n)
-        if os.path.exists(p):
-            try:
-                return json.load(open(p, encoding="utf-8"))
-            except Exception:
-                return {}
-    return {}
+    """La config combinada (usuario + proyecto) reconstruida para los que la consumen."""
+    import _config
+    return {"hooks": {t: [{"matcher": m, "hooks": [{"command": c}]} for m, c in _config.comandos(t)]
+                      for t in ("PreToolUse", "Stop", "UserPromptSubmit", "SessionStart")}}
 
 
 def _comandos_escritura():
-    """Los comandos de hook de escritura que deben correr los candados."""
-    for entrada in _settings().get("hooks", {}).get("PreToolUse", []):
-        matcher = (entrada.get("matcher") or "").lower()
-        if any(t in matcher for t in ("write", "edit")):
-            cmds = [h.get("command", "") for h in entrada.get("hooks", [])]
-            return matcher, cmds
-    return "", []
+    """Los comandos de hook de escritura que deben correr los candados (en cualquier capa)."""
+    import _config
+    cmds = [c for m, c in _config.comandos("PreToolUse")
+            if any(t in m.lower() for t in ("write", "edit"))]
+    return cmds
 
 
 def test_el_candado_de_escritura_esta_conectado_a_la_edicion():
-    matcher, cmds = _comandos_escritura()
-    assert matcher, "no hay hook de escritura/edicion en settings.json"
+    cmds = _comandos_escritura()
+    assert cmds, "no hay hook de escritura/edicion en settings (usuario o proyecto)"
     assert any("candado_equipo" in c for c in cmds), "falta el candado de equipo en la escritura"
     assert any("edit_gate_universal" in c for c in cmds), "falta el candado de edicion en la escritura"
+
+
+def test_el_arnes_NO_esta_duplicado():
+    """Julio, 2026-08-27: se pedian autorizacion dos veces para lo mismo porque el arnes vivia en
+    DOS settings a la vez (usuario y proyecto) y ademas habia 3 edit_gate distintos en el usuario.
+    La fuente canonica es el USUARIO; el proyecto NO debe repetir el arnes. Esta vigia muerde si la
+    MISMA funcion corre en el MISMO (evento, matcher) dos veces (en cualquier capa). Un candado en
+    varios matchers distintos (ej: candado_terminal en Bash, Grep, Glob) NO es duplicacion: son
+    herramientas distintas.
+    """
+    import _config
+    capas = _config.leer_capas()
+    assert len(capas) >= 1, "no hay ningun settings"
+    arnes = ["read_gate", "candado_terminal", "candado_equipo", "edit_gate_universal",
+             "candado_memoria", "candado_protocolo", "candado_diagnostico", "candado_preguntar",
+             "guard_pasado", "candado_cierre", "candado_contexto", "modo_ingeniero"]
+    donde = {}
+    for capa in capas:
+        for t in ("PreToolUse", "Stop", "UserPromptSubmit", "SessionStart",
+                  "PreCompact", "PostCompact"):
+            for e in capa.get("hooks", {}).get(t, []):
+                m = e.get("matcher", "")
+                for h in e.get("hooks", []):
+                    c = h.get("command", "")
+                    for nombre in arnes:
+                        if nombre + ".py" in c:
+                            clave = (t, m, nombre)
+                            donde.setdefault(clave, 0)
+                            donde[clave] += 1
+    duplicados = {k: v for k, v in donde.items() if v > 1}
+    assert not duplicados, (
+        "el arnes pide la misma funcion dos veces en el mismo lugar (se pide autorizacion dos "
+        "veces): " + ", ".join(f"{k}->{v}" for k, v in duplicados.items())
+        + ". La misma funcion en el mismo evento/matcher debe correr UNA sola vez.")
 
 
 def test_la_terminal_esta_conectada_al_candado():
@@ -49,19 +77,17 @@ def test_la_terminal_esta_conectada_al_candado():
     Escribir codigo por la terminal (echo, heredoc, Set-Content) se saltaba el candado de equipo,
     que solo se disparaba en la herramienta de editar. Y leer por terminal tampoco pasaba por el
     candado del paquete minimo. Esta vigia comprueba que candado_terminal SIGA conectado a la
-    terminal y a las busquedas en el settings real: si se desconecta, ROJA.
+    terminal y a las busquedas (en usuario o proyecto): si se desconecta, ROJA.
     """
-    s = _settings()
-    pre = s.get("hooks", {}).get("PreToolUse", [])
-    matchers = " ".join((e.get("matcher") or "").lower() for e in pre)
+    import _config
+    pre = _config.comandos("PreToolUse")
+    matchers = " ".join(m.lower() for m, _ in pre)
     # la terminal y las busquedas tienen que pasar por candado_terminal
-    assert any("bash" in (e.get("matcher") or "").lower() for e in pre), \
+    assert any("bash" in m.lower() for m, _ in pre), \
         "la terminal (Bash) no esta conectada a ningun candado"
-    cmds = [h.get("command", "") for e in pre for h in e.get("hooks", [])]
-    assert any("candado_terminal" in c for c in cmds), \
+    assert any("candado_terminal" in c for _, c in pre), \
         "candado_terminal no esta conectado a ninguna herramienta: la terminal es una rendija"
-    assert any("grep" in (e.get("matcher") or "").lower() for e in pre) or \
-           any("glob" in (e.get("matcher") or "").lower() for e in pre), \
+    assert any("grep" in m.lower() or "glob" in m.lower() for m, _ in pre), \
         "las busquedas (grep/glob) no pasan por candado_terminal"
 
 

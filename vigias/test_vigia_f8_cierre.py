@@ -32,9 +32,9 @@ def test_los_aciertos_salen_en_el_paquete():
 
 
 def test_commit_siempre_esta_conectado():
-    s = json.load(open(os.path.join(AQUI, ".claude", "settings.json"), encoding="utf-8"))
-    stop = [h.get("command", "") for e in s.get("hooks", {}).get("Stop", []) for h in e.get("hooks", [])]
-    assert any("candado_commit" in c for c in stop), "el commit-siempre no esta conectado al cierre"
+    import _config
+    assert _config.comandos_de("Stop", "candado_commit"), \
+        "el commit-siempre no esta conectado al cierre (en usuario o proyecto)"
 
 
 def test_las_claves_se_borran_al_cerrar():

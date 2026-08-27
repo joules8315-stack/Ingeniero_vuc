@@ -12,10 +12,9 @@ sys.path.insert(0, os.path.join(AQUI, "arnes"))
 
 
 def test_candado_comunicacion_esta_conectado_a_stop():
-    s = json.load(open(os.path.join(AQUI, ".claude", "settings.json"), encoding="utf-8"))
-    stop = s.get("hooks", {}).get("Stop", [])
-    cmds = [h.get("command", "") for e in stop for h in e.get("hooks", [])]
-    assert any("candado_comunicacion" in c for c in cmds), "candado_comunicacion no esta en el hook Stop"
+    import _config
+    assert _config.comandos_de("Stop", "candado_comunicacion"), \
+        "candado_comunicacion no esta conectado a Stop (en usuario o proyecto)"
 
 
 def test_el_canal_entrega_a_claude_el_mensaje_de_cline(tmp_path):

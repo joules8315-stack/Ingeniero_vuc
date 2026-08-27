@@ -31,10 +31,9 @@ def test_el_rol_de_cline_es_consultor_cerebro_supervisor():
 
 
 def test_el_canal_esta_conectado_a_claude_para_comunicarse_sin_julio():
-    s = json.load(open(os.path.join(AQUI, ".claude", "settings.json"), encoding="utf-8"))
-    ups = s.get("hooks", {}).get("UserPromptSubmit", [])
-    cmds = [h.get("command", "") for e in ups for h in e.get("hooks", [])]
-    assert any("canal" in c for c in cmds), "el canal no esta conectado a UserPromptSubmit (los agentes no se hablan solos)"
+    import _config
+    assert _config.comandos_de("UserPromptSubmit", "canal"), \
+        "el canal no esta conectado a UserPromptSubmit (los agentes no se hablan solos)"
 
 
 def test_hay_canal_para_la_comunicacion_agentica():

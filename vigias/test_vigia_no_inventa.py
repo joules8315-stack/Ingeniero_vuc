@@ -61,13 +61,11 @@ def test_la_terminal_no_es_via_para_inventar_ni_saltarse_el_equipo():
     lo que se escribe tiene que ser conforme a lo consignado y pasar por el equipo, no una
     alucinacion por la ventana de la terminal.
     """
-    # 1) la terminal esta conectada al candado en el settings real (no quedo suelta)
-    cfg = json.load(open(os.path.join(AQUI, ".claude", "settings.json"), encoding="utf-8"))
-    pre = cfg.get("hooks", {}).get("PreToolUse", [])
-    matchers = [e.get("matcher", "") for e in pre]
-    cmds = [h.get("command", "") for e in pre for h in e.get("hooks", [])]
-    assert any("bash" in m.lower() for m in matchers), "la terminal no esta conectada a ningun candado"
-    assert any("candado_terminal" in c for c in cmds), "candado_terminal no esta en la terminal"
+    # 1) la terminal esta conectada al candado (en usuario o proyecto, no quedo suelta)
+    import _config
+    pre = _config.comandos("PreToolUse")
+    assert any("bash" in m.lower() for m, _ in pre), "la terminal no esta conectada a ningun candado"
+    assert any("candado_terminal" in c for _, c in pre), "candado_terminal no esta en la terminal"
 
     # 2) escribir codigo por la terminal exige el equipo: rechaza algo no consignado/aprobado
     import candado_terminal as ct
