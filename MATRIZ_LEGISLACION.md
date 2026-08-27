@@ -14,6 +14,7 @@
 | B2.2 | Si NO se logró → aprender del error y reiniciar el ciclo para reparar, sin excusas. | candado de cierre (`candado_cierre.py`) | `vigias/test_vigia_legislacion_ciclo.py` | LEGISLADO |
 | B3 | Toda instrucción de Julio se legisla: analizar → legislar → tabla/matriz → bloques → indexar → vigías → arnés → cross-flow. | este contrato + `cerebro/protocolo.py` | `vigias/test_vigia_legislacion_ciclo.py` | LEGISLADO |
 | B4 | Solo se pregunta después de haber buscado (todo indexado); nunca antes. | `arnes/candado_preguntar.py` (PASO 4) | `vigias/test_vigia_dudas.py` | LEGISLADO |
+| B5 | La memoria no miente ni olvida: el paquete del repartidor trae la pieza COMPLETA con su flujo, sus rutas reparadas (cuáles acertaron y cuáles no) y su historial; se mide si la memoria sirve (cada NECESITO_LEER = fallo de fragmentación); si el sistema no puede trabajar, se repara la causa de fondo antes de pedir llaves. | repartidor no entrega trozo sin su pieza/función completa (`cerebro/router.py` + `cerebro/trozos.py`) | `vigias/test_vigia_memoria_completa.py` | LEGISLADO |
 
 ## Comprobación real (no autovalidación)
 

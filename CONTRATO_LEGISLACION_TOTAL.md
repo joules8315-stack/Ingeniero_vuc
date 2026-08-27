@@ -89,3 +89,18 @@ La plantilla puede tener más filas; solo se gestionan las que el usuario asigna
 de las que tiene la plantilla ES error.
 - **Candado:** `rv3_prueba_8_texto.py` (regla de filas).
 - **Vigía:** `test_vigia_filas_asignadas.py` (en Foto).
+
+## PARTE 6 — LEY DE LA MEMORIA (el repartidor y el paquete)
+
+### L13 — LA MEMORIA NO MIENTE NI OLVIDA (Julio, 2026-08-27)
+El paquete que arma el repartidor (tipo Obsidian) tiene que ser COMPLETO para la pieza que se va a
+tocar: su flujo, con quién se relaciona, las rutas que ya se tomaron (cuáles reparaciones acertaron
+y cuáles no) y su historial. El repartidor trae la información **veraz, completa, medida y necesaria**
+para evaluar cada pieza y repararla — sin especular, sin alucinar, sin inventar qué buscar. Y se MIDE
+si la memoria sirve: cada `NECESITO_LEER` (paquete incompleto) cuenta como fallo de la fragmentación.
+- **Regla madre:** si el sistema no puede trabajar (círculo: el repartidor no trae su propio material
+  y el equipo no aprueba), **se REPARA la causa de fondo de la herramienta antes de pedir llaves**.
+  La herramienta se repara/afina mientras construye.
+- **Candado:** que el repartidor no entregue un trozo sin la pieza/función completa a la que
+  pertenece (`cerebro/router.py` + `cerebro/trozos.py`).
+- **Vigía:** `vigias/test_vigia_memoria_completa.py`.

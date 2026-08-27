@@ -24,6 +24,13 @@ Si falta algo, se PIDE (formato `NECESITO_LEER` al final del paquete). No se abr
 6. **Siempre en equipo, sin salto, en TODAS las IA** (Claude, Cline, ChatGPT). Para saltar el candado de equipo se pide permiso y la respuesta es SIEMPRE **denegado**.
 7. **Probar de verdad antes de pedirle a Julio.** Antes de pedirle que pruebe con sus ojos se corre, con el equipo, una prueba real interna (Playwright) que demuestre que el objetivo se cumple. Si se logro, se le avisa; si no, se aprende del error y se reinicia el ciclo para lograr el resultado, sin excusas.
 
+## LA LEY DEL 2026-08-27 (LA MEMORIA NO MIENTE NI OLVIDA)
+El paquete del repartidor trae la pieza **COMPLETA**: su flujo, con quién se relaciona, las rutas que
+ya se tomaron (cuáles acertaron y cuáles no) y su historial. Se mide si la memoria sirve (cada
+`NECESITO_LEER` cuenta como fallo de fragmentación). **Regla madre:** si el sistema no puede trabajar,
+se **repara la causa de fondo de la herramienta antes de pedir llaves**; la herramienta se repara/
+afina mientras construye.
+
 ## COMO SE TRABAJA (el protocolo, no hay que repetirselo a nadie)
 ```
 python ingeniero.py arranca                 # donde ibamos (el estado NO vive en el chat)
