@@ -127,3 +127,16 @@ def test_el_mensaje_de_la_llave_no_miente():
     assert "APROBADO" in src, "el mensaje de llave no depende del veredicto APROBADO"
     assert "EL EQUIPO NO APROBO" in src, \
         "no hay mensaje honesto cuando el equipo rechaza: el mensaje miente"
+
+
+def test_el_obrero_confirma_la_linea_con_su_texto():
+    """Julio, 2026-08-27: el numero de linea solo se confunde (7 se lee como 1); el texto no.
+
+    El obrero debe copiar el texto literal de la linea que va a tocar (`linea_texto`), y el auditor
+    debe verificar que ese texto coincida con el material. Asi no se apunta al renglon equivocado.
+    """
+    src = _leer(os.path.join(AQUI, "cuerpo", "obrero.py"))
+    assert "linea_texto" in src, "el obrero no pide el texto literal de la linea"
+    assert "COPIAS el texto literal" in src, "el prompt no exige copiar el texto de la linea"
+    assert "COMPRUEBA EL TEXTO DE LA LINEA" in src, \
+        "el auditor no verifica que el texto de la linea coincida con el material"

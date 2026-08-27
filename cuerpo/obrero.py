@@ -72,7 +72,10 @@ def _prompt_obrero(paquete, tarea):
 REGLAS DURAS (si las rompes, tu trabajo se descarta):
 1. NO inventes archivos, funciones ni lineas. Si algo no esta en el material, escribe NO_ENCONTRADO.
 2. NO decidas lo que el contrato no dice. Escribe PREGUNTA_REQUERIDA: <la pregunta en palabras simples>.
-3. Cambia lo MINIMO. Nombra el archivo y la linea exacta de cada cambio.
+3. Cambia lo MINIMO. Nombra el archivo y la linea exacta de cada cambio. IMPORTANTE: al nombrar la
+   linea, COPIAS el texto literal de esa linea tal como aparece en el material (no solo el numero).
+   Un numero solo se confunde (ej: "7" se lee como "1"); el texto no. Si no copias el texto exacto,
+   tu trabajo se descarta.
 4. Antes de terminar, di a quien puedes danar (mira la seccion "A QUIEN PUEDE DANAR").
 5. Trabaja SOLO con la memoria del PAQUETE de abajo (la informacion indexada). Si te falta material
    para responder, pidelo asi y nada mas: NECESITO_LEER: archivo / motivo / que decide / riesgo.
@@ -84,6 +87,7 @@ Responde SOLO un JSON valido, sin texto alrededor:
 {{"diagnostico": "que esta mal, en una frase",
   "archivo": "ruta exacta del material",
   "lineas": "desde-hasta",
+  "linea_texto": "el texto literal de la linea que vas a tocar, copiado tal cual del material",
   "cambio": "que hay que cambiar, concreto",
   "codigo": "el codigo nuevo, solo el pedazo",
   "vigia": "que prueba lo comprobaria",
@@ -106,6 +110,11 @@ Comprueba una por una:
 3. Rompe algun vecino de la seccion "A QUIEN PUEDE DANAR"?
 4. Se salta alguna ley del contrato que viene en el material?
 5. Cambia mas de lo necesario?
+6. COMPRUEBA EL TEXTO DE LA LINEA: si el obrero dice `linea_texto`, verificalo contra el material.
+   El texto literal de la linea que dice tocar DEBE coincidir con lo que hay en el material. Si el
+   numero de linea y el texto no concuerdan (ej: dice "linea 40" pero el texto que copio es de otra
+   linea, o el texto no existe en el material) -> es un ERROR de ubicacion, RECHAZALO. Un numero solo
+   se confunde (7/1); el texto no. Esta comprobacion es la que evita apuntar al renglon equivocado.
 
 Responde SOLO JSON:
 {{"veredicto": "APROBADO|RECHAZADO|DUDOSO",
