@@ -95,6 +95,29 @@ def test_un_veredicto_viejo_ya_no_abre(tmp_path):
     assert code == 2, "un veredicto caducado siguio abriendo"
 
 
+def test_un_SIN_AUDITAR_no_abre(tmp_path):
+    """NO SELLO DE GOMA (Julio, 2026-08-27): un veredicto sin segundo cerebro NO abre.
+
+    La ley de CONTRATO_EQUIPO_QUE_AGUANTA ya decia "Un SIN_AUDITAR no es una aprobacion",
+    pero el candado abria igual por solo nombrar el archivo. Se le decian a Julio "el equipo lo
+    aprobo" cuando nadie habia auditado. Solo un APROBADO real (4 ojos) es llave.
+    """
+    import candado_equipo as ce
+    f = _un_codigo(tmp_path)
+    ce.guardar_veredicto("una tarea", [f], "groq", "(ninguno)", "SIN_AUDITAR")
+    code, _ = _correr(f)
+    assert code == 2, "un veredicto SIN_AUDITAR (sin auditor) abrio la puerta"
+
+
+def test_un_RECHAZADO_no_abre(tmp_path):
+    """El equipo dijo que NO: eso no abre. Aprobar solo es llave, rechazar no es permiso."""
+    import candado_equipo as ce
+    f = _un_codigo(tmp_path)
+    ce.guardar_veredicto("una tarea", [f], "groq", "gemini", "RECHAZADO")
+    code, _ = _correr(f)
+    assert code == 2, "un veredicto RECHAZADO abrio la puerta"
+
+
 # ─── NO ESTORBA ───────────────────────────────────────────────────────────────
 def test_los_documentos_pasan_siempre(tmp_path):
     d = tmp_path / "CONTRATO.md"

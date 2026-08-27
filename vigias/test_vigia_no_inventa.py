@@ -4,8 +4,9 @@
 Todo lo que el paquete nombra tiene que EXISTIR en el disco. Si algo no existe, el paquete
 debe decir NO_ENCONTRADO, nunca rellenar.
 """
-import os, re, sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import os, re, sys, json
+AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, AQUI)
 import pytest
 from cerebro import router, grafo
 
@@ -51,3 +52,38 @@ def test_proyecto_inexistente_no_se_inventa():
     with pytest.raises(SystemExit) as e:
         g.cargar("proyecto_que_no_existe_jamas")
     assert "NO_ENCONTRADO" in str(e.value)
+
+
+def test_la_terminal_no_es_via_para_inventar_ni_saltarse_el_equipo():
+    """Julio, 2026-08-27: escribir codigo por la terminal se saltaba el candado de equipo, que
+    solo vigila la herramienta de editar. Eso era una rendija por donde se colaba trabajo que no
+    estaba consignado en el mapa ni legislado. Conectado aqui, a la vigia de NO INVENTAR:
+    lo que se escribe tiene que ser conforme a lo consignado y pasar por el equipo, no una
+    alucinacion por la ventana de la terminal.
+    """
+    # 1) la terminal esta conectada al candado en el settings real (no quedo suelta)
+    cfg = json.load(open(os.path.join(AQUI, ".claude", "settings.json"), encoding="utf-8"))
+    pre = cfg.get("hooks", {}).get("PreToolUse", [])
+    matchers = [e.get("matcher", "") for e in pre]
+    cmds = [h.get("command", "") for e in pre for h in e.get("hooks", [])]
+    assert any("bash" in m.lower() for m in matchers), "la terminal no esta conectada a ningun candado"
+    assert any("candado_terminal" in c for c in cmds), "candado_terminal no esta en la terminal"
+
+    # 2) escribir codigo por la terminal exige el equipo: rechaza algo no consignado/aprobado
+    import candado_terminal as ct
+    import subprocess, io, tempfile
+    env = dict(os.environ)
+    env["INGENIERO_SIN_PAQUETE_TEST"] = "1"
+    env["INGENIERO_APAGONES_TEST"] = os.path.join(tempfile.gettempdir(), "apagones_no_inventa.log")
+    d = tempfile.mkdtemp()
+    env["INGENIERO_VEREDICTO_TEST"] = os.path.join(d, "v.json")   # sin veredicto: nada aprobado
+    proy = grafo.proyectos().get("foto_informe")
+    if not proy or not os.path.isdir(proy["ruta"]):
+        import pytest as _pt
+        _pt.skip("foto_informe no esta")
+    fp = os.path.join(proy["ruta"], "algo.py").replace("\\", "/")
+    p = subprocess.run([sys.executable, os.path.join(AQUI, "arnes", "candado_terminal.py")],
+                       input=json.dumps({"tool_name": "Bash",
+                                         "tool_input": {"command": 'echo "x=1" > "%s"' % fp}}),
+                       capture_output=True, text=True, env=env, timeout=120)
+    assert p.returncode == 2, "escribir codigo por terminal sin equipo no se freno"

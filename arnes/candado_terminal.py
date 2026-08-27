@@ -149,6 +149,39 @@ def _que_se_pide(data):
     return "", False
 
 
+# RENDIJA DE ESCRITURA POR TERMINAL (Julio, 2026-08-27): escribir codigo por la terminal
+# evita el candado de equipo (que solo se dispara en la herramienta de editar). Hay que cerrarlo:
+# si una orden de terminal ESCRIBE codigo de un proyecto, exige el veredicto del equipo igual que
+# editar un archivo. La terminal es para MIRAR y EJECUTAR, no para saltarse al equipo.
+ESCRIBE_CODIGO = re.compile(
+    r"(<<\s*['\"]?\w+['\"]?\s*|echo\b.*>\s*|printf\b.*>\s*|"
+    r"Set-Content\b|Out-File\b|Add-Content\b|"
+    r"python[^|;]*open\([^)]*['\"]w)",
+    re.I)
+ARCHIVO_OBJETIVO = re.compile(
+    r"(?:>>|>)\s*['\"]?([A-Za-z0-9_\\/.:\-]+\.(?:py|js|html|ts|json|css|sql))\b", re.I)
+
+
+def _equipo_cubre(fp):
+    """¿El veredicto vigente del equipo cubre este archivo? (solo un APROBADO real abre)."""
+    try:
+        import candado_equipo as _ce
+        return bool(_ce.cubre(_ce.veredicto_vigente(), fp))
+    except Exception:
+        return False
+
+
+MENSAJE_EQUIPO = (
+    "BLOQUEADO: NO SE ESCRIBE CODIGO POR LA TERMINAL SIN EL EQUIPO\n\n"
+    "  Escribir codigo por la terminal (echo, heredoc, Set-Content...) se saltaba el candado\n"
+    "  del equipo, que solo vigila la herramienta de editar. Julio lo ordeno: SIEMPRE en equipo,\n"
+    "  por todas las vias, sin salto. La terminal es para MIRAR y EJECUTAR, no para escribir\n"
+    "  codigo que otro no haya visto.\n\n"
+    "  Que hacer: escribi el codigo con la herramienta de editar, y antes pasa por el equipo:\n"
+    "     cd C:\\Ingeniero_VUC; python ingeniero.py equipo <proyecto> \"<la tarea>\"\n"
+    "  Eso deja el APROBADO (con auditor distinto) que abre la escritura.\n")
+
+
 AVISO_HEREDOC = (
     "BLOQUEADO: NO SE ESCRIBE CODIGO DESDE LA TERMINAL\n\n"
     "  Julio, 2026-08-21: \"por que mierdas sigues usando heredoc, si siempre te dana el\n"
@@ -216,6 +249,19 @@ def main():
         sys.stderr.write(AVISO_CLAVES)
         _cazado_terminal()
         return 2
+
+    # RENDIJA DE ESCRITURA POR TERMINAL (Julio, 2026-08-27): escribir codigo de un proyecto por
+    # la terminal se saltaba el candado de equipo. Si la orden escribe codigo y NO hay APROBADO
+    # del equipo que cubra ese archivo, se BLOQUEA. La terminal no es una puerta trasera.
+    herr = str(data.get("tool_name") or "")
+    if herr in ("Bash", "PowerShell") and ESCRIBE_CODIGO.search(cmd_txt):
+        m = ARCHIVO_OBJETIVO.search(cmd_txt)
+        if m:
+            fp = m.group(1)
+            if _de_que_proyecto(fp) and not _equipo_cubre(fp):
+                sys.stderr.write(MENSAJE_EQUIPO)
+                _cazado_terminal()
+                return 2
 
     texto, es_lectura = _que_se_pide(data)
     if not es_lectura or not texto:

@@ -80,8 +80,24 @@ def veredicto_vigente():
 
 
 def cubre(d, fp):
-    """¿El veredicto habla de ESTE archivo? Un veredicto sobre otra cosa no vale de llave."""
+    """¿El veredicto es una APROBACION REAL de ESTE archivo?
+
+    La puerta solo abre con dos cosas juntas:
+      1) el veredicto es APROBADO de verdad (hubo 4 ojos: uno genero, OTRO distinto audito), y
+      2) ese veredicto habla de ESTE archivo.
+
+    Por que el veredicto tambien: un veredicto que NO es aprobacion no abre. Antes, un SIN_AUDITAR
+    (no quedo segundo cerebro) o un RECHAZADO (el equipo dijo que no) abrian igual por solo nombrar
+    el archivo. Eso era un sello de goma: se le decia a Julio que hubo equipo cuando no lo hubo.
+    CONTRATO_EQUIPO_QUE_AGUANTA.md ya lo dice como ley: "Un SIN_AUDITAR no es una aprobacion.
+    No se le dice a Julio 'el equipo lo aprobo'." Ahora la ley la cumple el candado, no la memoria.
+    Un veredicto sobre otra cosa tampoco vale de llave: si abriera todo, bastaria llamar al equipo
+    una vez y ya.
+    """
     if not d:
+        return False
+    v = str(d.get("veredicto", "")).strip().upper()
+    if v != "APROBADO":
         return False
     base = os.path.basename(fp).lower()
     for a in d.get("archivos", []):

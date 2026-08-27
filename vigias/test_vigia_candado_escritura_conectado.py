@@ -43,6 +43,28 @@ def test_el_candado_de_escritura_esta_conectado_a_la_edicion():
     assert any("edit_gate_universal" in c for c in cmds), "falta el candado de edicion en la escritura"
 
 
+def test_la_terminal_esta_conectada_al_candado():
+    """LA RENDIJA (Julio, 2026-08-27): la terminal no estaba conectada a NINGUN candado.
+
+    Escribir codigo por la terminal (echo, heredoc, Set-Content) se saltaba el candado de equipo,
+    que solo se disparaba en la herramienta de editar. Y leer por terminal tampoco pasaba por el
+    candado del paquete minimo. Esta vigia comprueba que candado_terminal SIGA conectado a la
+    terminal y a las busquedas en el settings real: si se desconecta, ROJA.
+    """
+    s = _settings()
+    pre = s.get("hooks", {}).get("PreToolUse", [])
+    matchers = " ".join((e.get("matcher") or "").lower() for e in pre)
+    # la terminal y las busquedas tienen que pasar por candado_terminal
+    assert any("bash" in (e.get("matcher") or "").lower() for e in pre), \
+        "la terminal (Bash) no esta conectada a ningun candado"
+    cmds = [h.get("command", "") for e in pre for h in e.get("hooks", [])]
+    assert any("candado_terminal" in c for c in cmds), \
+        "candado_terminal no esta conectado a ninguna herramienta: la terminal es una rendija"
+    assert any("grep" in (e.get("matcher") or "").lower() for e in pre) or \
+           any("glob" in (e.get("matcher") or "").lower() for e in pre), \
+        "las busquedas (grep/glob) no pasan por candado_terminal"
+
+
 def test_ingeniero_off_solo_no_apaga_los_candados(tmp_path):
     """Prender INGENIERO_OFF sin la autorizacion escrita de Julio NO apaga (Julio, 2026-08-24)."""
     from cerebro import grafo

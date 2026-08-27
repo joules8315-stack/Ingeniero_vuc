@@ -42,6 +42,12 @@ def test_sin_veredicto_bloquea_aunque_no_haya_cerebros(monkeypatch):
 
 
 def test_con_veredicto_que_cubre_el_archivo_abre(monkeypatch):
-    """Con veredicto reciente que cubre el archivo, se abre."""
-    rc = _feed(monkeypatch, FOTO, veredicto={"archivos": ["app.py"]})
+    """Con APROBADO reciente del equipo que cubre el archivo, se abre.
+
+    (2026-08-27, NO SELLO DE GOMA): antes esta vigia pasaba {"archivos": [...]} SIN campo de
+    veredicto y esperaba que abriera — justo el hueco que Julio ordeno cerrar: una puerta que abre
+    sin APROBADO real le decian "el equipo lo aprobo" cuando nadie habia auditado. Ahora la llave
+    es un APROBADO con 4 ojos; SIN_AUDITAR o RECHAZADO no abren (ver test_vigia_siempre_con_equipo).
+    """
+    rc = _feed(monkeypatch, FOTO, veredicto={"archivos": ["app.py"], "veredicto": "APROBADO"})
     assert rc == 0
