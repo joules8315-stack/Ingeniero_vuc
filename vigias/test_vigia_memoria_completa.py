@@ -152,3 +152,7 @@ def test_el_juez_ilegible_se_vuelve_a_preguntar():
     assert "se le pide de nuevo" in src, \
         "el sistema da por perdida la respuesta ilegible del juez (fallo de Claude, 2026-08-27)"
     assert "SIN_JUEZ" in src, "no hay veredicto SIN_JUEZ para cuando el juez no contesta legible"
+    # sistema numerico de fallos del juez (Julio, 2026-08-27): codigos 1..6, no texto generico
+    assert "FALLOS_DEL_JUEZ" in src, "falta el catalogo numerico de fallos del juez"
+    assert "fallos_a_texto" in src, "falta la funcion que traduce los codigos a texto"
+    assert "fallos_a_texto(juez" in src, "el aprendido no usa la traduccion de codigos del juez"

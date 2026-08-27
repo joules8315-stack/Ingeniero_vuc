@@ -68,22 +68,26 @@ def _prompt_juez(paquete, propuesta, vigia):
 
 Di si la reparacion (A) pasaria la prueba (B). Se duro: tu trabajo es encontrar el hueco.
 
-Comprueba:
-1. ¿(A) invento algun archivo, funcion o linea que no este en el material? -> lo mas grave.
-2. ¿(A) hace pasar a (B) DE VERDAD, o solo se le parece?
-3. ¿(A) usa el atajo que (B) marca en "no_vale_si"?
-4. ¿(A) rompe algun vecino de "A QUIEN PUEDE DANAR"?
-5. ¿(A) ataca la CAUSA RAIZ o solo tapa el sintoma?
+RESPONDE LOS FALLOS CON CODIGOS NUMERICOS, NO CON TEXTO (Julio, 2026-08-27): asi no te atas
+en lo generico y el sistema siempre te entiende. La lista de fallos esta numerada abajo.
 
-Responde SOLO JSON:
+Comprueba y, si algo falla, apunta SU CODIGO en "fallos":
+  1 = INVENTA (la reparacion usa un archivo/funcion/linea que no esta en el material)
+  2 = NO PASA LA PRUEBA (la reparacion no hace pasar de verdad la prueba B, solo se le parece)
+  3 = ATAJO PROHIBIDO (la reparacion usa el atajo que la prueba B marca como "no_vale_si")
+  4 = ROMPE UN VECINO (daña a alguno de "A QUIEN PUEDE DANAR")
+  5 = TAPA EL SINTOMA (no ataca la causa raiz, solo lo disfraza)
+  6 = DUDOSO (no puedes decidir: di en "que_le_falta" que te falta para aprobar)
+
+RESPONDE SOLO UN JSON, sin texto antes ni despues, sin ```:
 {{"veredicto": "APROBADO|RECHAZADO|DUDOSO",
   "invento_algo": true/false,
-  "que_invento": ["..."],
-  "pasa_la_vigia": true/false,
-  "ataca_la_causa_raiz": true/false,
-  "fallos": ["concreto 1", "..."],
-  "que_le_falta": "que tendria que cambiar para aprobar",
+  "fallos": [<codigos numericos, ej: 1, 5>],
+  "que_le_falta": "solo si fallos=6 o si falta un detalle concreto",
   "resumen_para_el_jefe": "una frase para decidir sin leer todo"}}
+
+PON PRIMERO "veredicto": es lo unico imprescindible, llega siempre. Los "fallos" son codigos
+(1..6), no frases. Si no puedes decidir, pon "veredicto":"DUDOSO" y "fallos":[6].
 
 ===== (A) REPARACION PROPUESTA =====
 {propuesta}
@@ -92,6 +96,36 @@ Responde SOLO JSON:
 ===== MATERIAL ORIGINAL =====
 {paquete}
 ===== FIN ====="""
+
+
+# CATALOGO NUMERICO DE FALLOS DEL JUEZ (Julio, 2026-08-27): el juez responde con codigos (1..6),
+# no con texto generico, para que el sistema siempre lo entienda y no se atasca. Esta funcion
+# convierte los codigos en texto para que el reparador entienda que corregir.
+FALLOS_DEL_JUEZ = {
+    1: "la reparacion INVENTA (usa un archivo/funcion/linea que no esta en el material)",
+    2: "la reparacion NO hace pasar la prueba de verdad (solo se le parece)",
+    3: "la reparacion usa el ATAJO PROHIBIDO que la prueba marca como no_vale_si",
+    4: "la reparacion ROMPE UN VECINO de 'A QUIEN PUEDE DANAR'",
+    5: "la reparacion TAPA EL SINTOMA, no ataca la causa raiz",
+    6: "el juez no pudo decidir (DUDOSO)",
+}
+
+
+def fallos_a_texto(codigos, extra=""):
+    """Convierte los codigos del juez a texto entendible. Acepta codigos o texto ya escrito."""
+    if not codigos:
+        return str(extra or "").strip()
+    # si vienen como numeros (1..6), se traducen; si ya son texto, se dejan
+    partes = []
+    for c in (codigos if isinstance(codigos, (list, tuple)) else [codigos]):
+        try:
+            partes.append(FALLOS_DEL_JUEZ.get(int(c), "fallo desconocido: %s" % c))
+        except (TypeError, ValueError):
+            partes.append(str(c))
+    txt = "; ".join(p for p in partes if p)
+    if extra:
+        txt = (txt + " | " + str(extra)) if txt else str(extra)
+    return txt[:600]
 
 
 def _en_paralelo(tareas):
@@ -184,7 +218,7 @@ def resolver(paquete, problema, proyecto="", rondas=RONDAS_MAX, al_vuelo=None):
             _decir(f"Se acabo el tiempo ({TOPE_CICLO}s): se entrega lo que hay y se dice que falta.")
             historial[-1]["corto_por_tiempo"] = True
             break
-        aprendido = "; ".join((juez.get("fallos") or []) + [juez.get("que_le_falta") or ""])[:600]
+        aprendido = fallos_a_texto(juez.get("fallos"), juez.get("que_le_falta"))
         if v == "SIN_JUEZ":
             break
 
