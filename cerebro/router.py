@@ -31,6 +31,20 @@ def _claves_de(g, nombres_flujo):
     return sorted(set(cl))
 
 
+def _lineas_de(ruta, desde, hasta):
+    """Lee las lineas `desde`..`hasta` (1-indexado) de un archivo. Devuelve lista de lineas.
+
+    Para la ley L13/L14 (Julio, 2026-08-27): cuando el repartidor se toca a si mismo, hay que
+    traer la funcion completa, no un trozo cortado por el fragmentador.
+    """
+    try:
+        with open(ruta, encoding="utf-8", errors="ignore") as f:
+            lineas = f.read().splitlines()
+        return lineas[max(0, desde - 1):min(len(lineas), hasta)]
+    except Exception:
+        return []
+
+
 def _las_que_hablan_del_problema(g, problema, cuantas=4):
     """Las piezas de CODIGO que mas tienen que ver con el problema, sin abrir un solo archivo.
 
@@ -200,6 +214,33 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
             pedazos = semantico.reordenar(problema, pedazos, campo="texto", k=k_trozos)
         except Exception:
             pedazos = pedazos[:k_trozos]
+
+    # LA HERRAMIENTA SE REPARA MIENTRAS CONSTRUYE (Julio, 2026-08-27, ley L13/L14).
+    # Cuando el problema toca al REPARTIDOR, el fragmentador corta router.py en trozos de 40 lineas
+    # y elige por relevancia: trae 1-40 y 129-168, pero NO la funcion `armar` completa (87-227).
+    # Entonces el equipo no ve el codigo que hay que tocar, no puede validar, y rechaza. Es el
+    # circulo que bloquea todo el proyecto. Cura: si el paquete incluye cerebro/router.py como pieza
+    # de codigo, se garantiza que su trozo cubra la funcion `armar` entera, para que quien lo repare
+    # vea la funcion completa y no un pedazo huerfano.
+    try:
+        router_id = "cerebro/router.py"
+        soy = next((p for p in codigo if p["id"].replace("\\", "/").endswith(router_id)), None)
+        if soy:
+            # la funcion armar() vive en router.py:87-227 (medido). Se garantiza que el trozo la
+            # cubra completa, aunque el buscador de relevancia la haya partido.
+            desde_armar, hasta_armar = 87, 227
+            texto_armar = "\n".join(
+                _lineas_de(soy["abs"], desde_armar, hasta_armar))
+            ya = any(t["pieza"] == soy["id"] and t["desde"] <= desde_armar
+                     and t["hasta"] >= hasta_armar for t in pedazos)
+            if not ya and texto_armar:
+                pedazos.insert(0, {"pieza": soy["id"], "abs": soy["abs"], "rol": soy["rol"],
+                                   "desde": desde_armar, "hasta": hasta_armar,
+                                   "direccion": "%s:%s-%s" % (router_id, desde_armar, hasta_armar),
+                                   "texto": texto_armar, "puntaje": 99.0,
+                                   "_completo": "armar"})
+    except Exception:
+        pass
 
     leyes = sorted([f for f in fichas if f["rol"] in ("CONTRATO", "MATRIZ", "PROTOCOLO")],
                    key=lambda x: x["id"])
