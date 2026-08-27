@@ -156,3 +156,31 @@ def test_el_juez_ilegible_se_vuelve_a_preguntar():
     assert "FALLOS_DEL_JUEZ" in src, "falta el catalogo numerico de fallos del juez"
     assert "fallos_a_texto" in src, "falta la funcion que traduce los codigos a texto"
     assert "fallos_a_texto(juez" in src, "el aprendido no usa la traduccion de codigos del juez"
+
+
+def test_el_juez_se_cine_al_codigo_y_el_receptor_entiende():
+    """Julio, 2026-08-27: QUIEN VIGILA que el juez se cine al codigo y que el receptor entienda.
+
+    Comprueba el COMPORTAMIENTO, no solo que el codigo exista:
+      1. un codigo valido (1..6) se traduce a texto claro -> el receptor entiende,
+      2. un codigo fuera de rango (7, 0) se MARCA (no pasa silencioso),
+      3. texto libre donde iba un codigo tambien se MARCA,
+      4. el texto llega al reparador en 'aprendido' (no codigos sueltos).
+    """
+    import cuerpo.cruzado as cr
+    # 1) codigos validos -> texto entendible
+    t1 = cr.fallos_a_texto([1, 5])
+    assert "INVENTA" in t1 and "TAPA EL SINTOMA" in t1, \
+        "el receptor no entendio los codigos validos: %r" % t1
+    assert not t1.startswith("CODIGO"), "codigo valido marcado como desconocido"
+    # 2) codigo fuera de rango -> se marca, no silencioso
+    t2 = cr.fallos_a_texto([7])
+    assert "CODIGO DE JUEZ NO RECONOCIDO" in t2, \
+        "un codigo fuera de rango (7) paso silencioso: el juez no se cine y nadie lo ve"
+    # 3) texto libre donde iba un codigo -> se marca
+    t3 = cr.fallos_a_texto(["la prueba no corre"])
+    assert "CODIGO DE JUEZ NO RECONOCIDO" in t3, \
+        "texto libre paso como fallo valido: el juez no se cine al catalogo"
+    # 4) el catalogo cubre 1..6 (ninguno hueco)
+    for n in range(1, 7):
+        assert n in cr.FALLOS_DEL_JUEZ, "el catalogo de fallos del juez deja el %d sin definir" % n

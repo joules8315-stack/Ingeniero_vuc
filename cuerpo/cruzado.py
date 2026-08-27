@@ -112,17 +112,28 @@ FALLOS_DEL_JUEZ = {
 
 
 def fallos_a_texto(codigos, extra=""):
-    """Convierte los codigos del juez a texto entendible. Acepta codigos o texto ya escrito."""
+    """Convierte los codigos del juez a texto entendible. Acepta codigos (1..6) o texto ya escrito.
+
+    SI EL JUEZ NO SE CIÑE AL CATALOGO (Julio, 2026-08-27): un codigo fuera de rango (0, 7, ...)
+    o texto libre donde deberia ir un numero es una SEÑAL de que el juez no sigue el codigo. No se
+    deja pasar silencioso: se marca como "fallo de codigo del juez" y devuelve tambien ese aviso.
+    """
     if not codigos:
         return str(extra or "").strip()
-    # si vienen como numeros (1..6), se traducen; si ya son texto, se dejan
-    partes = []
+    partes, raros = [], []
     for c in (codigos if isinstance(codigos, (list, tuple)) else [codigos]):
         try:
-            partes.append(FALLOS_DEL_JUEZ.get(int(c), "fallo desconocido: %s" % c))
+            n = int(c)
+            if n in FALLOS_DEL_JUEZ:
+                partes.append(FALLOS_DEL_JUEZ[n])
+            else:
+                raros.append(str(c))     # codigo fuera del catalogo 1..6
         except (TypeError, ValueError):
-            partes.append(str(c))
+            raros.append(str(c))         # texto libre donde iba un codigo
     txt = "; ".join(p for p in partes if p)
+    if raros:
+        aviso = "CODIGO DE JUEZ NO RECONOCIDO: %s" % ", ".join(raros)
+        txt = (aviso + " | " + txt) if txt else aviso
     if extra:
         txt = (txt + " | " + str(extra)) if txt else str(extra)
     return txt[:600]
