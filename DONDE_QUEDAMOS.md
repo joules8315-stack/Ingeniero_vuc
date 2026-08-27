@@ -2,23 +2,24 @@
 
 ## LO PRIMERO DE MAÑANA
 
-**0. El repartidor no se incluye a sí mismo (punto 1 de Julio, 2026-08-27).**
-El `NO_ENCONTRADO` de `cerebro/router.py` no dice el porqué. Causa de raíz probada con el equipo 4
-veces: el repartidor **no entrega el trozo de sí mismo donde viven esos mensajes** (líneas 228-292 de
-`router.py`), así que el obrero no ve el código, no puede validar la reparación y el auditor rechaza.
-**Círculo:** para arreglar el repartidor hay que tocar `router.py`, el candado exige APROBADO, y el
-equipo no aprueba sin ver el trozo que el repartidor no trae. **Salida honrada:** Julio autoriza con su
-llave el ajuste quirúrgico de `router.py` (que se incluya a sí mismo con el trozo 228-292) y recién
-después se relanza el equipo sobre material completo. NO quemar saldo lanzando el equipo a ciegas.
+**0. El repartidor se fragmenta mal a sí mismo (causa de fondo que bloquea todo, Julio 2026-08-27).**
+El `NO_ENCONTRADO` de `cerebro/router.py` no dice el porqué, y la causa es MAS precisa que antes:
+el repartidor trae el trozo donde estan los mensajes (228-292) PERO **no la funcion `armar` entera**
+(87-227). El auditor lo cazo con claridad: *"el material solo muestra 129-168, dejando oculto el
+resto de la funcion (87-128 y 169-227)"*. Sin la funcion completa el obrero no puede proponer una
+reparacion de verdad y el auditor lo rechaza. Es un circulo: para arreglar el repartidor hay que
+tocar `router.py`, el candado exige APROBADO, y el equipo no aprueba sin ver la funcion entera.
+**Salida honrada:** Julio autoriza con su llave el ajuste quirurgico de `router.py` (que se incluya
+a si mismo con la funcion `armar` completa cuando el problema toca al repartidor), y recien despues
+se relanza el equipo. NO quemar saldo lanzando el equipo sobre material incompleto.
 
 **1. Falta vigilar que el equipo ENTREGUE el material (ajuste de Julio, 2026-08-27).**
 El comando `python ingeniero.py equipo` guarda la llave aunque el obrero no entregue nada (propuesta
-vacía / CORTO / SOSPECHOSO), y el bucle avanza con humo. La señal YA existe (medidor.juzgar) pero no
+vacia / CORTO / SOSPECHOSO), y el bucle avanza con humo. La señal YA existe (medidor.juzgar) pero no
 frena. OJO con lo que el equipo enseñó: **PREGUNTA_REQUERIDA es legítima** (cuando falta que Julio
 decida se pregunta y NO se frena); lo que hay que frenar es la propuesta **vacía** (rendirse sin
-entregar ni preguntar). Intentos previos del equipo fueron RECHAZADOS por material incompleto (el
-mismo círculo del punto 0) y porque confundían al Auditor con el Medidor. Retomar CON el equipo y
-con material completo (que incluya `ingeniero.py` y `cuerpo/medidor.py` en el paquete).
+entregar ni preguntar). Retomar CON el equipo y con material completo (que incluya `ingeniero.py` y
+`cuerpo/medidor.py` en el paquete).
 
 ## LO QUE SE CIERRA HOY (2026-08-27)
 - **El candado de equipo ya no es sello de goma:** solo abre con APROBADO real. SIN_AUDITAR y
@@ -26,9 +27,14 @@ con material completo (que incluya `ingeniero.py` y `cuerpo/medidor.py` en el pa
 - **La terminal quedó conectada al arnés** (settings real): `candado_terminal.py` se dispara en
   Bash/PowerShell y Grep/Glob. Escribir código por terminal exige el equipo; la terminal ya no es
   puerta trasera. Vigías en `test_vigia_no_inventa.py` y `test_vigia_candado_escritura_conectado.py`.
-  Probado de verdad: sin equipo bloquea (exit 2), con APROBADO pasa (exit 0).
-- Commit en rama canónica `integration/ingeniero-vuc` (de7427b). Suite 403 verdes.
-- Vía canónica verificada: los 3 proyectos en su ruta/rama correcta.
+- **Ya no se pide autorización dos veces para lo mismo** (Julio, 2026-08-27): el arnés estaba
+  duplicado en DOS settings a la vez (usuario + proyecto) y el usuario tenía 3 edit_gate. Consolidado:
+  el arnés vive SOLO en el settings de usuario (fuente canónica global); el proyecto conserva solo sus
+  candados de cierre; un solo edit_gate_universal. Vigía `test_el_arnes_NO_esta_duplicado` muerde si
+  la misma función corre dos veces en el mismo evento/matcher.
+- **El supervisor ya no da falsa alarma** (Claude, 2026-08-27): leía SOLO el settings del proyecto y
+  no veía el modo ingeniero que vive en el usuario. Ahora lee las dos capas. Verificado: ya no alarma.
+- Commit en rama canónica `integration/ingeniero-vuc` (de7427b, 0094fee, 1013e36). Suite 404 verdes.
 
 ## LO QUE JULIO PREGUNTÓ Y LO QUE SE MIDIÓ (2026-08-26)
 
@@ -47,7 +53,8 @@ con material completo (que incluya `ingeniero.py` y `cuerpo/medidor.py` en el pa
 ## LO QUE FALTA
 
 **A. EL BOTON DE LOS TITULOS** — legislarlo y construirlo. Texto: **"¿Quieres que los Titulos se
-guarden dentro de la tabla?  SI    No"**. Hoy funciona como "SI"; el "No" es lo nuevo.
+guarden dentro de la tabla?  SI    No"**. Hoy funciona como "SI"; el "No" es lo nuevo. **Bloqueado por
+el círculo del punto 0** (el equipo no puede trabajar en este proyecto).
 
 **B. EL WORD SELLADO** — falta la pregunta de Julio: qué pasa exactamente al intentar cambiar lo
 que escribió la aplicación.
@@ -76,4 +83,4 @@ exagerar, fallo 2). Pendiente de construir en el candado de salida (el que revis
 ---
 
 **Estado de la cuenta de Julio:** sus informes y fotos intactos; la colocación, devuelta.
-**Vigias:** Ingeniero 403 verdes.
+**Vigias:** Ingeniero 404 verdes.
