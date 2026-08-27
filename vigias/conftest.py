@@ -30,4 +30,11 @@ def _nada_toca_lo_real(tmp_path, monkeypatch):
     # valvula ya abierta y la comprobacion salia roja sin que nada estuviera roto (cuarto sitio
     # con este mismo patron, 2026-08-21).
     monkeypatch.setenv("INGENIERO_CONTADOR_TEST", str(tmp_path / ".protocolo_bloqueos"))
+    # La AUTORIZACION de Julio (su llave) tambien es estado REAL: si la tiene puesta (24h), los
+    # candados abren de verdad y las vigias que prueban que el candado MUERDE se pondrian rojas en
+    # falso (creyendo que el candado fallo cuando en realidad la llave abrio, que es su trabajo).
+    # Ley 23 + L15 (2026-08-27): ninguna comprobacion ve el estado real. Cada vigia apunta la
+    # autorizacion a su propia copia que no existe, asi prueba que el candado muerde SIN llave,
+    # y la llave real de Julio deja de causar rojos falsos. La llave real sigue abriendo (no se toca).
+    monkeypatch.setenv("INGENIERO_AUTORIZACION_TEST", str(tmp_path / ".aut_julio_no_existe"))
     yield
