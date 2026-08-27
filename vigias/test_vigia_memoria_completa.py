@@ -17,6 +17,7 @@ Se vigila aqui:
 """
 import os
 import sys
+from cerebro import grafo
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, AQUI)
@@ -90,3 +91,25 @@ def test_se_repara_la_causa_de_fondo_no_se_pide_llave():
     textos = " ".join(str(e.get("texto", "")) for e in led.values())
     assert "memoria no miente" in textos or "causa de fondo" in textos, \
         "la instruccion de la memoria no esta registrada en la legislacion"
+
+
+def test_lo_que_el_problema_nombra_entra_al_material():
+    """Ley L13/L14 (Julio, 2026-08-27): cuando el problema nombra un archivo, ESE entra al material.
+
+    Antes se nombraba 'app_web.html' y el repartidor devolvia solo las pruebas o vigias, no la
+    pantalla; el equipo no podia revisar ni aprobar, y todo se atascaba. Ahora el archivo nombrado
+    entra al material (codigo/trozos). Aplica a TODOS los proyectos.
+    """
+    import cerebro.router as router
+    # prueba en foto_informe con la pantalla del boton
+    prs = grafo.proyectos()
+    if "foto_informe" in prs:
+        pk = router.armar("foto_informe", "boton de los titulos en app_web.html")
+        ids = [t["pieza"] for t in pk.get("trozos", [])]
+        assert any("app_web.html" in x for x in ids), \
+            "nombran app_web.html y el material no trae la pantalla (causa de fondo)"
+    # y en el ingeniero con el propio router
+    pk2 = router.armar("ingeniero", "reparar cerebro/router.py")
+    ids2 = [t["pieza"] for t in pk2.get("trozos", [])]
+    assert any("router.py" in x for x in ids2), \
+        "nombran router.py y el material no lo trae (causa de fondo)"

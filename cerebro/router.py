@@ -124,6 +124,33 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
         fichas += candidatas
         codigo = candidatas
 
+    # LO QUE EL PROBLEMA NOMBRA, ENTRA (Julio, 2026-08-27, ley L13/L14).
+    # Cuando Julio (o el encargo) dice el nombre exacto de una parte del programa, esa parte DEBE
+    # entrar al material. Hoy se ignora: se nombra "app_web.html" y el repartidor devuelve solo las
+    # pruebas o vigias, no la pantalla; el equipo no puede revisar ni aprobar, y todo se atasca.
+    # Regla general: se detectan en el texto del problema las rutas/archivos que existen en el grafo
+    # del proyecto (p.ej. app_web.html, app.py, rv3_prueba_x.py), y se agregan al material. Aplica a
+    # TODOS los proyectos: el ingeniero es el central y transmite a los demas. Es el pedazo que hace
+    # falta, no el archivo entero (los hay de 16 mil renglones: ni caben ni sirven).
+    # Se guarda en _nombrados para que su trozo se agregue despues de que exista `pedazos`.
+    _nombrados = []
+    try:
+        import re as _re
+        for m in _re.finditer(r"([A-Za-z0-9_\\/.\-]+\.(?:py|html|js|css|ts|json|md))", problema):
+            pieza = m.group(1).replace("\\", "/")
+            base = pieza.split("/")[-1]
+            ficha = next((p for p in g["piezas"]
+                          if p["id"].replace("\\", "/").endswith(pieza)
+                          or p["id"].split("/")[-1] == base), None)
+            if not ficha or ficha in codigo:
+                continue
+            codigo.append(ficha)
+            if ficha not in fichas:
+                fichas.append(ficha)
+            _nombrados.append(ficha["id"])
+    except Exception:
+        _nombrados = []
+
     # LA CARA TAMBIEN ES DEL FLUJO (fallo real 2026-08-20, cazado por Qwen y Gemini).
     # El paquete del onboarding traia `cuerpo/perfil.py` (el motor) pero NO `web/` (la cara,
     # donde esta el formulario que de verdad guarda). Qwen: "no veo el codigo que invoca a
@@ -239,6 +266,28 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
                                    "direccion": "%s:%s-%s" % (router_id, desde_armar, hasta_armar),
                                    "texto": texto_armar, "puntaje": 99.0,
                                    "_completo": "armar"})
+    except Exception:
+        pass
+
+    # LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO (Julio, 2026-08-27, ley L13/L14).
+    # Los archivos nombrados ya se agregaron a `codigo`/`fichas`. Aqui se garantiza que su trozo
+    # llegue al material: si el fragmentador por relevancia no lo trajo, se pide el pedazo del
+    # archivo. Es la pantalla (app_web.html) o el motor (app.py) que el equipo necesita ver para
+    # revisar y aprobar; sin el, todo se atasca.
+    try:
+        for fid in list(_nombrados):
+            ficha = next((p for p in codigo if p["id"] == fid), None)
+            if not ficha or not ficha.get("abs"):
+                continue
+            texto = "\n".join(_lineas_de(ficha["abs"], 1, min(80, ficha.get("lineas", 80) or 80)))
+            if not texto.strip():
+                continue
+            ya = any(t["pieza"] == fid for t in pedazos)
+            if not ya:
+                pedazos.insert(0, {"pieza": fid, "abs": ficha["abs"], "rol": ficha["rol"],
+                                   "desde": 1, "hasta": min(80, ficha.get("lineas", 80) or 80),
+                                   "direccion": "%s:1-%s" % (fid, min(80, ficha.get("lineas", 80) or 80)),
+                                   "texto": texto, "puntaje": 99.0, "_nombrado": fid})
     except Exception:
         pass
 
