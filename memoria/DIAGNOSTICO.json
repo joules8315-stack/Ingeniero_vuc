@@ -1,10 +1,11 @@
 {
- "cuando": 1787766158.0689685,
+ "cuando": 1787795422.471728,
  "proyecto": "foto_informe",
- "archivo": "rv3_prueba_matriz_de_roles.py",
- "funcion": "ROLES",
- "linea": "40",
- "evidencia": "Corrida: 'SALTADA: no hay columnas suficientes'. La base devuelve reading, writing, name y evidence; yo puse reading, manual_write, objectives_write y evidence. Dos nombres inventados, asi que dos roles no se encontraban y la prueba creia que faltaban columnas. Los nombres reales estan en ETIQUETA de rv3_prueba_4_1_borrar_rol.py:42.",
- "cambio": "la lista de roles se escribio de memoria en vez de leerla del proyecto",
- "sintoma": "la matriz de roles se salta sin probar nada"
+ "archivo": "rv3_prueba_el_orden_manda.py",
+ "funcion": "main",
+ "linea": "60",
+ "evidencia": "Julio al verla: 'las pruebas deben ser con Playwright, de lo contrario es pura autovalidacion'. Tal como estaba, leia la base y el Word firmado sin pulsar nada: el programa comprobandose a si mismo. Y leido en la cabecera de rv3_prueba_8_manual.py, el usuario no escribe el orden sino la fila; el orden sale de la secuencia de colocacion, asi que sin colocar por pantalla no hay nada que probar.",
+ "cambio": "la prueba no abre el navegador",
+ "sintoma": "la prueba del orden se valida a si misma en vez de conducir la pantalla",
+ "alcance": "1 de 1 prueba (la del orden)"
 }
