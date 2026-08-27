@@ -36,6 +36,11 @@ Antes de tocar código se responden las **5 preguntas**: qué, dónde, por qué,
 es positivo (se sabe todo con precisión), se legisla y se repara. Si algo no se sabe, se investiga,
 se vuelve a responder y recién se repara.
 
+## LA LEY DE LA LLAVE ÚNICA (2026-08-27)
+Cuando Julio pone su llave, **no se abren los 12 candados de golpe**. Se abren **solo** los que la
+tarea necesita, ni más ni menos. Y antes de abrir, se le dice exactamente **cuáles** se abren y **por
+qué**.
+
 ## COMO SE TRABAJA (el protocolo, no hay que repetirselo a nadie)
 ```
 python ingeniero.py arranca                 # donde ibamos (el estado NO vive en el chat)

@@ -174,6 +174,13 @@ repara. Nada de reparar sin saber qué, dónde, por qué, cuándo y cómo.
   + el paso 3 "Causa raíz, nunca síntoma" del protocolo.
 - **Vigía:** `vigias/test_vigia_decision_reparar.py`.
 
+### LEY L — LA LLAVE ÚNICA DE JULIO ABRE SOLO LO NECESARIO (2026-08-27)
+Cuando Julio pone su llave, **no se abren los 12 candados de golpe**. Se abren **solo** los que la
+tarea necesita, ni más ni menos. Y antes de abrir, se le dice exactamente **cuáles** candados se abren
+y **por qué** (qué protege cada uno).
+- **Candado:** `arnes/autorizacion.py` + `arnes/candado_equipo.py`.
+- **Vigía:** `vigias/test_vigia_llave_unica.py`.
+
 ---
 
 ## EL NORTE (de "protocolo rv2:") — MANDA SOBRE TODO LO DEMÁS

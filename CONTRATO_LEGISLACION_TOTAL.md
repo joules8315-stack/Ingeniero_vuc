@@ -115,3 +115,11 @@ las 5 preguntas y recién se repara. Nada de reparar sin saber qué, dónde, por
 - **Candado:** `arnes/candado_diagnostico.py` (exige archivo/función/línea/evidencia/cambio/alcance)
   + el paso 3 "Causa raíz, nunca síntoma" del protocolo.
 - **Vigía:** `vigias/test_vigia_decision_reparar.py`.
+
+### L15 — LA LLAVE ÚNICA DE JULIO ABRE SOLO LO NECESARIO (Julio, 2026-08-27)
+Cuando Julio pone su llave, **no se abren los 12 candados de golpe**. Se abren **solo** los que la
+tarea necesita, ni más ni menos. Y antes de abrir, se le dice exactamente **cuáles** candados se abren
+y **por qué** (qué protege cada uno). La llave es una, pero su efecto es quirúrgico: autoriza lo que
+hace falta y nada más.
+- **Candado:** `arnes/autorizacion.py` (la llave) + `arnes/candado_equipo.py` (cómo decide abrir).
+- **Vigía:** `vigias/test_vigia_llave_unica.py`.

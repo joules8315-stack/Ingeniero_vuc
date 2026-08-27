@@ -16,6 +16,7 @@
 | B4 | Solo se pregunta después de haber buscado (todo indexado); nunca antes. | `arnes/candado_preguntar.py` (PASO 4) | `vigias/test_vigia_dudas.py` | LEGISLADO |
 | B5 | La memoria no miente ni olvida: el paquete del repartidor trae la pieza COMPLETA con su flujo, sus rutas reparadas (cuáles acertaron y cuáles no) y su historial; se mide si la memoria sirve (cada NECESITO_LEER = fallo de fragmentación); si el sistema no puede trabajar, se repara la causa de fondo antes de pedir llaves. | repartidor no entrega trozo sin su pieza/función completa (`cerebro/router.py` + `cerebro/trozos.py`) | `vigias/test_vigia_memoria_completa.py` | LEGISLADO |
 | B6 | Antes de reparar se responden las 5 preguntas (qué, dónde, por qué, cuándo, cómo); si todo es positivo se legisla y repara; si no se sabe, se investiga y se vuelve a responder. | `arnes/candado_diagnostico.py` + paso 3 del protocolo | `vigias/test_vigia_decision_reparar.py` | LEGISLADO |
+| B7 | La llave única de Julio abre SOLO los candados que la tarea necesita, ni más ni menos; antes de abrir se le dice cuáles se abren y por qué. | `arnes/autorizacion.py` + `arnes/candado_equipo.py` | `vigias/test_vigia_llave_unica.py` | LEGISLADO |
 
 ## Comprobación real (no autovalidación)
 
