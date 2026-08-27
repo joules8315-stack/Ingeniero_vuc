@@ -29,7 +29,12 @@ def marcar(para, asunto):
 
 
 def _toast(para, asunto):
-    """Aviso visual en Windows. Best effort: si falla, no rompe nada."""
+    """Aviso visual en Windows. APAGADO por Julio (2026-08-26): el popup de PowerShell salia una y
+    otra vez y molestaba. La MARCA (memoria/canal/llamados/<para>.txt) sigue siendo lo que la IA
+    lee, asi que el llamado no se pierde. Para volver a encender el popup: INGENIERO_LLAMAR_TOAST=1.
+    """
+    if os.environ.get("INGENIERO_LLAMAR_TOAST", "").strip() != "1":
+        return
     titulo = "CANAL: llamado para " + para
     texto = (asunto or "")[:120].replace("'", "")
     ps = ("Add-Type -AssemblyName System.Windows.Forms;"
