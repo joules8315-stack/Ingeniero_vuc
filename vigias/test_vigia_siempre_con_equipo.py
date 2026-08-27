@@ -177,6 +177,7 @@ def test_la_salida_de_emergencia_sigue_siendo_de_julio(tmp_path, monkeypatch):
     # apagaban EN SILENCIO: cualquiera podia y no quedaba rastro. La salida sigue existiendo,
     # pero ahora es SUYA y deja constancia.
     monkeypatch.setenv("INGENIERO_AUTORIZACION_TEST", str(tmp_path / "aut_de_mentira"))
+    secreto = aut.sembrar_secreto_test(tmp_path)
 
     # 1) La variable A SOLAS no abre nada.
     monkeypatch.setattr("sys.stdin", io.StringIO(entrada))
@@ -185,7 +186,7 @@ def test_la_salida_de_emergencia_sigue_siendo_de_julio(tmp_path, monkeypatch):
 
     # 2) Con la autorizacion de Julio, SI abre. Un candado sin salida no es candado, es un muro,
     #    y acaba con Julio apagandolo todo, que es peor que el problema.
-    aut.autorizar("prueba: comprobar que la salida de Julio sigue existiendo")
+    aut.autorizar("prueba: comprobar que la salida de Julio sigue existiendo", secreto)
     monkeypatch.setattr("sys.stdin", io.StringIO(entrada))
     assert ce.main() == 0, "Julio se quedo encerrado: ni con su propio interruptor puede salir"
 

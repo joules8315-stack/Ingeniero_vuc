@@ -72,8 +72,9 @@ def test_no_deja_a_julio_atrapado(tmp_path, monkeypatch):
     import autorizacion as aut
     marca = str(tmp_path / "aut_off")
     os.environ["INGENIERO_AUTORIZACION_TEST"] = marca
+    secreto = aut.sembrar_secreto_test(tmp_path)
     try:
-        aut.autorizar("prueba: salida de emergencia")
+        aut.autorizar("prueba: salida de emergencia", secreto)
         env = dict(os.environ)
         env["INGENIERO_LEGISLAR_TEST"] = str(tmp_path / "leg.json")
         env["INGENIERO_AUTORIZACION_TEST"] = marca
@@ -82,6 +83,7 @@ def test_no_deja_a_julio_atrapado(tmp_path, monkeypatch):
         assert r.returncode == 0, "la autorizacion de Julio no abrio el candado (encerrado)"
     finally:
         os.environ.pop("INGENIERO_AUTORIZACION_TEST", None)
+        os.environ.pop("INGENIERO_LLAVE_JULIO_TEST", None)
 
 
 if __name__ == "__main__":

@@ -78,18 +78,20 @@ def test_el_interruptor_de_emergencia_apaga_los_candados(tmp_path):
     import autorizacion as aut
     marca = str(tmp_path / "aut_off")
     os.environ["INGENIERO_AUTORIZACION_TEST"] = marca
+    secreto = aut.sembrar_secreto_test(tmp_path)
     try:
         # INGENIERO_OFF prendido SIN autorizacion -> NO apaga (bloquea).
         code, _ = _correr("edit_gate_universal.py", {"tool_input": {"file_path": f}},
                           {"INGENIERO_OFF": "1"})
         assert code == 2, "INGENIERO_OFF apago los candados sin autorizacion previa de Julio"
-        # con la autorizacion escrita (el comando autorizar-off) si apaga.
-        aut.autorizar("prueba: interruptor de emergencia")
+        # con la autorizacion escrita de Julio (con su llave) si apaga.
+        aut.autorizar("prueba: interruptor de emergencia", secreto)
         code, _ = _correr("edit_gate_universal.py", {"tool_input": {"file_path": f}},
                           {"INGENIERO_OFF": "1"})
         assert code == 0, "la autorizacion de Julio no abrio el candado"
     finally:
         os.environ.pop("INGENIERO_AUTORIZACION_TEST", None)
+        os.environ.pop("INGENIERO_LLAVE_JULIO_TEST", None)
         if os.path.exists(marca):
             os.remove(marca)
 

@@ -390,15 +390,21 @@ def main():
         return 0
     # (se quito el comando `necesito-editar`: RETIRADO por Julio, 2026-08-26. La puerta se cerro.)
     if cmd == "autorizar-off":
-        # SOLO Julio apaga los candados, por este comando y con autorizacion escrita (2026-08-24).
-        # Antes bastaba prender INGENIERO_OFF y cualquiera los apagaba en silencio.
+        # SOLO Julio apaga: exige SU LLAVE secreta (Julio, 2026-08-26). Antes bastaba correr
+        # el comando y la autorizacion se escribia sola; CUALQUIER IA podia autorizarse a si misma.
+        # La llave la tipea Julio en su terminal; nunca se pide ni se muestra por el chat.
+        #   python ingeniero.py autorizar-off "<motivo>" "<su secreto>"
         sys.path.insert(0, os.path.join(AQUI, "arnes"))
         import autorizacion
-        motivo = " ".join(sys.argv[2:]).strip() or "autorizado por Julio"
-        marca = autorizacion.autorizar(motivo)
+        args2 = sys.argv[2:]
+        llave = args2[-1] if args2 else ""
+        motivo = " ".join(args2[:-1]).strip() or "autorizado por Julio"
+        r = autorizacion.autorizar(motivo, llave)
+        if "_error" in r:
+            print("DENEGADO: " + r["_error"])
+            return 2
         print("CANDADOS APAGADOS por autorizacion de Julio (vigente 24h).")
-        print("  motivo: " + motivo)
-        print("  evidencia: " + marca)
+        print("  evidencia: " + r["ok"])
         return 0
     if cmd == "medir":
         from cuerpo import medidor, respuestas

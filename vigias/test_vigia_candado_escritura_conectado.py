@@ -60,19 +60,21 @@ def test_ingeniero_off_solo_no_apaga_los_candados(tmp_path):
     env["INGENIERO_AUTORIZACION_TEST"] = marca
     env["INGENIERO_OFF"] = "1"
     os.environ["INGENIERO_AUTORIZACION_TEST"] = marca   # para que autorizar() escriba en el temporal
+    secreto = aut.sembrar_secreto_test(tmp_path)
     try:
         p = subprocess.run([sys.executable, os.path.join(AQUI, "arnes", "edit_gate_universal.py")],
                            input=json.dumps({"tool_input": {"file_path": f}}),
                            capture_output=True, text=True, env=env, timeout=120)
         assert p.returncode == 2, "INGENIERO_OFF apago los candados sin autorizacion de Julio"
         # con autorizacion si apaga
-        aut.autorizar("prueba")
+        aut.autorizar("prueba", secreto)
         p2 = subprocess.run([sys.executable, os.path.join(AQUI, "arnes", "edit_gate_universal.py")],
                             input=json.dumps({"tool_input": {"file_path": f}}),
                             capture_output=True, text=True, env=env, timeout=120)
         assert p2.returncode == 0, "la autorizacion de Julio no abrio el candado"
     finally:
         os.environ.pop("INGENIERO_AUTORIZACION_TEST", None)
+        os.environ.pop("INGENIERO_LLAVE_JULIO_TEST", None)
 
 
 if __name__ == "__main__":
