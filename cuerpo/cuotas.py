@@ -28,10 +28,12 @@ RUTA = os.path.join(AQUI, "memoria", "CUOTAS.json")
 # tiene. Lo que antes parecia que funcionaba era Gemini contestando disfrazado.
 #   openai/gpt-oss-120b  0.9 s     openai/gpt-oss-20b  0.9 s     gemini  (el suyo fijo)
 # gpt-oss-120b y gpt-oss-20b son DOS cupos gratis distintos: Groq reparte por modelo.
-ORDEN = ["groq", "groq20b", "gemini", "gemini2", "gemini3", "local", "deepseek"]
+ORDEN = ["groq", "groq20b", "gemini", "gemini2", "gemini3", "gemini4",
+         "local", "deepseek"]
 APODO = {"groq": "GPT-OSS 120B (Groq)", "groq20b": "GPT-OSS 20B (Groq)",
          "gemini": "Gemini 3.5", "gemini2": "Gemini 3 preview",
-         "gemini3": "Gemini flash-latest", "local": "LM Studio (tu PC)",
+         "gemini3": "Gemini flash-latest", "gemini4": "Gemini 2.5 flash-lite",
+         "local": "LM Studio (tu PC)",
          "deepseek": "DeepSeek (SE PAGA)"}
 
 # LOS QUE CUESTAN DINERO. Todos los de arriba son gratis menos estos.
