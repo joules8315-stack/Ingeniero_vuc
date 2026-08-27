@@ -113,3 +113,17 @@ def test_lo_que_el_problema_nombra_entra_al_material():
     ids2 = [t["pieza"] for t in pk2.get("trozos", [])]
     assert any("router.py" in x for x in ids2), \
         "nombran router.py y el material no lo trae (causa de fondo)"
+
+
+def test_el_mensaje_de_la_llave_no_miente():
+    """Julio, 2026-08-27 (queja de Claude): 'LLAVE GUARDADA' salia SIEMPRE, incluso con RECHAZADO.
+
+    El candado no abria con rechazo (ya probado), pero el mensaje decia 'guarda llave' y enganaba.
+    Ahora el mensaje dice la verdad: 'LLAVE GUARDADA' solo con APROBADO, y si el equipo no aprobo
+    se dice que no se guardo llave.
+    """
+    src = _leer(os.path.join(AQUI, "ingeniero.py"))
+    assert "LLAVE GUARDADA" in src, "falta el mensaje de llave guardada"
+    assert "APROBADO" in src, "el mensaje de llave no depende del veredicto APROBADO"
+    assert "EL EQUIPO NO APROBO" in src, \
+        "no hay mensaje honesto cuando el equipo rechaza: el mensaje miente"

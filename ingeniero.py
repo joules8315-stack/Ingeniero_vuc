@@ -253,8 +253,16 @@ def main():
             print("(el veredicto llego y quedo guardado, pero no se pudo mostrar entero: %s)"
                   % str(_e)[:90])
         print()
-        print("LLAVE GUARDADA: se puede escribir en %d archivo(s) durante %d min."
-              % (len(tocados), _ce.VIGENCIA_MIN))
+        # EL MENSAJE NO MIENTE (Julio, 2026-08-27): antes "LLAVE GUARDADA" salia SIEMPRE, incluso
+        # cuando el equipo habia RECHAZADO. El candado NO abria (ya esta probado), pero el mensaje
+        # decia "guarda llave" y engañaba. Ahora se dice la verdad: la llave SOLO abre con APROBADO.
+        v_final = ((res.get("auditoria") or {}).get("veredicto", "?") or "?").strip().upper()
+        if v_final == "APROBADO":
+            print("LLAVE GUARDADA: se puede escribir en %d archivo(s) durante %d min."
+                  % (len(tocados), _ce.VIGENCIA_MIN))
+        else:
+            print("EL EQUIPO NO APROBO (%s): NO se guardo llave, no se puede tocar codigo."
+                  % v_final)
         return 0
 
     if cmd == "resolver" and len(sys.argv) >= 4:
