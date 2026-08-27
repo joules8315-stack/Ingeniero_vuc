@@ -41,10 +41,37 @@ def _apuntar(n):
 
 
 def _settings():
-    try:
-        return json.load(open(os.path.join(AQUI, ".claude", "settings.json"), encoding="utf-8"))
-    except Exception:
-        return {}
+    """La config EFECTIVA de hooks (usuario + proyecto), reconstruida en el formato que espera.
+
+    Julio, 2026-08-27: el arnes vive en el settings de USUARIO (fuente canonica global), y el
+    proyecto solo tiene sus candados de cierre. Antes este candado miraba SOLO el settings del
+    proyecto y daba falsa alarma (no veia el modo ingeniero que vive en el usuario). Claude lo
+    cazo (2026-08-27). Ahora se leen las dos capas.
+    """
+    out = {}
+    for capa in _capas():
+        for t, lista in capa.get("hooks", {}).items():
+            for e in lista:
+                out.setdefault(t, []).append(e)
+    return {"hooks": out}
+
+
+def _capas():
+    """Lista de dicts de settings: [usuario, proyecto] (los que existan)."""
+    capas = []
+    usr = os.path.join(os.path.expanduser("~"), ".claude", "settings.json")
+    if os.path.exists(usr):
+        try:
+            capas.append(json.load(open(usr, encoding="utf-8")))
+        except Exception:
+            pass
+    proy = os.path.join(AQUI, ".claude", "settings.json")
+    if os.path.exists(proy):
+        try:
+            capas.append(json.load(open(proy, encoding="utf-8")))
+        except Exception:
+            pass
+    return capas
 
 
 def _hay_modo_ingeniero_conectado():
