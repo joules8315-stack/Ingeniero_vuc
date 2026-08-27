@@ -31,6 +31,11 @@ ya se tomaron (cuáles acertaron y cuáles no) y su historial. Se mide si la mem
 se **repara la causa de fondo de la herramienta antes de pedir llaves**; la herramienta se repara/
 afina mientras construye.
 
+## LA LEY DE LA DECISIÓN DE REPARAR (2026-08-27)
+Antes de tocar código se responden las **5 preguntas**: qué, dónde, por qué, cuándo y cómo. Si todo
+es positivo (se sabe todo con precisión), se legisla y se repara. Si algo no se sabe, se investiga,
+se vuelve a responder y recién se repara.
+
 ## COMO SE TRABAJA (el protocolo, no hay que repetirselo a nadie)
 ```
 python ingeniero.py arranca                 # donde ibamos (el estado NO vive en el chat)

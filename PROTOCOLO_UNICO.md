@@ -165,6 +165,15 @@ memoria sirve: cada `NECESITO_LEER` (paquete incompleto) cuenta como fallo de la
   (`cerebro/router.py` + `cerebro/trozos.py`).
 - **Vigía:** `vigias/test_vigia_memoria_completa.py`.
 
+### LEY K — ANTES DE REPARAR SE RESPONDEN LAS 5 PREGUNTAS (2026-08-27)
+Antes de tocar código se responde, y queda escrito: **¿Qué** voy a reparar? **¿Dónde**? **¿Por qué**?
+**¿Cuándo**? **¿Cómo**? Si **todo es positivo** (se sabe todo con precisión) se **legisla y se
+repara**. Si algo no se sabe, se **investiga**, se vuelven a responder las 5 preguntas y recién se
+repara. Nada de reparar sin saber qué, dónde, por qué, cuándo y cómo.
+- **Candado:** `arnes/candado_diagnostico.py` (exige archivo/función/línea/evidencia/cambio/alcance)
+  + el paso 3 "Causa raíz, nunca síntoma" del protocolo.
+- **Vigía:** `vigias/test_vigia_decision_reparar.py`.
+
 ---
 
 ## EL NORTE (de "protocolo rv2:") — MANDA SOBRE TODO LO DEMÁS

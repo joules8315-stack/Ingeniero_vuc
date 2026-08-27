@@ -104,3 +104,14 @@ si la memoria sirve: cada `NECESITO_LEER` (paquete incompleto) cuenta como fallo
 - **Candado:** que el repartidor no entregue un trozo sin la pieza/función completa a la que
   pertenece (`cerebro/router.py` + `cerebro/trozos.py`).
 - **Vigía:** `vigias/test_vigia_memoria_completa.py`.
+
+## PARTE 7 — LEY DE LA DECISIÓN DE REPARAR
+
+### L14 — ANTES DE REPARAR SE RESPONDEN LAS 5 PREGUNTAS (Julio, 2026-08-27)
+Antes de tocar código se responde, y queda escrito, **las cinco preguntas**: ¿Qué voy a reparar?
+¿Dónde? ¿Por qué? ¿Cuándo? ¿Cómo lo voy a reparar? Si **todo es positivo** (se sabe todo con
+precisión) se **legisla y se repara**. Si algo no se sabe, se **investiga**, se vuelven a responder
+las 5 preguntas y recién se repara. Nada de reparar sin saber qué, dónde, por qué, cuándo y cómo.
+- **Candado:** `arnes/candado_diagnostico.py` (exige archivo/función/línea/evidencia/cambio/alcance)
+  + el paso 3 "Causa raíz, nunca síntoma" del protocolo.
+- **Vigía:** `vigias/test_vigia_decision_reparar.py`.
