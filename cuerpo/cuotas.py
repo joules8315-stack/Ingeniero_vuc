@@ -28,11 +28,28 @@ RUTA = os.path.join(AQUI, "memoria", "CUOTAS.json")
 # tiene. Lo que antes parecia que funcionaba era Gemini contestando disfrazado.
 #   openai/gpt-oss-120b  0.9 s     openai/gpt-oss-20b  0.9 s     gemini  (el suyo fijo)
 # gpt-oss-120b y gpt-oss-20b son DOS cupos gratis distintos: Groq reparte por modelo.
+# OPENROUTER ANEXADO el 2026-08-27 con la llave de Julio, para UN solo arreglo: el equipo se
+# quedaba SIN AUDITOR (Gemini agotado + los otros con 503) y sin segundo cerebro no hay 4 ojos,
+# asi que ningun trabajo se podia aprobar. Julio: "la idea es no quedarse sin combustible".
+# COMPROBADOS uno por uno el 2026-08-27, preguntando primero a la API cuales tienen precio CERO
+# (21 modelos) y luego probandolos con una auditoria de codigo real:
+#   cohere/north-mini-code:free              0.9 s  ACIERTA    256.000 de contexto
+#   nvidia/nemotron-3-ultra-550b-a55b:free   3.1 s  ACIERTA  1.000.000 de contexto  <- el gigante
+#   poolside/laguna-s-2.1:free               5.6 s  ACIERTA    262.000 de contexto
+#   z-ai/glm-5.2:free                        429 Too Many Requests -> saturado, NO entra
+# OJO CON LA CUOTA, y es distinta a la de Groq: OpenRouter da 50 llamadas al dia POR CUENTA, no
+# por modelo. Tener tres aqui NO triplica nada: es para que si uno esta caido haya otro. Por eso
+# van DESPUES de Groq y Gemini, que tienen mas holgura, y solo entran cuando esos se agotan.
+# Medido del historial de Julio: gasta 29 llamadas al dia (202 en 7 dias), asi que 50 alcanzan.
+# Van ANTES del local porque el local fallo 8 de 8 veces: un cerebro que no contesta no es relevo.
 ORDEN = ["groq", "groq20b", "gemini", "gemini2", "gemini3", "gemini4",
-         "local", "deepseek"]
+         "router", "router2", "router3", "local", "deepseek"]
 APODO = {"groq": "GPT-OSS 120B (Groq)", "groq20b": "GPT-OSS 20B (Groq)",
          "gemini": "Gemini 3.5", "gemini2": "Gemini 3 preview",
          "gemini3": "Gemini flash-latest", "gemini4": "Gemini 2.5 flash-lite",
+         "router": "North Mini Code (OpenRouter)",
+         "router2": "Nemotron 3 Ultra (OpenRouter)",
+         "router3": "Laguna S (OpenRouter)",
          "local": "LM Studio (tu PC)",
          "deepseek": "DeepSeek (SE PAGA)"}
 

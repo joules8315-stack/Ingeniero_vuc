@@ -83,7 +83,36 @@ def test_si_se_agota_toda_la_nube_queda_el_local():
     assert cuotas.turno() == "local", "con toda la nube agotada debe quedar LM Studio"
 
 
-GRATIS = ("groq", "gemini", "local")          # las tres puertas sin coste
+# Las puertas SIN COSTE. "router" (OpenRouter) entra el 2026-08-27 y SOLO con los modelos
+# terminados en ":free", que es lo unico que se configuro en arnes/velocidad.config. Comprobado
+# ese dia preguntando a su API cuales cobran CERO de entrada y de salida. OJO: en OpenRouter
+# conviven gratis y de pago bajo la misma llave, asi que si algun dia se configura un modelo SIN
+# el ":free", deja de ser gratis y hay que declararlo en DE_PAGO. Lo vigila el test de abajo.
+GRATIS = ("groq", "gemini", "local", "router")
+
+
+def test_en_OpenRouter_solo_entran_los_que_dicen_free():
+    """Protege el dinero de Julio en la unica puerta donde gratis y de pago comparten llave.
+
+    En Groq o Gemini la llave manda: o es gratis o no. En OpenRouter NO: con la MISMA llave se
+    puede llamar a un modelo gratis (`:free`) o a uno que cobra, y la diferencia son cinco letras
+    al final del nombre. Un despiste ahi le cobraria a Julio sin que nadie se entere, y encima
+    entraria como si fuera gratis en el relevo.
+
+    Anadido el 2026-08-27, el dia que OpenRouter entro en la fila.
+    """
+    from pathlib import Path
+    cfg = Path(__file__).resolve().parents[1] / "arnes" / "velocidad.config"
+    assert cfg.exists(), "falta arnes/velocidad.config: sin el no se sabe que modelos se usan"
+    for ln in cfg.read_text(encoding="utf-8", errors="replace").splitlines():
+        ln = ln.strip()
+        if ln.startswith("#") or "=" not in ln:
+            continue
+        clave, valor = (x.strip() for x in ln.split("=", 1))
+        if clave.startswith("modelo_router"):
+            assert valor.endswith(":free"), (
+                "'%s' esta configurado como '%s', que NO termina en ':free': en OpenRouter eso "
+                "SE PAGA, y ademas entraria en el relevo como si fuera gratis" % (clave, valor))
 
 
 def test_lo_que_cuesta_DINERO_esta_declarado():
