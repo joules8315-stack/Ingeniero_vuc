@@ -1,26 +1,23 @@
 {
- "cuando": 1787867954.3247924,
- "tarea": "RONDA 3 del boton de los titulos. Las dos rondas anteriores fueron rechazadas por INCOMPLETAS; ahora el material ya trae los dos lados. Entrega las CINCO piezas: (A) HTML en app_web.html, seccion page2 'Adjuntar plantilla', dentro del panel que contiene headerCell1..4 y tableTotalRows, justo despues del campo 'Filas de trabajo'. Texto EXACTO de Julio: 'Quieres que los Titulos se guarden dentro de la tabla? SI No', con data-titulos-en-tabla='si' y data-titulos-en-tabla='no'. (B) state.titulosEnTabla inicializado en true. (C) Al pulsar se guarda con persistUi, y al ENTRAR a page2 se lee y se marca el que Julio eligio. (D) titulos_en_tabla viaja al servidor con la configuracion de la tabla. (E) EL MOTOR: en app.py o en docx_table_engine.py se recibe ese campo y, cuando es false, NO se escribe el titulo dentro de la casilla, pero SI se sigue escribiendo el Anexo, Evidencia u Otro, porque eso indica el orden en que estan las fotos debajo de la tabla (LEY 4, palabras de Julio). Ancla cada cambio en una linea de texto que EXISTA en el material. Si para la pieza E el material no trae la funcion que escribe el texto de la casilla, NO la inventes: escribe NECESITO_LEER diciendo que funcion te falta. AUDITOR: VEREDICTO en una palabra, APROBADO o RECHAZADO.",
+ "cuando": 1787939557.505161,
+ "tarea": "AUDITA la reparacion ya escrita en app.py. NO propongas hash() ni ninguna otra forma de numerar: el numero YA se reparte con itertools.count(1000) dentro de _add_bookmark_to_paragraph y eso NO se discute. DOS DUDAS DE LA RONDA ANTERIOR YA SE COMPROBARON EN EL CODIGO y quedan CERRADAS: (1) los parrafos huerfanos se limpian en la linea 5318, ANTES de la salida temprana de la 5353, asi que no quedan celdas rotas; (2) los cuatro sitios que llaman a _add_bookmark_to_paragraph (5759, 5768, 5880, 5889) solo PASAN el numero, ninguno lo lee de vuelta, asi que ignorarlo no rompe a nadie. LO QUE SI HAY QUE AUDITAR, y solo esto: (a) con titulos_en_tabla=False la funcion sale antes de escribir los enlaces: queda la casilla con el Anexo/Evidencia/Otro y NADA MAS, como pidio Julio, o se pierde algo que si deberia salir? (b) el titulo pasa a ser el enlace en vez de un 'Ver fotos' al lado: el marcador al que apunta (photo_bookmark_name_for_group) es el MISMO que se crea debajo de la tabla, o apuntan a nombres distintos? (c) _docx_safe_bookmark_name corta a 40 letras: pueden dos marcadores distintos quedar con el mismo nombre al cortarse, y volver a romper los saltos por otra puerta? Responde el VEREDICTO en una palabra, APROBADO o RECHAZADO, y si es RECHAZADO di el motivo concreto.",
  "archivos": [
-  "docx_table_engine.py",
-  "CONTRATO_BORRAR_ASIGNACION_FILAS.md",
-  "CONTRATO_FILAS_ASIGNADAS.md",
-  "CONTRATO_ORDENAR_FILAS.md",
+  "app.py",
   "CONTRATO_TITULOS_DENTRO_DE_LA_TABLA.md",
+  "rv3_forense_donde_salen_los_titulos.py",
   "rv3_prueba_boton_titulos.py",
-  "rv3_vigia_borrar_filas_no_se_deshace.py",
-  "rv3_vigia_borrar_filas_no_se_deshace_reporte.json",
+  "rv3_prueba_boton_titulos_reporte.json",
+  "rv3_seed_diarios_solo.py",
+  "rv3_vigia_solo_salen_los_escogidos.py",
+  "rv3_vigia_solo_salen_los_escogidos_reporte.json",
   "TABLA_VERDAD_CONSOLIDACION_RV2_RV3_2026_06_30.md",
   "test_vigia_boton_titulos_en_la_tabla.py",
-  "test_vigia_filas_asignadas.py",
-  "test_vigia_ordenar_filas_reparte_todos.py",
-  "app_web.html",
-  "app.py",
-  "COMPARTIR_IA_CODIGO/app.py",
-  "verify_docx_table_engine_local.py",
-  "rv3_prueba_el_orden_manda.py"
+  "test_vigia_solo_las_llamadas_necesarias.py",
+  "rv3_prueba_el_orden_manda.py",
+  "rv3_prueba_matriz_de_roles.py",
+  "app_web.html"
  ],
  "obrero": "deepseek",
- "auditor": "router2",
- "veredicto": "APROBADO"
+ "auditor": "gemini2",
+ "veredicto": "RECHAZADO"
 }
