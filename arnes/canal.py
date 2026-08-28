@@ -46,13 +46,21 @@ def enviar(para, texto, de=None):
 
 
 def _llamar(para, texto):
-    """Dispara el aviso de Windows si el destinatario es otra IA (no el que envia)."""
+    """Deja la MARCA del llamado sin abrir ninguna ventana.
+
+    APAGADO DE RAIZ (Julio, 2026-08-27): antes se lanzaba `llamar.py` como subproceso, y aunque el
+    toast (aviso visual) estaba apagado, el subproceso abria una ventana de PowerShell cada vez que
+    alguien dejaba un mensaje. Ahora se escribe la marca DIRECTAMENTE (sin subproceso, sin ventana):
+    la marca (memoria/canal/llamados/<para>.txt) es lo que la IA lee para enterarse del llamado. El
+    aviso visual (toast) solo sale si INGENIERO_LLAMAR_TOAST=1, y en ese caso si se lanza.
+    """
     try:
-        import subprocess, sys as _sys
+        import sys as _sys
         _sys.path.insert(0, os.path.join(AQUI, "arnes"))
-        subprocess.Popen(
-            [_sys.executable, os.path.join(AQUI, "arnes", "llamar.py"), str(para), texto[:120]],
-            creationflags=0x08000000 if os.name == "nt" else 0)  # CREATE_NO_WINDOW: no abrir consola
+        import llamar as _ll
+        _ll.marcar(para, texto)          # la marca SIEMPRE se escribe (el llamado no se pierde)
+        if os.environ.get("INGENIERO_LLAMAR_TOAST", "").strip() == "1":
+            _ll._toast(para, texto)      # el aviso visual solo si Julio lo pide
     except Exception:
         pass
 
