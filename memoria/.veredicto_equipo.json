@@ -1,20 +1,26 @@
 {
- "cuando": 1787849321.4353623,
- "tarea": "en cerebro/router.py armar(): cuando el problema nombra explicitamente un archivo del proyecto (por ejemplo app_web.html, app.py, o una ruta con linea como app.py:5113), ese archivo DEBE entrar al material aunque no lo encuentre por palabras ni por quien llama a quien. Hoy se ignora: el equipo nombra un archivo y el repartidor le devuelve solo las pruebas, no la pantalla. Reparacion general: detectar en el texto del problema las rutas/archivos que existen en el grafo y agregarlos a codigo/fichas, y sus trozos al material. Esto es lo que desatasca el boton de los titulos y cualquier reparacion que nombre su archivo.",
+ "cuando": 1787867954.3247924,
+ "tarea": "RONDA 3 del boton de los titulos. Las dos rondas anteriores fueron rechazadas por INCOMPLETAS; ahora el material ya trae los dos lados. Entrega las CINCO piezas: (A) HTML en app_web.html, seccion page2 'Adjuntar plantilla', dentro del panel que contiene headerCell1..4 y tableTotalRows, justo despues del campo 'Filas de trabajo'. Texto EXACTO de Julio: 'Quieres que los Titulos se guarden dentro de la tabla? SI No', con data-titulos-en-tabla='si' y data-titulos-en-tabla='no'. (B) state.titulosEnTabla inicializado en true. (C) Al pulsar se guarda con persistUi, y al ENTRAR a page2 se lee y se marca el que Julio eligio. (D) titulos_en_tabla viaja al servidor con la configuracion de la tabla. (E) EL MOTOR: en app.py o en docx_table_engine.py se recibe ese campo y, cuando es false, NO se escribe el titulo dentro de la casilla, pero SI se sigue escribiendo el Anexo, Evidencia u Otro, porque eso indica el orden en que estan las fotos debajo de la tabla (LEY 4, palabras de Julio). Ancla cada cambio en una linea de texto que EXISTA en el material. Si para la pieza E el material no trae la funcion que escribe el texto de la casilla, NO la inventes: escribe NECESITO_LEER diciendo que funcion te falta. AUDITOR: VEREDICTO en una palabra, APROBADO o RECHAZADO.",
  "archivos": [
-  "cerebro/router.py",
-  "cerebro/grafo.py",
-  "cerebro/trozos.py",
-  "memoria/paquetes/ingeniero__el_repartidor_cerebro_router_py_no_se_in.md",
-  "memoria/paquetes/ingeniero__el_router_trae_trozos_que_no_son_del_asu.md",
-  "memoria/paquetes/ingeniero__en_a_texto_de_cerebro_router_py_las_line.md",
-  "vigias/test_vigia_diccionario_router.py",
-  "vigias/test_vigia_grafo_metodo.py",
-  "vigias/test_vigia_router_contrato_nuevo.py",
-  "cuerpo/dudas.py",
-  "cuerpo/respuestas.py"
+  "docx_table_engine.py",
+  "CONTRATO_BORRAR_ASIGNACION_FILAS.md",
+  "CONTRATO_FILAS_ASIGNADAS.md",
+  "CONTRATO_ORDENAR_FILAS.md",
+  "CONTRATO_TITULOS_DENTRO_DE_LA_TABLA.md",
+  "rv3_prueba_boton_titulos.py",
+  "rv3_vigia_borrar_filas_no_se_deshace.py",
+  "rv3_vigia_borrar_filas_no_se_deshace_reporte.json",
+  "TABLA_VERDAD_CONSOLIDACION_RV2_RV3_2026_06_30.md",
+  "test_vigia_boton_titulos_en_la_tabla.py",
+  "test_vigia_filas_asignadas.py",
+  "test_vigia_ordenar_filas_reparte_todos.py",
+  "app_web.html",
+  "app.py",
+  "COMPARTIR_IA_CODIGO/app.py",
+  "verify_docx_table_engine_local.py",
+  "rv3_prueba_el_orden_manda.py"
  ],
  "obrero": "deepseek",
- "auditor": "(ninguno)",
- "veredicto": "SIN_AUDITAR"
+ "auditor": "router2",
+ "veredicto": "APROBADO"
 }
