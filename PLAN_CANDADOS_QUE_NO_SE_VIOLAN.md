@@ -51,7 +51,53 @@ permiso: es un aviso mal calibrado que se repite por el mismo tema una y otra ve
 
 ---
 
+## LA PIEZA QUE FALTABA: EL VIGILANTE QUE AUTORIZA
+
+**Julio, 2026-08-28:** *"Debe incluir un vigilante proactivo, que sea el que vigila una vez trazado
+el plan de trabajo: qué se va a hacer, dónde, cómo, por qué; que tenga claro absolutamente todo, y
+sea el que autoriza para trabajar. De esta manera no pides permisos, ya que lo hice al momento de
+autorizar el plan o la tarea."*
+
+Esto **da la vuelta** a cómo funciona hoy todo el arnés, y es lo correcto.
+
+**Hoy:** se pregunta acción por acción. Julio dice que sí cien veces al día y acaba harto; y como
+la pregunta llega tarde (cuando ya se decidió), no protege — solo molesta.
+
+**Con el vigilante:** Julio autoriza **UNA vez**, el plan. A partir de ahí, cada paso se lo pide al
+vigilante, no a él. El vigilante tiene el plan aprobado delante y compara:
+
+| Pregunta del vigilante | Si la respuesta es NO |
+|---|---|
+| ¿Este archivo está en el plan que Julio aprobó? | **Se para.** Fuera del plan = sin permiso |
+| ¿Este cambio sirve al objetivo que Julio aprobó? | **Se para** |
+| ¿El plan dice qué, dónde, cómo y por qué? | **No se empieza** hasta que lo diga |
+| ¿Hubo equipo para lo que el plan exige que lo tenga? | **Se para** |
+
+Y **apunta cada decisión**, abra o cierre, con el motivo. Julio no vuelve a preguntar "¿usaste el
+equipo?": lo mira.
+
+**Por qué esto sí protege y las preguntas de hoy no:**
+- Julio decide cuando **puede pensar** (al aprobar el plan), no interrumpido a mitad de otra cosa.
+- El permiso es **estrecho por naturaleza**: vale para ESE plan y nada más. Terminado el plan,
+  caduca solo.
+- **Salirse del plan es imposible sin que se note**, porque queda escrito.
+- Es **proactivo**: avisa ANTES de empezar si el plan está incompleto, en vez de frenar a mitad.
+
+**Lo que NO cambia:** si un paso del plan implica algo que puede destruir (borrar, publicar, gastar
+dinero), eso sigue preguntándose a Julio aunque esté en el plan. El vigilante autoriza trabajo, no
+daño.
+
+---
+
 ## LO QUE SE VA A CONSTRUIR
+
+### 0. `arnes/vigilante.py` — el que autoriza (lo primero de todo)
+
+- Guarda el plan aprobado: **qué, dónde, cómo, por qué**, y la lista de lo que se puede tocar.
+- Julio lo aprueba **una vez**, con un comando.
+- Cada intento de tocar algo le pregunta a él, no a Julio. Compara con el plan y decide.
+- **Apunta todo**: lo que deja pasar y lo que frena, con el motivo.
+- Cuando el plan se termina o Julio lo cierra, **el permiso caduca solo**.
 
 ### 1. `CONTRATO_NUNCA_A_SOLAS.md` — la ley, primero
 
@@ -117,13 +163,15 @@ qué permiso. **Sin tener que preguntármelo a mí.**
 
 ## ORDEN DE TRABAJO
 
-1. La ley (`CONTRATO_NUNCA_A_SOLAS.md`).
+1. La ley (`CONTRATO_NUNCA_A_SOLAS.md`), incluida la del vigilante que autoriza.
 2. Las vigías — **rojas primero**.
-3. `candado_equipo.py`: cerrar el agujero de los archivos nuevos + el registro.
-4. `candado_memoria.py`: avisar una vez, no frenar en bucle.
-5. `candado_protocolo.py`: preguntar antes.
-6. Sabotaje de las tres vigías clave.
-7. El comando de la lista de permitidos, para Julio.
+3. **`arnes/vigilante.py`**: el que guarda el plan aprobado y autoriza cada paso.
+4. `candado_equipo.py`: cerrar el agujero de los archivos nuevos + el registro.
+5. `candado_memoria.py`: avisar una vez, no frenar en bucle.
+6. `candado_protocolo.py`: preguntar antes, y apoyarse en el vigilante.
+7. Sabotaje de las vigías clave.
+8. El mapa de todo el arnés: qué es adorno, qué no muerde, qué no vigila nadie.
+9. El comando de la lista de permitidos, para Julio.
 
 **Todo el arnés está exento del propio candado** (`/arnes/` pasa libre), así que este plan **no se
 bloquea a sí mismo**. No hace falta ninguna llave tuya.
