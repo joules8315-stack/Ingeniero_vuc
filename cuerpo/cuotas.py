@@ -173,8 +173,21 @@ def apuntar_uso(quien, ok=True, segundos=None, tamano=None):
 # OJO (Julio, 2026-08-21): esto es lo que DICEN los proveedores, pero Claude midio que los gratis
 # se caen ~21k letras aunque su contexto sea enorme. Por eso NO se legisla con esto: `medir_capacidad.py`
 # mide la capacidad REAL y la guarda en memoria/CAPACIDADES.json, que es lo que manda de verdad.
+# FALLO REAL 2026-08-27, y es una trampa cerrada: un cerebro que NO figure aqui entra con
+# capacidad CERO, y `rankear` descarta a todo el que no aguante el encargo. O sea: nunca se le
+# llama, y como nunca se le llama nunca mide cuanto aguanta. Queda de adorno para siempre.
+# Se cazo asi: se anadio OpenRouter a la fila, quedaron 11 cerebros, y el equipo siguio diciendo
+# "no quedo un segundo cerebro libre para auditar". Los tres router (y gemini4, anadido ese mismo
+# dia) estaban en la fila pero invisibles. Por eso ahora TODO el que entre en ORDEN entra tambien
+# aqui. Los numeros son en LETRAS y van por lo bajo a proposito: si uno revienta, `no_cupo` baja
+# el techo solo; si aguanta mas, `mayor_ok` lo sube solo. Lo caro es quedarse en cero.
 CAPACIDAD = {"local": 26000, "groq": 500000, "groq20b": 500000,
-             "gemini": 4000000, "gemini2": 4000000, "gemini3": 4000000, "deepseek": 250000}
+             "gemini": 4000000, "gemini2": 4000000, "gemini3": 4000000,
+             "gemini4": 4000000, "deepseek": 250000,
+             # OpenRouter, por el contexto que declara cada uno (probados el 2026-08-27):
+             "router": 400000,      # cohere/north-mini-code   256.000 de contexto
+             "router2": 1000000,    # nvidia/nemotron-3-ultra  1.000.000 de contexto
+             "router3": 400000}     # poolside/laguna-s        262.000 de contexto
 
 
 def _medidas():

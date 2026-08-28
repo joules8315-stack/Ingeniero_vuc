@@ -91,6 +91,24 @@ def test_si_se_agota_toda_la_nube_queda_el_local():
 GRATIS = ("groq", "gemini", "local", "router")
 
 
+def test_ningun_cerebro_de_la_fila_entra_con_capacidad_CERO():
+    """FALLO REAL del 2026-08-27: cerebros en la fila que NUNCA se llamaban.
+
+    Es una trampa cerrada: quien no figura en CAPACIDAD entra con cero, `rankear` descarta a todo
+    el que no aguante el encargo, asi que nunca se le llama; y como nunca se le llama, nunca mide
+    cuanto aguanta. Queda de adorno para siempre.
+
+    Se cazo asi: se anadio OpenRouter, la fila paso de 8 a 11 cerebros, y el equipo SIGUIO
+    diciendo "no quedo un segundo cerebro libre para auditar". Los tres router y gemini4 estaban
+    en la lista pero invisibles. Un cerebro de adorno es peor que no tenerlo: hace creer a Julio
+    que tiene relevo cuando no lo tiene.
+    """
+    for q in cuotas.ORDEN:
+        assert cuotas._capacidad(q) > 0, (
+            "'%s' esta en la fila pero su capacidad es CERO: el repartidor lo saltara SIEMPRE y "
+            "nunca podra medir cuanto aguanta. Esta de adorno" % q)
+
+
 def test_en_OpenRouter_solo_entran_los_que_dicen_free():
     """Protege el dinero de Julio en la unica puerta donde gratis y de pago comparten llave.
 
