@@ -83,9 +83,41 @@ equipo?": lo mira.
 - **Salirse del plan es imposible sin que se note**, porque queda escrito.
 - Es **proactivo**: avisa ANTES de empezar si el plan está incompleto, en vez de frenar a mitad.
 
-**Lo que NO cambia:** si un paso del plan implica algo que puede destruir (borrar, publicar, gastar
-dinero), eso sigue preguntándose a Julio aunque esté en el plan. El vigilante autoriza trabajo, no
-daño.
+## LA ÚNICA PUERTA QUE LLEGA A JULIO (él lo cerró así el 2026-08-28)
+
+**Julio:** *"Solo debe pedir mi aprobación, con secreto, cuando vayas a realizar pruebas reales
+Playwright. Nada más."*
+
+Esa es **la lista completa**. No hay más casos:
+
+| Qué se va a hacer | Quién autoriza |
+|---|---|
+| **Pruebas reales con navegador contra su cuenta** | **JULIO, con su secreto** |
+| Todo lo demás que esté en el plan aprobado | El vigilante |
+| Cualquier cosa fuera del plan | **Nadie: se para** |
+
+**Por qué esa y solo esa:** una prueba con navegador entra en su cuenta de verdad, con sus informes
+y sus fotos. Ahí un fallo le toca lo suyo. El resto del trabajo —leer, medir, escribir código con
+equipo, correr las vigías— no toca nada de él y ya quedó autorizado al aprobar el plan.
+
+Esto **sustituye** a la regla anterior de "si borra, publica o gasta dinero, se pregunta". Julio la
+simplificó a una sola puerta, y así queda.
+
+### Y esa llave es ESTRECHA por las dos puntas
+
+**Julio, 2026-08-28:** *"La llave que te suministre debe ser por el tiempo que dure las pruebas, y
+no podrá hacer nada más sino el trabajo encomendado."*
+
+| | |
+|---|---|
+| **Dura** | Lo que duren **esas** pruebas. Al terminar, **se cierra sola**. No hay plazos de 24 horas ni de una jornada |
+| **Sirve para** | **Solo** el trabajo encomendado. Nada más |
+| **No sirve para** | Tocar código, abrir otros candados, ni ninguna otra cosa aunque esté en el plan |
+
+O sea: **no es una llave que abre el sistema mientras corre.** Es un pase para **una** prueba
+concreta, que se apaga al acabarla. Si hace falta otra prueba, se pide otra vez.
+
+Y queda apuntado en el registro: **qué prueba se pidió, cuándo se abrió y cuándo se cerró.**
 
 ---
 
