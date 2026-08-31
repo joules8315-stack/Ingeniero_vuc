@@ -110,11 +110,12 @@ Comprueba una por una:
 3. Rompe algun vecino de la seccion "A QUIEN PUEDE DANAR"?
 4. Se salta alguna ley del contrato que viene en el material?
 5. Cambia mas de lo necesario?
-6. COMPRUEBA EL TEXTO DE LA LINEA: si el obrero dice `linea_texto`, verificalo contra el material.
-   El texto literal de la linea que dice tocar DEBE coincidir con lo que hay en el material. Si el
-   numero de linea y el texto no concuerdan (ej: dice "linea 40" pero el texto que copio es de otra
-   linea, o el texto no existe en el material) -> es un ERROR de ubicacion, RECHAZALO. Un numero solo
-   se confunde (7/1); el texto no. Esta comprobacion es la que evita apuntar al renglon equivocado.
+6. LA UBICACION SE JUZGA POR EL TEXTO, NUNCA POR EL NUMERO. Si el texto literal que el obrero dice
+   tocar APARECE en el material, la ubicacion es CORRECTA aunque el numero no cuadre.
+   El numero es solo ORIENTATIVO: se corre en cuanto alguien anade una linea, y ademas el obrero
+   cuenta sobre el material que le llega y tu sobre otro recorte, asi que casi nunca coinciden.
+   SOLO se rechaza por ubicacion si el texto NO aparece en el material o si no da texto ninguno.
+   Un numero que no cuadre NO ES MOTIVO DE RECHAZO por si solo.
 
 Responde SOLO JSON:
 {{"veredicto": "APROBADO|RECHAZADO|DUDOSO",

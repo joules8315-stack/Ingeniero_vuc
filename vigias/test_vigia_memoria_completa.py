@@ -138,8 +138,16 @@ def test_el_obrero_confirma_la_linea_con_su_texto():
     src = _leer(os.path.join(AQUI, "cuerpo", "obrero.py"))
     assert "linea_texto" in src, "el obrero no pide el texto literal de la linea"
     assert "COPIAS el texto literal" in src, "el prompt no exige copiar el texto de la linea"
-    assert "COMPRUEBA EL TEXTO DE LA LINEA" in src, \
+    # ACTUALIZADO el 2026-08-28: la regla 6 se reescribio. Antes buscaba "COMPRUEBA EL TEXTO DE LA
+    # LINEA"; ahora la regla empieza por "LA UBICACION SE JUZGA POR EL TEXTO". La intencion es la
+    # misma y se mide MAS que antes: se exige ademas que este escrito que el numero por si solo no
+    # basta para rechazar. Ese era el fallo que tumbo OCHO rondas de equipo en un solo dia.
+    assert "LA UBICACION SE JUZGA POR EL TEXTO" in src, \
         "el auditor no verifica que el texto de la linea coincida con el material"
+    assert "NO ES MOTIVO DE RECHAZO" in src, \
+        ("no esta escrito que un numero que no cuadra NO basta para rechazar: sin esa frase el "
+         "auditor vuelve a tumbar reparaciones correctas por contar mal, y cada una es una ronda "
+         "de Julio pagada para nada")
 
 
 def test_el_juez_ilegible_se_vuelve_a_preguntar():
