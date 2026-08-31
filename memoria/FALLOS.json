@@ -937,5 +937,35 @@
   "quien_lo_caza": "vigias/test_vigia_la_pieza_se_busca_por_nombre.py",
   "disparador": "numero de linea|tramo de lineas|escrito a mano|buscar por nombre",
   "veces": 1
+ },
+ {
+  "id": 59,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "Se pidio TRES veces que un cerebro concreto revisara, y las tres veces reviso otro (o ninguno): la peticion se ignora en silencio",
+  "causa_raiz": "cuerpo/obrero.py::trabajar acepta los parametros generador y auditor en su firma, pero NO los usa en ningun sitio del cuerpo: el unico filtro real es evitar que el revisor sea el mismo que genero. Quien trabaja lo decide siempre el relevo de cuotas. La firma promete algo que la funcion no hace",
+  "cura": "que trabajar respete generador y auditor cuando se los pasan, y que si no puede respetarlos lo DIGA en el aviso en vez de callarse",
+  "no_volver_a": "poner un parametro en una funcion sin usarlo: quien lo llama cree que mando algo y no mando nada, y se gastan vueltas creyendo que se esta probando otra cosa",
+  "piezas": [
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+  "disparador": "elegir cerebro|generador|revisor concreto|parametro que no se usa",
+  "veces": 1
+ },
+ {
+  "id": 60,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "Dos IA quedaron con la MISMA tarea porque cada una la tenia escrita con otras palabras: 'el guardian deja de ensuciarse solo' y 'el guardian deja de gritar por sus propios cuadernos'",
+  "causa_raiz": "arnes/reparto.py compara las tareas letra por letra. Dos formas de decir lo mismo no coinciden, asi que no las ve como la misma y deja que dos las cojan. Es justo lo que el reparto existe para impedir",
+  "cura": "comparar las tareas por las palabras que comparten, no letra por letra, y avisar cuando se parecen demasiado antes de asignarlas a dos",
+  "no_volver_a": "dar por distinta una tarea solo porque este escrita con otras palabras: Julio habla de la misma cosa de diez maneras y todas son la misma cosa",
+  "piezas": [
+   "arnes/reparto.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_reparto_con_cline.py",
+  "disparador": "misma tarea dos duenos|tarea repetida|comparar letra por letra",
+  "veces": 1
  }
 ]
