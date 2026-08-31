@@ -2603,5 +2603,208 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.6
+ },
+ {
+  "id": 51,
+  "cuando": "2026-08-31 10:58",
+  "proyecto": "ingeniero",
+  "problema": "crear arnes/companero.py: la pieza que dice en un solo sitio con que otra IA se trabaja, quien es el activo y quien el reemplazo",
+  "flujos": [
+   "que",
+   "solo",
+   "pieza"
+  ],
+  "piezas": [
+   "cerebro/enlaces.py",
+   "ingeniero.py",
+   "cerebro/piezas.py",
+   "mapa/inventario.py",
+   "arnes/companero.py"
+  ],
+  "trozos": [
+   "arnes/companero.py:1-40",
+   "cerebro/piezas.py:1-40",
+   "ingeniero.py:1-40",
+   "mapa/inventario.py:97-136",
+   "ingeniero.py:161-200",
+   "ingeniero.py:353-392"
+  ],
+  "leyes": [
+   "CONTRATO_ALARMA_QUE_GRITA_EN_FALSO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "PLAN_CANDADOS_QUE_NO_SE_VIOLAN.md",
+   "CONTRATO_EL_COMPANERO.md",
+   "CONTRATO_SE_BUSCA_POR_NOMBRE.md",
+   "CONTRATO_TRABAJO_CON_CLINE.md",
+   "cerebro/protocolo.py"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_privacidad_solo_pedazo.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_rag_encuentra_pieza_correcta.py",
+   "memoria/rescate/test_vigia_solo_las_llamadas_necesarias.py",
+   "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+   "vigias/test_vigia_el_texto_largo_no_corta_la_pieza.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_la_pieza_se_busca_por_nombre.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_solo_codigo_a_la_nube.py",
+   "vigias/test_vigia_trae_la_pieza_correcta.py"
+  ],
+  "lineas_paquete": 366,
+  "lineas_proyecto": 86129,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.6
+ },
+ {
+  "id": 52,
+  "cuando": "2026-08-31 11:04",
+  "proyecto": "ingeniero",
+  "problema": "en cuerpo/obrero.py la funcion trabajar acepta los parametros generador y auditor pero no los usa en ningun sitio del cuerpo: se pide un revisor concreto y revisa otro, sin avisar",
+  "flujos": [
+   "obrero"
+  ],
+  "piezas": [
+   "cuerpo/obrero.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cuerpo/obrero.py:545-584",
+   "cuerpo/obrero.py:97-136",
+   "cuerpo/obrero.py:609-634"
+  ],
+  "leyes": [
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_SE_BUSCA_POR_NOMBRE.md",
+   "mapa/MAPA_INGENIERO.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_el_obrero_repara_por_texto.py"
+  ],
+  "lineas_paquete": 193,
+  "lineas_proyecto": 86791,
+  "veredicto": "NO_CONCLUYENTE",
+  "por_que": "rechazada, pero por la reparacion, no por el material",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 53,
+  "cuando": "2026-08-31 11:09",
+  "proyecto": "ingeniero",
+  "problema": "en cuerpo/obrero.py la funcion trabajar acepta los parametros generador y auditor pero no los usa en ningun sitio del cuerpo: se pide un revisor concreto y revisa otro, sin avisar",
+  "flujos": [
+   "obrero"
+  ],
+  "piezas": [
+   "cuerpo/obrero.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cuerpo/obrero.py:545-584",
+   "cuerpo/obrero.py:97-136",
+   "cuerpo/obrero.py:609-634"
+  ],
+  "leyes": [
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_SE_BUSCA_POR_NOMBRE.md",
+   "mapa/MAPA_INGENIERO.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_el_obrero_repara_por_texto.py"
+  ],
+  "lineas_paquete": 192,
+  "lineas_proyecto": 86966,
+  "veredicto": "CORTO",
+  "por_que": "el obrero tuvo que pedir mas material",
+  "falto": [
+   "¿Como se deben pasar los parametros generador y auditor a _preguntar_con_relevo?"
+  ],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 54,
+  "cuando": "2026-08-31 11:11",
+  "proyecto": "ingeniero",
+  "problema": "arnes/candado_buzon.py quedo a medias y le falta la funcion main: no frena ni deja pasar, y sus vigias estan rojas",
+  "flujos": [
+   "que",
+   "buzon"
+  ],
+  "piezas": [
+   "memoria/rescate/_copia_vieja_completa/correr_todas.py",
+   "ingeniero.py",
+   "verificar.py",
+   "cerebro/router.py",
+   "arnes/candado_buzon.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cerebro/router.py:101-319",
+   "arnes/candado_buzon.py:1-40",
+   "ingeniero.py:353-392",
+   "ingeniero.py:65-104",
+   "verificar.py:65-104",
+   "ingeniero.py:193-232",
+   "ingeniero.py:449-488"
+  ],
+  "leyes": [
+   "CONTRATO_ALARMA_QUE_GRITA_EN_FALSO.md",
+   "CONTRATO_BUZON_DE_CLINE.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "PLAN_CANDADOS_QUE_NO_SE_VIOLAN.md",
+   "cerebro/protocolo.py"
+  ],
+  "vigias": [
+   "vigias/test_vigia_buzon_de_cline.py",
+   "vigias/test_vigia_buzon_no_bloquea_por_lo_propio.py",
+   "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py"
+  ],
+  "lineas_paquete": 591,
+  "lineas_proyecto": 86597,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.3
+ },
+ {
+  "id": 55,
+  "cuando": "2026-08-31 11:17",
+  "proyecto": "ingeniero",
+  "problema": "en cuerpo/obrero.py la funcion trabajar acepta los parametros generador y auditor pero no los usa en ningun sitio del cuerpo: se pide un revisor concreto y revisa otro, sin avisar",
+  "flujos": [
+   "obrero"
+  ],
+  "piezas": [
+   "cuerpo/obrero.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cuerpo/obrero.py:545-584",
+   "cuerpo/obrero.py:97-136",
+   "cuerpo/obrero.py:609-634"
+  ],
+  "leyes": [
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_SE_BUSCA_POR_NOMBRE.md",
+   "mapa/MAPA_INGENIERO.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_el_obrero_repara_por_texto.py"
+  ],
+  "lineas_paquete": 193,
+  "lineas_proyecto": 87432,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
  }
 ]

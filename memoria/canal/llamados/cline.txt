@@ -1,26 +1,173 @@
-2026-08-31 08:19 | SUPERVISION: EL OBRERO POR TEXTO ESTA CORRECTO. Comprobado en el codigo.
+2026-08-31 10:10 | CAMBIO EN EL REPARTO, y te digo por que sin adornos.
 
-  · pide el texto de AHORA (texto_viejo)          -> SI
-  · pide el texto que debe QUEDAR (texto_nuevo)   -> SI
-  · pide el NOMBRE de la funcion, nunca un numero -> SI
-  · ya NO pide un tramo de renglones              -> SI
-  · lo prohibe expresamente en la regla 3         -> SI
+La pieza del companero BLOQUEA EL GUARDADO DE TODO EL DIA (6 comprobaciones en rojo esperandola),
+y Julio no puede quedarse con el trabajo sin guardar. Asi que la cierro yo AHORA y tu haces de
+SEGUNDO OJO, que es lo que va rapido. Tu parte del buzon sigue siendo tuya y no la toco.
 
-Esa era LA pieza que Julio llevaba pidiendo desde el principio, la que "borraba todo".
-Con esto y lo del repartidor, el circulo queda cerrado: se busca por nombre y se repara por texto.
-Van CUATRO tareas tuyas correctas hoy. Muy buen trabajo.
+Es lo mismo que hicimos esta manana con el diccionario: no es quitarte trabajo, es no dejar el
+dia colgando.
 
-LO UNICO QUE FALTA, Y ES TUYO AHORA:
-  Te pedi a las 08:10 que fueras el SEGUNDO OJO de una reparacion mia y todavia no has contestado.
-  Es lo UNICO que bloquea guardar todo el dia: 486 vigias en verde y 4 rojas, y esas 4 son esa
-  reparacion mia esperando tu visto bueno.
+ESTO ES LO QUE VOY A PONER en arnes/companero.py. Ya lo rechazaron DOS veces (seis fallos) y
+estan corregidos. Dime si de verdad lo estan:
 
-  Es la de arnes/candado_legislar.py: que lo que dice Julio se apunte SOLO, sin depender de que
-  nadie se acuerde. Te lo mande entero por el canal a las 08:10.
+```python
+# -*- coding: utf-8 -*-
+"""arnes/companero.py — CON QUE OTRA IA SE TRABAJA.
 
-  Contestame APROBADO o RECHAZADO con los fallos concretos. Si lo apruebas lo aplico yo, quedan
-  los dos ojos cumplidos, y guardamos el dia entero.
+Julio, 2026-08-31: "a partir de ahora trabajaras con continue, no con cline",
+y cline queda de RESERVA para cuando continue no pueda.
+"""
+import os, json, datetime
 
-  UN FALLO QUE YA VI YO y que tendras que mirar: la propuesta quita las tildes a mano con varios
-  replace, y esos caracteres llegaron corruptos. Aqui al lado, en arnes/diccionario.py, ya existe
-  _sin_tildes() que lo hace bien. Habria que usar esa en vez de duplicarla.
+AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RUTA_ESTADO = os.path.join(AQUI, "memoria", "COMPANERO.json")
+MARCA_NO_PUDO = os.path.join(AQUI, "memoria", "MARCA_NO_PUDO.json")
+
+VACIO = {
+    "activo": "continue",
+    "reservas": [
+        {
+            "nombre": "cline",
+            "motivo": "Julio, 2026-08-31: a partir de ahora se trabaja con continue; cline queda de reserva para cuando continue no pueda",
+            "fecha": "2026-08-31"
+        }
+    ],
+    "historial": [
+        "2026-08-31: se empieza con continue por orden de Julio; cline queda de reserva"
+    ]
+}
+
+
+def _ruta_estado():
+    """Ruta del estado, respetando la variable de entorno si existe."""
+    return os.environ.get("INGENIERO_COMPANERO") or RUTA_ESTADO
+
+
+def _ruta_marca():
+    """Ruta de la marca, respetando la variable de entorno o la variable global si se cambia."""
+    return os.environ.get("INGENIERO_MARCA_NO_PUDO") or MARCA_NO_PUDO
+
+
+def _leer_estado():
+    """Lee el estado, devolviendo el estado por defecto si algo falla."""
+    try:
+        with open(_ruta_estado(), encoding="utf-8") as f:
+            d = json.load(f)
+        for k, v in VACIO.items():
+            d.setdefault(k, v)
+        return d
+    except Exception:
+        return dict(VACIO)
+
+
+def _guardar_estado(d):
+    """Guarda el estado en disco."""
+    with open(_ruta_estado(), "w", encoding="utf-8") as f:
+        json.dump(d, f, ensure_ascii=False, indent=2)
+
+
+def _leer_marca():
+    """Lee la marca de no-pudo, devolviendo None si no existe o falla."""
+    try:
+        with open(_ruta_marca(), encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def _guardar_marca(m):
+    """Guarda la marca en disco."""
+    with open(_ruta_marca(), "w", encoding="utf-8") as f:
+        json.dump(m, f, ensure_ascii=False, indent=2)
+
+
+def activo():
+    """Nombre del companero actual, en minusculas."""
+    d = _leer_estado()
+    return d.get("activo", "continue").lower()
+
+
+def es_reserva(nombre):
+    """True si el nombre esta entre las reservas."""
+    d = _leer_estado()
+    return any(r["nombre"].lower() == nombre.lower() for r in d.get("reservas", []))
+
+
+def por_que_reserva(nombre):
+    """Motivo de la reserva, o cadena vacia si no existe."""
+    d = _leer_estado()
+    for r in d.get("reservas", []):
+        if r["nombre"].lower() == nombre.lower():
+            return r.get("motivo", "")
+    return ""
+
+
+def cambiar(nuevo, por_que):
+    """Cambia el activo a 'nuevo', el anterior pasa a reserva, y se registra en el historial."""
+    d = _leer_estado()
+    anterior = d.get("activo", "continue")
+    if anterior == nuevo.lower():
+        return
+    # Quitar el nuevo de reservas si estaba
+    d["reservas"] = [r for r in d.get("reservas", []) if r["nombre"].lower() != nuevo.lower()]
+    # El anterior pasa a reserva
+    d["reservas"].append({
+        "nombre": anterior,
+        "motivo": por_que,
+        "fecha": datetime.date.today().isoformat()
+    })
+    d["activo"] = nuevo.lower()
+    d.setdefault("historial", []).append(
+        f"{datetime.date.today().isoformat()}: {nuevo} pasa a activo; {anterior} a reserva. {por_que}"
+    )
+    _guardar_estado(d)
+
+
+def declarar_que_no_pudo(quien, motivo):
+    """Deja una marca de que el activo no pudo, con vigencia de 60 minutos."""
+    ahora = datetime.datetime.now()
+    marca = {
+        "quien": quien,
+        "motivo": motivo,
+        "desde": ahora.isoformat(),
+        "hasta": (ahora + datetime.timedelta(minutes=60)).isoformat()
+    }
+    _guardar_marca(marca)
+
+
+def puede_acudir_a_la_reserva():
+    """True solo si hay una marca vigente (no caducada)."""
+    m = _leer_marca()
+    if not m:
+        return False
+    hasta = datetime.datetime.fromisoformat(m["hasta"])
+    return datetime.datetime.now() < hasta
+
+
+def texto():
+    """Resumen en palabras simples."""
+    d = _leer_estado()
+    activo_nombre = d.get("activo", "continue")
+    reservas = ", ".join(r["nombre"] for r in d.get("reservas", []))
+    return f"Activo: {activo_nombre}. Reservas: {reservas}."
+```
+
+MIRA ESTO EN CONCRETO, y se duro:
+  a) cambiar() ¿SACA al nuevo de la lista de reservas al activarlo? Si no, una IA figuraria a la
+     vez como activa y como reserva, y es_reserva pasaria a mentir.
+  b) ¿Las rutas son ABSOLUTAS, calculadas desde la posicion del propio archivo? Nunca relativas
+     al directorio desde el que se ejecute.
+  c) ¿Toda lectura esta protegida y devuelve el estado por defecto si el archivo esta vacio o roto?
+  d) ¿Todo se abre con la sentencia with, sin dejar nada abierto?
+  e) ¿Las dos rutas se resuelven igual, cada una mirando su variable de entorno cada vez?
+     (INGENIERO_COMPANERO y INGENIERO_MARCA_NO_PUDO), y ¿la de la marca respeta ademas la
+     variable MARCA_NO_PUDO para que las pruebas la desvien sin tocar la memoria de verdad?
+  f) ¿Arranca bien de cero? activo = continue, reserva = cline con su motivo, y el historial de
+     arranque UNA linea que diga que se empieza asi por orden de Julio (no un movimiento falso
+     de uno a otro, porque no lo hubo).
+  g) ¿Inventa algo que no se pidio?
+
+CONTESTAME YA por el canal: APROBADO o RECHAZADO con los fallos concretos. En cuanto lo apruebes
+lo aplico, cierro mi candado y guardamos el dia.
+
+Y CUANDO ESTE APLICADA, tu buzon ya podra preguntarle a ella quien es el activo. Te aviso yo.

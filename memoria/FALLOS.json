@@ -967,5 +967,66 @@
   "quien_lo_caza": "vigias/test_vigia_reparto_con_cline.py",
   "disparador": "misma tarea dos duenos|tarea repetida|comparar letra por letra",
   "veces": 1
+ },
+ {
+  "id": 61,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "El candado del buzon bloquea a Claude ensenandole SUS PROPIOS mensajes como si fueran de otro, y no deja trabajar",
+  "causa_raiz": "arnes/candado_buzon.py sabe a quien esta bloqueando solo por una variable de entorno (INGENIERO_QUIEN) que nadie pone. Sin ella, quien corre es 'desconocido', asi que la excepcion 'Claude no se bloquea por lo que el mismo envio' nunca se aplica. Otra vez lo mismo: depende de que alguien se acuerde de ponerla",
+  "cura": "si no consta quien corre, se deduce: unos mensajes sin leer que los envio todos el mismo remitente no pueden bloquear a ese remitente. Y ante la duda se AVISA, no se bloquea: parar el trabajo de todos es peor que un aviso",
+  "no_volver_a": "hacer que un candado dependa de una variable de entorno que nadie pone; si no esta puesta, el candado se comporta al reves de como se penso",
+  "piezas": [
+   "arnes/candado_buzon.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_el_companero_es_continue.py",
+  "disparador": "buzon|mis propios mensajes|variable que nadie pone|quien corre",
+  "veces": 1
+ },
+ {
+  "id": 62,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "El candado del buzon tiene la lista de companeros ESCRITA A MANO y no incluye a Continue, asi que al cambiar de companero siguio exigiendo el buzon del anterior",
+  "causa_raiz": "arnes/candado_buzon.py lleva dentro una lista fija con 'cline'. Cuando Julio cambio a Continue el 2026-08-31, esa lista no se entero. Un nombre escrito a mano en diez sitios obliga a acordarse de diez sitios",
+  "cura": "que pregunte por el companero activo a arnes/companero.py, que es el unico sitio donde vive esa respuesta",
+  "no_volver_a": "escribir a mano el nombre del companero dentro de una pieza: se pregunta a quien lo sabe",
+  "piezas": [
+   "arnes/candado_buzon.py",
+   "arnes/companero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_el_companero_es_continue.py",
+  "disparador": "lista escrita a mano|companero fijo|cambiar de companero",
+  "veces": 1
+ },
+ {
+  "id": 63,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "El apuntador de ordenes se trago cuatro frases que NO las dijo Julio, sino Continue contestando por el canal",
+  "causa_raiz": "arnes/candado_legislar.py, en el modo que se engancha a lo que escribe Julio, recibe TODO el texto del turno y no solo lo que Julio teclea. Ahi dentro viene tambien lo que responden las otras IA, y algunos de esos trozos llevan marcas de mando y pasan el filtro",
+  "cura": "apuntar solo el texto que Julio teclea, y apartar de entrada lo que venga marcado como de otra IA o del canal",
+  "no_volver_a": "dar por dicho por Julio cualquier texto que aparezca en el turno: hay que distinguir quien habla",
+  "piezas": [
+   "arnes/candado_legislar.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+  "disparador": "apunta lo que no dijo Julio|quien habla|texto de otra IA",
+  "veces": 1
+ },
+ {
+  "id": 64,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "en cuerpo/obrero.py la funcion trabajar acepta los parametros generador y auditor pero no los usa en ningun sitio del cuerpo: se pide un revisor concreto y revisa otro, sin avisar",
+  "causa_raiz": "La funcion trabajar acepta los parametros generador y auditor pero no los usa en ningun sitio del cuerpo: se pide un revisor concreto y revisa otro, sin avisar",
+  "cura": "Anadir un comentario que indique que _preguntar_con_relevo no acepta los parametros y que se necesita decidir como pasarlos",
+  "no_volver_a": "La reparación debe implementar la lógica real para usar los parámetros 'generador' y 'auditor' y gestionar el reintento ante JSON rotos (que es lo que muestra la prueba B), en lugar de limitarse a añadir un comentario de duda.",
+  "piezas": [
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_obrero_respeta_generador_auditor.py",
+  "disparador": "candado a medias|funcion que falta|se cae en silencio|buzon",
+  "veces": 2
  }
 ]
