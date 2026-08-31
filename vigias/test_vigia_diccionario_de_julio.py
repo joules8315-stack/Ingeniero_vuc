@@ -105,3 +105,46 @@ def test_solo_guarda_lo_PROBADO(tmp_path, monkeypatch):
     assert not diccionario.todo(), (
         "guardo una pareja sin sitio probado. El diccionario solo vale si cada pareja salio de "
         "una causa DEMOSTRADA; si acepta suposiciones, envenena al repartidor")
+
+
+def test_no_guarda_un_sitio_cuyo_archivo_NO_existe_en_el_disco(tmp_path, monkeypatch):
+    """EL VENENO (encargo de Claude a Cline, 2026-08-31): la entrada falsa era
+    archivo a.py, funcion f, proyecto p — un sitio que NO existe.
+
+    aprender() dice en su docstring \"sin sitio probado no se guarda nada\" pero NO
+    lo comprueba: guarda cualquier archivo, exista o no en el disco. Ese sitio
+    fantasma casa con casi cualquier problema (basta 1 palabra) y gana, asi que el
+    repartidor recibe un archivo que no existe.
+    """
+    _aparte(tmp_path, monkeypatch)
+    # "foto_informe" es un proyecto real, pero este archivo NO existe ahi.
+    ok = diccionario.aprender("un problema que se describe con estas palabras",
+                              "archivo_que_no_existe_xyz.py", "funcion_falsa", 1, "foto_informe")
+    assert ok is False, (
+        "aprender() guardo un sitio cuyo archivo NO existe en el disco. El diccionario debe "
+        "prometer menos y cumplir mas: sin sitio probado en el disco no se guarda nada")
+    assert not diccionario.todo(), (
+        "se guardo un sitio fantasma (archivo que no existe): envenena al repartidor porque casa "
+        "con casi cualquier problema y gana")
+
+
+def test_tambien_dicho_NO_crece_sin_limite(tmp_path, monkeypatch):
+    """EL IMAN: una entrada \"aprendida\" de 500 maneras es un iman, no un sitio.
+
+    El veneno tenia 571 apariciones y 27 formas de decirlo. Cada forma nueva lo hace
+    casar con mas problemas y ganar. Se queda con las ultimas y se descarta el resto.
+    """
+    _aparte(tmp_path, monkeypatch)
+    # un sitio REAL para que pase la comprobacion de existencia
+    import os as _os
+    real = _os.path.join(AQUI, "ingeniero.py")
+    n = 60
+    for i in range(n):
+        diccionario.aprender("frase distinta numero %d de este mismo problema" % i,
+                             real, "main", 1, "ingeniero")
+    datos = diccionario.todo()
+    assert datos, "no guardo nada, pero deberia haber guardado el sitio real"
+    formas = len(datos[0].get("tambien_dicho") or [])
+    assert formas <= 20, (
+        "tambien_dicho crecio sin limite: %d formas de decir lo mismo. Un sitio aprendido de "
+        "demasiadas maneras es un iman que casa con cualquier problema. Tope a las ultimas." % formas)

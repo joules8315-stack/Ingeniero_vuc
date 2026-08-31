@@ -17,7 +17,7 @@ Lo que SIEMPRE lleva el paquete (y por que):
 Regla dura: aqui NO se inventa. Si algo no esta en el disco, se escribe NO_ENCONTRADO.
 """
 import os, sys, json, datetime
-from . import grafo, flujos, trozos, enlaces
+from . import grafo, flujos, trozos, enlaces, piezas
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAQUETES = os.path.join(AQUI, "memoria", "paquetes")
@@ -253,19 +253,23 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
         router_id = "cerebro/router.py"
         soy = next((p for p in codigo if p["id"].replace("\\", "/").endswith(router_id)), None)
         if soy:
-            # la funcion armar() vive en router.py:87-227 (medido). Se garantiza que el trozo la
-            # cubra completa, aunque el buscador de relevancia la haya partido.
-            desde_armar, hasta_armar = 87, 227
-            texto_armar = "\n".join(
-                _lineas_de(soy["abs"], desde_armar, hasta_armar))
-            ya = any(t["pieza"] == soy["id"] and t["desde"] <= desde_armar
-                     and t["hasta"] >= hasta_armar for t in pedazos)
-            if not ya and texto_armar:
-                pedazos.insert(0, {"pieza": soy["id"], "abs": soy["abs"], "rol": soy["rol"],
-                                   "desde": desde_armar, "hasta": hasta_armar,
-                                   "direccion": "%s:%s-%s" % (router_id, desde_armar, hasta_armar),
-                                   "texto": texto_armar, "puntaje": 99.0,
-                                   "_completo": "armar"})
+            # La funcion armar() se busca POR SU NOMBRE, nunca por un numero de renglon.
+            # Antes aqui habia dos numeros escritos a mano, y se rompian en cuanto alguien anadia
+            # algo mas arriba: apuntaban a otro sitio y el equipo recibia un pedazo huerfano.
+            # El nombre no se mueve. Ley: CONTRATO_SE_BUSCA_POR_NOMBRE.md (Julio, 2026-08-31).
+            hallazgo = piezas.funcion_completa(soy["abs"], "armar")
+            if hallazgo:
+                desde_armar = hallazgo["desde"]
+                hasta_armar = hallazgo["hasta"]
+                texto_armar = hallazgo["texto"]
+                ya = any(t["pieza"] == soy["id"] and t["desde"] <= desde_armar
+                         and t["hasta"] >= hasta_armar for t in pedazos)
+                if not ya and texto_armar:
+                    pedazos.insert(0, {"pieza": soy["id"], "abs": soy["abs"], "rol": soy["rol"],
+                                       "desde": desde_armar, "hasta": hasta_armar,
+                                       "direccion": "%s:%s-%s" % (router_id, desde_armar, hasta_armar),
+                                       "texto": texto_armar, "puntaje": 99.0,
+                                       "_completo": "armar"})
     except Exception:
         pass
 

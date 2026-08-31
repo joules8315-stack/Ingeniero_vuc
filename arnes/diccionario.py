@@ -50,6 +50,43 @@ RUIDO = {"el", "la", "los", "las", "un", "una", "unos", "unas", "de", "del", "al
 # palabras se suman a esa pareja. Asi mejora con el uso en vez de quedarse quieto.
 MINIMO_PALABRAS_COMPARTIDAS = 1
 
+# Tope de "tambien_dicho" (2026-08-31, encargo de Claude a Cline). Una entrada aprendida de
+# demasiadas maneras es un iman: cada forma nueva la hace casar con mas problemas y ganar.
+# Se queda con las ultimas y se descarta el resto.
+MAX_TAMBIEN_DICHO = 20
+
+
+def _resolver_archivo(archivo, proyecto):
+    """La ruta real de un archivo en el disco, o None si NO existe.
+
+    EL VENENO (2026-08-31): una entrada con archivo 'a.py', funcion 'f', proyecto 'p' — que no
+    existe en ningun lado — se guardo igual y envenenaba al repartidor (basta 1 palabra en comun
+    para casar, y un sitio fantasma gana). aprender() ya prometia "sin sitio probado no se guarda
+    nada" pero no lo comprobaba. A partir de ahora lo comprueba: sin archivo REAL en el disco,
+    no se cosecha.
+    """
+    if not archivo:
+        return None
+    a = str(archivo).strip()
+    if not a:
+        return None
+    if os.path.isabs(a) and os.path.exists(a):
+        return a
+    candidatos = []
+    if proyecto:
+        try:
+            from cerebro import grafo
+            pr = grafo.proyectos().get(proyecto, {}).get("ruta", "")
+            if pr:
+                candidatos.append(os.path.join(pr, a))
+        except Exception:
+            pass
+    candidatos.append(os.path.join(AQUI, a))   # el propio ingeniero
+    for c in candidatos:
+        if os.path.exists(c):
+            return c
+    return None
+
 
 def _sin_tildes(t):
     return "".join(c for c in unicodedata.normalize("NFD", t)
@@ -91,6 +128,11 @@ def aprender(problema, archivo, funcion, linea, proyecto=""):
         return False
     if not _palabras(problema):
         return False
+    # SIN SITIO DE VERDAD NO SE GUARDA NADA. Esto ya lo prometia el texto de arriba, pero nadie
+    # lo comprobaba: por ahi entro una entrada de PRUEBA (a.py / f / p) que no existe en ningun
+    # sitio, se trago 535 apariciones y le ganaba a todas las de verdad. Medido 2026-08-31.
+    if _resolver_archivo(archivo, proyecto) is None:
+        return False
 
     parejas = _leer()
     for p in parejas:
@@ -105,6 +147,11 @@ def aprender(problema, archivo, funcion, linea, proyecto=""):
             dichos = p.setdefault("tambien_dicho", [])
             if problema not in dichos:
                 dichos.append(problema)
+            # UN SITIO APRENDIDO DE 500 MANERAS ES UN IMAN, NO UN SITIO: basta una palabra en
+            # comun para casar, asi que cuantas mas formas guarda, con mas problemas casa y mas
+            # gana, hasta tapar a los sitios de verdad. Se queda con las ultimas.
+            if len(dichos) > MAX_TAMBIEN_DICHO:
+                p["tambien_dicho"] = dichos[-MAX_TAMBIEN_DICHO:]
         _guardar(parejas)
         return True
 

@@ -43,6 +43,41 @@ def _leer(ruta_abs, tope=None):
         return ""
 
 
+def funcion_completa(ruta_abs, nombre):
+    """La pieza ENTERA, buscada POR SU NOMBRE y nunca por un numero de renglon.
+
+    Julio, 2026-08-31, tras repetirlo muchas veces: "que lo busque por funcion y nombre... ya
+    que el numero esta constantemente cambiando". Y tenia razon medida: un numero se corre en
+    cuanto alguien anade algo mas arriba, y pedir un tramo ("de la 97 a la 136") BORRA la
+    funcion entera aunque solo hubiera que cambiar una palabra. El nombre no se mueve.
+
+    Devuelve {"desde", "hasta", "texto"} con el sitio REAL (1-indexado), o None si no esta.
+    Nunca inventa: si el nombre no aparece, se contesta que no aparece.
+
+    Se mira solo la boca del modulo (columna cero), el mismo criterio que ya usa api() aqui
+    al lado: lo anidado no es una pieza que nadie pueda pedir por su nombre.
+    """
+    lineas = _leer(ruta_abs).splitlines()
+    arranques = ("def " + nombre + "(", "class " + nombre + "(", "class " + nombre + ":")
+    desde = hasta = 0
+    for i, linea in enumerate(lineas, 1):
+        if linea[:1] in (" ", "\t"):
+            continue
+        if linea.rstrip().startswith(arranques):
+            desde = hasta = i
+            break
+    if not desde:
+        return None
+    for j in range(desde, len(lineas)):
+        linea = lineas[j]
+        if not linea.strip():
+            continue                    # un renglon en blanco NO corta la funcion
+        if len(linea) - len(linea.lstrip()) == 0:
+            break                       # vuelve a columna cero: aqui ya empieza otra cosa
+        hasta = j + 1
+    return {"desde": desde, "hasta": hasta, "texto": "\n".join(lineas[desde - 1:hasta])}
+
+
 def resumen(ruta_abs, ext):
     """Una linea que diga QUE es. Docstring, titulo del .md o primer comentario."""
     txt = _leer(ruta_abs, 4000)

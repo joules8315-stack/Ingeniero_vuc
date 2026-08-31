@@ -874,5 +874,68 @@
   "quien_lo_caza": "vigias/test_vigia_loop_final.py",
   "disparador": "page\\.evaluate.{0,120}\\.value\\s*=",
   "veces": 1
+ },
+ {
+  "id": 55,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "Se perdio una ronda del equipo YA PAGADA porque el auditor devolvio una respuesta ilegible y el veredicto salio '?'",
+  "causa_raiz": "El comando `equipo` de ingeniero.py le pregunta al auditor UNA sola vez. Si su JSON viene roto o cortado, no se le vuelve a preguntar y la propuesta buena del obrero se tira entera. `cuerpo/cruzado.py` SI reintenta (2 intentos, desde el 2026-08-27), pero esa cura nunca llego a `cuerpo/obrero.py::trabajar`",
+  "cura": "reintentar al auditor en obrero.trabajar igual que ya hace cruzado.resolver",
+  "no_volver_a": "dar por perdida una ronda del equipo porque el auditor contesto roto: se le vuelve a preguntar antes de tirar el trabajo del obrero",
+  "piezas": [
+   "cuerpo/obrero.py",
+   "ingeniero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_equipo_sirve.py",
+  "disparador": "auditor|veredicto ilegible|sin reintento|ronda perdida",
+  "veces": 1
+ },
+ {
+  "id": 56,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "El diccionario de Julio quedo envenenado: una entrada de PRUEBA (archivo 'a.py', funcion 'f', proyecto 'p') acumulo 535 apariciones y 27 formas de decirlo, y como basta UNA palabra en comun para casar, ganaba casi siempre y le mandaba al repartidor un archivo que no existe",
+  "causa_raiz": "Las vigias (test_vigia_causa_cambio.py y test_vigia_decision_reparar.py) llaman a candado_diagnostico.declarar('p','a.py','f','1',...), que a su vez llama a diccionario.aprender, y ESO escribe en la memoria DE VERDAD (memoria/DICCIONARIO.json). Ademas aprender() no comprueba que el archivo exista, aunque su propio texto promete que 'sin sitio probado no se guarda nada'",
+  "cura": "aprender() rechaza el sitio que no existe en el disco, y se pone tope a las formas de decirlo: un sitio que dice haberse aprendido de 500 maneras es un iman, no un sitio",
+  "no_volver_a": "dejar que una prueba escriba en la memoria de verdad, ni guardar un sitio sin comprobar que existe",
+  "piezas": [
+   "arnes/diccionario.py",
+   "arnes/candado_diagnostico.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_diccionario_de_julio.py",
+  "disparador": "diccionario|envenenado|sitio que no existe|aprender del sitio",
+  "veces": 1
+ },
+ {
+  "id": 57,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "Tres rondas del equipo rechazadas seguidas por pedirle un cambio que tocaba DOS archivos a la vez",
+  "causa_raiz": "El contrato del obrero tiene UN campo `archivo` y UN campo de codigo: no sabe expresar una reparacion repartida en dos archivos, asi que el auditor la ve incompleta y la rechaza con razon",
+  "cura": "partir el encargo en uno por archivo, y decirlo explicito en la tarea ('SOLO en tal archivo y en ningun otro')",
+  "no_volver_a": "mandarle al equipo un encargo que toca dos archivos a la vez",
+  "piezas": [
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_equipo_sirve.py",
+  "disparador": "dos archivos a la vez|encargo repartido|un solo archivo",
+  "veces": 1
+ },
+ {
+  "id": 58,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "El repartidor localizaba la funcion `armar` con los numeros 87 y 227 escritos a mano, asi que se rompia en cuanto el archivo cambiaba de tamano",
+  "causa_raiz": "No existia ninguna forma de pedir una funcion POR SU NOMBRE: todo el sistema sabia hablar de tramos de lineas, y un tramo se corre solo",
+  "cura": "se creo cerebro/piezas.py::funcion_completa(ruta, nombre), que devuelve la funcion entera con su sitio real buscandola POR SU NOMBRE. Queda pendiente que el repartidor la use en lugar de los numeros a mano",
+  "no_volver_a": "escribir un numero de linea a mano dentro del codigo para encontrar algo: se busca por nombre",
+  "piezas": [
+   "cerebro/router.py",
+   "cerebro/piezas.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_la_pieza_se_busca_por_nombre.py",
+  "disparador": "numero de linea|tramo de lineas|escrito a mano|buscar por nombre",
+  "veces": 1
  }
 ]
