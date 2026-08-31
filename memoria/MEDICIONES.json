@@ -2163,5 +2163,130 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.5
+ },
+ {
+  "id": 41,
+  "cuando": "2026-08-30 19:33",
+  "proyecto": "ingeniero",
+  "problema": "cerebro/trozos.py y cerebro/router.py: el paquete entrega los archivos empezando por la mitad, sin las importaciones ni las constantes de arriba, y por eso el auditor cree que el codigo usa cosas inventadas y rechaza reparaciones que estaban bien",
+  "flujos": [
+   "router",
+   "trozos",
+   "que"
+  ],
+  "piezas": [
+   "cerebro/router.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py"
+  ],
+  "trozos": [
+   "cerebro/router.py:87-227",
+   "cerebro/router.py:1-40",
+   "cerebro/router.py:225-264",
+   "cerebro/trozos.py:1-40",
+   "cerebro/router.py:193-232",
+   "cerebro/router.py:321-360",
+   "cerebro/router.py:417-447"
+  ],
+  "leyes": [
+   "CONTRATO_ALARMA_QUE_GRITA_EN_FALSO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "PLAN_CANDADOS_QUE_NO_SE_VIOLAN.md",
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "cerebro/protocolo.py",
+   "mapa/MAPA_INGENIERO.md",
+   "memoria/paquetes/foto_informe__rv3_prueba_matriz_de_roles_py_no_puede_m.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_diccionario_router.py",
+   "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_router_contrato_nuevo.py"
+  ],
+  "lineas_paquete": 495,
+  "lineas_proyecto": 78497,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.4
+ },
+ {
+  "id": 42,
+  "cuando": "2026-08-30 19:34",
+  "proyecto": "ingeniero",
+  "problema": "la funcion cortar de cerebro/trozos.py elige los trozos del archivo por relevancia y deja fuera la cabecera con las importaciones y las constantes",
+  "flujos": [
+   "trozos",
+   "cerebro"
+  ],
+  "piezas": [
+   "cerebro/trozos.py",
+   "memoria/rescate/RESCATE__test_vigia_cerebro_gemini.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py"
+  ],
+  "trozos": [
+   "cerebro/trozos.py:1-40",
+   "cerebro/trozos.py:129-168",
+   "cuerpo/dudas.py:97-136",
+   "cuerpo/respuestas.py:1-40",
+   "memoria/rescate/RESCATE__test_vigia_cerebro_gemini.py:1-15",
+   "cuerpo/dudas.py:161-200"
+  ],
+  "leyes": [
+   "cerebro/protocolo.py"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_cerebro_es_nube.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_cerebro_gemini.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_revisor_arnes_cerebro.py",
+   "vigias/test_vigia_el_cerebro_es_el_que_pido.py"
+  ],
+  "lineas_paquete": 327,
+  "lineas_proyecto": 79035,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.6
+ },
+ {
+  "id": 43,
+  "cuando": "2026-08-30 20:00",
+  "proyecto": "ingeniero",
+  "problema": "cuerpo/privacidad.py: la regla que tapa claves destroza el codigo legitimo porque tapa cualquier cosa detras del igual, y en espanol clave es un nombre de variable normal",
+  "flujos": [
+   "privacidad",
+   "que",
+   "codigo"
+  ],
+  "piezas": [
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cuerpo/privacidad.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_ALARMA_QUE_GRITA_EN_FALSO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "PLAN_CANDADOS_QUE_NO_SE_VIOLAN.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_privacidad_solo_pedazo.py",
+   "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+   "vigias/test_vigia_el_paquete_trae_el_codigo.py",
+   "vigias/test_vigia_el_tapador_no_rompe_el_codigo.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_solo_codigo_a_la_nube.py"
+  ],
+  "lineas_paquete": 115,
+  "lineas_proyecto": 79508,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
  }
 ]

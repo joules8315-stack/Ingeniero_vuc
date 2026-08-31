@@ -29,8 +29,25 @@ import re
 PATRONES = [
     # El nombre puede venir con prefijo (GROQ_API_KEY, MI-TOKEN): por eso no vale un \b delante,
     # que es lo que hacia que "GROQ_API_KEY=..." pasara de largo con la llave a la vista.
+    # QUE VALOR SE TAPA (Julio, 2026-08-28). Antes se tapaba CUALQUIER cosa detras del igual, y eso
+    # DESTROZABA el codigo que se manda a los cerebros: en un programa escrito en espanol 'clave'
+    # es un nombre de variable normalisimo, asi que una linea sana como  clave = t["desde"] // 100
+    # salia convertida en la etiqueta seguida del resto, o sea codigo que YA NO COMPILA. El auditor
+    # lo veia, decia con razon "hay un error de sintaxis" y RECHAZABA la ronda. Media docena de
+    # rechazos de ese dia eran esto: la IA no alucinaba, le mandabamos codigo partido.
+    # Ahora solo se tapa lo que PARECE un secreto de verdad:
+    #   · algo entre comillas con cuerpo (una contrasena escrita a mano), o
+    #   · una tirada seguida de letras y numeros que CONTENGA AL MENOS UN NUMERO (una llave), y que
+    #     ademas no sea una llamada a funcion ni un acceso a un indice.
+    # Una expresion de codigo normal (una variable, un indice, una llamada) ya no se toca.
+    # EL NUMERO ES LO QUE DISTINGUE: 'gsk_loquesea123' es una llave; 'mi_variable_larga' no lo es.
+    # Lo cazo la vigia vecina test_vigia_solo_codigo_a_la_nube con una llave corta de 15 letras que
+    # se escapaba con un tope de longitud mas alto. Proteger el dato de Julio manda sobre todo.
     ("<CLAVE>", re.compile(r"(?i)[\w-]*(?:api[_-]?key|apikey|token|password|passwd|clave|secret)"
-                           r"\s*[:=]\s*\S+")),
+                           r"\s*[:=]\s*"
+                           r"(?:[\"'][^\"'\n]{8,}[\"']"
+                           r"|(?=[A-Za-z0-9_\-]*\d)[A-Za-z0-9_\-]{12,}"
+                           r"(?![\w\-]*\s*[\(\[]))")),
     ("<CORREO>", re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.]{2,}\b")),
     ("<TARJETA>", re.compile(r"(?<![\w.])(?:\d[ -]?){13,19}(?![\w.])")),
     ("<DOCUMENTO>", re.compile(r"\b\d{7,8}[-\s]?[A-Za-z]\b")),
