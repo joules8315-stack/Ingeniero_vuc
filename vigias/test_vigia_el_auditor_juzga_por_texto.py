@@ -82,8 +82,26 @@ def test_la_regla_1_sigue_intacta():
         "al arreglar la 6")
 
 
-def test_el_obrero_sigue_teniendo_que_dar_el_texto_literal():
-    """Si el obrero deja de dar el texto, no queda NADA con que comprobar la ubicacion."""
-    assert "linea_texto" in OBRERO, (
-        "el obrero ya no entrega el texto literal de la linea que toca: sin eso el auditor se "
-        "queda sin la unica forma fiable de comprobar donde se esta reparando")
+def test_el_obrero_repara_por_NOMBRE_y_por_texto_viejo_a_nuevo():
+    """La mitad que faltaba (Julio, 2026-08-31): el obrero ya no da tramos, da NOMBRE y TEXTO.
+
+    Se actualizo al contrato nuevo y pide MAS, no menos: antes era el texto de una sola linea
+    (linea_texto); ahora tiene que dar el NOMBRE de la funcion y el par texto_viejo -> texto_nuevo,
+    y esta PROHIBIDO dar numeros de renglon (un tramo borra la funcion entera y se corre solo).
+    Ademas trabaja con la funcion COMPLETA, no un pedazo.
+    """
+    assert "linea_texto" not in OBRERO, (
+        "el obrero todavia pide la casilla vieja 'linea_texto'; se reemplazo por funcion + "
+        "texto_viejo + texto_nuevo")
+    assert '"funcion"' in OBRERO, (
+        "el obrero no pide el NOMBRE de la funcion donde esta el cambio: sin nombre, se cae en "
+        "numeros de renglon, y esos se corren solos")
+    assert '"texto_viejo"' in OBRERO and '"texto_nuevo"' in OBRERO, (
+        "el obrero no pide el par texto_viejo -> texto_nuevo: sin eso no queda texto con que "
+        "comprobar la ubicacion")
+    assert "PROHIBIDO" in OBRERO, (
+        "no esta escrito que esta PROHIBIDO dar numeros de renglon: un tramo borra la funcion entera")
+    assert '"lineas": "desde-hasta"' not in OBRERO, (
+        "el obrero todavia pide tramos de lineas; se elimino esa instruccion")
+    assert "COMPLETA" in OBRERO or "completa" in OBRERO, (
+        "el obrero no dice que trabaja con la funcion COMPLETA, no un pedazo (Julio, 2026-08-31)")

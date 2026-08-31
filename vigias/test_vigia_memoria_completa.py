@@ -136,7 +136,12 @@ def test_el_obrero_confirma_la_linea_con_su_texto():
     debe verificar que ese texto coincida con el material. Asi no se apunta al renglon equivocado.
     """
     src = _leer(os.path.join(AQUI, "cuerpo", "obrero.py"))
-    assert "linea_texto" in src, "el obrero no pide el texto literal de la linea"
+    assert "linea_texto" not in src, (
+        "el obrero todavia pide la casilla vieja 'linea_texto'; se reemplazo por funcion + "
+        "texto_viejo + texto_nuevo (Julio, 2026-08-31)")
+    assert '"texto_viejo"' in src and '"texto_nuevo"' in src, (
+        "el obrero no pide el par texto_viejo -> texto_nuevo: sin texto no hay forma fiable de "
+        "comprobar donde se esta reparando")
     assert "COPIAS el texto literal" in src, "el prompt no exige copiar el texto de la linea"
     # ACTUALIZADO el 2026-08-28: la regla 6 se reescribio. Antes buscaba "COMPRUEBA EL TEXTO DE LA
     # LINEA"; ahora la regla empieza por "LA UBICACION SE JUZGA POR EL TEXTO". La intencion es la

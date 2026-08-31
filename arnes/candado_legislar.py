@@ -56,6 +56,72 @@ def apuntar(texto, fuente="julio"):
     return len([e for e in d.values() if e.get("estado") == "pendiente"])
 
 
+# LAS MARCAS DE MANDO: por aqui se reconoce que Julio esta ORDENANDO y no preguntando.
+# Se anaden aqui, sin tocar la funcion, segun se vean formas nuevas de decirlo.
+MARCAS_DE_MANDO = (
+    "no vuelvas", "no vas a", "siempre", "nunca", "que se ", "asignale", "asigna ",
+    "repara", "legisla", "haz ", "pon ", "elimina", "debe ser", "tienes que",
+    "quiero que", "no dejes", "no quiero", "y despues", "de una vez",
+)
+
+MINIMO_LETRAS = 20      # menos que esto es ruido, no una orden
+MINIMO_PALABRAS = 4
+
+
+def _llano(texto):
+    """El texto en minusculas y sin tildes, para que 'función' y 'funcion' sean lo mismo.
+
+    Se usa la misma manera que el diccionario, no una copia a mano con reemplazos: esa copia
+    llego con las tildes corrompidas y habria comparado contra basura.
+    """
+    import unicodedata
+    return "".join(c for c in unicodedata.normalize("NFD", (texto or "").lower())
+                   if unicodedata.category(c) != "Mn")
+
+
+def parece_una_orden(texto):
+    """True si Julio esta MANDANDO algo; False si pregunta, saluda o comenta.
+
+    Tiene que ser preciso en los dos sentidos. Si se le escapan ordenes, la ley no se cumple
+    (que es lo que Julio denuncio el 2026-08-31). Si apunta cualquier cosa, el cierre se
+    bloquea siempre, alguien acaba apagando el candado, y eso protege menos que no tenerlo.
+    """
+    texto = (texto or "").strip()
+    if not texto:
+        return False
+    if texto.rstrip().endswith("?"):
+        return False                       # preguntar no es mandar
+    if len(texto.split()) < MINIMO_PALABRAS:
+        return False                       # "ok", "gracias": ruido
+    llano = _llano(texto)
+    return any(marca in llano for marca in MARCAS_DE_MANDO)
+
+
+def apuntar_lo_que_dijo_julio(texto):
+    """Apunta SOLAS las ordenes que vengan en lo que Julio acaba de escribir. Devuelve cuantas.
+
+    ESTO ES LO QUE FALTABA (Julio, 2026-08-31): "te digo cosas y no las legislas, esa es una ley
+    y no se cumple". El candado que bloquea el cierre ya existia y funcionaba, pero las
+    instrucciones solo entraban si alguien llamaba a apuntar() A MANO. O sea: dependia de que la
+    IA se acordara, y eso ya estaba escrito en la memoria de fallos como algo que NO funciona.
+    """
+    texto = (texto or "").strip()
+    if not texto:
+        return 0
+    trozos = []
+    for renglon in texto.splitlines():
+        for trozo in renglon.split("."):
+            trozo = trozo.strip(" ,;:-\t")
+            if len(trozo) >= MINIMO_LETRAS:
+                trozos.append(trozo)
+    puestas = 0
+    for trozo in trozos:
+        if parece_una_orden(trozo):
+            apuntar(trozo, fuente="julio")
+            puestas += 1
+    return puestas
+
+
 def marcar(texto, resolucion, motivo=""):
     """Marca una instruccion como resuelta: legislado / ya_existe / no_aplica (con motivo)."""
     d = _leer()
@@ -79,6 +145,21 @@ def pendientes():
 
 def main():
     args = sys.argv[1:]
+    if args and args[0] == "desde-julio":
+        # LA PUERTA POR DONDE ENTRA LO QUE JULIO ESCRIBE. Aqui se apunta SOLO, sin que nadie
+        # tenga que acordarse. Si algo falla, se calla y deja pasar: este modo NO puede
+        # estorbarle a Julio al escribir; el que frena es el candado de cierre, no este.
+        try:
+            crudo = sys.stdin.read()
+            dentro = json.loads(crudo) if crudo.strip().startswith("{") else {}
+            dicho = str(dentro.get("prompt") or dentro.get("user_prompt") or crudo or "")
+            n = apuntar_lo_que_dijo_julio(dicho)
+            if n:
+                sys.stderr.write("(apuntada%s %d instruccion%s de Julio para legislar)\n"
+                                 % ("s" if n > 1 else "", n, "es" if n > 1 else ""))
+        except Exception:
+            pass
+        return 0
     if args and args[0] == "apuntar":
         n = apuntar(" ".join(args[1:]))
         sys.stdout.write("apuntado. pendientes: %d\n" % n)

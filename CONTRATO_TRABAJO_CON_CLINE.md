@@ -3,11 +3,26 @@
 **Julio, 2026-08-31:** *"Trabaja con cline y haz la reparacion... Una vez termine la tarea cline,
 superviza, si es correcta, dale otra tarea, sino, dile que corrija, y me informas si falla."*
 
+## 0. EL FOCO: SE AFINA LA HERRAMIENTA, NO EL PRODUCTO
+
+**Julio, 2026-08-31:** *"no vas a reparar a hacer pruebas del ingeniero reparando el MVP,
+seguimos afinando el ingeniero"*.
+
+Mientras esta orden siga en pie, **no se toca ningun proyecto de Julio para probar la
+herramienta**. Ni foto_informe, ni dmm, ni ninguno. La herramienta se prueba **contra si misma**,
+que es lo que se hizo el 2026-08-31 y funciono: la busqueda por nombre se uso para reparar el
+diccionario, y ahi mismo destapo su propio fallo.
+
+Solo Julio levanta este foco. Nadie lo levanta "porque venia bien para probar".
+
 ## 1. LA TAREA SE ASIGNA, NO SE OFRECE
 
-Nunca se le manda a Cline una lista para que elija. **Se le asigna UNA tarea concreta**, con:
+**Julio, 2026-08-31:** *"asignale tarea a cline"*.
+
+Nunca se le manda una lista para que elija. **Se le asigna UNA tarea concreta**, con:
 
 - **Que hay que conseguir**, dicho como resultado, no como programacion.
+- **El pedazo de codigo DENTRO del encargo**, no solo nombrado.
 - **Lo que ya esta hecho y en verde**, para que no lo repita ni lo pise.
 - **Lo que NO debe tocar** (lo que tiene el otro).
 - **Lo medido**: numeros, no impresiones.
@@ -17,9 +32,20 @@ Nunca se le manda a Cline una lista para que elija. **Se le asigna UNA tarea con
 Cada tarea tiene **un solo dueno**. El reparto vive en `memoria/REPARTO_IA.json` y lo lleva
 `arnes/reparto.py`. Dos IA con la misma tarea es trabajo pagado dos veces y un choque al guardar.
 
-## 3. SE SUPERVISA LO QUE ENTREGA. SIEMPRE.
+## 3. LO QUE UNO NO PUEDE CERRAR, SE LE PASA AL OTRO
 
-Cuando Cline dice que termino, **no se da por bueno**. Se comprueba:
+**Julio, 2026-08-31:** *"asignale tarea a cline, esa que no has podido resolver y despues la
+supervisas"*.
+
+Una tarea atascada **no se queda parada esperando**. Se le pasa a la otra IA, y se le pasa
+**con todo el material**: el codigo dentro, lo ya medido, lo que se intento, por que no salio, y
+las trampas conocidas. Pasarla sin el material es tirarle el problema encima, no repartir.
+
+Y **quien la pasa la supervisa**. No se pasa para quitarsela de encima.
+
+## 4. SE SUPERVISA LO QUE ENTREGA. SIEMPRE.
+
+Cuando dice que termino, **no se da por bueno**. Se comprueba:
 
 | Se comprueba | Como |
 |---|---|
@@ -32,7 +58,7 @@ Y despues, una de tres:
 - **Incorrecto** → se le dice **que corrija**, con el fallo concreto y medido.
 - **Falla y no sale** → **se le informa a Julio**. No se esconde ni se maquilla.
 
-## 4. LA PALABRA DE OTRA IA NO ES PRUEBA
+## 5. LA PALABRA DE OTRA IA NO ES PRUEBA
 
 Medido el 2026-08-31, dos veces el mismo dia:
 
@@ -41,20 +67,21 @@ Medido el 2026-08-31, dos veces el mismo dia:
   delante** (comprobado letra por letra en el papel que recibe).
 
 **Antes de repetirle a Julio lo que dijo otra IA, se comprueba en el codigo.** Si no se comprobo,
-se dice que no se comprobo.
+se dice que no se comprobo. Y al reves: **antes de echarle la culpa a la otra IA, se comprueba**.
+Ese mismo dia se le echo en cara a Cline un fallo que era del limpiador propio.
 
-## 5. EL CANAL ES UN BUZON, NO UN TELEFONO
+## 6. EL CANAL ES UN BUZON, NO UN TELEFONO
 
-Medido: dejar el recado funciona; **despertar a Cline no**. Cline solo lee su buzon cuando alguien
-lo abre. Por eso, al dejarle una tarea, **se le dice a Julio** que tiene que abrir Cline y
-mandarle leer su buzon. Callarselo es dejar la tarea muerta y aparentar que se avanzo.
+Dejar el recado funciona. Al dejarle una tarea, **se le dice a Julio** si hace falta que abra la
+otra IA. Callarselo es dejar la tarea muerta y aparentar que se avanzo.
 
-## 6. NADA QUEDA PENDIENTE
+## 7. NADA QUEDA PENDIENTE
 
-Igual que para todo lo demas: la vigia nace roja, se repara, queda verde, y recien entonces la
-siguiente. **Un paso en rojo no se guarda ni se avanza.**
+La vigia nace roja, se repara, queda verde, y recien entonces la siguiente. **Un paso en rojo no
+se guarda ni se avanza.**
 
 ## QUIEN LO HACE CUMPLIR
 
 - `arnes/reparto.py` — lleva quien tiene que tarea y en que estado.
-- `vigias/test_vigia_reparto_con_cline.py` — mide que esto se cumple de verdad.
+- `vigias/test_vigia_reparto_con_cline.py` — mide el reparto y la supervision.
+- `vigias/test_vigia_lo_atascado_se_pasa.py` — mide los puntos 0, 1 y 3.
