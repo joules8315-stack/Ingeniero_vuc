@@ -1,112 +1,126 @@
-# DONDE QUEDAMOS — cierre del 2026-08-28
+# DONDE QUEDAMOS — cierre del 2026-08-31
 
-## LO PRIMERO DE MAÑANA, Y NO HAY DISCUSIÓN: EL REPARTIDOR
+## LO PRIMERO DE MAÑANA, Y LO BLOQUEA TODO: EL TRAMO DE LÍNEAS
 
-**Está MEDIDO, con prueba, no es sospecha.** El auditor rechazó **tres rondas seguidas** diciendo
-cosas que son **falsas**:
+**Medido, con tres rechazos seguidos hoy y ocho ayer.**
 
-| Lo que dijo el auditor | La realidad |
+Cuando el equipo propone una reparación, el obrero tiene que decir **qué tramo de líneas toca**.
+Y ahí es donde se cae siempre:
+
+| Lo que declaró | Lo que pasaría |
 |---|---|
-| *"usa el reloj sin importarlo"* | está importado, **línea 42** |
-| *"la variable AQUI no existe, dará error"* | existe, **línea 44** |
-| *"se inventó una forma rara de calcular la ruta"* | es **exactamente** la que ya usa el archivo |
+| líneas 97-136 | borraría la función entera |
+| líneas 1-196 | borraría **todo el archivo**, incluidas las piezas de apoyo |
+| líneas 113-117 | esas líneas ni siquiera estaban en el material |
 
-**Por qué se equivoca:** el repartidor le entrega el archivo **a partir de la línea 65**. Las
-líneas 39-44 —donde están el reloj y la variable— **nunca llegan a sus ojos**. Así que ve código
-que usa cosas que él no ve declaradas, concluye que son inventadas, y **rechaza propuestas que
-estaban bien**.
+**El auditor lo rechaza con razón todas las veces.** El fallo no es suyo ni de la reparación
+pedida: es que **pedimos un tramo en vez de pedir un texto**.
 
-**Consecuencia para Julio:** tres rondas pagadas hoy para nada, y **el bucle no puede cerrar**:
-se puede relanzar diez veces más y fallará igual, porque el problema no es lo que se pide, es que
-**al auditor le falta la cabeza del archivo para juzgar**.
+**La salida, y ya está medio hecha:** hoy se reparó que el auditor juzgue por el TEXTO y no por el
+número. Falta la otra mitad — que **el obrero entregue "este texto se cambia por este otro"** en
+lugar de "las líneas de la 97 a la 136". Mientras eso no esté, **ninguna reparación del propio
+sistema va a poder cerrarse**, y cada intento cuesta rondas.
 
-**Y no son solo inventos del obrero: el auditor también inventa, por la misma razón.** Es el mismo
-fallo por las dos puntas.
+---
 
-**La reparación:** cuando el trabajo toca importaciones o constantes, el paquete tiene que traer el
-archivo **desde su primera línea**. Sin eso, ninguna reparación del propio sistema podrá aprobarse
-nunca.
+## LO QUE SE HIZO HOY
 
-## LO SEGUNDO: EL NUDO QUE IMPIDE GUARDAR
+### 1. El filtro que protegía tus datos ya no destroza el código (CERRADO, con equipo)
 
-Hay una contradicción del sistema consigo mismo, encontrada hoy:
+Tapaba cualquier cosa llamada `clave`, `token` o `secret` seguida de un igual. En un programa
+escrito en español, `clave` es un nombre de variable corrientísimo. Una línea sana llegaba al
+auditor hecha basura, él decía —con razón— *"esto no compila"*, y **rechazaba la ronda**.
 
-```
-El método de Julio  →  la vigía nace en ROJO, primero
-El guardián         →  no se guarda nada si hay algo en rojo
-La reparación que la pondría verde  →  necesita al equipo
-El equipo           →  no converge (ver punto de arriba)
-```
+**Las IA no alucinaban: les mandábamos código partido y lo copiaban.**
 
-**Resultado: el trabajo de hoy no se pudo guardar formalmente.** Está en disco y no se pierde,
-pero no quedó sellado.
+DeepSeek propuso, Groq auditó, aprobado. Comprobado que la vigía muerde. Y una vigía vecina cazó
+que mi primer arreglo dejaba escapar una llave corta de verdad: corregido.
 
-**El guardián no distingue** entre una prueba rota por descuido y una que nació roja a propósito.
-Y eso choca con una lección que ya está escrita en el sistema: *"no hacer un candado sin una forma
-honrada de satisfacerlo: empuja a saltárselo, y eso es peor que no tenerlo"*.
+### 2. El auditor ya no rechaza por contar líneas (CERRADO, con equipo)
 
-**La salida limpia** es la que usa el propio Python para esto: marcar la vigía como *"se espera que
-falle hasta que llegue la reparación"*, de forma que si un día pasa sin querer, avise. Eso no
-afloja nada y desatasca el método.
+DeepSeek propuso, Gemini auditó, aprobado. Nació roja en 5 de 7, verde después, sabotaje
+comprobado. La regla vecina se actualizó para medir **más** que antes.
 
-## LO QUE SÍ QUEDÓ HECHO HOY (en disco)
+### 3. El veredicto ilegible (CERRADO de rebote)
 
-- **`CONTRATO_NUNCA_A_SOLAS.md`: 11 leyes**, de fallos medidos hoy. Incluye las dos que dictó Julio:
-  **solo las pruebas con navegador llegan a él**, y **esa llave dura lo que duren las pruebas y no
-  sirve para nada más**.
-- **`PLAN_CANDADOS_QUE_NO_SE_VIOLAN.md`**, con el vigilante que autoriza a partir del plan aprobado.
-- **`VIGIA_PENDIENTE_nunca_a_solas.py`: NACIÓ ROJA**, 4 de 9, por los motivos correctos.
-  **ESTÁ APARTADA A PROPÓSITO, y hay que devolverla.** No vive todavía en la carpeta de vigías
-  porque su reparación no está aprobada y el guardián no deja guardar con nada en rojo. En cuanto
-  el equipo apruebe la reparación, **lo primero es moverla a `vigias/` con su nombre normal**
-  (`test_vigia_nunca_a_solas.py`) y comprobar que se pone verde. Si se olvida, queda una ley sin
-  vigía, que es justo lo que Julio no quiere.
-- **Foto Informe, guardado y en verde:** los enlaces del Word ya saltan (dos marcadores compartían
-  número y Word descartaba el salto), y el título es ahora el enlace. 72 vigías verdes.
+Llegaba como `?` dos rondas seguidas porque el juez no ponía el nombre del campo. **Al decírselo
+expresamente en el encargo, empezó a llegar bien.** Vale la pena dejarlo escrito en sus
+instrucciones para siempre.
 
-## LOS CUATRO AGUJEROS (medidos, siguen abiertos)
+---
 
-1. **Crear un archivo nuevo no exige equipo.** Por ahí se construyó un subsistema entero a solas.
-2. **El candado apunta lo que frena, nunca lo que deja pasar.** Por eso no se pudo explicar cómo se
-   pasó.
-3. **Avisa tarde**, cuando ya se decidió escribir.
-4. **El aviso de memoria frena y obliga a repetir el comando**: hoy saltó más de **doce** veces.
-   Es lo que Julio ve como "me pide permiso otra vez".
+## EL MAPA DEL ARNÉS, MEDIDO HOY DE PUNTA A PUNTA
+
+### Las 7 puertas por donde se puede escribir sin equipo
+
+| # | Cuándo deja pasar | ¿Está bien? |
+|---|---|---|
+| 1 | La llave de Julio está puesta | Sí, es SU llave |
+| 2 | **No se pudo leer la petición** | **NO. Es un accidente, no una excepción** |
+| 3 | **La petición no trae archivo** | **NO. Sin saber qué archivo es, no vigila nada** |
+| 4 | Es un documento | Sí, si no, no se podría legislar |
+| 5 | **El archivo no existe (crear)** | **NO. Por ahí se construyó un subsistema a solas** |
+| 6 | Está dentro del propio arnés | Sí, hay que poder reparar un candado roto |
+| 7 | Hay veredicto aprobado que lo cubre | Sí |
+
+**LA PUERTA 2 ES LA PEOR Y NADIE LA HABÍA VISTO.** El candado hace *"intenta leer la petición; si
+falla, deja pasar"*. **Un candado que se abre solo cuando algo va mal no es un candado.** Y explica
+lo que el 28 de agosto no se pudo explicar: *"a veces me deja pasar y no sé por qué"*.
+
+**La puerta 3 la encontró el auditor**, no yo. El equipo sirve.
+
+### Lo que NO es adorno (casi acuso en falso)
+
+Trece piezas parecían no estar enchufadas. **Comprobado: se llaman desde otros sitios** (los
+enganches del guardado y otras piezas), no desde la configuración. **Ninguna es adorno.**
+
+### Lo que sí está bien
+
+**Ninguna pieza del arnés se queda sin vigía.**
+
+---
+
+## LO QUE QUEDÓ A MEDIAS
+
+**La vigía que cierra las 7 puertas está escrita y NACIÓ ROJA en 7 de 12**, por los motivos
+correctos. **Está apartada a propósito**, fuera de la carpeta de vigías, porque el guardián no deja
+guardar con nada en rojo y su reparación no pasó.
+
+**LO PRIMERO AL VOLVER, después del tramo de líneas: devolverla a su sitio** y comprobar que se
+pone verde. Si se olvida, quedan siete puertas abiertas sin nadie que avise.
+
+**Tres rondas de equipo se gastaron** en esa reparación. Las tres rechazadas con razón, y las tres
+por el tramo de líneas.
+
+---
 
 ## LO QUE FALTA DE JULIO (dos comandos, una vez)
 
 ```
 setx OPENROUTER_API_KEY "su llave"
 ```
-Sin esto los dos únicos cerebros gratis que **no fallaron hoy** siguen invisibles, y cuando Google
-se cae —hoy los tres Gemini dieron 503 a la vez— **el equipo se queda sin auditor**.
+Sin esto, los dos únicos cerebros gratis que **no fallaron** siguen invisibles, y cuando Google se
+cae —pasó el 28, los tres a la vez— **el equipo se queda sin auditor**.
 
-Y la lista de permitidos de Windows, que ya se le entregó. Sin ella cada permiso muere al cerrar la
+Y la lista de permitidos de Windows, ya entregada. Sin ella, cada permiso muere al cerrar la
 ventana.
 
-## EL ESTADO REAL DE LOS CEREBROS (medido hoy)
+---
 
-| | llamadas | fallos | |
-|---|---|---|---|
-| DeepSeek (**se paga**) | 75 | 0 | **0%** |
-| Nemotron Ultra (nuevo) | 2 | 0 | **0%** |
-| North Mini Code (nuevo) | 2 | 1 | 50% |
-| Gemini 3 preview | 68 | 30 | 44% |
-| GPT-OSS grande | 21 | 12 | 57% |
-| Gemini 3.5 | 24 | 19 | 79% |
-| Gemini flash | 26 | 23 | 88% |
-| GPT-OSS pequeño | 9 | 8 | 89% |
-| Gemini lite | 3 | 3 | **100%** ← *no tiene modelo asignado: fallo nuestro* |
-| El de su PC | 9 | 9 | **100%** |
+## LO QUE PIDIÓ JULIO EL 2026-08-31 Y AÚN NO ESTÁ
 
-**6 de cada 10 llamadas gratis fallan**, y cada fallo empuja el trabajo al de pago.
+1. **Que nunca se pueda trabajar sin equipo, sin puertas traseras** → medido (7 puertas), la vigía
+   está escrita y roja, la reparación no pasó por el tramo de líneas.
+2. **El vigilante que autoriza desde el plan aprobado** → legislado, no construido.
+3. **Que el equipo no sea una molestia** → a medias: se arreglaron el filtro, el conteo y el
+   veredicto ilegible. Falta el tramo de líneas.
+4. **Que no le pida permiso a cada instante** → falta el vigilante, y falta su lista de permitidos.
+5. **Pruebas reales con navegador del Ingeniero** → NO EMPEZADO.
 
-## LO QUE APRENDIMOS HOY (caro)
+## Y EN FOTO INFORME, SIN GUARDAR (está en disco, no se pierde)
 
-**Escribí código a solas por tercera vez, y Julio lo cazó.** El candado existía y no lo impidió
-porque "crear no es reescribir". La letra se cumplió; el espíritu no.
-
-**El equipo sirve cuando tiene material.** En una ronda cazó un error mío de verdad: pedí comprobar
-el contenido de un archivo, y cuando el candado actúa **el archivo todavía no existe**.
-
-**Pero sin material inventa, por las dos puntas.** Y eso es lo que hay que reparar mañana, primero.
+El botón de los títulos y el arreglo de los enlaces del Word. Necesitan el ensayo completo, y ese
+necesita el portero encendido:
+```
+cd "C:\Users\USER\dev\Foto_info_repo\Foto_informe--main"; python rv3_portero.py
+```
