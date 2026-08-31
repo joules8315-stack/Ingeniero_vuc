@@ -573,13 +573,26 @@ def trabajar(paquete, tarea, generador=None, auditor=None):
         propuesta["_fuera_del_paquete"] = inventados   # marco: no se deja pasar como valido
 
     # el auditor NUNCA puede ser el mismo que genero: si no, se aprueba a si mismo.
-    crudo_a, quien_aud, av2 = _preguntar_con_relevo(
-        _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1, evitar=quien_gen)
-    if not crudo_a:
-        auditoria = {"veredicto": "SIN_AUDITAR", "_error": "; ".join(av2),
-                     "resumen_para_el_jefe": "no quedo un segundo cerebro libre para auditar"}
-    else:
+    # CURA DE cruzado.py (Julio, 2026-08-31): el revisor puede contestar ROTO o ilegible. Antes
+    # se le preguntaba UNA sola vez y se tiraba la propuesta buena del obrero (la vuelta YA
+    # PAGADA). Ahora se le pide de nuevo (hasta 2 intentos), igual que hace el juez en resolver().
+    auditoria = None
+    for _intento in range(2):
+        crudo_a, quien_aud, av2 = _preguntar_con_relevo(
+            _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1, evitar=quien_gen)
+        if not crudo_a:
+            continue                       # no contesto: se le pide de nuevo
         auditoria = _json_de(crudo_a)
+        if isinstance(auditoria, dict) and "_error" not in auditoria:
+            break                          # se entendio: listo
+        # JSON roto/cortado: no se da por perdido (cura que ya existe en cruzado.py).
+    if not isinstance(auditoria, dict) or "_error" in (auditoria or {}):
+        # EL INFORME NO MIENTE: si el revisor contesto roto, se dice claro, no '?'.
+        auditoria = {"veredicto": "SIN_AUDITAR",
+                     "_error": ((auditoria or {}).get("_error", "")
+                                if isinstance(auditoria, dict) else ""),
+                     "resumen_para_el_jefe":
+                         "el revisor contesto roto; se conserva la propuesta del obrero"}
 
     return {"obrero": quien_gen, "auditor": quien_aud or "(ninguno)",
             "propuesta": propuesta, "auditoria": auditoria,

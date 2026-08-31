@@ -68,13 +68,23 @@ def funcion_completa(ruta_abs, nombre):
             break
     if not desde:
         return None
+    # DENTRO DE UN TEXTO NO SE CORTA (2026-08-31, cazado usando esto mismo). Muchas piezas son
+    # casi todo un texto entre comillas triples, y sus renglones van pegados al margen. Con la
+    # regla a secas de "columna cero termina la pieza", `_prompt_obrero` llegaba de 2 renglones
+    # cuando mide 40: el mismo dano de entregar la pieza partida, por otro camino.
+    # Se arranca mirando el propio renglon del def, por si abrio el texto ahi mismo.
+    dentro_de_texto = (lineas[desde - 1].count('"""') + lineas[desde - 1].count("'''")) % 2 == 1
     for j in range(desde, len(lineas)):
         linea = lineas[j]
         if not linea.strip():
             continue                    # un renglon en blanco NO corta la funcion
-        if len(linea) - len(linea.lstrip()) == 0:
+        # EL ORDEN IMPORTA: primero se decide con el estado de ANTES de este renglon. El renglon
+        # que CIERRA las comillas suele ir en columna cero; si se actualizara antes de decidir,
+        # se cortaria justo antes y la pieza llegaria sin su cierre.
+        if len(linea) - len(linea.lstrip()) == 0 and not dentro_de_texto:
             break                       # vuelve a columna cero: aqui ya empieza otra cosa
         hasta = j + 1
+        dentro_de_texto = (dentro_de_texto + linea.count('"""') + linea.count("'''")) % 2 == 1
     return {"desde": desde, "hasta": hasta, "texto": "\n".join(lineas[desde - 1:hasta])}
 
 
