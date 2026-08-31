@@ -37,17 +37,54 @@ def _apuntar(n):
     open(_contador(), "w", encoding="utf-8").write("%f|%d" % (time.time(), n))
 
 
+# LOS CUADERNOS que los propios candados escriben cada vez que actuan (Julio, 2026-08-31).
+# El guardián NO los cuenta como "trabajo sin guardar": se ensucian solos al comprobar, y eso
+# es lo que Julio ve como "me pide permiso a cada rato". Solo se ignora ESTO, no el trabajo real.
+CUADERNOS_BASE = {
+    "guardia.log", "candados_medicion.json", "sin_equipo.log", "diagnostico.json",
+    ".veredicto_equipo.json", ".commit_bloqueos", ".protocolo_bloqueos",
+    ".avisos_ya_dados.json", ".supervisor_bloqueos", ".comunicacion_bloqueos",
+    ".cierres_bloqueados", ".lecturas_sueltas", ".pasado_corriendo", "apagones.log",
+    "lo_que_julio_ya_dijo.json", "decisiones_por_nombre.log", "reparto_ia.json",
+    "significados.json", ".objetivo_confirmado", ".vigias_corriendo",
+}
+
+
+def _es_cuaderno(ruta):
+    """True si `ruta` es un cuaderno que escriben los propios candados, no trabajo de verdad.
+
+    El guardián los ignora para no gritar por lo que el mismo ensucia. Pero SOLO estos: el codigo,
+    las leyes, las vigias y los paquetes indexados son trabajo de verdad y siguen gritando.
+    """
+    base = os.path.basename(ruta).lower()
+    if base in CUADERNOS_BASE:
+        return True
+    n = ruta.replace("\\", "/").lower()
+    # el canal (mensajes AI-AI), las pruebas reales y los apuntes de llamadas tambien los escriben
+    # los candados; no son trabajo que Julio pida guardar, y ensucian en cada corrida.
+    return ("/canal/" in n or "/pruebas_real/" in n or "/.git/" in n)
+
+
 def _cambios_sin_commit():
-    """True si hay archivos modificados sin commitear (trabajo que se puede perder)."""
+    """True si hay archivos modificados sin commitear (trabajo que se puede perder).
+
+    NO cuentan los cuadernos que escriben los propios candados (Julio, 2026-08-31): se ensucian
+    solos al comprobar y harian gritar al guardián siempre. Solo el trabajo de verdad.
+    """
     try:
         r = subprocess.run(["git", "status", "--porcelain"], cwd=AQUI,
                            capture_output=True, text=True, timeout=30)
         if r.returncode != 0:
             return False
         for linea in r.stdout.splitlines():
-            estado = linea[:2].strip()
-            if estado and not linea.endswith("GUARDIA.log") and "memoria/" not in linea:
-                return True
+            if not linea or len(linea) < 4:
+                continue
+            ruta = linea[3:].strip()          # el camino, sin el estado (XX + espacio)
+            if not ruta:
+                continue
+            if _es_cuaderno(ruta):
+                continue                       # cuaderno del candado, no trabajo de verdad
+            return True
         return False
     except Exception:
         return False
