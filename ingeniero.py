@@ -213,6 +213,8 @@ def main():
         # Uno genera, OTRO distinto audita. Claude dirige y lee el veredicto: nada mas.
         # Deja la llave que abre el candado de escribir codigo.
         import sys as _s
+        import json as _json
+        import re as _re
         sys.path.insert(0, os.path.join(AQUI, "arnes"))
         from cerebro import router as _r
         from cuerpo import obrero as _o
@@ -221,6 +223,18 @@ def main():
         paq = _r.armar(proy, tarea)
         # el TEXTO, no la caja: trabajar espera el texto del paquete (fix 2026-08-24)
         res = _o.trabajar(_r.a_texto(paq), tarea)
+        # ENCARGO A (Claude, 2026-09-02): el trabajo pagado NO se tira. Se guarda SIEMPRE el
+        # resultado ENTERO que contesto el equipo, ANTES de imprimir nada, pase lo que pase
+        # (aprobado, rechazado o sin revisar: un rechazo tambien dice algo y vale dinero). Se
+        # guarda antes de mostrar porque ya paso que la pantalla reventaba con una letra rara y
+        # se perdia todo.
+        try:
+            _ult = os.path.join(AQUI, "memoria", "ULTIMO_TRABAJO_DEL_EQUIPO.json")
+            os.makedirs(os.path.dirname(_ult), exist_ok=True)
+            with open(_ult, "w", encoding="utf-8") as _f:
+                _json.dump(res, _f, ensure_ascii=False, indent=1)
+        except Exception:
+            pass    # guardar es la prueba, pero no puede tumbar el trabajo
         # PRIMERO SE GUARDA, DESPUES SE ENSENA (fallo real 2026-08-25).
         # Antes se imprimia justo aqui y la llave se guardaba al final. El equipo contesto, el
         # print murio por un caracter que la consola de Windows no sabia dibujar, y el trabajo YA
@@ -257,6 +271,30 @@ def main():
         # cuando el equipo habia RECHAZADO. El candado NO abria (ya esta probado), pero el mensaje
         # decia "guarda llave" y engañaba. Ahora se dice la verdad: la llave SOLO abre con APROBADO.
         v_final = ((res.get("auditoria") or {}).get("veredicto", "?") or "?").strip().upper()
+        # ENCARGO A (parte 2): cuando el equipo APROBO y la propuesta trae un archivo NUEVO con su
+        # texto completo, y ese archivo NO EXISTE todavia, se crea. Si ya existe NO se toca, ni se
+        # sobrescribe ni se le anade: solo se crean archivos nuevos. Y si el texto viene envuelto
+        # entre lineas de tres tildes, se le quita la envoltura antes de guardar o queda roto.
+        if v_final == "APROBADO" and isinstance(prop, dict):
+            _nuevo_archivo = prop.get("archivo") or (prop.get("archivos") or [None])[0]
+            _texto = prop.get("codigo") or prop.get("texto_nuevo") or ""
+            if _nuevo_archivo and isinstance(_texto, str) and _texto.strip() \
+                    and not os.path.exists(str(_nuevo_archivo)):
+                _texto_limpio = _texto.lstrip()
+                if _texto_limpio.startswith("```"):
+                    _salto = _texto_limpio.find("\n")
+                    _texto_limpio = _texto_limpio[_salto + 1:] if _salto >= 0 else ""
+                if _texto_limpio.rstrip().endswith("```"):
+                    _texto_limpio = _texto_limpio.rstrip()[:-3].rstrip("\n")
+                try:
+                    _destino = os.path.abspath(str(_nuevo_archivo))
+                    os.makedirs(os.path.dirname(_destino), exist_ok=True)
+                    with open(_destino, "w", encoding="utf-8") as _f:
+                        _f.write(_texto_limpio + "\n")
+                    print("CREADO (lo escribio el equipo): %s (%d letras)"
+                          % (_nuevo_archivo, len(_texto_limpio)))
+                except Exception as _e:
+                    print("no se pudo crear %s: %s" % (_nuevo_archivo, str(_e)[:90]))
         if v_final == "APROBADO":
             print("LLAVE GUARDADA: se puede escribir en %d archivo(s) durante %d min."
                   % (len(tocados), _ce.VIGENCIA_MIN))
@@ -419,6 +457,11 @@ def main():
         print(medidor.texto(sys.argv[2] if len(sys.argv) > 2 else None))
         print()
         print(respuestas.texto())
+        return 0
+    if cmd == "reparto":
+        # EL BALANCE DEL TRABAJO (Julio, 2026-09-02): cuanto hizo el equipo y cuanto a mano.
+        from cuerpo import balance
+        print(balance.texto(sys.argv[2] if len(sys.argv) > 2 else None))
         return 0
     if cmd == "respondio" and len(sys.argv) >= 3:
         # se apunta QUE se pregunto y QUE contesto Julio; nace SIN EVALUAR

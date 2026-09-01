@@ -59,7 +59,7 @@ def _leer_gasto():
         return 0
 
 
-def reparto():
+def reparto(proyecto=None):
     """Devuelve el reparto: equipo, a_mano, rondas_equipo y gasto_tanda."""
     equipo, a_mano = _leer_balance()
     rondas = _leer_rondas()
@@ -72,7 +72,7 @@ def reparto():
     }
 
 
-def texto():
+def texto(proyecto=None):
     """Devuelve el balance en palabras simples para Julio."""
     r = reparto()
     return (
