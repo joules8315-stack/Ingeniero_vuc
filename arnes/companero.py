@@ -32,13 +32,21 @@ VIGENCIA_MIN = 60       # lo que dura la marca de "el activo no pudo"
 
 ARRANQUE = {
     "activo": "continue",
-    "reservas": [{
+    "reservas": [],
+    # RETIRADO NO ES RESERVA. A un retirado NO se le manda trabajo ni aunque el activo falle:
+    # Julio lo dijo el 2026-08-31, despues de haberlo dejado antes como reemplazo:
+    #   "No uses mas a cline, no lo uses, legisla, pon candado y vigilalo"
+    # Por eso hay dos listas y no una: la reserva tiene salida honrada, el retiro no.
+    "retirados": [{
         "quien": "cline",
-        "por_que": ("Julio, 2026-08-31: a partir de ahora se trabaja con continue; cline queda "
-                    "de reserva para cuando continue se bloquee, falle o no responda"),
+        "por_que": ("Julio, 2026-08-31: 'No uses mas a cline, no lo uses, legisla, pon candado "
+                    "y vigilalo'. Se retira del todo, no queda ni de reemplazo"),
         "desde": "2026-08-31",
     }],
-    "historial": ["2026-08-31 se empieza asi por orden de Julio: activo continue, reserva cline"],
+    "historial": [
+        "2026-08-31 se empieza asi por orden de Julio: activo continue",
+        "2026-08-31 cline RETIRADO por orden de Julio: no se usa mas, ni de reemplazo",
+    ],
 }
 
 
@@ -99,6 +107,50 @@ def es_reserva(nombre):
     """Si ese nombre es un reemplazo (no el activo)."""
     n = str(nombre or "").strip().lower()
     return bool(n) and any(str(r.get("quien", "")).lower() == n for r in reservas())
+
+
+def retirados():
+    """Los que ya NO se usan. No es lo mismo que la reserva: al retirado no se acude nunca."""
+    return list(_leer().get("retirados", []) or [])
+
+
+def es_retirado(nombre):
+    """Si a ese ya no se le manda trabajo, pase lo que pase.
+
+    LA DIFERENCIA QUE IMPORTA: la reserva tiene salida honrada (se declara que el activo no
+    pudo). El retiro NO la tiene. Julio lo dijo asi: "No uses mas a cline, no lo uses".
+    """
+    n = str(nombre or "").strip().lower()
+    return bool(n) and any(str(r.get("quien", "")).lower() == n for r in retirados())
+
+
+def por_que_retirado(nombre):
+    """El motivo por el que se le retiro. La memoria no olvida por que."""
+    n = str(nombre or "").strip().lower()
+    for r in retirados():
+        if str(r.get("quien", "")).lower() == n:
+            return str(r.get("por_que", ""))
+    return ""
+
+
+def retirar(quien, por_que):
+    """Saca a alguien del todo: ni activo ni reserva. Queda apuntado quien, cuando y por que."""
+    quien = str(quien or "").strip().lower()
+    if not quien:
+        return False, "hace falta decir a quien"
+    d = _leer()
+    if str(d.get("activo", "")).lower() == quien:
+        return False, "%s es el companero de ahora: primero se cambia de companero" % quien
+    d["reservas"] = [r for r in (d.get("reservas") or [])
+                     if str(r.get("quien", "")).lower() != quien]
+    ya = [r for r in (d.get("retirados") or []) if str(r.get("quien", "")).lower() == quien]
+    if not ya:
+        d.setdefault("retirados", []).append(
+            {"quien": quien, "por_que": str(por_que or ""), "desde": _ahora()[:10]})
+        d.setdefault("historial", []).append(
+            "%s %s RETIRADO — %s" % (_ahora(), quien, por_que or "?"))
+        _guardar(d)
+    return True, "%s queda retirado: no se le manda trabajo" % quien
 
 
 def por_que_reserva(nombre):

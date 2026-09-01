@@ -69,13 +69,24 @@ def test_el_companero_de_ahora_es_continue():
         "el companero de ahora no es `continue`, y Julio lo mando el 2026-08-31")
 
 
-def test_cline_es_reserva_y_se_sabe_por_que():
+def test_cline_esta_fuera_y_se_sabe_por_que():
+    """Julio lo saco del todo, no lo dejo de reemplazo. Son cosas distintas.
+
+    La reserva tiene salida honrada (se declara que el activo no pudo). El retiro NO la tiene:
+    "No uses mas a cline, no lo uses" (Julio, 2026-08-31). Si siguiera figurando como reserva,
+    volveria a entrar por la puerta de atras en cuanto el companero de ahora fallara.
+    """
     c = _companero()
-    assert c.es_reserva("cline"), "cline no figura como reserva"
-    motivo = c.por_que_reserva("cline")
+    assert c.es_retirado("cline"), (
+        "cline no figura como retirado. Julio lo saco del todo el 2026-08-31, no lo dejo de "
+        "reemplazo")
+    assert not c.es_reserva("cline"), (
+        "cline sigue figurando como reserva: asi volveria a entrar por la puerta de atras en "
+        "cuanto el companero de ahora fallara, y eso es justo lo que Julio prohibio")
+    motivo = c.por_que_retirado("cline")
     assert motivo and len(motivo) > 15, (
-        "cline es reserva pero no se apunto POR QUE. Dentro de un mes nadie sabra si fue una "
-        "orden de Julio o un capricho")
+        "esta retirado pero no se apunto POR QUE. Dentro de un mes nadie sabra si fue una orden "
+        "de Julio o un capricho, y la memoria no puede olvidar eso")
 
 
 def _preguntarle_al_candado(a_quien, marca=None):
@@ -98,13 +109,6 @@ def test_frena_ir_a_la_reserva_por_costumbre(tmp_path):
         "y Julio tiene que repetirlo otra vez. Dijo: %s" % dijo[:200])
 
 
-def test_deja_ir_a_la_reserva_cuando_consta_que_el_de_ahora_no_pudo(sin_permiso, tmp_path):
-    """La forma honrada de satisfacer el candado. Sin ella, se acabaria saltando."""
-    sin_permiso.declarar_que_no_pudo("continue", "los servidores no contestan")
-    codigo, dijo = _preguntarle_al_candado("cline", marca=sin_permiso.MARCA_NO_PUDO)
-    assert codigo == PASA, (
-        "no deja usar la reserva ni siquiera constando que el de ahora no pudo. Un candado sin "
-        "forma honrada de satisfacerlo empuja a saltarselo. Dijo: %s" % dijo[:200])
 
 
 def test_deja_trabajar_con_el_de_ahora(tmp_path):

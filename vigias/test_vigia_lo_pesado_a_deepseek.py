@@ -32,10 +32,21 @@ def _fuente():
 
 
 def test_generar_pide_lo_pesado():
-    """El que GENERA se pide con pesado=True. Es la orden entera en una linea."""
+    """El trabajo duro NO vuelve por defecto a los cerebros gratis.
+
+    LA LEY CAMBIO el 2026-08-31: lo pesado ya no es fijo. Se calcula con
+    pesado_ahora = not generador, para que cuando alguien pida EXPRESAMENTE un cerebro
+    concreto no se lo pise la regla del pesado (antes se la pisaba, y por eso pedir un
+    revisor concreto no servia de nada: se ignoraba en silencio).
+    Cuando nadie pide generador, pesado_ahora vale verdadero y la regla de Julio sigue
+    INTACTA: lo pesado al de pago.
+    """
     txt = _fuente()
-    assert "_prompt_obrero(paquete, tarea), 0.2, pesado=True" in txt, \
-        "generar ya no pide lo pesado: el trabajo duro volvio a los cerebros gratis"
+    assert "pesado_ahora = not generador" in txt, (
+        "desaparecio el calculo del pesado: o volvio a ser fijo, o se quito del todo. "
+        "Si es fijo, pedir un cerebro concreto vuelve a no servir de nada")
+    assert "pesado=pesado_ahora" in txt, (
+        "generar ya no pide lo pesado: el trabajo duro volvio a los cerebros gratis")
 
 
 def test_auditar_sigue_siendo_gratis():

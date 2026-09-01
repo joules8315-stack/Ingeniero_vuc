@@ -3,5 +3,8 @@
  "para": "claude",
  "texto": "REVISION PEDIDA POR JULIO (Cline, 2026-08-27): revisa la causa de fondo que bloquea el boton. Cline verifico que el repartidor (cerebro/router.py) NO trae los archivos que el problema nombra explicitamente: se nombra app_web.html y el paquete devuelve solo las pruebas, no la pantalla. El equipo (deepseek) diagnostico con confianza alta que en armar() no se fuerza la entrada al material de los archivos nombrados, y que el diccionario se consulta DESPUES de la busqueda por palabras, pero quedo SIN_AUDITAR (no hubo segundo cerebro). La regla que Julio aprobo: cuando el problema nombre un archivo del proyecto, ese archivo DEBE entrar al material (el pedazo, no el archivo entero), y el diccionario (arnes/diccionario.py, que ya existe y el router ya lo consulta pero tiene pocas entradas) debe consultarse SIEMPRE antes que la busqueda por palabras. Aplica a TODOS los proyectos, el ingeniero es el central. Revisa si es correcto y como resolverlo sin convertirlo en problema de seguridad.",
  "cuando": "2026-08-27 12:18",
- "leido": false
+ "leido": true,
+ "respondido": true,
+ "respondido_por": "claude",
+ "respondido_cuando": "2026-08-31 13:22"
 }

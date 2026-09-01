@@ -2801,10 +2801,363 @@
   ],
   "lineas_paquete": 193,
   "lineas_proyecto": 87432,
+  "veredicto": "NO_CONCLUYENTE",
+  "por_que": "rechazada, pero por la reparacion, no por el material",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 56,
+  "cuando": "2026-08-31 11:24",
+  "proyecto": "ingeniero",
+  "problema": "en cuerpo/obrero.py la funcion trabajar acepta los parametros generador y auditor pero no los usa en ningun sitio del cuerpo: se pide un revisor concreto y revisa otro, sin avisar",
+  "flujos": [
+   "obrero"
+  ],
+  "piezas": [
+   "cuerpo/obrero.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cuerpo/obrero.py:545-584",
+   "cuerpo/obrero.py:97-136",
+   "cuerpo/obrero.py:609-634"
+  ],
+  "leyes": [
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_SE_BUSCA_POR_NOMBRE.md",
+   "mapa/MAPA_INGENIERO.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_el_obrero_repara_por_texto.py"
+  ],
+  "lineas_paquete": 193,
+  "lineas_proyecto": 87601,
+  "veredicto": "CORTO",
+  "por_que": "el obrero tuvo que pedir mas material",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 57,
+  "cuando": "2026-08-31 11:25",
+  "proyecto": "ingeniero",
+  "problema": "Julio retiro a cline: no se usa mas. arnes/companero.py necesita saber quien esta RETIRADO y el candado debe frenarlo siempre, sin salida",
+  "flujos": [
+   "cline",
+   "julio",
+   "siempre"
+  ],
+  "piezas": [
+   "cuerpo/fallos.py",
+   "cerebro/trozos.py",
+   "verificar.py",
+   "cerebro/enlaces.py",
+   "arnes/companero.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py"
+  ],
+  "trozos": [
+   "arnes/companero.py:1-40",
+   "verificar.py:1-40",
+   "arnes/companero.py:129-168",
+   "verificar.py:129-137",
+   "cuerpo/respuestas.py:1-40",
+   "cuerpo/respuestas.py:129-168"
+  ],
+  "leyes": [
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_BUZON_DE_CLINE.md",
+   "CONTRATO_TRABAJO_CON_CLINE.md",
+   "cerebro/protocolo.py",
+   "CONTRATO_DOS_TRABAJANDO.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_autorizacion_de_julio.py",
+   "vigias/test_vigia_buzon_de_cline.py",
+   "vigias/test_vigia_diccionario_de_julio.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_modo_ingeniero_siempre.py",
+   "vigias/test_vigia_reparto_con_cline.py",
+   "vigias/test_vigia_siempre_con_equipo.py"
+  ],
+  "lineas_paquete": 337,
+  "lineas_proyecto": 87692,
   "veredicto": "SIN_JUZGAR",
   "por_que": "",
   "falto": [],
   "prueba_humana": "PENDIENTE",
+  "ahorro": 99.6
+ },
+ {
+  "id": 58,
+  "cuando": "2026-08-31 11:25",
+  "proyecto": "ingeniero",
+  "problema": "arnes/candado_companero.py frena tocar el propio arnes: impide retirar a un companero porque el texto nombra al retirado, y asi no hay forma de cumplir la orden de Julio",
+  "flujos": [
+   "julio",
+   "texto",
+   "que"
+  ],
+  "piezas": [
+   "cuerpo/fallos.py",
+   "cerebro/semantico.py",
+   "cuerpo/cuotas.py",
+   "cuerpo/cruzado.py",
+   "arnes/candado_companero.py"
+  ],
+  "trozos": [
+   "arnes/candado_companero.py:1-40",
+   "cuerpo/cuotas.py:33-72",
+   "cuerpo/cruzado.py:1-40",
+   "cuerpo/cruzado.py:129-168",
+   "cuerpo/cuotas.py:321-345",
+   "cerebro/semantico.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_ALARMA_QUE_GRITA_EN_FALSO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "PLAN_CANDADOS_QUE_NO_SE_VIOLAN.md",
+   "cerebro/protocolo.py",
+   "PROTOCOLO_UNICO.md",
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_autorizacion_de_julio.py",
+   "vigias/test_vigia_diccionario_de_julio.py",
+   "vigias/test_vigia_el_auditor_juzga_por_texto.py",
+   "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+   "vigias/test_vigia_el_obrero_repara_por_texto.py",
+   "vigias/test_vigia_el_texto_largo_no_corta_la_pieza.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py"
+  ],
+  "lineas_paquete": 345,
+  "lineas_proyecto": 88082,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.6
+ },
+ {
+  "id": 59,
+  "cuando": "2026-08-31 11:27",
+  "proyecto": "ingeniero",
+  "problema": "arnes/companero.py necesita una lista de RETIRADOS aparte de las reservas: a un retirado no se le manda trabajo ni aunque el activo falle",
+  "flujos": [
+   "que"
+  ],
+  "piezas": [
+   "cuerpo/obrero.py",
+   "cuerpo/subagentes.py",
+   "cuerpo/cruzado.py",
+   "cerebro/trozos.py",
+   "arnes/companero.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py"
+  ],
+  "trozos": [
+   "arnes/companero.py:97-136",
+   "arnes/companero.py:129-168",
+   "cuerpo/obrero.py:1-40",
+   "cuerpo/obrero.py:385-424",
+   "cuerpo/subagentes.py:1-40",
+   "cerebro/trozos.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_ALARMA_QUE_GRITA_EN_FALSO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "PLAN_CANDADOS_QUE_NO_SE_VIOLAN.md",
+   "cerebro/protocolo.py",
+   "PROTOCOLO_UNICO.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py"
+  ],
+  "lineas_paquete": 364,
+  "lineas_proyecto": 88495,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.6
+ },
+ {
+  "id": 60,
+  "cuando": "2026-08-31 11:28",
+  "proyecto": "ingeniero",
+  "problema": "arnes/candado_companero.py debe frenar SIEMPRE a un retirado, sin salida honrada, a diferencia de la reserva",
+  "flujos": [
+   "siempre"
+  ],
+  "piezas": [
+   "cuerpo/fallos.py",
+   "cerebro/enlaces.py",
+   "mapa/compilar_mapa.py",
+   "memoria/rescate/app_web_reparada_2026-08-24.html",
+   "arnes/candado_companero.py"
+  ],
+  "trozos": [
+   "arnes/candado_companero.py:1-40",
+   "memoria/rescate/app_web_reparada_2026-08-24.html:353-392",
+   "cuerpo/fallos.py:1-40",
+   "memoria/rescate/app_web_reparada_2026-08-24.html:1473-1512",
+   "memoria/rescate/app_web_reparada_2026-08-24.html:705-744",
+   "memoria/rescate/app_web_reparada_2026-08-24.html:1505-1544"
+  ],
+  "leyes": [
+   "cerebro/protocolo.py",
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_BUZON_DE_CLINE.md",
+   "CONTRATO_EL_COMPANERO.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_modo_ingeniero_siempre.py",
+   "vigias/test_vigia_siempre_con_equipo.py"
+  ],
+  "lineas_paquete": 347,
+  "lineas_proyecto": 89015,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.6
+ },
+ {
+  "id": 61,
+  "cuando": "2026-08-31 11:29",
+  "proyecto": "ingeniero",
+  "problema": "la vigia del companero mide que cline es reserva, pero Julio lo retiro del todo: hay que medir la ley nueva, que a un retirado no se le manda trabajo nunca",
+  "flujos": [
+   "que",
+   "cline",
+   "julio"
+  ],
+  "piezas": [
+   "cuerpo/dudas.py",
+   "cuerpo/medidor.py",
+   "cuerpo/subagentes.py",
+   "cuerpo/estado.py"
+  ],
+  "trozos": [
+   "cuerpo/medidor.py:1-40",
+   "cuerpo/medidor.py:161-179",
+   "cuerpo/subagentes.py:1-40",
+   "cuerpo/estado.py:1-40",
+   "cuerpo/dudas.py:1-40",
+   "cuerpo/dudas.py:193-208"
+  ],
+  "leyes": [
+   "CONTRATO_ALARMA_QUE_GRITA_EN_FALSO.md",
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_BUZON_DE_CLINE.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_TRABAJO_CON_CLINE.md",
+   "PLAN_CANDADOS_QUE_NO_SE_VIOLAN.md",
+   "PROTOCOLO_UNICO.md",
+   "cerebro/protocolo.py"
+  ],
+  "vigias": [
+   "vigias/test_vigia_autorizacion_de_julio.py",
+   "vigias/test_vigia_buzon_de_cline.py",
+   "vigias/test_vigia_diccionario_de_julio.py",
+   "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_reparto_con_cline.py"
+  ],
+  "lineas_paquete": 312,
+  "lineas_proyecto": 89426,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.7
+ },
+ {
+  "id": 62,
+  "cuando": "2026-08-31 11:31",
+  "proyecto": "ingeniero",
+  "problema": "en cuerpo/obrero.py la funcion trabajar acepta los parametros generador y auditor pero no los usa en ningun sitio del cuerpo: se pide un revisor concreto y revisa otro, sin avisar",
+  "flujos": [
+   "obrero"
+  ],
+  "piezas": [
+   "cuerpo/obrero.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cuerpo/obrero.py:545-584",
+   "cuerpo/obrero.py:97-136",
+   "cuerpo/obrero.py:609-634"
+  ],
+  "leyes": [
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_SE_BUSCA_POR_NOMBRE.md",
+   "mapa/MAPA_INGENIERO.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_el_obrero_repara_por_texto.py"
+  ],
+  "lineas_paquete": 193,
+  "lineas_proyecto": 89862,
+  "veredicto": "NO_CONCLUYENTE",
+  "por_que": "rechazada, pero por la reparacion, no por el material",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
   "ahorro": 99.8
+ },
+ {
+  "id": 63,
+  "cuando": "2026-08-31 11:54",
+  "proyecto": "ingeniero",
+  "problema": "arnes/candado_companero.py grita en falso: frena por nombrar a un retirado aunque no se le mande nada, y asi freno hasta la prueba que comprueba que esta retirado",
+  "flujos": [
+   "que",
+   "prueba",
+   "estado"
+  ],
+  "piezas": [
+   "cuerpo/estado.py",
+   "memoria/rescate/rv3_prueba_real_velocidad.py",
+   "arnes/candado_companero.py"
+  ],
+  "trozos": [
+   "arnes/candado_companero.py:97-136",
+   "arnes/candado_companero.py:129-156",
+   "memoria/rescate/rv3_prueba_real_velocidad.py:65-104",
+   "memoria/rescate/rv3_prueba_real_velocidad.py:129-168",
+   "cuerpo/estado.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_ALARMA_QUE_GRITA_EN_FALSO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "PLAN_CANDADOS_QUE_NO_SE_VIOLAN.md",
+   "memoria/paquetes/foto_informe__rv3_prueba_matriz_de_roles_py_no_puede_m.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md",
+   "CONTRATO_INGENIERO_VUC.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_prueba_real.py"
+  ],
+  "lineas_paquete": 293,
+  "lineas_proyecto": 89958,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.7
  }
 ]

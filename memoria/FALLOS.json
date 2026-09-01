@@ -1027,6 +1027,37 @@
   ],
   "quien_lo_caza": "vigias/test_vigia_obrero_respeta_generador_auditor.py",
   "disparador": "candado a medias|funcion que falta|se cae en silencio|buzon",
-  "veces": 2
+  "veces": 5
+ },
+ {
+  "id": 65,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "Cuando todos los cerebros gratis se caen, el unico vivo acaba revisandose a si mismo y se contradice: rechazo una reparacion diciendo que se inventaba un nombre que el mismo encargo citaba dos renglones despues",
+  "causa_raiz": "No son cuatro ojos: es el mismo cerebro con dos sombreros. Y el sistema no sabe pedirle a un cerebro concreto que revise, porque cuerpo/obrero.py::trabajar acepta los parametros generador y auditor y no los usa: el que genera va siempre al de pago por pesado=True, y el revisor sale por descarte",
+  "cura": "que trabajar respete de verdad esos dos parametros, y que si no puede, lo diga. Julio se lo asigno a Continue el 2026-08-31 y Claude aprobo el plan",
+  "no_volver_a": "quemar vueltas insistiendo cuando el que revisa es el mismo que escribio: se para, se dice, y se espera a que haya un segundo cerebro de verdad",
+  "piezas": [
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+  "disparador": "se revisa a si mismo|un solo cerebro vivo|revisor que se contradice",
+  "veces": 1
+ },
+ {
+  "id": 66,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "Diez recados quedaron guardados con el remitente 'desconocido', asi que contestarle a quien de verdad los escribio NO los cerraba, y el cierre del dia seguia bloqueado mostrando siempre los mismos",
+  "causa_raiz": "canal.enviar apunta el remitente con lo que devuelve _quien(), que lee la variable de entorno INGENIERO_QUIEN. Esa variable no la ponia nadie, asi que todo lo que se mandaba desde un sitio sin configurar quedaba firmado como 'desconocido'. Es el mismo fallo de raiz que dejaba al candado del buzon sin saber a quien bloqueaba",
+  "cura": "poner INGENIERO_QUIEN en la configuracion para que todo lo que se manda quede firmado, y cerrar a mano los diez que ya estaban sin firma",
+  "no_volver_a": "dejar que un dato que identifica a quien trabaja dependa de una variable que nadie pone: sin ella el sistema no sabe con quien habla y bloquea a ciegas",
+  "piezas": [
+   "arnes/canal.py",
+   "arnes/candado_buzon.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_contestar_cierra_el_recado.py",
+  "disparador": "remitente desconocido|recado sin firma|no se cierra al contestar",
+  "veces": 1
  }
 ]

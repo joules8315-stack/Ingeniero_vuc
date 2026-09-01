@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """cuerpo/obrero.py — EL OBRERO. Quien hace el trabajo pesado: el cerebro GRATIS, no Claude.
 
 Manda el CONTRATO_MAESTRO_AHORRO de DMM:
@@ -298,6 +299,13 @@ def _gemini_directo(prompt, temperatura, modelo):
     MEDIDO ese dia con el paquete grande: 3.5-flash 3.3s | 3-flash-preview 3.4s | latest 9.3s |
     3.7-flash 29.1s | 3.6-flash 62.8s | 2.5-flash y 2.0-flash: 404, muertos."""
     import json as _j, os as _o, urllib.request as _u, urllib.parse as _up
+    # Un nombre de la fila SIN modelo configurado reventaba mudo con "can only concatenate str
+    # (not NoneType) to str" y tumbaba el relevo dejando el ciclo sin revisor (fallo real
+    # 2026-08-31: gemini4 estaba en ORDEN pero no en el dict `modelos`). Se avisa CLARO y por
+    # su nombre, no con un mensaje sin sentido: un cerebro de adorno hace creer que hay relevo
+    # cuando no lo hay, peor que no tenerlo.
+    if not modelo:
+        raise RuntimeError("no hay modelo configurado para Gemini")
     k = _o.environ.get("GEMINI_API_KEY", "").strip()
     if not k:
         raise RuntimeError("no hay llave de Gemini")
@@ -380,11 +388,20 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
         turnos = [primero] + [q for q in turnos if q != primero]
     avisos = []
     vel = _velocidad()
+    # DE UNA SOLA FUENTE, NUNCA A MANO (fallo real 2026-08-31, el que mas dinero costo ese dia).
+    # Antes esta lista se escribia nombre por nombre, y quienes_hay() sacaba los suyos de otro
+    # sitio: de `vel`. Dos listas que tenian que decir lo mismo y que nadie comparaba nunca.
+    # Un nombre configurado entraba en la fila pero NO estaba aqui, asi que al hablarle el modelo
+    # llegaba vacio, reventaba, el relevo lo contaba como un fallo mas y el ciclo se quedaba SIN
+    # REVISOR: todo el trabajo caia en el cerebro de PAGO, pagandolo Julio, sin ninguna necesidad.
+    # Anadir el nombre que faltaba habria tapado el caso de ese dia; manana se configura otro y
+    # vuelve a pasar igual. Por eso ahora sale de la MISMA fuente: quien se configura, entra en la
+    # fila Y se sabe como llamarle. No hay dos sitios que recordar.
     # Cada modelo de Groq es un cupo gratis distinto: Groq reparte POR MODELO, no por llave.
-    modelos = {"groq": vel["modelo_groq"], "groq20b": vel.get("modelo_groq20b"),
-               "gemini": vel["modelo_gemini"], "gemini2": vel.get("modelo_gemini2"),
-               "gemini3": vel.get("modelo_gemini3"), "local": None,
-               "deepseek": vel.get("modelo_deepseek")}
+    modelos = {}
+    for _quien in cuotas.ORDEN:
+        # el de casa no se llama por internet: no tiene modelo que pedirle a nadie
+        modelos[_quien] = None if _quien == "local" else vel.get("modelo_" + _quien)
     for k in vel:
         if k.startswith("modelo_router"):
             modelos[k[len("modelo_"):]] = vel[k]
@@ -570,7 +587,12 @@ def trabajar(paquete, tarea, generador=None, auditor=None):
         return {"_error": "NO_ENCONTRADO: no hay llave ni modelo local (revisa el .env de DMM)"}
 
     # GENERAR es lo pesado -> DeepSeek (orden de Julio). AUDITAR es lo ligero -> gratis, abajo.
-    crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(paquete, tarea), 0.2, pesado=True)
+    # El pesado NO se queda fijo: si el que llama pidio un generador, ese manda (primero=generador)
+    # y el pesado se apaga para no pisarlo. Si nadie pidio generador, pesado_ahora sale verdadero
+    # y la regla de siempre sigue intacta.
+    pesado_ahora = not generador
+    crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(paquete, tarea), 0.2,
+                                                  pesado=pesado_ahora, primero=generador)
     if not crudo:
         return {"_error": "; ".join(av1)}
     propuesta = _json_de(crudo)
@@ -578,14 +600,26 @@ def trabajar(paquete, tarea, generador=None, auditor=None):
     if inventados:
         propuesta["_fuera_del_paquete"] = inventados   # marco: no se deja pasar como valido
 
+    # Si se pidio un generador y contesto otro, se avisa. Nunca en silencio.
+    if generador and quien_gen != generador:
+        av1.append("se pidio generar a %s y no esta disponible: contesto %s" % (generador, quien_gen))
+
     # el auditor NUNCA puede ser el mismo que genero: si no, se aprueba a si mismo.
     # CURA DE cruzado.py (Julio, 2026-08-31): el revisor puede contestar ROTO o ilegible. Antes
     # se le preguntaba UNA sola vez y se tiraba la propuesta buena del obrero (la vuelta YA
     # PAGADA). Ahora se le pide de nuevo (hasta 2 intentos), igual que hace el juez en resolver().
     auditoria = None
+    av2 = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor
+    auditor_ok = auditor
+    if auditor == quien_gen:
+        # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa
+        auditor_ok = None
+        av2.append("el auditor pedido (%s) era el mismo que genero; se busca otro" % auditor)
     for _intento in range(2):
-        crudo_a, quien_aud, av2 = _preguntar_con_relevo(
-            _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1, evitar=quien_gen)
+        crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
+            _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1,
+            evitar=quien_gen, primero=auditor_ok)
+        av2 += av_intento   # no se pierde lo que dijo el primer intento
         if not crudo_a:
             continue                       # no contesto: se le pide de nuevo
         auditoria = _json_de(crudo_a)
@@ -599,6 +633,10 @@ def trabajar(paquete, tarea, generador=None, auditor=None):
                                 if isinstance(auditoria, dict) else ""),
                      "resumen_para_el_jefe":
                          "el revisor contesto roto; se conserva la propuesta del obrero"}
+
+    # Si se pidio un auditor y no fue el que reviso, se avisa.
+    if auditor and quien_aud != auditor:
+        av2.append("se pidio auditar a %s y no esta disponible: reviso %s" % (auditor, quien_aud))
 
     return {"obrero": quien_gen, "auditor": quien_aud or "(ninguno)",
             "propuesta": propuesta, "auditoria": auditoria,

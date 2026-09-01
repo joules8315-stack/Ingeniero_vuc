@@ -42,7 +42,35 @@ def enviar(para, texto, de=None):
                "cuando": time.strftime("%Y-%m-%d %H:%M"), "leido": False},
               open(ruta, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     _llamar(para, texto)          # el llamado: que la otra IA 'sienta' que le escribieron
+    try:
+        cerrar_recados_de(para, de or _quien())
+    except Exception:
+        pass
     return ruta
+
+
+def cerrar_recados_de(quien, por_quien):
+    """Cierra los recados que 'quien' dejo, marcandolos como respondidos por 'por_quien'."""
+    cerrados = 0
+    if not os.path.isdir(_bandeja()):
+        return cerrados
+    for ruta in glob.glob(os.path.join(_bandeja(), "*.json")):
+        try:
+            with open(ruta, encoding="utf-8") as f:
+                m = json.load(f)
+            if str(m.get("de", "")).strip().lower() != quien.strip().lower():
+                continue
+            if m.get("respondido"):
+                continue
+            m["respondido"] = True
+            m["respondido_por"] = por_quien
+            m["respondido_cuando"] = time.strftime("%Y-%m-%d %H:%M")
+            with open(ruta, "w", encoding="utf-8") as f:
+                json.dump(m, f, ensure_ascii=False, indent=1)
+            cerrados += 1
+        except Exception:
+            continue
+    return cerrados
 
 
 def _llamar(para, texto):

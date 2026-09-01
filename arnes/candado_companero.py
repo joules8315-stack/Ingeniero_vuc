@@ -51,13 +51,26 @@ def _apuntar(a_quien, motivo):
         pass
 
 
+# Palabras de MANDAR. Sin una de estas cerca, nombrar a alguien no es mandarle trabajo.
+VERBOS_DE_MANDAR = ("enviar(", "enviar (", "canal.enviar", "asignar(", "reparto.asignar",
+                    "encargo para", "tarea para", "le mando", "mandarle", "pidele",
+                    "que lo haga", "que se encargue")
+
+
 def _a_quien_le_habla(texto, nombres):
-    """Devuelve el primer nombre de la lista al que se le esta mandando algo en ese texto."""
+    """El primer nombre al que de verdad se le esta MANDANDO algo. No basta con nombrarlo.
+
+    OJO, cazado el 2026-08-31: al principio bastaba con que el nombre apareciera, y este mismo
+    candado freno la escritura de la PRUEBA que comprueba que ese esta retirado. Nombrar a
+    alguien no es darle trabajo. Un candado que grita en falso se acaba apagando, y entonces
+    no protege nada.
+    """
     llano = (texto or "").lower()
+    if not any(v in llano for v in VERBOS_DE_MANDAR):
+        return ""                          # no se le esta mandando nada a nadie
     for n in nombres:
         if not n:
             continue
-        # se busca el nombre entre comillas o pegado a una palabra de mandar
         for forma in ("'%s'" % n, '"%s"' % n, " %s " % n, "para %s" % n, "a %s" % n):
             if forma in llano:
                 return n
@@ -90,9 +103,47 @@ def main():
         return 0                           # sin la pieza no hay nada que comparar: no se estorba
 
     dentro = data.get("tool_input") or {}
+
+    # EL PROPIO ARNES SE PUEDE TOCAR SIEMPRE, igual que en los candados hermanos. Si no, este
+    # mismo candado impide RETIRAR a alguien (el texto nombra al retirado) y no habria forma de
+    # cumplir una orden de Julio. Cazado el 2026-08-31: freno el retiro de cline que el pidio,
+    # y para arreglarlo habia que tocarlo a el, que tambien se frenaba. Un candado que se muerde
+    # la cola acaba apagado.
+    ruta = str(dentro.get("file_path") or "").replace("\\", "/").lower()
+    if "/arnes/" in ruta or "/vigias/" in ruta:
+        return 0
+
     texto = " ".join(str(dentro.get(k) or "") for k in ("command", "content", "new_string"))
     if not texto.strip():
         return 0
+
+    # PRIMERO LOS RETIRADOS: a esos no se les manda trabajo NUNCA, ni aunque el activo falle.
+    # Julio: "No uses mas a cline, no lo uses". El retiro no tiene salida honrada; la reserva si.
+    try:
+        nombres_retirados = [str(r.get("quien", "")).lower() for r in companero.retirados()]
+    except Exception:
+        nombres_retirados = []
+    retirado = _a_quien_le_habla(texto, nombres_retirados)
+    if retirado:
+        por_que = ""
+        try:
+            por_que = companero.por_que_retirado(retirado)
+        except Exception:
+            pass
+        _apuntar(retirado, "esta RETIRADO: no se le manda trabajo nunca")
+        sys.stderr.write(
+            "\nFRENADO — %s ESTA RETIRADO, NO SE LE MANDA TRABAJO\n\n"
+            "  Julio lo retiro: %s\n\n"
+            "  Esto NO tiene salida: un retirado no vuelve porque el de ahora falle. Si el\n"
+            "  companero de ahora (%s) no puede, se le dice a Julio; no se acude al retirado.\n\n"
+            "  La ley: CONTRATO_EL_COMPANERO.md\n"
+            % (retirado, por_que or "lo mando Julio", companero.activo() or "(nadie)"))
+        try:
+            import candados_medicion
+            candados_medicion.cazado("companero")
+        except Exception:
+            pass
+        return 2
 
     nombres_reemplazo = [str(r.get("quien", "")).lower() for r in companero.reservas()]
     a_quien = _a_quien_le_habla(texto, nombres_reemplazo)
