@@ -72,7 +72,15 @@ def test_el_modelo_de_groq_configurado_esta_VIVO():
         pytest.skip("sin llave de Groq")
     c, _ = obrero.prestar_cerebro()
     m = obrero._velocidad().get("modelo_groq")
-    assert (c._preguntar_groq("Di solo LISTO.", m, 0.1) or "").strip(), \
+    try:
+        respuesta = c._preguntar_groq("Di solo LISTO.", m, 0.1)
+    except Exception as e:
+        numero = getattr(e, "code", None) or getattr(e, "status_code", None)
+        texto = str(e).lower()
+        if numero in (429, 503) or "429" in texto or "503" in texto or "too many requests" in texto or "service unavailable" in texto:
+            pytest.skip("cuota del dia agotada o servidor no disponible: no es fallo del modelo")
+        raise
+    assert (respuesta or "").strip(), \
         "el modelo de Groq configurado no contesta"
 
 
