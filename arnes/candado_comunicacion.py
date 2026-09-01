@@ -103,12 +103,17 @@ def main():
                                   for m in pend[:4])
                       + "\n   Responde por el canal antes de terminar:\n"
                         "     cd C:\\Ingeniero_VUC; python arnes/canal.py enviar cline \"<tu respuesta>\"")
-    # Comunicacion obligatoria con Cline y DeepSeek (Julio 2026-08-24): si hizo trabajo y no
-    # escribio por el canal a cline ni a deepseek, se le exige.
-    if qu in ("claude",) and not (_escribio_a(qu, "cline") or _escribio_a(qu, "4ojos")) and not _escribio_a(qu, "deepseek"):
-        faltas.append("F4: Claude debe comunicarse SIEMPRE con Cline y con DeepSeek, en primera\n"
+    # Comunicacion obligatoria con el companero activo y DeepSeek (Julio 2026-08-24): si hizo trabajo y no
+    # escribio por el canal al companero actual ni a deepseek, se le exige.
+    try:
+        import companero
+        companero_activo = companero.activo()
+    except Exception:
+        companero_activo = "cline"  # respaldo: lista de ahora
+    if qu in ("claude",) and not (_escribio_a(qu, companero_activo) or _escribio_a(qu, "4ojos")) and not _escribio_a(qu, "deepseek"):
+        faltas.append("F4: Claude debe comunicarse SIEMPRE con " + companero_activo + " y con DeepSeek, en primera\n"
                       "   instancia, para cualquier cosa. No escribiste por el canal. Hazlo:\n"
-                      "     cd C:\\Ingeniero_VUC; python arnes/canal.py enviar cline \"<estado>\"\n"
+                      "     cd C:\\Ingeniero_VUC; python arnes/canal.py enviar " + companero_activo + " \"<estado>\"\n"
                       "     cd C:\\Ingeniero_VUC; python arnes/canal.py enviar deepseek \"<encargo>\"")
     if not faltas:
         _apuntar(0)
