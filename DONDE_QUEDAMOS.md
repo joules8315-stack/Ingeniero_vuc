@@ -1,126 +1,95 @@
-# DONDE QUEDAMOS — cierre del 2026-08-31
+# DONDE QUEDAMOS — 2026-08-31
 
-## LO PRIMERO DE MAÑANA, Y LO BLOQUEA TODO: EL TRAMO DE LÍNEAS
+Julio: *"cuando todo este terminado, guarda todo, continuamos manana"*.
+Esta todo guardado y en verde. Aqui esta lo que hicimos y por donde seguir.
 
-**Medido, con tres rechazos seguidos hoy y ocho ayer.**
+---
 
-Cuando el equipo propone una reparación, el obrero tiene que decir **qué tramo de líneas toca**.
-Y ahí es donde se cae siempre:
+## LO QUE SE CERRO HOY (todo con su ley, su candado y su prueba)
 
-| Lo que declaró | Lo que pasaría |
+Todo lo de hoy es **la misma enfermedad con distintas caras**: el sistema decia
+una cosa y hacia otra.
+
+| Lo que decia | Lo que hacia de verdad |
 |---|---|
-| líneas 97-136 | borraría la función entera |
-| líneas 1-196 | borraría **todo el archivo**, incluidas las piezas de apoyo |
-| líneas 113-117 | esas líneas ni siquiera estaban en el material |
+| que buscaba el sitio del codigo | contaba renglones, que se corren solos, y borraba funciones enteras |
+| que habia un ayudante disponible | no sabia ni como llamarle, y reventaba al intentarlo |
+| que aceptaba la eleccion de revisor | la tiraba a la basura **en silencio** |
+| que habia que contestar los recados | no daba ninguna forma de marcarlos como contestados |
+| quien mandaba cada recado | los firmaba como "desconocido" y luego bloqueaba con ellos |
+| que un fallo estaba protegido | apuntaba una prueba **que no existe** |
 
-**El auditor lo rechaza con razón todas las veces.** El fallo no es suyo ni de la reparación
-pedida: es que **pedimos un tramo en vez de pedir un texto**.
+Las seis, cerradas.
 
-**La salida, y ya está medio hecha:** hoy se reparó que el auditor juzgue por el TEXTO y no por el
-número. Falta la otra mitad — que **el obrero entregue "este texto se cambia por este otro"** en
-lugar de "las líneas de la 97 a la 136". Mientras eso no esté, **ninguna reparación del propio
-sistema va a poder cerrarse**, y cada intento cuesta rondas.
+### 1. El sitio se busca POR NOMBRE, nunca por numero de renglon
+- `cerebro/piezas.py::funcion_completa` devuelve la pieza entera buscandola por su nombre.
+- El repartidor ya no lleva los numeros 87 y 227 escritos a mano.
+- El obrero entrega **texto viejo a texto nuevo**, no un tramo.
+- Candado `arnes/candado_por_nombre.py`, enchufado y probado.
+
+### 2. Con quien se trabaja lo dice Julio, y hay quien lo haga cumplir
+- `arnes/companero.py`: **un solo sitio** dice quien es el companero.
+- Distingue RESERVA (con salida honrada) de RETIRADO (sin ella).
+- Candado `arnes/candado_companero.py`, enchufado.
+
+### 3. El equipo dejo de tirar trabajo ya pagado
+- Si el revisor contesta roto, **se le vuelve a preguntar**. Antes se tiraba la ronda.
+- El informe ya no dice un simple interrogante: dice que el revisor contesto roto.
+
+### 4. Las dos listas ya no se pueden separar — LA CURA DE FONDO DEL DIA
+- Habia **dos listas que debian decir lo mismo y nadie comparaba nunca**: una decidia
+  quien entra en la fila de cerebros, la otra sabia como llamarle.
+- Un nombre entro en la primera sin estar en la segunda: reventaba, el relevo lo contaba
+  como un fallo mas, y el ciclo se quedaba **SIN REVISOR**. Todo caia en el de PAGO.
+- Ahora la segunda se construye de la **misma fuente** que la primera.
+- **El hallazgo fue de Continue.** Fue el mejor diagnostico del dia.
+
+### 5. Se puede elegir de verdad quien escribe y quien revisa
+- Lo pesado ya no es fijo: se calcula, para que pedir un cerebro concreto no se lo pise.
+- Si no se puede respetar lo pedido, **SE DICE**. Antes se ignoraba callando.
+- El que revisa **nunca** puede ser el que escribio.
+
+### 6. El buzon y los recados
+- Contestar un recado **lo deja cerrado**, con quien y cuando.
+- El sistema **ya sabe quien es quien** (antes firmaba todo como "desconocido").
+- El vigilante que llevaba **seis dias muerto** sin que nadie lo notara.
 
 ---
 
-## LO QUE SE HIZO HOY
+## LO QUE HAY QUE DECIDIR MANANA
 
-### 1. El filtro que protegía tus datos ya no destroza el código (CERRADO, con equipo)
+**Con que ayudante se sigue.** Los numeros de hoy, misma jornada:
 
-Tapaba cualquier cosa llamada `clave`, `token` o `secret` seguida de un igual. En un programa
-escrito en español, `clave` es un nombre de variable corrientísimo. Una línea sana llegaba al
-auditor hecha basura, él decía —con razón— *"esto no compila"*, y **rechazaba la ronda**.
-
-**Las IA no alucinaban: les mandábamos código partido y lo copiaban.**
-
-DeepSeek propuso, Groq auditó, aprobado. Comprobado que la vigía muerde. Y una vigía vecina cazó
-que mi primer arreglo dejaba escapar una llave corta de verdad: corregido.
-
-### 2. El auditor ya no rechaza por contar líneas (CERRADO, con equipo)
-
-DeepSeek propuso, Gemini auditó, aprobado. Nació roja en 5 de 7, verde después, sabotaje
-comprobado. La regla vecina se actualizó para medir **más** que antes.
-
-### 3. El veredicto ilegible (CERRADO de rebote)
-
-Llegaba como `?` dos rondas seguidas porque el juez no ponía el nombre del campo. **Al decírselo
-expresamente en el encargo, empezó a llegar bien.** Vale la pena dejarlo escrito en sus
-instrucciones para siempre.
-
----
-
-## EL MAPA DEL ARNÉS, MEDIDO HOY DE PUNTA A PUNTA
-
-### Las 7 puertas por donde se puede escribir sin equipo
-
-| # | Cuándo deja pasar | ¿Está bien? |
+| | Cline | Continue |
 |---|---|---|
-| 1 | La llave de Julio está puesta | Sí, es SU llave |
-| 2 | **No se pudo leer la petición** | **NO. Es un accidente, no una excepción** |
-| 3 | **La petición no trae archivo** | **NO. Sin saber qué archivo es, no vigila nada** |
-| 4 | Es un documento | Sí, si no, no se podría legislar |
-| 5 | **El archivo no existe (crear)** | **NO. Por ahí se construyó un subsistema a solas** |
-| 6 | Está dentro del propio arnés | Sí, hay que poder reparar un candado roto |
-| 7 | Hay veredicto aprobado que lo cubre | Sí |
+| Trabajos terminados | **4 de 4** | 0 de 1 |
+| Comprobados en el codigo | **4** | 1 a medias |
+| Dijo hecho sin estarlo | 0 | **3 veces** |
+| Rompio algo | nunca | **2 veces el mismo archivo** |
 
-**LA PUERTA 2 ES LA PEOR Y NADIE LA HABÍA VISTO.** El candado hace *"intenta leer la petición; si
-falla, deja pasar"*. **Un candado que se abre solo cuando algo va mal no es un candado.** Y explica
-lo que el 28 de agosto no se pudo explicar: *"a veces me deja pasar y no sé por qué"*.
+**Recomendacion de Claude:** Cline vuelve a activo para EJECUTAR. Continue solo para
+MIRAR Y OPINAR, que ahi acerto mejor que nadie, pero sin escribir mientras su
+herramienta diga que guardo sin haber guardado.
 
-**La puerta 3 la encontró el auditor**, no yo. El equipo sirve.
-
-### Lo que NO es adorno (casi acuso en falso)
-
-Trece piezas parecían no estar enchufadas. **Comprobado: se llaman desde otros sitios** (los
-enganches del guardado y otras piezas), no desde la configuración. **Ninguna es adorno.**
-
-### Lo que sí está bien
-
-**Ninguna pieza del arnés se queda sin vigía.**
+Falta que Julio lo decida y que se legisle.
 
 ---
 
-## LO QUE QUEDÓ A MEDIAS
+## LO QUE FALTA (por orden)
 
-**La vigía que cierra las 7 puertas está escrita y NACIÓ ROJA en 7 de 12**, por los motivos
-correctos. **Está apartada a propósito**, fuera de la carpeta de vigías, porque el guardián no deja
-guardar con nada en rojo y su reparación no pasó.
-
-**LO PRIMERO AL VOLVER, después del tramo de líneas: devolverla a su sitio** y comprobar que se
-pone verde. Si se olvida, quedan siete puertas abiertas sin nadie que avise.
-
-**Tres rondas de equipo se gastaron** en esa reparación. Las tres rechazadas con razón, y las tres
-por el tramo de líneas.
-
----
-
-## LO QUE FALTA DE JULIO (dos comandos, una vez)
-
-```
-setx OPENROUTER_API_KEY "su llave"
-```
-Sin esto, los dos únicos cerebros gratis que **no fallaron** siguen invisibles, y cuando Google se
-cae —pasó el 28, los tres a la vez— **el equipo se queda sin auditor**.
-
-Y la lista de permitidos de Windows, ya entregada. Sin ella, cada permiso muere al cerrar la
-ventana.
+1. **Que Julio lo pruebe con sus ojos.** Vigia verde NO es prueba. Nada de hoy esta
+   sellado hasta que el lo vea funcionar.
+2. Decidir y legislar lo del ayudante (arriba).
+3. La vigia de las 7 puertas del candado de equipo: escrita, nacio roja, apartada.
+4. El vigilante que autoriza desde el plan aprobado: legislado, NO construido.
+5. Pruebas con navegador del propio Ingeniero: no empezadas.
+6. **Foto Informe, paso 6 de 8.** El producto de Julio, parado mientras se afina la
+   herramienta. Es lo unico que da dinero: en cuanto la herramienta aguante, va esto.
 
 ---
 
-## LO QUE PIDIÓ JULIO EL 2026-08-31 Y AÚN NO ESTÁ
+## COMO EMPEZAR MANANA
 
-1. **Que nunca se pueda trabajar sin equipo, sin puertas traseras** → medido (7 puertas), la vigía
-   está escrita y roja, la reparación no pasó por el tramo de líneas.
-2. **El vigilante que autoriza desde el plan aprobado** → legislado, no construido.
-3. **Que el equipo no sea una molestia** → a medias: se arreglaron el filtro, el conteo y el
-   veredicto ilegible. Falta el tramo de líneas.
-4. **Que no le pida permiso a cada instante** → falta el vigilante, y falta su lista de permitidos.
-5. **Pruebas reales con navegador del Ingeniero** → NO EMPEZADO.
+    cd C:\Ingeniero_VUC; python ingeniero.py arranca
 
-## Y EN FOTO INFORME, SIN GUARDAR (está en disco, no se pierde)
-
-El botón de los títulos y el arreglo de los enlaces del Word. Necesitan el ensayo completo, y ese
-necesita el portero encendido:
-```
-cd "C:\Users\USER\dev\Foto_info_repo\Foto_informe--main"; python rv3_portero.py
-```
+**512 comprobaciones en verde, ninguna roja, todo guardado.**
