@@ -109,10 +109,22 @@ def api(ruta_abs):
     """La BOCA de un modulo: sus funciones y clases publicas, con la linea donde viven.
     Con esto la IA sabe QUE puede llamar sin abrir el archivo."""
     out = []
-    for i, ln in enumerate(_leer(ruta_abs).splitlines(), 1):
+    lineas = _leer(ruta_abs).splitlines()
+    for i, ln in enumerate(lineas, 1):
         m = re.match(r"^(def|class)\s+([A-Za-z_]\w*)", ln)
         if m and not m.group(2).startswith("_"):
-            out.append({"nombre": m.group(2), "tipo": m.group(1), "linea": i})
+            explicacion = ""
+            if i < len(lineas):
+                siguiente = lineas[i].strip()
+                if siguiente.startswith('"""') or siguiente.startswith("'''"):
+                    explicacion = siguiente[3:]
+                    if explicacion.endswith('"""') or explicacion.endswith("'''"):
+                        explicacion = explicacion[:-3]
+                    explicacion = explicacion.strip()
+                    punto = explicacion.find('.')
+                    if punto != -1:
+                        explicacion = explicacion[:punto + 1]
+            out.append({"nombre": m.group(2), "tipo": m.group(1), "linea": i, "para_que_sirve": explicacion})
     return out
 
 

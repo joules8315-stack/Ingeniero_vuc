@@ -149,7 +149,10 @@ Comprueba una por una:
    expresamente. Al reves: poner el valor una sola vez arriba y que todos lo miren de ahi es la
    manera correcta de trabajar, porque evita que dos sitios se descuadren. Inventar es AFIRMAR
    que algo ya existia cuando no existia, o usar un archivo o una funcion que no esta en ninguna
-   parte.
+   parte. Escribir lineas nuevas, aunque sean muchas y aunque antes no hubiera nada parecido en
+   el archivo, NO es inventar cuando el encargo lo pide. Casi toda reparacion anade codigo que
+   no estaba; esa es la unica manera de reparar. La frase "esto no estaba en el codigo original"
+   NO es un motivo de rechazo por si sola, y usarla como motivo es un rechazo en falso.
 2. El cambio arregla de verdad lo que dice el diagnostico?
 3. Rompe algun vecino de la seccion "A QUIEN PUEDE DANAR"?
 4. Se salta alguna ley del contrato que viene en el material?
