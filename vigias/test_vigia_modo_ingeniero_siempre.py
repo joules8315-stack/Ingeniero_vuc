@@ -42,3 +42,62 @@ def test_hay_algo_que_bloquea_sin_modo_ingeniero():
     s = json.dumps(_settings())
     assert ("modo_ingeniero" in s) or ("candado_ingeniero" in s), \
         "no hay nada que fuerce el modo ingeniero en settings.json"
+
+
+# ─── EL MODO INGENIERO ES EL ARNES DE CUALQUIER IA, EN CUALQUIER PROYECTO (Julio, 2026-09-02).
+# "Todo lo que trabaje aqui debe estar en modo ingeniero, nada trabaja de manera diferente, y todo
+# lo que envie a reparar (MVP, DMM, cualquier aplicacion) debe arrancar por modo ingeniero. No es
+# una sugerencia: asi, y solo asi debe trabajar."
+CLINERULES_USUARIO = os.path.join(os.path.expanduser("~"), ".clinerules", "modo_ingeniero.md")
+PROYECTOS_CFG = os.path.join(AQUI, "proyectos.config")
+
+
+def _proyectos_registrados():
+    """Los proyectos que viven en proyectos.config: (apodo, ruta)."""
+    out = []
+    try:
+        for linea in open(PROYECTOS_CFG, encoding="utf-8"):
+            linea = linea.strip()
+            if not linea or linea.startswith("#") or "=" not in linea or "|" not in linea:
+                continue
+            apodo = linea.split("=", 1)[0].strip()
+            ruta = linea.split("=", 1)[1].split("|", 1)[0].strip()
+            if apodo and ruta:
+                out.append((apodo, ruta))
+    except Exception:
+        pass
+    return out
+
+
+def test_cline_tiene_modo_ingeniero_a_nivel_usuario():
+    """Cline tambien debe estar en modo ingeniero en CUALQUIER proyecto, no solo en Ingeniero_VUC.
+    Sin las reglas de usuario, Cline trabaja sin arnes fuera de aqui."""
+    assert os.path.exists(CLINERULES_USUARIO), (
+        "Cline no tiene modo_ingeniero a nivel usuario (~/.clinerules/modo_ingeniero.md): "
+        "fuera de Ingeniero_VUC no trabaja con el arnes")
+
+
+def test_todos_los_proyectos_registrados_arrancan_por_modo_ingeniero():
+    """Todo proyecto registrado debe arrancar por modo ingeniero: bloque en CLAUDE.md + candado de
+    lectura + reglas de Cline. Asi, y solo asi se trabaja en ellos."""
+    comprobados = 0
+    for apodo, ruta in _proyectos_registrados():
+        if not os.path.isdir(ruta):
+            continue                          # no esta en esta maquina: no se puede comprobar
+        comprobados += 1
+        md = os.path.join(ruta, "CLAUDE.md")
+        texto = open(md, encoding="utf-8").read() if os.path.exists(md) else ""
+        assert "INGENIERO_VUC:INICIO" in texto, \
+            "%s no tiene el bloque de modo ingeniero en su CLAUDE.md" % apodo
+        cr = os.path.join(ruta, ".clinerules", "modo_ingeniero.md")
+        assert os.path.exists(cr), \
+            "%s no tiene .clinerules/modo_ingeniero.md (Cline sin arnes ahi)" % apodo
+        sj = os.path.join(ruta, ".claude", "settings.json")
+        try:
+            s = json.load(open(sj, encoding="utf-8"))
+        except Exception:
+            s = {}
+        assert "read_gate" in json.dumps(s), \
+            "%s no tiene el candado de lectura en .claude/settings.json" % apodo
+    assert comprobados >= 1, "no se pudo comprobar ningun proyecto registrado"
+
