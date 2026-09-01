@@ -56,6 +56,34 @@ cd C:\Ingeniero_VUC; python ingeniero.py trabaja {apodo} "<el problema>"
 """
 
 
+# EL MODO INGENIERO PARA CLINE (Julio, 2026-09-02): "el asunto principal es que todo lo que
+# trabaje debe estar en modo ingeniero. No es una sugerencia: asi, y solo asi debe trabajar."
+# Se deja en `.clinerules/modo_ingeniero.md` de CADA proyecto, porque Cline lee esas reglas
+# dentro del proyecto y asi ningun trabajo se hace fuera del arnes.
+CLINE_BLOQUE = """# MODO INGENIERO — reglas fijas de Cline en este proyecto (las pone el Ingeniero VUC).
+
+Toda orden que Julio de aqui arranca por el MODO INGENIERO. El Ingeniero es el arnes de cualquier
+IA: toma la orden y repara. No es una sugerencia: asi, y solo asi debe trabajar.
+
+0. NUNCA TRABAJAR A SOLAS (lo mas importante). Para tocar CODIGO, PRIMERO se corre el equipo:
+     cd C:\\Ingeniero_VUC; python ingeniero.py equipo {apodo} "<la tarea>"
+   Uno GENERA, OTRO distinto AUDITA (nadie se aprueba a si mismo). Si el candado te bloquea,
+   NO lo rodees ni lo ignores: pasa por el equipo. No se escribe codigo a solas en ningun proyecto.
+1. NUNCA ASUMIR. Si algo no esta escrito, se PREGUNTA (PREGUNTA_REQUERIDA) o se escribe NO_ENCONTRADO.
+   Jamas se adivina.
+2. NO LEER EL PROYECTO ENTERO. Se pide el paquete minimo:
+     cd C:\\Ingeniero_VUC; python ingeniero.py trabaja {apodo} "<el problema>"
+   Lo que falte se pide con NECESITO_LEER. El candado de lectura frena lo demas.
+3. VIGIA VERDE NO ES PRUEBA: la prueba es que Julio lo vea funcionar con sus ojos. Ninguna IA se
+   autocertifica.
+4. NO ROMPER VECINOS. Antes de tocar se mira "A QUIEN PUEDE DANAR" del paquete.
+5. A JULIO SE LE HABLA SIMPLE, sin jerga, y el comando siempre listo para PowerShell (`;`, no `&&`).
+6. SI SE PIERDE EL CONTEXTO, NO SE SIGUE A CIEGAS. Se para y se dice que hacer para retomar.
+
+Cuando Julio mande algo: se arranca por el Ingeniero (paquete + equipo), no por cuenta propia.
+"""
+
+
 def hook_cfg():
     gate = os.path.join(AQUI, "arnes", "read_gate.py").replace("\\", "/")
     return {"type": "command", "command": f'python "{gate}"'}
@@ -117,6 +145,19 @@ def instalar(apodo, quitar=False):
     else:
         open(rr, "w", encoding="utf-8").write(REGLA.format(apodo=apodo))
         print("REGLA puesta en", rr)
+
+    # 4) EL MODO INGENIERO PARA CLINE (Julio, 2026-09-02): sin esto, Cline no tiene reglas fuera
+    #    de Ingeniero_VUC y trabaja sin arnes en los proyectos de Julio. Se deja `.clinerules/`
+    #    dentro del proyecto para que Cline SIEMPRE lea el modo ingeniero aqui.
+    crd = os.path.join(raiz, ".clinerules")
+    os.makedirs(crd, exist_ok=True)
+    cr = os.path.join(crd, "modo_ingeniero.md")
+    if quitar:
+        if os.path.exists(cr):
+            os.remove(cr); print("QUITADO modo ingeniero de Cline", cr)
+    else:
+        open(cr, "w", encoding="utf-8").write(CLINE_BLOQUE.format(apodo=apodo))
+        print("MODO INGENIERO DE CLINE puesto en", cr)
     return 0
 
 
