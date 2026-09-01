@@ -130,6 +130,21 @@ def _apuntar_frenada(fp, por_que):
             f.write("%s  %s  (%s)\n" % (time.strftime("%Y-%m-%d %H:%M"), fp[:120], por_que))
     except Exception:
         pass
+    # EL REGISTRO DE DECISIONES (Julio, 2026-09-02): aqui queda TODO lo que decide el candado,
+    # lo que frena Y lo que deja pasar, con cuatro datos separados por barra: cuando, que
+    # archivo, que decidio y por que. Antes solo se apuntaba lo frenado, asi que nadie podia
+    # auditar POR DONDE se colo algo: Julio tenia que creerme en vez de mirarlo.
+    try:
+        _dec = os.path.join(AQUI, "memoria", "DECISIONES_CANDADO.log")
+        _texto = str(por_que or "")
+        _que = "DEJO PASAR" if _texto.upper().startswith("DEJO PASAR") else "FRENO"
+        _motivo = _texto.split(":", 1)[1].strip() if ":" in _texto else _texto
+        os.makedirs(os.path.dirname(_dec), exist_ok=True)
+        with open(_dec, "a", encoding="utf-8") as f:
+            f.write("%s | %s | %s | %s\n"
+                    % (time.strftime("%Y-%m-%d %H:%M"), fp[:160], _que, _motivo))
+    except Exception:
+        pass
 
 
 MENSAJE = (
@@ -147,6 +162,7 @@ def main():
     import autorizacion
     # Solo Julio apaga, por comando (autorizar-off) y con autorizacion escrita: candados abiertos.
     if autorizacion.autorizada():
+        _apuntar_frenada("(llave de Julio)", "DEJO PASAR: llave de Julio puesta")
         return 0
     # El interruptor viejo INGENIERO_OFF ya NO basta para apagar: sin autorizacion de Julio,
     # se deja constancia y se sigue bloqueando (Julio, 2026-08-24).
@@ -154,23 +170,86 @@ def main():
         _apuntar_frenada("(INGENIERO_OFF)", "interruptor encendido sin autorizacion previa de Julio")
     try:
         data = json.load(sys.stdin)
-    except Exception:
-        return 0
+    except Exception as e:
+        _apuntar_frenada("(peticion ilegible)", "no se pudo leer la peticion: %s" % e)
+        sys.stderr.write(MENSAJE.format(fp="(peticion ilegible)"))
+        return 2
     fp = str((data.get("tool_input") or {}).get("file_path") or "")
+
+    # SOLO SE VIGILA LO QUE ESTA EN CASA (cazado el 2026-09-01, al cerrar las puertas).
+    # Al exigir veredicto tambien para CREAR, este candado empezo a frenar archivos que ni
+    # siquiera son del proyecto: los borradores de la carpeta temporal. Un candado que vigila
+    # el disco entero estorba en sitios donde no manda, y un candado que estorba se acaba
+    # apagando. Fuera de la casa y de los proyectos atendidos, no es asunto suyo.
+    if fp:
+        _abs = os.path.abspath(fp).replace("\\", "/").lower()
+        _casas = [AQUI.replace("\\", "/").lower()]
+        # Las pruebas desvian la casa a su carpeta de mentira, igual que hace el resto del
+        # arnes con sus cuadernos. Asi miden al candado DE VERDAD sin tocar el proyecto.
+        _otra_casa = os.environ.get("INGENIERO_CASA_TEST", "").strip()
+        if _otra_casa:
+            _casas.append(_otra_casa.replace("\\", "/").lower())
+        try:
+            _cfg = os.path.join(AQUI, "proyectos.config")
+            with open(_cfg, "r", encoding="utf-8") as _f:
+                for _linea in _f:
+                    _linea = _linea.strip()
+                    if not _linea or _linea.startswith("#"):
+                        continue
+                    if "=" not in _linea or "|" not in _linea:
+                        continue
+                    _ruta = _linea.split("=", 1)[1].split("|", 1)[0].strip()
+                    if _ruta:
+                        _casas.append(_ruta.replace("\\", "/").lower())
+        except Exception:
+            pass
+        if not any(_abs.startswith(c) for c in _casas if c):
+            return 0                       # no es de esta casa: no se vigila
     if not fp:
-        return 0
+        _apuntar_frenada("(peticion vacia)", "la peticion no trae archivo")
+        sys.stderr.write(MENSAJE.format(fp="(peticion vacia)"))
+        return 2
     if os.path.splitext(fp)[1].lower() not in CODIGO:
+        _apuntar_frenada(fp, "documento libre")
         return 0                                    # documentos: libres
-    if not os.path.exists(fp):
-        return 0                                    # crear no es reescribir
     rel = fp.replace("\\", "/").lower()
     if "/arnes/" in rel:
+        _apuntar_frenada(fp, "DEJO PASAR: es el propio arnes")
         return 0                                    # hay que poder arreglar el propio candado
+    # VIGIA NUEVA (Julio, 2026-09-02): crear una vigia nueva (por carpeta /vigias/ o por
+    # nombre test_vigia_) NO exige veredicto: es la prueba que protege una reparacion y
+    # debe nacer ANTES que ella. Si no existe, se deja pasar y se apunta. REESCRIBIR una
+    # vigia que ya existe sigue exigiendo veredicto.
+    #
+    # EL ORDEN IMPORTA Y AQUI SE PAGO: este trozo estaba DESPUES del freno de "crear codigo
+    # nuevo", asi que era codigo muerto al que no se llegaba nunca. Una vigia nueva, por
+    # definicion, todavia no existe. Toda excepcion va ANTES del freno o no sirve de nada.
+    # Y NO BASTA CON LLAMARSE VIGIA: hay que SERLO. Se mira el contenido que se va a escribir,
+    # y solo pasa si de verdad es una prueba (trae pytest y algun def test_). Si no, seria la
+    # trampa mas facil del mundo: llamar test_vigia_ a cualquier cosa y colar codigo entero sin
+    # que nadie lo revise. Cumplir la letra y saltarse el espiritu ya paso una vez aqui.
+    # Y sin contenido que mirar tampoco se abre: una excepcion que no se puede comprobar deja
+    # de ser excepcion y se convierte en una puerta.
+    _loquesea = str((data.get("tool_input") or {}).get("content") or
+                    (data.get("tool_input") or {}).get("new_string") or "")
+    _es_vigia_de_verdad = ("pytest" in _loquesea and "def test_" in _loquesea)
+    if (("/vigias/" in rel) or
+            os.path.basename(fp).lower().startswith("test_vigia_")):
+        if not os.path.exists(fp) and _es_vigia_de_verdad:
+            _apuntar_frenada(fp, "DEJO PASAR: vigia nueva de verdad")
+            return 0
+    # CERRADO (Julio, 2026-08-27): crear archivos de codigo tambien exige veredicto.
+    # Antes se colaba por aqui y se construia un subsistema entero a solas.
+    if not os.path.exists(fp):
+        _apuntar_frenada(fp, "FRENO: crear codigo nuevo sin veredicto del equipo")
+        sys.stderr.write(MENSAJE.format(fp=fp))
+        return 2
     # FORTALECIDO (Julio, 2026-08-21): ya NO se deja pasar sin veredicto aunque no haya cerebros.
     # Antes se escapaba por aqui y dejaba a foto_informe y a cualquier proyecto SIN VIGILAR.
     # Ahora SIEMPRE se exige el veredicto del equipo; si no hay, se BLOQUEA y Julio decide.
     d = veredicto_vigente()
     if cubre(d, fp):
+        _apuntar_frenada(fp, "veredicto del equipo cubre el archivo")
         return 0                                    # el equipo ya lo miro: adelante
     # SIN PUERTA (Julio, 2026-08-26): la salida de emergencia NECESITO_EDITAR / permiso_editar
     # se volvio la ENTRADA PRINCIPAL — todas las IA se salieron por ahi y trabajaron a solas,

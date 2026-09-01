@@ -25,6 +25,13 @@ sys.path.insert(0, os.path.join(AQUI, "arnes"))
 def _nada_toca_lo_real(tmp_path, monkeypatch):
     """Cada prueba, con su propia copia. Se hereda a los programas que la prueba lance."""
     monkeypatch.setenv("INGENIERO_CONTEXTO_TEST", str(tmp_path / ".contexto_perdido"))
+    # LA CASA, DURANTE LAS PRUEBAS, ES LA CARPETA DE USAR Y TIRAR (2026-09-01).
+    # Al cerrarle las puertas traseras, el candado de equipo empezo a vigilar el disco entero y
+    # frenaba hasta los borradores. Se le acoto a vigilar solo lo que esta en casa... y entonces
+    # las pruebas, que escriben en carpetas temporales, quedaron FUERA: el candado las ignoraba y
+    # DIECIOCHO comprobaciones salieron verdes sin medir nada. Una verde que no mide es peor que
+    # una roja, porque da falsa seguridad. Con esto, durante las pruebas su carpeta ES la casa.
+    monkeypatch.setenv("INGENIERO_CASA_TEST", str(tmp_path))
     # El contador de bloqueos del protocolo: tras 2 bloqueos seguidos se abre una valvula de
     # escape para no atascar a Julio. Era compartido, asi que un bloqueo DE VERDAD dejaba la
     # valvula ya abierta y la comprobacion salia roja sin que nada estuviera roto (cuarto sitio

@@ -113,6 +113,11 @@ no felicitarlo. Se duro y concreto.
 
 Comprueba una por una:
 1. INVENTO algo? (archivo/funcion/linea que no aparece en el material) -> es el fallo mas grave.
+   PERO OJO CON QUE ES INVENTAR, porque confundirlo cuesta vueltas y dinero: inventar es usar un
+   archivo, una funcion o un dato que NO EXISTE. Escribir codigo NUEVO que el encargo pide
+   EXPRESAMENTE no es inventar: es hacer el trabajo. Una reparacion SIEMPRE trae codigo que antes
+   no estaba; si eso fuera inventar, ninguna reparacion podria aprobarse jamas. Rechaza por
+   inventar SOLO cuando se usa algo que no existe, NUNCA por escribir lo que se pidio.
 2. El cambio arregla de verdad lo que dice el diagnostico?
 3. Rompe algun vecino de la seccion "A QUIEN PUEDE DANAR"?
 4. Se salta alguna ley del contrato que viene en el material?
@@ -123,6 +128,11 @@ Comprueba una por una:
    cuenta sobre el material que le llega y tu sobre otro recorte, asi que casi nunca coinciden.
    SOLO se rechaza por ubicacion si el texto NO aparece en el material o si no da texto ninguno.
    Un numero que no cuadre NO ES MOTIVO DE RECHAZO por si solo.
+7. NO SE RECHAZA POR LA FORMA, SE JUZGA EL FONDO. Una coma, una palabra distinta, un
+   mensaje redactado de otra manera o un nombre elegido con otro criterio NO son fallos si
+   el cambio hace lo que se pidio. Rechazar por eso quema una vuelta entera y no arregla
+   nada. Se rechaza cuando el cambio NO FUNCIONA, cuando rompe a un vecino, cuando usa
+   algo que no existe, o cuando no hace lo que el encargo pedia.
 
 Responde SOLO JSON:
 {{"veredicto": "APROBADO|RECHAZADO|DUDOSO",

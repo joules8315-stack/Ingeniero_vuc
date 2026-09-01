@@ -127,8 +127,9 @@ def test_los_documentos_pasan_siempre(tmp_path):
 
 
 def test_un_archivo_nuevo_pasa(tmp_path):
+    """Desde 2026-09-01, crear codigo nuevo tambien exige el veredicto del equipo."""
     code, _ = _correr(str(tmp_path / "todavia_no_existe.py"))
-    assert code == 0, "estorba: crear no es reescribir"
+    assert code == 2, "crear era la puerta trasera mas grande: por ahi se colo un subsistema entero a solas"
 
 
 def test_el_propio_arnes_se_puede_arreglar():
