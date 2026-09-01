@@ -51,6 +51,18 @@ VIGENCIA_MIN = 90          # un veredicto vale hora y media: lo que dura una tan
 CODIGO = (".py", ".js", ".html", ".ts", ".jsx", ".tsx", ".css", ".sql")
 
 
+def _es_temporal(p):
+    """¿Es un borrador temporal? En PRODUCCION NO hay exencion temporal: fuera de la casa siempre
+    se exige veredicto (Julio, 2026-09-02: la IA no escribe codigo a solas en ningun lado).
+
+    La exencion SOLO existe para la prueba, desviada con INGENIERO_TEMP_TEST: asi la vigia mide
+    que el candado sabe distinguir un borrador sin abrirle a la IA una puerta real de salida."""
+    ov = os.environ.get("INGENIERO_TEMP_TEST", "").strip()
+    if ov:
+        return p.lower().startswith(ov.replace("\\", "/").lower())
+    return False
+
+
 def _ruta_veredicto():
     return os.environ.get("INGENIERO_VEREDICTO_TEST") or VEREDICTO
 
@@ -196,11 +208,15 @@ def main():
         return 2
     fp = str((data.get("tool_input") or {}).get("file_path") or "")
 
-    # SOLO SE VIGILA LO QUE ESTA EN CASA (cazado el 2026-09-01, al cerrar las puertas).
-    # Al exigir veredicto tambien para CREAR, este candado empezo a frenar archivos que ni
-    # siquiera son del proyecto: los borradores de la carpeta temporal. Un candado que vigila
-    # el disco entero estorba en sitios donde no manda, y un candado que estorba se acaba
-    # apagando. Fuera de la casa y de los proyectos atendidos, no es asunto suyo.
+    # EL EQUIPO VIGILA TAMBIEN FUERA DE LA CASA (Julio, 2026-09-02).
+    # Agujero medido: antes esto devolvia 0 ("no es de esta casa: no se vigila") para TODO lo que
+    # no estuviera dentro de `proyectos.config`. La mesa de Julio esta FUERA (MVP y sus proyectos),
+    # asi que la IA podia escribir codigo A SOLAS ahi y nadie lo veia. Ahora:
+    #   · dentro de una casa            -> se vigila como siempre
+    #   · FUERA de toda casa            -> se exige veredicto IGUAL (se cierra la puerta de fuera)
+    #   · temporal del sistema          -> no se vigila (un borrador no debe frenar, leccion 2026-09-01)
+    #   · documento (.md) fuera         -> no se vigila (no es codigo)
+    _fuera_de_casa = False
     if fp:
         _abs = os.path.abspath(fp).replace("\\", "/").lower()
         _casas = [AQUI.replace("\\", "/").lower()]
@@ -223,8 +239,11 @@ def main():
                         _casas.append(_ruta.replace("\\", "/").lower())
         except Exception:
             pass
-        if not any(_abs.startswith(c) for c in _casas if c):
-            return 0                       # no es de esta casa: no se vigila
+        _en_casa = any(_abs.startswith(c) for c in _casas if c)
+        if not _en_casa:
+            if _es_temporal(_abs):
+                return 0                    # borrador (solo via la exencion de prueba): no se vigila
+            _fuera_de_casa = True           # FUERA de la casa y no es temporal: se exige veredicto
     if not fp:
         _apuntar_frenada("(peticion vacia)", "la peticion no trae archivo")
         sys.stderr.write(MENSAJE.format(fp="(peticion vacia)"))
@@ -262,7 +281,12 @@ def main():
     # Antes se colaba por aqui y se construia un subsistema entero a solas.
     if not os.path.exists(fp):
         _apuntar_frenada(fp, "FRENO: crear codigo nuevo sin veredicto del equipo")
-        sys.stderr.write(MENSAJE.format(fp=fp))
+        _m = MENSAJE.format(fp=fp)
+        if _fuera_de_casa:
+            _m += ("\n  (OJO: este archivo esta FUERA de las rutas registradas de proyectos.config.\n"
+                   "   Para trabajar ahi hay que registrar el proyecto (agregar su ruta a "
+                   "proyectos.config)\n   o trabajar en uno ya registrado.)\n")
+        sys.stderr.write(_m)
         return 2
     # FORTALECIDO (Julio, 2026-08-21): ya NO se deja pasar sin veredicto aunque no haya cerebros.
     # Antes se escapaba por aqui y dejaba a foto_informe y a cualquier proyecto SIN VIGILAR.
@@ -280,7 +304,12 @@ def main():
     # LA LIBRETA, AL REVES: queda constancia de CADA frenada, con el motivo exacto.
     _apuntar_frenada(fp, "sin veredicto del equipo" if not d else
                      "el veredicto vigente no habla de este archivo")
-    sys.stderr.write(MENSAJE.format(fp=fp))
+    _m = MENSAJE.format(fp=fp)
+    if _fuera_de_casa:
+        _m += ("\n  (OJO: este archivo esta FUERA de las rutas registradas de proyectos.config.\n"
+               "   Para trabajar ahi hay que registrar el proyecto (agregar su ruta a "
+               "proyectos.config)\n   o trabajar en uno ya registrado.)\n")
+    sys.stderr.write(_m)
     # MEDICION (Julio, 2026-08-25): este candado cazo algo real: freno escribir a solas.
     try:
         import candados_medicion

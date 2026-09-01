@@ -696,12 +696,12 @@ def trabajar(paquete, tarea, generador=None, auditor=None):
             av2.append("se pidio auditar a %s y no esta disponible: reviso %s" % (auditor, quien_aud))
         avisos_totales += av2
 
-        # Si no hay auditor, intentar con el cerebro de pago (si no es el mismo que genero).
-        if (not auditoria or auditoria.get("veredicto") == "SIN_AUDITAR") and not auditor_ok:
-            # intentar con el cerebro de pago, evitando al generador
+        # Si no hay auditor, intentar con el cerebro de pago (aunque sea el mismo que genero).
+        if (not auditoria or auditoria.get("veredicto") == "SIN_AUDITAR"):
+            # intentar con el cerebro de pago, sin apartar a nadie
             crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
                 _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1,
-                evitar=quien_gen, primero=None, pesado=True)
+                primero=None, pesado=True)
             avisos_totales += av_intento
             if crudo_a:
                 auditoria = _json_de(crudo_a)
@@ -711,6 +711,8 @@ def trabajar(paquete, tarea, generador=None, auditor=None):
                                             if isinstance(auditoria, dict) else ""),
                                  "resumen_para_el_jefe":
                                      "el revisor contesto roto; se conserva la propuesta del obrero"}
+            if quien_aud == quien_gen:
+                avisos_totales.append("el mismo cerebro escribio y reviso; comprobar con los ojos antes de dar por bueno")
 
         # Si el veredicto es RECHAZADO, guardar motivos y reintentar (hasta 3 veces).
         if isinstance(auditoria, dict) and auditoria.get("veredicto") == "RECHAZADO":

@@ -29,6 +29,7 @@ import os
 import subprocess
 import sys
 import time
+import json
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -103,6 +104,39 @@ def _hay_llaves(raiz, archivos):
     return malos
 
 
+def _cubierto_por_equipo(archivos):
+    """¿Lo que se va a guardar lleva veredicto del equipo? (Julio, 2026-09-02)
+
+    Asi el balance sabe, en cada guardado y sin que nadie lo cuente a mano, si esto fue del
+    equipo o a mano. Devuelve True (equipo), False (a mano) o None (no toca codigo)."""
+    codigo = [a for a in archivos
+              if a.lower().endswith((".py", ".js", ".html", ".ts", ".jsx", ".tsx", ".css", ".sql"))]
+    if not codigo:
+        return None                                   # nada que atribuir: no toca codigo
+    ruta = os.environ.get("INGENIERO_VEREDICTO_TEST") or \
+        os.path.join(AQUI, "memoria", ".veredicto_equipo.json")
+    try:
+        d = json.load(open(ruta, encoding="utf-8"))
+    except Exception:
+        d = None
+    if not d or str(d.get("veredicto", "")).upper() != "APROBADO":
+        return False
+    bases = set(os.path.basename(str(a)).lower() for a in d.get("archivos", []))
+    return all(os.path.basename(a).lower() in bases for a in codigo)
+
+
+def _apuntar_balance(raiz, tipo, archivos):
+    """Deja una linea en el BALANCE.log: que hizo el equipo y que se hizo a mano. A prueba de
+    fallos: si no se puede escribir, el guardia no se cae."""
+    try:
+        ruta = os.path.join(raiz, "memoria", "BALANCE.log")
+        os.makedirs(os.path.dirname(ruta), exist_ok=True)
+        with open(ruta, "a", encoding="utf-8") as f:
+            f.write("%s | %s\n" % (tipo, ", ".join(archivos[:8])))
+    except Exception:
+        pass
+
+
 def _vigias(raiz):
     """(paso, mensaje). Si no hay vigias o no se pueden correr, se DEJA PASAR con aviso."""
     carpeta = os.path.join(raiz, "vigias")
@@ -153,6 +187,17 @@ def main():
             "  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n"
             "  Arreglalo y vuelve a guardar.\n\n")
         return 1
+
+    # EL BALANCE (Julio, 2026-09-02): cada guardado apunta si fue del equipo o a mano, para que
+    # nadie tenga que contar a mano cuanto trabaja cada quien (memoria/BALANCE.log).
+    try:
+        cub = _cubierto_por_equipo(archivos)
+        if cub is True:
+            _apuntar_balance(raiz, "equipo", archivos)
+        elif cub is False:
+            _apuntar_balance(raiz, "a_mano", archivos)
+    except Exception:
+        pass
 
     _apuntar(raiz, "OK: %d archivo(s) | %s" % (len(archivos), mensaje))
     sys.stderr.write("GUARDIA: verde. " + mensaje + "\n")
