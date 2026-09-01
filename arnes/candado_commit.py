@@ -47,6 +47,9 @@ CUADERNOS_BASE = {
     ".cierres_bloqueados", ".lecturas_sueltas", ".pasado_corriendo", "apagones.log",
     "lo_que_julio_ya_dijo.json", "decisiones_por_nombre.log", "reparto_ia.json",
     "significados.json", ".objetivo_confirmado", ".vigias_corriendo",
+    # el cuaderno del candado del companero, creado el 2026-08-31: se olvido anadirlo aqui
+    # y por eso el guardian seguia gritando por una libreta que escribia el mismo.
+    "decisiones_companero.log",
 }
 
 
