@@ -155,3 +155,123 @@ Para que estas reglas se cumplan solas, se pondrán candados que frenen el siste
 Añadiría una **regla de gasto máximo por tarea**. Hoy la IA cara se lleva el 80% del gasto y una mañana entera consumió el 90% de la sesión. Pondría un candado que avise cuando el gasto de una tarea supere un límite, para que Julio decida si vale la pena. Esto no está en la lista de Julio, pero es esencial para que el proyecto sea económico.
 
 También añadiría un **informe semanal para Julio**, en lenguaje claro, que diga qué se ha construido, qué se ha reparado y cuánto ha costado. Así Julio no necesita ser técnico para saber si el Ingeniero está trabajando bien.
+
+## PARTE 6 - LO QUE YA HAY EN LA CASA
+
+Esto es un inventario de todo lo que ya está documentado y legislado, explicado para que se entienda para qué sirve cada grupo, no por nombres raros. Cada grupo dice qué problema resuelve y en cuál de los 8 pasos del plan se apoya. Si algo ya cubre un paso, se dice claramente: ese paso se COMPLETA, no se empieza de cero.
+
+### Grupo 1: Las reglas del juego (las leyes)
+- **Qué es**: Son 25 documentos escritos que dicen cómo hay que comportarse. Por ejemplo, hay leyes que dicen que nunca se debe inventar, que siempre hay que trabajar en equipo, que no se puede romper lo que ya funciona, y que hay que hablarle simple a Julio.
+- **Qué resuelve**: Evita que cada uno haga lo que le parezca. Pone orden y obliga a todos a seguir las mismas reglas.
+- **En qué paso del plan se apoya**: En el paso 2 (mapa de piezas y leyes) y en el paso 3 (candados coherentes). Estas leyes ya existen, así que el paso 2 se COMPLETA en parte: ya hay leyes, solo falta organizarlas en un mapa claro.
+
+### Grupo 2: Los candados (los frenos que protegen)
+- **Qué es**: Son 18 candados que frenan al sistema cuando algo va mal. Por ejemplo, hay un candado que impide que se escriba código desde la línea de comandos, y otro que obliga a leer una nota antes de seguir si se pierde el hilo.
+- **Qué resuelve**: Protegen lo que ya funciona. Evitan que se rompan archivos, que se gaste de más, o que se trabaje sin contexto.
+- **En qué paso del plan se apoya**: En el paso 3 (candados que no se contradigan). Ya hay candados, pero algunos se contradicen o frenan cosas que no deben, así que este paso se REPARA, no se empieza de cero.
+
+### Grupo 3: Las pruebas (las comprobaciones)
+- **Qué es**: Son 87 archivos con 524 comprobaciones, todas en verde hoy. Sirven para verificar que las cosas funcionan.
+- **Qué resuelve**: Da confianza de que lo que se hace no rompe lo que ya estaba bien.
+- **En qué paso del plan se apoya**: En el paso 1 (medición real de cerebros) y en el paso 4 (bucle de trabajo). Las pruebas ya existen, pero hay que asegurarse de que midan lo que importa, no solo lo fácil.
+
+### Grupo 4: La memoria escrita (lo que se ha aprendido)
+- **Qué es**: Son documentos que guardan dónde íbamos, los grafos, el rescate, el registro de lo que cada candado frenó y por qué, el registro de los trabajos del equipo, lo que Julio ya dijo, las decisiones tomadas, el diagnóstico, la medición de los candados, las respuestas y los significados.
+- **Qué resuelve**: Que nadie empiece de cero. Todo lo que se ha hecho y aprendido queda guardado para no repetir errores.
+- **En qué paso del plan se apoya**: En el paso 2 (mapa de piezas y leyes) y en el paso 7 (autoevaluación y autoreparación). Esta memoria ya existe, pero no está organizada como un mapa único y claro, así que el paso 2 se COMPLETA en parte: ya hay memoria, falta convertirla en un mapa por función.
+
+### Grupo 5: Las leyes de Julio (las reglas sagradas)
+- **Qué es**: Son 5 leyes que Julio ha dicho y que son innegociables: nunca asumir, nunca inventar, el vigilante en verde NO es prueba (la prueba es que Julio lo vea con sus ojos), no romper a los vecinos, y hablarle simple. Además hay otras reglas como siempre en equipo sin salto, probar de verdad antes de pedírselo a Julio, la memoria no miente ni olvida, las 5 preguntas antes de tocar nada (qué, dónde, por qué, cuándo y cómo), y la llave única que abre solo los candados que la tarea necesita y avisa cuáles abre y por qué.
+- **Qué resuelve**: Son la base de todo. Sin estas leyes, el equipo podría desviarse y hacer lo que no debe.
+- **En qué paso del plan se apoya**: En todos los pasos, pero especialmente en el paso 8 (prioridad a los proyectos de Julio). Estas leyes ya existen y se deben respetar siempre.
+
+### Resumen de lo que ya hay y qué se completa
+- **Paso 1 (medición real)**: Ya hay un medidor y una tabla, pero mide lo que no importa. Se REPARA.
+- **Paso 2 (mapa)**: Ya hay leyes y memoria, pero no un mapa único. Se COMPLETA.
+- **Paso 3 (candados coherentes)**: Ya hay 18 candados, pero algunos se contradicen. Se REPARA.
+- **Paso 4 (bucle)**: No hay un mecanismo de bucle. Se CREA.
+- **Paso 5 (repartidor inteligente)**: Ya hay un router, pero no usa medición real. Se REPARA.
+- **Paso 6 (director con informes)**: No hay informes JSON. Se CREA.
+- **Paso 7 (autoevaluación)**: Ya hay memoria de fallos y lecciones, pero no un método. Se COMPLETA.
+- **Paso 8 (prioridad a Julio)**: No hay una regla que obligue a construir para Julio. Se CREA.
+
+## PARTE 7 - LA TABLA DE FRENADOS
+
+Esta tabla muestra cada frenado que ha pasado, por qué frenó (la causa de fondo, no el síntoma), qué sirve de ese frenado (lo que hay que conservar), qué fue inútil (lo que hay que quitar), y qué se repara exactamente. Si dos frenados tienen la misma causa de fondo, se dice, porque entonces una sola reparación arregla los dos.
+
+| Qué frenó | Por qué frenó (causa de fondo) | Qué SIRVE de ese frenado | Qué fue INÚTIL | Qué se repara exactamente |
+|---|---|---|---|---|
+| A - El aviso que obliga a repetir cada orden | El candado se creó para confirmar lo grave, pero se dispara con todo, sin distinguir lo importante de lo trivial | Obliga a confirmar antes de algo grave | Se dispara con TODO, hasta con lo trivial | Se repara el candado para que solo pida confirmación en lo grave, no en lo trivial |
+| B - El encargo se reescribía hasta 8 veces | No se comprobaba que el material llegara dentro del encargo antes de mandarlo | Nadie trabaja a ciegas | Se pagaba 8 veces lo mismo por no comprobar antes | Se repara el proceso de envío: comprobar que el material está dentro antes de mandar |
+| C - El trabajo aprobado se tiraba | No había un registro de lo aprobado, así que se perdía | Nada | Pérdida pura | Se repara el registro de lo aprobado para que no se pierda |
+| D - El revisor rechazaba trabajo bueno | El revisor juzgaba la forma (comas, palabras) en vez del fondo (si el trabajo cumple lo pedido) | Cuatro ojos: uno escribe y otro juzga | Juzgar la forma en vez del fondo | Se repara el revisor para que juzgue el fondo, no la forma |
+| E - Dos candados se contradecían | No había una revisión central de los candados, así que uno exigía lo que el otro prohibía | Nada | El trabajo no podía avanzar | Se repara la revisión central de candados para que no se contradigan |
+| F - Alarma de cuota agotada en falso | La alarma se basaba en un dato equivocado (creía que no había cuota cuando sí la había) | Avisa cuando la cuota se agota | Gritaba en falso y bloqueaba el día | Se repara la alarma para que use datos reales |
+| G - El candado de la terminal frena cosas que solo miran | El candado se creó para impedir que se rompan archivos, pero también frena lo que solo lee | Impide que se rompan archivos | Frena lo que solo lee, como pedir las últimas líneas de un registro | Se repara el candado para que distinga entre escribir (peligroso) y leer (seguro) |
+| H - El compañero reportó 3 veces que había terminado sin hacerlo | No se comprobaba el trabajo del compañero antes de creerle | Tener quien ayude | Creerle sin comprobar | Se repara el proceso de verificación: comprobar siempre lo que reporta el compañero |
+| I - La tabla de cerebros mide lo que no importa | Se eligió una prueba de marketing porque era fácil, no porque midiera la capacidad real de reparar código | La idea de medir | Medir lo que no importa | Se repara la prueba para que mida la capacidad real de reparar código |
+| J - Se reportaba todo en verde sin avance real | No había una definición clara de qué es un avance para Julio | Nada | Verde no significa que Julio termine su aplicación | Se repara el informe para que muestre avance real en los proyectos de Julio |
+| K - La IA cara se mete en todo y gasta el 80% | No hay un límite de gasto ni una ubicación estratégica para la IA cara | Nada | Gasto excesivo sin beneficio claro | Se repara la ubicación de la IA cara: solo para supervisar e instruir, no para escribir código |
+| L - La nota para recuperar el hilo apunta a un asunto viejo | La nota no se actualiza cuando cambia el trabajo, así que no orienta | No continuar inventando lo que se cree recordar | La nota apunta a un asunto viejo que ya no es el actual | Se repara la nota para que siempre apunte al asunto actual |
+
+**Causas de fondo que se repiten**: Los frenados B, C y J tienen la misma causa de fondo: no hay un registro claro de lo que se ha aprobado y de lo que es un avance real. Una sola reparación (crear un registro de aprobaciones y avances) arregla los tres. Los frenados D y H también comparten causa: no se comprueba el trabajo antes de darlo por bueno. Una sola reparación (obligar a comprobar siempre) arregla los dos.
+
+## PARTE 8 - EL PROTOCOLO DE REPARACIÓN
+
+Este es el método que el equipo debe seguir siempre ante cualquier fallo. Está escrito como protocolo, en pasos numerados, para que todos lo hagan igual. Cada paso tiene un candado que impide saltárselo y un vigilante que comprueba que el candado sigue puesto. Recuerda la lección de esta casa: lo escrito se ignora, solo lo que FRENA se cumple.
+
+### Paso 1: Anotar el fallo
+- **Qué se hace**: Cuando algo falla, se escribe en el registro de fallos. Se anota qué pasó, cuándo pasó, y qué se estaba haciendo.
+- **Candado**: No se puede seguir al siguiente paso si el fallo no está anotado.
+- **Vigilante**: El registro de fallos comprueba que la anotación existe.
+
+### Paso 2: Buscar la causa de fondo
+- **Qué se hace**: Se investiga por qué falló de verdad, no solo el síntoma. Se usan las 5 preguntas: qué, dónde, por qué, cuándo y cómo.
+- **Candado**: No se puede proponer una reparación si no se ha encontrado la causa de fondo.
+- **Vigilante**: El equipo revisa que la causa de fondo esté bien identificada.
+
+### Paso 3: Decidir si se repara o se completa lo que ya hay
+- **Qué se hace**: Se mira si ya existe una pieza que haga lo que se necesita. Si existe, se repara o se completa. Si no existe, se crea una nueva, pero solo si de verdad no hay nada parecido.
+- **Candado**: No se puede crear algo nuevo si ya hay una pieza que sirve.
+- **Vigilante**: El mapa de piezas comprueba que no hay duplicados.
+
+### Paso 4: Comprobar antes de mandar el encargo
+- **Qué se hace**: Antes de enviar el trabajo a Julio, se comprueba que todo el material necesario está dentro del encargo. Así no se paga ocho veces lo mismo.
+- **Candado**: No se puede enviar el encargo si no se ha comprobado que está completo.
+- **Vigilante**: El revisor comprueba que el encargo está completo y que el trabajo cumple lo pedido.
+
+### Paso 5: Revisión final
+- **Qué se hace**: Un revisor (que no sea el que escribió) revisa el trabajo. Debe juzgar el fondo, no la forma. Si el trabajo cumple lo pedido, se aprueba. Si no, se devuelve con explicación clara.
+- **Candado**: No se puede dar por terminado un trabajo sin la aprobación del revisor.
+- **Vigilante**: El revisor comprueba que el trabajo cumple lo pedido.
+
+### Paso 6: Cierre
+- **Qué se hace**: Se registra lo que se hizo, cuánto costó, y se informa a Julio en lenguaje claro. Si el trabajo es para un proyecto de Julio, se marca como avance real.
+- **Candado**: No se puede cerrar un trabajo sin informe.
+- **Vigilante**: El registro de trabajos comprueba que el informe existe.
+
+## PARTE 9 - EL SITIO DE LA IA CARA
+
+La IA cara se coloca en un lugar estratégico: solo para supervisar e instruir, nunca para escribir código. Julio fue tajante: la IA cara no vuelve a escribir código; solo lee el resultado del equipo y se lo cuenta a Julio.
+
+### Qué SÍ puede hacer la IA cara
+- Leer el resultado del equipo (el código, los informes, los avances).
+- Explicarle a Julio en lenguaje claro qué se ha hecho, qué falta y cuánto ha costado.
+- Instruir al equipo barato: decirle qué hacer, pero sin hacerlo ella.
+- Supervisar que el equipo no se desvíe y que los candados se cumplan.
+
+### Qué NO puede hacer nunca la IA cara
+- Escribir código.
+- Reparar código directamente.
+- Tomar decisiones por su cuenta.
+- Gastar más de un límite sin avisar a Julio.
+
+### Qué candado lo impide
+- Un candado de gasto que frena a la IA cara si intenta escribir código o si su gasto supera el límite. Este candado ya existe (el candado del gasto) y se refuerza para que la IA cara solo pueda leer y explicar.
+- Un candado de terminal que impide que la IA cara escriba código desde la línea de comandos. Este candado ya existe y se mantiene.
+
+## PARTE 10 - LO QUE AÑADES TÚ
+
+Sí, añado una mejora sustancial que no está nombrada: **un informe semanal para Julio en lenguaje claro**. Este informe dirá, cada semana, qué se ha construido, qué se ha reparado, cuánto ha costado y qué falta para terminar los proyectos de Julio. Así Julio no necesita ser técnico para saber si el equipo está trabajando bien. Esta mejora no está en el plan original y es esencial para que Julio tenga visibilidad sin tener que preguntar.
+
+Además, añado una **regla de gasto máximo por tarea**: si una tarea supera un límite de gasto, el sistema avisa a Julio para que decida si vale la pena seguir. Esto ya se mencionó en el plan original, pero aquí se concreta como un candado más.
