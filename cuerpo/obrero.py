@@ -637,56 +637,94 @@ def trabajar(paquete, tarea, generador=None, auditor=None):
     # y el pesado se apaga para no pisarlo. Si nadie pidio generador, pesado_ahora sale verdadero
     # y la regla de siempre sigue intacta.
     pesado_ahora = not generador
-    crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(paquete, tarea), 0.2,
-                                                  pesado=pesado_ahora, primero=generador)
-    if not crudo:
-        return {"_error": "; ".join(av1)}
-    propuesta = _json_de(crudo)
-    inventados = _validar_en_paquete(paquete, propuesta)
-    if inventados:
-        propuesta["_fuera_del_paquete"] = inventados   # marco: no se deja pasar como valido
+    avisos_totales = []
+    motivos_rechazo = []
+    vueltas = 0
+    for _vuelta in range(3):
+        vueltas += 1
+        encargo = tarea
+        if motivos_rechazo:
+            encargo = ("Este trabajo ya se rechazo antes, y estos fueron los motivos:\n" +
+                       "\n".join(motivos_rechazo) +
+                       "\nArregla todos esos motivos y no repitas el mismo fallo.\n" + tarea)
+        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(paquete, encargo), 0.2,
+                                                      pesado=pesado_ahora, primero=generador)
+        avisos_totales += av1
+        if not crudo:
+            return {"_error": "; ".join(avisos_totales)}
+        propuesta = _json_de(crudo)
+        inventados = _validar_en_paquete(paquete, propuesta)
+        if inventados:
+            propuesta["_fuera_del_paquete"] = inventados   # marco: no se deja pasar como valido
 
-    # Si se pidio un generador y contesto otro, se avisa. Nunca en silencio.
-    if generador and quien_gen != generador:
-        av1.append("se pidio generar a %s y no esta disponible: contesto %s" % (generador, quien_gen))
+        # Si se pidio un generador y contesto otro, se avisa. Nunca en silencio.
+        if generador and quien_gen != generador:
+            avisos_totales.append("se pidio generar a %s y no esta disponible: contesto %s" % (generador, quien_gen))
 
-    # el auditor NUNCA puede ser el mismo que genero: si no, se aprueba a si mismo.
-    # CURA DE cruzado.py (Julio, 2026-08-31): el revisor puede contestar ROTO o ilegible. Antes
-    # se le preguntaba UNA sola vez y se tiraba la propuesta buena del obrero (la vuelta YA
-    # PAGADA). Ahora se le pide de nuevo (hasta 2 intentos), igual que hace el juez en resolver().
-    auditoria = None
-    av2 = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor
-    auditor_ok = auditor
-    if auditor == quien_gen:
-        # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa
-        auditor_ok = None
-        av2.append("el auditor pedido (%s) era el mismo que genero; se busca otro" % auditor)
-    for _intento in range(2):
-        crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
-            _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1,
-            evitar=quien_gen, primero=auditor_ok)
-        av2 += av_intento   # no se pierde lo que dijo el primer intento
-        if not crudo_a:
-            continue                       # no contesto: se le pide de nuevo
-        auditoria = _json_de(crudo_a)
-        if isinstance(auditoria, dict) and "_error" not in auditoria:
-            break                          # se entendio: listo
-        # JSON roto/cortado: no se da por perdido (cura que ya existe en cruzado.py).
-    if not isinstance(auditoria, dict) or "_error" in (auditoria or {}):
-        # EL INFORME NO MIENTE: si el revisor contesto roto, se dice claro, no '?'.
-        auditoria = {"veredicto": "SIN_AUDITAR",
-                     "_error": ((auditoria or {}).get("_error", "")
-                                if isinstance(auditoria, dict) else ""),
-                     "resumen_para_el_jefe":
-                         "el revisor contesto roto; se conserva la propuesta del obrero"}
+        # el auditor NUNCA puede ser el mismo que genero: si no, se aprueba a si mismo.
+        # CURA DE cruzado.py (Julio, 2026-08-31): el revisor puede contestar ROTO o ilegible. Antes
+        # se le preguntaba UNA sola vez y se tiraba la propuesta buena del obrero (la vuelta YA
+        # PAGADA). Ahora se le pide de nuevo (hasta 2 intentos), igual que hace el juez en resolver().
+        auditoria = None
+        av2 = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor
+        auditor_ok = auditor
+        if auditor == quien_gen:
+            # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa
+            auditor_ok = None
+            av2.append("el auditor pedido (%s) era el mismo que genero; se busca otro" % auditor)
+        for _intento in range(2):
+            crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
+                _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1,
+                evitar=quien_gen, primero=auditor_ok)
+            av2 += av_intento   # no se pierde lo que dijo el primer intento
+            if not crudo_a:
+                continue                       # no contesto: se le pide de nuevo
+            auditoria = _json_de(crudo_a)
+            if isinstance(auditoria, dict) and "_error" not in auditoria:
+                break                          # se entendio: listo
+            # JSON roto/cortado: no se da por perdido (cura que ya existe en cruzado.py).
+        if not isinstance(auditoria, dict) or "_error" in (auditoria or {}):
+            # EL INFORME NO MIENTE: si el revisor contesto roto, se dice claro, no '?'.
+            auditoria = {"veredicto": "SIN_AUDITAR",
+                         "_error": ((auditoria or {}).get("_error", "")
+                                    if isinstance(auditoria, dict) else ""),
+                         "resumen_para_el_jefe":
+                             "el revisor contesto roto; se conserva la propuesta del obrero"}
 
-    # Si se pidio un auditor y no fue el que reviso, se avisa.
-    if auditor and quien_aud != auditor:
-        av2.append("se pidio auditar a %s y no esta disponible: reviso %s" % (auditor, quien_aud))
+        # Si se pidio un auditor y no fue el que reviso, se avisa.
+        if auditor and quien_aud != auditor:
+            av2.append("se pidio auditar a %s y no esta disponible: reviso %s" % (auditor, quien_aud))
+        avisos_totales += av2
 
+        # Si no hay auditor, intentar con el cerebro de pago (si no es el mismo que genero).
+        if (not auditoria or auditoria.get("veredicto") == "SIN_AUDITAR") and not auditor_ok:
+            # intentar con el cerebro de pago, evitando al generador
+            crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
+                _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1,
+                evitar=quien_gen, primero=None, pesado=True)
+            avisos_totales += av_intento
+            if crudo_a:
+                auditoria = _json_de(crudo_a)
+                if not isinstance(auditoria, dict) or "_error" in (auditoria or {}):
+                    auditoria = {"veredicto": "SIN_AUDITAR",
+                                 "_error": ((auditoria or {}).get("_error", "")
+                                            if isinstance(auditoria, dict) else ""),
+                                 "resumen_para_el_jefe":
+                                     "el revisor contesto roto; se conserva la propuesta del obrero"}
+
+        # Si el veredicto es RECHAZADO, guardar motivos y reintentar (hasta 3 veces).
+        if isinstance(auditoria, dict) and auditoria.get("veredicto") == "RECHAZADO":
+            motivo = auditoria.get("motivo", "") or auditoria.get("resumen_para_el_jefe", "")
+            if motivo:
+                motivos_rechazo.append(motivo)
+            continue
+        # Si APROBADO o SIN_AUDITAR, salir del bucle.
+        break
+
+    avisos_totales.append("vueltas_dadas: %d" % vueltas)
     return {"obrero": quien_gen, "auditor": quien_aud or "(ninguno)",
             "propuesta": propuesta, "auditoria": auditoria,
-            "avisos": av1 + av2}
+            "avisos": avisos_totales}
 
 
 def veredicto_corto(r):

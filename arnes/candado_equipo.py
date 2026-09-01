@@ -61,8 +61,9 @@ def _ruta_sin_equipo():
 
 def guardar_veredicto(tarea, archivos, obrero, auditor, veredicto):
     """Lo llama `ingeniero.py equipo` cuando el equipo termina. Es la llave."""
-    d = {"cuando": time.time(), "tarea": tarea, "archivos": list(archivos or []),
-         "obrero": obrero, "auditor": auditor, "veredicto": veredicto}
+    d = {"cuando": time.time(), "tarea": tarea, "archivos": list(archivos or []) if veredicto == "APROBADO" else [],
+         "obrero": obrero, "auditor": auditor, "veredicto": veredicto,
+         "reviso_a_si_mismo": (obrero == auditor)}
     os.makedirs(os.path.dirname(_ruta_veredicto()), exist_ok=True)
     json.dump(d, open(_ruta_veredicto(), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     # EL CUADERNO DEL EQUIPO (Julio, 2026-09-02, preguntandolo por tercera vez: "que pasa con el
@@ -77,8 +78,11 @@ def guardar_veredicto(tarea, archivos, obrero, auditor, veredicto):
         with open(_cuaderno, "a", encoding="utf-8") as f:
             fecha = time.strftime("%Y-%m-%d %H:%M", time.localtime(d["cuando"]))
             archivos_txt = ", ".join(os.path.basename(str(a)) for a in list(archivos or [])[:3])
-            f.write("%s | escribio %s | reviso %s | %s | %s\n"
-                    % (fecha, obrero, auditor, veredicto, archivos_txt))
+            trozos = [fecha, "escribio " + obrero, "reviso " + auditor, veredicto, archivos_txt,
+                      "abre puertas" if veredicto == "APROBADO" else "NO abre puertas"]
+            if obrero == auditor:
+                trozos.append("se reviso a si mismo: hay que comprobarlo con los ojos")
+            f.write(" | ".join(trozos) + "\n")
     except Exception:
         pass    # dejar constancia es la prueba, pero no puede tumbar el trabajo
     return d
