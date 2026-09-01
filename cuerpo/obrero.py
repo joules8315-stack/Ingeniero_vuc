@@ -144,7 +144,12 @@ Comprueba una por una:
    archivo, una funcion o un dato que NO EXISTE. Escribir codigo NUEVO que el encargo pide
    EXPRESAMENTE no es inventar: es hacer el trabajo. Una reparacion SIEMPRE trae codigo que antes
    no estaba; si eso fuera inventar, ninguna reparacion podria aprobarse jamas. Rechaza por
-   inventar SOLO cuando se usa algo que no existe, NUNCA por escribir lo que se pidio.
+   inventar SOLO cuando se usa algo que no existe, NUNCA por escribir lo que se pidio. Crear un
+   dato nuevo arriba del archivo, con su nombre, tampoco es inventar cuando el encargo lo pide
+   expresamente. Al reves: poner el valor una sola vez arriba y que todos lo miren de ahi es la
+   manera correcta de trabajar, porque evita que dos sitios se descuadren. Inventar es AFIRMAR
+   que algo ya existia cuando no existia, o usar un archivo o una funcion que no esta en ninguna
+   parte.
 2. El cambio arregla de verdad lo que dice el diagnostico?
 3. Rompe algun vecino de la seccion "A QUIEN PUEDE DANAR"?
 4. Se salta alguna ley del contrato que viene en el material?
@@ -419,7 +424,8 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
     c, _ = prestar_cerebro()
     if not c:
         return "", "", ["NO_ENCONTRADO: sin cerebro"]
-    hay = [q for q in quienes_hay() if q != (evitar or "")]
+    evitar_lista = evitar if isinstance(evitar, list) else [evitar] if evitar else []
+    hay = [q for q in quienes_hay() if q not in evitar_lista]
     turnos = cuotas.fila(hay) or hay          # si todos duermen, se intenta igual (por si desperto ya)
     if primero and primero in turnos:         # el que reparte el trabajo cruzado manda
         turnos = [primero] + [q for q in turnos if q != primero]

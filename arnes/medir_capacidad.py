@@ -26,9 +26,25 @@ INTENTOS = 3            # robustez: cada tamano se prueba varias veces, no una s
 BASE = "Responde SOLO con la palabra OK. Relleno inofensivo para medir cuanto aguantas: "
 PAD = " nada de datos, solo relleno inofensivo y neutral "
 
+TRABAJO_PRUEBA = """Abajo hay una funcion con un fallo. Suma los numeros de una lista, pero empieza a contar desde
+el segundo en vez de desde el primero, asi que siempre se deja uno fuera.
+
+def suma(numeros):
+    total = 0
+    for n in numeros[1:]:
+        total = total + n
+    return total
+
+Contesta SOLO con la linea corregida, sin explicar nada."""
+
+RESPUESTA_CORRECTA = "for n in numeros:"
+
 
 def _prompt_de(tamano):
-    p = BASE
+    trabajo = TRABAJO_PRUEBA
+    if len(trabajo) >= tamano:
+        return trabajo
+    p = trabajo + BASE
     while len(p) < tamano:
         p += PAD
     return p[:tamano]
@@ -95,7 +111,7 @@ def medir(quien):
                 primer_fallo = primer_fallo or _tipo_de_fallo(r["err"])
                 continue
             txt = (r.get("txt") or "").strip()
-            if "OK" not in txt:
+            if RESPUESTA_CORRECTA.strip() not in txt:
                 primer_fallo = primer_fallo or "VACIO"
                 continue
             aciertos += 1
