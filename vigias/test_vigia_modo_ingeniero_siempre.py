@@ -92,12 +92,11 @@ def test_todos_los_proyectos_registrados_arrancan_por_modo_ingeniero():
         cr = os.path.join(ruta, ".clinerules", "modo_ingeniero.md")
         assert os.path.exists(cr), \
             "%s no tiene .clinerules/modo_ingeniero.md (Cline sin arnes ahi)" % apodo
-        sj = os.path.join(ruta, ".claude", "settings.json")
-        try:
-            s = json.load(open(sj, encoding="utf-8"))
-        except Exception:
-            s = {}
-        assert "read_gate" in json.dumps(s), \
-            "%s no tiene el candado de lectura en .claude/settings.json" % apodo
+    # El candado de lectura (read_gate) es canonico a nivel USUARIO: cubre a todos los proyectos.
+    # Si esta en el proyecto TAMBIEN, el arnes se duplica y se pide permiso dos veces (medido el
+    # 2026-08-27). Por eso no se exige por proyecto: se exige en el settings de usuario.
+    s_usr = json.dumps(_settings())
+    assert "read_gate" in s_usr, \
+        "el candado de lectura no esta a nivel usuario (~/.claude/settings.json)"
     assert comprobados >= 1, "no se pudo comprobar ningun proyecto registrado"
 
