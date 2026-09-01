@@ -55,8 +55,10 @@ def test_se_conserva_la_frase_copias_el_texto_literal():
 
 def test_la_regla_3_prohibe_los_numeros():
     """Tiene que estar ESCRITO que esta prohibido dar numeros o tramos, con el porque."""
-    i = OBRERO.find("3.")
-    bloque = OBRERO[i:i + 900].lower() if i > 0 else OBRERO.lower()
+    i = OBRERO.find("Eres el OBRERO de un ingeniero de software. Trabajas SOLO con el material de abajo.")
+    if i < 0:
+        assert False, "ya no se encuentra el encargo de reparar"
+    bloque = OBRERO[i:i + 900].lower()
     assert "prohibido" in bloque, (
         "la regla 3 no dice EXPRESAMENTE que esta PROHIBIDO dar numeros de renglon o tramos")
     assert "numero" in bloque, "no se menciona el numero de renglon que queda prohibido"

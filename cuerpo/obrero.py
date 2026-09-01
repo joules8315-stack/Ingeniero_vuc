@@ -67,7 +67,34 @@ def disponible():
 
 
 # ─── los prompts: cortos, con el paquete dentro, y prohibicion de inventar ──────────
-def _prompt_obrero(paquete, tarea):
+def _prompt_obrero(paquete, tarea, clase="reparar"):
+    if clase != "reparar":
+        return f"""Eres el ANALISTA de un ingeniero de software. Tu trabajo es PENSAR y ESCRIBIR un documento
+nuevo. NO vas a cambiar codigo.
+
+REGLAS DURAS (si las rompes, tu trabajo se descarta):
+1. NO hay texto viejo que sustituir: el documento todavia no existe. Lo escribes entero.
+2. NO inventes archivos, funciones ni datos. Si te falta informacion para analizar algo, escribe
+   NO_ENCONTRADO en ese punto. Jamas lo rellenes a ojo.
+3. NO decidas lo que el contrato no dice. Escribe PREGUNTA_REQUERIDA y la pregunta en palabras
+   simples.
+4. El documento se escribe para alguien que NO ES TECNICO: sin jerga, sin nombres de archivo
+   salvo cuando sea imprescindible, y explicando cada cosa como se la contarias a un amigo dueno
+   de un negocio.
+5. Trabaja SOLO con el material de abajo. Si te falta algo, pidelo asi y nada mas:
+   NECESITO_LEER: archivo / motivo / que decide / riesgo.
+
+TAREA: {tarea}
+
+Responde SOLO un JSON valido, sin texto alrededor:
+{{"diagnostico": "que has encontrado, en una frase",
+  "archivo": "el nombre del documento que creas",
+  "texto_nuevo": "el documento ENTERO y completo, escrito en markdown",
+  "confianza": "alta|media|baja"}}
+
+===== MATERIAL (esto es TODO lo que existe) =====
+{paquete}
+===== FIN DEL MATERIAL ====="""
     return f"""Eres el OBRERO de un ingeniero de software. Trabajas SOLO con el material de abajo.
 
 REGLAS DURAS (si las rompes, tu trabajo se descarta):
