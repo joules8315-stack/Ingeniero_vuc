@@ -97,14 +97,26 @@ def _hay_candado_por_paso():
 def verificar():
     """Devuelve la lista de incumplimientos (vacía = todo bien)."""
     faltas = []
-    # 1) EQUIPO: hay veredicto vigente?
+    # 1) EQUIPO: hay veredicto vigente? Solo si se toco codigo hace poco.
     try:
-        import candado_equipo as _ce
-        if not _ce.veredicto_vigente():
-            faltas.append("1) EQUIPO: no hay veredicto del equipo vigente. Para tocar codigo SIEMPRE se "
-                          "usa el equipo:\n     cd C:\\Ingeniero_VUC; python ingeniero.py equipo <proyecto> \"<tarea>\"")
+        from candado_cierre import _toco_codigo
+        if _toco_codigo(90):
+            try:
+                import candado_equipo as _ce
+                if not _ce.veredicto_vigente():
+                    faltas.append("1) EQUIPO: no hay veredicto del equipo vigente. Para tocar codigo SIEMPRE se "
+                                  "usa el equipo:\n     cd C:\\Ingeniero_VUC; python ingeniero.py equipo <proyecto> \"<tarea>\"")
+            except Exception:
+                pass
     except Exception:
-        pass
+        # Si no se puede saber si se toco codigo, se exige el veredicto igual.
+        try:
+            import candado_equipo as _ce
+            if not _ce.veredicto_vigente():
+                faltas.append("1) EQUIPO: no hay veredicto del equipo vigente. Para tocar codigo SIEMPRE se "
+                              "usa el equipo:\n     cd C:\\Ingeniero_VUC; python ingeniero.py equipo <proyecto> \"<tarea>\"")
+        except Exception:
+            pass
     # 2) MODO INGENIERO conectado e inyectando
     if not _hay_modo_ingeniero_conectado():
         faltas.append("2) MODO INGENIERO: el hook del modo no esta conectado (no inyecta las leyes a cada "
