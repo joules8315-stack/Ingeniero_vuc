@@ -65,8 +65,8 @@ def test_existe_quien_diga_con_quien_se_trabaja():
 
 
 def test_el_companero_de_ahora_es_continue():
-    assert _companero().activo() == "continue", (
-        "el companero de ahora no es `continue`, y Julio lo mando el 2026-08-31")
+    assert _companero().activo() == "cline", (
+        "el companero de ahora no es `cline`, y Julio lo mando el 2026-09-02")
 
 
 def test_cline_esta_fuera_y_se_sabe_por_que():
@@ -77,13 +77,13 @@ def test_cline_esta_fuera_y_se_sabe_por_que():
     volveria a entrar por la puerta de atras en cuanto el companero de ahora fallara.
     """
     c = _companero()
-    assert c.es_retirado("cline"), (
-        "cline no figura como retirado. Julio lo saco del todo el 2026-08-31, no lo dejo de "
+    assert c.es_retirado("continue"), (
+        "continue no figura como retirado. Julio lo saco del todo el 2026-09-02, no lo dejo de "
         "reemplazo")
-    assert not c.es_reserva("cline"), (
-        "cline sigue figurando como reserva: asi volveria a entrar por la puerta de atras en "
+    assert not c.es_reserva("continue"), (
+        "continue sigue figurando como reserva: asi volveria a entrar por la puerta de atras en "
         "cuanto el companero de ahora fallara, y eso es justo lo que Julio prohibio")
-    motivo = c.por_que_retirado("cline")
+    motivo = c.por_que_retirado("continue")
     assert motivo and len(motivo) > 15, (
         "esta retirado pero no se apunto POR QUE. Dentro de un mes nadie sabra si fue una orden "
         "de Julio o un capricho, y la memoria no puede olvidar eso")
@@ -103,7 +103,12 @@ def _preguntarle_al_candado(a_quien, marca=None):
 
 def test_frena_ir_a_la_reserva_por_costumbre(tmp_path):
     assert os.path.exists(CANDADO), "no existe el candado del companero"
-    codigo, dijo = _preguntarle_al_candado("cline", marca=str(tmp_path / ".no_hay"))
+    c = _companero()
+    fuera = c.retirados()
+    if not fuera:
+        pytest.skip("no hay ningun retirado que probar")
+    nombre = fuera[0]["quien"]
+    codigo, dijo = _preguntarle_al_candado(nombre, marca=str(tmp_path / ".no_hay"))
     assert codigo == FRENA, (
         "dejo mandarle trabajo a la reserva sin mas. Asi el companero nuevo no se estrena nunca "
         "y Julio tiene que repetirlo otra vez. Dijo: %s" % dijo[:200])
@@ -112,9 +117,11 @@ def test_frena_ir_a_la_reserva_por_costumbre(tmp_path):
 
 
 def test_deja_trabajar_con_el_de_ahora(tmp_path):
-    codigo, _ = _preguntarle_al_candado("continue", marca=str(tmp_path / ".no_hay"))
+    """Comprueba que el candado no estorba al companero de ahora, sin fijar su nombre a mano."""
+    quien = _companero().activo()
+    codigo, _ = _preguntarle_al_candado(quien, marca=str(tmp_path / ".no_hay"))
     assert codigo == PASA, \
-        "freno al companero de ahora: un candado que estorba se acaba apagando"
+        f"freno al companero de ahora ({quien}): un candado que estorba se acaba apagando"
 
 
 def test_el_candado_esta_enchufado():

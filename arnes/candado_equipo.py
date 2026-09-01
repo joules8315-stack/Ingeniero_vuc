@@ -65,6 +65,22 @@ def guardar_veredicto(tarea, archivos, obrero, auditor, veredicto):
          "obrero": obrero, "auditor": auditor, "veredicto": veredicto}
     os.makedirs(os.path.dirname(_ruta_veredicto()), exist_ok=True)
     json.dump(d, open(_ruta_veredicto(), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    # EL CUADERNO DEL EQUIPO (Julio, 2026-09-02, preguntandolo por tercera vez: "que pasa con el
+    # equipo, que no lo veo trabajando?"). Y tenia razon aunque el equipo SI trabajase: el
+    # veredicto de arriba se SOBRESCRIBE en cada trabajo, asi que solo sobrevivia el ultimo. De
+    # diez reparaciones aprobadas en un dia quedaba rastro de UNA. Julio tenia que creerme en vez
+    # de mirarlo, que es justo lo que no quiere.
+    # La ruta va ABSOLUTA: una relativa depende de desde donde se lance y falla en silencio.
+    try:
+        _cuaderno = os.path.join(AQUI, "memoria", "TRABAJOS_DEL_EQUIPO.log")
+        os.makedirs(os.path.dirname(_cuaderno), exist_ok=True)
+        with open(_cuaderno, "a", encoding="utf-8") as f:
+            fecha = time.strftime("%Y-%m-%d %H:%M", time.localtime(d["cuando"]))
+            archivos_txt = ", ".join(os.path.basename(str(a)) for a in list(archivos or [])[:3])
+            f.write("%s | escribio %s | reviso %s | %s | %s\n"
+                    % (fecha, obrero, auditor, veredicto, archivos_txt))
+    except Exception:
+        pass    # dejar constancia es la prueba, pero no puede tumbar el trabajo
     return d
 
 
