@@ -178,7 +178,7 @@ def main():
     # ya se leyo, y seguir es entonces una decision tomada a sabiendas, no un descuido.
     # No se afloja nada: sigue siendo IMPOSIBLE actuar sin haber visto el aviso primero.
     huella = hashlib.sha1(
-        ("|".join(sorted(str(f.get("id", "")) for f in revividos)) + "::" + texto
+        ("|".join(sorted(str(f.get("id", "")) for f in revividos))
          ).encode("utf-8", "replace")).hexdigest()
 
     if _ya_avisado(huella):
