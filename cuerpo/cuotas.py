@@ -254,7 +254,7 @@ def _capacidad(quien):
     """
     g = _leer().get("gasto", {}).get(quien, {})
     medido = max(int(g.get("mayor_ok", 0)), int(_medidas().get(quien, 0)))
-    cabe = max(int(CAPACIDAD.get(quien, 0)), medido)
+    cabe = medido if medido > 0 else int(CAPACIDAD.get(quien, 0))
     no_cupo = int(g.get("no_cupo", 0) or 0)
     if no_cupo > 0:
         cabe = min(cabe, no_cupo - 1)
