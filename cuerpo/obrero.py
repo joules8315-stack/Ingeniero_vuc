@@ -472,9 +472,25 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
     # REPARTIDOR POR METRICAS (Julio, 2026-08-21): se asigna por eficiencia, no preguntando a
     # todos a la vez. `cuotas.rankear` ordena del mas eficiente al menos y SALTA a los que no
     # soportan el tamano. Asi no se gasta tokens en preguntar a quien no va a poder.
+    turnos_antes = list(turnos)
     turnos = cuotas.rankear(turnos, len(prompt))
     # DESPUES de rankear, nunca antes: rankear ordena por eficiencia y volveria a hundir al de
     # pago, deshaciendo la orden de Julio sin que se notara.
+    # AVISOS DE CAPACIDAD (2026-09-01): si rankear salto a alguien por tamano, se dice quien fue
+    # y cuanto aguantaba. Y si no quedo nadie, se avisa claro de que hay que PARTIR el trabajo.
+    saltados = [q for q in turnos_antes if q not in turnos]
+    for _saltado in saltados:
+        avisos.append("%s no le cabe (%d letras, aguanta %d) -> se le salta" % (
+            cuotas.APODO[_saltado], len(prompt), cuotas._capacidad(_saltado)))
+    if not turnos:
+        _mas_aguanta = max(turnos_antes, key=cuotas._capacidad, default=None)
+        if _mas_aguanta:
+            avisos.append("ENCARGO NO LE CABE A NADIE: mide %d letras, el que mas aguanta es %s "
+                          "con %d. HAY QUE PARTIRLO en trozos mas pequenos." % (
+                              len(prompt), cuotas.APODO[_mas_aguanta], cuotas._capacidad(_mas_aguanta)))
+        else:
+            avisos.append("ENCARGO NO LE CABE A NADIE: mide %d letras y no hay cerebro disponible. "
+                          "HAY QUE PARTIRLO en trozos mas pequenos." % len(prompt))
     # SI NO HAY LLAVE DE DEEPSEEK no pasa nada: no estara en `turnos`, esto no hace nada y el
     # relevo sigue con los gratis. Julio no se queda atrapado por no tener saldo.
     # SI DEEPSEEK FALLA tampoco pasa nada: comprobado en el bucle de abajo, cualquier fallo cae
