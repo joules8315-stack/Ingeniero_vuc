@@ -119,6 +119,15 @@ def es_agote(error_txt):
     # Si se forzo un proveedor concreto y contesta eso, ESE proveedor no atendio: se releva.
     if "ningun cerebro respondio" in t or "ningún cerebro respondió" in t:
         return True
+    # FALLO DE LLAVE, PERMISO O SERVICIO CAIDO: NO SE ARREGLAN SOLOS, SE APARTAN IGUAL QUE AGOTADOS.
+    # Julio ordeno 2026-09-01: "no funcionar cuenta igual que no estar".
+    if any(x in t for x in ("401", "403", "unauthorized", "forbidden",
+                            "invalid api key", "invalid_api_key", "api key not valid",
+                            "no auth", "authentication")):
+        return True
+    if any(x in t for x in ("500", "502", "503", "504", "service unavailable",
+                            "bad gateway", "internal server error", "overloaded")):
+        return True
     return False
 
 
