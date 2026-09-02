@@ -112,6 +112,8 @@ def main():
     ruta = str(dentro.get("file_path") or "").replace("\\", "/").lower()
     if "/arnes/" in ruta or "/vigias/" in ruta:
         return 0
+    if ruta.endswith((".md", ".txt", ".log", ".json")):
+        return 0
 
     texto = " ".join(str(dentro.get(k) or "") for k in ("command", "content", "new_string"))
     if not texto.strip():
