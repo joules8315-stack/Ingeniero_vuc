@@ -42,14 +42,16 @@ RUTA = os.path.join(AQUI, "memoria", "CUOTAS.json")
 # van DESPUES de Groq y Gemini, que tienen mas holgura, y solo entran cuando esos se agotan.
 # Medido del historial de Julio: gasta 29 llamadas al dia (202 en 7 dias), asi que 50 alcanzan.
 # Van ANTES del local porque el local fallo 8 de 8 veces: un cerebro que no contesta no es relevo.
+# Julio saco a los tres cerebros de OpenRouter el 2026-09-01: llave no autorizada todo el dia,
+# llave presente pero sin acceso, y se les llamaba en balde en cada vuelta. Sus nombres eran
+# router, router2 y router3. Si algun dia se renueva la llave, se devuelven asi: volver a poner
+# los tres nombres en la lista de orden, y sus entradas en las dos tablas, con los mismos valores
+# que tenian.
 ORDEN = ["groq", "groq20b", "gemini", "gemini2", "gemini3", "gemini4",
-         "router", "router2", "router3", "local", "deepseek"]
+         "local", "deepseek"]
 APODO = {"groq": "GPT-OSS 120B (Groq)", "groq20b": "GPT-OSS 20B (Groq)",
          "gemini": "Gemini 3.5", "gemini2": "Gemini 3 preview",
          "gemini3": "Gemini flash-latest", "gemini4": "Gemini 2.5 flash-lite",
-         "router": "North Mini Code (OpenRouter)",
-         "router2": "Nemotron 3 Ultra (OpenRouter)",
-         "router3": "Laguna S (OpenRouter)",
          "local": "LM Studio (tu PC)",
          "deepseek": "DeepSeek (SE PAGA)"}
 
