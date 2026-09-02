@@ -107,7 +107,11 @@ def instalar(apodo, quitar=False):
     elif os.path.exists(md):
         os.remove(md); print("BORRADO (quedaba vacio):", md)
 
-    # 2) hook en .claude/settings.json
+    # 2) .claude/settings.json — EL CANDADO DE LECTURA (read_gate) NO se instala por proyecto
+    #    (Claude/Julio, 2026-09-02): es canonico a nivel USUARIO y cubre a todos los proyectos.
+    #    Si se mete en el proyecto TAMBIEN, el arnes se duplica y se pide permiso dos veces
+    #    (medido el 2026-08-27). Por eso el instalador SOLO lo QUITA del proyecto si alguien lo
+    #    puso antes, y no lo vuelve a anadir: asi nunca mas se duplica.
     d = os.path.join(raiz, ".claude")
     os.makedirs(d, exist_ok=True)
     sj = os.path.join(d, "settings.json")
@@ -120,15 +124,13 @@ def instalar(apodo, quitar=False):
     hooks = cfg.setdefault("hooks", {})
     pre = hooks.setdefault("PreToolUse", [])
     pre = [e for e in pre if "read_gate.py" not in json.dumps(e)]
-    if not quitar:
-        pre.append({"matcher": "Read", "hooks": [hook_cfg()]})
     hooks["PreToolUse"] = pre
     if not pre:
         hooks.pop("PreToolUse", None)
     if not hooks:
         cfg.pop("hooks", None)
     json.dump(cfg, open(sj, "w", encoding="utf-8"), indent=2, ensure_ascii=False)
-    print(("QUITADO el candado de " if quitar else "CANDADO DE LECTURA puesto en ") + sj)
+    print("CANDADO DE LECTURA: canonico a nivel USUARIO (no se instala por proyecto) ->", sj)
 
     # 3) regla por ruta
     rd = os.path.join(d, "rules")
