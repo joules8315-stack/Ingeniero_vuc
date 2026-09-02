@@ -271,30 +271,26 @@ def main():
         # cuando el equipo habia RECHAZADO. El candado NO abria (ya esta probado), pero el mensaje
         # decia "guarda llave" y engañaba. Ahora se dice la verdad: la llave SOLO abre con APROBADO.
         v_final = ((res.get("auditoria") or {}).get("veredicto", "?") or "?").strip().upper()
-        # ENCARGO A (parte 2): cuando el equipo APROBO y la propuesta trae un archivo NUEVO con su
-        # texto completo, y ese archivo NO EXISTE todavia, se crea. Si ya existe NO se toca, ni se
-        # sobrescribe ni se le anade: solo se crean archivos nuevos. Y si el texto viene envuelto
-        # entre lineas de tres tildes, se le quita la envoltura antes de guardar o queda roto.
+        # ENCARGO A / plan pieza 2 (Claude, 2026-09-02): cuando el equipo APROBO, se APLICA en disco
+        # lo que escribio usando el aplicador probado (cuerpo/aplicador.py): crea el archivo nuevo o
+        # cambia el texto aprobado, y comprueba que el .py no quede roto ANTES de confirmar. Si el
+        # texto viene envuelto entre tres tildes, se le quita la envoltura o el archivo queda roto.
         if v_final == "APROBADO" and isinstance(prop, dict):
-            _nuevo_archivo = prop.get("archivo") or (prop.get("archivos") or [None])[0]
-            _texto = prop.get("codigo") or prop.get("texto_nuevo") or ""
-            if _nuevo_archivo and isinstance(_texto, str) and _texto.strip() \
-                    and not os.path.exists(str(_nuevo_archivo)):
-                _texto_limpio = _texto.lstrip()
-                if _texto_limpio.startswith("```"):
-                    _salto = _texto_limpio.find("\n")
-                    _texto_limpio = _texto_limpio[_salto + 1:] if _salto >= 0 else ""
-                if _texto_limpio.rstrip().endswith("```"):
-                    _texto_limpio = _texto_limpio.rstrip()[:-3].rstrip("\n")
-                try:
-                    _destino = os.path.abspath(str(_nuevo_archivo))
-                    os.makedirs(os.path.dirname(_destino), exist_ok=True)
-                    with open(_destino, "w", encoding="utf-8") as _f:
-                        _f.write(_texto_limpio + "\n")
-                    print("CREADO (lo escribio el equipo): %s (%d letras)"
-                          % (_nuevo_archivo, len(_texto_limpio)))
-                except Exception as _e:
-                    print("no se pudo crear %s: %s" % (_nuevo_archivo, str(_e)[:90]))
+            from cuerpo import aplicador
+            for _k in ("codigo", "texto_nuevo"):
+                _t = prop.get(_k)
+                if isinstance(_t, str) and _t.lstrip().startswith("```"):
+                    _l = _t.lstrip()
+                    _s = _l.find("\n")
+                    _l = _l[_s + 1:] if _s >= 0 else ""
+                    if _l.rstrip().endswith("```"):
+                        _l = _l.rstrip()[:-3].rstrip("\n")
+                    prop[_k] = _l
+            _ok, _msg = aplicador.aplicar_cambio(prop)
+            if _ok:
+                print("APLICADO en disco (lo escribio el equipo): %s" % prop.get("archivo"))
+            else:
+                print("EL EQUIPO APROBO, pero no se pudo aplicar: %s" % _msg)
         if v_final == "APROBADO":
             print("LLAVE GUARDADA: se puede escribir en %d archivo(s) durante %d min."
                   % (len(tocados), _ce.VIGENCIA_MIN))

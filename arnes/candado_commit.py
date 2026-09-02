@@ -50,6 +50,12 @@ CUADERNOS_BASE = {
     # el cuaderno del candado del companero, creado el 2026-08-31: se olvido anadirlo aqui
     # y por eso el guardian seguia gritando por una libreta que escribia el mismo.
     "decisiones_companero.log",
+    # 2026-09-02 (Claude: "el guardian que se muerde la cola"): los candados que se anadieron
+    # despues dejaban sus propios apuntes dentro de memoria y el guardian volvia a pedir guardar
+    # a cada rato. Son cuadernos de los candados, NO trabajo de Julio: se ignoran igual que los
+    # de arriba, pero se quedan en el disco (el rastro que Julio mira sigue ahi).
+    "balance.log", "gasto.log", "gasto.json", "trabajos_del_equipo.log",
+    "decisiones_candado.log", "aplicaciones.log", "ultimo_trabajo_del_equipo.json",
 }
 
 

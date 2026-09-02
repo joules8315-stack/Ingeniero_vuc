@@ -62,3 +62,19 @@ def test_el_trabajo_real_en_memoria_SI_grita(monkeypatch):
         "el guardián ignora TODO memoria/, pero memoria/paquetes/ es trabajo real indexado (lo que "
         "se le manda al equipo). Un paquete nuevo sin guardar no se puede dejar pasar en silencio. "
         "Hay que ignorar SOLO los cuadernos de los candados, no el trabajo de verdad.")
+
+
+def test_los_cuadernos_nuevos_NO_gritan(monkeypatch):
+    """2026-09-02 (Claude: 'el guardian que se muerde la cola'): los candados anadidos despues
+    (gasto, balance, aplicador, equipo) dejaban sus apuntes en memoria y el guardián volvia a
+    pedir guardar a cada rato. Esos cuadernos nuevos tampoco son trabajo sin guardar."""
+    salida = (" M memoria/BALANCE.log\n"
+              " M memoria/GASTO.log\n"
+              " M memoria/GASTO.json\n"
+              " M memoria/TRABAJOS_DEL_EQUIPO.log\n"
+              " M memoria/DECISIONES_CANDADO.log\n"
+              " M memoria/APLICACIONES.log\n"
+              " M memoria/ULTIMO_TRABAJO_DEL_EQUIPO.json\n")
+    assert _correr_con(salida, monkeypatch) is False, (
+        "los cuadernos nuevos (balance, gasto, trabajos, decisiones, aplicaciones) hicieron "
+        "gritar al guardián. Son apuntes de los candados, no trabajo de Julio.")
