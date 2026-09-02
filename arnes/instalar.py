@@ -84,11 +84,6 @@ Cuando Julio mande algo: se arranca por el Ingeniero (paquete + equipo), no por 
 """
 
 
-def hook_cfg():
-    gate = os.path.join(AQUI, "arnes", "read_gate.py").replace("\\", "/")
-    return {"type": "command", "command": f'python "{gate}"'}
-
-
 def instalar(apodo, quitar=False):
     prs = grafo.proyectos()
     if apodo not in prs:
