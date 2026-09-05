@@ -1,5 +1,163 @@
 # Análisis del Ingeniero
 
+> **ESTE ES EL ÚNICO ARCHIVO DE DIAGNÓSTICO.** Julio, 2026-09-05: *"Unifica, crea un solo archivo,
+> ya existen por lo menos dos que hablan de esto."* Lo que haya en otros documentos sobre qué
+> falla, qué se reparó y qué falta, **se trae aquí**. No se abre otro.
+
+---
+
+# ESTADO AL 2026-09-05 — MEDIDO, NO OPINADO
+
+## Los cuatro números que mandan
+
+| Qué se midió | Resultado |
+|---|---|
+| Frenadas de los candados (desde el 20-ago) | **13.375** |
+| Trabajos del equipo que **SIRVIERON** | **2 de 70** (3%) |
+| Esfuerzo de 30 días que fue a la **herramienta** | **85%** (182 guardados) |
+| Esfuerzo que fue a los **productos que dan dinero** | **15%** (32 guardados) |
+| Vigías en verde | **560** — y el producto de Julio no genera un informe |
+
+**Trece mil frenadas para dos resultados útiles.**
+
+## Reparto de los 70 trabajos del equipo
+
+| Cómo acabó | Cuántos |
+|---|---|
+| Sin llegar a juzgarse | 60 |
+| No concluyente | 5 |
+| **Sirvió** | **2** |
+| Se quedó corto (faltó material) | 2 |
+| Esperando que Julio decidiera | 1 |
+
+---
+
+# LAS TRES CAUSAS, CADA UNA CON SU PRUEBA
+
+## Causa 1 — El sistema mide sus aciertos solo y sus errores a mano
+
+```
+frenadas cazadas : 13.375   <- se suma sola
+frenos en falso  :      2   <- hay que apuntarlos a mano
+```
+
+Julio recibió **al menos seis** frenadas falsas en pocos días. **Ninguna está contada.**
+
+**Consecuencia:** el termómetro solo sube. El sistema siempre parece que va bien, así que **nunca
+se entera de que va mal**. Esa es la respuesta medida a *"por qué no aprende de sus fallos"*.
+
+**Agravante:** esto ya estaba escrito como lección —*"no medir algo importante con un contador que
+hay que subir a mano"*— y se repitió igual.
+
+## Causa 2 — Una lección solo avisa; avisar no detiene a quien ya decidió
+
+De las **66 lecciones** guardadas, **51 son de dos días** (20 y 21 de agosto). Después, casi nada.
+**Dejó de aprender hace dos semanas y siguió funcionando igual.**
+
+**Prueba del mismo día:** la lección *"no des por bueno un anuncio sin comprobarlo"* estaba escrita,
+y el sistema anunció **APLICADO** sin comprobar nada.
+
+## Causa 3 — Todo mide la herramienta; nada mide si Julio puede trabajar
+
+**560 vigías en verde y el programa no genera un informe.** Las vigías comprueban que la
+herramienta se porta bien. **Ninguna comprueba que Julio pudo hacer su informe.**
+
+Por eso se puede tener el sistema entero en verde y el negocio parado. **Es la causa de fondo.**
+
+---
+
+# LA RUTA: EN QUÉ FASE VAMOS
+
+| Fase | Qué es | Estado |
+|---|---|---|
+| **0** | Medir de verdad qué falla | **HECHO** (2026-09-05, los números de arriba) |
+| **1** | Que no se escriba en el proyecto equivocado | **HECHO** (ver abajo) |
+| **2** | Que los frenos falsos se cuenten solos | pendiente |
+| **3** | Que una lección repetida pase a candado | pendiente |
+| **4** | **La medida única: ¿Julio pudo hacer su informe hoy?** | pendiente — *lo más importante* |
+| **5** | Cerrar las 7 puertas del candado de equipo | a medias: vigía escrita y roja, apartada |
+| **6** | Que el entregador traiga la función completa | pendiente |
+| **7** | El vigilante que autoriza desde el plan aprobado | legislado, no construido |
+| **8** | **Volver a Foto Informe y terminarlo** | **parado en el paso 6 de 8** |
+
+---
+
+# LO REPARADO (con prueba, no de palabra)
+
+| Qué | Cuándo | Prueba |
+|---|---|---|
+| El filtro de datos destrozaba el código que se manda a los cerebros | 28-ago | Vigía nació roja, verde ahora, sabotaje comprobado |
+| El auditor rechazaba por contar renglones | 28-ago | Ídem |
+| Los enlaces del Word no saltaban (dos marcadores con el mismo número) | 28-ago | Ídem |
+| **Anunciaba APLICADO habiendo escrito en la carpeta equivocada** | **05-sep** | **Vigía nació roja 2 de 6, verde ahora, sabotaje comprobado** |
+
+## Detalle del último, porque es el que más daño hacía
+
+Cuando la propuesta era un **cambio** sobre un archivo existente y ese archivo no estaba en la ruta
+resuelta, **lo creaba** con solo el trozo nuevo dentro y devolvía éxito. Así nació un archivo de
+Foto Informe **dentro de la carpeta del Ingeniero**, mientras arriba se anunciaba *"APLICADO"*.
+
+**La ruta mal resuelta convertía un error en un éxito silencioso** — la peor clase de error, porque
+quien viene detrás trabaja sobre algo que no existe y la ronda se paga igual.
+
+---
+
+# LO QUE FALTA, POR ORDEN DE DAÑO
+
+1. **Nadie mide si el producto sirve.** (Fase 4)
+2. **Los frenos falsos no se cuentan.** (Fase 2)
+3. **El entregador entrega material incompleto.** Es lo que tumba la mayoría de las rondas. (Fase 6)
+4. **Siete puertas por las que se puede escribir sin equipo**, una de ellas un accidente: si no se
+   puede leer la petición, deja pasar. (Fase 5)
+5. **La vía canónica solo se comprueba al arrancar**, no al escribir. Parcialmente cerrado hoy.
+
+---
+
+# PARA CONSULTAR CON OTRA IA — TODO LO QUE HACE FALTA SABER
+
+Julio, 2026-09-05: *"dame todos los datos, para consultar con otra IA."* Aquí está, completo y sin
+adornos.
+
+## Qué es esto
+
+Una herramienta que ayuda a construir y reparar dos productos, escrita en Python, en Windows.
+Trabaja así: ante un problema se pide un **paquete mínimo** (los trozos de código relevantes), dos
+IA distintas trabajan (una propone, otra audita), y unos **candados** (hooks) frenan las acciones
+que rompen las reglas.
+
+## Las piezas
+
+- **El entregador**: elige qué trozos de código se le enseñan a las IA.
+- **El equipo**: una IA propone un cambio en JSON (archivo, texto viejo, texto nuevo), otra lo
+  audita y da un veredicto.
+- **El aplicador**: escribe en disco el cambio aprobado.
+- **Los candados**: 14 piezas enganchadas a los eventos de la herramienta; salir con código 2 frena.
+- **Las vigías**: 560 pruebas automáticas.
+- **La memoria**: 66 lecciones de fallos pasados, que se muestran antes de repetir una acción.
+
+## Los síntomas medidos
+
+1. 3% de éxito del equipo (2 de 70).
+2. 13.375 frenadas, con solo 2 frenos falsos registrados (se apuntan a mano).
+3. 85% del esfuerzo en la herramienta, 15% en los productos.
+4. 560 vigías verdes con el producto sin funcionar.
+5. Los rechazos del auditor se concentran en cosas que no son la reparación: números de línea que
+   no cuadran, material incompleto, respuestas ilegibles.
+
+## Las preguntas concretas para esa IA
+
+1. Con un 3% de éxito del equipo, **¿el fallo está en el entregador, en el formato de la propuesta,
+   o en el criterio del auditor?** ¿Qué medición lo decide?
+2. **¿Cómo se hace que un sistema de este tipo cuente sus propios errores sin depender de que
+   alguien los apunte?**
+3. **¿Cómo se evita que 560 pruebas en verde convivan con un producto que no funciona?** ¿Qué
+   medida única lo impediría?
+4. Con 13.375 frenadas, **¿cómo se distingue el candado que protege del que solo estorba**, sin
+   aflojar ninguno a ciegas?
+5. **¿Cómo se sale de un sistema que gasta el 85% de su esfuerzo en sí mismo?**
+
+---
+
 ## Parte 1 - Qué hay de cada punto
 
 ### Punto 1: Ayudar a construir proyectos rápido, confiable, económico y en equipo
