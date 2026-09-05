@@ -29,8 +29,11 @@ def aplicar_cambio(propuesta):
     texto_nuevo = propuesta.get("texto_nuevo", "")
     codigo = propuesta.get("codigo", "")
 
-    # Si el archivo NO existe, se crea con codigo o texto_nuevo.
+    # Si el archivo NO existe y la propuesta trae texto_viejo, es un cambio sobre algo que deberia existir: no se crea nada.
     if not os.path.exists(archivo):
+        if texto_viejo:
+            _apuntar_log(False, archivo, funcion, "archivo no existe en esa ruta")
+            return False, "El archivo no existe en esa ruta; probablemente la ruta este mal resuelta o falte la carpeta del proyecto."
         contenido = codigo if codigo else texto_nuevo
         if not contenido:
             _apuntar_log(False, archivo, funcion, "archivo no existe y no trae texto")
