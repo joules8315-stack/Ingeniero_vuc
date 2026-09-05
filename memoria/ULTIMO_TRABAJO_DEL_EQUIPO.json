@@ -1,24 +1,20 @@
 {
  "obrero": "deepseek",
- "auditor": "groq20b",
+ "auditor": "gemini4",
  "propuesta": {
-  "diagnostico": "Falta avisar cuando se salta a un cerebro por tamaño y cuando el encargo no le cabe a nadie, en la funcion _preguntar_con_relevo.",
-  "archivo": "cuerpo/obrero.py",
-  "funcion": "_preguntar_con_relevo",
-  "texto_viejo": "    turnos = cuotas.rankear(turnos, len(prompt))\n    # DESPUES de rankear, nunca antes: rankear ordena por eficiencia y volveria a hundir al de\n    # pago, deshaciendo la orden de Julio sin que se notara.",
-  "texto_nuevo": "    turnos_antes = list(turnos)\n    turnos = cuotas.rankear(turnos, len(prompt))\n    # DESPUES de rankear, nunca antes: rankear ordena por eficiencia y volveria a hundir al de\n    # pago, deshaciendo la orden de Julio sin que se notara.\n    # AVISOS DE CAPACIDAD (2026-09-01): si rankear salto a alguien por tamano, se dice quien fue\n    # y cuanto aguantaba. Y si no quedo nadie, se avisa claro de que hay que PARTIR el trabajo.\n    saltados = [q for q in turnos_antes if q not in turnos]\n    for _saltado in saltados:\n        avisos.append(\"%s no le cabe (%d letras, aguanta %d) -> se le salta\" % (\n            cuotas.APODO[_saltado], len(prompt), cuotas._capacidad(_saltado)))\n    if not turnos:\n        _mas_aguanta = max(turnos_antes, key=cuotas._capacidad, default=None)\n        if _mas_aguanta:\n            avisos.append(\"ENCARGO NO LE CABE A NADIE: mide %d letras, el que mas aguanta es %s \"\n                          \"con %d. HAY QUE PARTIRLO en trozos mas pequenos.\" % (\n                              len(prompt), cuotas.APODO[_mas_aguanta], cuotas._capacidad(_mas_aguanta)))\n        else:\n            avisos.append(\"ENCARGO NO LE CABE A NADIE: mide %d letras y no hay cerebro disponible. \"\n                          \"HAY QUE PARTIRLO en trozos mas pequenos.\" % len(prompt))",
-  "cambio": "Guardar la lista de turnos antes de rankear, comparar con la de despues para generar avisos de saltados por capacidad, y avisar si no queda ningun cerebro tras el salto.",
-  "codigo": "    turnos_antes = list(turnos)\n    turnos = cuotas.rankear(turnos, len(prompt))\n    # DESPUES de rankear, nunca antes: rankear ordena por eficiencia y volveria a hundir al de\n    # pago, deshaciendo la orden de Julio sin que se notara.\n    # AVISOS DE CAPACIDAD (2026-09-01): si rankear salto a alguien por tamano, se dice quien fue\n    # y cuanto aguantaba. Y si no quedo nadie, se avisa claro de que hay que PARTIR el trabajo.\n    saltados = [q for q in turnos_antes if q not in turnos]\n    for _saltado in saltados:\n        avisos.append(\"%s no le cabe (%d letras, aguanta %d) -> se le salta\" % (\n            cuotas.APODO[_saltado], len(prompt), cuotas._capacidad(_saltado)))\n    if not turnos:\n        _mas_aguanta = max(turnos_antes, key=cuotas._capacidad, default=None)\n        if _mas_aguanta:\n            avisos.append(\"ENCARGO NO LE CABE A NADIE: mide %d letras, el que mas aguanta es %s \"\n                          \"con %d. HAY QUE PARTIRLO en trozos mas pequenos.\" % (\n                              len(prompt), cuotas.APODO[_mas_aguanta], cuotas._capacidad(_mas_aguanta)))\n        else:\n            avisos.append(\"ENCARGO NO LE CABE A NADIE: mide %d letras y no hay cerebro disponible. \"\n                          \"HAY QUE PARTIRLO en trozos mas pequenos.\" % len(prompt))",
-  "vigia": "Un test que llame a _preguntar_con_relevo con un prompt enorme (mayor que la capacidad de todos) y verifique que los avisos contienen 'ENCARGO NO LE CABE A NADIE' y 'PARTIRLO'. Otro test con un prompt que solo quepa en algunos, verificando que los avisos mencionan a los saltados.",
+  "diagnostico": "En rv3_prueba_boton_titulos.py, la funcion generar_y_abrir espera el aviso previo a generar buscando el boton por su id confirmContinueBtn, pero el aviso real no usa ese id, por lo que la prueba no lo contesta y falla.",
+  "archivo": "rv3_prueba_boton_titulos.py",
+  "funcion": "generar_y_abrir",
+  "texto_viejo": "    click_humano(page, \"#generateBtn\", \"Generar informe final\")\n    for _ in range(40):\n        if page.evaluate(\"\"\"() => { const o=document.getElementById('confirmOverlay');\n            return !!o && !o.classList.contains('hidden'); }\n        \"\"\"):\n            page.click(\"#confirmContinueBtn\")\n            break",
+  "texto_nuevo": "    click_humano(page, \"#generateBtn\", \"Generar informe final\")\n    contestado = False\n    for _ in range(50):\n        boton = page.query_selector(\"button:visible\")\n        if boton and boton.inner_text().strip() == \"Continuar\":\n            boton.click()\n            contestado = True\n            break\n        page.wait_for_timeout(500)\n    if contestado:\n        print(\"  [AVISO] Se contesto el aviso previo a generar pulsando Continuar.\", flush=True)\n    else:\n        print(\"  [AVISO] El aviso previo a generar NO aparecio.\", flush=True)",
+  "cambio": "Reemplazar el bloque que espera confirmOverlay y pulsa confirmContinueBtn por un bucle que busca un boton visible con el texto exacto 'Continuar' y lo pulsa, reintentando hasta 50 veces con esperas de medio segundo. Ademas, registrar si se contesto el aviso o si no aparecio.",
+  "codigo": "    click_humano(page, \"#generateBtn\", \"Generar informe final\")\n    contestado = False\n    for _ in range(50):\n        boton = page.query_selector(\"button:visible\")\n        if boton and boton.inner_text().strip() == \"Continuar\":\n            boton.click()\n            contestado = True\n            break\n        page.wait_for_timeout(500)\n    if contestado:\n        print(\"  [AVISO] Se contesto el aviso previo a generar pulsando Continuar.\", flush=True)\n    else:\n        print(\"  [AVISO] El aviso previo a generar NO aparecio.\", flush=True)",
+  "vigia": "Ejecutar rv3_prueba_boton_titulos.py y verificar en la salida que imprime '[AVISO] Se contesto el aviso previo a generar pulsando Continuar.' cuando el aviso aparece, o '[AVISO] El aviso previo a generar NO aparecio.' cuando no aparece.",
   "puede_danar": [
-   "cuerpo/obrero.py",
-   "cuotas._capacidad (solo lectura, no se toca)"
+   "rv3_prueba_boton_titulos.py"
   ],
   "preguntas": [],
-  "confianza": "alta",
-  "_fuera_del_paquete": [
-   "obrero.py"
-  ]
+  "confianza": "alta"
  },
  "auditoria": {
   "veredicto": "APROBADO",
@@ -27,20 +23,19 @@
   "fallos": [],
   "riesgo_vecinos": [],
   "que_falta": [],
-  "resumen_para_el_jefe": "El cambio añade avisos de capacidad y de encargo no cabe, cumpliendo el diagnóstico sin romper nada."
+  "resumen_para_el_jefe": "La reparación corrige la detección del botón de confirmación en la prueba, alineándose con el diagnóstico y el material proporcionado."
  },
  "avisos": [
-  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
-  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
-  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
-  "Gemini 3 preview se agoto -> pasa el turno",
-  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
-  "Gemini 3.5 se agoto -> pasa el turno",
-  "Gemini flash-latest se agoto -> pasa el turno",
-  "North Mini Code (OpenRouter) fallo (no es cuota): HTTP Error 401: Unauthorized",
-  "Nemotron 3 Ultra (OpenRouter) fallo (no es cuota): HTTP Error 401: Unauthorized",
-  "Laguna S (OpenRouter) fallo (no es cuota): HTTP Error 401: Unauthorized",
-  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) no le cabe (121789 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (121789 letras, aguanta 20169) -> se le salta",
+  "Gemini 3.5 no le cabe (121789 letras, aguanta 107349) -> se le salta",
+  "Gemini flash-latest no le cabe (121789 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (121789 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (123297 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (123297 letras, aguanta 20169) -> se le salta",
+  "Gemini 3.5 no le cabe (123297 letras, aguanta 107349) -> se le salta",
+  "Gemini flash-latest no le cabe (123297 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (123297 letras, aguanta 26000) -> se le salta",
   "vueltas_dadas: 1"
  ]
 }
