@@ -22,6 +22,11 @@ from . import grafo, flujos, trozos, enlaces, piezas
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAQUETES = os.path.join(AQUI, "memoria", "paquetes")
 TOPE_LINEAS = 800   # un paquete mas largo que esto ya no es un paquete: es releer el proyecto
+# Hasta que tamano vale la pena traer una funcion ENTERA en vez del trozo suelto (2026-09-05).
+# Medido: una funcion de 700 renglones abarcaba el 87% de su archivo, y el paquete se fue a 963
+# lineas. Traer la funcion entera cura los pedazos huerfanos, pero pasado este tope sale mas caro
+# que el problema que resuelve, asi que se manda el trozo con su cabecera delante.
+TOPE_FUNCION_ENTERA = 120
 
 
 def _claves_de(g, nombres_flujo):
@@ -273,6 +278,12 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
     except Exception:
         pass
 
+    # GENERALIZAR LA REPARACION A CUALQUIER FUNCION (Julio, 2026-09-05).
+    # El bloque de arriba solo arregla el caso de `armar`. El mismo problema ocurre con cualquier
+    # otra funcion: el fragmentador entrega pedazos huerfanos. Esta funcion generaliza esa cura.
+    pedazos = completar_funciones(pedazos, codigo)
+    # (la funcion vive al final de este archivo, junto a las demas ayudas)
+
     # LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO (Julio, 2026-08-27, ley L13/L14).
     # Los archivos nombrados ya se agregaron a `codigo`/`fichas`. Aqui se garantiza que su trozo
     # llegue al material: si el fragmentador por relevancia no lo trajo, se pide el pedazo del
@@ -445,6 +456,69 @@ def main():
     if n > TOPE_LINEAS:
         print(f"  AVISO: el paquete pasa de {TOPE_LINEAS} lineas. Afina el problema.")
     return 0
+
+
+def completar_funciones(pedazos, codigo):
+    """Si un trozo cae DENTRO de una funcion, se entrega la funcion ENTERA. Nada mas.
+
+    Julio, 2026-09-05: "estos son repos muy grandes y no tienes el contexto... ese es el objetivo
+    de la memoria y del repartidor, que no has podido resolver".
+
+    EL FALLO, MEDIDO: los trozos se eligen por parecido de palabras en ventanas de 40 renglones, y
+    las palabras no saben donde empieza ni acaba una funcion. Resultado: pedazos huerfanos.
+      · pidiendo la funcion que escribe una casilla, llegaron las lineas 1-80 (la portada del
+        archivo) y la funcion estaba en la 5300;
+      · pidiendo la funcion `cortar`, llegaron 1-40 y 129-168, y `cortar` empieza en la 54.
+    El auditor rechazaba esas rondas diciendo que se usaban cosas inventadas, y esas cosas estaban
+    declaradas en renglones que el paquete nunca le enseño. 2 de 70 trabajos sirvieron.
+
+    Aqui arriba ya se hacia esto MISMO, pero solo para `armar`, con el nombre escrito a mano. Esto
+    lo generaliza: la cura existia y se usaba una sola vez.
+
+    NO se traen las funciones vecinas (eso seria gastar de mas) y NO se toca lo que esta fuera de
+    toda funcion: las importaciones y las constantes de arriba son justo lo que evita que el
+    auditor crea que algo esta inventado.
+    """
+    if not pedazos:
+        return pedazos
+    por_id = {}
+    for p in (codigo or []):
+        por_id[p.get("id")] = p
+    salida, ya_entera = [], set()
+    for t in pedazos:
+        pieza = por_id.get(t.get("pieza"))
+        abs_path = (pieza or {}).get("abs") or t.get("abs")
+        if not abs_path or not str(abs_path).lower().endswith(".py"):
+            salida.append(t)
+            continue
+        try:
+            duena = piezas.funcion_que_contiene(abs_path, t.get("desde"), t.get("hasta"))
+        except Exception:
+            duena = None                       # leer mal una pieza no puede tumbar el paquete
+        if not duena:
+            salida.append(t)                   # fuera de toda funcion: se respeta tal cual
+            continue
+        # TOPE DE TAMANO (2026-09-05, lo cazo la vigia que vigila el GASTO). Una funcion de 700
+        # renglones abarcaba el 87% de su archivo: traerla entera es releer el repo por la puerta
+        # de atras. Si pasa del tope, se manda el trozo tal cual PERO con su cabecera delante, que
+        # es lo minimo para que el auditor sepa de donde sale y no crea que algo esta inventado.
+        if (duena["hasta"] - duena["desde"] + 1) > TOPE_FUNCION_ENTERA:
+            cabecera = duena["texto"].splitlines()[:1]
+            nuevo = dict(t)
+            nuevo["texto"] = "\n".join(cabecera + ["    # ... (funcion larga: solo el trozo)"] +
+                                       str(t.get("texto") or "").splitlines())
+            salida.append(nuevo)
+            continue
+        marca = (t.get("pieza"), duena["nombre"])
+        if marca in ya_entera:
+            continue                           # esa funcion ya va: no se paga dos veces
+        ya_entera.add(marca)
+        nuevo = dict(t)
+        nuevo.update({"desde": duena["desde"], "hasta": duena["hasta"], "texto": duena["texto"],
+                      "direccion": "%s:%s-%s" % (t.get("pieza"), duena["desde"], duena["hasta"]),
+                      "_completo": duena["nombre"]})
+        salida.append(nuevo)
+    return salida
 
 
 if __name__ == "__main__":

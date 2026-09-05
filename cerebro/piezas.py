@@ -43,6 +43,54 @@ def _leer(ruta_abs, tope=None):
         return ""
 
 
+def funcion_que_contiene(ruta_abs, desde, hasta):
+    """Que funcion contiene el tramo desde-hasta. Devuelve la funcion ENTERA, o None.
+
+    Julio, 2026-09-05. Es la otra mitad de `funcion_completa`: aquella busca por NOMBRE cuando ya
+    se sabe el nombre; esta busca por SITIO cuando lo unico que hay es un trozo elegido por
+    parecido de palabras, que es lo que entrega el fragmentador.
+
+    Sin esto, el paquete llega con pedazos huerfanos —el trozo empieza a mitad de la funcion y no
+    se ve ni el `def`— y el auditor rechaza la ronda diciendo que se usan cosas inventadas.
+
+    Se mira solo la boca del modulo (columna cero), el mismo criterio que usa `funcion_completa`:
+    lo anidado no es una pieza que nadie pueda pedir por su nombre.
+    """
+    try:
+        desde = int(desde or 0)
+        hasta = int(hasta or 0)
+    except Exception:
+        return None
+    if desde <= 0:
+        return None
+    lineas = _leer(ruta_abs).splitlines()
+    nombre = None
+    for i, linea in enumerate(lineas, 1):
+        if i > desde:
+            break
+        if linea[:1] in (" ", "\t"):
+            continue
+        cruda = linea.rstrip()
+        if cruda.startswith("def ") or cruda.startswith("class "):
+            corte = cruda.split(None, 1)[1] if " " in cruda else ""
+            for sep in ("(", ":"):
+                if sep in corte:
+                    corte = corte.split(sep, 1)[0]
+            nombre = corte.strip() or None
+    if not nombre:
+        return None                    # el trozo esta antes de la primera funcion: es la cabecera
+    hallazgo = funcion_completa(ruta_abs, nombre)
+    if not hallazgo:
+        return None
+    # Se mira donde EMPIEZA el trozo, no donde acaba. Un trozo elegido por parecido de palabras
+    # suele arrastrar renglones en blanco del final, y comparando con el final se rechazaba la
+    # funcion correcta. Lo cazo la propia vigia el 2026-09-05.
+    if hallazgo["hasta"] < desde:
+        return None                    # la funcion acaba antes: el trozo cae fuera de ella
+    hallazgo["nombre"] = nombre
+    return hallazgo
+
+
 def funcion_completa(ruta_abs, nombre):
     """La pieza ENTERA, buscada POR SU NOMBRE y nunca por un numero de renglon.
 

@@ -2,23 +2,21 @@
  "obrero": "deepseek",
  "auditor": "gemini4",
  "propuesta": {
-  "diagnostico": "La funcion aplicar_cambio crea un archivo cuando no existe aunque la propuesta traiga texto_viejo, lo que convierte un error de ruta en un exito silencioso.",
-  "archivo": "cuerpo/aplicador.py",
-  "funcion": "aplicar_cambio",
-  "texto_viejo": "    # Si el archivo NO existe, se crea con codigo o texto_nuevo.\n    if not os.path.exists(archivo):\n        contenido = codigo if codigo else texto_nuevo\n        if not contenido:\n            _apuntar_log(False, archivo, funcion, \"archivo no existe y no trae texto\")\n            return False, \"El archivo no existe y la propuesta no trae texto para crearlo.\"\n        try:\n            with open(archivo, \"w\", encoding=\"utf-8\") as f:\n                f.write(contenido)",
-  "texto_nuevo": "    # Si el archivo NO existe y la propuesta trae texto_viejo, es un cambio sobre algo que deberia existir: no se crea nada.\n    if not os.path.exists(archivo):\n        if texto_viejo:\n            _apuntar_log(False, archivo, funcion, \"archivo no existe en esa ruta\")\n            return False, \"El archivo no existe en esa ruta; probablemente la ruta este mal resuelta o falte la carpeta del proyecto.\"\n        contenido = codigo if codigo else texto_nuevo\n        if not contenido:\n            _apuntar_log(False, archivo, funcion, \"archivo no existe y no trae texto\")\n            return False, \"El archivo no existe y la propuesta no trae texto para crearlo.\"\n        try:\n            with open(archivo, \"w\", encoding=\"utf-8\") as f:\n                f.write(contenido)",
-  "cambio": "Agregar una condicion que, cuando el archivo no existe y la propuesta trae texto_viejo, devuelva False con un mensaje que mencione la ruta, en lugar de crear el archivo.",
-  "codigo": "    # Si el archivo NO existe y la propuesta trae texto_viejo, es un cambio sobre algo que deberia existir: no se crea nada.\n    if not os.path.exists(archivo):\n        if texto_viejo:\n            _apuntar_log(False, archivo, funcion, \"archivo no existe en esa ruta\")\n            return False, \"El archivo no existe en esa ruta; probablemente la ruta este mal resuelta o falte la carpeta del proyecto.\"\n        contenido = codigo if codigo else texto_nuevo\n        if not contenido:\n            _apuntar_log(False, archivo, funcion, \"archivo no existe y no trae texto\")\n            return False, \"El archivo no existe y la propuesta no trae texto para crearlo.\"\n        try:\n            with open(archivo, \"w\", encoding=\"utf-8\") as f:\n                f.write(contenido)",
-  "vigia": "vigias/test_vigia_aplicador.py",
+  "diagnostico": "Falta la funcion completar_funciones en cerebro/router.py que generalice el bloque que ya trae la funcion armar completa.",
+  "archivo": "cerebro/router.py",
+  "funcion": "armar",
+  "texto_viejo": "    # LA HERRAMIENTA SE REPARA MIENTRAS CONSTRUYE (Julio, 2026-08-27, ley L13/L14).\n    # Cuando el problema toca al REPARTIDOR, el fragmentador corta router.py en trozos de 40 lineas\n    # y elige por relevancia: trae 1-40 y 129-168, pero NO la funcion `armar` completa (87-227).\n    # Entonces el equipo no ve el codigo que hay que tocar, no puede validar, y rechaza. Es el\n    # circulo que bloquea todo el proyecto. Cura: si el paquete incluye cerebro/router.py como pieza\n    # de codigo, se garantiza que su trozo cubra la funcion `armar` entera, para que quien lo repare\n    # vea la funcion completa y no un pedazo huerfano.\n    try:\n        router_id = \"cerebro/router.py\"\n        soy = next((p for p in codigo if p[\"id\"].replace(\"\\\\\", \"/\").endswith(router_id)), None)\n        if soy:\n            # La funcion armar() se busca POR SU NOMBRE, nunca por un numero de renglon.\n            # Antes aqui habia dos numeros escritos a mano, y se rompian en cuanto alguien anadia\n            # algo mas arriba: apuntaban a otro sitio y el equipo recibia un pedazo huerfano.\n            # El nombre no se mueve. Ley: CONTRATO_SE_BUSCA_POR_NOMBRE.md (Julio, 2026-08-31).\n            hallazgo = piezas.funcion_completa(soy[\"abs\"], \"armar\")\n            if hallazgo:\n                desde_armar = hallazgo[\"desde\"]\n                hasta_armar = hallazgo[\"hasta\"]\n                texto_armar = hallazgo[\"texto\"]\n                ya = any(t[\"pieza\"] == soy[\"id\"] and t[\"desde\"] <= desde_armar\n                         and t[\"hasta\"] >= hasta_armar for t in pedazos)\n                if not ya and texto_armar:\n                    pedazos.insert(0, {\"pieza\": soy[\"id\"], \"abs\": soy[\"abs\"], \"rol\": soy[\"rol\"],\n                                       \"desde\": desde_armar, \"hasta\": hasta_armar,\n                                       \"direccion\": \"%s:%s-%s\" % (router_id, desde_armar, hasta_armar),\n                                       \"texto\": texto_armar, \"puntaje\": 99.0,\n                                       \"_completo\": \"armar\"})\n    except Exception:\n        pass",
+  "texto_nuevo": "    # LA HERRAMIENTA SE REPARA MIENTRAS CONSTRUYE (Julio, 2026-08-27, ley L13/L14).\n    # Cuando el problema toca al REPARTIDOR, el fragmentador corta router.py en trozos de 40 lineas\n    # y elige por relevancia: trae 1-40 y 129-168, pero NO la funcion `armar` completa (87-227).\n    # Entonces el equipo no ve el codigo que hay que tocar, no puede validar, y rechaza. Es el\n    # circulo que bloquea todo el proyecto. Cura: si el paquete incluye cerebro/router.py como pieza\n    # de codigo, se garantiza que su trozo cubra la funcion `armar` entera, para que quien lo repare\n    # vea la funcion completa y no un pedazo huerfano.\n    try:\n        router_id = \"cerebro/router.py\"\n        soy = next((p for p in codigo if p[\"id\"].replace(\"\\\\\", \"/\").endswith(router_id)), None)\n        if soy:\n            # La funcion armar() se busca POR SU NOMBRE, nunca por un numero de renglon.\n            # Antes aqui habia dos numeros escritos a mano, y se rompian en cuanto alguien anadia\n            # algo mas arriba: apuntaban a otro sitio y el equipo recibia un pedazo huerfano.\n            # El nombre no se mueve. Ley: CONTRATO_SE_BUSCA_POR_NOMBRE.md (Julio, 2026-08-31).\n            hallazgo = piezas.funcion_completa(soy[\"abs\"], \"armar\")\n            if hallazgo:\n                desde_armar = hallazgo[\"desde\"]\n                hasta_armar = hallazgo[\"hasta\"]\n                texto_armar = hallazgo[\"texto\"]\n                ya = any(t[\"pieza\"] == soy[\"id\"] and t[\"desde\"] <= desde_armar\n                         and t[\"hasta\"] >= hasta_armar for t in pedazos)\n                if not ya and texto_armar:\n                    pedazos.insert(0, {\"pieza\": soy[\"id\"], \"abs\": soy[\"abs\"], \"rol\": soy[\"rol\"],\n                                       \"desde\": desde_armar, \"hasta\": hasta_armar,\n                                       \"direccion\": \"%s:%s-%s\" % (router_id, desde_armar, hasta_armar),\n                                       \"texto\": texto_armar, \"puntaje\": 99.0,\n                                       \"_completo\": \"armar\"})\n    except Exception:\n        pass\n\n    # GENERALIZAR LA REPARACION A CUALQUIER FUNCION (Julio, 2026-09-05).\n    # El bloque de arriba solo arregla el caso de `armar`. El mismo problema ocurre con cualquier\n    # otra funcion: el fragmentador entrega pedazos huerfanos. Esta funcion generaliza esa cura.\n    pedazos = completar_funciones(pedazos, codigo)",
+  "cambio": "Agregar la funcion completar_funciones al archivo cerebro/router.py y llamarla al final de la funcion armar para que generalice la reparacion de trozos huerfanos.",
+  "codigo": "def completar_funciones(trozos_elegidos, piezas_codigo):\n    \"\"\"Sustituye cada trozo que cae dentro de una funcion por la funcion ENTERA.\n\n    Julio, 2026-09-05: el repartidor elige trozos por parecido de palabras en ventanas de 40\n    renglones, y las palabras no saben donde empieza ni acaba una funcion, asi que entrega\n    pedazos huerfanos. Esta funcion los completa: si un trozo cae DENTRO de una funcion del\n    archivo, se sustituye por la funcion entera (con su desde y su hasta reales). Si no cae\n    dentro de ninguna funcion, se deja tal cual (las importaciones y constantes de arriba son\n    justo lo que hace falta). No arrastra funciones vecinas: solo la que contiene el trozo.\n    Si dos trozos caen en la MISMA funcion, se entrega UNA sola vez. Si un trozo ya traia la\n    funcion completa, no se anade otra vez. Si al leer una pieza falla algo, NO se revienta:\n    se devuelve el trozo que ya se tenia.\n    \"\"\"\n    resultado = []\n    vistos = set()\n    for trozo in trozos_elegidos:\n        # Si el trozo no es de codigo o no tiene ruta absoluta, se deja tal cual.\n        if not trozo.get(\"abs\") or trozo.get(\"rol\") not in (\"CUERPO\", \"CODIGO\", \"WEB\", \"CEREBRO\"):\n            resultado.append(trozo)\n            continue\n        # Si el trozo ya traia una funcion completa (marcado con _completo), no se toca.\n        if trozo.get(\"_completo\"):\n            if trozo[\"pieza\"] not in vistos:\n                resultado.append(trozo)\n                vistos.add(trozo[\"pieza\"])\n            continue\n        # Buscar en que funcion cae este trozo.\n        reemplazado = False\n        try:\n            # Escanear las funciones del archivo (usando la boca del modulo).\n            lineas = _lineas_de(trozo[\"abs\"], 1, 1000000)\n            texto_completo = \"\\n\".join(lineas)\n            import re as _re\n            # Detectar nombres de funciones a nivel de modulo (columna cero).\n            for m in _re.finditer(r\"^(?:def|class)\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*[\\(\\:]\", texto_completo, _re.MULTILINE):\n                nombre_funcion = m.group(1)\n                hallazgo = piezas.funcion_completa(trozo[\"abs\"], nombre_funcion)\n                if not hallazgo:\n                    continue\n                # Si el trozo cae dentro de esta funcion (desde <= trozo.desde <= hasta).\n                if hallazgo[\"desde\"] <= trozo[\"desde\"] <= hallazgo[\"hasta\"]:\n                    # Si esta funcion ya se agrego, no se repite.\n                    clave = (trozo[\"pieza\"], hallazgo[\"desde\"], hallazgo[\"hasta\"])\n                    if clave in vistos:\n                        reemplazado = True\n                        break\n                    # Sustituir por la funcion completa.\n                    resultado.append({\n                        \"pieza\": trozo[\"pieza\"],\n                        \"abs\": trozo[\"abs\"],\n                        \"rol\": trozo[\"rol\"],\n                        \"desde\": hallazgo[\"desde\"],\n                        \"hasta\": hallazgo[\"hasta\"],\n                        \"direccion\": \"%s:%s-%s\" % (trozo[\"pieza\"], hallazgo[\"desde\"], hallazgo[\"hasta\"]),\n                        \"texto\": hallazgo[\"texto\"],\n                        \"puntaje\": trozo.get(\"puntaje\", 99.0),\n                        \"_completo\": nombre_funcion\n                    })\n                    vistos.add(clave)\n                    reemplazado = True\n                    break\n        except Exception:\n            # Si falla algo, se devuelve el trozo original.\n            pass\n        if not reemplazado:\n            # Si no cayo en ninguna funcion, se deja tal cual.\n            if trozo[\"pieza\"] not in vistos:\n                resultado.append(trozo)\n                vistos.add(trozo[\"pieza\"])\n    return resultado",
+  "vigia": "Un test que llame a completar_funciones con un trozo que cae dentro de una funcion (p.ej. lineas 1-40 de router.py) y verifique que el resultado contiene la funcion completa (desde y hasta reales) y no el trozo huerfano.",
   "puede_danar": [
-   "vigias/test_vigia_aplicador.py"
+   "cerebro/router.py",
+   "cerebro/piezas.py",
+   "cerebro/trozos.py"
   ],
   "preguntas": [],
-  "confianza": "alta",
-  "veredicto": "APROBADO",
-  "_fuera_del_paquete": [
-   "test_vigia_aplicador.py"
-  ]
+  "confianza": "media"
  },
  "auditoria": {
   "veredicto": "APROBADO",
@@ -27,13 +25,37 @@
   "fallos": [],
   "riesgo_vecinos": [],
   "que_falta": [],
-  "resumen_para_el_jefe": "La reparacion corrige el comportamiento de creacion de archivos no existentes cuando se espera un cambio sobre un archivo existente, tal como se pidio en el diagnostico."
+  "resumen_para_el_jefe": "La reparacion introduce la funcion 'completar_funciones' para generalizar la obtencion de funciones completas, solucionando el problema de trozos huerfanos y cumpliendo con el diagnostico."
  },
  "avisos": [
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "GPT-OSS 120B (Groq) no le cabe (20272 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (20272 letras, aguanta 20169) -> se le salta",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "vueltas_dadas: 1"
+  "GPT-OSS 120B (Groq) no le cabe (38602 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (38602 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (38602 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (38602 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (38778 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (38778 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (38778 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (38778 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (38778 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (38778 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (38778 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (38778 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (38913 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (38913 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (38913 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (38913 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (43144 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (43144 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (43144 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (43144 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (39154 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (39154 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (39154 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (39154 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (46436 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (46436 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (46436 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (46436 letras, aguanta 26000) -> se le salta",
+  "vueltas_dadas: 3"
  ]
 }
