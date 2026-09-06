@@ -158,6 +158,193 @@ que rompen las reglas.
 
 ---
 
+# LA LEY QUE MANDA SOBRE TODAS LAS DEMÁS
+
+**Julio, 2026-09-05**, respondiendo a dos preguntas mías mal planteadas (yo le preguntaba si
+*parar* o *seguir*):
+
+> *"Se debe hacer siempre analizar la información y determinar qué está mal: la herramienta, o el
+> razonamiento, o la información recibida, o quien reparte. Se debe ver qué está fallando. Si no,
+> ¿qué caso tiene?"*
+
+**La pregunta nunca es "¿paro o sigo?". La pregunta es "¿QUIÉN FALLÓ?".**
+
+## Los cuatro sospechosos, siempre los mismos
+
+Ante **cualquier** freno, aviso, rechazo o resultado raro, se determina cuál de los cuatro falló:
+
+| # | Quién | Cómo se reconoce | Qué se repara |
+|---|---|---|---|
+| 1 | **La herramienta** | El candado frenó algo que estaba bien | El candado |
+| 2 | **El razonamiento** | Se midió bien y se concluyó mal | Quien concluyó |
+| 3 | **La información recibida** | El material no traía lo necesario | La memoria |
+| 4 | **Quien reparte** | Trajo lo que no era, o incompleto | El entregador |
+
+**Y se repara al que falló.** No se rodea el freno, no se pide permiso para saltarlo, no se
+"sigue igual". Eso es lo que convierte cada tropiezo en una mejora en vez de en un obstáculo.
+
+## Por qué esto lo cambia todo (medido)
+
+Hoy hay **13.375 frenadas** y **2 frenos falsos apuntados**. Esa diferencia no es que el sistema
+acierte el 99,98% de las veces: es que **nadie preguntó nunca quién falló**. Las frenadas se
+trataban como obstáculos que superar, no como información.
+
+Si de cada frenada se hubiera determinado el culpable:
+- las falsas habrían reparado **el candado**,
+- las de material incompleto habrían reparado **el entregador**,
+- las de conclusión equivocada habrían reparado **el razonamiento**.
+
+**El sistema tenía 13.375 oportunidades de aprender y aprovechó dos.**
+
+## Lo que esto obliga a construir
+
+Cada freno tiene que acabar en una de estas cuatro respuestas, **escrita y contada sola**. Un
+freno sin culpable identificado es un freno desperdiciado.
+
+---
+
+# EL PLAN: LA MEMORIA COMO RED, NO COMO LISTA
+
+**Julio, 2026-09-05:** *"No has entendido lo de la memoria. La idea es que crees una red neuronal,
+y esa red esté disponible, para que cuando te pida hacer algo tengas la información veraz, completa,
+pertinente."*
+
+## Qué hay hoy (medido) y por qué no sirve
+
+| Pieza | Qué guarda | Por qué no sirve |
+|---|---|---|
+| Las lecciones | 66 textos de fallos pasados | Son una **lista**, no una red. Se muestran por parecido de palabras, no por relación |
+| El mapa | Qué archivo hace qué | **El entregador no lo usa** para decidir qué traer |
+| Los hilos | Quién llama a quién | Existen, pero **no se consultan al reparar** |
+| El entregador | Trozos por parecido de palabras | Las palabras **no saben** dónde empieza una pieza ni a quién daña tocarla |
+
+**El fallo de fondo:** cada pieza guarda algo suelto y **nada las relaciona**. Por eso hay
+información y aun así se repara a ciegas.
+
+## Lo que debe ser: una red que responda cinco preguntas
+
+Antes de tocar nada, la red tiene que poder contestar **sin que nadie lo escriba a mano**:
+
+| # | Pregunta | Hoy |
+|---|---|---|
+| 1 | **¿Qué pieza hace de verdad lo que se pide?** | Se adivina por palabras |
+| 2 | **¿A quién daño si la toco?** | Existe la lista, no se consulta |
+| 3 | **¿Esto ya se intentó antes y falló?** | 66 lecciones sueltas, por parecido |
+| 4 | **¿Falta legislar, candado, tabla, matriz, vigía, arnés o skill?** | Nadie lo comprueba |
+| 5 | **¿Esta reparación resuelve lo pedido, o crea otro problema?** | **Nadie lo comprueba** |
+
+## Las siete comprobaciones antes de reparar (punto 4.3 de Julio)
+
+Ante cualquier orden, la red responde **sí/no/no aplica** a cada una, y **si falta alguna, se
+construye antes de tocar código**:
+
+| # | Qué | Para qué sirve |
+|---|---|---|
+| 1 | **Legislación** | Que la regla quede escrita, no en la cabeza de nadie |
+| 2 | **Candado** | Que la regla frene de verdad, porque escrita no es cumplida |
+| 3 | **Tabla de la verdad** | Qué debe pasar en cada caso, incluidos los raros |
+| 4 | **Matriz** | Qué se toca y **a quién daña** |
+| 5 | **Vigía** | Que si se rompe, se sepa |
+| 6 | **Arnés** | Que el candado esté enchufado de verdad y no sea adorno |
+| 7 | **Skill** | Que el paso a paso quede guardado y no se reinvente |
+
+## Las dos leyes que Julio subrayó
+
+**No reparar a ciegas.** Si no se sabe **qué** hay que reparar, no se toca: se mide primero. Una
+reparación sobre una sospecha es una avería nueva con permiso.
+
+**No romper otra cosa.** Antes de tocar, la red dice **a quién daña**; después de tocar, se
+comprueba que esos siguen sanos. Sin las dos mitades, no está reparado.
+
+## Cómo se construye, por fases y en este orden
+
+| Fase | Qué se construye | Por qué en ese orden |
+|---|---|---|
+| **A** | **La red se arma sola** desde lo que ya existe (mapa, hilos, lecciones, flujos) | Sin red no hay nada que consultar. **No se pide a nadie que la escriba a mano** |
+| **B** | **Consulta obligatoria antes de reparar**: las cinco preguntas | Es lo que evita reparar a ciegas |
+| **C** | **Las siete comprobaciones** como candado | Si falta una, se para y se dice cuál |
+| **D** | **¿Daña a alguien?** antes y después | Es la mitad que falta de "no romper otra cosa" |
+| **E** | **La red aprende sola**: cada fallo entra sin que nadie lo apunte | Hoy los aciertos se cuentan solos y los errores a mano: 13.375 contra 2 |
+| **F** | **¿Resuelve lo pedido?** Se comprueba contra lo que Julio pidió, no contra las vigías | Es la única medida que manda |
+
+## Lo que hace falta para que esto no sea otro humo
+
+Cada fase nace con **su vigía en rojo primero**, y **no se da por hecha** hasta que:
+
+1. La vigía pasa de roja a verde.
+2. Se **rompe la cura a propósito** y la vigía vuelve a ponerse roja.
+3. **Ninguna de las otras se rompe**.
+4. Queda escrito **qué se midió**, no qué se cree.
+
+---
+
+# PARA QUIEN EVALÚE ESTE PLAN
+
+Lo que hay que juzgar, con los números de arriba delante:
+
+1. **¿La red resuelve el 3%?** El 97% de las rondas se cae por material incompleto o por
+   respuestas ilegibles. ¿Una red de relaciones ataca eso, o hace falta otra cosa?
+2. **¿El orden de las fases es el correcto?** ¿O hay una que daría más resultado antes?
+3. **¿Falta alguna fase?** En especial: ¿cómo se comprueba **de verdad** que una reparación
+   resuelve lo pedido y no crea otro problema?
+4. **¿Se puede armar la red sola desde lo que ya existe**, o hace falta escribir algo a mano —y
+   entonces se pudre igual que el contador que hay que subir a mano?
+5. **¿Cómo se evita que esta red acabe siendo otra pieza más que existe y nadie usa**, como el mapa
+   y los hilos de hoy?
+
+---
+
+# EL MAPA: QUÉ HAY, MEDIDO HOY
+
+## El inventario
+
+| Parte | Piezas | Renglones | Qué hace |
+|---|---|---|---|
+| La memoria y el entregador | 8 | 1.669 | Decide qué código se le enseña a las IA |
+| El equipo y el trabajo | 15 | 3.157 | Las IA que proponen y auditan, y quien aplica |
+| Los candados | 39 | 6.368 | Frenan lo que rompe las reglas |
+| Las vigías | 96 archivos | 566 pruebas | Comprueban que la herramienta se porta bien |
+
+**Los candados ocupan más que la memoria y el equipo juntos.** Eso es el retrato del problema: la
+mayor parte del sistema existe para impedir cosas, no para hacerlas.
+
+## La memoria y el entregador, pieza por pieza
+
+| Pieza | Qué hace | Estado medido |
+|---|---|---|
+| Los hilos | Quién llama a quién | Existe. **No se consulta al reparar** |
+| Los flujos | Los asuntos del proyecto | Existe |
+| El grafo | Junta las capas | Existe |
+| Las piezas | Un nodo por archivo, y traer una función por su nombre | **Reparado hoy**: ahora también sabe qué función contiene un trozo |
+| El protocolo | Cómo se trabaja | Existe |
+| El repartidor | Entrega el material | **Reparado hoy**: ya trae la función entera |
+| El semántico | Buscar por significado | Existe. Sin medir si se usa |
+| Los trozos | Parte el archivo en pedazos | Ventanas de 40 renglones |
+
+## Los candados: cuántas veces frenó cada uno
+
+| Candado | Frenadas | Frenos falsos apuntados |
+|---|---|---|
+| Terminal | 4.983 | 0 |
+| Equipo | 3.760 | 0 |
+| Prueba real | 1.144 | 0 |
+| Cierre | 957 | 0 |
+| Memoria | 797 | 0 |
+| Por nombre | 540 | 0 |
+| Buzón | 322 | 0 |
+| Archivo del veredicto | 293 | 0 |
+| Legislar | 289 | 0 |
+| Compañero | 193 | 0 |
+| Commit | 96 | 0 |
+| Preguntar | 1 | 0 |
+| Diagnóstico | 0 | 1 |
+| Supervisor | 0 | 1 |
+
+**Ninguno tiene un solo freno falso apuntado**, salvo dos que solo tienen eso. Y hubo al menos
+seis reales en pocos días. **Los frenos falsos se apuntan a mano, así que no se apuntan.**
+
+---
+
 ## Parte 1 - Qué hay de cada punto
 
 ### Punto 1: Ayudar a construir proyectos rápido, confiable, económico y en equipo
