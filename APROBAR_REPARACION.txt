@@ -1,63 +1,76 @@
-APROBAR LA SIGUIENTE REPARACION — Julio, 2026-09-06
-====================================================
+DOS COSAS PARA APROBAR — Julio, 2026-09-06
+===========================================
 
-YA HECHO HOY (tres, y ninguna la escribio Claude)
---------------------------------------------------
-1. El material ya trae la pieza que el problema NOMBRA. Era la causa de que 60
-   de cada 70 trabajos no llegaran ni a juzgarse.
-2. El reparto ya mira quien falla: antes elegia al que falla 98 de cada 100,
-   ahora al que falla 46.
-3. CREAR ya no se confunde con INVENTAR. Ese era el muro que impedia que el
-   equipo hiciera nada nuevo.
-
-Comprobado: 579 verdes, ninguna roja.
+Son independientes. Corre la que quieras primero.
 
 
-LO QUE VA AHORA, Y POR QUE ESTA
---------------------------------
-Es la que tu propio analisis llama la mas importante y sigue sin construirse:
-LA MEDIDA DE SI JULIO PUDO TRABAJAR HOY.
+=====================================================================
+COSA 1 — CERRAR EL BUCLE QUE ME FRENA EN CADA GUARDADO
+=====================================================================
 
-El numero que la justifica, y duele: 579 comprobaciones en verde y Foto Informe
-PARADO. Todo mide la herramienta. NADA mide si tu avanzaste. Mientras eso siga
-asi, el sistema puede estar entero en verde y tu sin poder hacer tu informe.
+QUE PASA, EN SIMPLE
+-------------------
+Tu trabajo esta guardado. No se pierde nada. Lo que da vueltas son los
+CUADERNOS DE LOS PROPIOS CANDADOS: sus contadores.
 
-Esta es la unica medida que dice si todo lo demas sirvio para algo.
+Cada vez que se guarda, el guardian corre las comprobaciones y, AL CORRERLAS,
+escribe en sus propios cuadernos. Asi que al terminar de guardar ya hay rastro
+nuevo sin guardar. Nunca queda limpio.
 
+Es como un vigilante que apunta en su libreta cada vez que revisa la puerta:
+revisa, apunta, y ya hay algo nuevo que revisar.
+
+Me freno tres guardados seguidos solo por esto. Es tiempo tuyo tirado.
+
+LA CURA
+-------
+Esos cuadernos no tienen por que viajar con el codigo. Se quedan en tu disco
+igual, y las habilidades los siguen leyendo. Solo dejan de contar como trabajo
+pendiente.
+
+OJO CON LO QUE NO ESTA EN LA LISTA, A PROPOSITO: el registro de trabajos del
+equipo, el de aplicaciones y el de mediciones SIGUEN guardandose. Esos son tu
+memoria y tus numeros: no se tocan.
+
+EL COMANDO — copialo entero, pegalo y dale Enter
+------------------------------------------------
+
+cd C:\Ingeniero_VUC; git rm --cached memoria/.lecturas_sueltas memoria/GUARDIA.log memoria/DECISIONES_CANDADO.log memoria/DECISIONES_COMPANERO.log memoria/DECISIONES_POR_NOMBRE.log memoria/SIN_EQUIPO.log memoria/RUTA_DE_ACCESO.log memoria/canal/llamados/claude.txt memoria/canal/llamados/continue.txt; git commit -m "Los cuadernos del guardian dejan de viajar con el codigo"
+
+
+=====================================================================
+COSA 2 — LA MEDIDA DE SI TU PUDISTE TRABAJAR HOY
+=====================================================================
+
+POR QUE ESTA
+------------
+Es la que tu propio analisis llama la mas importante y nunca se construyo.
+
+El numero que duele: 579 comprobaciones en verde y tu proyecto que da dinero,
+PARADO. Todo mide la herramienta. Nada mide si tu avanzaste. Asi, el sistema
+puede estar entero en verde y tu sin poder hacer tu informe.
 
 LO QUE PENSE
--------------
-No hace falta preguntarle nada a ninguna IA: el dato ya esta en el disco.
-Se mira, del proyecto que te da dinero (foto_informe, el apodo que esta en la
-libreta de direcciones, confirmado por ti el 2026-08-20):
-  - si hubo guardados hoy, y cuantos dias lleva sin uno
-  - si se aplico algun cambio de verdad en su codigo
-  - si hay prueba real apuntada
-  - y se compara con lo que se movio en la herramienta el mismo dia
-Si la herramienta se movio mucho y tu proyecto nada, esa es la senal roja.
+------------
+No hace falta preguntarle nada a ninguna IA: el dato ya esta en tu disco.
+Se mira, del proyecto que en la libreta de direcciones tiene el apodo
+foto_informe: cuando guardaste por ultima vez, cuantos dias lleva parado, y
+cuanto se movio la herramienta ese mismo dia. Si la herramienta se movio mucho
+y tu proyecto nada, esa es la senal roja.
 
-Es contar y comparar fechas: una CUENTA, no un juicio. Por eso es una habilidad
-y no una vuelta del equipo.
+Es contar y comparar fechas: una cuenta, no un juicio. Por eso es una habilidad
+y no cuesta nada cada vez que la corras.
 
-
-EL COMANDO — copialo entero, pegalo en PowerShell y dale Enter
----------------------------------------------------------------
+EL COMANDO — copialo entero, pegalo y dale Enter
+------------------------------------------------
 
 cd C:\Ingeniero_VUC; python ingeniero.py equipo ingeniero "Crear el archivo NUEVO skills/julio_pudo_trabajar.py. Crear lo que el encargo pide por su nombre NO es inventar. Es una habilidad que NO llama a ninguna IA: solo lee lo que ya hay en el disco. Motivo medido el 2026-09-06: hay 579 comprobaciones en verde y el proyecto de Julio que da dinero, el que en la libreta de direcciones tiene el apodo foto_informe, sigue parado; todo mide la herramienta y nada mide si Julio avanzo. La habilidad debe leer el archivo proyectos.config para sacar la ruta de cada proyecto por su apodo, y para el apodo foto_informe mirar con git: cuando fue su ultimo guardado, cuantos dias lleva sin uno, y cuantos guardados hubo hoy; hacer lo mismo con el apodo ingeniero; y leer la carpeta memoria/pruebas_real para ver si hay prueba real apuntada. Luego imprimir un informe corto en lenguaje simple, sin jerga, que diga JULIO PUDO TRABAJAR HOY: SI o NO, y si es NO, cuantos dias lleva parado su proyecto y cuanto se movio la herramienta el mismo dia. Debe tener una funcion medir() que devuelva los datos y una funcion informe() que devuelva el texto, igual que las demas habilidades de esa carpeta. Que no use requests ni urllib ni ninguna llave de API." --escribe deepseek --revisa gemini4
 
 
-QUE VA A PASAR
---------------
-- Escribe DeepSeek. Revisa un cerebro gratis.
-- Si sale APROBADO, se crea sola y sale "archivo creado".
-- Si sale RECHAZADO, no se toca nada.
-
-Pegame lo que salga y sigo con la siguiente.
-
-
+=====================================================================
 LO QUE VIENE DESPUES, por orden
---------------------------------
+=====================================================================
 - las 13 vigias de las leyes que hoy son papel (mas de la mitad de tus leyes)
 - que el guardian deje de correr las 580 comprobaciones en CADA guardado
-  (minuto y medio cada vez, y solo hacen falta las que tocan lo que cambio)
+  (minuto y medio cada vez; solo hacen falta las que tocan lo que cambio)
 - el candado del gasto, que cuenta lo gratis e ignora lo que cobra
