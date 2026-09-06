@@ -54,8 +54,27 @@ las pruebas. Es decir, el numero que llevas meses persiguiendo esta falseado.
 Y ya te paso antes: esta apuntado que "se perdieron 27 de los 32 errores
 aprendidos" por esto mismo, y quedo escrito que se habia curado. No se curo.
 
-EL COMANDO
-----------
+CORREGIDO EL 2026-09-06: el primer intento se rechazo, y con razon. El encargo no
+decia DONDE se escribe, solo donde se lee. Ya esta localizado, y hay buena
+noticia: el DESVIO YA EXISTE en cuerpo/balance.py (la funcion _ruta usa la
+variable INGENIERO_BALANCE_EQUIPO). Los otros dos sitios simplemente no lo usan.
+
+Son dos sitios, asi que son DOS comandos, uno por vuelta.
+
+COMANDO A — el registro del equipo (el de las 852 lineas falsas)
+-----------------------------------------------------------------
+
+cd C:\Ingeniero_VUC; python ingeniero.py equipo ingeniero "UN SOLO CAMBIO en arnes/candado_equipo.py, dentro de la funcion guardar_veredicto, en el trozo que arma la variable _cuaderno con os.path.join(AQUI, memoria, TRABAJOS_DEL_EQUIPO.log). Ese sitio escribe SIEMPRE en el cuaderno real, tambien cuando lo llama una prueba. Medido el 2026-09-06: de 924 lineas de ese cuaderno solo 72 son trabajo real; las otras 852 las metieron las vigias con archivos que no existen, y por eso el numero de trabajos utiles que Julio persigue esta falseado. El desvio YA EXISTE y se usa en cuerpo/balance.py, en su funcion _ruta: si la variable de entorno INGENIERO_BALANCE_EQUIPO esta puesta, se escribe ahi. Ampliar ese trozo de guardar_veredicto para que respete esa misma variable: si INGENIERO_BALANCE_EQUIPO esta puesta, _cuaderno es esa ruta; si no, la de siempre. No se borra ningun apunte existente y el comportamiento normal no cambia." --escribe deepseek --revisa gemini4
+
+
+COMANDO B — el registro de lo aplicado
+---------------------------------------
+
+cd C:\Ingeniero_VUC; python ingeniero.py equipo ingeniero "UN SOLO CAMBIO en cuerpo/aplicador.py, dentro de la funcion _apuntar_log, que abre memoria/APLICACIONES.log con una ruta RELATIVA. Dos problemas medidos el 2026-09-06: uno, una ruta relativa depende de desde donde se lance y falla en silencio; dos, las vigias escriben ahi sus pruebas y el registro se llena de carpetas temporales, ensuciando el dato real de que se aplico. Reparar _apuntar_log para que la ruta sea ABSOLUTA a partir de la carpeta del proyecto, y para que respete una variable de entorno de desvio llamada INGENIERO_APLICACIONES: si esta puesta, se escribe ahi; si no, en la de siempre. Es el mismo patron que ya usa cuerpo/balance.py en su funcion _ruta. No se borra ningun apunte existente." --escribe deepseek --revisa gemini4
+
+
+EL COMANDO VIEJO (rechazado, no lo uses)
+-----------------------------------------
 
 cd C:\Ingeniero_VUC; python ingeniero.py equipo ingeniero "Las vigias escriben en la memoria REAL en vez de en una copia de mentira. Medido el 2026-09-06: en memoria/TRABAJOS_DEL_EQUIPO.log hay 924 lineas y solo 72 son de trabajo real; las otras 852 las metieron las vigias con archivos que no existen. Lo mismo en memoria/APLICACIONES.log, que se llena de carpetas temporales de las pruebas. Ya paso antes y esta apuntado que se perdieron 27 de 32 errores aprendidos por esto. Reparar el sitio donde se apunta el trabajo del equipo y donde se apunta lo aplicado para que, cuando la variable de entorno PYTEST_CURRENT_TEST este puesta (es decir, cuando se esta corriendo una prueba), NO se escriba en el archivo real sino en uno de mentira dentro de la carpeta temporal. No se borra ningun apunte existente y el comportamiento normal no cambia." --escribe deepseek --revisa gemini4
 
