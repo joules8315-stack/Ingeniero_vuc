@@ -1,66 +1,66 @@
-COMANDO PARA ABRIR EL CANDADO — Julio, 2026-09-05
-==================================================
-
-POR QUE TE SALIO "DENEGADO"
----------------------------
-Tu llave SI existe: esta guardada desde el 30 de agosto. Entonces "denegado"
-solo puede significar una cosa: la que escribiste no es igual a la guardada.
-Ojo con los espacios de mas al final y con las mayusculas.
-
-Yo NO la abro ni la miro. Es tuya y asi debe ser: si yo pudiera leerla, podria
-autorizarme a mi mismo, que es justo lo que este candado existe para impedir.
-
-SI NO LA RECUERDAS
-------------------
-Esta guardada en tu carpeta de usuario, en un papel oculto que se llama:
-
-    .ingeniero_julio_llave
-
-Esta en:  C:\Users\USER
-
-Para verla: abre esa carpeta, activa "elementos ocultos" en la pestaña Vista,
-y abrelo con el Bloc de notas. Solo lo abres tu.
+ABRIR EL CANDADO — Julio, 2026-09-05
+=====================================
 
 
-EL COMANDO QUE TE PIDE LA LLAVE TAPADA
---------------------------------------
-Copia esta linea entera y pegala en PowerShell. Te va a pedir la llave y NO se
-va a ver mientras la escribes (sale tapada). La escribes y das Enter.
+PASO 1 — VER TU LLAVE (si no la recuerdas)
+-------------------------------------------
+Copia esta linea, pegala en PowerShell y dale Enter. Te la muestra en pantalla:
 
 
-cd C:\Ingeniero_VUC; $s = Read-Host "Tu llave" -AsSecureString; $b = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($s); $p = [Runtime.InteropServices.Marshal]::PtrToStringAuto($b); python ingeniero.py autorizar-off "crear las habilidades y reparar el freno que no deja crear piezas nuevas" $p
+type $env:USERPROFILE\.ingeniero_julio_llave
 
 
-Si vuelve a decir denegado, es que la llave escrita no coincide con la guardada.
+Eso es todo. Ahi sale tu llave, tal cual esta guardada.
+(Si no sale nada, avisame: querria decir que el papel esta vacio.)
 
 
-QUE ABRE
---------
-Abre TODOS los candados, no solo el que estorba, y dura 24 horas.
-No existe forma de abrir uno solo. Eso es un hueco frente a la ley de la llave
-unica, y queda apuntado para repararlo.
+PASO 2 — ABRIR
+---------------
+Copia esta linea, pegala y dale Enter. Te va a preguntar la llave.
+La escribes a mano y das Enter otra vez.
 
-PARA QUE SE VA A USAR, Y NADA MAS
+
+cd C:\Ingeniero_VUC; $llave = Read-Host "Escribe tu llave"; python ingeniero.py autorizar-off "crear las habilidades y reparar el freno que no deja crear piezas nuevas" $llave
+
+
+Si dice OK, ya esta abierto. Avisame y arranco.
+Si dice denegado otra vez, es que la llave escrita no es igual a la del paso 1.
+
+
+PASO 3 — CERRARLO CUANDO TERMINE
 ---------------------------------
+Copia esta linea y quedan todos los candados puestos otra vez, en el acto:
+
+
+cd C:\Ingeniero_VUC; del memoria\.autorizacion_off
+
+
+=====================================
+
+
+QUE ABRE Y PARA QUE
+-------------------
+Abre TODOS los candados (no hay forma de abrir uno solo: eso es un hueco de la
+herramienta y queda apuntado) y dura 24 horas.
+
+Se va a usar SOLO para esto:
+
 1. Reparar el freno que marca como "inventado" cualquier pieza nueva. Son dos
    lineas. Sin eso NINGUNA habilidad puede nacer.
-2. Crear las 6 habilidades legisladas en CONTRATO_MENOS_IA_MAS_PROGRAMA:
-   - cazar el humo (comparar el cambio sin comentarios)
+
+2. Crear las 6 habilidades que ya quedaron legisladas:
+   - cazar el humo (ver si un cambio solo toca comentarios)
    - medir al equipo (quien escribe, quien revisa, que llego al codigo)
-   - comprobar la via unica (ramas y copias sueltas)
+   - comprobar que hay una sola via (ramas y copias sueltas)
    - avisar si el material no trae la pieza del problema
    - contar frenos y decir cuantos acabaron sabiendo quien fallo
    - distinguir una orden de Julio de un texto pegado de otra IA
 
 Nada mas. Ninguna otra cosa se toca.
 
-COMO SE VUELVE A CERRAR ANTES DE LAS 24 HORAS
----------------------------------------------
-Cuando el trabajo este hecho, corre esta linea y quedan cerrados en el acto:
 
-
-cd C:\Ingeniero_VUC; del memoria\.autorizacion_off
-
-
-Comprobado: esa es la marca que guarda el permiso. Al borrarla, todos los
-candados vuelven a estar puestos, sin esperar las 24 horas.
+UNA COSA QUE NO CAMBIA
+----------------------
+Claude no abre ni lee tu llave. No es cortesia: si pudiera leerla, podria darse
+permiso a si mismo, que es justo lo que ese candado existe para impedir.
+Por eso el paso 1 lo corres tu, no yo.
