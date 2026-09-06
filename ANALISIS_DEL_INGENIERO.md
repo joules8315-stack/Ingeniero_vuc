@@ -620,3 +620,147 @@ La IA cara se coloca en un lugar estratégico: solo para supervisar e instruir, 
 Sí, añado una mejora sustancial que no está nombrada: **un informe semanal para Julio en lenguaje claro**. Este informe dirá, cada semana, qué se ha construido, qué se ha reparado, cuánto ha costado y qué falta para terminar los proyectos de Julio. Así Julio no necesita ser técnico para saber si el equipo está trabajando bien. Esta mejora no está en el plan original y es esencial para que Julio tenga visibilidad sin tener que preguntar.
 
 Además, añado una **regla de gasto máximo por tarea**: si una tarea supera un límite de gasto, el sistema avisa a Julio para que decida si vale la pena seguir. Esto ya se mencionó en el plan original, pero aquí se concreta como un candado más.
+
+---
+---
+
+# ESTADO AL 2026-09-06 — LO QUE SE MIDIÓ Y LO QUE SE REPARÓ
+
+Todo lo de aquí abajo está **comprobado en el código o contado del registro**, no opinado.
+
+## Los cinco números nuevos
+
+| Qué se midió | Resultado | Qué significa |
+|---|---|---|
+| Frenos de los candados | **15.034** | y **CERO** acabaron diciendo quién falló (0,000%) |
+| El candado que más frena | **el de la terminal: 5.577 (37%)** | frenaba órdenes que **solo miran**. YA REPARADO |
+| Leyes escritas | **25**, y **13 sin vigía (52%)** | más de la mitad de las leyes son papel |
+| Trabajos del equipo | **900**, de los que **72** son reales | 828 fueron ensayos en archivos que no existen |
+| Quién escribió código real | **solo el de pago: 72. Los gratis: 0** | nunca se les pidió: el mando no deja elegir |
+
+## Las mediciones que se tomaron y NO se usan (lo que Julio sospechaba)
+
+Julio preguntó: *"se han hecho varias pruebas y no son tomadas en cuenta, se pierden,
+verifica por qué"*. **Tenía razón. Comprobado:**
+
+| Medición | Quién la lee | ¿Sirve para decidir? |
+|---|---|---|
+| **Tabla de precisión** (quién es bueno) | solo quien la escribe, y su vigía | **NO. Se toma y se tira** |
+| **Mediciones de paquetes** | solo quien las escribe, y vigías | **NO** |
+| Tabla de capacidades | el repartidor de cerebros | SÍ |
+| Pruebas reales | dos candados | SÍ |
+
+**La más grave es la primera:** la tabla que dice *quién es bueno* (donde uno de los gratis
+saca 100%) **no la consulta nadie al repartir trabajo**. Se mide y no se usa. Por eso el
+reparto nunca mejora: la información existe y está desconectada.
+
+**Y hay un agravante ya conocido:** esa tabla mide una prueba de **marketing**, no de reparar
+código. Así que aunque se conectara, hoy diría una mentira útil.
+
+## Lo reparado el 5 y 6 de septiembre (con prueba)
+
+| Qué | Prueba |
+|---|---|
+| El repartidor se guiaba por las palabras **"que"** y **"solo"** | ahora dice NO_ENCONTRADO en vez de inventar un tema. Es la causa del 3% |
+| El candado de la terminal frenaba lo que solo mira | probado con la misma orden que frenó seis veces: ya pasa |
+| El revisor acusaba de inventar a quien decía "no lo encuentro" | reparado y aplicado por el equipo |
+| El freno anti-invento impedía crear **cualquier** pieza nueva | reparado: lo que la tarea pide crear ya no es invento |
+| El que aplica los cambios aceptaba **humo** | ahora rechaza el cambio que solo toca comentarios |
+| Había una segunda copia completa del Ingeniero | retirada: una carpeta y una rama |
+
+## Las siete habilidades que ya no gastan IA
+
+medir al equipo · una sola vía · frenos con culpable · cazar el humo ·
+falta en el material · orden o texto pegado · **leyes sin vigía**
+
+---
+
+# EL PLAN NUEVO — CON LAS CINCO RESPUESTAS DE JULIO
+
+Manda [CONTRATO_ANALISIS_DE_FONDO.md](CONTRATO_ANALISIS_DE_FONDO.md): sin las cinco
+respuestas no se toca nada. Van por orden: **cada una desbloquea la siguiente**.
+
+## PIEZA 1 — Poder elegir quién escribe
+
+- **QUÉ:** que el mando del equipo acepte a quién se le pide escribir y a quién revisar.
+- **DÓNDE:** en el mando `equipo`, donde llama al obrero. El obrero **ya** respeta esos dos
+  datos; lo único que falta es que se los pasen.
+- **CÓMO:** dos datos más en la llamada. Es fontanería, no juicio: **cuenta, no cerebro**.
+- **POR QUÉ ASÍ Y NO DE OTRO MODO:** se descartó (a) medir a los gratis con una prueba
+  aparte — no mide trabajo real, es el error que ya se cometió con la tabla de marketing; y
+  (b) turnarlos al azar — no se puede repetir ni comparar. Ésta es la única que da un número
+  comparable. **Número que lo justifica: los gratis llevan 0 de 72 trabajos reales escritos,
+  no por malos sino porque nunca se les pudo pedir.**
+- **CUÁNDO:** **la primera**. Sin esto, las piezas 2, 3 y 4 son imposibles de medir.
+
+## PIEZA 2 — Que el medidor mida por TIPO de trabajo
+
+- **QUÉ:** medir a cada cerebro en buscar, resumir, escribir y revisar, con trabajo real de
+  código, y guardarlo junto a lo que ya se mide.
+- **DÓNDE:** en el medidor de capacidad y en la tabla que ya existe. **No se crea otra tabla.**
+- **CÓMO:** se le da a cada uno un encargo real pequeño de cada tipo y **la vigía dice si
+  sirvió**, no otro cerebro. Es cuenta, no juicio.
+- **POR QUÉ ASÍ:** se descartó seguir con la prueba de marketing (ya está medido que un 100%
+  ahí alucinó tres veces reparando) y se descartó preguntarle a un cerebro si el otro lo hizo
+  bien (el revisor gratis aprobó dos reparaciones falsas el mismo día).
+- **CUÁNDO:** después de la 1.
+
+## PIEZA 3 — Que el repartidor USE lo medido
+
+- **QUÉ:** que el reparto ordene por (tipo de trabajo × capacidad medida × tamaño × coste).
+- **DÓNDE:** en la función que ya ordena a los cerebros. **Se amplía, no se duplica.**
+- **CÓMO:** leer la tabla nueva antes de elegir. Y **conectar la tabla de precisión, que hoy
+  se escribe y nadie lee**.
+- **POR QUÉ ASÍ:** es el fallo medido hoy — la información existe y está desconectada.
+  Construir un repartidor nuevo sería duplicar una pieza que ya funciona.
+- **CUÁNDO:** después de la 2.
+
+## PIEZA 4 — Que un cerebro gratis no pueda firmar un veredicto
+
+- **QUÉ:** una vigía que impida que el "quedó bien" de un cerebro abra la puerta de escribir.
+  Verificar = correr la vigía.
+- **DÓNDE:** en las vigías, junto al candado del equipo.
+- **CÓMO:** se simula un veredicto firmado por un gratis y se comprueba que **no** abre.
+- **POR QUÉ ASÍ:** medido el 5 de septiembre — el revisor gratis aprobó **dos veces** una
+  reparación que solo cambiaba comentarios.
+- **CUÁNDO:** puede ir en paralelo con la 2.
+
+## PIEZA 5 — Vigía para las 13 leyes que son papel
+
+- **QUÉ:** una vigía por cada ley sin vigía, empezando por las cuatro de estos dos días.
+- **DÓNDE:** en las vigías. La habilidad **leyes sin vigía** dice cuáles faltan.
+- **CÓMO:** cada contrato ya trae escrito su apartado "cómo se comprueba". Se convierte en
+  vigía tal cual.
+- **POR QUÉ ASÍ:** una ley sin vigía depende de que la IA se acuerde, y eso ya está medido
+  que no funciona.
+- **CUÁNDO:** en cuanto la 1 permita repartir este trabajo a los gratis: es trabajo
+  secundario, real y comprobable por máquina — exactamente lo que la ley manda darles.
+
+## PIEZA 6 — Que el material traiga la pieza que el problema nombra
+
+- **QUÉ:** que el repartidor meta siempre en el material la pieza cuyo nombre aparece en el
+  problema.
+- **DÓNDE:** en el armado del paquete.
+- **CÓMO:** ya existe un bloque que mete lo que el problema nombra **por ruta exacta**; se
+  amplía a nombres sueltos. **Se avisa antes de gastar** con la habilidad ya hecha.
+- **POR QUÉ ASÍ:** un intento anterior se rechazó **con razón** porque citaba mal una ley. La
+  ley de buscar por nombre habla de funciones, no de archivos: esto es una ampliación nueva y
+  se justifica sola con el número (dos vueltas perdidas en un día).
+- **CUÁNDO:** después de la 3.
+
+---
+
+# LO QUE FALTA Y JULIO NO HA VISTO
+
+1. **El guardián escribe en sus propios cuadernos** mientras comprueba, así que cada guardado
+   deja rastro nuevo sin guardar. Es un bucle: nunca queda limpio.
+2. **El guardián corre las 566 vigías en cada guardado** (4 minutos y medio). Debería correr
+   solo las que tocan lo que cambió. Eso es una cuenta: **habilidad**.
+3. **El candado del equipo miente**: su aviso dice que las piezas nuevas se pueden tocar
+   siempre, y las frena.
+4. **El diccionario tiene 35 palabras y no conoce "skill" ni "habilidad"** — la palabra que
+   Julio llevaba repitiendo y no se entendió hasta que la dijo una IA de fuera.
+5. **No hay ninguna medida de si Julio pudo trabajar hoy.** Todo mide la herramienta.
+6. **Foto Informe tiene 10 ramas de junio** con trabajo que la buena no tiene. Julio dijo:
+   para después.
+
