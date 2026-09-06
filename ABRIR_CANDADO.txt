@@ -1,10 +1,37 @@
 COMANDO PARA ABRIR EL CANDADO — Julio, 2026-09-05
 ==================================================
 
-Copia esta linea entera, pegala en PowerShell y cambia TU_LLAVE por tu secreto:
+POR QUE TE SALIO "DENEGADO"
+---------------------------
+Tu llave SI existe: esta guardada desde el 30 de agosto. Entonces "denegado"
+solo puede significar una cosa: la que escribiste no es igual a la guardada.
+Ojo con los espacios de mas al final y con las mayusculas.
+
+Yo NO la abro ni la miro. Es tuya y asi debe ser: si yo pudiera leerla, podria
+autorizarme a mi mismo, que es justo lo que este candado existe para impedir.
+
+SI NO LA RECUERDAS
+------------------
+Esta guardada en tu carpeta de usuario, en un papel oculto que se llama:
+
+    .ingeniero_julio_llave
+
+Esta en:  C:\Users\USER
+
+Para verla: abre esa carpeta, activa "elementos ocultos" en la pestaña Vista,
+y abrelo con el Bloc de notas. Solo lo abres tu.
 
 
-cd C:\Ingeniero_VUC; python ingeniero.py autorizar-off "crear las habilidades y reparar el freno que no deja crear piezas nuevas" "TU_LLAVE"
+EL COMANDO QUE TE PIDE LA LLAVE TAPADA
+--------------------------------------
+Copia esta linea entera y pegala en PowerShell. Te va a pedir la llave y NO se
+va a ver mientras la escribes (sale tapada). La escribes y das Enter.
+
+
+cd C:\Ingeniero_VUC; $s = Read-Host "Tu llave" -AsSecureString; $b = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($s); $p = [Runtime.InteropServices.Marshal]::PtrToStringAuto($b); python ingeniero.py autorizar-off "crear las habilidades y reparar el freno que no deja crear piezas nuevas" $p
+
+
+Si vuelve a decir denegado, es que la llave escrita no coincide con la guardada.
 
 
 QUE ABRE
@@ -29,12 +56,11 @@ Nada mas. Ninguna otra cosa se toca.
 
 COMO SE VUELVE A CERRAR ANTES DE LAS 24 HORAS
 ---------------------------------------------
-Cuando el trabajo este hecho, Julio corre esta linea y quedan cerrados al
-instante (borra la marca de autorizacion):
+Cuando el trabajo este hecho, corre esta linea y quedan cerrados en el acto:
 
 
 cd C:\Ingeniero_VUC; del memoria\.autorizacion_off
 
 
 Comprobado: esa es la marca que guarda el permiso. Al borrarla, todos los
-candados vuelven a estar puestos en el acto, sin esperar las 24 horas.
+candados vuelven a estar puestos, sin esperar las 24 horas.
