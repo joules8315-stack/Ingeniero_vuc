@@ -44,4 +44,8 @@ def _nada_toca_lo_real(tmp_path, monkeypatch):
     # autorizacion a su propia copia que no existe, asi prueba que el candado muerde SIN llave,
     # y la llave real de Julio deja de causar rojos falsos. La llave real sigue abriendo (no se toca).
     monkeypatch.setenv("INGENIERO_AUTORIZACION_TEST", str(tmp_path / ".aut_julio_no_existe"))
+    # El cuaderno de guardar_veredicto se escribe con AQUI (la carpeta real del proyecto); se
+    # desvia a la carpeta de mentira para que ninguna comprobacion ensucie el registro de verdad.
+    import candado_equipo as ce
+    monkeypatch.setattr(ce, "AQUI", str(tmp_path))
     yield
