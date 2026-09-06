@@ -23,6 +23,12 @@ AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TRABAJOS = os.path.join(AQUI, "memoria", "TRABAJOS_DEL_EQUIPO.log")
 APLICADO = os.path.join(AQUI, "memoria", "APLICACIONES.log")
 
+if os.environ.get("PYTEST_CURRENT_TEST"):
+    import tempfile
+    _tmp = tempfile.mkdtemp()
+    TRABAJOS = os.path.join(_tmp, "TRABAJOS_DEL_EQUIPO.log")
+    APLICADO = os.path.join(_tmp, "APLICACIONES.log")
+
 
 def _lineas(ruta):
     if not os.path.exists(ruta):

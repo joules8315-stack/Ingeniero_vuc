@@ -85,7 +85,7 @@ def guardar_veredicto(tarea, archivos, obrero, auditor, veredicto):
     # de mirarlo, que es justo lo que no quiere.
     # La ruta va ABSOLUTA: una relativa depende de desde donde se lance y falla en silencio.
     try:
-        _cuaderno = os.path.join(AQUI, "memoria", "TRABAJOS_DEL_EQUIPO.log")
+        _cuaderno = os.environ.get("INGENIERO_BALANCE_EQUIPO") or os.path.join(AQUI, "memoria", "TRABAJOS_DEL_EQUIPO.log")
         os.makedirs(os.path.dirname(_cuaderno), exist_ok=True)
         with open(_cuaderno, "a", encoding="utf-8") as f:
             fecha = time.strftime("%Y-%m-%d %H:%M", time.localtime(d["cuando"]))

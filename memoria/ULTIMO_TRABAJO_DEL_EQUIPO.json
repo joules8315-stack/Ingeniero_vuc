@@ -1,17 +1,17 @@
 {
  "obrero": "deepseek",
- "auditor": "gemini2",
+ "auditor": "deepseek",
  "propuesta": {
-  "diagnostico": "En _leer_proyectos_config se guarda toda la linea tras el '=' como ruta, incluyendo ' | rama | marca', y falta el bloque de arranque al final del archivo.",
-  "archivo": "skills/julio_pudo_trabajar.py",
-  "funcion": "_leer_proyectos_config",
-  "texto_viejo": "                apodo, ruta = linea.split('=', 1)\n                proyectos[apodo.strip()] = ruta.strip()",
-  "texto_nuevo": "                apodo, ruta = linea.split('=', 1)\n                ruta = ruta.split('|', 1)[0].strip()\n                proyectos[apodo.strip()] = ruta",
-  "cambio": "En _leer_proyectos_config, tras dividir por '=', se debe tomar solo la parte antes de la primera '|' y quitar espacios. Además, añadir el bloque de arranque al final del archivo.",
-  "codigo": "                apodo, ruta = linea.split('=', 1)\n                ruta = ruta.split('|', 1)[0].strip()\n                proyectos[apodo.strip()] = ruta\n\nif __name__ == '__main__':\n    informe()",
-  "vigia": "Ejecutar el archivo directamente y verificar que imprime el informe sin errores y con datos correctos.",
+  "diagnostico": "Las vigias escriben en los archivos de memoria reales (TRABAJOS_DEL_EQUIPO.log y APLICACIONES.log) en lugar de en copias temporales cuando corren pruebas, ensuciando el registro real.",
+  "archivo": "skills/medir_al_equipo.py",
+  "funcion": "medir",
+  "texto_viejo": "TRABAJOS = os.path.join(AQUI, \"memoria\", \"TRABAJOS_DEL_EQUIPO.log\")\nAPLICADO = os.path.join(AQUI, \"memoria\", \"APLICACIONES.log\")",
+  "texto_nuevo": "TRABAJOS = os.path.join(AQUI, \"memoria\", \"TRABAJOS_DEL_EQUIPO.log\")\nAPLICADO = os.path.join(AQUI, \"memoria\", \"APLICACIONES.log\")\n\nif os.environ.get(\"PYTEST_CURRENT_TEST\"):\n    import tempfile\n    _tmp = tempfile.mkdtemp()\n    TRABAJOS = os.path.join(_tmp, \"TRABAJOS_DEL_EQUIPO.log\")\n    APLICADO = os.path.join(_tmp, \"APLICACIONES.log\")",
+  "cambio": "Agregar una redirección condicional al inicio de la sección de constantes de rutas, para que cuando la variable de entorno PYTEST_CURRENT_TEST esté definida, las rutas TRABAJOS y APLICADO apunten a archivos temporales dentro de una carpeta temporal creada con tempfile.mkdtemp().",
+  "codigo": "if os.environ.get(\"PYTEST_CURRENT_TEST\"):\n    import tempfile\n    _tmp = tempfile.mkdtemp()\n    TRABAJOS = os.path.join(_tmp, \"TRABAJOS_DEL_EQUIPO.log\")\n    APLICADO = os.path.join(_tmp, \"APLICACIONES.log\")",
+  "vigia": "Una prueba que ejecute skills/medir_al_equipo.py con PYTEST_CURRENT_TEST definida y verifique que los archivos memoria/TRABAJOS_DEL_EQUIPO.log y memoria/APLICACIONES.log no cambian su contenido ni su número de líneas.",
   "puede_danar": [
-   "Ninguna otra pieza depende de este archivo."
+   "skills/medir_al_equipo.py"
   ],
   "preguntas": [],
   "confianza": "alta"
@@ -21,33 +21,33 @@
   "invento_algo": false,
   "que_invento": [],
   "fallos": [],
-  "riesgo_vecinos": [
-   "Ninguno, el archivo está aislado según el material."
-  ],
+  "riesgo_vecinos": [],
   "que_falta": [],
-  "resumen_para_el_jefe": "La reparación corrige correctamente el parseo de rutas con pipes y añade el bloque de arranque solicitado."
+  "resumen_para_el_jefe": "La reparación redirige correctamente las rutas de los archivos de memoria a archivos temporales cuando PYTEST_CURRENT_TEST está definida, cumpliendo con el diagnóstico y sin afectar el comportamiento normal."
  },
  "avisos": [
-  "GPT-OSS 120B (Groq) no le cabe (20628 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (20628 letras, aguanta 20169) -> se le salta",
-  "GPT-OSS 120B (Groq) no le cabe (23052 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (23052 letras, aguanta 20169) -> se le salta",
-  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
-  "Gemini 3 preview se agoto -> pasa el turno",
-  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
-  "Gemini 3.5 se agoto -> pasa el turno",
-  "se pidio auditar a gemini4 y no esta disponible: reviso gemini3",
-  "GPT-OSS 120B (Groq) no le cabe (20887 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (20887 letras, aguanta 20169) -> se le salta",
-  "GPT-OSS 120B (Groq) no le cabe (23071 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (23071 letras, aguanta 20169) -> se le salta",
-  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
-  "se pidio auditar a gemini4 y no esta disponible: reviso gemini2",
-  "GPT-OSS 120B (Groq) no le cabe (21027 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (21027 letras, aguanta 20169) -> se le salta",
-  "GPT-OSS 120B (Groq) no le cabe (21580 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (21580 letras, aguanta 20169) -> se le salta",
-  "se pidio auditar a gemini4 y no esta disponible: reviso gemini2",
-  "vueltas_dadas: 3"
+  "GPT-OSS 120B (Groq) no le cabe (66281 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (66281 letras, aguanta 20169) -> se le salta",
+  "LM Studio (tu PC) no le cabe (66281 letras, aguanta 26000) -> se le salta",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "GPT-OSS 120B (Groq) no le cabe (67788 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (67788 letras, aguanta 20169) -> se le salta",
+  "LM Studio (tu PC) no le cabe (67788 letras, aguanta 26000) -> se le salta",
+  "ENCARGO NO LE CABE A NADIE: mide 67788 letras, el que mas aguanta es LM Studio (tu PC) con 26000. HAY QUE PARTIRLO en trozos mas pequenos.",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) no le cabe (67788 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (67788 letras, aguanta 20169) -> se le salta",
+  "LM Studio (tu PC) no le cabe (67788 letras, aguanta 26000) -> se le salta",
+  "ENCARGO NO LE CABE A NADIE: mide 67788 letras, el que mas aguanta es LM Studio (tu PC) con 26000. HAY QUE PARTIRLO en trozos mas pequenos.",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini4 y no esta disponible: reviso ",
+  "GPT-OSS 120B (Groq) no le cabe (67788 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (67788 letras, aguanta 20169) -> se le salta",
+  "LM Studio (tu PC) no le cabe (67788 letras, aguanta 26000) -> se le salta",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "el mismo cerebro escribio y reviso; comprobar con los ojos antes de dar por bueno",
+  "vueltas_dadas: 1"
  ]
 }
