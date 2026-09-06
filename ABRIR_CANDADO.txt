@@ -2,12 +2,22 @@ ABRIR EL CANDADO — Julio, 2026-09-05
 =====================================
 
 
-PASO 1 — VER TU LLAVE (si no la recuerdas)
--------------------------------------------
-Copia esta linea, pegala en PowerShell y dale Enter. Te la muestra en pantalla:
+OJO, ESTO ES LO QUE TE ESTABA FALLANDO
+---------------------------------------
+El papel de tu llave NO tiene salto de linea al final. Por eso, al mostrarla,
+la llave queda PEGADA a lo que viene despues en el mismo renglon, y al copiar
+"tal cual" te llevas caracteres de mas sin verlos. Por eso decia denegado.
+
+Usa la linea de abajo: te la muestra ENTRE CORCHETES, asi ves exactamente
+donde empieza y donde termina. Copia SOLO lo de adentro, sin los corchetes.
 
 
-type $env:USERPROFILE\.ingeniero_julio_llave
+PASO 1 — VER TU LLAVE ENTRE CORCHETES
+--------------------------------------
+Copia esta linea, pegala en PowerShell y dale Enter:
+
+
+"[" + (Get-Content -Raw $env:USERPROFILE\.ingeniero_julio_llave) + "]"
 
 
 Eso es todo. Ahi sale tu llave, tal cual esta guardada.
@@ -29,17 +39,28 @@ La escribiste tu el 30 de agosto de 2026.
 Eso lo se por el TAMANO del papel, no por su contenido: no lo he abierto.
 
 
-PASO 2 — ABRIR
----------------
-Copia esta linea, pegala y dale Enter. Te va a preguntar la llave.
-La escribes a mano y das Enter otra vez.
+PASO 2 — ABRIR (la forma mas simple: la llave va escrita en la misma linea)
+----------------------------------------------------------------------------
+Copia esta linea, y ANTES de darle Enter cambia las palabras PON_AQUI_LA_LLAVE
+por los 15 caracteres del paso 1. Deja las comillas como estan, sin espacios
+por dentro.
 
 
-cd C:\Ingeniero_VUC; $llave = Read-Host "Escribe tu llave"; python ingeniero.py autorizar-off "crear las habilidades y reparar el freno que no deja crear piezas nuevas" $llave
+cd C:\Ingeniero_VUC; python ingeniero.py autorizar-off "crear las habilidades y reparar el freno" "PON_AQUI_LA_LLAVE"
 
 
 Si dice OK, ya esta abierto. Avisame y arranco.
-Si dice denegado otra vez, es que la llave escrita no es igual a la del paso 1.
+
+SI VUELVE A DECIR DENEGADO, avisame y te doy una linea que compara tu llave
+con la guardada y te dice EN QUE se diferencian, sin enseñarmela a mi.
+
+
+OTRA FORMA (si prefieres que te la pregunte)
+---------------------------------------------
+Esta SOLO funciona en PowerShell, no en la ventana negra normal:
+
+
+cd C:\Ingeniero_VUC; $llave = Read-Host "Escribe tu llave"; python ingeniero.py autorizar-off "crear las habilidades y reparar el freno" $llave
 
 
 PASO 3 — CERRARLO CUANDO TERMINE
