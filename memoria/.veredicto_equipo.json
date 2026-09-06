@@ -1,9 +1,9 @@
 {
- "cuando": 1788662379.0944865,
- "tarea": "El paquete NO trae la pieza cuyo NOMBRE esta escrito en el problema. Medido el 2026-09-05: se pidio paquete para 'el candado de la terminal frena ordenes que solo miran' y el paquete trajo verificar.py, respuestas.py y medir_navegador.py, pero NO trajo arnes/candado_terminal.py, que esta en el mapa y cuyo nombre sale en el problema. Existe la ley CONTRATO_SE_BUSCA_POR_NOMBRE.md pero el armado del paquete no la aplica a las PIEZAS: solo puntua por parecido. Reparar en cerebro/router.py la funcion armar para que, ANTES de puntuar por parecido, meta SIEMPRE en el paquete las piezas cuyo nombre de archivo case con las palabras del problema (por ejemplo candado y terminal casan con candado_terminal.py). Que se busque por nombre, como manda la ley.",
+ "cuando": 1788663550.1556687,
+ "tarea": "UN SOLO CAMBIO, nada mas. En cuerpo/obrero.py, dentro de la funcion _validar_en_paquete, hay que sustituir este texto viejo, que incluye la linea de la firma y las cuatro lineas siguientes para que sea unico: la linea que dice def _validar_en_paquete(paquete, propuesta): seguida de la linea que dice comillas triples FRENO (2026-08-24): que el modelo use SOLO la memoria del paquete, no invente. El texto nuevo debe ser el mismo pero con la firma cambiada a def _validar_en_paquete(paquete, propuesta, tarea=comillas vacias): y con una linea añadida al final del docstring que diga: NUEVO (2026-09-05): lo que la TAREA pide crear no es invento; un archivo nuevo por definicion no puede venir en el paquete. NO se toca ninguna otra linea del archivo en esta vuelta.",
  "archivos": [],
  "obrero": "deepseek",
- "auditor": "deepseek",
+ "auditor": "gemini2",
  "veredicto": "RECHAZADO",
- "reviso_a_si_mismo": true
+ "reviso_a_si_mismo": false
 }

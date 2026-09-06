@@ -38,6 +38,33 @@ def aplicar_cambio(propuesta):
         if not contenido:
             _apuntar_log(False, archivo, funcion, "archivo no existe y no trae texto")
             return False, "El archivo no existe y la propuesta no trae texto para crearlo."
+
+    # Comprobacion de humo: si el texto nuevo solo se diferencia del viejo en comentarios,
+    # cadenas de documentacion o lineas en blanco, no se aplica nada.
+    def _quitar_ruido(texto):
+        lineas = []
+        dentro_docstring = False
+        for linea in texto.splitlines():
+            tira = linea.strip()
+            if not tira:
+                continue
+            if dentro_docstring:
+                if '"""' in tira:
+                    dentro_docstring = False
+                continue
+            if tira.startswith('"""'):
+                if tira.count('"""') < 2:
+                    dentro_docstring = True
+                continue
+            if tira.startswith('#'):
+                continue
+            lineas.append(tira)
+        return "\n".join(lineas)
+
+    # El bloque que CREA el archivo nuevo pertenece al caso "el archivo no existe" y estaba
+    # quedando dentro de la comprobacion de humo: asi no se podia crear ni un archivo nuevo.
+    # Se devuelve a su sitio (Julio, 2026-09-05: la reparacion no puede romper al vecino).
+    if not os.path.exists(archivo):
         try:
             with open(archivo, "w", encoding="utf-8") as f:
                 f.write(contenido)
@@ -46,6 +73,11 @@ def aplicar_cambio(propuesta):
         except Exception as e:
             _apuntar_log(False, archivo, funcion, f"no se pudo crear: {e}")
             return False, f"No se pudo crear el archivo: {e}"
+
+    if texto_viejo and texto_nuevo:
+        if _quitar_ruido(texto_viejo) == _quitar_ruido(texto_nuevo):
+            _apuntar_log(False, archivo, funcion, "cambio humo: solo toca comentarios")
+            return False, "HUMO: el cambio solo toca comentarios, no repara nada."
 
     # Si el archivo YA existe, se busca texto_viejo.
     try:
