@@ -1,15 +1,15 @@
 {
  "obrero": "deepseek",
- "auditor": "gemini3",
+ "auditor": "deepseek",
  "propuesta": {
-  "diagnostico": "Los dos mensajes de aviso en la funcion salida() contienen tildes (contó, leyó, día) que rompen la lectura desde la prueba, que recibe vacio en vez del texto y falla con TypeError NoneType.",
-  "archivo": "arnes/candado_no_repetir.py",
-  "funcion": "salida",
-  "texto_viejo": "        _registrar(\"AVISO: se deja pasar para no atascar a Julio, pero repite lo ya contado.\")\n        sys.stderr.write(\"AVISO: la respuesta repite lo que ya se le contó a Julio. Se deja pasar para no\\n\"\n                         \"  atascar a Julio, pero incumple CONTRATO_NO_REPETIR.md.\\n\")\n        return 0\n    _apuntar_bloqueo(veces + 1)\n    _registrar(\"BLOQUEO: respuesta repetida, se frena.\")\n    sys.stderr.write(\n        \"NO SE PUEDE TERMINAR: la respuesta repite lo que ya se le contó a Julio.\\n\"\n        \"  Julio ya leyó esto y se quejó tres veces el mismo día. Contesta solo lo nuevo.\\n\")\n    return 2",
-  "texto_nuevo": "        _registrar(\"AVISO: se deja pasar para no atascar a Julio, pero repite lo ya contado.\")\n        sys.stderr.write(\"AVISO: la respuesta repite lo que ya se le conto a Julio. Se deja pasar para no\\n\"\n                         \"  atascar a Julio, pero incumple CONTRATO_NO_REPETIR.md.\\n\")\n        return 0\n    _apuntar_bloqueo(veces + 1)\n    _registrar(\"BLOQUEO: respuesta repetida, se frena.\")\n    sys.stderr.write(\n        \"NO SE PUEDE TERMINAR: la respuesta repite lo que ya se le conto a Julio.\\n\"\n        \"  Julio ya leyo esto y se quejo tres veces el mismo dia. Contesta solo lo nuevo.\\n\")\n    return 2",
-  "cambio": "Quitar las tildes de las palabras 'contó', 'leyó' y 'día' en los dos mensajes que se escriben por la salida de avisos (sys.stderr.write), dejando el resto del texto igual.",
-  "codigo": "        _registrar(\"AVISO: se deja pasar para no atascar a Julio, pero repite lo ya contado.\")\n        sys.stderr.write(\"AVISO: la respuesta repite lo que ya se le conto a Julio. Se deja pasar para no\\n\"\n                         \"  atascar a Julio, pero incumple CONTRATO_NO_REPETIR.md.\\n\")\n        return 0\n    _apuntar_bloqueo(veces + 1)\n    _registrar(\"BLOQUEO: respuesta repetida, se frena.\")\n    sys.stderr.write(\n        \"NO SE PUEDE TERMINAR: la respuesta repite lo que ya se le conto a Julio.\\n\"\n        \"  Julio ya leyo esto y se quejo tres veces el mismo dia. Contesta solo lo nuevo.\\n\")\n    return 2",
-  "vigia": "Una prueba que ejecute la funcion salida() con una respuesta repetida y verifique que el texto escrito en sys.stderr no contiene tildes y que la salida es 2.",
+  "diagnostico": "Al final de skills/julio_pudo_trabajar.py falta el bloque de arranque que llama a informe() cuando el archivo se ejecuta directamente.",
+  "archivo": "skills/julio_pudo_trabajar.py",
+  "funcion": "informe",
+  "texto_viejo": "    print('Prueba real apuntada: ' + ('SI' if datos['prueba_real'] else 'NO'))",
+  "texto_nuevo": "    print('Prueba real apuntada: ' + ('SI' if datos['prueba_real'] else 'NO'))\n\nif __name__ == '__main__':\n    informe()",
+  "cambio": "Añadir el bloque de arranque (if __name__ == '__main__': informe()) después de la última línea del archivo, pegado al margen izquierdo sin sangría.",
+  "codigo": "if __name__ == '__main__':\n    informe()",
+  "vigia": "Ejecutar el archivo directamente con 'python skills/julio_pudo_trabajar.py' y verificar que imprime el informe.",
   "puede_danar": [
    "Nadie depende de estas piezas. Reparacion aislada."
   ],
@@ -23,16 +23,26 @@
   "fallos": [],
   "riesgo_vecinos": [],
   "que_falta": [],
-  "resumen_para_el_jefe": "Reparacion limpia y exacta: quita las tildes de los dos mensajes de sys.stderr sin tocar nada mas."
+  "resumen_para_el_jefe": "La reparacion anade el bloque de arranque que faltaba al final de skills/julio_pudo_trabajar.py, tal como pide el encargo, sin inventar nada y sin riesgo para otros archivos."
  },
  "avisos": [
-  "GPT-OSS 120B (Groq) no le cabe (19718 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 120B (Groq) no le cabe (22530 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (22530 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (24470 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (24470 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (25374 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (25374 letras, aguanta 20169) -> se le salta",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) no le cabe (25374 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (25374 letras, aguanta 20169) -> se le salta",
   "Gemini 2.5 flash-lite se agoto -> pasa el turno",
   "Gemini 3 preview se agoto -> pasa el turno",
-  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
-  "se pidio auditar a gemini4 y no esta disponible: reviso gemini3",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini4 y no esta disponible: reviso ",
+  "GPT-OSS 120B (Groq) no le cabe (25374 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (25374 letras, aguanta 20169) -> se le salta",
+  "el mismo cerebro escribio y reviso; comprobar con los ojos antes de dar por bueno",
   "vueltas_dadas: 1"
  ]
 }

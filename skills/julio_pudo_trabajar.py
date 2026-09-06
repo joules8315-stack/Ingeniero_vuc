@@ -76,3 +76,6 @@ def informe():
         print('Dias parado el proyecto foto_informe: ' + str(foto['dias_sin_commit']))
         print('Movimiento de la herramienta ingeniero hoy: ' + str(ing['commits_hoy']) + ' commits')
     print('Prueba real apuntada: ' + ('SI' if datos['prueba_real'] else 'NO'))
+
+if __name__ == '__main__':
+    informe()
