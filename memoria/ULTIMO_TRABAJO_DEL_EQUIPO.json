@@ -2,53 +2,45 @@
  "obrero": "deepseek",
  "auditor": "gemini4",
  "propuesta": {
-  "diagnostico": "El material no contiene ninguna funcion que mida a cada cerebro por TIPO de trabajo (buscar, resumir, escribir codigo, revisar) ni que guarde esa medida junto a la existente; el problema descrito no tiene codigo asociado en el paquete.",
-  "archivo": "NO_ENCONTRADO",
-  "funcion": "NO_ENCONTRADO",
-  "texto_viejo": "NO_ENCONTRADO",
-  "texto_nuevo": "NO_ENCONTRADO",
-  "cambio": "NO_ENCONTRADO",
-  "codigo": "NO_ENCONTRADO",
-  "vigia": "NO_ENCONTRADO",
-  "puede_danar": [],
-  "preguntas": [
-   "PREGUNTA_REQUERIDA: ¿En qué archivo y función se debe implementar la medición por tipo de trabajo y el guardado de esa medida?",
-   "PREGUNTA_REQUERIDA: ¿Cuál es la estructura de datos existente donde se guarda la medida actual (la que ya existe) para añadir la nueva sin duplicar piezas?"
+  "diagnostico": "El mando equipo de ingeniero.py llama a obrero.trabajar sin pasarle generador ni auditor, impidiendo elegir quién escribe y quién revisa.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "def main():\n    \"\"\"Mando unico: decide que hacer con lo que Julio dice.\"\"\"\n    if len(sys.argv) < 2:\n        print(__doc__)\n        return\n    cmd = sys.argv[1]\n    if cmd == \"via\":\n        _via_ok(cmd)\n        return\n    if cmd == \"arranca\":\n        arranca()\n        return\n    if cmd == \"trabaja\":\n        if len(sys.argv) < 4:\n            print(\"falta el proyecto y el problema\")\n            return\n        trabaja(sys.argv[2], sys.argv[3])\n        return\n    if cmd == \"resolver\":\n        if len(sys.argv) < 4:\n            print(\"falta el proyecto y el problema\")\n            return\n        resolver(sys.argv[2], sys.argv[3])\n        return\n    if cmd == \"cruzado\":\n        if len(sys.argv) < 4:\n            print(\"falta el proyecto y el problema\")\n            return\n        cruzado(sys.argv[2], sys.argv[3])\n        return\n    if cmd == \"equipo\":\n        if len(sys.argv) < 4:\n            print(\"falta el proyecto y el problema\")\n            return\n        equipo(sys.argv[2], sys.argv[3])\n        return\n    if cmd == \"resultado\":\n        resultado()\n        return\n    if cmd == \"verificar\":\n        verificar()\n        return\n    if cmd == \"consejo\":\n        if len(sys.argv) < 6:\n            print(\"falta la decision, el proyecto y la razon\")\n            return\n        consejo(sys.argv[2], sys.argv[4], sys.argv[6])\n        return\n    if cmd == \"duda\":\n        if len(sys.argv) < 4:\n            print(\"falta la duda y el proyecto\")\n            return\n        duda(sys.argv[2], sys.argv[4])\n        return\n    if cmd == \"fallos\":\n        fallos()\n        return\n    if cmd == \"cuotas\":\n        cuotas()\n        return\n    if cmd == \"buscar-skill\":\n        if len(sys.argv) < 3:\n            print(\"falta el nombre de la skill\")\n            return\n        buscar_skill(sys.argv[2])\n        return\n    if cmd == \"crear-skill\":\n        if len(sys.argv) < 4:\n            print(\"falta el nombre y la descripcion\")\n            return\n        crear_skill(sys.argv[2], sys.argv[3])\n        return\n    if cmd == \"vigias\":\n        if len(sys.argv) < 3:\n            print(\"falta el proyecto\")\n            return\n        vigias(sys.argv[2])\n        return\n    if cmd == \"mapa\":\n        mapa()\n        return\n    if cmd == \"proyectos\":\n        proyectos()\n        return\n    print(__doc__)",
+  "texto_nuevo": "def main():\n    \"\"\"Mando unico: decide que hacer con lo que Julio dice.\"\"\"\n    if len(sys.argv) < 2:\n        print(__doc__)\n        return\n    cmd = sys.argv[1]\n    if cmd == \"via\":\n        _via_ok(cmd)\n        return\n    if cmd == \"arranca\":\n        arranca()\n        return\n    if cmd == \"trabaja\":\n        if len(sys.argv) < 4:\n            print(\"falta el proyecto y el problema\")\n            return\n        trabaja(sys.argv[2], sys.argv[3])\n        return\n    if cmd == \"resolver\":\n        if len(sys.argv) < 4:\n            print(\"falta el proyecto y el problema\")\n            return\n        resolver(sys.argv[2], sys.argv[3])\n        return\n    if cmd == \"cruzado\":\n        if len(sys.argv) < 4:\n            print(\"falta el proyecto y el problema\")\n            return\n        cruzado(sys.argv[2], sys.argv[3])\n        return\n    if cmd == \"equipo\":\n        if len(sys.argv) < 4:\n            print(\"falta el proyecto y el problema\")\n            return\n        generador = None\n        auditor = None\n        if \"--escribe\" in sys.argv:\n            idx = sys.argv.index(\"--escribe\")\n            if idx + 1 < len(sys.argv):\n                generador = sys.argv[idx + 1]\n        if \"--revisa\" in sys.argv:\n            idx = sys.argv.index(\"--revisa\")\n            if idx + 1 < len(sys.argv):\n                auditor = sys.argv[idx + 1]\n        equipo(sys.argv[2], sys.argv[3], generador=generador, auditor=auditor)\n        return\n    if cmd == \"resultado\":\n        resultado()\n        return\n    if cmd == \"verificar\":\n        verificar()\n        return\n    if cmd == \"consejo\":\n        if len(sys.argv) < 6:\n            print(\"falta la decision, el proyecto y la razon\")\n            return\n        consejo(sys.argv[2], sys.argv[4], sys.argv[6])\n        return\n    if cmd == \"duda\":\n        if len(sys.argv) < 4:\n            print(\"falta la duda y el proyecto\")\n            return\n        duda(sys.argv[2], sys.argv[4])\n        return\n    if cmd == \"fallos\":\n        fallos()\n        return\n    if cmd == \"cuotas\":\n        cuotas()\n        return\n    if cmd == \"buscar-skill\":\n        if len(sys.argv) < 3:\n            print(\"falta el nombre de la skill\")\n            return\n        buscar_skill(sys.argv[2])\n        return\n    if cmd == \"crear-skill\":\n        if len(sys.argv) < 4:\n            print(\"falta el nombre y la descripcion\")\n            return\n        crear_skill(sys.argv[2], sys.argv[3])\n        return\n    if cmd == \"vigias\":\n        if len(sys.argv) < 3:\n            print(\"falta el proyecto\")\n            return\n        vigias(sys.argv[2])\n        return\n    if cmd == \"mapa\":\n        mapa()\n        return\n    if cmd == \"proyectos\":\n        proyectos()\n        return\n    print(__doc__)",
+  "cambio": "Modificar la sección del comando 'equipo' en la función main para que acepte los parámetros opcionales --escribe y --revisa, y pasarlos a la función equipo.",
+  "codigo": "    if cmd == \"equipo\":\n        if len(sys.argv) < 4:\n            print(\"falta el proyecto y el problema\")\n            return\n        generador = None\n        auditor = None\n        if \"--escribe\" in sys.argv:\n            idx = sys.argv.index(\"--escribe\")\n            if idx + 1 < len(sys.argv):\n                generador = sys.argv[idx + 1]\n        if \"--revisa\" in sys.argv:\n            idx = sys.argv.index(\"--revisa\")\n            if idx + 1 < len(sys.argv):\n                auditor = sys.argv[idx + 1]\n        equipo(sys.argv[2], sys.argv[3], generador=generador, auditor=auditor)\n        return",
+  "vigia": "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_equipo.py"
   ],
-  "confianza": "baja",
+  "preguntas": [],
+  "confianza": "media",
   "_fuera_del_paquete": [
-   "NO_ENCONTRADO"
+   "autorizacion.py",
+   "candado_equipo.py"
   ]
  },
  "auditoria": {
-  "veredicto": "RECHAZADO",
-  "invento_algo": true,
-  "que_invento": [
-   "El modelo propuso la creación de nuevas funciones y la modificación de archivos existentes sin que estos estuvieran definidos o referenciados en el material original. Específicamente, se infiere la necesidad de crear o modificar archivos para implementar la medición por tipo de trabajo y el guardado de dicha medida, así como la estructura de datos para ello, lo cual no se encuentra en el material proporcionado."
-  ],
-  "fallos": [
-   "El diagnóstico indica que el material no contiene ninguna función que mida a cada cerebro por TIPO de trabajo ni que guarde esa medida junto a la existente. La propuesta de reparación, al no encontrar código existente para esta funcionalidad, implícitamente propone crearla o modificarla sin que haya una base en el material original. Esto constituye una invención de código y funcionalidad.",
-   "El modelo no proporciona un archivo, función o línea específica del material original que deba ser modificada o utilizada para implementar la reparación. Las preguntas planteadas ('¿En qué archivo y función se debe implementar la medición por tipo de trabajo y el guardado de esa medida?' y '¿Cuál es la estructura de datos existente donde se guarda la medida actual?') demuestran que la solución propuesta no se basa en el material existente, sino en la creación de nuevo código y estructuras.",
-   "El modelo no ha identificado ninguna pieza del material original (archivo, función, línea) que deba ser modificada para cumplir con el diagnóstico. En su lugar, plantea la necesidad de implementar algo nuevo que no existe en el material."
-  ],
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
   "riesgo_vecinos": [],
-  "que_falta": [
-   "El modelo no ha identificado el archivo y la función donde se debe implementar la medición por tipo de trabajo.",
-   "El modelo no ha identificado la estructura de datos existente donde se guarda la medida actual para añadir la nueva sin duplicar piezas."
-  ],
-  "resumen_para_el_jefe": "La propuesta de reparación inventa funcionalidades y código que no existen en el material proporcionado, sin identificar dónde implementar los cambios ni cómo integrar la nueva información con la existente."
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación implementa correctamente la funcionalidad solicitada para pasar los parámetros 'generador' y 'auditor' a la función 'equipo', respetando el diagnóstico y el material proporcionado."
  },
  "avisos": [
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "GPT-OSS 120B (Groq) no le cabe (19651 letras, aguanta 19042) -> se le salta",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "GPT-OSS 120B (Groq) no le cabe (20016 letras, aguanta 19042) -> se le salta",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "GPT-OSS 120B (Groq) no le cabe (19702 letras, aguanta 19042) -> se le salta",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "vueltas_dadas: 3"
+  "GPT-OSS 120B (Groq) no le cabe (25075 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (25075 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (25976 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (25976 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (25403 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (25403 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (31883 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (31883 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (31883 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (31883 letras, aguanta 26000) -> se le salta",
+  "vueltas_dadas: 2"
  ]
 }

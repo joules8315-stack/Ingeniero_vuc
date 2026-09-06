@@ -670,7 +670,9 @@ def trabajar(paquete, tarea, generador=None, auditor=None):
             return {"_error": "; ".join(avisos_totales)}
         propuesta = _json_de(crudo)
         inventados = _validar_en_paquete(paquete, propuesta)
-        if inventados:
+        # Si el obrero dijo NO_ENCONTRADO y PREGUNTA_REQUERIDA, es falta de material, no invento.
+        # Eso sale como PREGUNTA al que reparte, no como rechazo.
+        if inventados and not ("NO_ENCONTRADO" in str(propuesta) and "PREGUNTA_REQUERIDA" in str(propuesta)):
             propuesta["_fuera_del_paquete"] = inventados   # marco: no se deja pasar como valido
 
         # Si se pidio un generador y contesto otro, se avisa. Nunca en silencio.

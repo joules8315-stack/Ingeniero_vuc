@@ -197,7 +197,10 @@ def _es_heredoc_con_codigo(data):
     """¿Va a escribir codigo desde la terminal? Eso rompe archivos y ya paso siete veces.
 
     Se caza por lo que la orden HACE, no por como se llame: da igual heredoc, echo, printf o
-    python -c; si mete texto con barras invertidas dentro de un archivo, rompe."""
+    python -c; si mete texto con barras invertidas dentro de un archivo, rompe.
+
+    Solo caza escritura REAL a un archivo: el > debe apuntar a un nombre de archivo,
+    y no cuenta 2>&1 ni 2> ni >& (que solo redirigen avisos y no escriben nada)."""
     if str(data.get("tool_name") or "") not in ("Bash", "PowerShell"):
         return False
     cmd = str((data.get("tool_input") or {}).get("command") or "")
