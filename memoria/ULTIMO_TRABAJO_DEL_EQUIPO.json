@@ -1,20 +1,24 @@
 {
  "obrero": "deepseek",
- "auditor": "gemini4",
+ "auditor": "gemini",
  "propuesta": {
-  "diagnostico": "rankear no penaliza a los cerebros que fallan mucho, solo ordena por fiabilidad x rapidez, dejando que un cerebro que falla 98% quede primero si es rapido y aguanta el tamano.",
-  "archivo": "cuerpo/cuotas.py",
-  "funcion": "rankear",
-  "texto_viejo": "def rankear(disponibles, tamano):\n    \"\"\"Del MAS eficiente al MENOS, entre los que aguantan este tamano.\n\n    Julio, 2026-08-21: \"donde veas cual es mas eficiente, del mayor al menor, y asi se asignen\n    las tareas... es estupido darle una tarea a una IA que sabes que no va a soportar.\"\n    Antes se les preguntaba a TODOS a la vez y gana el primero: eso gastaba tokens en todos y les\n    mandaba trabajo que no aguantan. Ahora se ordena por fiabilidad x rapidez y se SALTAN los\n    que no soportan el encargo.\n    \"\"\"\n    elegibles = [q for q in disponibles if tamano <= _capacidad(q)]\n\n    def score(q):\n        g = _leer().get(\"gasto\", {}).get(q, {})\n        llam = float(g.get(\"llamadas\", 0))\n        fall = float(g.get(\"fallos\", 0))\n        conf = (llam - fall) / llam if llam > 0 else 0.0     # fiabilidad (sin fallos)\n        vel = 1.0 / (1.0 + float(g.get(\"record_seg\", 0)))    # rapidez (mas lento = menos)\n        return round(conf * vel, 6)\n\n    return sorted(elegibles, key=score, reverse=True)",
-  "texto_nuevo": "def rankear(disponibles, tamano):\n    \"\"\"Del MAS eficiente al MENOS, entre los que aguantan este tamano.\n\n    Julio, 2026-08-21: \"donde veas cual es mas eficiente, del mayor al menor, y asi se asignen\n    las tareas... es estupido darle una tarea a una IA que sabes que no va a soportar.\"\n    Antes se les preguntaba a TODOS a la vez y gana el primero: eso gastaba tokens en todos y les\n    mandaba trabajo que no aguantan. Ahora se ordena por fiabilidad x rapidez y se SALTAN los\n    que no soportan el encargo.\n    \"\"\"\n    elegibles = [q for q in disponibles if tamano <= _capacidad(q)]\n\n    def score(q):\n        g = _leer().get(\"gasto\", {}).get(q, {})\n        llam = float(g.get(\"llamadas\", 0))\n        fall = float(g.get(\"fallos\", 0))\n        conf = (llam - fall) / llam if llam > 0 else 0.0     # fiabilidad (sin fallos)\n        vel = 1.0 / (1.0 + float(g.get(\"record_seg\", 0)))    # rapidez (mas lento = menos)\n        # Penaliza a los que fallan mucho: si falla el 98%, su score se divide por 50.\n        penal = 1.0 / (1.0 + fall) if llam > 0 else 1.0\n        return round(conf * vel * penal, 6)\n\n    return sorted(elegibles, key=score, reverse=True)",
-  "cambio": "Agregar una penalizacion por cantidad de fallos al score: se multiplica el score actual por 1/(1+fallos), de modo que cuantos mas fallos tenga un cerebro, mas baja en el orden, quedando los que fallan casi siempre al final de la fila.",
-  "codigo": "        # Penaliza a los que fallan mucho: si falla el 98%, su score se divide por 50.\n        penal = 1.0 / (1.0 + fall) if llam > 0 else 1.0\n        return round(conf * vel * penal, 6)",
-  "vigia": "vigias/test_vigia_relevo_cuotas.py",
+  "diagnostico": "La instruccion al auditor no incluye la regla CREAR NO ES INVENTAR que evita rechazos falsos por invento al crear archivos nuevos.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_prompt_auditor",
+  "texto_viejo": "1. INVENTO algo? (archivo/funcion/linea que no aparece en el material) -> es el fallo mas grave.\n   PERO OJO CON QUE ES INVENTAR, porque confundirlo cuesta vueltas y dinero: inventar es usar un\n   archivo, una funcion o un dato que NO EXISTE. Escribir codigo NUEVO que el encargo pide\n   EXPRESAMENTE no es inventar: es hacer el trabajo. Una reparacion SIEMPRE trae codigo que antes\n   no estaba; si eso fuera inventar, ninguna reparacion podria aprobarse jamas. Rechaza por\n   inventar SOLO cuando se usa algo que no existe, NUNCA por escribir lo que se pidio. Crear un\n   dato nuevo arriba del archivo, con su nombre, tampoco es inventar cuando el encargo lo pide\n   expresamente. Al reves: poner el valor una sola vez arriba y que todos lo miren de ahi es la\n   manera correcta de trabajar, porque evita que dos sitios se descuadren. Inventar es AFIRMAR\n   que algo ya existia cuando no existia, o usar un archivo o una funcion que no esta en ninguna\n   parte. Escribir lineas nuevas, aunque sean muchas y aunque antes no hubiera nada parecido en\n   el archivo, NO es inventar cuando el encargo lo pide. Casi toda reparacion anade codigo que\n   no estaba; esa es la unica manera de reparar. La frase \"esto no estaba en el codigo original\"\n   NO es un motivo de rechazo por si sola, y usarla como motivo es un rechazo en falso.",
+  "texto_nuevo": "1. INVENTO algo? (archivo/funcion/linea que no aparece en el material) -> es el fallo mas grave.\n   PERO OJO CON QUE ES INVENTAR, porque confundirlo cuesta vueltas y dinero: inventar es usar un\n   archivo, una funcion o un dato que NO EXISTE. Escribir codigo NUEVO que el encargo pide\n   EXPRESAMENTE no es inventar: es hacer el trabajo. Una reparacion SIEMPRE trae codigo que antes\n   no estaba; si eso fuera inventar, ninguna reparacion podria aprobarse jamas. Rechaza por\n   inventar SOLO cuando se usa algo que no existe, NUNCA por escribir lo que se pidio. Crear un\n   dato nuevo arriba del archivo, con su nombre, tampoco es inventar cuando el encargo lo pide\n   expresamente. Al reves: poner el valor una sola vez arriba y que todos lo miren de ahi es la\n   manera correcta de trabajar, porque evita que dos sitios se descuadren. Inventar es AFIRMAR\n   que algo ya existia cuando no existia, o usar un archivo o una funcion que no esta en ninguna\n   parte. Escribir lineas nuevas, aunque sean muchas y aunque antes no hubiera nada parecido en\n   el archivo, NO es inventar cuando el encargo lo pide. Casi toda reparacion anade codigo que\n   no estaba; esa es la unica manera de reparar. La frase \"esto no estaba en el codigo original\"\n   NO es un motivo de rechazo por si sola, y usarla como motivo es un rechazo en falso.\n   CREAR NO ES INVENTAR. Si el encargo pide expresamente crear un archivo nuevo y da su ruta, ese\n   archivo NO cuenta como invento aunque su contenido no venga en el material, porque un archivo\n   que todavia no existe nunca puede venir en el material. Inventar es usar un archivo o una\n   funcion que nadie pidio y que no existe.",
+  "cambio": "Anadir la regla 'CREAR NO ES INVENTAR' al final del punto 1 de la instruccion del auditor, sin borrar ninguna otra regla.",
+  "codigo": "   CREAR NO ES INVENTAR. Si el encargo pide expresamente crear un archivo nuevo y da su ruta, ese\n   archivo NO cuenta como invento aunque su contenido no venga en el material, porque un archivo\n   que todavia no existe nunca puede venir en el material. Inventar es usar un archivo o una\n   funcion que nadie pidio y que no existe.",
+  "vigia": "vigias/test_vigia_el_obrero_repara_por_texto.py",
   "puede_danar": [
-   "Nadie depende de estas piezas. Reparacion aislada."
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_obrero_repara_por_texto.py"
   ],
   "preguntas": [],
-  "confianza": "alta"
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_obrero_repara_por_texto.py"
+  ]
  },
  "auditoria": {
   "veredicto": "APROBADO",
@@ -22,13 +26,23 @@
   "que_invento": [],
   "fallos": [],
   "riesgo_vecinos": [],
-  "resumen_para_el_jefe": "La reparación implementa correctamente la penalización por fallos en la función rankear, alineándose con el diagnóstico y sin introducir regresiones."
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta añade correctamente la regla 'CREAR NO ES INVENTAR' a la instrucción del auditor en cuerpo/obrero.py tal como se solicitó."
  },
  "avisos": [
-  "GPT-OSS 120B (Groq) no le cabe (20473 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (20473 letras, aguanta 20169) -> se le salta",
-  "GPT-OSS 120B (Groq) no le cabe (23639 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (23639 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (32736 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (32736 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (32736 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (32736 letras, aguanta 26000) -> se le salta",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "GPT-OSS 120B (Groq) no le cabe (36730 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (36730 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (36730 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (36730 letras, aguanta 26000) -> se le salta",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso gemini",
   "vueltas_dadas: 1"
  ]
 }

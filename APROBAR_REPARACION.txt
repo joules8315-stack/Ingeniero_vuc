@@ -1,48 +1,56 @@
-APROBAR LA REPARACION — Julio, 2026-09-06
-==========================================
+APROBAR LA SIGUIENTE REPARACION — Julio, 2026-09-06
+====================================================
 
-QUE SE VA A REPARAR, EN SIMPLE
-------------------------------
-El que reparte el material no trae la funcion que el problema NOMBRA, si esa
-funcion no cayo por casualidad en los trozos que eligio. Medido: se pidio
-reparar la funcion "rankear"; vinieron trozos de su mismo archivo (renglones
-1-40, 150-163, 214-228 y 320-322) pero rankear esta en el 275 y NO vino. El
-equipo rechazo cuatro veces pidiendo verla.
+YA HECHO Y PROBADO (con el comando anterior)
+---------------------------------------------
+1. El material YA trae la funcion que el problema nombra.
+   Antes: se pedia reparar "rankear" y venian trozos 1-40, 150-163, 214-228 y
+   320-322 de su archivo, pero rankear (renglon 275) NO venia. Cuatro rechazos.
+   Ahora: viene entera, renglones 275-294, la primera de la lista.
+   ESA ERA LA CAUSA DE QUE 60 DE 70 TRABAJOS NO LLEGARAN NI A JUZGARSE.
 
-Eso es la causa de que 60 de 70 trabajos no lleguen ni a juzgarse.
+2. El reparto YA mira quien falla.
+   Antes decia "le toca a Gemini 3.5", el que falla 98 de cada 100.
+   Ahora dice "le toca a Groq 120B", que falla 46. Probado, no es teoria.
+
+Las dos las escribio DeepSeek. Claude no escribio ni una linea.
 
 
-LO QUE PENSE YO (y por que las cuatro veces anteriores fallaron)
-----------------------------------------------------------------
-Se lo pedi cuatro veces dentro de la funcion "completar_funciones". Ahi NO se
-puede: esa funcion no recibe el texto del problema, asi que harian falta TRES
-cambios a la vez (la firma, quien la llama, y la logica) y el aplicador hace
-UNO por vuelta. Por eso rebotaba.
+EL MURO QUE QUEDA
+------------------
+El equipo NO PUEDE CREAR ARCHIVOS NUEVOS. Se intento dos veces con encargos
+distintos y las dos fueron rechazadas por lo mismo: el REVISOR dice que crear
+un archivo cuyo contenido no viene en el material "es inventar".
 
-La cura va en la funcion "armar", que es la unica que tiene el texto del
-problema a mano, y que ademas el material trae SIEMPRE entera. Un solo cambio,
-en un solo sitio. Eso es lo que cambia respecto a los cuatro intentos.
+Y el contenido de un archivo nuevo NUNCA puede venir en el material: todavia
+no existe.
+
+Por eso no se pueden crear las vigias que faltan (13 leyes sin vigia), ni las
+habilidades nuevas. Es el ultimo muro grande.
+
+
+LO QUE PENSE
+-------------
+No es la comprobacion automatica: esa ya se reparo y funciona.
+Es el REVISOR, que aplica la regla por su cuenta. La instruccion que se le da
+al revisor no distingue entre inventar (sacarse un archivo de la manga) y
+crear lo que el encargo pidio expresamente por su nombre.
+
+La cura va en la instruccion del revisor, dentro de la funcion _prompt_auditor
+de cuerpo/obrero.py. Un solo cambio, en un solo sitio.
 
 
 EL COMANDO — copialo entero, pegalo en PowerShell y dale Enter
 ---------------------------------------------------------------
 
-cd C:\Ingeniero_VUC; python ingeniero.py equipo ingeniero "UN SOLO CAMBIO y en un solo sitio: dentro de la funcion armar de cerebro/router.py, justo DESPUES de la linea que dice pedazos = completar_funciones(pedazos, codigo). NO se toca completar_funciones y NO se borra ninguna linea existente. Motivo medido el 2026-09-06: si la funcion que el problema NOMBRA no cayo en ningun trozo elegido por relevancia, no se trae nunca; se pidio reparar rankear de cuerpo/cuotas.py y vinieron los trozos 1-40, 150-163, 214-228 y 320-322 de ese archivo, pero rankear esta en la 275 y no vino, y el equipo rechazo cuatro veces pidiendo verla. Se elige armar porque es la UNICA que tiene a mano el texto del problema y porque el paquete la trae entera siempre. Lo que hay que anadir ahi: recorrer las palabras del texto del problema y, por cada palabra que sea el nombre de una funcion dentro de alguna pieza de codigo del paquete, comprobarlo con piezas.funcion_completa(ruta_abs, palabra) que YA EXISTE en cerebro/piezas.py linea 94, y si esa funcion no esta ya en pedazos, anadirla entera respetando el tope TOPE_FUNCION_ENTERA que ya existe." --escribe deepseek --revisa gemini4
+cd C:\Ingeniero_VUC; python ingeniero.py equipo ingeniero "UN SOLO CAMBIO dentro de la funcion _prompt_auditor de cuerpo/obrero.py: anadir a la instruccion que se le da al auditor una regla que diga, con estas palabras: CREAR NO ES INVENTAR. Si el encargo pide expresamente crear un archivo nuevo y da su ruta, ese archivo NO cuenta como invento aunque su contenido no venga en el material, porque un archivo que todavia no existe nunca puede venir en el material. Inventar es usar un archivo o una funcion que nadie pidio y que no existe. Motivo medido el 2026-09-06: dos encargos distintos de crear una vigia nueva fueron RECHAZADOS por el auditor con el motivo INVENTO, y por eso no se pueden crear las 13 vigias que faltan ni ninguna habilidad nueva. No se borra ninguna otra regla de la instruccion del auditor." --escribe deepseek --revisa gemini4
 
 
 QUE VA A PASAR
 --------------
 - Escribe DeepSeek. Revisa un cerebro gratis.
-- Si sale APROBADO, se aplica solo en el disco y sale "APLICADO en disco".
-- Si sale RECHAZADO, no se toca nada: no se pierde ni se rompe.
+- Si sale APROBADO, se aplica solo y sale "APLICADO en disco".
+- Si sale RECHAZADO, no se toca nada.
 
-Cuando termine, pegame lo que salga y sigo desde ahi.
-
-
-POR QUE ASI Y NO DE OTRO MODO
-------------------------------
-Se descarto que lo escribiera Claude: esta prohibido por
-CONTRATO_LA_IA_CARA_NUNCA_ESCRIBE.md, y ademas ya salio caro una vez.
-Se descarto seguir insistiendo en completar_funciones: cuatro rechazos no son
-mala suerte, son un encargo mal planteado, y la ley del gasto manda parar a las
-tres y replantear. Esto es el replanteo.
+Pegame lo que salga y sigo desde ahi. Si esto pasa, se desbloquean las 13
+vigias que faltan y todas las habilidades nuevas.

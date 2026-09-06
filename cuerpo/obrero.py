@@ -153,6 +153,10 @@ Comprueba una por una:
    el archivo, NO es inventar cuando el encargo lo pide. Casi toda reparacion anade codigo que
    no estaba; esa es la unica manera de reparar. La frase "esto no estaba en el codigo original"
    NO es un motivo de rechazo por si sola, y usarla como motivo es un rechazo en falso.
+   CREAR NO ES INVENTAR. Si el encargo pide expresamente crear un archivo nuevo y da su ruta, ese
+   archivo NO cuenta como invento aunque su contenido no venga en el material, porque un archivo
+   que todavia no existe nunca puede venir en el material. Inventar es usar un archivo o una
+   funcion que nadie pidio y que no existe.
 2. El cambio arregla de verdad lo que dice el diagnostico?
 3. Rompe algun vecino de la seccion "A QUIEN PUEDE DANAR"?
 4. Se salta alguna ley del contrato que viene en el material?
