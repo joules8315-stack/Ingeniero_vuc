@@ -219,10 +219,34 @@ def main():
         from cerebro import router as _r
         from cuerpo import obrero as _o
         import candado_equipo as _ce
-        proy, tarea = sys.argv[2], " ".join(sys.argv[3:])
+        # PIEZA 1 DEL PLAN (Julio, 2026-09-06): SE PUEDE ELEGIR QUIEN ESCRIBE Y QUIEN REVISA.
+        # Por que: obrero.trabajar YA respeta generador y auditor, pero este mando nunca se los
+        # pasaba, asi que siempre acababa escribiendo el de pago. Medido el 2026-09-05: los
+        # cerebros gratis llevan 0 de 72 trabajos reales escritos, y NO por malos: porque nunca
+        # se les pudo pedir. Sin esto no hay forma de medirlos escribiendo (pieza 2 del plan).
+        # Se usa:  equipo <proyecto> "<tarea>" --escribe groq20b --revisa gemini4
+        # Es sacar dos marcas de las palabras y pasarlas: una CUENTA, no un juicio.
+        _partes = list(sys.argv[3:])
+        _quien = {"--escribe": None, "--revisa": None}
+        _resto = []
+        _i = 0
+        while _i < len(_partes):
+            _p = _partes[_i]
+            if _p in _quien and _i + 1 < len(_partes):
+                _quien[_p] = _partes[_i + 1].strip()
+                _i += 2
+                continue
+            _resto.append(_p)
+            _i += 1
+        proy, tarea = sys.argv[2], " ".join(_resto)
+        _generador, _auditor = _quien["--escribe"], _quien["--revisa"]
+        if _generador or _auditor:
+            print("SE PIDE: escribe=%s  revisa=%s" % (_generador or "(el que toque)",
+                                                      _auditor or "(el que toque)"))
         paq = _r.armar(proy, tarea)
         # el TEXTO, no la caja: trabajar espera el texto del paquete (fix 2026-08-24)
-        res = _o.trabajar(_r.a_texto(paq), tarea)
+        # Si el pedido no se puede respetar, trabajar lo DICE en el aviso: nunca en silencio.
+        res = _o.trabajar(_r.a_texto(paq), tarea, generador=_generador, auditor=_auditor)
         # ENCARGO A (Claude, 2026-09-02): el trabajo pagado NO se tira. Se guarda SIEMPRE el
         # resultado ENTERO que contesto el equipo, ANTES de imprimir nada, pase lo que pase
         # (aprobado, rechazado o sin revisar: un rechazo tambien dice algo y vale dinero). Se

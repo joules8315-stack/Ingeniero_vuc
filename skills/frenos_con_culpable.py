@@ -49,7 +49,9 @@ def _numero(v):
 def _falsos(v):
     """Los frenos en falso, que son los unicos que hoy se apuntan a mano."""
     if isinstance(v, dict):
-        for k in ("falsos", "en_falso", "falsos_positivos"):
+        # OJO: el archivo lo guarda como "frenos_falsos". Sin ese nombre no se contaba NINGUNO
+        # aunque los hubiera (fallo real cazado el 2026-09-06 y aprobado por el equipo).
+        for k in ("frenos_falsos", "falsos", "en_falso", "falsos_positivos"):
             if isinstance(v.get(k), (int, float)):
                 return int(v[k])
     return 0
