@@ -1,56 +1,63 @@
 APROBAR LA SIGUIENTE REPARACION — Julio, 2026-09-06
 ====================================================
 
-YA HECHO Y PROBADO (con el comando anterior)
----------------------------------------------
-1. El material YA trae la funcion que el problema nombra.
-   Antes: se pedia reparar "rankear" y venian trozos 1-40, 150-163, 214-228 y
-   320-322 de su archivo, pero rankear (renglon 275) NO venia. Cuatro rechazos.
-   Ahora: viene entera, renglones 275-294, la primera de la lista.
-   ESA ERA LA CAUSA DE QUE 60 DE 70 TRABAJOS NO LLEGARAN NI A JUZGARSE.
+YA HECHO HOY (tres, y ninguna la escribio Claude)
+--------------------------------------------------
+1. El material ya trae la pieza que el problema NOMBRA. Era la causa de que 60
+   de cada 70 trabajos no llegaran ni a juzgarse.
+2. El reparto ya mira quien falla: antes elegia al que falla 98 de cada 100,
+   ahora al que falla 46.
+3. CREAR ya no se confunde con INVENTAR. Ese era el muro que impedia que el
+   equipo hiciera nada nuevo.
 
-2. El reparto YA mira quien falla.
-   Antes decia "le toca a Gemini 3.5", el que falla 98 de cada 100.
-   Ahora dice "le toca a Groq 120B", que falla 46. Probado, no es teoria.
-
-Las dos las escribio DeepSeek. Claude no escribio ni una linea.
+Comprobado: 579 verdes, ninguna roja.
 
 
-EL MURO QUE QUEDA
-------------------
-El equipo NO PUEDE CREAR ARCHIVOS NUEVOS. Se intento dos veces con encargos
-distintos y las dos fueron rechazadas por lo mismo: el REVISOR dice que crear
-un archivo cuyo contenido no viene en el material "es inventar".
+LO QUE VA AHORA, Y POR QUE ESTA
+--------------------------------
+Es la que tu propio analisis llama la mas importante y sigue sin construirse:
+LA MEDIDA DE SI JULIO PUDO TRABAJAR HOY.
 
-Y el contenido de un archivo nuevo NUNCA puede venir en el material: todavia
-no existe.
+El numero que la justifica, y duele: 579 comprobaciones en verde y Foto Informe
+PARADO. Todo mide la herramienta. NADA mide si tu avanzaste. Mientras eso siga
+asi, el sistema puede estar entero en verde y tu sin poder hacer tu informe.
 
-Por eso no se pueden crear las vigias que faltan (13 leyes sin vigia), ni las
-habilidades nuevas. Es el ultimo muro grande.
+Esta es la unica medida que dice si todo lo demas sirvio para algo.
 
 
 LO QUE PENSE
 -------------
-No es la comprobacion automatica: esa ya se reparo y funciona.
-Es el REVISOR, que aplica la regla por su cuenta. La instruccion que se le da
-al revisor no distingue entre inventar (sacarse un archivo de la manga) y
-crear lo que el encargo pidio expresamente por su nombre.
+No hace falta preguntarle nada a ninguna IA: el dato ya esta en el disco.
+Se mira, del proyecto que te da dinero (foto_informe, el apodo que esta en la
+libreta de direcciones, confirmado por ti el 2026-08-20):
+  - si hubo guardados hoy, y cuantos dias lleva sin uno
+  - si se aplico algun cambio de verdad en su codigo
+  - si hay prueba real apuntada
+  - y se compara con lo que se movio en la herramienta el mismo dia
+Si la herramienta se movio mucho y tu proyecto nada, esa es la senal roja.
 
-La cura va en la instruccion del revisor, dentro de la funcion _prompt_auditor
-de cuerpo/obrero.py. Un solo cambio, en un solo sitio.
+Es contar y comparar fechas: una CUENTA, no un juicio. Por eso es una habilidad
+y no una vuelta del equipo.
 
 
 EL COMANDO — copialo entero, pegalo en PowerShell y dale Enter
 ---------------------------------------------------------------
 
-cd C:\Ingeniero_VUC; python ingeniero.py equipo ingeniero "UN SOLO CAMBIO dentro de la funcion _prompt_auditor de cuerpo/obrero.py: anadir a la instruccion que se le da al auditor una regla que diga, con estas palabras: CREAR NO ES INVENTAR. Si el encargo pide expresamente crear un archivo nuevo y da su ruta, ese archivo NO cuenta como invento aunque su contenido no venga en el material, porque un archivo que todavia no existe nunca puede venir en el material. Inventar es usar un archivo o una funcion que nadie pidio y que no existe. Motivo medido el 2026-09-06: dos encargos distintos de crear una vigia nueva fueron RECHAZADOS por el auditor con el motivo INVENTO, y por eso no se pueden crear las 13 vigias que faltan ni ninguna habilidad nueva. No se borra ninguna otra regla de la instruccion del auditor." --escribe deepseek --revisa gemini4
+cd C:\Ingeniero_VUC; python ingeniero.py equipo ingeniero "Crear el archivo NUEVO skills/julio_pudo_trabajar.py. Crear lo que el encargo pide por su nombre NO es inventar. Es una habilidad que NO llama a ninguna IA: solo lee lo que ya hay en el disco. Motivo medido el 2026-09-06: hay 579 comprobaciones en verde y el proyecto de Julio que da dinero, el que en la libreta de direcciones tiene el apodo foto_informe, sigue parado; todo mide la herramienta y nada mide si Julio avanzo. La habilidad debe leer el archivo proyectos.config para sacar la ruta de cada proyecto por su apodo, y para el apodo foto_informe mirar con git: cuando fue su ultimo guardado, cuantos dias lleva sin uno, y cuantos guardados hubo hoy; hacer lo mismo con el apodo ingeniero; y leer la carpeta memoria/pruebas_real para ver si hay prueba real apuntada. Luego imprimir un informe corto en lenguaje simple, sin jerga, que diga JULIO PUDO TRABAJAR HOY: SI o NO, y si es NO, cuantos dias lleva parado su proyecto y cuanto se movio la herramienta el mismo dia. Debe tener una funcion medir() que devuelva los datos y una funcion informe() que devuelva el texto, igual que las demas habilidades de esa carpeta. Que no use requests ni urllib ni ninguna llave de API." --escribe deepseek --revisa gemini4
 
 
 QUE VA A PASAR
 --------------
 - Escribe DeepSeek. Revisa un cerebro gratis.
-- Si sale APROBADO, se aplica solo y sale "APLICADO en disco".
+- Si sale APROBADO, se crea sola y sale "archivo creado".
 - Si sale RECHAZADO, no se toca nada.
 
-Pegame lo que salga y sigo desde ahi. Si esto pasa, se desbloquean las 13
-vigias que faltan y todas las habilidades nuevas.
+Pegame lo que salga y sigo con la siguiente.
+
+
+LO QUE VIENE DESPUES, por orden
+--------------------------------
+- las 13 vigias de las leyes que hoy son papel (mas de la mitad de tus leyes)
+- que el guardian deje de correr las 580 comprobaciones en CADA guardado
+  (minuto y medio cada vez, y solo hacen falta las que tocan lo que cambio)
+- el candado del gasto, que cuenta lo gratis e ignora lo que cobra
