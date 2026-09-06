@@ -600,7 +600,7 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
     return _ultimo_recurso(avisos)          # ningun gratis pudo: ahora si, el de pago
 
 
-def _validar_en_paquete(paquete, propuesta):
+def _validar_en_paquete(paquete, propuesta, tarea=""):
     """FRENO (2026-08-24): que el modelo use SOLO la memoria del paquete, no invente.
 
     Julio: "que usen la memoria indexada, los paquetes, para que no vuelvan a rechazar trabajo
@@ -617,6 +617,12 @@ def _validar_en_paquete(paquete, propuesta):
     declarados = set()
     for m in re.finditer(r"^### `([^`]+?)`", paquete or "", re.M):
         declarados.add(m.group(1).split(":")[0].split("/")[-1].strip())
+    # LO QUE LA TAREA PIDE CREAR NO ES INVENTO (Julio, 2026-09-05: "crea las habilidades").
+    # Una pieza NUEVA nunca puede venir en el paquete: todavia no existe. Si la tarea nombra su
+    # ruta, la declara la propia tarea. Sin esto el equipo NO PODIA CREAR NADA NUEVO: cinco
+    # encargos seguidos de crear una habilidad se rechazaron por invento el 2026-09-05.
+    for m in re.findall(r"[\w/]+\.(?:py|html|js|ts|css|sql|md)", str(tarea or "")):
+        declarados.add(m.split("/")[-1].strip())
     p = propuesta or {}
     inventados = []
     arch = str(p.get("archivo") or "")
@@ -669,7 +675,7 @@ def trabajar(paquete, tarea, generador=None, auditor=None):
         if not crudo:
             return {"_error": "; ".join(avisos_totales)}
         propuesta = _json_de(crudo)
-        inventados = _validar_en_paquete(paquete, propuesta)
+        inventados = _validar_en_paquete(paquete, propuesta, tarea)
         # Si el obrero dijo NO_ENCONTRADO y PREGUNTA_REQUERIDA, es falta de material, no invento.
         # Eso sale como PREGUNTA al que reparte, no como rechazo.
         if inventados and not ("NO_ENCONTRADO" in str(propuesta) and "PREGUNTA_REQUERIDA" in str(propuesta)):

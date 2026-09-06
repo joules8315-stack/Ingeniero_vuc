@@ -209,8 +209,17 @@ def _es_heredoc_con_codigo(data):
     cmd = str((data.get("tool_input") or {}).get("command") or "")
     if not cmd:
         return False
+    # FRENADO G (Julio): este candado frenaba ordenes que SOLO MIRAN. Es el que mas frena de
+    # toda la casa: 5.577 frenadas, el 37% de las 15.034 medidas el 2026-09-05.
+    # El patron viejo era "echo .* >": casaba con CUALQUIER orden que llevara la palabra echo y
+    # CUALQUIER mayor-que mas adelante, incluido el 2>&1 y el 2>/dev/null, que no escriben nada.
+    # Y luego bastaba UN backslash en cualquier sitio (el separador de un grep, por ejemplo).
+    # Medido: freno seis ordenes de solo lectura en una sola sesion.
+    # Cura: primero se quitan las redirecciones de AVISOS, y solo despues se busca escritura;
+    # y el mayor-que tiene que apuntar a algo, no a un ampersand.
+    sin_avisos = re.sub(r"\d?>&\d?|\d>\s*\S*(?:null|nul)\b", " ", cmd, flags=re.I)
     escribe = re.search(r"<<\s*'?\w+'?|>\s*\S+\.(py|js|html|ts|json|md)\b"
-                        r"|\becho\b.*>|\bprintf\b.*>", cmd, re.I)
+                        r"|\b(?:echo|printf)\b[^|;]*>\s*[^&\s]", sin_avisos, re.I)
     if not escribe:
         return False
     # lo peligroso es la barra invertida: es lo que la terminal se come
