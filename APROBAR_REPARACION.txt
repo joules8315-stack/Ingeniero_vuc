@@ -1,4 +1,32 @@
-CORRE ESTE PRIMERO — la habilidad nueva se aprobo y NO funciona
+LO MAS URGENTE — TUS NUMEROS SIGUEN FALSEADOS
+==============================================
+
+POR QUE NO SE HA REPARADO
+--------------------------
+Se reparo A MEDIAS, dos veces. El desvio existe y funciona, PERO solo actua si
+CADA prueba se acuerda de encenderlo. De las 580 comprobaciones, solo UNA lo
+hace. Las otras 579 siguen escribiendo en tu registro de verdad.
+
+Es el mismo fallo de fondo que ya tienes apuntado con otras palabras: "un
+contador que hay que subir a mano marca cero aunque haya pasado cuatro veces".
+Lo que depende de que alguien se acuerde, no funciona.
+
+MEDIDO despues de las dos reparaciones: siguen entrando 12 lineas falsas en tu
+registro en CADA guardado.
+
+LA CURA BUENA
+-------------
+Que se desvie SOLO, sin que nadie se acuerde: la herramienta de pruebas enciende
+una señal ella sola cada vez que corre. Si esa señal esta encendida, se escribe
+en un cuaderno de mentira. Nadie tiene que recordarlo.
+
+EL COMANDO
+----------
+
+cd C:\Ingeniero_VUC; python ingeniero.py equipo ingeniero "MEDIO REPARADO, falta la otra mitad. En arnes/candado_equipo.py la funcion guardar_veredicto ya respeta la variable INGENIERO_BALANCE_EQUIPO, pero eso obliga a que CADA prueba se acuerde de ponerla, y solo una de las 580 lo hace. Medido el 2026-09-06: despues de la reparacion siguen entrando 12 lineas de prueba en el registro real en cada guardado. Es el mismo fallo ya apuntado de que un contador que hay que subir a mano marca cero. Ampliar esa misma linea de guardar_veredicto para que ADEMAS, si la variable de entorno PYTEST_CURRENT_TEST esta puesta (la pone sola la herramienta de pruebas, sin que nadie se acuerde), el cuaderno sea uno temporal y NO el real. Que siga respetando INGENIERO_BALANCE_EQUIPO cuando este puesta, y que el comportamiento normal no cambie." --escribe deepseek --revisa gemini4
+
+
+CORRE ESTE DESPUES — la habilidad nueva se aprobo y NO funciona
 ================================================================
 
 Se aplico y se probo. Dice "Dias parado: None" y "Movimiento de la herramienta
