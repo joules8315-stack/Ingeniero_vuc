@@ -21,8 +21,20 @@ Claude cuando repite lo que YA le conto.
 
 Es comparar texto: una cuenta, no un juicio.
 
-EL COMANDO
-----------
+PRIMERO HAY QUE CORRER ESTE (2026-09-06, medido)
+-------------------------------------------------
+Se intento crear el candado y el equipo lo rechazo. Pero OJO: el revisor ya
+funciona bien y le dio la razon a Julio; dijo que el obrero confundio CREAR con
+INVENTAR. La reparacion del revisor si sirvio.
+
+Ahora el que se niega es EL QUE ESCRIBE: su instruccion todavia dice que si algo
+no esta en el material no lo haga. Misma cura, otro sitio.
+
+cd C:\Ingeniero_VUC; python ingeniero.py equipo ingeniero "UN SOLO CAMBIO dentro de la funcion _prompt_obrero de cuerpo/obrero.py, en la parte que se usa para reparar (la que empieza por Eres el OBRERO de un ingeniero de software): ampliar su regla 1, la que dice NO inventes archivos funciones ni lineas, para que ademas diga con estas palabras: CREAR NO ES INVENTAR. Si el encargo pide expresamente crear un archivo nuevo y da su ruta y describe lo que debe hacer, ESO SE ESCRIBE ENTERO, y no es inventar: es el trabajo. Un archivo que todavia no existe nunca puede venir en el material. Inventar es usar un archivo, una funcion o un dato que nadie pidio y que no existe en ninguna parte. Nunca se rechaza un encargo de crear alegando que faltaria inventar. Motivo medido el 2026-09-06: tres encargos distintos de crear una pieza nueva fueron rechazados porque el obrero se nego a escribirla, y el propio auditor lo señalo como falso positivo. No se borra ninguna otra regla de la instruccion del obrero." --escribe deepseek --revisa gemini4
+
+
+Y DESPUES ESTE (el candado de no repetir)
+------------------------------------------
 
 cd C:\Ingeniero_VUC; python ingeniero.py equipo ingeniero "Crear el archivo NUEVO arnes/candado_no_repetir.py. Crear lo que el encargo pide por su nombre NO es inventar. Es un candado que se engancha al terminar la respuesta (Stop), igual que arnes/candado_protocolo.py, y que frena cuando la respuesta repite lo que ya se le conto a Julio. Motivo medido el 2026-09-06: Julio pregunto por que se le repite todo dos veces, y tenia razon. Como funciona, sin llamar a ninguna IA: guarda en memoria/.ya_le_dije.json las frases largas que ya se le dijeron a Julio (frases de mas de 60 letras, guardando solo su huella md5, no el texto); al terminar una respuesta, si mas de la mitad de sus frases largas ya estan en ese cuaderno, frena con salida 2 y avisa que eso ya se le conto y que conteste solo lo nuevo. Que no frene mas de dos veces seguidas, igual que hace candado_protocolo, para no bloquear el trabajo. Que se pueda apagar con la variable de entorno INGENIERO_OFF. Que deje rastro en memoria/.repeticiones.log." --escribe deepseek --revisa gemini4
 
