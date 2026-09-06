@@ -2,24 +2,19 @@
  "obrero": "deepseek",
  "auditor": "gemini2",
  "propuesta": {
-  "diagnostico": "El archivo skills/julio_pudo_trabajar.py no existe y debe crearse desde cero.",
-  "archivo": "skills/julio_pudo_trabajar.py (nuevo)",
-  "funcion": "N/A - archivo nuevo",
-  "texto_viejo": "NO_ENCONTRADO (el archivo no existe)",
-  "texto_nuevo": "NO_ENCONTRADO (no hay texto previo, se crea el archivo completo)",
-  "cambio": "Crear el archivo skills/julio_pudo_trabajar.py con las funciones medir() e informe() que lean proyectos.config, usen git para obtener fechas de último commit y conteo de commits de hoy para los apodos foto_informe e ingeniero, revisen memoria/pruebas_real, y generen el informe solicitado.",
-  "codigo": "import os\nimport subprocess\nfrom datetime import datetime, date\n\ndef _leer_proyectos_config():\n    ruta_config = os.path.join(os.path.dirname(__file__), '..', 'proyectos.config')\n    proyectos = {}\n    try:\n        with open(ruta_config, 'r', encoding='utf-8') as f:\n            for linea in f:\n                linea = linea.strip()\n                if not linea or linea.startswith('#') or '=' not in linea:\n                    continue\n                apodo, ruta = linea.split('=', 1)\n                proyectos[apodo.strip()] = ruta.strip()\n    except FileNotFoundError:\n        return {}\n    return proyectos\n\ndef _git_info(ruta_proyecto):\n    try:\n        # último commit\n        ultimo = subprocess.check_output(['git', '-C', ruta_proyecto, 'log', '-1', '--format=%ci'],\n                                         stderr=subprocess.DEVNULL, text=True).strip()\n        # commits de hoy\n        hoy = date.today().isoformat()\n        commits_hoy = subprocess.check_output(['git', '-C', ruta_proyecto, 'log', '--since=' + hoy + ' 00:00:00', '--until=' + hoy + ' 23:59:59', '--oneline'],\n                                              stderr=subprocess.DEVNULL, text=True).strip().splitlines()\n        return ultimo, len(commits_hoy)\n    except subprocess.CalledProcessError:\n        return None, 0\n\ndef _dias_sin_commit(ultimo_commit):\n    if not ultimo_commit:\n        return None\n    try:\n        fecha_commit = datetime.strptime(ultimo_commit, '%Y-%m-%d %H:%M:%S %z')\n        hoy = datetime.now(fecha_commit.tzinfo)\n        return (hoy - fecha_commit).days\n    except ValueError:\n        return None\n\ndef _hay_prueba_real():\n    ruta_pruebas = os.path.join(os.path.dirname(__file__), '..', 'memoria', 'pruebas_real')\n    if not os.path.isdir(ruta_pruebas):\n        return False\n    return any(os.path.isfile(os.path.join(ruta_pruebas, f)) for f in os.listdir(ruta_pruebas))\n\ndef medir():\n    proyectos = _leer_proyectos_config()\n    foto_informe = proyectos.get('foto_informe')\n    ingeniero = proyectos.get('ingeniero')\n    if not foto_informe or not ingeniero:\n        return {'error': 'NO_ENCONTRADO: apodo faltante en proyectos.config'}\n    ultimo_foto, commits_hoy_foto = _git_info(foto_informe)\n    ultimo_ing, commits_hoy_ing = _git_info(ingeniero)\n    dias_foto = _dias_sin_commit(ultimo_foto)\n    dias_ing = _dias_sin_commit(ultimo_ing)\n    return {\n        'foto_informe': {'ultimo_commit': ultimo_foto, 'dias_sin_commit': dias_foto, 'commits_hoy': commits_hoy_foto},\n        'ingeniero': {'ultimo_commit': ultimo_ing, 'dias_sin_commit': dias_ing, 'commits_hoy': commits_hoy_ing},\n        'prueba_real': _hay_prueba_real()\n    }\n\ndef informe():\n    datos = medir()\n    if 'error' in datos:\n        print(datos['error'])\n        return\n    foto = datos['foto_informe']\n    ing = datos['ingeniero']\n    puede_trabajar = foto['dias_sin_commit'] is not None and foto['dias_sin_commit'] <= 1\n    print('JULIO PUDO TRABAJAR HOY: ' + ('SI' if puede_trabajar else 'NO'))\n    if not puede_trabajar:\n        print('Dias parado el proyecto foto_informe: ' + str(foto['dias_sin_commit']))\n        print('Movimiento de la herramienta ingeniero hoy: ' + str(ing['commits_hoy']) + ' commits')\n    print('Prueba real apuntada: ' + ('SI' if datos['prueba_real'] else 'NO'))",
-  "vigia": "No hay vigia específica para este archivo nuevo; se podría añadir una que verifique que medir() e informe() existen y que el informe contiene el texto esperado.",
+  "diagnostico": "En _leer_proyectos_config se guarda toda la linea tras el '=' como ruta, incluyendo ' | rama | marca', y falta el bloque de arranque al final del archivo.",
+  "archivo": "skills/julio_pudo_trabajar.py",
+  "funcion": "_leer_proyectos_config",
+  "texto_viejo": "                apodo, ruta = linea.split('=', 1)\n                proyectos[apodo.strip()] = ruta.strip()",
+  "texto_nuevo": "                apodo, ruta = linea.split('=', 1)\n                ruta = ruta.split('|', 1)[0].strip()\n                proyectos[apodo.strip()] = ruta",
+  "cambio": "En _leer_proyectos_config, tras dividir por '=', se debe tomar solo la parte antes de la primera '|' y quitar espacios. Además, añadir el bloque de arranque al final del archivo.",
+  "codigo": "                apodo, ruta = linea.split('=', 1)\n                ruta = ruta.split('|', 1)[0].strip()\n                proyectos[apodo.strip()] = ruta\n\nif __name__ == '__main__':\n    informe()",
+  "vigia": "Ejecutar el archivo directamente y verificar que imprime el informe sin errores y con datos correctos.",
   "puede_danar": [
-   "ninguna pieza existente (archivo nuevo)"
+   "Ninguna otra pieza depende de este archivo."
   ],
-  "preguntas": [
-   "¿Debe la habilidad considerar que 'pudo trabajar' si el proyecto foto_informe tiene un commit hoy, aunque sea de hace más de un día? El encargo dice 'cuando fue su ultimo guardado, cuantos dias lleva sin uno y cuantos guardados hubo hoy', pero no define el umbral exacto para SI/NO. Se asume que SI si hay commit hoy o ayer, pero se pregunta para confirmar."
-  ],
-  "confianza": "media",
-  "_fuera_del_paquete": [
-   "julio_pudo_trabajar.py (nuevo)"
-  ]
+  "preguntas": [],
+  "confianza": "alta"
  },
  "auditoria": {
   "veredicto": "APROBADO",
@@ -27,20 +22,32 @@
   "que_invento": [],
   "fallos": [],
   "riesgo_vecinos": [
-   "ninguno (archivo nuevo)"
+   "Ninguno, el archivo está aislado según el material."
   ],
-  "que_falta": [
-   "nada"
-  ],
-  "resumen_para_el_jefe": "La reparación es correcta, sigue las instrucciones del encargo al pie de la letra y maneja bien los errores de archivos inexistentes o fallos de git."
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación corrige correctamente el parseo de rutas con pipes y añade el bloque de arranque solicitado."
  },
  "avisos": [
-  "GPT-OSS 120B (Groq) no le cabe (23167 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (23167 letras, aguanta 20169) -> se le salta",
-  "GPT-OSS 120B (Groq) no le cabe (27418 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (27418 letras, aguanta 20169) -> se le salta",
-  "LM Studio (tu PC) no le cabe (27418 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (20628 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (20628 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (23052 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (23052 letras, aguanta 20169) -> se le salta",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso gemini3",
+  "GPT-OSS 120B (Groq) no le cabe (20887 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (20887 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (23071 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (23071 letras, aguanta 20169) -> se le salta",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
   "se pidio auditar a gemini4 y no esta disponible: reviso gemini2",
-  "vueltas_dadas: 1"
+  "GPT-OSS 120B (Groq) no le cabe (21027 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (21027 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (21580 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (21580 letras, aguanta 20169) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso gemini2",
+  "vueltas_dadas: 3"
  ]
 }

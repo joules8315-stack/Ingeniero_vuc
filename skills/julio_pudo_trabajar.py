@@ -12,7 +12,8 @@ def _leer_proyectos_config():
                 if not linea or linea.startswith('#') or '=' not in linea:
                     continue
                 apodo, ruta = linea.split('=', 1)
-                proyectos[apodo.strip()] = ruta.strip()
+                ruta = ruta.split('|', 1)[0].strip()
+                proyectos[apodo.strip()] = ruta
     except FileNotFoundError:
         return {}
     return proyectos
