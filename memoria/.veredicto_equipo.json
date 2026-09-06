@@ -1,27 +1,9 @@
 {
- "cuando": 1788646487.1784596,
- "tarea": "Anadir a cerebro/router.py una funcion nueva llamada completar_funciones. SOLO en cerebro/router.py y en ningun otro archivo. POR QUE, medido: el repartidor elige trozos por parecido de palabras en ventanas de 40 renglones, y las palabras no saben donde empieza ni acaba una funcion, asi que entrega pedazos huerfanos: pidiendo la funcion que escribe una casilla trajo las lineas 1-80 del archivo y la funcion estaba en la 5300; pidiendo la funcion cortar trajo 1-40 y 129-168 y cortar estaba en la 54. El auditor rechaza esas rondas diciendo que se usan cosas inventadas, y esas cosas estaban en lineas que nunca vio. Resultado medido: 2 de 70 trabajos del equipo sirvieron. LA SOLUCION YA EXISTE Y NO SE USA: en el mismo archivo, mas abajo, hay un bloque que trae la funcion armar entera llamando a piezas.funcion_completa con el nombre 'armar' escrito a mano, y deja el comentario de que el nombre no se mueve y el numero de renglon si. Hay que GENERALIZAR eso. QUE DEBE HACER completar_funciones, que recibe dos cosas: la lista de trozos elegidos y la lista de piezas; y devuelve otra lista de trozos. Para cada trozo, si su pieza es un archivo de codigo, se mira si ese trozo cae DENTRO de alguna funcion del archivo; si cae dentro, se sustituye por la funcion ENTERA, con su desde y su hasta reales; si no cae dentro de ninguna funcion, se deja tal cual, porque las importaciones y las constantes de arriba son justo lo que hace falta para que el auditor no crea que algo esta inventado. No se arrastran las funciones vecinas: solo la que contiene el trozo. Si dos trozos caen en la MISMA funcion, se entrega UNA sola vez, no dos, porque eso seria pagar dos veces lo mismo. Si un trozo ya traia la funcion completa, no se anade otra vez. Y si al leer una pieza falla algo, NO se revienta: se devuelve el trozo que ya se tenia. Para saber si un trozo cae dentro de una funcion y cual es, usa lo que ya existe en cerebro/piezas.py: la funcion funcion_completa devuelve, dado un archivo y un nombre, la funcion entera con su desde, su hasta y su texto. AUDITOR: tu respuesta debe llevar un campo llamado exactamente veredicto con la palabra APROBADO o RECHAZADO.",
- "archivos": [
-  "cerebro/router.py",
-  "cerebro/piezas.py",
-  "cerebro/trozos.py",
-  "memoria/canal/0_orden_piezas.json",
-  "memoria/paquetes/ingeniero__cerebro_router_py_usa_piezas_funcion_com.md",
-  "memoria/paquetes/ingeniero__cerebro_trozos_py_y_cerebro_router_py__e.md",
-  "memoria/paquetes/ingeniero__el_repartidor_cerebro_router_py_no_se_in.md",
-  "memoria/paquetes/ingeniero__el_router_trae_trozos_que_no_son_del_asu.md",
-  "memoria/paquetes/ingeniero__en_a_texto_de_cerebro_router_py_las_line.md",
-  "memoria/paquetes/ingeniero__en_cerebro_piezas_py_la_funcion_funcion_.md",
-  "memoria/paquetes/ingeniero__en_cerebro_router_py_el_bloque_que_dice_.md",
-  "memoria/paquetes/ingeniero__la_funcion_cortar_de_cerebro_trozos_py_e.md",
-  "vigias/test_vigia_diccionario_router.py",
-  "vigias/test_vigia_router_contrato_nuevo.py",
-  "cuerpo/dudas.py",
-  "cuerpo/respuestas.py",
-  "cuerpo/privacidad.py"
- ],
+ "cuando": 1788660241.556929,
+ "tarea": "El repartidor decide a quien mandarle un encargo mirando SOLO cuantas letras aguanta cada cerebro, no lo que cada uno sabe hacer. Medir a cada cerebro por TIPO de trabajo (buscar, resumir, escribir codigo, revisar) con una prueba real de reparar codigo, y guardar esa medida junto a la que ya existe, sin duplicar piezas.",
+ "archivos": [],
  "obrero": "deepseek",
  "auditor": "gemini4",
- "veredicto": "APROBADO",
+ "veredicto": "RECHAZADO",
  "reviso_a_si_mismo": false
 }
