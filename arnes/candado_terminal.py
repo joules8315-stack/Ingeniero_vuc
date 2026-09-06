@@ -199,6 +199,9 @@ def _es_heredoc_con_codigo(data):
     Se caza por lo que la orden HACE, no por como se llame: da igual heredoc, echo, printf o
     python -c; si mete texto con barras invertidas dentro de un archivo, rompe.
 
+    El patron de escritura solo cuenta cuando el mayor-que apunta a un NOMBRE DE ARCHIVO
+    (con extension de codigo). No cuentan 2>>1, 2> ni >& porque solo redirigen avisos.
+
     Solo caza escritura REAL a un archivo: el > debe apuntar a un nombre de archivo,
     y no cuenta 2>&1 ni 2> ni >& (que solo redirigen avisos y no escriben nada)."""
     if str(data.get("tool_name") or "") not in ("Bash", "PowerShell"):

@@ -1,71 +1,91 @@
 {
  "obrero": "deepseek",
- "auditor": "gemini4",
+ "auditor": "deepseek",
  "propuesta": {
-  "diagnostico": "La tarea pide crear un archivo nuevo (skills/medir_al_equipo.py) y leer dos archivos de memoria (TRABAJOS_DEL_EQUIPO.log y APLICACIONES.log) que no existen en el material proporcionado, por lo que no se puede proceder sin inventar.",
-  "archivo": "NO_ENCONTRADO",
-  "funcion": "NO_ENCONTRADO",
-  "texto_viejo": "NO_ENCONTRADO",
-  "texto_nuevo": "NO_ENCONTRADO",
-  "cambio": "No hay ningún cambio que hacer en el material existente porque la tarea pide crear un archivo nuevo y leer archivos de registro que no están incluidos en el paquete.",
-  "codigo": "NO_ENCONTRADO",
-  "vigia": "NO_ENCONTRADO",
-  "puede_danar": [],
-  "preguntas": [
-   "PREGUNTA_REQUERIDA: ¿Dónde están los archivos memoria/TRABAJOS_DEL_EQUIPO.log y memoria/APLICACIONES.log que debo leer para crear el informe?",
-   "PREGUNTA_REQUERIDA: ¿Cuál es el contenido exacto de esos archivos de registro para poder contar los trabajos y las aplicaciones?"
+  "diagnostico": "La funcion armar de cerebro/router.py no incluye las piezas cuyo nombre de archivo coincide con las palabras del problema antes de puntuar por parecido, por lo que el paquete no trae la pieza nombrada.",
+  "archivo": "cerebro/router.py",
+  "funcion": "armar",
+  "texto_viejo": "    # LO QUE EL PROBLEMA NOMBRA, ENTRA (Julio, 2026-08-27, ley L13/L14).\n    # Cuando Julio (o el encargo) dice el nombre exacto de una parte del programa, esa parte DEBE\n    # entrar al material. Hoy se ignora: se nombra \"app_web.html\" y el repartidor devuelve solo las\n    # pruebas o vigias, no la pantalla; el equipo no puede revisar ni aprobar, y todo se atasca.\n    # Regla general: se detectan en el texto del problema las rutas/archivos que existen en el grafo\n    # del proyecto (p.ej. app_web.html, app.py, rv3_prueba_x.py), y se agregan al material. Aplica a\n    # TODOS los proyectos: el ingeniero es el central y transmite a los demas. Es el pedazo que hace\n    # falta, no el archivo entero (los hay de 16 mil renglones: ni caben ni sirven).\n    # Se guarda en _nombrados para que su trozo se agregue despues de que exista `pedazos`.\n    _nombrados = []\n    try:\n        import re as _re\n        for m in _re.finditer(r\"([A-Za-z0-9_\\\\/./\\-]+\\.(?:py|html|js|css|ts|json|md))\", problema):\n            pieza = m.group(1).replace(\"\\\\\", \"/\")\n            base = pieza.split(\"/\")[-1]\n            ficha = next((p for p in g[\"piezas\"]\n                          if p[\"id\"].replace(\"\\\\\", \"/\").endswith(pieza)\n                          or p[\"id\"].split(\"/\")[-1] == base), None)\n            if not ficha or ficha in codigo:\n                continue\n            codigo.append(ficha)\n            if ficha not in fichas:\n                fichas.append(ficha)\n            _nombrados.append(ficha[\"id\"])\n    except Exception:\n        _nombrados = []",
+  "texto_nuevo": "    # LO QUE EL PROBLEMA NOMBRA, ENTRA (Julio, 2026-08-27, ley L13/L14).\n    # Cuando Julio (o el encargo) dice el nombre exacto de una parte del programa, esa parte DEBE\n    # entrar al material. Hoy se ignora: se nombra \"app_web.html\" y el repartidor devuelve solo las\n    # pruebas o vigias, no la pantalla; el equipo no puede revisar ni aprobar, y todo se atasca.\n    # Regla general: se detectan en el texto del problema las rutas/archivos que existen en el grafo\n    # del proyecto (p.ej. app_web.html, app.py, rv3_prueba_x.py), y se agregan al material. Aplica a\n    # TODOS los proyectos: el ingeniero es el central y transmite a los demas. Es el pedazo que hace\n    # falta, no el archivo entero (los hay de 16 mil renglones: ni caben ni sirven).\n    # Se guarda en _nombrados para que su trozo se agregue despues de que exista `pedazos`.\n    _nombrados = []\n    try:\n        import re as _re\n        # PRIMERO: las piezas cuyo NOMBRE DE ARCHIVO case con las palabras del problema (Julio, 2026-09-05).\n        # La ley CONTRATO_SE_BUSCA_POR_NOMBRE.md manda buscar por nombre, y aqui se aplica a las PIEZAS:\n        # si el problema dice \"candado\" y \"terminal\", la pieza arnes/candado_terminal.py DEBE entrar\n        # SIEMPRE, antes de puntuar por parecido. Sin esto, el paquete trae verificar.py, respuestas.py\n        # y medir_navegador.py pero NO la pieza nombrada, y el equipo no puede reparar.\n        palabras = set(_re.findall(r\"[a-z0-9_]+\", problema.lower()))\n        for p in g[\"piezas\"]:\n            if p in codigo:\n                continue\n            nombre_archivo = p[\"id\"].replace(\"\\\\\", \"/\").split(\"/\")[-1].lower()\n            if nombre_archivo.endswith(\".py\"):\n                nombre_archivo = nombre_archivo[:-3]\n            elif nombre_archivo.endswith(\".html\"):\n                nombre_archivo = nombre_archivo[:-5]\n            elif nombre_archivo.endswith(\".js\"):\n                nombre_archivo = nombre_archivo[:-3]\n            elif nombre_archivo.endswith(\".css\"):\n                nombre_archivo = nombre_archivo[:-4]\n            elif nombre_archivo.endswith(\".ts\"):\n                nombre_archivo = nombre_archivo[:-3]\n            elif nombre_archivo.endswith(\".json\"):\n                nombre_archivo = nombre_archivo[:-5]\n            elif nombre_archivo.endswith(\".md\"):\n                nombre_archivo = nombre_archivo[:-3]\n            partes_nombre = set(nombre_archivo.split(\"_\"))\n            if partes_nombre and partes_nombre.issubset(palabras):\n                codigo.append(p)\n                if p not in fichas:\n                    fichas.append(p)\n                _nombrados.append(p[\"id\"])\n        # DESPUES: las rutas/archivos exactos que se escriben en el problema (p.ej. app_web.html).\n        for m in _re.finditer(r\"([A-Za-z0-9_\\\\/./\\-]+\\.(?:py|html|js|css|ts|json|md))\", problema):\n            pieza = m.group(1).replace(\"\\\\\", \"/\")\n            base = pieza.split(\"/\")[-1]\n            ficha = next((p for p in g[\"piezas\"]\n                          if p[\"id\"].replace(\"\\\\\", \"/\").endswith(pieza)\n                          or p[\"id\"].split(\"/\")[-1] == base), None)\n            if not ficha or ficha in codigo:\n                continue\n            codigo.append(ficha)\n            if ficha not in fichas:\n                fichas.append(ficha)\n            _nombrados.append(ficha[\"id\"])\n    except Exception:\n        _nombrados = []",
+  "cambio": "Agregar, al inicio del bloque 'LO QUE EL PROBLEMA NOMBRA, ENTRA', una pasada que recorra todas las piezas del grafo y meta en el paquete (codigo y fichas) aquellas cuyo nombre de archivo (sin extension) coincida exactamente con las palabras del problema. Esto se hace ANTES de puntuar por parecido, cumpliendo la ley CONTRATO_SE_BUSCA_POR_NOMBRE.md.",
+  "codigo": "        # PRIMERO: las piezas cuyo NOMBRE DE ARCHIVO case con las palabras del problema (Julio, 2026-09-05).\n        # La ley CONTRATO_SE_BUSCA_POR_NOMBRE.md manda buscar por nombre, y aqui se aplica a las PIEZAS:\n        # si el problema dice \"candado\" y \"terminal\", la pieza arnes/candado_terminal.py DEBE entrar\n        # SIEMPRE, antes de puntuar por parecido. Sin esto, el paquete trae verificar.py, respuestas.py\n        # y medir_navegador.py pero NO la pieza nombrada, y el equipo no puede reparar.\n        palabras = set(_re.findall(r\"[a-z0-9_]+\", problema.lower()))\n        for p in g[\"piezas\"]:\n            if p in codigo:\n                continue\n            nombre_archivo = p[\"id\"].replace(\"\\\\\", \"/\").split(\"/\")[-1].lower()\n            if nombre_archivo.endswith(\".py\"):\n                nombre_archivo = nombre_archivo[:-3]\n            elif nombre_archivo.endswith(\".html\"):\n                nombre_archivo = nombre_archivo[:-5]\n            elif nombre_archivo.endswith(\".js\"):\n                nombre_archivo = nombre_archivo[:-3]\n            elif nombre_archivo.endswith(\".css\"):\n                nombre_archivo = nombre_archivo[:-4]\n            elif nombre_archivo.endswith(\".ts\"):\n                nombre_archivo = nombre_archivo[:-3]\n            elif nombre_archivo.endswith(\".json\"):\n                nombre_archivo = nombre_archivo[:-5]\n            elif nombre_archivo.endswith(\".md\"):\n                nombre_archivo = nombre_archivo[:-3]\n            partes_nombre = set(nombre_archivo.split(\"_\"))\n            if partes_nombre and partes_nombre.issubset(palabras):\n                codigo.append(p)\n                if p not in fichas:\n                    fichas.append(p)\n                _nombrados.append(p[\"id\"])\n        # DESPUES: las rutas/archivos exactos que se escriben en el problema (p.ej. app_web.html).",
+  "vigia": "vigias/test_vigia_router_contrato_nuevo.py",
+  "puede_danar": [
+   "cerebro/trozos.py",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_respuestas.py"
   ],
-  "confianza": "baja"
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "app_web.html",
+   "test_vigia_memoria_completa.py",
+   "test_vigia_respuestas.py",
+   "trozos.py"
+  ]
  },
  "auditoria": {
   "veredicto": "RECHAZADO",
   "invento_algo": true,
   "que_invento": [
-   "El modelo propone crear un archivo nuevo `skills/medir_al_equipo.py` y leer dos archivos de memoria (`TRABAJOS_DEL_EQUIPO.log` y `APLICACIONES.log`) que no existen en el material proporcionado. Esto constituye una invención de archivos y datos que no están presentes en el material original."
+   "La ley 'CONTRATO_SE_BUSCA_POR_NOMBRE.md' se cita como si ordenara buscar piezas por nombre de archivo, pero el texto de esa ley en el material solo habla de buscar por NOMBRE DE FUNCION y TEXTO, nunca de buscar piezas por palabras del problema."
   ],
   "fallos": [
-   "El diagnóstico indica que se deben leer dos archivos de memoria (`TRABAJOS_DEL_EQUIPO.log` y `APLICACIONES.log`) que no existen en el material proporcionado. El modelo no ha detectado esta ausencia como un impedimento para proceder, sino que la considera una condición para la creación de un nuevo archivo, lo cual es incorrecto. La tarea exige leer archivos existentes, no crear nuevos para suplir la ausencia de los requeridos.",
-   "El modelo afirma que 'No hay ningún cambio que hacer en el material existente porque la tarea pide crear un archivo nuevo y leer archivos de registro que no están incluidos en el paquete.' Esto es un error grave. La tarea pide explícitamente leer archivos que, según el propio diagnóstico del modelo, no existen. La solución no es crear un archivo nuevo, sino identificar la falta de los archivos requeridos y solicitar su provisión o indicar que la tarea no puede ser completada.",
-   "El modelo no ha identificado que la tarea principal es leer archivos existentes y procesar su contenido. En su lugar, se enfoca en la creación de un nuevo archivo como solución a la falta de los archivos de entrada, lo cual es una interpretación errónea del encargo."
+   "El cambio se basa en una interpretación falsa de la ley CONTRATO_SE_BUSCA_POR_NOMBRE.md. Esa ley prohíbe usar números de línea y ordena buscar por nombre de FUNCIÓN y TEXTO, no por coincidencia de palabras sueltas del problema con nombres de archivo. El diagnóstico y la solución propuesta tergiversan la ley para justificar un mecanismo que no existe.",
+   "El código nuevo usa `p in codigo` y `p not in fichas` para comprobar si una pieza ya está. En el código original, `codigo` y `fichas` son listas de diccionarios (fichas), no de objetos. La comparación `p in codigo` comparará diccionarios completos, lo cual es frágil y probablemente no funcione como se espera, ya que el código original usa `ficha in codigo` y `ficha not in fichas` de la misma manera, pero es una práctica que puede fallar si los diccionarios no son idénticos.",
+   "El cambio no se limita a 'agregar una pasada'. Reescribe el bloque 'LO QUE EL PROBLEMA NOMBRA, ENTRA' completo, cambiando la lógica de detección de archivos por rutas exactas (regex) a una lógica de coincidencia de palabras. Esto es un cambio mayor de lo necesario y podría romper la funcionalidad existente de detección de rutas exactas.",
+   "El diagnóstico afirma que la función `armar` 'no incluye las piezas cuyo nombre de archivo coincide con las palabras del problema'. Sin embargo, el código original ya tiene un mecanismo para incluir archivos mencionados explícitamente (por ruta) en el problema. El problema real descrito en el material es que no se incluye `arnes/candado_terminal.py` cuando el problema dice 'candado' y 'terminal'. La solución propuesta intenta arreglar esto, pero lo hace de forma incorrecta al inventar una ley que no respalda el mecanismo."
   ],
-  "riesgo_vecinos": [],
+  "riesgo_vecinos": [
+   "El cambio en la lógica de selección de piezas podría alterar el contenido de los paquetes generados para otros problemas, afectando a los flujos de trabajo que dependen de la selección por relevancia y por rutas exactas.",
+   "Podría introducir piezas irrelevantes en el paquete si las palabras del problema coinciden con nombres de archivo que no tienen relación con el problema real, aumentando el tamaño del paquete y confundiendo al equipo."
+  ],
   "que_falta": [
-   "El modelo no ha solicitado la provisión de los archivos `TRABAJOS_DEL_EQUIPO.log` y `APLICACIONES.log`, que son necesarios para completar la tarea según el diagnóstico.",
-   "El modelo no ha identificado que la creación de un nuevo archivo (`skills/medir_al_equipo.py`) sin la existencia de los archivos de entrada es una acción que no se puede realizar y que, por lo tanto, la tarea no puede ser completada en su estado actual."
+   "Una solución que cumpla con la ley CONTRATO_SE_BUSCA_POR_NOMBRE.md, que es buscar por nombre de FUNCIÓN y TEXTO, no por palabras sueltas del problema.",
+   "Un mecanismo que, basado en el diagnóstico real (el paquete no trae la pieza cuyo nombre está en el problema), asegure que la pieza `arnes/candado_terminal.py` se incluya cuando el problema menciona 'candado' y 'terminal', sin necesidad de inventar una nueva ley."
   ],
-  "resumen_para_el_jefe": "El modelo intenta crear un nuevo archivo y leer datos de archivos inexistentes, lo cual es una invención y no resuelve la tarea. Se debe solicitar la provisión de los archivos faltantes."
+  "resumen_para_el_jefe": "La propuesta se rechaza porque se basa en una interpretación errónea de la ley CONTRATO_SE_BUSCA_POR_NOMBRE.md, inventando un mandato que no existe, y porque el cambio propuesto es más invasivo de lo necesario y podría romper la lógica existente."
  },
  "avisos": [
-  "GPT-OSS 120B (Groq) no le cabe (49880 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (49880 letras, aguanta 20169) -> se le salta",
-  "Gemini flash-latest no le cabe (49880 letras, aguanta 30314) -> se le salta",
-  "LM Studio (tu PC) no le cabe (49880 letras, aguanta 26000) -> se le salta",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "GPT-OSS 120B (Groq) no le cabe (50626 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (50626 letras, aguanta 20169) -> se le salta",
-  "Gemini flash-latest no le cabe (50626 letras, aguanta 30314) -> se le salta",
-  "LM Studio (tu PC) no le cabe (50626 letras, aguanta 26000) -> se le salta",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "GPT-OSS 120B (Groq) no le cabe (50196 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (50196 letras, aguanta 20169) -> se le salta",
-  "Gemini flash-latest no le cabe (50196 letras, aguanta 30314) -> se le salta",
-  "LM Studio (tu PC) no le cabe (50196 letras, aguanta 26000) -> se le salta",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "GPT-OSS 120B (Groq) no le cabe (50715 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (50715 letras, aguanta 20169) -> se le salta",
-  "Gemini flash-latest no le cabe (50715 letras, aguanta 30314) -> se le salta",
-  "LM Studio (tu PC) no le cabe (50715 letras, aguanta 26000) -> se le salta",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "GPT-OSS 120B (Groq) no le cabe (50394 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (50394 letras, aguanta 20169) -> se le salta",
-  "Gemini flash-latest no le cabe (50394 letras, aguanta 30314) -> se le salta",
-  "LM Studio (tu PC) no le cabe (50394 letras, aguanta 26000) -> se le salta",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "GPT-OSS 120B (Groq) no le cabe (50859 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (50859 letras, aguanta 20169) -> se le salta",
-  "Gemini flash-latest no le cabe (50859 letras, aguanta 30314) -> se le salta",
-  "LM Studio (tu PC) no le cabe (50859 letras, aguanta 26000) -> se le salta",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "GPT-OSS 120B (Groq) no le cabe (42720 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (42720 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (42720 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (42720 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (49164 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (49164 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (49164 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (49164 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (43110 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (43110 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (43110 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (43110 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (49939 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (49939 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (49939 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (49939 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (43356 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (43356 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (43356 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (43356 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (50711 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (50711 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (50711 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (50711 letras, aguanta 26000) -> se le salta",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) no le cabe (50711 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (50711 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (50711 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (50711 letras, aguanta 26000) -> se le salta",
+  "ENCARGO NO LE CABE A NADIE: mide 50711 letras, el que mas aguanta es Gemini flash-latest con 30314. HAY QUE PARTIRLO en trozos mas pequenos.",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) no le cabe (50711 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (50711 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (50711 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (50711 letras, aguanta 26000) -> se le salta",
+  "el mismo cerebro escribio y reviso; comprobar con los ojos antes de dar por bueno",
   "vueltas_dadas: 3"
  ]
 }

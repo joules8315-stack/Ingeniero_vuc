@@ -14,7 +14,11 @@ import os, re
 
 RUIDO = {"py", "md", "test", "vigia", "contrato", "contratos", "cuerpo", "web", "de", "del",
          "la", "el", "los", "las", "y", "e", "en", "un", "una", "por", "con", "para", "sh",
-         "html", "json", "txt", "auto", "maestro", "mvp", "mvp2", "dmm", "app", "main"}
+         "html", "json", "txt", "auto", "maestro", "mvp", "mvp2", "dmm", "app", "main",
+         "que", "solo", "se", "no", "si", "lo", "su", "sus", "mas", "ya", "esta", "estan", "son",
+         "hay", "sin", "sobre", "cuando", "porque", "todo", "toda", "cada", "este", "esta", "ese",
+         "esa", "muy", "tambien", "pero", "como", "donde", "quien", "cual", "algo", "otro", "otra",
+         "hacer", "ser", "tiene", "puede"}
 
 
 def _tokens(pid):
