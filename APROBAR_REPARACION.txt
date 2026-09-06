@@ -1,0 +1,48 @@
+APROBAR LA REPARACION — Julio, 2026-09-06
+==========================================
+
+QUE SE VA A REPARAR, EN SIMPLE
+------------------------------
+El que reparte el material no trae la funcion que el problema NOMBRA, si esa
+funcion no cayo por casualidad en los trozos que eligio. Medido: se pidio
+reparar la funcion "rankear"; vinieron trozos de su mismo archivo (renglones
+1-40, 150-163, 214-228 y 320-322) pero rankear esta en el 275 y NO vino. El
+equipo rechazo cuatro veces pidiendo verla.
+
+Eso es la causa de que 60 de 70 trabajos no lleguen ni a juzgarse.
+
+
+LO QUE PENSE YO (y por que las cuatro veces anteriores fallaron)
+----------------------------------------------------------------
+Se lo pedi cuatro veces dentro de la funcion "completar_funciones". Ahi NO se
+puede: esa funcion no recibe el texto del problema, asi que harian falta TRES
+cambios a la vez (la firma, quien la llama, y la logica) y el aplicador hace
+UNO por vuelta. Por eso rebotaba.
+
+La cura va en la funcion "armar", que es la unica que tiene el texto del
+problema a mano, y que ademas el material trae SIEMPRE entera. Un solo cambio,
+en un solo sitio. Eso es lo que cambia respecto a los cuatro intentos.
+
+
+EL COMANDO — copialo entero, pegalo en PowerShell y dale Enter
+---------------------------------------------------------------
+
+cd C:\Ingeniero_VUC; python ingeniero.py equipo ingeniero "UN SOLO CAMBIO y en un solo sitio: dentro de la funcion armar de cerebro/router.py, justo DESPUES de la linea que dice pedazos = completar_funciones(pedazos, codigo). NO se toca completar_funciones y NO se borra ninguna linea existente. Motivo medido el 2026-09-06: si la funcion que el problema NOMBRA no cayo en ningun trozo elegido por relevancia, no se trae nunca; se pidio reparar rankear de cuerpo/cuotas.py y vinieron los trozos 1-40, 150-163, 214-228 y 320-322 de ese archivo, pero rankear esta en la 275 y no vino, y el equipo rechazo cuatro veces pidiendo verla. Se elige armar porque es la UNICA que tiene a mano el texto del problema y porque el paquete la trae entera siempre. Lo que hay que anadir ahi: recorrer las palabras del texto del problema y, por cada palabra que sea el nombre de una funcion dentro de alguna pieza de codigo del paquete, comprobarlo con piezas.funcion_completa(ruta_abs, palabra) que YA EXISTE en cerebro/piezas.py linea 94, y si esa funcion no esta ya en pedazos, anadirla entera respetando el tope TOPE_FUNCION_ENTERA que ya existe." --escribe deepseek --revisa gemini4
+
+
+QUE VA A PASAR
+--------------
+- Escribe DeepSeek. Revisa un cerebro gratis.
+- Si sale APROBADO, se aplica solo en el disco y sale "APLICADO en disco".
+- Si sale RECHAZADO, no se toca nada: no se pierde ni se rompe.
+
+Cuando termine, pegame lo que salga y sigo desde ahi.
+
+
+POR QUE ASI Y NO DE OTRO MODO
+------------------------------
+Se descarto que lo escribiera Claude: esta prohibido por
+CONTRATO_LA_IA_CARA_NUNCA_ESCRIBE.md, y ademas ya salio caro una vez.
+Se descarto seguir insistiendo en completar_funciones: cuatro rechazos no son
+mala suerte, son un encargo mal planteado, y la ley del gasto manda parar a las
+tres y replantear. Esto es el replanteo.
