@@ -284,6 +284,38 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
     pedazos = completar_funciones(pedazos, codigo)
     # (la funcion vive al final de este archivo, junto a las demas ayudas)
 
+    # LO QUE EL PROBLEMA NOMBRA COMO FUNCION, ENTRA ENTERO (Julio, 2026-09-06).
+    # Si el problema nombra una funcion que no cayo en ningun trozo elegido por relevancia,
+    # nunca se trae. Se recorre el texto del problema y, por cada palabra que sea el nombre de
+    # una funcion dentro de alguna pieza de codigo del paquete, se comprueba con
+    # piezas.funcion_completa(ruta_abs, palabra) y si no esta ya en pedazos, se anade entera
+    # respetando el tope TOPE_FUNCION_ENTERA.
+    try:
+        import re as _re2
+        for _palabra in set(_re2.findall(r"[A-Za-z_][A-Za-z0-9_]*", problema)):
+            for _ficha_codigo in codigo:
+                if not _ficha_codigo.get("abs"):
+                    continue
+                _hallazgo = piezas.funcion_completa(_ficha_codigo["abs"], _palabra)
+                if not _hallazgo:
+                    continue
+                _texto_funcion = _hallazgo["texto"]
+                _lineas_funcion = _hallazgo["hasta"] - _hallazgo["desde"] + 1
+                if _lineas_funcion > TOPE_FUNCION_ENTERA:
+                    continue
+                _ya_en_pedazos = any(
+                    t["pieza"] == _ficha_codigo["id"] and t["desde"] <= _hallazgo["desde"]
+                    and t["hasta"] >= _hallazgo["hasta"] for t in pedazos)
+                if not _ya_en_pedazos and _texto_funcion:
+                    pedazos.insert(0, {"pieza": _ficha_codigo["id"], "abs": _ficha_codigo["abs"],
+                                       "rol": _ficha_codigo["rol"],
+                                       "desde": _hallazgo["desde"], "hasta": _hallazgo["hasta"],
+                                       "direccion": "%s:%s-%s" % (_ficha_codigo["id"], _hallazgo["desde"], _hallazgo["hasta"]),
+                                       "texto": _texto_funcion, "puntaje": 99.0,
+                                       "_completo": _palabra})
+    except Exception:
+        pass
+
     # LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO (Julio, 2026-08-27, ley L13/L14).
     # Los archivos nombrados ya se agregaron a `codigo`/`fichas`. Aqui se garantiza que su trozo
     # llegue al material: si el fragmentador por relevancia no lo trajo, se pide el pedazo del

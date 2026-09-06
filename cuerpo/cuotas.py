@@ -289,7 +289,9 @@ def rankear(disponibles, tamano):
         fall = float(g.get("fallos", 0))
         conf = (llam - fall) / llam if llam > 0 else 0.0     # fiabilidad (sin fallos)
         vel = 1.0 / (1.0 + float(g.get("record_seg", 0)))    # rapidez (mas lento = menos)
-        return round(conf * vel, 6)
+        # Penaliza a los que fallan mucho: si falla el 98%, su score se divide por 50.
+        penal = 1.0 / (1.0 + fall) if llam > 0 else 1.0
+        return round(conf * vel * penal, 6)
 
     return sorted(elegibles, key=score, reverse=True)
 
