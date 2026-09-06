@@ -1,17 +1,21 @@
 {
- "obrero": "deepseek",
+ "obrero": "groq20b",
  "auditor": "deepseek",
  "propuesta": {
-  "diagnostico": "Las vigias escriben en los archivos de memoria reales (TRABAJOS_DEL_EQUIPO.log y APLICACIONES.log) en lugar de en copias temporales cuando corren pruebas, ensuciando el registro real.",
-  "archivo": "skills/medir_al_equipo.py",
-  "funcion": "medir",
-  "texto_viejo": "TRABAJOS = os.path.join(AQUI, \"memoria\", \"TRABAJOS_DEL_EQUIPO.log\")\nAPLICADO = os.path.join(AQUI, \"memoria\", \"APLICACIONES.log\")",
-  "texto_nuevo": "TRABAJOS = os.path.join(AQUI, \"memoria\", \"TRABAJOS_DEL_EQUIPO.log\")\nAPLICADO = os.path.join(AQUI, \"memoria\", \"APLICACIONES.log\")\n\nif os.environ.get(\"PYTEST_CURRENT_TEST\"):\n    import tempfile\n    _tmp = tempfile.mkdtemp()\n    TRABAJOS = os.path.join(_tmp, \"TRABAJOS_DEL_EQUIPO.log\")\n    APLICADO = os.path.join(_tmp, \"APLICACIONES.log\")",
-  "cambio": "Agregar una redirección condicional al inicio de la sección de constantes de rutas, para que cuando la variable de entorno PYTEST_CURRENT_TEST esté definida, las rutas TRABAJOS y APLICADO apunten a archivos temporales dentro de una carpeta temporal creada con tempfile.mkdtemp().",
-  "codigo": "if os.environ.get(\"PYTEST_CURRENT_TEST\"):\n    import tempfile\n    _tmp = tempfile.mkdtemp()\n    TRABAJOS = os.path.join(_tmp, \"TRABAJOS_DEL_EQUIPO.log\")\n    APLICADO = os.path.join(_tmp, \"APLICACIONES.log\")",
-  "vigia": "Una prueba que ejecute skills/medir_al_equipo.py con PYTEST_CURRENT_TEST definida y verifique que los archivos memoria/TRABAJOS_DEL_EQUIPO.log y memoria/APLICACIONES.log no cambian su contenido ni su número de líneas.",
+  "diagnostico": "Se reemplaza la ruta relativa por una absoluta basada en la raíz del proyecto y se respeta la variable de entorno INGENIERO_APLICACIONES.",
+  "archivo": "cuerpo/aplicador.py",
+  "funcion": "_apuntar_log",
+  "texto_viejo": "def _apuntar_log(ok, archivo, funcion, detalle):\n    \"\"\"Apuntar en memoria/APLICACIONES.log. Si falla, no revienta.\"\"\"\n    try:\n        os.makedirs(\"memoria\", exist_ok=True)\n        with open(\"memoria/APLICACIONES.log\", \"a\", encoding=\"utf-8\") as f:\n            f.write(f\"{datetime.now().isoformat()} | {'OK' if ok else 'FALLO'} | {archivo} | {funcion} | {detalle}\\n\")\n    except Exception:\n        pass  # no debe tumbar la aplicacion",
+  "texto_nuevo": "def _apuntar_log(ok, archivo, funcion, detalle):\n    \"\"\"Apuntar en memoria/APLICACIONES.log. Si falla, no revienta.\"\"\"\n    try:\n        ruta = os.environ.get(\"INGENIERO_APLICACIONES\") or os.path.join(os.path.dirname(os.path.dirname(__file__)), \"memoria\", \"APLICACIONES.log\")\n        os.makedirs(os.path.dirname(ruta), exist_ok=True)\n        with open(ruta, \"a\", encoding=\"utf-8\") as f:\n            f.write(f\"{datetime.now().isoformat()} | {'OK' if ok else 'FALLO'} | {archivo} | {funcion} | {detalle}\\n\")\n    except Exception:\n        pass  # no debe tumbar la aplicacion",
+  "cambio": "Reemplazar la ruta relativa por una absoluta basada en la raíz del proyecto y respetar la variable de entorno INGENIERO_APLICACIONES.",
+  "codigo": "ruta = os.environ.get(\"INGENIERO_APLICACIONES\") or os.path.join(os.path.dirname(os.path.dirname(__file__)), \"memoria\", \"APLICACIONES.log\")\n        os.makedirs(os.path.dirname(ruta), exist_ok=True)\n        with open(ruta, \"a\", encoding=\"utf-8\") as f:\n            f.write(f\"{datetime.now().isoformat()} | {'OK' if ok else 'FALLO'} | {archivo} | {funcion} | {detalle}\\n\")",
+  "vigia": [
+   "vigias/test_vigia_aplicador.py",
+   "vigias/test_vigia_no_se_escribe_en_otro_proyecto.py"
+  ],
   "puede_danar": [
-   "skills/medir_al_equipo.py"
+   "cuerpo/aplicador.py",
+   "cuerpo/balance.py"
   ],
   "preguntas": [],
   "confianza": "alta"
@@ -23,31 +27,11 @@
   "fallos": [],
   "riesgo_vecinos": [],
   "que_falta": [],
-  "resumen_para_el_jefe": "La reparación redirige correctamente las rutas de los archivos de memoria a archivos temporales cuando PYTEST_CURRENT_TEST está definida, cumpliendo con el diagnóstico y sin afectar el comportamiento normal."
+  "resumen_para_el_jefe": "La reparacion reemplaza la ruta relativa por una absoluta basada en la raiz del proyecto y respeta la variable de entorno INGENIERO_APLICACIONES, tal como pide el encargo y siguiendo el patron de cuerpo/balance.py."
  },
  "avisos": [
-  "GPT-OSS 120B (Groq) no le cabe (66281 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (66281 letras, aguanta 20169) -> se le salta",
-  "LM Studio (tu PC) no le cabe (66281 letras, aguanta 26000) -> se le salta",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "GPT-OSS 120B (Groq) no le cabe (67788 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (67788 letras, aguanta 20169) -> se le salta",
-  "LM Studio (tu PC) no le cabe (67788 letras, aguanta 26000) -> se le salta",
-  "ENCARGO NO LE CABE A NADIE: mide 67788 letras, el que mas aguanta es LM Studio (tu PC) con 26000. HAY QUE PARTIRLO en trozos mas pequenos.",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "NO_ENCONTRADO: ningun cerebro pudo atender",
-  "GPT-OSS 120B (Groq) no le cabe (67788 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (67788 letras, aguanta 20169) -> se le salta",
-  "LM Studio (tu PC) no le cabe (67788 letras, aguanta 26000) -> se le salta",
-  "ENCARGO NO LE CABE A NADIE: mide 67788 letras, el que mas aguanta es LM Studio (tu PC) con 26000. HAY QUE PARTIRLO en trozos mas pequenos.",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "NO_ENCONTRADO: ningun cerebro pudo atender",
-  "se pidio auditar a gemini4 y no esta disponible: reviso ",
-  "GPT-OSS 120B (Groq) no le cabe (67788 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (67788 letras, aguanta 20169) -> se le salta",
-  "LM Studio (tu PC) no le cabe (67788 letras, aguanta 26000) -> se le salta",
-  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
-  "el mismo cerebro escribio y reviso; comprobar con los ojos antes de dar por bueno",
+  "se pidio generar a deepseek y no esta disponible: contesto groq20b",
+  "se pidio auditar a gemini4 y no esta disponible: reviso deepseek",
   "vueltas_dadas: 1"
  ]
 }

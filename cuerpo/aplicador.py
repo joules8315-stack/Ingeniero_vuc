@@ -9,8 +9,9 @@ from datetime import datetime
 def _apuntar_log(ok, archivo, funcion, detalle):
     """Apuntar en memoria/APLICACIONES.log. Si falla, no revienta."""
     try:
-        os.makedirs("memoria", exist_ok=True)
-        with open("memoria/APLICACIONES.log", "a", encoding="utf-8") as f:
+        ruta = os.environ.get("INGENIERO_APLICACIONES") or os.path.join(os.path.dirname(os.path.dirname(__file__)), "memoria", "APLICACIONES.log")
+        os.makedirs(os.path.dirname(ruta), exist_ok=True)
+        with open(ruta, "a", encoding="utf-8") as f:
             f.write(f"{datetime.now().isoformat()} | {'OK' if ok else 'FALLO'} | {archivo} | {funcion} | {detalle}\n")
     except Exception:
         pass  # no debe tumbar la aplicacion
