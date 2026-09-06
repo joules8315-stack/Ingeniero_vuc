@@ -1,95 +1,70 @@
-# DONDE QUEDAMOS — 2026-08-31
+# DONDE QUEDAMOS — 2026-09-06
 
-Julio: *"cuando todo este terminado, guarda todo, continuamos manana"*.
-Esta todo guardado y en verde. Aqui esta lo que hicimos y por donde seguir.
+## LO QUE HAY QUE SABER EN UNA LINEA
+
+Julio prohibio que la IA cara escriba codigo: **NUNCA, ni con autorizacion**
+(CONTRATO_LA_IA_CARA_NUNCA_ESCRIBE.md). El codigo lo escribe el equipo. Claude piensa donde va,
+lanza el encargo el mismo (Julio no pega comandos), y aplica lo aprobado.
 
 ---
 
-## LO QUE SE CERRO HOY (todo con su ley, su candado y su prueba)
+## LO QUE SE REPARO HOY, Y ESTA PROBADO
 
-Todo lo de hoy es **la misma enfermedad con distintas caras**: el sistema decia
-una cosa y hacia otra.
-
-| Lo que decia | Lo que hacia de verdad |
+| Que | Prueba |
 |---|---|
-| que buscaba el sitio del codigo | contaba renglones, que se corren solos, y borraba funciones enteras |
-| que habia un ayudante disponible | no sabia ni como llamarle, y reventaba al intentarlo |
-| que aceptaba la eleccion de revisor | la tiraba a la basura **en silencio** |
-| que habia que contestar los recados | no daba ninguna forma de marcarlos como contestados |
-| quien mandaba cada recado | los firmaba como "desconocido" y luego bloqueaba con ellos |
-| que un fallo estaba protegido | apuntaba una prueba **que no existe** |
+| El material ya trae la pieza que el problema NOMBRA | se pedia reparar una funcion y venian trozos del archivo pero NO esa funcion. Ahora viene entera y la primera. **Era la causa de que 60 de 70 trabajos no llegaran ni a juzgarse** |
+| El reparto ya penaliza al que falla | antes elegia al que falla 98 de cada 100; ahora al que falla 46 |
+| CREAR ya no se confunde con INVENTAR | era el muro que impedia que el equipo hiciera nada nuevo. Se reparo en el revisor Y en el que escribe |
+| Las pruebas ya no ensucian la memoria | registro real: 1272 renglones antes y despues de correr las 585 comprobaciones. **Antes entraban 12 falsos por guardado** |
+| Candado que frena a Claude cuando repite | con su vigia de 6 comprobaciones. Julio se quejo TRES veces el mismo dia |
+| La medida de si Julio pudo trabajar | ya funciona: **4 dias parado su proyecto, 31 guardados en la herramienta el mismo dia** |
+| La ruta de acceso (pieza 0) | blindada: frena aunque los candados esten apagados |
+| Una sola via | el Ingeniero unificado; se retiro una copia entera de 9,3 MB |
 
-Las seis, cerradas.
+**Todo lo escribio el equipo. Claude solo penso donde iba y aplico lo aprobado.**
 
-### 1. El sitio se busca POR NOMBRE, nunca por numero de renglon
-- `cerebro/piezas.py::funcion_completa` devuelve la pieza entera buscandola por su nombre.
-- El repartidor ya no lleva los numeros 87 y 227 escritos a mano.
-- El obrero entrega **texto viejo a texto nuevo**, no un tramo.
-- Candado `arnes/candado_por_nombre.py`, enchufado y probado.
-
-### 2. Con quien se trabaja lo dice Julio, y hay quien lo haga cumplir
-- `arnes/companero.py`: **un solo sitio** dice quien es el companero.
-- Distingue RESERVA (con salida honrada) de RETIRADO (sin ella).
-- Candado `arnes/candado_companero.py`, enchufado.
-
-### 3. El equipo dejo de tirar trabajo ya pagado
-- Si el revisor contesta roto, **se le vuelve a preguntar**. Antes se tiraba la ronda.
-- El informe ya no dice un simple interrogante: dice que el revisor contesto roto.
-
-### 4. Las dos listas ya no se pueden separar — LA CURA DE FONDO DEL DIA
-- Habia **dos listas que debian decir lo mismo y nadie comparaba nunca**: una decidia
-  quien entra en la fila de cerebros, la otra sabia como llamarle.
-- Un nombre entro en la primera sin estar en la segunda: reventaba, el relevo lo contaba
-  como un fallo mas, y el ciclo se quedaba **SIN REVISOR**. Todo caia en el de PAGO.
-- Ahora la segunda se construye de la **misma fuente** que la primera.
-- **El hallazgo fue de Continue.** Fue el mejor diagnostico del dia.
-
-### 5. Se puede elegir de verdad quien escribe y quien revisa
-- Lo pesado ya no es fijo: se calcula, para que pedir un cerebro concreto no se lo pise.
-- Si no se puede respetar lo pedido, **SE DICE**. Antes se ignoraba callando.
-- El que revisa **nunca** puede ser el que escribio.
-
-### 6. El buzon y los recados
-- Contestar un recado **lo deja cerrado**, con quien y cuando.
-- El sistema **ya sabe quien es quien** (antes firmaba todo como "desconocido").
-- El vigilante que llevaba **seis dias muerto** sin que nadie lo notara.
+**PRIMERA VEZ EN EL REGISTRO:** un cerebro GRATIS (groq20b) escribio codigo real y se aprobo.
+Antes llevaban cero de 924.
 
 ---
 
-## LO QUE HAY QUE DECIDIR MANANA
+## LO QUE FALTA, POR ORDEN
 
-**Con que ayudante se sigue.** Los numeros de hoy, misma jornada:
-
-| | Cline | Continue |
-|---|---|---|
-| Trabajos terminados | **4 de 4** | 0 de 1 |
-| Comprobados en el codigo | **4** | 1 a medias |
-| Dijo hecho sin estarlo | 0 | **3 veces** |
-| Rompio algo | nunca | **2 veces el mismo archivo** |
-
-**Recomendacion de Claude:** Cline vuelve a activo para EJECUTAR. Continue solo para
-MIRAR Y OPINAR, que ahi acerto mejor que nadie, pero sin escribir mientras su
-herramienta diga que guardo sin haber guardado.
-
-Falta que Julio lo decida y que se legisle.
-
----
-
-## LO QUE FALTA (por orden)
-
-1. **Que Julio lo pruebe con sus ojos.** Vigia verde NO es prueba. Nada de hoy esta
-   sellado hasta que el lo vea funcionar.
-2. Decidir y legislar lo del ayudante (arriba).
-3. La vigia de las 7 puertas del candado de equipo: escrita, nacio roja, apartada.
-4. El vigilante que autoriza desde el plan aprobado: legislado, NO construido.
-5. Pruebas con navegador del propio Ingeniero: no empezadas.
-6. **Foto Informe, paso 6 de 8.** El producto de Julio, parado mientras se afina la
-   herramienta. Es lo unico que da dinero: en cuanto la herramienta aguante, va esto.
+1. **El candado del gasto cuenta al reves.** Cuenta 15 escrituras (gratis) y CERO de las
+   llamadas al cerebro que cobra. Frena lo barato y deja correr lo caro. Y el numero 15 no
+   salio de ningun analisis: esta puesto a ojo.
+2. **14 leyes siguen siendo papel** (de 28 escritas). Se ven con la habilidad de leyes sin vigia.
+3. **El guardian corre las 585 comprobaciones en CADA guardado**: minuto y medio cada vez.
+   Solo hacen falta las que tocan lo que cambio.
+4. **El apuntador de ordenes toma por orden de Julio cualquier texto que el pegue.** Paso
+   CUATRO veces hoy. La cura YA EXISTE: la habilidad que distingue una orden de un texto
+   pegado. **Nadie la ha enchufado.** Esa es la reparacion pendiente y es corta.
+5. **El candado del lenguaje choca con la ley 5 de Julio.** La ley manda darle siempre el
+   comando listo; el candado prohibe nombrar archivos en la respuesta. Para dar un comando hay
+   que nombrarlos. Por eso los comandos acaban en papeles sueltos y se pierden.
+6. Para despues, dicho por Julio: las 10 ramas de junio de Foto Informe, y el diccionario que
+   no conoce sus palabras (35 palabras, y no esta ni "habilidad").
 
 ---
 
-## COMO EMPEZAR MANANA
+## LAS HABILIDADES QUE YA EXISTEN (ninguna gasta una llamada)
 
-    cd C:\Ingeniero_VUC; python ingeniero.py arranca
+Todas se corren igual: `cd C:\Ingeniero_VUC; python skills/<la que sea>`
 
-**512 comprobaciones en verde, ninguna roja, todo guardado.**
+- **julio_pudo_trabajar** — LA IMPORTANTE: si Julio avanzo hoy
+- **medir_al_equipo** — quien escribe, quien revisa, que llego al codigo
+- **quien_sirve_de_verdad** — quien falla cuanto, sacado de las llamadas reales
+- **via_unica** — carpetas, ramas y copias sueltas de todos los proyectos
+- **leyes_sin_vigia** — que leyes son solo papel
+- **cazar_el_humo** — si un cambio solo toca comentarios y no repara nada
+- **falta_en_el_material** — avisa antes de pagar una vuelta que no puede salir bien
+- **orden_o_texto_pegado** — distingue una orden de Julio de un texto pegado
+- **frenos_con_culpable** — cuantos frenos acabaron sabiendo quien fallo
+
+---
+
+## COMO SE LE HABLA A JULIO
+
+Sin jerga, sin nombres de archivo, sin palabras de informatica. Como a un amigo dueño de un
+negocio. Y **no se le repite lo que ya leyo**: se contesta solo lo nuevo. Ahora hay un candado
+que lo frena, pero la ley esta en CONTRATO_NO_REPETIR.md.
