@@ -130,6 +130,9 @@ def salida():
     sys.stderr.write(
         "NO SE PUEDE TERMINAR: la respuesta repite lo que ya se le conto a Julio.\n"
         "  Julio ya leyo esto y se quejo tres veces el mismo dia. Contesta solo lo nuevo.\n")
+    sys.stderr.write("  Las frases que ya se le contaron son:\n")
+    for f in repetidas[:3]:
+        sys.stderr.write("    - " + f[:100] + "\n")
     return 2
 
 
