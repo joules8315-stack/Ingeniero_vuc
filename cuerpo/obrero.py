@@ -642,6 +642,63 @@ def _validar_en_paquete(paquete, propuesta, tarea=""):
     return sorted(set(inventados))
 
 
+def auditar(paquete, propuesta, auditor=None, evitar=None):
+    """Pide a un cerebro que REVISE una propuesta ya escrita. No escribe ni genera nada.
+
+    Nace porque arnes/copista.py aplica cambios ya decididos sin llamar a un cerebro, y
+    despues hay que pedirle al equipo que lo revise. Antes toda la logica de revisar
+    estaba metida dentro de trabajar, mezclada con la de escribir, y no habia forma de
+    decir "esto ya esta hecho, solo revisalo".
+
+    Devuelve (auditoria, quien_reviso, avisos).
+    """
+    auditoria = None
+    avisos = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor
+    quien_aud = None
+    auditor_ok = auditor
+    if auditor == evitar:
+        # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa
+        auditor_ok = None
+        avisos.append("el auditor pedido (%s) era el mismo que genero; se busca otro" % auditor)
+    for _intento in range(2):
+        crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
+            _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1,
+            evitar=evitar, primero=auditor_ok)
+        avisos += av_intento   # no se pierde lo que dijo el primer intento
+        if not crudo_a:
+            continue                       # no contesto: se le pide de nuevo
+        auditoria = _json_de(crudo_a)
+        if isinstance(auditoria, dict) and "_error" not in auditoria:
+            break                          # se entendio: listo
+        # JSON roto/cortado: no se da por perdido (cura que ya existe en cruzado.py).
+    if not isinstance(auditoria, dict) or "_error" in (auditoria or {}):
+        # EL INFORME NO MIENTE: si el revisor contesto roto, se dice claro, no '?'.
+        auditoria = {"veredicto": "SIN_AUDITAR",
+                     "_error": ((auditoria or {}).get("_error", "")
+                                 if isinstance(auditoria, dict) else ""),
+                     "resumen_para_el_jefe":
+                         "el revisor contesto roto; se conserva la propuesta del obrero"}
+
+    # Si se pidio un auditor y no fue el que reviso, se avisa.
+    if auditor and quien_aud != auditor:
+        avisos.append("se pidio auditar a %s y no esta disponible: reviso %s" % (auditor, quien_aud))
+
+    # Si no hay auditor, intentar con el cerebro de pago (aunque sea el mismo que genero).
+    if (not auditoria or auditoria.get("veredicto") == "SIN_AUDITAR"):
+        # intentar con el cerebro de pago, sin apartar a nadie
+        crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
+            _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1,
+            primero=None, pesado=True)
+        avisos += av_intento
+        if crudo_a:
+            auditoria = _json_de(crudo_a)
+
+    # Si al final el mismo cerebro escribio y reviso, se avisa.
+    if evitar and quien_aud == evitar:
+        avisos.append("el mismo cerebro escribio y reviso: hay que comprobarlo con los ojos antes de darlo por bueno")
+
+    return auditoria, quien_aud, avisos
+
 def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
     """Un cerebro GENERA, OTRO distinto AUDITA (4 ojos). Quien es cada uno lo decide el relevo
     de cuotas, no una lista fija: asi nunca se para el trabajo por una cuota agotada.
@@ -698,58 +755,12 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
         if generador and quien_gen != generador:
             avisos_totales.append("se pidio generar a %s y no esta disponible: contesto %s" % (generador, quien_gen))
 
-        # el auditor NUNCA puede ser el mismo que genero: si no, se aprueba a si mismo.
-        # CURA DE cruzado.py (Julio, 2026-08-31): el revisor puede contestar ROTO o ilegible. Antes
-        # se le preguntaba UNA sola vez y se tiraba la propuesta buena del obrero (la vuelta YA
-        # PAGADA). Ahora se le pide de nuevo (hasta 2 intentos), igual que hace el juez en resolver().
-        auditoria = None
-        av2 = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor
-        auditor_ok = auditor
-        if auditor == quien_gen:
-            # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa
-            auditor_ok = None
-            av2.append("el auditor pedido (%s) era el mismo que genero; se busca otro" % auditor)
-        for _intento in range(2):
-            crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
-                _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1,
-                evitar=quien_gen, primero=auditor_ok)
-            av2 += av_intento   # no se pierde lo que dijo el primer intento
-            if not crudo_a:
-                continue                       # no contesto: se le pide de nuevo
-            auditoria = _json_de(crudo_a)
-            if isinstance(auditoria, dict) and "_error" not in auditoria:
-                break                          # se entendio: listo
-            # JSON roto/cortado: no se da por perdido (cura que ya existe en cruzado.py).
-        if not isinstance(auditoria, dict) or "_error" in (auditoria or {}):
-            # EL INFORME NO MIENTE: si el revisor contesto roto, se dice claro, no '?'.
-            auditoria = {"veredicto": "SIN_AUDITAR",
-                         "_error": ((auditoria or {}).get("_error", "")
-                                    if isinstance(auditoria, dict) else ""),
-                         "resumen_para_el_jefe":
-                             "el revisor contesto roto; se conserva la propuesta del obrero"}
-
-        # Si se pidio un auditor y no fue el que reviso, se avisa.
-        if auditor and quien_aud != auditor:
-            av2.append("se pidio auditar a %s y no esta disponible: reviso %s" % (auditor, quien_aud))
+        # La revision se delega entera a auditar(): asi arnes/copista.py puede pedir SOLO una
+        # revision (un cambio gratis ya aplicado) y no hay el mismo codigo en dos sitios.
+        # Dentro de auditar() siguen vivos la cura de los dos reintentos del 2026-08-31 y el
+        # ultimo recurso con el cerebro de pago: no se quito nada, solo se movio.
+        auditoria, quien_aud, av2 = auditar(paquete, propuesta, auditor=auditor, evitar=quien_gen)
         avisos_totales += av2
-
-        # Si no hay auditor, intentar con el cerebro de pago (aunque sea el mismo que genero).
-        if (not auditoria or auditoria.get("veredicto") == "SIN_AUDITAR"):
-            # intentar con el cerebro de pago, sin apartar a nadie
-            crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
-                _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1,
-                primero=None, pesado=True)
-            avisos_totales += av_intento
-            if crudo_a:
-                auditoria = _json_de(crudo_a)
-                if not isinstance(auditoria, dict) or "_error" in (auditoria or {}):
-                    auditoria = {"veredicto": "SIN_AUDITAR",
-                                 "_error": ((auditoria or {}).get("_error", "")
-                                            if isinstance(auditoria, dict) else ""),
-                                 "resumen_para_el_jefe":
-                                     "el revisor contesto roto; se conserva la propuesta del obrero"}
-            if quien_aud == quien_gen:
-                avisos_totales.append("el mismo cerebro escribio y reviso; comprobar con los ojos antes de dar por bueno")
 
         # Si el veredicto es RECHAZADO, guardar motivos y reintentar (hasta 3 veces).
         if isinstance(auditoria, dict) and auditoria.get("veredicto") == "RECHAZADO":

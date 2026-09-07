@@ -26,10 +26,20 @@ def test_trabajar_pasa_generador_como_primero():
 
 
 def test_trabajar_pasa_auditor_como_primero():
-    """El auditor pedido se intenta PRIMERO en la llamada de AUDITAR."""
-    src = inspect.getsource(obrero.trabajar)
+    """El auditor pedido se intenta PRIMERO en la llamada de AUDITAR.
+
+    La revision vive ahora en auditar(), no en trabajar(): se saco para que
+    arnes/copista.py pueda pedir SOLO una revision. La garantia sigue intacta
+    porque trabajar() le pasa el auditor a auditar(), y auditar() lo usa como
+    'primero'. Por eso se mira en las DOS funciones.
+    """
+    src_trabajar = inspect.getsource(obrero.trabajar)
+    src_auditar = inspect.getsource(obrero.auditar)
+    src = src_trabajar + src_auditar
     assert "primero=auditor" in src or "primero=auditor_ok" in src, \
-        "trabajar() no pasa el auditor pedido como 'primero' en la llamada de AUDITAR"
+        "El auditor pedido se estaria ignorando: se busco en trabajar() y en auditar() y en ninguna aparece como 'primero'"
+    assert "auditor=auditor" in src_trabajar, \
+        "trabajar() no le pasa el auditor pedido a auditar()"
 
 
 def test_el_auditor_nunca_es_el_que_genero():
