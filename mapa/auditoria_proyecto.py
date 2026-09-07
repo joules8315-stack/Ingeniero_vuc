@@ -223,6 +223,27 @@ def _rellenar_proyecto(informe, g, apodo):
         "objetivo_del_mvp": "esto no se lee del codigo: lo dice Julio. Se deja vacio antes que "
                             "inventarlo",
     }
+    # ANTES DE RENDIRSE, AGOTAR LAS FUENTES: buscar entre las piezas CONTRATO o PROTOCOLO
+    # las que lleven 'objetivo' o 'norte' en el nombre o en el resumen.
+    objetivo_encontrado = None
+    for pieza in g.get("piezas", []):
+        if pieza.get("rol") not in ("CONTRATO", "PROTOCOLO"):
+            continue
+        nombre_pieza = os.path.basename(pieza.get("archivo", "")).lower()
+        resumen_pieza = (pieza.get("resumen") or "").lower()
+        if "objetivo" in nombre_pieza or "norte" in nombre_pieza or \
+           "objetivo" in resumen_pieza or "norte" in resumen_pieza:
+            primera_linea = (pieza.get("resumen") or "").strip().splitlines()
+            if primera_linea:
+                objetivo_encontrado = {
+                    "texto": primera_linea[0][:180],
+                    "fuente": pieza.get("archivo", NO_VER),
+                }
+                break
+    if objetivo_encontrado:
+        informe["proyecto"]["objetivo_del_mvp"] = objetivo_encontrado["texto"]
+        informe["proyecto"]["_objetivo_del_mvp_fuente"] = objetivo_encontrado["fuente"]
+        razones.pop("objetivo_del_mvp", None)
     for k, v in list(informe["proyecto"].items()):
         if v == NO_VER:
             informe["proyecto"]["_como_se_sabe_" + k] = razones.get(

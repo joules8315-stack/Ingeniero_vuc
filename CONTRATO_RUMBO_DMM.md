@@ -1,82 +1,70 @@
-# CONTRATO — EL RUMBO DE DMM (tres principios, medidos contra el disco)
+# CONTRATO — DMM Y MVP2 SON DOS PROYECTOS DISTINTOS, Y EL OBJETIVO SE DECLARA
 
-**Fecha:** 2026-09-07. **Estado: RUMBO PROPUESTO, PENDIENTE DEL SI DE JULIO.**
+**Julio, 2026-09-07, enfadado y con razon:**
 
-Julio trajo una segunda opinion sobre DMM y pidio: *"verifica si lo construido se encuentra
-orientado a estos objetivos"*. De esa opinion salieron tres frases que son principios de diseno,
-no tareas. Se dejan escritas aqui **para que no se pierdan**, con lo que hay medido debajo de
-cada una. No se construye nada por este documento: **falta que Julio diga si este es el rumbo.**
+> *"debe ser el objetivo del DMM en una sola frase, que tiene que ver el MVP, nada, son dos
+> proyectos diferentes"*
 
 ---
 
-## POR QUE ESTE DOCUMENTO EXISTE
+## LO QUE ESTE DOCUMENTO **YA NO** DICE (se quito por duplicar)
 
-El candado del cierre las marco como instrucciones sin legislar, y tiene razon: una frase que
-marca el rumbo y no queda escrita se pierde, y a los tres dias hay que repetirla. Pero
-tampoco se puede legislar como ley dura algo que Julio todavia no ha decidido: eso seria
-asumir, que es la Ley 1. Asi que quedan **escritas y medidas, esperando su si**.
+La primera version de este archivo legislaba tres principios —*nunca recomendar sin evidencia*,
+*todo reemplazable*, *el perfil nunca fijo*— como si fueran rumbo nuevo por decidir.
+**Eran leyes de Julio desde el 2026-07-28**, escritas en `CONTRATO_MAESTRO_DMM_AGENCIA.md`
+(leyes transversales 2, 6 y 5). Presentarlas como novedad fue **duplicar ley**, que esta
+prohibido, y ademas le hizo repetirse.
 
----
-
-## PRINCIPIO 1 — Nunca recomendar algo sin evidencia
-
-Cada recomendacion deberia responder: por que, con que datos, con que evidencia, con cuanta
-confianza y con que riesgo.
-
-**Lo que hay hoy, medido:** 4 piezas y 205 lineas en total (la que guarda evidencia, la que
-juzga calidad, la que revisa y la que audita). Existe el sitio donde meter la evidencia.
-**Lo que no hay:** nada obliga a que una recomendacion la traiga. Es una costumbre, no un
-candado.
-
-**Ley mas cercana que ya existe en DMM:** `CONTRATO_NUNCA_ASUMAS.md`. **No es la misma cosa:**
-esa prohibe asumir; esta exigiria acompanar cada consejo con su prueba.
+**La ley de esos tres principios es la suya. Aqui no se repite: se apunta y se sigue.**
 
 ---
 
-## PRINCIPIO 2 — Todo debe ser reemplazable
+## LA LEY
 
-Hoy un cerebro, manana otro, sin cambiar el sistema.
+### Regla 1 — Son dos proyectos, y no se mezclan
 
-**Lo que hay hoy, medido:** 3 piezas y 409 lineas (el relevo de cerebros, el cerebro operativo
-y las habilidades). Es **la capacidad mejor construida de las diez** que se revisaron.
-**Lo que no hay:** que sea reemplazable TODO. Hoy lo es el cerebro; no consta que lo sean el
-almacen, el publicador ni el que mide.
+| | Objetivo, en la frase de Julio | Donde esta escrito |
+|---|---|---|
+| **DMM** | *"hacer TODO el ciclo de marketing de principio a fin, casi sin intervencion humana, como una EMPRESA con departamentos, no un monton de herramientas"* (2026-07-28) | `CONTRATO_MAESTRO_DMM_AGENCIA.md` |
+| **MVP2 / Marketing Manager** | *"adjuntar los datos de una empresa y obtener TODO el marketing de esa empresa"* (2026-07-23) | `CONTRATO_OBJETIVO_MARKETING_MANAGER.md` |
 
-**Ley mas cercana que ya existe en DMM:** `CONTRATO_ROTACION_DE_CEREBROS.md`. **No es la misma
-cosa:** esa evita quedarse sin combustible; esta exigiria que cualquier pieza se pueda cambiar.
+Comparten carpeta en el disco. **No comparten objetivo.** Contestar con el de uno cuando se
+pregunta por el otro es el fallo que Julio tuvo que corregir a gritos.
+
+### Regla 2 — El objetivo de un proyecto se DECLARA, no se adivina
+
+El inventario ponia como objetivo de DMM el del MVP2. No fue mala suerte: **buscaba la palabra
+"objetivo" en el nombre de los contratos y se quedaba con el primero**. Eso es adivinar, y
+adivinar es asumir (Ley 1 de Julio).
+
+**A partir de aqui:** cada proyecto declara cual es la ley que dice su objetivo. El recolector
+lee **esa** y ninguna otra.
+Si no hay declaracion, **no elige**: escribe `no_verificado`, dice que falta declararlo, y
+**lista los candidatos** para que se declare. Un informe que se manda fuera no puede afirmar de
+un proyecto lo que dice la ley de otro.
+
+### Regla 3 — Antes de preguntarle a Julio, se busca en SU proyecto
+
+Se le pregunto por el objetivo teniendolo escrito desde julio en su propia carpeta. La ley de
+agotar las fuentes antes de preguntar ya existia y no se cumplio.
+**Preguntar algo que esta escrito en el proyecto cuenta como fallo, no como prudencia.**
 
 ---
 
-## PRINCIPIO 3 — El perfil del cliente nunca debe ser fijo
+## A QUIEN PUEDE DANAR
 
-Debe enriquecerse solo: empezar en "vende cafe" y acabar sabiendo edad, ciudad, horario,
-objeciones, precio medio, conversion y canales preferidos.
-
-**Lo que hay hoy, medido:** 5 piezas y 500 lineas de perfil y perfilador de clientes. El perfil
-existe y se puede editar.
-**Lo que no hay:** que se enriquezca **solo**. Y hay un antecedente exacto de por que esto no
-puede depender de acordarse: el contador de veces que Julio repetia algo marcaba CERO habiendo
-repetido cuatro veces, porque solo subia si alguien lo apuntaba a mano.
-
-**Ley mas cercana que ya existe en DMM:** `CONTRATO_PERFIL_Y_MULTIEMPRESA.md`. **No es la misma
-cosa:** esa hace el perfil editable y multiempresa; esta exigiria que crezca sin que nadie lo
-toque.
-
----
-
-## LO QUE NO SE DECIDE AQUI
-
-```
-PREGUNTA_REQUERIDA:
-  1. ¿Es este el rumbo de DMM? Si Julio dice que si, cada principio pasa a ley dura con su
-     candado y su vigia, y deja de ser una intencion.
-  2. ¿Cual es el objetivo del MVP de DMM en UNA frase? Sin eso no se puede decidir cual de los
-     tres se construye primero, y elegir por mi cuenta seria asumir.
-```
+- Al recolector del inventario: cambia de donde saca el objetivo.
+- A la libreta de direcciones de los proyectos: gana una linea declarada. Quien la lea a la
+  vieja usanza debe seguir andando igual.
 
 ## COMO SE COMPRUEBA QUE SE CUMPLE
 
-Mientras sea rumbo propuesto, **no se comprueba nada**: no hay nada que cumplir. El dia que
-Julio diga que si, cada principio necesita su vigia, y hasta que la tenga no cuenta como
-legislado. Lo dice la memoria de fallos de esta casa: *dejar una ley escrita sin un disparador
-que la haga cumplir es dejarla sin cumplir*.
+Una vigia que:
+1. con un proyecto que **declara** su ley de objetivo, comprueba que el informe trae **esa** frase
+   y la ruta de donde salio;
+2. con uno que **no** la declara, comprueba que el objetivo sale `no_verificado` **y** que se
+   listan los candidatos — nunca que se escoge uno;
+3. comprueba que un contrato de OTRO proyecto **jamas** acaba en el objetivo de este.
+
+**Vigia verde no es prueba.** La prueba es que Julio no tenga que volver a decir que son dos
+proyectos distintos.
