@@ -254,7 +254,8 @@ def main():
     rel = fp.replace("\\", "/").lower()
     if "/arnes/" in rel:
         _apuntar_frenada(fp, "DEJO PASAR: es el propio arnes")
-        return 0                                    # hay que poder arreglar el propio candado
+        if os.path.exists(fp):                       # solo si el candado YA existe (reparar, no crear)
+            return 0                                    # hay que poder arreglar el propio candado
     # VIGIA NUEVA (Julio, 2026-09-02): crear una vigia nueva (por carpeta /vigias/ o por
     # nombre test_vigia_) NO exige veredicto: es la prueba que protege una reparacion y
     # debe nacer ANTES que ella. Si no existe, se deja pasar y se apunta. REESCRIBIR una
