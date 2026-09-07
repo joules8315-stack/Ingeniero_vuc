@@ -329,7 +329,12 @@ def main():
                     if _l.rstrip().endswith("```"):
                         _l = _l.rstrip()[:-3].rstrip("\n")
                     prop[_k] = _l
-            _ok, _msg = aplicador.aplicar_cambio(prop)
+            # LA RUTA ES DEL PROYECTO, NO DEL INGENIERO (2026-09-06). El obrero devuelve rutas
+            # relativas ("cuerpo/memoria.py") y sin esta raiz se resolvian contra la carpeta del
+            # Ingeniero: solo acertaba cuando el proyecto ERA el Ingeniero. Fallo real de hoy: una
+            # reparacion de dmm quedo APROBADA y sin aplicar. La carpeta ya venia en el paquete.
+            _raiz = paq.get("raiz") if isinstance(paq, dict) else None
+            _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)
             if _ok:
                 print("APLICADO en disco (lo escribio el equipo): %s" % prop.get("archivo"))
             else:
@@ -341,6 +346,44 @@ def main():
             print("EL EQUIPO NO APROBO (%s): NO se guardo llave, no se puede tocar codigo."
                   % v_final)
         return 0
+
+    if cmd == "aplicar-guardado" and len(sys.argv) >= 3:
+        # EL TRABAJO PAGADO NO SE TIRA (Julio). Fallo real 2026-09-06: el equipo aprobo una
+        # reparacion de dmm y no se pudo aplicar por una ruta mal resuelta. El trabajo quedo
+        # guardado y aprobado, pero NO habia forma de aplicarlo: habia que volver a pagarlo.
+        # Esto aplica lo que ya esta guardado y aprobado, SIN llamar a ningun cerebro.
+        import json as _j2
+        from cerebro import router as _r2
+        from cuerpo import aplicador as _ap
+        _proy = sys.argv[2]
+        _ruta = os.path.join(AQUI, "memoria", "ULTIMO_TRABAJO_DEL_EQUIPO.json")
+        if not os.path.exists(_ruta):
+            print("NO_ENCONTRADO: no hay ningun trabajo del equipo guardado.")
+            return 1
+        with open(_ruta, encoding="utf-8") as _f2:
+            _res = _j2.load(_f2)
+        _prop = _res.get("propuesta") or {}
+        _ver = ((_res.get("auditoria") or {}).get("veredicto", "?") or "?").strip().upper()
+        if _ver != "APROBADO":
+            print("NO SE APLICA: el trabajo guardado NO esta aprobado (%s)." % _ver)
+            return 1
+        _raiz2 = None
+        try:
+            _paq2 = _r2.armar(_proy, _prop.get("diagnostico") or "aplicar lo guardado")
+            _raiz2 = _paq2.get("raiz") if isinstance(_paq2, dict) else None
+        except Exception as _e2:
+            print("NO_ENCONTRADO: no se pudo saber la carpeta de '%s': %s" % (_proy, str(_e2)[:90]))
+            return 1
+        print("APLICANDO lo que el equipo ya aprobo (no se llama a ningun cerebro):")
+        print("  proyecto : %s" % _proy)
+        print("  carpeta  : %s" % _raiz2)
+        print("  archivo  : %s" % _prop.get("archivo"))
+        _ok2, _msg2 = _ap.aplicar_cambio(_prop, raiz=_raiz2)
+        if _ok2:
+            print("APLICADO en disco: %s" % _prop.get("archivo"))
+            return 0
+        print("NO SE PUDO APLICAR: %s" % _msg2)
+        return 1
 
     if cmd == "resolver" and len(sys.argv) >= 4:
         return resolver(sys.argv[2], " ".join(sys.argv[3:]))

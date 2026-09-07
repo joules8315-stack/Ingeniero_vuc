@@ -49,8 +49,17 @@ def _apuntar(raiz, texto):
 
 
 def _lo_que_se_va_a_guardar(raiz):
+    """Los archivos que de verdad VIAJAN en este guardado.
+
+    CATCH-22 REAL (2026-09-06): antes devolvia tambien los archivos que se estan QUITANDO del
+    guardado. El guardia frenaba, decia "sacala del guardado y ponla en la lista de lo que nunca
+    se sube", se hacia eso, y volvia a frenar por el mismo archivo: no habia salida. Un archivo
+    que se quita no se sube a ninguna parte, asi que mirarle dentro no protege de nada. La marca
+    d minuscula de --diff-filter deja fuera los borrados; todo lo que se anade o se cambia se
+    sigue mirando exactamente igual que antes.
+    """
     try:
-        r = subprocess.run(["git", "diff", "--cached", "--name-only"],
+        r = subprocess.run(["git", "diff", "--cached", "--name-only", "--diff-filter=d"],
                            cwd=raiz, capture_output=True, text=True, timeout=60)
         return [l.strip() for l in (r.stdout or "").splitlines() if l.strip()]
     except Exception:
@@ -62,12 +71,26 @@ import re
 # Como es una llave DE VERDAD. Se mira el CONTENIDO, no el nombre: un documento que HABLA de
 # claves no lleva ninguna dentro, y frenarlo por el nombre es ruido. Paso el mismo dia que se
 # escribio este guardia: freno el contrato que explica como se piden las claves.
+# FALSA ALARMA REAL (2026-09-06): la ultima rama frenaba la linea de codigo
+#     clave = _clave_pub(fila)
+# porque en espanol "clave" es la clave de un diccionario, no una contrasena. Con eso frenaba
+# el guardado de cualquier codigo escrito en espanol, incluido el de DMM. Un candado que frena
+# el trabajo bueno se acaba desactivando, y entonces no protege de nada. Se afina, NO se quita:
+#   · si el valor va ENTRE COMILLAS, se frena igual que antes: una contrasena escrita a mano
+#     en un archivo se escribe entrecomillada, y eso sigue siendo peligroso.
+#   · si va SIN comillas, solo se frena cuando de verdad tiene pinta de secreto: que lleve al
+#     menos un numero y que NO sea una llamada a una funcion (no puede haber un parentesis
+#     detras). Un nombre de variable o de funcion como _clave_pub no lleva numeros y va
+#     seguido de un parentesis: deja de saltar.
+# Las cuatro primeras ramas (las llaves de verdad, por su forma) NO se tocan.
 PINTA_DE_LLAVE = re.compile(
     r"sk-[A-Za-z0-9]{16,}"
     r"|AIza[A-Za-z0-9_\-]{20,}"
     r"|gsk_[A-Za-z0-9]{20,}"
     r"|eyJ[A-Za-z0-9_\-]{30,}\.[A-Za-z0-9_\-]{20,}"
-    r"|(password|contrasena|clave|secret)\s*[:=]\s*[\"']?[A-Za-z0-9!@#%^&*_\-]{8,}",
+    r"|(password|contrasena|clave|secret)\s*[:=]\s*[\"'][A-Za-z0-9!@#%^&*_\-]{8,}[\"']"
+    r"|(password|contrasena|clave|secret)\s*[:=]\s*"
+    r"(?=[A-Za-z0-9!@#%^&*_\-]*[0-9])[A-Za-z0-9!@#%^&*_\-]{8,}(?!\s*\()",
     re.IGNORECASE)
 
 # Por el NOMBRE solo se frena lo que EXISTE para guardar llaves: la terminacion del archivo.
