@@ -223,27 +223,51 @@ def _rellenar_proyecto(informe, g, apodo):
         "objetivo_del_mvp": "esto no se lee del codigo: lo dice Julio. Se deja vacio antes que "
                             "inventarlo",
     }
-    # ANTES DE RENDIRSE, AGOTAR LAS FUENTES: buscar entre las piezas CONTRATO o PROTOCOLO
-    # las que lleven 'objetivo' o 'norte' en el nombre o en el resumen.
-    objetivo_encontrado = None
-    for pieza in g.get("piezas", []):
-        if pieza.get("rol") not in ("CONTRATO", "PROTOCOLO"):
-            continue
-        nombre_pieza = os.path.basename(pieza.get("archivo", "")).lower()
-        resumen_pieza = (pieza.get("resumen") or "").lower()
-        if "objetivo" in nombre_pieza or "norte" in nombre_pieza or \
-           "objetivo" in resumen_pieza or "norte" in resumen_pieza:
-            primera_linea = (pieza.get("resumen") or "").strip().splitlines()
-            if primera_linea:
-                objetivo_encontrado = {
-                    "texto": primera_linea[0][:180],
-                    "fuente": pieza.get("archivo", NO_VER),
-                }
-                break
-    if objetivo_encontrado:
-        informe["proyecto"]["objetivo_del_mvp"] = objetivo_encontrado["texto"]
-        informe["proyecto"]["_objetivo_del_mvp_fuente"] = objetivo_encontrado["fuente"]
-        razones.pop("objetivo_del_mvp", None)
+    # LEER LA DECLARACION DEL OBJETIVO (CONTRATO_RUMBO_DMM.md regla 2):
+    # cada proyecto declara cual es la ley que dice su objetivo en mapa/objetivo_declarado.config
+    # con lineas 'apodo = ruta relativa de la ley'. Si esta declarado y el archivo existe, se usa
+    # esa ley. Si NO esta declarado, NO se elige: se deja no_verificado, se dice que falta
+    # declararlo y se listan los candidatos.
+    # LA DECLARACION VIVE EN EL INGENIERO, NO EN EL PROYECTO AUDITADO. Con la raiz del proyecto
+    # nunca se encontraba el archivo y el objetivo salia siempre sin declarar. Lo cazo la primera
+    # corrida con la declaracion ya escrita.
+    ruta_config = os.path.join(RAIZ_INGENIERO, "mapa", "objetivo_declarado.config")
+    ruta_ley_objetivo = None
+    if os.path.exists(ruta_config):
+        with open(ruta_config, "r", encoding="utf-8") as f:
+            for linea in f:
+                linea = linea.strip()
+                if not linea or linea.startswith("#") or "=" not in linea:
+                    continue
+                apodo_declarado, ruta_relativa = [x.strip() for x in linea.split("=", 1)]
+                if apodo_declarado == apodo:
+                    ruta_ley_objetivo = os.path.normpath(os.path.join(raiz, ruta_relativa))
+                    break
+    if ruta_ley_objetivo and os.path.exists(ruta_ley_objetivo):
+        with open(ruta_ley_objetivo, "r", encoding="utf-8") as f_ley:
+            primera_linea = f_ley.readline().strip()
+        if primera_linea:
+            informe["proyecto"]["objetivo_del_mvp"] = primera_linea[:180]
+            informe["proyecto"]["_objetivo_del_mvp_fuente"] = ruta_ley_objetivo
+            razones.pop("objetivo_del_mvp", None)
+    else:
+        # No hay declaracion: no se elige ninguno, se listan los candidatos.
+        candidatos = []
+        for pieza in g.get("piezas", []):
+            if pieza.get("rol") not in ("CONTRATO", "PROTOCOLO"):
+                continue
+            nombre_pieza = os.path.basename(pieza.get("archivo", "")).lower()
+            resumen_pieza = (pieza.get("resumen") or "").lower()
+            if "objetivo" in nombre_pieza or "norte" in nombre_pieza or \
+               "objetivo" in resumen_pieza or "norte" in resumen_pieza:
+                candidatos.append(pieza.get("archivo", NO_VER))
+        if candidatos:
+            informe["proyecto"]["_objetivo_del_mvp_candidatos"] = candidatos
+        informe["proyecto"]["_objetivo_del_mvp_como_se_sabe"] = (
+            "falta declarar la ley del objetivo en mapa/objetivo_declarado.config "
+            "(linea 'apodo = ruta relativa de la ley'); no se eligio ningun candidato "
+            "para no adivinar (CONTRATO_RUMBO_DMM.md regla 2)"
+        )
     for k, v in list(informe["proyecto"].items()):
         if v == NO_VER:
             informe["proyecto"]["_como_se_sabe_" + k] = razones.get(
