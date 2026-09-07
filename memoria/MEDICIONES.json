@@ -3956,5 +3956,97 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.8
+ },
+ {
+  "id": 82,
+  "cuando": "2026-09-06 22:00",
+  "proyecto": "dmm",
+  "problema": "hay que seguir creando DMM desde donde quedamos: cual es el mapa canonico, que esta hecho y que falta por construir",
+  "flujos": [
+   "canonico",
+   "faltantes"
+  ],
+  "piezas": [
+   "cuerpo/indice.py",
+   "web/web_c.py",
+   "cuerpo/perfil.py",
+   "cuerpo/reglero.py",
+   "web/servidor.py",
+   "cuerpo/generadores.py",
+   "cuerpo/parrilla.py",
+   "cuerpo/contestadora.py"
+  ],
+  "trozos": [
+   "cuerpo/indice.py:49-79",
+   "cuerpo/reglero.py:62-70",
+   "web/web_c.py:288-332"
+  ],
+  "leyes": [
+   "CONTRATO_ESTADO_CANONICO.md",
+   "CONTRATO_HOGAR_CANONICO.md",
+   "CONTRATO_MODELO_PUBLICACION_CANONICO.md",
+   "MAPA_CANONICO.md",
+   "MATRIZ_FALTANTES.md",
+   "CONTRATO_CARPETAS.md",
+   "CONTRATO_MAESTRO_DMM_AGENCIA.md",
+   "MAPA_DMM.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_estado_canonico.py",
+   "vigias/test_vigia_hogar_canonico.py",
+   "vigias/test_vigia_mapa_canonico.py",
+   "vigias/test_vigia_onboarding_campos_faltantes.py",
+   "vigias/test_vigia_web_valida_faltantes.py"
+  ],
+  "lineas_paquete": 211,
+  "lineas_proyecto": 33166,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.4
+ },
+ {
+  "id": 83,
+  "cuando": "2026-09-06 22:09",
+  "proyecto": "dmm",
+  "problema": "falta la memoria del historial: DMM guarda numeros sueltos de cada publicacion pero no guarda como le fue dia tras dia, asi que no puede comparar en el tiempo ni aprender de lo que paso",
+  "flujos": [
+   "memoria",
+   "memoria_historica",
+   "faltantes"
+  ],
+  "piezas": [
+   "cuerpo/memoria.py",
+   "cuerpo/memoria_historica.py",
+   "cuerpo/generadores.py"
+  ],
+  "trozos": [
+   "cuerpo/memoria.py:67-68",
+   "cuerpo/memoria.py:1-40",
+   "cuerpo/memoria_historica.py:1-37",
+   "cuerpo/generadores.py:154-184"
+  ],
+  "leyes": [
+   "CONTRATO_MEMORIA.md",
+   "MATRIZ_FALTANTES.md",
+   "CONTRATO_MAESTRO_DMM_AGENCIA.md",
+   "CONTRATO_CARPETAS.md",
+   "matriz_verdad.py",
+   "CONTRATO_CAPTADOR_POLITICAS.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_memoria_cierra_bucle.py",
+   "vigias/test_vigia_memoria_historica.py",
+   "vigias/test_vigia_onboarding_campos_faltantes.py",
+   "vigias/test_vigia_web_valida_faltantes.py"
+  ],
+  "lineas_paquete": 213,
+  "lineas_proyecto": 33174,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.4
  }
 ]
