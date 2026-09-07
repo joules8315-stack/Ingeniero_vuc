@@ -388,6 +388,26 @@ def a_texto(pk):
     if pk["leyes"]:
         for f in pk["leyes"]:
             w(f"- `{f['id']}` ({f['lineas']} lineas) — {f['resumen'][:120] or 's/resumen'}")
+        w("")
+        w("### Texto de la ley que manda aqui (primera de la lista):")
+        w("```")
+        f = pk["leyes"][0]
+        try:
+            if os.path.exists(f.get("abs", "")):
+                with open(f["abs"], encoding="utf-8", errors="ignore") as _archivo_ley:
+                    _texto_ley = _archivo_ley.read()
+                _lineas_ley = _texto_ley.splitlines()
+                if len(_lineas_ley) > 400:
+                    w("\n".join(_lineas_ley[:400]))
+                    w("")
+                    w("... [AVISO: la ley se corto en 400 lineas por el tope del paquete]")
+                else:
+                    w(_texto_ley)
+            else:
+                w("NO_ENCONTRADO")
+        except Exception:
+            w("NO_ENCONTRADO")
+        w("```")
     else:
         w("- NO_ENCONTRADO: ningun contrato cubre este flujo. **Hay que legislarlo antes de tocar codigo.**")
     w("")
