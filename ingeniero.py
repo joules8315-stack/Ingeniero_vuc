@@ -230,8 +230,16 @@ def main():
         _quien = {"--escribe": None, "--revisa": None}
         _resto = []
         _i = 0
+        _crear = False
         while _i < len(_partes):
             _p = _partes[_i]
+            if _p == "--crear":
+                # marca SUELTA, sin valor detras: la enciende Julio a mano y nada mas.
+                # NO se deduce de las palabras de la tarea. CONTRATO_CREAR_PIEZA_NUEVA
+                # regla 5: una pieza nueva se crea CON AUTORIZACION de Julio.
+                _crear = True
+                _i += 1
+                continue
             if _p in _quien and _i + 1 < len(_partes):
                 _quien[_p] = _partes[_i + 1].strip()
                 _i += 2
@@ -240,13 +248,24 @@ def main():
             _i += 1
         proy, tarea = sys.argv[2], " ".join(_resto)
         _generador, _auditor = _quien["--escribe"], _quien["--revisa"]
+        # PIEZA 3 (Julio, 2026-09-06): SE PUEDE PEDIR CREAR, NO SOLO REPARAR.
+        # Por que: obrero._prompt_obrero YA sabia escribir el encargo de ANALISTA (crear un
+        # documento nuevo entero, sin pedir texto viejo) y trabajar YA acepta clase, pero este
+        # mando nunca se la pasaba. Resultado medido: pedir crear un archivo nuevo acababa
+        # SIEMPRE en el encargo de reparar, que exige un texto_viejo que no existe, y el obrero
+        # se rendia. Sin esta linea el interruptor queda conectado por dentro y sin boton fuera.
+        _clase = "crear" if _crear else "reparar"
+        if _crear:
+            print("SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).")
+            print("Al obrero le llega el encargo de ANALISTA: escribe el documento entero.")
         if _generador or _auditor:
             print("SE PIDE: escribe=%s  revisa=%s" % (_generador or "(el que toque)",
                                                       _auditor or "(el que toque)"))
         paq = _r.armar(proy, tarea)
         # el TEXTO, no la caja: trabajar espera el texto del paquete (fix 2026-08-24)
         # Si el pedido no se puede respetar, trabajar lo DICE en el aviso: nunca en silencio.
-        res = _o.trabajar(_r.a_texto(paq), tarea, generador=_generador, auditor=_auditor)
+        res = _o.trabajar(_r.a_texto(paq), tarea, generador=_generador, auditor=_auditor,
+                          clase=_clase)
         # ENCARGO A (Claude, 2026-09-02): el trabajo pagado NO se tira. Se guarda SIEMPRE el
         # resultado ENTERO que contesto el equipo, ANTES de imprimir nada, pase lo que pase
         # (aprobado, rechazado o sin revisar: un rechazo tambien dice algo y vale dinero). Se
