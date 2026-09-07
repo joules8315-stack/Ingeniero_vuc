@@ -161,7 +161,10 @@ def _apuntar_balance(raiz, tipo, archivos):
 
 
 def _vigias(raiz):
-    """(paso, mensaje). Si no hay vigias o no se pueden correr, se DEJA PASAR con aviso."""
+    """(paso, mensaje). Si no hay vigias o no se pueden correr, se DEJA PASAR con aviso.
+    Si hay vigias rojas, se distingue si son NUEVAS (recien escritas, sin pieza) o no.
+    Si TODAS las rojas son nuevas, se DEJA PASAR con aviso. Si alguna ya estaba guardada,
+    se FRENA."""
     carpeta = os.path.join(raiz, "vigias")
     if not os.path.isdir(carpeta):
         return True, "este proyecto no tiene vigias (se deja pasar)"
@@ -176,7 +179,38 @@ def _vigias(raiz):
         return True, ultima[0].strip()
     if r.returncode == 5:
         return True, "no se recogio ninguna vigia (se deja pasar)"
-    return False, ultima[0].strip()
+    # Hay vigias rojas. Sacar los archivos que fallaron (lineas FAILED o ERROR).
+    archivos_rojos = []
+    for linea in salida.splitlines():
+        linea = linea.strip()
+        if linea.startswith(("FAILED", "ERROR")):
+            # Quedarse con la parte anterior a los dos puntos dobles.
+            archivo = linea.split("::")[0].strip()
+            if archivo and archivo not in archivos_rojos:
+                archivos_rojos.append(archivo)
+    if not archivos_rojos:
+        # No se pudo identificar el archivo rojo: se frena como antes.
+        return False, ultima[0].strip()
+    # Preguntarle a git cuales de esos archivos son NUEVOS (nunca guardados).
+    nuevos = []
+    guardados = []
+    for archivo in archivos_rojos:
+        try:
+            rr = subprocess.run(["git", "ls-files", "--error-unmatch", "--", archivo],
+                                cwd=raiz, capture_output=True, text=True, timeout=30)
+            if rr.returncode != 0:
+                nuevos.append(archivo)
+            else:
+                guardados.append(archivo)
+        except Exception:
+            # Si git falla, tratar como guardado (frenar) para no dejar pasar algo roto.
+            guardados.append(archivo)
+    if guardados:
+        # Al menos uno ya estaba guardado: es romper algo que estaba verde. Frenar.
+        return False, ultima[0].strip()
+    # Todos los rojos son nuevos: dejar pasar con aviso.
+    detalle = "; ".join(nuevos)
+    return True, "vigias recien escritas sin su pieza aun (se deja pasar): " + detalle
 
 
 def main():
