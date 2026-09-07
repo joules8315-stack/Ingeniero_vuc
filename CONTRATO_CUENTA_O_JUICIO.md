@@ -88,7 +88,24 @@ lleva escrito si es CUENTA o JUICIO. Si es CUENTA y se le manda a un cerebro, se
 equipo sigue metido en cada trabajo. Deja de teclear y pasa a **auditar**, que es JUICIO.
 Ningún cerebro escribe una letra que no estuviera ya decidida.
 
-**Regla 4 — Cada pieza nueva deja su fallo anotado.** En `memoria/FALLOS.json`, con su
+**Regla 4 — Nunca se frena por no encontrar un nombre (Julio, 2026-09-07).**
+
+> *"Hablas mucho de nombrar, y muchos de los fallos pasados fue por ello: no encontraba el
+> nombre. Debes agregar 'por nombre o por función', para que si no la encuentra de una forma
+> la encuentre por otra y no frene el trabajo por un fallo falso."*
+
+**Toda búsqueda tiene DOS caminos, nunca uno:** primero por su **nombre**; si no aparece, por
+**lo que hace**. Un nombre que no se encuentra **no es una avería**: casi siempre es otra
+forma de escribir lo mismo.
+
+**Frenar por eso es un fallo falso, y un fallo falso es peor que no tener aviso**, porque
+enseña a ignorar los avisos de verdad. Solo se frena cuando **los dos caminos** fallan, y
+entonces se dice **cuál se probó y con qué**.
+
+Es la Regla 1 de `CONTRATO_CREAR_PIEZA_NUEVA` (*"primero se busca POR FUNCIÓN, no por
+nombre"*) hecha obligatoria en TODA búsqueda: piezas, funciones, cerebros, modelos y archivos.
+
+**Regla 5 — Cada pieza nueva deja su fallo anotado.** En `memoria/FALLOS.json`, con su
 **disparador**, para que `arnes/candado_memoria.py` avise ANTES de repetirlo. Un fallo sin
 disparador no avisa a nadie, y volver a pisarlo es cuestión de tiempo. (Es la instrucción 2 de
 Julio del 2026-09-07: *"que nada se pierda, que los fallos siempre estén presentes para no

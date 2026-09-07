@@ -14,14 +14,38 @@ Y después, con la medida delante:
 
 ## LA LEY
 
-**El cerebro local es SIEMPRE `qwen2.5-3b-instruct`. Se pide POR SU NOMBRE, nunca por su
-posición en una lista.**
+**El cerebro local es SIEMPRE el de 3B. Se busca POR SU NOMBRE Y, SI NO APARECE, POR LO QUE
+ES. Nunca por su posición en una lista.**
 
 No se elimina: **sí sirve, y está medido.** Lo que no servía era cómo se elegía.
 
 Es la misma regla que ya mandó Julio el 2026-08-31 para las funciones (*"se busca por nombre,
 nunca por un número"*), aplicada aquí: **una posición en una lista se corre sola, igual que un
 número de renglón. Un nombre no se mueve.**
+
+### DOS CAMINOS, NUNCA UNO (Julio, 2026-09-07)
+
+> *"Hablas mucho de nombrar, y muchos de los fallos pasados fue por ello: no encontraba el
+> nombre. Debes agregar 'por nombre o por función', para que si no la encuentra de una forma
+> la encuentre por otra y no frene el trabajo por un fallo falso."*
+
+**El origen ya está localizado y medido, no supuesto:** el nombre que anuncia el programa
+(`qwen2.5-3b-instruct`) **no es el mismo que el del archivo en el disco**
+(`qwen2.5-3b-instruct-q4_k_m.gguf`). Buscar solo por nombre exacto habría fallado en cuanto
+cambiara una letra, y habría parado todo por nada.
+
+**El orden de búsqueda, siempre los dos caminos:**
+
+1. **Por NOMBRE exacto:** `qwen2.5-3b-instruct`.
+2. **Si no aparece, por LO QUE ES:** el que sea de 3B y sirva para conversar (su nombre lleva
+   `3b`, y no es de búsqueda ni de embeddings).
+3. **Si tampoco, por lo que HACE:** cualquiera de los que hay que responda de verdad,
+   **excepto el 7B** (está medido que se estrella). Y **se dice cuál se usó y por qué**.
+4. **Solo si ninguno responde** se avisa de que no hay cerebro local.
+
+**Nunca se frena por no encontrar un nombre.** Un nombre que no aparece no es una avería: es
+otra forma de escribirlo. Es la Regla 1 de `CONTRATO_CREAR_PIEZA_NUEVA` (*"primero se busca
+POR FUNCIÓN, no por nombre"*) aplicada a los cerebros.
 
 ---
 
@@ -60,9 +84,11 @@ código cae en `qwen2.5-coder-1.5b-instruct`. El respaldo debe ser el bueno, no 
 
 | Situación | Qué debe pasar |
 |---|---|
-| El 3B está y responde | **Se usa el 3B** |
-| El 3B está en la lista pero no responde | Se dice claro que el cerebro local no está disponible. **No se cae al 1.5B en silencio** |
-| El 3B no está en la lista | Se avisa a Julio en su pantalla, con el nombre exacto que falta |
+| El 3B está con su nombre exacto y responde | **Se usa el 3B** |
+| El nombre exacto no está, pero hay uno de 3B escrito de otra forma | **Se usa ese**, y se dice con qué nombre apareció. NO se frena |
+| No hay ninguno de 3B, pero hay otro que responde | Se usa ese (menos el 7B) y **se dice cuál y por qué**. NO se frena |
+| El 3B está en la lista pero no responde | Se pasa al siguiente camino. **No se cae al 1.5B en silencio**: se dice |
+| Ninguno responde | Recién entonces se avisa de que no hay cerebro local |
 | Alguien pide el 7B | **No se intenta.** Está medido que se estrella, y cada intento cuesta 36 segundos tirados |
 | La consulta al puerto falla | El respaldo es el **3B**, nunca el 1.5B |
 
