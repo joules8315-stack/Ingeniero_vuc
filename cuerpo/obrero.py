@@ -642,13 +642,22 @@ def _validar_en_paquete(paquete, propuesta, tarea=""):
     return sorted(set(inventados))
 
 
-def trabajar(paquete, tarea, generador=None, auditor=None):
+def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
     """Un cerebro GENERA, OTRO distinto AUDITA (4 ojos). Quien es cada uno lo decide el relevo
     de cuotas, no una lista fija: asi nunca se para el trabajo por una cuota agotada.
 
     SEGURIDAD (2026-08-24): el que llama a veces manda la CAJA (dict) en vez del texto. Se
     normaliza a texto aqui para que ni el generador, ni el freno, ni el auditor vean basura
-    (fallo real: el comando 'equipo' pasaba el dict y se caia tras pagar a DeepSeek)."""
+    (fallo real: el comando 'equipo' pasaba el dict y se caia tras pagar a DeepSeek).
+
+    CLASE (2026-09-06): "reparar" es lo de siempre (por defecto, nada cambia para quien ya
+    llamaba). "crear" le manda al obrero el encargo de ANALISTA, el que sabe escribir un
+    documento nuevo entero sin pedir texto viejo. Antes ese encargo existia en _prompt_obrero
+    pero era inalcanzable, porque esta firma no tenia por donde recibirlo: pedirle crear un
+    archivo nuevo acababa siempre en el encargo de reparar, que exige un texto_viejo que no
+    existe, y el obrero se rendia. Quien enciende "crear" es Julio con una marca explicita;
+    nunca se adivina de las palabras de la tarea (CONTRATO_CREAR_PIEZA_NUEVA, regla 5: una
+    pieza nueva se crea CON AUTORIZACION)."""
     if not isinstance(paquete, str):
         from cerebro import router as _r
         paquete = _r.a_texto(paquete)
@@ -673,7 +682,7 @@ def trabajar(paquete, tarea, generador=None, auditor=None):
             encargo = ("Este trabajo ya se rechazo antes, y estos fueron los motivos:\n" +
                        "\n".join(motivos_rechazo) +
                        "\nArregla todos esos motivos y no repitas el mismo fallo.\n" + tarea)
-        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(paquete, encargo), 0.2,
+        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(paquete, encargo, clase), 0.2,
                                                       pesado=pesado_ahora, primero=generador)
         avisos_totales += av1
         if not crudo:

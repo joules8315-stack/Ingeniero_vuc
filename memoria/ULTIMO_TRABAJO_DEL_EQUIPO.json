@@ -1,17 +1,26 @@
 {
  "obrero": "deepseek",
- "auditor": "deepseek",
+ "auditor": "gemini4",
  "propuesta": {
-  "diagnostico": "Al final de skills/julio_pudo_trabajar.py falta el bloque de arranque que llama a informe() cuando el archivo se ejecuta directamente.",
-  "archivo": "skills/julio_pudo_trabajar.py",
-  "funcion": "informe",
-  "texto_viejo": "    print('Prueba real apuntada: ' + ('SI' if datos['prueba_real'] else 'NO'))",
-  "texto_nuevo": "    print('Prueba real apuntada: ' + ('SI' if datos['prueba_real'] else 'NO'))\n\nif __name__ == '__main__':\n    informe()",
-  "cambio": "Añadir el bloque de arranque (if __name__ == '__main__': informe()) después de la última línea del archivo, pegado al margen izquierdo sin sangría.",
-  "codigo": "if __name__ == '__main__':\n    informe()",
-  "vigia": "Ejecutar el archivo directamente con 'python skills/julio_pudo_trabajar.py' y verificar que imprime el informe.",
+  "diagnostico": "La funcion trabajar no tiene el parametro clase en su firma y no lo pasa a _prompt_obrero, dejando la rama de crear como codigo muerto.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "def trabajar(paquete, tarea, generador=None, auditor=None):\n    \"\"\"Un cerebro GENERA, OTRO distinto AUDITA (4 ojos). Quien es cada uno lo decide el relevo\n    de cuotas, no una lista fija: asi nunca se para el trabajo por una cuota agotada.\n\n    SEGURIDAD (2026-08-24): el que llama a veces manda la CAJA (dict) en vez del texto. Se\n    normaliza a texto aqui para que ni el generador, ni el freno, ni el auditor vean basura\n    (fallo real: el comando 'equipo' pasaba el dict y se caia tras pagar a DeepSeek).\"\"\"\n    if not isinstance(paquete, str):\n        from cerebro import router as _r\n        paquete = _r.a_texto(paquete)\n    c, _ = prestar_cerebro()\n    if not c:\n        return {\"_error\": \"NO_ENCONTRADO: no se pudo tomar prestado el cerebro de DMM\"}\n    if not quienes_hay():\n        return {\"_error\": \"NO_ENCONTRADO: no hay llave ni modelo local (revisa el .env de DMM)\"}\n\n    # GENERAR es lo pesado -> DeepSeek (orden de Julio). AUDITAR es lo ligero -> gratis, abajo.\n    # El pesado NO se queda fijo: si el que llama pidio un generador, ese manda (primero=generador)\n    # y el pesado se apaga para no pisarlo. Si nadie pidio generador, pesado_ahora sale verdadero\n    # y la regla de siempre sigue intacta.\n    pesado_ahora = not generador\n    avisos_totales = []\n    motivos_rechazo = []\n    vueltas = 0\n    for _vuelta in range(3):\n        vueltas += 1\n        encargo = tarea\n        if motivos_rechazo:\n            encargo = (\"Este trabajo ya se rechazo antes, y estos fueron los motivos:\\n\" +\n                       \"\\n\".join(motivos_rechazo) +\n                       \"\\nArregla todos esos motivos y no repitas el mismo fallo.\\n\" + tarea)\n        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(paquete, encargo), 0.2,",
+  "texto_nuevo": "def trabajar(paquete, tarea, generador=None, auditor=None, clase=\"reparar\"):\n    \"\"\"Un cerebro GENERA, OTRO distinto AUDITA (4 ojos). Quien es cada uno lo decide el relevo\n    de cuotas, no una lista fija: asi nunca se para el trabajo por una cuota agotada.\n\n    SEGURIDAD (2026-08-24): el que llama a veces manda la CAJA (dict) en vez del texto. Se\n    normaliza a texto aqui para que ni el generador, ni el freno, ni el auditor vean basura\n    (fallo real: el comando 'equipo' pasaba el dict y se caia tras pagar a DeepSeek).\n\n    CLASE (2026-09-06): \"reparar\" es lo de siempre (por defecto, nada cambia para quien ya\n    llamaba). \"crear\" le manda al obrero el encargo de ANALISTA, el que sabe escribir un\n    documento nuevo entero sin pedir texto viejo. Antes ese encargo existia en _prompt_obrero\n    pero era inalcanzable, porque esta firma no tenia por donde recibirlo: pedirle crear un\n    archivo nuevo acababa siempre en el encargo de reparar, que exige un texto_viejo que no\n    existe, y el obrero se rendia. Quien enciende \"crear\" es Julio con una marca explicita;\n    nunca se adivina de las palabras de la tarea (CONTRATO_CREAR_PIEZA_NUEVA, regla 5: una\n    pieza nueva se crea CON AUTORIZACION).\"\"\"\n    if not isinstance(paquete, str):\n        from cerebro import router as _r\n        paquete = _r.a_texto(paquete)\n    c, _ = prestar_cerebro()\n    if not c:\n        return {\"_error\": \"NO_ENCONTRADO: no se pudo tomar prestado el cerebro de DMM\"}\n    if not quienes_hay():\n        return {\"_error\": \"NO_ENCONTRADO: no hay llave ni modelo local (revisa el .env de DMM)\"}\n\n    # GENERAR es lo pesado -> DeepSeek (orden de Julio). AUDITAR es lo ligero -> gratis, abajo.\n    # El pesado NO se queda fijo: si el que llama pidio un generador, ese manda (primero=generador)\n    # y el pesado se apaga para no pisarlo. Si nadie pidio generador, pesado_ahora sale verdadero\n    # y la regla de siempre sigue intacta.\n    pesado_ahora = not generador\n    avisos_totales = []\n    motivos_rechazo = []\n    vueltas = 0\n    for _vuelta in range(3):\n        vueltas += 1\n        encargo = tarea\n        if motivos_rechazo:\n            encargo = (\"Este trabajo ya se rechazo antes, y estos fueron los motivos:\\n\" +\n                       \"\\n\".join(motivos_rechazo) +\n                       \"\\nArregla todos esos motivos y no repitas el mismo fallo.\\n\" + tarea)\n        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(paquete, encargo, clase), 0.2,",
+  "cambio": "Anadir el parametro clase con valor por defecto \"reparar\" a la firma de trabajar, anadir la explicacion en el docstring, y pasar clase a _prompt_obrero en la llamada.",
+  "codigo": "def trabajar(paquete, tarea, generador=None, auditor=None, clase=\"reparar\"):\n    \"\"\"Un cerebro GENERA, OTRO distinto AUDITA (4 ojos). Quien es cada uno lo decide el relevo\n    de cuotas, no una lista fija: asi nunca se para el trabajo por una cuota agotada.\n\n    SEGURIDAD (2026-08-24): el que llama a veces manda la CAJA (dict) en vez del texto. Se\n    normaliza a texto aqui para que ni el generador, ni el freno, ni el auditor vean basura\n    (fallo real: el comando 'equipo' pasaba el dict y se caia tras pagar a DeepSeek).\n\n    CLASE (2026-09-06): \"reparar\" es lo de siempre (por defecto, nada cambia para quien ya\n    llamaba). \"crear\" le manda al obrero el encargo de ANALISTA, el que sabe escribir un\n    documento nuevo entero sin pedir texto viejo. Antes ese encargo existia en _prompt_obrero\n    pero era inalcanzable, porque esta firma no tenia por donde recibirlo: pedirle crear un\n    archivo nuevo acababa siempre en el encargo de reparar, que exige un texto_viejo que no\n    existe, y el obrero se rendia. Quien enciende \"crear\" es Julio con una marca explicita;\n    nunca se adivina de las palabras de la tarea (CONTRATO_CREAR_PIEZA_NUEVA, regla 5: una\n    pieza nueva se crea CON AUTORIZACION).\"\"\"\n    if not isinstance(paquete, str):\n        from cerebro import router as _r\n        paquete = _r.a_texto(paquete)\n    c, _ = prestar_cerebro()\n    if not c:\n        return {\"_error\": \"NO_ENCONTRADO: no se pudo tomar prestado el cerebro de DMM\"}\n    if not quienes_hay():\n        return {\"_error\": \"NO_ENCONTRADO: no hay llave ni modelo local (revisa el .env de DMM)\"}\n\n    # GENERAR es lo pesado -> DeepSeek (orden de Julio). AUDITAR es lo ligero -> gratis, abajo.\n    # El pesado NO se queda fijo: si el que llama pidio un generador, ese manda (primero=generador)\n    # y el pesado se apaga para no pisarlo. Si nadie pidio generador, pesado_ahora sale verdadero\n    # y la regla de siempre sigue intacta.\n    pesado_ahora = not generador\n    avisos_totales = []\n    motivos_rechazo = []\n    vueltas = 0\n    for _vuelta in range(3):\n        vueltas += 1\n        encargo = tarea\n        if motivos_rechazo:\n            encargo = (\"Este trabajo ya se rechazo antes, y estos fueron los motivos:\\n\" +\n                       \"\\n\".join(motivos_rechazo) +\n                       \"\\nArregla todos esos motivos y no repitas el mismo fallo.\\n\" + tarea)\n        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(paquete, encargo, clase), 0.2,",
+  "vigia": "vigias/test_vigia_trabajar_respeta_generador_auditor.py y vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py (leen el codigo de trabajar con inspect)",
   "puede_danar": [
-   "Nadie depende de estas piezas. Reparacion aislada."
+   "ingeniero.py",
+   "cuerpo/cruzado.py",
+   "cuerpo/consejeros.py",
+   "cuerpo/dudas.py",
+   "cerebro/semantico.py",
+   "arnes/candado_equipo.py",
+   "arnes/medir_precision.py",
+   "arnes/medir_capacidad.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_trabajar_respeta_generador_auditor.py"
   ],
   "preguntas": [],
   "confianza": "alta"
@@ -23,26 +32,17 @@
   "fallos": [],
   "riesgo_vecinos": [],
   "que_falta": [],
-  "resumen_para_el_jefe": "La reparacion anade el bloque de arranque que faltaba al final de skills/julio_pudo_trabajar.py, tal como pide el encargo, sin inventar nada y sin riesgo para otros archivos."
+  "resumen_para_el_jefe": "La reparacion anade el parametro 'clase' a la funcion 'trabajar' y lo pasa a '_prompt_obrero', solucionando el problema de la rama de creacion de codigo muerto."
  },
  "avisos": [
-  "GPT-OSS 120B (Groq) no le cabe (24470 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (24470 letras, aguanta 20169) -> se le salta",
-  "GPT-OSS 120B (Groq) no le cabe (25374 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (25374 letras, aguanta 20169) -> se le salta",
-  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
-  "NO_ENCONTRADO: ningun cerebro pudo atender",
-  "GPT-OSS 120B (Groq) no le cabe (25374 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (25374 letras, aguanta 20169) -> se le salta",
-  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
-  "Gemini 3 preview se agoto -> pasa el turno",
-  "Gemini flash-latest se agoto -> pasa el turno",
-  "Gemini 3.5 se agoto -> pasa el turno",
-  "NO_ENCONTRADO: ningun cerebro pudo atender",
-  "se pidio auditar a gemini4 y no esta disponible: reviso ",
-  "GPT-OSS 120B (Groq) no le cabe (25374 letras, aguanta 19042) -> se le salta",
-  "GPT-OSS 20B (Groq) no le cabe (25374 letras, aguanta 20169) -> se le salta",
-  "el mismo cerebro escribio y reviso; comprobar con los ojos antes de dar por bueno",
+  "GPT-OSS 120B (Groq) no le cabe (96657 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (96657 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (96657 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (96657 letras, aguanta 26000) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (98996 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (98996 letras, aguanta 20169) -> se le salta",
+  "Gemini flash-latest no le cabe (98996 letras, aguanta 30314) -> se le salta",
+  "LM Studio (tu PC) no le cabe (98996 letras, aguanta 26000) -> se le salta",
   "vueltas_dadas: 1"
  ]
 }
