@@ -42,12 +42,15 @@ def aplicar_cambio(propuesta, raiz=None):
     if raiz and not os.path.isabs(archivo):
         archivo = os.path.normpath(os.path.join(raiz, archivo))
 
-    # Si el archivo NO existe, se crea si la propuesta trae codigo; si no trae codigo, es un cambio sobre algo que deberia existir: no se crea nada.
+    # Si el archivo NO existe y la propuesta trae texto_viejo, es un cambio sobre algo que deberia existir: no se crea nada.
     if not os.path.exists(archivo):
+        if texto_viejo:
+            _apuntar_log(False, archivo, funcion, "archivo no existe en esa ruta")
+            return False, "El archivo no existe en esa ruta; probablemente la ruta este mal resuelta o falte la carpeta del proyecto."
         contenido = codigo if codigo else texto_nuevo
         if not contenido:
             _apuntar_log(False, archivo, funcion, "archivo no existe y no trae texto")
-            return False, "El archivo no existe en esa ruta; probablemente la ruta este mal resuelta o falte la carpeta del proyecto."
+            return False, "El archivo no existe y la propuesta no trae texto para crearlo."
 
     # Comprobacion de humo: si el texto nuevo solo se diferencia del viejo en comentarios,
     # cadenas de documentacion o lineas en blanco, no se aplica nada.
