@@ -186,6 +186,12 @@ def _vigias(raiz):
         if linea.startswith(("FAILED", "ERROR")):
             # Quedarse con la parte anterior a los dos puntos dobles.
             archivo = linea.split("::")[0].strip()
+            # Quitar el prefijo FAILED o ERROR y los espacios, y normalizar barras.
+            for prefijo in ("FAILED", "ERROR"):
+                if archivo.startswith(prefijo):
+                    archivo = archivo[len(prefijo):].strip()
+                    break
+            archivo = archivo.replace("\\", "/")
             if archivo and archivo not in archivos_rojos:
                 archivos_rojos.append(archivo)
     if not archivos_rojos:
