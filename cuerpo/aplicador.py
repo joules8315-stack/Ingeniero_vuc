@@ -17,8 +17,15 @@ def _apuntar_log(ok, archivo, funcion, detalle):
         pass  # no debe tumbar la aplicacion
 
 
-def aplicar_cambio(propuesta):
-    """Aplica la propuesta del obrero al disco. Devuelve (ok, mensaje)."""
+def aplicar_cambio(propuesta, raiz=None):
+    """Aplica la propuesta del obrero al disco. Devuelve (ok, mensaje).
+
+    RAIZ (2026-09-06): la carpeta del proyecto al que pertenece la propuesta. El obrero
+    devuelve rutas RELATIVAS ("cuerpo/memoria.py") y sin esto se resolvian contra la carpeta
+    del Ingeniero, que solo acierta cuando el proyecto ES el Ingeniero. Fallo real medido hoy:
+    una reparacion de dmm quedo APROBADA y sin aplicar por eso. Si no se pasa raiz, se
+    comporta igual que siempre, asi que nadie de los que ya llamaban se entera.
+    """
     # Si no es diccionario o no trae archivo, no se toca nada.
     if not isinstance(propuesta, dict) or not propuesta.get("archivo"):
         _apuntar_log(False, "?", "?", "propuesta invalida: no es dict o no trae archivo")
@@ -29,6 +36,11 @@ def aplicar_cambio(propuesta):
     texto_viejo = propuesta.get("texto_viejo", "")
     texto_nuevo = propuesta.get("texto_nuevo", "")
     codigo = propuesta.get("codigo", "")
+    # La ruta del obrero es relativa al PROYECTO, no al Ingeniero. Si nos dieron la carpeta del
+    # proyecto y la ruta no es absoluta, se resuelve contra ella. Una ruta absoluta se respeta
+    # tal cual: si el obrero ya dijo donde exactamente, no se le corrige.
+    if raiz and not os.path.isabs(archivo):
+        archivo = os.path.normpath(os.path.join(raiz, archivo))
 
     # Si el archivo NO existe y la propuesta trae texto_viejo, es un cambio sobre algo que deberia existir: no se crea nada.
     if not os.path.exists(archivo):

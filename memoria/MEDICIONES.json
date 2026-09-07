@@ -4048,5 +4048,57 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.4
+ },
+ {
+  "id": 84,
+  "cuando": "2026-09-06 22:17",
+  "proyecto": "ingeniero",
+  "problema": "cuando el equipo repara un proyecto que no es el Ingeniero, el aplicador busca el archivo en la carpeta del Ingeniero en vez de en la carpeta del proyecto, y el trabajo aprobado no se aplica",
+  "flujos": [
+   "aplicador",
+   "equipo",
+   "ingeniero"
+  ],
+  "piezas": [
+   "ingeniero.py",
+   "cuerpo/aplicador.py",
+   "skills/medir_al_equipo.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cuerpo/aplicador.py:1-40",
+   "ingeniero.py:289-328",
+   "ingeniero.py:152-175",
+   "skills/medir_al_equipo.py:70-98",
+   "ingeniero.py:353-392",
+   "ingeniero.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_INGENIERO_VUC.md",
+   "mapa/MAPA_INGENIERO.json",
+   "mapa/MAPA_INGENIERO.md",
+   "CONTRATO_CREAR_PIEZA_NUEVA.md",
+   "CONTRATO_DOS_TRABAJANDO.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_roles_ingeniero.py",
+   "vigias/test_vigia_aplicador.py",
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_modo_ingeniero_siempre.py",
+   "vigias/test_vigia_siempre_con_equipo.py"
+  ],
+  "lineas_paquete": 343,
+  "lineas_proyecto": 105868,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.7
  }
 ]
