@@ -62,11 +62,11 @@ def _las_que_hablan_del_problema(g, problema, cuantas=4):
     """
     palabras = set(trozos._palabras(problema))
     if not palabras:
-        return sorted([p for p in g["piezas"] if p["rol"] in ("CODIGO", "WEB", "CUERPO")],
+        return sorted([p for p in g["piezas"] if p["rol"] in ("CODIGO", "WEB", "CUERPO", "ARNES")],
                       key=lambda x: -x["lineas"])[:cuantas]
     puntuadas = []
     for p in g["piezas"]:
-        if p["rol"] not in ("CODIGO", "WEB", "CUERPO", "CEREBRO"):
+        if p["rol"] not in ("CODIGO", "WEB", "CUERPO", "CEREBRO", "ARNES"):
             continue
         api_nombres = " ".join(a["nombre"] for a in (p.get("api", []) or []))
         ficha = " ".join([p["id"], p.get("resumen", "") or "", api_nombres])
