@@ -1,0 +1,81 @@
+# -*- coding: utf-8 -*-
+"""VIGIA — PASO 1: EL INGENIERO SE MIRA A SI MISMO ANTES DE CONSTRUIR.
+
+Legisla el Paso 1 de CONTRATO_COMO_EL_INGENIERO_CONSTRUYE_UN_PROYECTO.md, que nace de una orden
+de Julio (2026-09-07): "el ingeniero... si es capaz de verse, y de determinar que tiene el
+ingeniero que le sirva al proyecto (enumerar todo lo que le sirve del ingeniero y que no)".
+
+LAS DOS COLUMNAS SON OBLIGATORIAS. La de "NO le sirve" no es un adorno: es la que impide meterle
+al producto los guardias del taller. Julio lo prohibio con todas las letras: "quiero que DMM la
+construya el ingeniero, mas NO que funcione con el".
+
+SE ESCRIBE ANTES QUE EL CODIGO. NACE ROJA.
+
+No sale a la red ni toca ningun proyecto: trabaja sobre los inventarios ya escritos.
+"""
+import os
+import sys
+
+import pytest
+
+AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, AQUI)
+
+from mapa import que_le_sirve  # noqa: E402
+
+
+@pytest.fixture(scope="module")
+def cruce():
+    """El cruce de verdad: lo que el Ingeniero tiene contra lo que DMM necesita."""
+    return que_le_sirve.cruzar("dmm")
+
+
+def test_salen_LAS_DOS_columnas(cruce):
+    """1) Las dos, siempre. Una lista de 'lo que le sirve' sin su contraria invita a metercelo
+    todo, y ahi es donde el producto se ata al taller."""
+    assert "le_sirve" in cruce and "no_le_sirve" in cruce, \
+        "faltan columnas: tienen que estar las dos, %s" % list(cruce)
+    assert cruce["le_sirve"], "la columna de lo que le sirve salio vacia"
+    assert cruce["no_le_sirve"], \
+        "la columna de lo que NO le sirve salio vacia: es la que protege al producto"
+
+
+def test_cada_linea_dice_QUE_pieza_y_POR_QUE(cruce):
+    """Sin el porque, la lista es una opinion. Con el porque, se puede discutir y auditar."""
+    for columna in ("le_sirve", "no_le_sirve"):
+        for fila in cruce[columna]:
+            assert fila.get("pieza"), "hay una fila sin decir de que pieza habla: %s" % fila
+            assert fila.get("porque"), \
+                "la pieza %s aparece en %s sin decir por que" % (fila.get("pieza"), columna)
+
+
+def test_lo_del_taller_va_en_la_columna_de_NO(cruce):
+    """Regla 2: lo que sirve para CONSTRUIR el proyecto no va DENTRO del proyecto. El candado
+    del equipo, el de legislar o el buzon son del taller: ayudan a construir DMM, no a que DMM
+    haga marketing."""
+    no_sirve = " ".join(f["pieza"] for f in cruce["no_le_sirve"])
+    for del_taller in ("candado_equipo", "candado_legislar", "candado_buzon"):
+        assert del_taller in no_sirve, \
+            "%s es del taller y tenia que salir en la columna de NO le sirve" % del_taller
+
+
+def test_le_sirve_no_quiere_decir_se_le_presta(cruce):
+    """La columna de 'le sirve' dice que el Ingeniero SABE HACERLO y se lo construye al proyecto,
+    dentro de su carpeta. Nunca que el proyecto vaya a llamar al Ingeniero en marcha."""
+    for fila in cruce["le_sirve"]:
+        assert fila.get("como") == "se_le_construye", (
+            "la pieza %s figura como si se le fuera a prestar; solo vale construirsela suya: %s"
+            % (fila.get("pieza"), fila.get("como")))
+
+
+def test_no_se_propone_lo_que_el_proyecto_YA_tiene(cruce):
+    """Regla 4: no duplicar. Si DMM ya lo tiene resuelto, no entra en la lista de lo que hay que
+    construirle. DMM ya tiene su propio relevo de cerebros y su propio candado de edicion."""
+    a_construir = " ".join(f["pieza"] for f in cruce["le_sirve"] if f.get("falta"))
+    assert "cuotas" not in a_construir, \
+        "DMM ya tiene su relevo de cerebros propio (rotacion): no hay que construirle otro"
+
+
+def test_dice_de_donde_saco_cada_cosa(cruce):
+    """Nada se afirma sin rastro: de que inventario salio cada lista."""
+    assert cruce.get("_de_donde_sale"), "el cruce no dice de donde salieron los datos"
