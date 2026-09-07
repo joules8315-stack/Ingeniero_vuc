@@ -338,6 +338,16 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
     except Exception:
         pass
 
+    # FILTRAR POR ARCHIVOS NOMBRADOS (Julio, 2026-09-07).
+    # Si el problema nombra archivos, se descartan los trozos de archivos NO nombrados.
+    # Esto evita que el paquete se llene de codigo irrelevante y no le quepa a ningun cerebro.
+    # Solo se filtra si quedan al menos dos trozos; si no, se deja la lista como esta.
+    if _nombrados:
+        _nombrados_set = set(_nombrados)
+        _pedazos_filtrados = [t for t in pedazos if t.get("pieza") in _nombrados_set]
+        if len(_pedazos_filtrados) >= 2:
+            pedazos = _pedazos_filtrados
+
     leyes = sorted([f for f in fichas if f["rol"] in ("CONTRATO", "MATRIZ", "PROTOCOLO")],
                    key=lambda x: x["id"])
     # 2026-08-24: incluir los contratos que HABLAN del problema aunque no esten en un flujo.
