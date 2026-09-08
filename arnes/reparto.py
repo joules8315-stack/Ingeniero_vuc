@@ -147,3 +147,12 @@ def texto():
         L.append("")
         L.append("  HAY QUE CONTARLE A JULIO %d cosa(s) que no salieron." % len(avisos))
     return "\n".join(L)
+
+
+def dueno(tarea):
+    """Quien tiene VIVA esa tarea exacta. Devuelve (quien, estado) o (None, None). Estados vivos igual que los que ya usa asignar: asignada, entregada, a_corregir."""
+    tarea = str(tarea or '').strip()
+    for t in _leer():
+        if t.get('tarea') == tarea and t.get('estado') in ('asignada', 'entregada', 'a_corregir'):
+            return (str(t.get('quien') or ''), str(t.get('estado') or ''))
+    return (None, None)

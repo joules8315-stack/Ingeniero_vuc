@@ -261,6 +261,20 @@ def main():
         if _generador or _auditor:
             print("SE PIDE: escribe=%s  revisa=%s" % (_generador or "(el que toque)",
                                                       _auditor or "(el que toque)"))
+        # EL PORTERO (CONTRATO_CUENTA_O_JUICIO): antes de pagar, se decide con programa.
+        try:
+            import arnes.portero as _portero
+            _v = _portero.decidir(proy, tarea)
+        except Exception:
+            _v = None
+        if isinstance(_v, dict) and _v.get('decision') == 'ya_tiene_dueno':
+            print('EL PORTERO: esa tarea exacta ya la tiene %s (esta %s). '
+                  'No se llama a ningun cerebro ni se paga dos veces.'
+                  % (_v.get('quien_la_tiene'), _v.get('estado')))
+            return 0
+        elif isinstance(_v, dict) and _v.get('decision') == 'ya_curado':
+            print('EL PORTERO: esa pieza ya tiene un fallo curado; '
+                  'no deberia repetirse (no bloquea, se sigue).')
         paq = _r.armar(proy, tarea)
         # el TEXTO, no la caja: trabajar espera el texto del paquete (fix 2026-08-24)
         # Si el pedido no se puede respetar, trabajar lo DICE en el aviso: nunca en silencio.

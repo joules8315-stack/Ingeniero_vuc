@@ -133,6 +133,12 @@ base = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(base, "MAPA_INGENIERO.json"), "w", encoding="utf-8") as f:
     json.dump(salida, f, ensure_ascii=False, indent=1)
 
+# Regenerar el mapa legible para Julio: el compilador ya existe y convierte el json en md.
+compilar = os.path.join(base, "compilar_mapa.py")
+if os.path.exists(compilar):
+    import subprocess, sys
+    subprocess.run([sys.executable, compilar], cwd=base, check=True)
+
 print("PIEZAS:", len(piezas), "| LINEAS:", salida["total_lineas"])
 print("\n-- POR PROYECTO --")
 for k, v in sorted(por_proyecto.items(), key=lambda x: -x[1]): print(f"  {v:5}  {k}")

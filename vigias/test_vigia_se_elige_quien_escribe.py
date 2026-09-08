@@ -29,10 +29,23 @@ def _texto_del_mando():
 
 
 def _bloque_del_equipo(texto):
-    """El trozo del mando `equipo`, para no juzgar por lo que hay en otros mandos."""
+    """El trozo del mando `equipo`, para no juzgar por lo que hay en otros mandos.
+
+    Ventana que llega HASTA el siguiente mando (o 'elif cmd =='), no una distancia fija:
+    si el bloque crece (por ejemplo al enchufar una comprobacion antes de pagar), la llamada
+    al obrero no se sale de la ventana y esta vigia no da un falso rojo.
+    """
     i = texto.find('if cmd == "equipo"')
     assert i > 0, "no se encuentra el mando equipo"
-    return texto[i:i + 4000]
+    j = texto.find('\n    if cmd == "', i + 10)
+    k = texto.find('\n    elif cmd == "', i + 10)
+    fin = i + 4000
+    if j > 0 and j - i < fin:
+        fin = j - i
+    if k > 0 and k - i < fin:
+        fin = k - i
+    return texto[i:i + fin]
+
 
 
 def test_el_mando_entiende_a_quien_se_le_pide():

@@ -2,33 +2,32 @@
 > Generado por `mapa/inventario.py` + `mapa/compilar_mapa.py`. NO se edita a mano: se regenera.
 > Regla: aqui solo entra lo que EXISTE en disco. Lo que no aparece, no existe.
 
-**Universo:** 1590 piezas · 519,779 lineas · 4 proyectos.
+**Universo:** 2239 piezas · 608,306 lineas · 4 proyectos.
 
 ## 1. Cuanto hay en cada proyecto
 
 | Proyecto | Piezas |
 |---|---|
-| foto_repo | 1089 |
-| dmm | 347 |
-| Ingeniero VUC (esta herramienta) | 90 |
-| foto_informe | 64 |
+| foto_informe | 1179 |
+| Ingeniero VUC (esta herramienta) | 665 |
+| dmm | 395 |
 
 ## 2. Que tipo de piezas hay
 
 | Rol | Cuantas |
 |---|---|
-| DATO/CONFIG | 929 |
-| VIGIA | 194 |
-| CODIGO | 139 |
-| DOC | 85 |
-| CONTRATO | 70 |
-| CUERPO (modulo) | 70 |
-| OTRO | 29 |
-| LANZADOR/SCRIPT | 29 |
-| ARNES/CANDADO | 17 |
-| PROTOCOLO/MAPA | 13 |
-| WEB | 7 |
-| MATRIZ/TABLA_VERDAD | 7 |
+| DATO/CONFIG | 1190 |
+| VIGIA | 319 |
+| DOC | 189 |
+| CODIGO | 160 |
+| CONTRATO | 112 |
+| CUERPO (modulo) | 99 |
+| ARNES/CANDADO | 65 |
+| OTRO | 46 |
+| LANZADOR/SCRIPT | 22 |
+| PROTOCOLO/MAPA | 17 |
+| MATRIZ/TABLA_VERDAD | 11 |
+| WEB | 8 |
 | SKILL | 1 |
 
 ## 3. EL CUERPO que ya existe (no se vuelve a construir)
@@ -68,23 +67,23 @@ Son **0** contratos. Los que mandan sobre el Ingeniero:
 
 | Proyecto | Archivo | Lineas |
 |---|---|---|
-| foto_repo | `Foto_informe--main/app.py` | 16,845 |
-| foto_repo | `Foto_informe--main/COMPARTIR_IA_CODIGO/app.py` | 15,109 |
-| foto_repo | `Foto_informe--main/test_template_session_family.py` | 12,693 |
-| foto_informe | `app.py` | 10,819 |
-| foto_repo | `Foto_informe--main/validate_mvp.py` | 7,160 |
-| foto_informe | `test_template_session_family.py` | 5,495 |
-| foto_repo | `Foto_informe--main/app_web.html` | 2,349 |
-| foto_informe | `validate_mvp.py` | 2,330 |
+| foto_informe | `app.py` | 16,918 |
+| foto_informe | `COMPARTIR_IA_CODIGO/app.py` | 15,109 |
+| foto_informe | `test_template_session_family.py` | 12,693 |
+| foto_informe | `validate_mvp.py` | 7,160 |
+| foto_informe | `app_web.html` | 2,463 |
+| Ingeniero VUC (esta herramienta) | `memoria/rescate/app_web_reparada_2026-08-24.html` | 2,382 |
+| Ingeniero VUC (esta herramienta) | `memoria/rescate/app_web_reparada_2026-08-21.html` | 2,373 |
 | foto_informe | `supervisor_full.py` | 1,585 |
-| foto_repo | `Foto_informe--main/supervisor_full.py` | 1,585 |
-| foto_repo | `Foto_informe--main/COMPARTIR_IA_CODIGO/app_web.html` | 1,424 |
-| foto_repo | `Foto_informe--main/rv3_prueba_integral.py` | 1,307 |
+| foto_informe | `COMPARTIR_IA_CODIGO/app_web.html` | 1,424 |
+| foto_informe | `rv3_prueba_integral.py` | 1,307 |
+| foto_informe | `test_table_search_unit.py` | 967 |
+| dmm | `web/servidor.py` | 823 |
 
 ## 9. REPETIDERA DETECTADA
 
-- Copias con contenido identico en 2+ lugares: **50**
-- Mismo nombre de archivo en 2+ lugares: **123**
+- Copias con contenido identico en 2+ lugares: **7**
+- Mismo nombre de archivo en 2+ lugares: **78**
 - `C:\vigias` (52 vigias): comparada una por una contra la carpeta buena.
   **Nada unico. Solo 2 pruebas rescatables:**
   - `test_vigia_cerebro_gemini.py::test_sin_llave_error_claro_no_silencio`
