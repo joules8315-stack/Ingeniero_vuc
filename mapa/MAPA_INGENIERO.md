@@ -2,14 +2,14 @@
 > Generado por `mapa/inventario.py` + `mapa/compilar_mapa.py`. NO se edita a mano: se regenera.
 > Regla: aqui solo entra lo que EXISTE en disco. Lo que no aparece, no existe.
 
-**Universo:** 2244 piezas · 609,025 lineas · 4 proyectos.
+**Universo:** 2243 piezas · 609,118 lineas · 4 proyectos.
 
 ## 1. Cuanto hay en cada proyecto
 
 | Proyecto | Piezas |
 |---|---|
 | foto_informe | 1179 |
-| Ingeniero VUC (esta herramienta) | 670 |
+| Ingeniero VUC (esta herramienta) | 669 |
 | dmm | 395 |
 
 ## 2. Que tipo de piezas hay
@@ -23,7 +23,7 @@
 | CONTRATO | 114 |
 | CUERPO (modulo) | 99 |
 | ARNES/CANDADO | 65 |
-| OTRO | 46 |
+| OTRO | 45 |
 | LANZADOR/SCRIPT | 22 |
 | PROTOCOLO/MAPA | 17 |
 | MATRIZ/TABLA_VERDAD | 11 |
