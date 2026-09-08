@@ -56,6 +56,32 @@ una sola con cara de certeza cuando es la equivocada es peor que devolver cuatro
 ### Regla 4 — Si no hay funcion que lo cubra, se dice NO_ENCONTRADO
 No se traen parecidos. Ley de siempre: si no se puede saber, se dice que no se sabe.
 
+### Regla 5 — SI EL NOMBRE ACIERTA PERO LA FUNCION NO, ES **FALLO** (Julio, 2026-09-08)
+
+> *"Que no se cace por nombre, no se busque por nombre, no SOLO por nombre, sino
+> PRINCIPALMENTE por funcion, de modo que si el numero, palabra, palabras, no concuerdan con
+> la funcion, el uso, o para que sirve, SE DE POR FALLO. El criterio es que concuerde con su
+> funcion, utilidad, para que sirve, o fue construido."*
+
+Esto endurece la regla 1 y **corrige una version anterior que se quedaba corta**: antes esta ley
+decia que si no se sabe, se devuelve vacio. **No basta.** Julio exige que un acierto por nombre
+con la funcion equivocada **se cuente como FALLO**, no como duda.
+
+| Coincide el nombre | Coincide la funcion | Veredicto |
+|---|---|---|
+| si | si | **ACIERTO** |
+| si | **no** | **FALLO** — y se apunta como fallo, no como "casi" |
+| no | si | **ACIERTO** (el nombre es adorno; manda la funcion) |
+| no | no | **NO_ENCONTRADO** |
+
+**El nombre, el numero y la palabra NO se prohiben como pista.** Se prohiben como CRITERIO. Se
+pueden usar para acercarse; **quien decide es siempre la funcion**: que hace, para que sirve, para
+que fue construido.
+
+**Por que "fallo" y no "duda":** una duda no se mide y no duele. Un fallo se cuenta, sale en la
+medicion, y obliga a repararlo. Julio ha tenido que repetir esta ley varias veces justamente
+porque quedaba como aviso blando.
+
 ---
 
 ## EL FALLO REAL QUE LA HACE NACER (medido el 2026-09-08)

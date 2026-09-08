@@ -66,6 +66,40 @@ programa. Faltan tres: el 8, el 9 y el 16.**
 
 ---
 
+## REVISION DEL 2026-09-08 — POR QUE JULIO SIGUE TENIENDO QUE REPETIRLO
+
+Julio: *"El segundo criterio mas importante: que todas las funciones que no ameriten una IA se
+conviertan en programa, script o skill... yo solicite que se cree una tabla."*
+
+**La tabla existe: es la de arriba.** Lo que no existe es que se CUMPLA. Medido hoy:
+
+| Lo que dice la tabla | Lo que hay de verdad (2026-09-08) |
+|---|---|
+| Pasos 8 y 9 (copiar el texto ya decidido) los debe hacer un programa | **La cura ESTA CONSTRUIDA**: `arnes/copista.py`, escrito el 2026-09-07 |
+| ...y ese programa se usa | **NO. Cero llamadas desde el flujo.** Las 2 unicas menciones son COMENTARIOS dentro de `cuerpo/obrero.py` (renglones 648 y 758). Texto muerto |
+| Paso 16 (entender respuesta rota) | Ya hay reintento en `cuerpo/obrero.py` |
+
+**El diagnostico, y es el mismo de siempre:** la ley esta escrita, la tabla esta hecha, el
+programa esta construido — y **ninguna linea de codigo lo llama**. Por eso cada vuelta sigue
+pagandole a un cerebro para que haga de fotocopiadora, y por eso Julio tiene que repetirlo.
+
+**Medido el mismo dia, en el mismo sistema, el mismo mal:**
+
+| Pieza | Existe | La llama el flujo |
+|---|---|---|
+| `arnes/copista.py` (la copia sin IA) | si | **0 veces** |
+| Las 11 habilidades de `skills/` | si | **0 veces** |
+| `arnes/reparto.py` (el anti-duplicado) | si | **0 veces** |
+| `arnes/candado_no_repetir.py` | si | **0 veces** |
+| `skills/orden_o_texto_pegado.py` | si | **0 veces** |
+| 25 de 38 contratos | si | **0 veces** |
+
+**Regla 0 que nace de esto:** una pieza que existe y nadie llama **cuenta como NO HECHA**. En la
+tabla de arriba, el estado deja de ser "esta construido" y pasa a ser **"lo llama X"**. Si nadie
+la llama, la casilla va en rojo aunque el archivo exista.
+
+---
+
 ## LA MATRIZ — qué falta y con qué se cura
 
 | Falta | Pieza que lo cura | Qué se reusa (no se duplica) |
