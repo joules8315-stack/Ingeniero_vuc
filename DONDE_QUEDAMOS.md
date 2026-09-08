@@ -1,70 +1,69 @@
-# DONDE QUEDAMOS — 2026-09-06
+# DÓNDE QUEDAMOS — mapa al 2026-09-08
 
-## LO QUE HAY QUE SABER EN UNA LINEA
-
-Julio prohibio que la IA cara escriba codigo: **NUNCA, ni con autorizacion**
-(CONTRATO_LA_IA_CARA_NUNCA_ESCRIBE.md). El codigo lo escribe el equipo. Claude piensa donde va,
-lanza el encargo el mismo (Julio no pega comandos), y aplica lo aprobado.
+> Lo que se hizo, lo que falta, y los fallos que más se repiten con su estado real.
+> Todo lo de aquí está **medido**, no opinado. Si algo no se pudo comprobar, se dice.
 
 ---
 
-## LO QUE SE REPARO HOY, Y ESTA PROBADO
+## 1. LO QUE SE HIZO HOY Y ESTÁ FUNCIONANDO
 
-| Que | Prueba |
+| Qué | Estado |
 |---|---|
-| El material ya trae la pieza que el problema NOMBRA | se pedia reparar una funcion y venian trozos del archivo pero NO esa funcion. Ahora viene entera y la primera. **Era la causa de que 60 de 70 trabajos no llegaran ni a juzgarse** |
-| El reparto ya penaliza al que falla | antes elegia al que falla 98 de cada 100; ahora al que falla 46 |
-| CREAR ya no se confunde con INVENTAR | era el muro que impedia que el equipo hiciera nada nuevo. Se reparo en el revisor Y en el que escribe |
-| Las pruebas ya no ensucian la memoria | registro real: 1272 renglones antes y despues de correr las 585 comprobaciones. **Antes entraban 12 falsos por guardado** |
-| Candado que frena a Claude cuando repite | con su vigia de 6 comprobaciones. Julio se quejo TRES veces el mismo dia |
-| La medida de si Julio pudo trabajar | ya funciona: **4 dias parado su proyecto, 31 guardados en la herramienta el mismo dia** |
-| La ruta de acceso (pieza 0) | blindada: frena aunque los candados esten apagados |
-| Una sola via | el Ingeniero unificado; se retiro una copia entera de 9,3 MB |
+| **El mapa que lees se pone al día solo** (llevaba **18 días** caducado y te mandaba a construir cosas que ya tenías) | **HECHO y verde** |
+| **El revisor de programa** (el ojo 2): caza lo mecánico gratis, sin IA | **HECHO**, 6 pruebas verdes |
+| **El revisor está enchufado**: si encuentra un fallo, la puerta de escribir **no se abre** | **HECHO**, 613 pruebas verdes |
+| En la aplicación de marketing: un beneficio salía cortado a mitad de palabra | **REPARADO** por el equipo, aprobado por otro cerebro |
+| **Un solo plan** para la aplicación de marketing; los dos viejos jubilados **con la prueba delante** | **HECHO** |
 
-**Todo lo escribio el equipo. Claude solo penso donde iba y aplico lo aprobado.**
+## 2. LEYES NUEVAS DE HOY
 
-**PRIMERA VEZ EN EL REGISTRO:** un cerebro GRATIS (groq20b) escribio codigo real y se aprobo.
-Antes llevaban cero de 924.
+| Ley | Qué obliga |
+|---|---|
+| **Se busca por función, no por palabra ni por número** | Si el nombre acierta pero la función no, **es fallo**, no duda |
+| **Nace conectada o no nace** | Una pieza que nadie llama está **sin terminar**. Crear y enchufar son **un solo trabajo** |
+| **Antes de reparar, se busca si ya se reparó** | Y una cura de **palabras** no es una cura |
+| **El plan se sigue en su orden** | Solo Julio avanza de paso |
+| **Sin trampas** (se le añadió la recaída de hoy) | Pedir permiso para saltarse un candado **es trampa**, aunque se pregunte de frente |
 
----
+## 3. LOS FALLOS QUE MÁS SE REPITEN — ¿reparado o no?
 
-## LO QUE FALTA, POR ORDEN
+| Fallo | ¿Reparado? |
+|---|---|
+| El mapa te enseñaba una foto vieja | **SÍ** |
+| Dos IA aprueban código que no arranca | **SÍ** — ahora lo caza el programa y frena |
+| Un beneficio partido a mitad de palabra en la web | **SÍ** |
+| **Piden un cerebro para revisar y lo ignoran en silencio** | **NO.** Medido hoy: tu cerebro encendido, en la lista, pedido por su nombre, ignorado sin decir por qué |
+| **El paquete engorda solo y no le cabe a los gratis** | **NO.** Aguantan 20.000 letras; los paquetes llegan a 40.000 |
+| **Un "vas muy rápido" se anota como "no le cabe"** | **NO.** Dejó a un cerebro en capacidad **cero** para siempre |
+| **La pantalla dice LISTO de un cerebro que falla el 93%** | **NO** |
+| **Guardar ensucia y ensuciar obliga a guardar** | **NO.** Las pruebas escriben en la memoria de verdad |
+| **11 habilidades construidas y ninguna se llama** | **NO** |
+| **25 de 38 leyes sin nada que las dispare** | **NO** |
+| El trabajo pagado se pisa: un solo hueco para guardarlo | **NO.** Hoy se perdieron 2 rondas pagadas |
 
-1. **El candado del gasto cuenta al reves.** Cuenta 15 escrituras (gratis) y CERO de las
-   llamadas al cerebro que cobra. Frena lo barato y deja correr lo caro. Y el numero 15 no
-   salio de ningun analisis: esta puesto a ojo.
-2. **14 leyes siguen siendo papel** (de 28 escritas). Se ven con la habilidad de leyes sin vigia.
-3. **El guardian corre las 585 comprobaciones en CADA guardado**: minuto y medio cada vez.
-   Solo hacen falta las que tocan lo que cambio.
-4. **El apuntador de ordenes toma por orden de Julio cualquier texto que el pegue.** Paso
-   CUATRO veces hoy. La cura YA EXISTE: la habilidad que distingue una orden de un texto
-   pegado. **Nadie la ha enchufado.** Esa es la reparacion pendiente y es corta.
-5. **El candado del lenguaje choca con la ley 5 de Julio.** La ley manda darle siempre el
-   comando listo; el candado prohibe nombrar archivos en la respuesta. Para dar un comando hay
-   que nombrarlos. Por eso los comandos acaban en papeles sueltos y se pierden.
-6. Para despues, dicho por Julio: las 10 ramas de junio de Foto Informe, y el diccionario que
-   no conoce sus palabras (35 palabras, y no esta ni "habilidad").
+## 4. QUÉ FALTA PARA TERMINAR LA APLICACIÓN DE MARKETING
 
----
+**Su estado real, contra su propio mapa: de 17 departamentos hay 1 terminado, 12 a medias y 4 que no existen.**
 
-## LAS HABILIDADES QUE YA EXISTEN (ninguna gasta una llamada)
+| Turno | Qué falta | Por qué importa |
+|---|---|---|
+| **1** | **Aprender de los experimentos** | Su propio documento lo llama *"la diferencia entre un generador de contenido y un director de marketing basado en evidencia"*. Sin esto **repite lo que ya sabe que no funciona**. **OJO: ya se intentó 5 veces y falló las 5**; el porqué y la cura están escritos en el plan |
+| **2** | Que cada pieza creativa lleve su ficha | Sin ficha no hay nada que medir |
+| **3** | **Decirle al cliente cómo mejorar su negocio** | Hoy **no existe** |
+| **4** | **Analizar campañas** | Hoy **no existe** |
+| **5** | **Buscar de verdad la huella del cliente en internet** | Hoy solo apunta el dato |
+| **6** | Derechos de autor | **Y hay uno urgente: la marca de un curso ajeno sigue metida en el código, en dos sitios** |
+| **7** | Que la web parezca de agencia | Hoy, en tus palabras, "parece de niños" |
+| **8** | Podcast y voz | No existe |
+| **9** | El jefe que coordina los departamentos | Va después de todo lo anterior |
+| **10** | Auditoría de los almacenes | Riesgo bajo |
+| **11** | Canales reales (WhatsApp, Facebook) | **Depende de trámites tuyos y de terceros** |
+| — | **Imágenes reales** | **PARADO: depende de que actives el cobro de Google** |
 
-Todas se corren igual: `cd C:\Ingeniero_VUC; python skills/<la que sea>`
+**Y una cuenta que resume el rumbo que pediste:** la aplicación tiene **83 piezas, de las cuales 33 llaman a una IA**, y **ninguna habilidad suelta**. El Ingeniero tiene once. Ahí está el trabajo: pasar de IA a programa todo lo que no sea pensar.
 
-- **julio_pudo_trabajar** — LA IMPORTANTE: si Julio avanzo hoy
-- **medir_al_equipo** — quien escribe, quien revisa, que llego al codigo
-- **quien_sirve_de_verdad** — quien falla cuanto, sacado de las llamadas reales
-- **via_unica** — carpetas, ramas y copias sueltas de todos los proyectos
-- **leyes_sin_vigia** — que leyes son solo papel
-- **cazar_el_humo** — si un cambio solo toca comentarios y no repara nada
-- **falta_en_el_material** — avisa antes de pagar una vuelta que no puede salir bien
-- **orden_o_texto_pegado** — distingue una orden de Julio de un texto pegado
-- **frenos_con_culpable** — cuantos frenos acabaron sabiendo quien fallo
+## 5. LO QUE TE TOCA A TI (nadie más puede)
 
----
-
-## COMO SE LE HABLA A JULIO
-
-Sin jerga, sin nombres de archivo, sin palabras de informatica. Como a un amigo dueño de un
-negocio. Y **no se le repite lo que ya leyo**: se contesta solo lo nuevo. Ahora hay un candado
-que lo frena, pero la ley esta en CONTRATO_NO_REPETIR.md.
+- **Activar el cobro de Google** — sin eso no hay imágenes reales.
+- **Los trámites de Facebook** — sin eso no hay canales de verdad.
+- **Probarlo con tus ojos.** Una prueba verde no es prueba: la prueba eres tú viéndolo funcionar.

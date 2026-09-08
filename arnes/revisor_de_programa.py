@@ -164,7 +164,15 @@ def revisar(propuesta, tarea=""):
         # 4 — NO HACE LO QUE SE PIDIO. Solo se miran las palabras con guion bajo dentro: son
         # nombres de funcion o de dato. Las palabras normales del castellano se ignoran, porque
         # si no, "reparar" o "impuesto" darian frenadas en falso.
-        for palabra in set(re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\b", tarea)):
+        # FRENADA EN FALSO CAZADA EL 2026-09-08, en la primera mordida de verdad: un encargo
+        # nombra archivos (cuerpo/campana_flujo.py) y palabras del propio encargo
+        # (texto_viejo, texto_nuevo). Esas NO son funciones que la reparacion deba tocar, y
+        # contarlas frena trabajos buenos. Un candado que frena lo legitimo ensena a ignorar
+        # todos los candados. Por eso se quitan antes de mirar.
+        limpia = re.sub(r"[\w/\\.]+\.(?:py|md|json|txt|js|html|css|sql|cfg|config)\b", " ", tarea)
+        for jerga in ("texto_viejo", "texto_nuevo"):
+            limpia = limpia.replace(jerga, " ")
+        for palabra in set(re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\b", limpia)):
             if palabra not in viejo and palabra not in nuevo:
                 fallos.append("NO HACE LO QUE SE PIDIO: el encargo habla de '%s' y esa palabra "
                               "no aparece ni en el texto viejo ni en el nuevo." % palabra)
