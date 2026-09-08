@@ -71,11 +71,65 @@ def _ruta_sin_equipo():
     return os.environ.get("INGENIERO_SIN_EQUIPO_TEST") or SIN_EQUIPO
 
 
+def _fallos_mecanicos(tarea, archivos=None):
+    """EL OJO 2 (Julio, 2026-09-08). Antes de guardar la llave, un PROGRAMA mira lo mecanico.
+
+    POR QUE AQUI: el trabajo del equipo ya esta guardado en disco cuando se llama a esta
+    funcion, asi que se puede leer sin pedirselo a nadie. Y aqui es donde se decide si se abre
+    la puerta de escribir: si el programa encuentra un fallo mecanico, la puerta NO se abre.
+
+    NACE DE DOS FALLOS MEDIDOS ESE DIA, los dos con DOS cerebros delante y ninguno los vio:
+      · el equipo entrego codigo que reventaba en la primera linea (usaba re sin importarlo) y
+        lo aprobo un auditor DISTINTO con confianza alta;
+      · y un auditor rechazo un cambio bueno diciendo que tres nombres no existian: se
+        comprobo en el codigo y los tres SI existian.
+    Las dos cosas son CUENTAS, no juicios. Un programa las responde en un segundo y sin fallar.
+
+    NO SUSTITUYE AL AUDITOR DE IA: el juicio (si esta bien pensado, si rompe a un vecino) sigue
+    siendo suyo y sigue siendo obligatorio. Esto solo anade un freno mas, gratis.
+
+    NUNCA lanza: si no se puede comprobar, se deja todo exactamente como estaba.
+    """
+    try:
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        import revisor_de_programa as _rp
+        ruta = os.path.join(AQUI, "memoria", "ULTIMO_TRABAJO_DEL_EQUIPO.json")
+        if not os.path.exists(ruta):
+            return []
+        with open(ruta, encoding="utf-8") as f:
+            guardado = json.load(f)
+        prop = guardado.get("propuesta") if isinstance(guardado, dict) else None
+        if not isinstance(prop, dict):
+            return []
+        # QUE SEA EL TRABAJO DE ESTA RONDA, NO EL DE OTRA (Julio lo cazo el 2026-09-08:
+        # "esto no se convertira en otro problema por buscar atajos?"). Ese archivo se PISA en
+        # cada ronda: si se leyera el de una ronda anterior, se estaria juzgando un trabajo que
+        # no es, y eso seria un fallo nuevo y de los feos. Por eso se comprueba que el archivo
+        # que toca la propuesta guardada sea uno de los que este veredicto abre. Si no cuadra,
+        # no se juzga nada.
+        suyo = str(prop.get("archivo") or "").replace("\\", "/").split("/")[-1]
+        de_ahora = [str(a).replace("\\", "/").split("/")[-1] for a in (archivos or [])]
+        if not suyo or (de_ahora and suyo not in de_ahora):
+            return []
+        return _rp.revisar(prop, tarea) or []
+    except Exception:
+        return []       # si no se puede comprobar, no se estorba
+
+
 def guardar_veredicto(tarea, archivos, obrero, auditor, veredicto):
     """Lo llama `ingeniero.py equipo` cuando el equipo termina. Es la llave."""
+    fallos_del_programa = _fallos_mecanicos(tarea, archivos) if veredicto == "APROBADO" else []
+    if fallos_del_programa:
+        # El programa caza lo que a las IA se les escapa. La llave NO se guarda.
+        sys.stderr.write("\nEL REVISOR DE PROGRAMA FRENA (gratis, sin ninguna IA):\n")
+        for f in fallos_del_programa:
+            sys.stderr.write("   - %s\n" % f)
+        sys.stderr.write("NO se abre la puerta de escribir. El trabajo queda guardado.\n")
+        veredicto = "RECHAZADO_POR_EL_PROGRAMA"
     d = {"cuando": time.time(), "tarea": tarea, "archivos": list(archivos or []) if veredicto == "APROBADO" else [],
          "obrero": obrero, "auditor": auditor, "veredicto": veredicto,
-         "reviso_a_si_mismo": (obrero == auditor)}
+         "reviso_a_si_mismo": (obrero == auditor),
+         "fallos_del_programa": fallos_del_programa}
     os.makedirs(os.path.dirname(_ruta_veredicto()), exist_ok=True)
     json.dump(d, open(_ruta_veredicto(), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     # EL CUADERNO DEL EQUIPO (Julio, 2026-09-02, preguntandolo por tercera vez: "que pasa con el

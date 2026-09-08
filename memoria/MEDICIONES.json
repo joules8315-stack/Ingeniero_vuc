@@ -4422,5 +4422,149 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.7
+ },
+ {
+  "id": 93,
+  "cuando": "2026-09-08 15:15",
+  "proyecto": "ingeniero",
+  "problema": "el revisor de programa arnes/revisor_de_programa.py existe y nadie lo llama: hay que enchufarlo en el mando equipo de ingeniero.py, justo antes de aplicar el cambio con aplicador.aplicar_cambio, para que un fallo mecanico frene la aplicacion",
+  "flujos": [
+   "aplicador",
+   "ingeniero",
+   "equipo"
+  ],
+  "piezas": [
+   "ingeniero.py",
+   "cuerpo/aplicador.py",
+   "skills/medir_al_equipo.py",
+   "arnes/revisor_de_programa.py"
+  ],
+  "trozos": [
+   "arnes/revisor_de_programa.py:1-40",
+   "ingeniero.py:353-392",
+   "ingeniero.py:513-552",
+   "ingeniero.py:182-193",
+   "ingeniero.py:609-640"
+  ],
+  "leyes": [
+   "CONTRATO_COMO_EL_INGENIERO_CONSTRUYE_UN_PROYECTO.md",
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_INGENIERO_CONSTRUYE_COMO_FUE_CONSTRUIDO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_INGENIERO_VUC.md",
+   "mapa/MAPA_INGENIERO.json",
+   "mapa/MAPA_INGENIERO.md",
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md",
+   "CONTRATO_ANTES_DE_REPARAR_SE_BUSCA_LA_CURA.md",
+   "CONTRATO_AUDITORIA_DE_PROYECTO.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_roles_ingeniero.py",
+   "vigias/test_vigia_aplicador.py",
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_modo_ingeniero_siempre.py",
+   "vigias/test_vigia_siempre_con_equipo.py"
+  ],
+  "lineas_paquete": 426,
+  "lineas_proyecto": 132975,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.7
+ },
+ {
+  "id": 94,
+  "cuando": "2026-09-08 15:19",
+  "proyecto": "ingeniero",
+  "problema": "en ingeniero.py falta llamar al revisor antes de aplicar el cambio aprobado",
+  "flujos": [
+   "ingeniero",
+   "revisor"
+  ],
+  "piezas": [
+   "ingeniero.py"
+  ],
+  "trozos": [
+   "ingeniero.py:49-82",
+   "ingeniero.py:321-360",
+   "ingeniero.py:152-175",
+   "ingeniero.py:417-456",
+   "ingeniero.py:513-552"
+  ],
+  "leyes": [
+   "CONTRATO_COMO_EL_INGENIERO_CONSTRUYE_UN_PROYECTO.md",
+   "CONTRATO_EL_INGENIERO_CONSTRUYE_COMO_FUE_CONSTRUIDO.md",
+   "CONTRATO_INGENIERO_VUC.md",
+   "mapa/MAPA_INGENIERO.json",
+   "mapa/MAPA_INGENIERO.md",
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md",
+   "CONTRATO_ANTES_DE_REPARAR_SE_BUSCA_LA_CURA.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_revisor_arnes_cerebro.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_roles_ingeniero.py",
+   "vigias/test_vigia_modo_ingeniero_siempre.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "lineas_paquete": 416,
+  "lineas_proyecto": 133562,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.7
+ },
+ {
+  "id": 95,
+  "cuando": "2026-09-08 15:28",
+  "proyecto": "ingeniero",
+  "problema": "en arnes/candado_equipo.py la funcion guardar_veredicto abre la puerta de escribir sin que ningun programa haya mirado lo mecanico del trabajo",
+  "flujos": [
+   "equipo"
+  ],
+  "piezas": [
+   "skills/medir_al_equipo.py",
+   "arnes/candado_equipo.py",
+   "ingeniero.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "arnes/candado_equipo.py:74-100",
+   "arnes/candado_equipo.py:1-40",
+   "arnes/candado_equipo.py:257-296",
+   "arnes/candado_equipo.py:193-232"
+  ],
+  "leyes": [
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "cerebro/protocolo.py",
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md",
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_MEDIR_A_LOS_GRATIS.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_siempre_con_equipo.py"
+  ],
+  "lineas_paquete": 390,
+  "lineas_proyecto": 133988,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.7
  }
 ]

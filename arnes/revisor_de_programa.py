@@ -27,6 +27,27 @@ import builtins
 import os
 import re
 import sys
+import textwrap
+
+# Palabras con las que empieza un PEDAZO que vive dentro de otro bloque. Un texto que empieza
+# asi no es un archivo entero y no se puede leer suelto, por mucho que este perfecto.
+EMPIEZOS_DE_PEDAZO = ("else", "elif", "except", "finally", "case")
+
+
+def es_un_pedazo(texto):
+    """El texto es un PEDAZO de dentro de otro bloque, no un archivo entero?
+
+    Se sabe por la forma, que es una cuenta: o viene sangrado desde el primer renglon, o
+    empieza por una palabra que solo existe colgando de algo de mas arriba.
+    """
+    for linea in str(texto or "").splitlines():
+        if not linea.strip():
+            continue
+        if linea[:1] in (" ", "\t"):
+            return True
+        primera = linea.strip().split()[0].rstrip(":") if linea.strip().split() else ""
+        return primera in EMPIEZOS_DE_PEDAZO
+    return False
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -107,12 +128,26 @@ def revisar(propuesta, tarea=""):
                           "IGUAL al viejo. Ese cambio no repara nada.")
 
         # 2 — SINTAXIS: si queda roto, no se puede aplicar ni se puede seguir leyendo.
+        #
+        # OJO, FRENADA EN FALSO CAZADA EL 2026-09-08 la primera vez que este revisor se uso
+        # con trabajo de verdad: el equipo entrego un PEDAZO que empieza a media altura
+        # (dentro de otro bloque, con su sangria y empezando por else). No estaba roto: es un
+        # pedazo, no un archivo entero. Y este revisor grito "el codigo queda roto".
+        # Su propia vigia lo dice: un candado que frena lo legitimo es PEOR que no tenerlo,
+        # porque ensena a ignorarlos todos. Por eso, si es un pedazo y no se deja leer entero,
+        # NO se acusa de nada: no se puede comprobar, y callar es mas honrado que gritar.
+        arbol = None
         try:
             arbol = ast.parse(nuevo)
         except SyntaxError as e:
-            fallos.append("EL CODIGO QUEDA ROTO en el renglon %s: %s. Asi no arranca."
-                          % (getattr(e, "lineno", "?"), e.msg))
-            return fallos
+            try:
+                arbol = ast.parse(textwrap.dedent(nuevo))
+            except SyntaxError:
+                if es_un_pedazo(nuevo):
+                    return fallos       # pedazo suelto: no hay nada que se pueda comprobar
+                fallos.append("EL CODIGO QUEDA ROTO en el renglon %s: %s. Asi no arranca."
+                              % (getattr(e, "lineno", "?"), e.msg))
+                return fallos
         except Exception as e:
             fallos.append("No se pudo leer el codigo nuevo: %s" % str(e)[:120])
             return fallos
