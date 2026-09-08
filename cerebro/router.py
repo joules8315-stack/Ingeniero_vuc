@@ -147,7 +147,10 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
             ficha = next((p for p in g["piezas"]
                           if p["id"].replace("\\", "/").endswith(pieza)
                           or p["id"].split("/")[-1] == base), None)
-            if not ficha or ficha in codigo:
+            if not ficha:
+                continue
+            if ficha in codigo:
+                _nombrados.append(ficha["id"])
                 continue
             codigo.append(ficha)
             if ficha not in fichas:
