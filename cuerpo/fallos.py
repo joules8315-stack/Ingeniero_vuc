@@ -95,14 +95,21 @@ def parecidos(problema, proyecto="", k=4):
     q = _palabras(problema)
     if not q:
         return []
+    fallos = _leer()
+    frecuencia = {}
+    for f in fallos:
+        texto = " ".join([f["que_paso"], f["causa_raiz"], f["no_volver_a"]] + f.get("piezas", []))
+        for p in _palabras(texto):
+            frecuencia[p] = frecuencia.get(p, 0) + 1
     out = []
-    for f in _leer():
+    for f in fallos:
         if proyecto and f.get("proyecto") and f["proyecto"] != proyecto:
             continue
         texto = " ".join([f["que_paso"], f["causa_raiz"], f["no_volver_a"]] + f.get("piezas", []))
         comunes = q & _palabras(texto)
         if comunes:
-            out.append((len(comunes), f))
+            puntaje = sum(1.0 / frecuencia[p] for p in comunes)
+            out.append((puntaje, f))
     return [f for _, f in sorted(out, key=lambda x: -x[0])[:k]]
 
 
