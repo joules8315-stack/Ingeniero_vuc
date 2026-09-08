@@ -53,6 +53,61 @@ Cuando se cumplen las reglas 1 a 4 y de verdad no existe nada parecido, **se pue
 autorizacion de Julio**. Las piezas nuevas ya no se rechazan de oficio como invento: se
 rechazan si les falta alguna de las cinco respuestas.
 
+### Regla 6 — NACE CONECTADA O NO NACE (Julio, 2026-09-08)
+
+> *"Por que siguen cosas desconectadas, y lo mejor, POR QUE NACEN DESCONECTADAS. Legisla: nada
+> puede crearse y quedar huerfano."*
+
+**DECLARAR QUIEN LA LLAMA NO ES CONECTARLA.** La regla 2 ya obligaba a responder CUANDO ("quien
+la llama y en que momento"), y aun asi las piezas nacen huerfanas: porque esa respuesta se
+ESCRIBE y nadie comprueba despues que el llamador exista de verdad en el codigo.
+
+**La pieza no esta terminada hasta que algo la llama.**
+
+| Estado | Veredicto |
+|---|---|
+| El archivo existe, 0 llamadas desde el flujo | **NO HECHA.** No se sella, no se cuenta, no se cobra |
+| El archivo existe y alguien lo llama | HECHA |
+
+1. **Se cuenta, no se promete.** Al terminar de crear se cuentan las llamadas reales a la pieza
+   desde el flujo. Comentarios y documentacion **no cuentan**: solo llamadas de codigo.
+2. **Cero llamadas = trabajo sin terminar.** No es un aviso: es que el encargo no esta cumplido.
+3. **El llamador va en el mismo encargo.** Crear la pieza y engancharla son **un solo trabajo**,
+   nunca dos. Si se parten, la segunda mitad no se hace: eso ya esta medido.
+4. **Vale igual para leyes y para habilidades.** Una ley que ningun codigo dispara y una
+   habilidad que nadie llama son lo mismo: huerfanas.
+
+---
+
+## POR QUE NACEN HUERFANAS — medido el 2026-09-08, y duele
+
+Esta misma ley es huerfana. Su seccion "COMO SE COMPRUEBA QUE SE CUMPLE" describe una vigia con
+tres pruebas. **Esa vigia no existe.** Y ademas:
+
+| Lo que deberia comprobarse | Existe |
+|---|---|
+| Una vigia de esta ley | **NO** |
+| Codigo que compruebe las cinco respuestas | **NINGUNO** |
+| Codigo que compruebe que la pieza nueva tiene quien la llame | **NINGUNO** |
+
+Resultado, contado el mismo dia (existe / lo llama el flujo):
+
+| Pieza | Existe | Llamadas |
+|---|---|---|
+| `arnes/copista.py` (creado el 2026-09-07) | si | **0** |
+| Las 11 habilidades de `skills/` | si | **0** |
+| `arnes/reparto.py` (el anti-duplicado) | si | **0** |
+| `arnes/candado_no_repetir.py` | si | **0** |
+| `skills/orden_o_texto_pegado.py` | si | **0** |
+| 25 de 38 contratos | si | **0** |
+
+**La causa de fondo, en una frase:** el sistema comprueba que la pieza ESTE ESCRITA, nunca que
+ESTE ENCHUFADA. Mientras el unico examen sea "el archivo existe", seguiran naciendo huerfanas.
+
+**AVISO HONESTO:** esta Regla 6, escrita aqui, es hoy tan huerfana como las demas. No hay ningun
+candado que la haga cumplir. Escribirla sin construir el contador de llamadas seria repetir
+exactamente el fallo que denuncia.
+
 ---
 
 ## LO QUE ESTO CAMBIA EN LA HERRAMIENTA
