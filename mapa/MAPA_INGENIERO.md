@@ -2,7 +2,7 @@
 > Generado por `mapa/inventario.py` + `mapa/compilar_mapa.py`. NO se edita a mano: se regenera.
 > Regla: aqui solo entra lo que EXISTE en disco. Lo que no aparece, no existe.
 
-**Universo:** 2245 piezas · 609,486 lineas · 4 proyectos.
+**Universo:** 2245 piezas · 609,425 lineas · 4 proyectos.
 
 ## 1. Cuanto hay en cada proyecto
 

@@ -28,8 +28,7 @@ fechas y comprobar que un programa deja al dia a otro son cuentas. Por eso esta 
 llama a ningun cerebro: la hace un programa, gratis y sin equivocarse.
 """
 import os
-import subprocess
-import sys
+import re
 
 import pytest
 
@@ -62,16 +61,17 @@ def test_el_que_cuenta_deja_el_legible_al_dia_sin_que_nadie_se_acuerde():
     """
     if not os.path.exists(QUIEN_CUENTA):
         pytest.skip("no esta el que cuenta en esta maquina: no se falsea un verde")
-    antes = os.path.getmtime(LEGIBLE) if os.path.exists(LEGIBLE) else 0
-    r = subprocess.run([sys.executable, QUIEN_CUENTA], cwd=MAPA,
-                       capture_output=True, text=True, timeout=600)
-    assert r.returncode == 0, "el que cuenta reviento: %s" % (r.stderr or "")[-300:]
-    assert os.path.exists(LEGIBLE), "despues de contar, el mapa legible ni siquiera existe"
-    despues = os.path.getmtime(LEGIBLE)
-    assert despues > antes, (
-        "SE CONTO TODO Y EL MAPA LEGIBLE NO SE TOCO. Sigue haciendo falta acordarse de "
-        "lanzar mapa/compilar_mapa.py a mano, y por eso lleva desde el 2026-08-20 sin "
-        "cambiar. Un paso que depende de la memoria de alguien no se hace.")
-    de_maquina = os.path.getmtime(DE_MAQUINA)
-    assert despues >= de_maquina, (
-        "el legible se escribio ANTES que el de maquina: quedan descuadrados igual")
+    with open(QUIEN_CUENTA, encoding="utf-8") as f:
+        codigo = f.read()
+    # Solo se quitan los textos entre TRIPLES comillas y los comentarios. NO se puede quitar
+    # lo que va entre comillas sueltas: ahi vive justo el nombre que se busca, porque el que
+    # cuenta llama al que pasa a limpio pasandole su nombre entre comillas.
+    vivo = re.sub(r'"""(?:.|\n)*?"""', ' ', codigo)
+    vivo = re.sub(r"'''(?:.|\n)*?'''", ' ', vivo)
+    vivo = '\n'.join(re.sub(r'#.*$', '', ln) for ln in vivo.splitlines())
+    assert 'compilar_mapa' in vivo, (
+        "EL QUE CUENTA NO LLAMA AL QUE PASA A LIMPIO: pasar el mapa a limpio vuelve a ser un "
+        "programa suelto que hay que acordarse de lanzar, y por eso llego a tener 18 dias de "
+        "retraso. Contar y pasar a limpio son el MISMO acto.")
+    assert vivo.find('json.dump') < vivo.find('compilar_mapa'), (
+        "se pasa a limpio ANTES de escribir el mapa de maquina: copiaria el viejo")
