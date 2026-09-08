@@ -153,6 +153,15 @@ def revisar(propuesta, tarea=""):
             return fallos
 
         # 3 — USA UN NOMBRE QUE NO EXISTE. El fallo real del 2026-09-08: re sin importar.
+        #
+        # SOLO SI ES UN ARCHIVO ENTERO. Segunda frenada en falso cazada el mismo dia: se
+        # reviso un PEDAZO del interior de una funcion y el revisor grito que perfil,
+        # objetivo, camp, experimentos e hipotesis "no existen". Existen todos: son los datos
+        # que recibe la funcion de mas arriba y lo que se importa al principio del archivo.
+        # Mirando un pedazo suelto no se puede ver nada de eso, asi que acusar es mentir.
+        # Cuando no se puede comprobar, se calla. Frenar lo bueno ensena a ignorar los frenos.
+        if es_un_pedazo(nuevo):
+            return fallos
         conocidos = _conocidos(arbol)
         ya_dicho = set()
         for nombre in _leidos(arbol):
