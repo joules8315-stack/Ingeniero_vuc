@@ -334,11 +334,21 @@ def main():
             # Ingeniero: solo acertaba cuando el proyecto ERA el Ingeniero. Fallo real de hoy: una
             # reparacion de dmm quedo APROBADA y sin aplicar. La carpeta ya venia en el paquete.
             _raiz = paq.get("raiz") if isinstance(paq, dict) else None
-            _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)
-            if _ok:
-                print("APLICADO en disco (lo escribio el equipo): %s" % prop.get("archivo"))
+            # UN VEREDICTO AUTO AUDITADO NO SE APLICA (Julio, 2026-09-07). El candado del equipo
+            # (arnes/candado_equipo.py::cubre) ya rechaza la llave si el obrero y el auditor son el
+            # mismo, pero el comando equipo aplicaba el cambio por su cuenta sin pasar por ahi.
+            # Medido hoy: dos rondas seguidas donde el mismo cerebro escribio y reviso se aplicaron
+            # igual. El trabajo queda GUARDADO (el veredicto y su guardado no se tocan), pero no se
+            # escribe en disco hasta que un cerebro DISTINTO lo revise.
+            if res.get("obrero") and res.get("obrero") == res.get("auditor"):
+                print("TRABAJO GUARDADO pero NO aplicado: quien escribio y quien reviso son el MISMO.")
+                print("Hace falta OTRO cerebro que lo revise antes de tocar el disco.")
             else:
-                print("EL EQUIPO APROBO, pero no se pudo aplicar: %s" % _msg)
+                _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)
+                if _ok:
+                    print("APLICADO en disco (lo escribio el equipo): %s" % prop.get("archivo"))
+                else:
+                    print("EL EQUIPO APROBO, pero no se pudo aplicar: %s" % _msg)
         if v_final == "APROBADO":
             print("LLAVE GUARDADA: se puede escribir en %d archivo(s) durante %d min."
                   % (len(tocados), _ce.VIGENCIA_MIN))
