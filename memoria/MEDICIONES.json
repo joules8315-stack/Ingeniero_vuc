@@ -4328,5 +4328,52 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.8
+ },
+ {
+  "id": 91,
+  "cuando": "2026-09-08 11:20",
+  "proyecto": "ingeniero",
+  "problema": "el portero decide si una habilidad propia cubre la tarea comparando por PALABRAS que se parecen, no por la FUNCION (por lo que HACE y a que). Por eso para pedido 'medir las acciones de cada IA' trae a medir_acciones/medir_navegador (miden el programa web) y NO a quien_sirve_de_verdad (que cuenta el uso real por IA), que es la correcta. Quiero que busque POR FUNCION, y que cuando no se pueda saber con seguridad NO arme cuenta falsa: devuelva NO_ENCONTRADO y pase a juicio de la IA",
+  "flujos": [
+   "medir",
+   "real",
+   "trae"
+  ],
+  "piezas": [
+   "memoria/rescate/rv3_prueba_real_velocidad.py",
+   "skills/medir_acciones.py",
+   "skills/medir_al_equipo.py",
+   "skills/medir_navegador.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "skills/medir_al_equipo.py:70-98",
+   "skills/medir_al_equipo.py:1-40",
+   "memoria/rescate/rv3_prueba_real_velocidad.py:33-72",
+   "skills/medir_acciones.py:65-104",
+   "skills/medir_navegador.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_MEDIR_A_LOS_GRATIS.md",
+   "CONTRATO_CUENTA_O_JUICIO.md",
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md",
+   "skills/quien_sirve_de_verdad.py"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_envio_real.py",
+   "vigias/test_vigia_el_paquete_trae_el_codigo.py",
+   "vigias/test_vigia_el_paquete_trae_la_funcion_entera.py",
+   "vigias/test_vigia_paquete_trae_la_cara.py",
+   "vigias/test_vigia_prueba_real.py",
+   "vigias/test_vigia_trae_la_pieza_correcta.py"
+  ],
+  "lineas_paquete": 381,
+  "lineas_proyecto": 130954,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.7
  }
 ]
