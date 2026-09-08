@@ -128,6 +128,8 @@ def cubre(d, fp):
     """
     if not d:
         return False
+    if d.get("reviso_a_si_mismo"):
+        return False
     v = str(d.get("veredicto", "")).strip().upper()
     if v != "APROBADO":
         return False
