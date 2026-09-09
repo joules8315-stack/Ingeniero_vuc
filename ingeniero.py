@@ -425,17 +425,27 @@ def main():
         # del diagnostico mas el texto fijo, y volvia a pasarse del tope aunque el recorte
         # estuviera bien hecho. Recortar por un lado y duplicar por otro no sirve de nada.
         # Aqui va solo el titular; el detalle ya viaja en el encargo.
-        _hecho = {"archivo": "(ya aplicado)",
-                  "diagnostico": _asunto[:300],
-                  "cambio": "el trabajo YA esta en el disco y sus vigias estan verdes",
-                  "texto_viejo": "", "texto_nuevo": ""}
-        _aud, _quien, _avisos = _oj.auditar(_paq, _hecho)
-        for _a in _avisos:
-            print("  aviso     : %s" % _a)
-        print("  lo juzgo  : %s" % _quien)
-        print("  VEREDICTO : %s" % (_aud or {}).get("veredicto", "?"))
-        print("  resumen   : %s" % (_aud or {}).get("resumen_para_el_jefe", ""))
-        return 0
+        # NO SE LE PIDE A UN CEREBRO QUE JUZGUE ALGO YA HECHO Y VERDE (Julio, 2026-09-09):
+        # "por que se le pide que juzgue algo que ya esta. Eso es estupido. Debe pasar a
+        # EJECUTAR. Lo que debe hacer, a lo sumo, es con un PROGRAMA verificar que el pedido
+        # este bien hecho y lleve lo que se le pidio. Para romper el bucle."
+        # EL BUCLE, ocurrido TRES VECES SEGUIDAS ese dia: se mandaba a juzgar -> el cerebro,
+        # ahogado en relleno, decia "errores de sintaxis graves" -> se comprobaba y era FALSO
+        # (compilaba y sus vigias pasaban) -> se volvia a mandar -> otra vez. Dinero por nada,
+        # y encima un veredicto mentiroso.
+        # La vigia YA dijo si funciona: ese es el comparador, y su palabra vale mas que una
+        # opinion de quien no puede correr el codigo. Aqui solo se comprueba, GRATIS, que el
+        # pedido sirva para trabajar. El equipo sigue siendo obligatorio para ESCRIBIR codigo.
+        _ok, _falta = _asig.pedido_bien_hecho({"objetivo": _asunto, "material": _asunto})
+        if _ok:
+            print("  EL PEDIDO ESTA BIEN HECHO: dice que se queria, lleva lo pedido y cabe.")
+            print("  A EJECUTAR. No se le pregunta a ningun cerebro: la vigia ya dijo si")
+            print("  funciona, y su palabra vale mas que una opinion.")
+            return 0
+        print("  EL PEDIDO NO ESTA BIEN HECHO. No se manda a nadie ni se gasta un centimo:")
+        for _f in _falta:
+            print("     - %s" % _f)
+        return 1
 
     if cmd == "aplicar-guardado" and len(sys.argv) >= 3:
         # EL TRABAJO PAGADO NO SE TIRA (Julio). Fallo real 2026-09-06: el equipo aprobo una

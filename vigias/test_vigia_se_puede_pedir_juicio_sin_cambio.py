@@ -45,5 +45,16 @@ def test_el_mando_sabe_pedir_juicio_sin_cambio():
         "EL MANDO NO SABE PEDIR UN JUICIO SOBRE TRABAJO YA HECHO. Solo sabe pedir cambios, y "
         "por eso un trabajo aplicado con el copista NUNCA puede tener veredicto: el equipo lo "
         "rechaza diciendo que no cambia nada, aunque su propio diagnostico diga que esta bien.")
-    assert "auditar(" in vivo, (
+    # CORREGIDO EL 2026-09-09 POR ORDEN DE JULIO. Esta vigia exigia lo contrario de lo que
+    # ahora manda la ley: "por que se le pide que juzgue algo que ya esta. Eso es estupido.
+    # Debe pasar a EJECUTAR. Lo que debe hacer, a lo sumo, es con un PROGRAMA verificar que el
+    # pedido este bien hecho". El bucle: se mandaba a juzgar, el cerebro decia "errores de
+    # sintaxis graves", se comprobaba y era FALSO, se volvia a mandar, y otra vez. Tres veces
+    # seguidas el mismo dia. Ahora lo comprueba un programa, gratis y en 0,18 segundos.
+    # Una vigia que exige lo que la ley prohibe no protege: estorba. Se corrige, no se borra.
+    assert "pedido_bien_hecho" in vivo, (
+        "EL MANDO YA NO COMPRUEBA QUE EL PEDIDO ESTE BIEN HECHO. Sin eso, o se le vuelve a "
+        "preguntar a un cerebro (el bucle que costo dinero y dio veredictos falsos) o no se "
+        "comprueba nada.")
+    assert "auditar(" not in vivo, (
         "el mando nombra el juicio pero no llama a la pieza que lo hace: seguiria sin servir")

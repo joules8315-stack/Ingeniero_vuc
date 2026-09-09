@@ -132,6 +132,37 @@ def elegir_cerebro(letras, evitar=None):
         return None, "no se pudo comprobar quien puede: %s" % str(e)[:90]
 
 
+def pedido_bien_hecho(pedido):
+    """¿El pedido esta bien hecho? Devuelve (True/False, lo que falta). Es una CUENTA, cero IA.
+
+    NACE PARA ROMPER UN BUCLE (Julio, 2026-09-09): "por que se le pide que juzgue algo que ya
+    esta. Eso es estupido. Debe pasar a EJECUTAR. Lo que debe hacer, a lo sumo, es con un
+    PROGRAMA verificar que el pedido este bien hecho y lleve lo que se le pidio".
+
+    EL BUCLE QUE ROMPE, ocurrido tres veces seguidas ese dia: se mandaba el trabajo ya hecho y
+    verde a que un cerebro lo juzgara; el cerebro, ahogado en relleno, contestaba "errores de
+    sintaxis graves"; se comprobaba y era FALSO (compilaba y sus vigias pasaban); se volvia a
+    mandar; y otra vez. Cada vuelta costaba dinero y no aportaba nada.
+
+    Esto NO opina sobre si el trabajo es bueno: de eso ya se encarga la vigia, que es quien lo
+    corre de verdad. Aqui solo se mira que el pedido sirva para trabajar.
+    """
+    p = pedido or {}
+    falta = []
+    objetivo = str(p.get("objetivo") or "").strip()
+    material = str(p.get("material") or "").strip()
+    if len(objetivo) < 10:
+        falta.append("no dice QUE se queria conseguir: sin eso no hay con que comparar")
+    if not material:
+        falta.append("no lleva dentro lo que se pidio: el cerebro contestaria NO_ENCONTRADO "
+                     "y la vuelta ya estaria pagada")
+    if len(objetivo) + len(material) > TOPE_LETRAS:
+        falta.append("no le cabe a ningun cerebro gratis (%d letras, el tope son %d): se les "
+                     "salta a todos en silencio y acaba pagandolo el de pago"
+                     % (len(objetivo) + len(material), TOPE_LETRAS))
+    return (not falta), falta
+
+
 def armar_encargo(fallo, material, intento=1):
     """El encargo con LAS TRES COSAS. Depurado, pero SIN perder lo necesario.
 
