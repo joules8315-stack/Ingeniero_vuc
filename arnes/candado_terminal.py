@@ -42,6 +42,42 @@ CUENTA = os.path.join(AQUI, "memoria", ".lecturas_sueltas")
 APAGONES = os.path.join(AQUI, "memoria", "APAGONES.log")
 
 
+def es_una_fotocopia(texto):
+    """El encargo YA trae el texto de antes y el de despues? Entonces no hay nada que pensar.
+
+    LEY: CONTRATO_LA_FOTOCOPIA_NO_SE_PAGA.md (Julio, 2026-09-08), que lo tuvo que repetir
+    varias veces: "quedo que lo que se podia hacer con programa, se hacia, asi salia gratis".
+
+    LO MEDIDO ESE DIA, el mismo cambio de las dos maneras:
+        con el equipo de IA .... 4 rondas y NO entro
+        con arnes/copista.py ... 1 segundo, a la primera, coste CERO
+
+    ES UNA CUENTA, NO UN JUICIO: se mira si el texto trae las dos marcas (el texto viejo y el
+    texto nuevo). No se interpreta nada. Si las trae las dos, es una fotocopia.
+
+    NUNCA lanza: si no se puede mirar, se dice que NO es fotocopia y no se estorba a nadie.
+    """
+    try:
+        t = (texto or "").upper()
+        viejo = ("TEXTO VIEJO" in t) or ("TEXTO_VIEJO" in t)
+        nuevo = ("TEXTO NUEVO" in t) or ("TEXTO_NUEVO" in t)
+        return bool(viejo and nuevo)
+    except Exception:
+        return False
+
+
+AVISO_FOTOCOPIA = (
+    "\nFRENADO: ESO ES UNA FOTOCOPIA, Y LA FOTOCOPIA NO SE PAGA.\n\n"
+    "  Ese encargo YA trae el texto de antes y el de despues exactos. No hay nada que pensar:\n"
+    "  solo hay que copiar. Mandarlo a un cerebro es pagar por una fotocopiadora.\n\n"
+    "  Medido el 2026-09-08 con el MISMO cambio: con el equipo, 4 rondas y no entro. Con el\n"
+    "  programa, 1 segundo, a la primera y gratis.\n\n"
+    "  Hazlo asi (el encargo lleva las marcas archivo:, funcion:, TEXTO_VIEJO y TEXTO_NUEVO):\n"
+    "     cd C:\\Ingeniero_VUC; python arnes/copista.py <archivo_del_encargo> <carpeta_proyecto>\n\n"
+    "  Al equipo se le llama para lo que hay que PENSAR: que esta mal y como se arregla.\n"
+    "  Ley: CONTRATO_LA_FOTOCOPIA_NO_SE_PAGA.md\n")
+
+
 def _apagones():
     """El registro de verdad, o uno de prueba.
 
@@ -264,6 +300,25 @@ def main():
         sys.stderr.write(AVISO_CLAVES)
         _cazado_terminal()
         return 2
+
+    # LA FOTOCOPIA NO SE PAGA (Julio, 2026-09-08, repitiendolo por enesima vez).
+    # Si se va a lanzar al equipo un encargo que YA trae el texto de antes y el de despues
+    # exactos, eso no es trabajo de cerebro: es copiar. Se frena y se manda al copista, que lo
+    # hace gratis y en un segundo. Medido ese dia con el MISMO cambio: con el equipo, 4 rondas
+    # y no entro; con el programa, a la primera. Ley: CONTRATO_LA_FOTOCOPIA_NO_SE_PAGA.md
+    if "ingeniero.py equipo" in cmd_txt:
+        _texto_encargo = cmd_txt
+        # el encargo suele ir en un archivo que se lee con Get-Content: se mira su contenido
+        for _m in re.finditer(r'Get-Content\s+-Raw\s+"([^"]+)"', cmd_txt):
+            try:
+                with open(_m.group(1), encoding="utf-8", errors="ignore") as _f:
+                    _texto_encargo += "\n" + _f.read()
+            except Exception:
+                pass
+        if es_una_fotocopia(_texto_encargo):
+            sys.stderr.write(AVISO_FOTOCOPIA)
+            _cazado_terminal()
+            return 2
 
     # RENDIJA DE ESCRITURA POR TERMINAL (Julio, 2026-08-27): escribir codigo de un proyecto por
     # la terminal se saltaba el candado de equipo. Si la orden escribe codigo y NO hay APROBADO

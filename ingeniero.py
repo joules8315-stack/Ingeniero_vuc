@@ -209,6 +209,18 @@ def main():
     if cmd == "trabaja" and len(sys.argv) >= 4:
         return trabaja(sys.argv[2], " ".join(sys.argv[3:]))
     if cmd == "equipo" and len(sys.argv) >= 4:
+        # LA FOTOCOPIA NO SE PAGA (Julio, 2026-09-08, tras repetirlo varias veces).
+        # Si el encargo YA trae el texto de antes y el de despues exactos, no hay nada que
+        # pensar: solo hay que copiar, y eso lo hace arnes/copista.py gratis y en un segundo.
+        # Medido ese dia con el MISMO cambio: con el equipo, 4 rondas y no entro; con el
+        # programa, a la primera. Ley: CONTRATO_LA_FOTOCOPIA_NO_SE_PAGA.md
+        # VA AQUI y no en el candado de la terminal porque aquel solo vigila Bash y el equipo
+        # se lanza por PowerShell: pasaba por al lado sin verlo. Aqui lo ve siempre.
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        import candado_terminal as _ct
+        if _ct.es_una_fotocopia(" ".join(sys.argv[3:])):
+            sys.stderr.write(_ct.AVISO_FOTOCOPIA)
+            return 2
         # SIEMPRE EL EQUIPO (Julio, 2026-08-21, tras repetirlo tres veces y pagarlo).
         # Uno genera, OTRO distinto audita. Claude dirige y lee el veredicto: nada mas.
         # Deja la llave que abre el candado de escribir codigo.

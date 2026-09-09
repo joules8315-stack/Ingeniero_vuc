@@ -15,6 +15,16 @@ FRENA y no toca nada.
 import os
 import sys
 
+# QUE SEPA ENCONTRAR SU CASA (Julio, 2026-09-08). Este programa llevaba meses dormido y nadie
+# sabia por que: al lanzarlo como dice su propia documentacion, reventaba en el arranque con
+# "No module named cuerpo", porque al ejecutarlo por su ruta solo queda visible la carpeta del
+# arnes, no la del Ingeniero. Una pieza que se rompe al primer intento no la usa nadie jamas.
+# Leccion que se suma a "nace conectada o no nace": una pieza no esta terminada hasta que se ha
+# USADO una vez de verdad, lanzandola como la lanzaria quien la necesita.
+_AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _AQUI not in sys.path:
+    sys.path.insert(0, _AQUI)
+
 
 def leer_bloques(encargo):
     """Saca del encargo los bloques marcados: archivo, funcion, texto_viejo y texto_nuevo.
