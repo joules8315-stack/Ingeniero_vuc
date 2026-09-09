@@ -49,6 +49,55 @@ cuál está, contesta al que se imagina. **Y contestar bien a la pregunta equivo
 Si al que trabaja se le manda un hueco donde debía ir el texto, **el fallo NO es suyo**. Se
 apunta contra quien redactó el encargo.
 
+### Regla 5 — EL QUE ASIGNA COMPRUEBA ANTES DE GASTAR (Julio, 2026-09-08)
+
+> *"Para que asignen la IA, ya el que asigna debe tener la información pertinente completa, lo
+> en verdad necesario: **saber si la IA tiene la capacidad, si no está dormida**, diciéndole
+> claramente este es el resultado que queremos, se hizo esto y no sirvió por esto, repáralo."*
+
+**Antes de llamar a nadie se comprueba, en este orden, y son todas cuentas:**
+
+| | Qué se mira | Si no |
+|---|---|---|
+| 1 | **Cuánto pesa** el encargo, en letras | — |
+| 2 | **Quién tiene llave** | se descarta |
+| 3 | **Quién NO está dormido** | se descarta |
+| 4 | **A quién le cabe** ese peso | se descarta |
+| 5 | **Si alguien ya lo tiene asignado** | no se pide dos veces |
+
+**Y si no queda nadie, SE DICE Y NO SE GASTA.** Callarse y mandarlo igual es lo que hacía el
+sistema viejo: se saltaba a todos los gratis en silencio y acababa escribiendo y revisando el
+mismo cerebro de pago. **Medido: dos o tres rondas por cada cambio, una noche entera.**
+
+**Y el material va DEPURADO:** *"no solo que quepa, sino que venga lo necesario, y no con peso
+innecesario"*. Recortar por lo bruto es trampa: si al recortar se cae el trozo que hay que
+reparar, **el encargo cabe y no sirve para nada**. Primero se guarda lo necesario; lo que se
+recorta es el relleno.
+
+### Regla 6 — UNA VIGÍA RECIÉN NACIDA NO LLAMA A NADIE (Julio, 2026-09-08)
+
+> *"Si nace roja, lo va a mandar para una IA, y no es así; **debe ser en la segunda vuelta**,
+> porque si nace roja lo manda enseguida para la IA, y es lo que no queremos. Estaríamos dando
+> una orden contradictoria."*
+
+**Lo cazó antes de que se construyera, y tenía toda la razón.** El método de esta casa dice que
+**la vigía nace roja a propósito**. Si el criterio fuera *"rojo = llamar a una IA"*, cada vez
+que se escribe una prueba nueva se dispararía una IA a reparar **algo que todavía no existe**:
+se estaría pagando por el paso 1 del propio método, y encima la IA no encontraría nada.
+
+**El criterio, y la casa YA sabe distinguirlo** (`arnes/guardia_de_guardado.py::_vigias` le
+pregunta al guardado si esa vigía es nueva o si ya estaba):
+
+| Tipo de rojo | Qué es | Quién entra |
+|---|---|---|
+| **Recién nacida** (la pieza aún no existe) | El método, no un fallo | **Nadie. Cero gasto** |
+| **Estaba verde y se puso roja** | Algo se rompió de verdad | La IA |
+| **Sigue roja tras un intento** | El arreglo no lo consiguió | La IA, con el mensaje nuevo |
+
+**Regla que se suma:** un rojo que no se repite **es ruido, no un fallo**. Ya está medido en
+esta casa que el guardia llegó a probar archivos a medio escribir. Antes de dar un rojo por
+bueno, **se repite**.
+
 ---
 
 ## EL FALLO REAL QUE LA HACE NACER (2026-09-08, y lo cazó Julio)
