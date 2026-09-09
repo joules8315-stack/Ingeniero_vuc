@@ -1,69 +1,99 @@
-# DÓNDE QUEDAMOS — mapa al 2026-09-08
+# DÓNDE QUEDAMOS — 2026-09-09
 
-> Lo que se hizo, lo que falta, y los fallos que más se repiten con su estado real.
-> Todo lo de aquí está **medido**, no opinado. Si algo no se pudo comprobar, se dice.
+**Para retomar sin releer nada. Esto es el estado, no un resumen bonito.**
 
 ---
 
-## 1. LO QUE SE HIZO HOY Y ESTÁ FUNCIONANDO
+## LO QUE SE ESTABA HACIENDO
 
-| Qué | Estado |
+**Construyendo la aplicación de marketting, despertando sus piezas dormidas.**
+
+De 82 piezas, **22 estaban construidas, probadas y sin que nadie las llamara**. El plan las daba
+por *"departamentos que faltan"*. **No faltaban: estaban desenchufadas.**
+
+### Van 12 despertadas. Todas gratis, sin una sola llamada a IA
+
+| Lo que ahora hace y antes no |
+|---|
+| Dice **cuánto cuesta cada clic** |
+| Apunta a **quién escribió** |
+| Cada campaña **cuelga de una meta** que no se pierde |
+| **Reparte** cada pregunta a su departamento |
+| Guarda lo aprendido **con su fuente y su caducidad** |
+| Saca **dos versiones** del mensaje para comparar |
+| Deja **rastro** de todo, y sobrevive al apagón |
+| Sabe **qué sale mañana** |
+| Dice **qué red funciona mejor** |
+| Sabe **qué campaña trajo a qué cliente** |
+| **No paga dos veces** por calcular lo mismo |
+| **Avisa si una red cambia sus reglas** |
+
+**Cuatro de ellas no guardaban nada** y se les reparó la raíz antes de enchufarlas: las metas,
+el historial, el calendario y el grafo. *Enchufar algo que pierde lo que guarda es enchufar humo.*
+
+---
+
+## POR DÓNDE SEGUIR — quedan 10
+
+### Necesitan una IA de verdad (6). Una ronda del equipo cada una
+`video` (el guion cronometrado) · `perfilador_clientes` (a quién hablarle) ·
+`motor_preguntas` (preguntar solo lo que falta) · `director` (de una idea, el plan entero) ·
+`skills` (que elija su herramienta) · `rotacion` (repartir entre cerebros)
+
+**Empezar por `video`:** es la de más valor visible.
+
+### Esperan las credenciales de Julio (3). **Van al final, por orden suya**
+| Pieza | Qué hace falta |
 |---|---|
-| **El mapa que lees se pone al día solo** (llevaba **18 días** caducado y te mandaba a construir cosas que ya tenías) | **HECHO y verde** |
-| **El revisor de programa** (el ojo 2): caza lo mecánico gratis, sin IA | **HECHO**, 6 pruebas verdes |
-| **El revisor está enchufado**: si encuentra un fallo, la puerta de escribir **no se abre** | **HECHO**, 613 pruebas verdes |
-| En la aplicación de marketing: un beneficio salía cortado a mitad de palabra | **REPARADO** por el equipo, aprobado por otro cerebro |
-| **Un solo plan** para la aplicación de marketing; los dos viejos jubilados **con la prueba delante** | **HECHO** |
+| Entrar con contraseña | Cuenta de Supabase |
+| Memoria en la nube | **La misma llave** |
+| Leer los boletines de las redes | Una cuenta de correo **aparte, no la personal** |
 
-## 2. LEYES NUEVAS DE HOY
+**Son dos llaves, no tres.**
 
-| Ley | Qué obliga |
-|---|---|
-| **Se busca por función, no por palabra ni por número** | Si el nombre acierta pero la función no, **es fallo**, no duda |
-| **Nace conectada o no nace** | Una pieza que nadie llama está **sin terminar**. Crear y enchufar son **un solo trabajo** |
-| **Antes de reparar, se busca si ya se reparó** | Y una cura de **palabras** no es una cura |
-| **El plan se sigue en su orden** | Solo Julio avanza de paso |
-| **Sin trampas** (se le añadió la recaída de hoy) | Pedir permiso para saltarse un candado **es trampa**, aunque se pregunte de frente |
+### Y una suelta
+`cola_autonoma` — la lista para que trabaje solo.
 
-## 3. LOS FALLOS QUE MÁS SE REPITEN — ¿reparado o no?
+---
 
-| Fallo | ¿Reparado? |
-|---|---|
-| El mapa te enseñaba una foto vieja | **SÍ** |
-| Dos IA aprueban código que no arranca | **SÍ** — ahora lo caza el programa y frena |
-| Un beneficio partido a mitad de palabra en la web | **SÍ** |
-| **Piden un cerebro para revisar y lo ignoran en silencio** | **NO.** Medido hoy: tu cerebro encendido, en la lista, pedido por su nombre, ignorado sin decir por qué |
-| **El paquete engorda solo y no le cabe a los gratis** | **NO.** Aguantan 20.000 letras; los paquetes llegan a 40.000 |
-| **Un "vas muy rápido" se anota como "no le cabe"** | **NO.** Dejó a un cerebro en capacidad **cero** para siempre |
-| **La pantalla dice LISTO de un cerebro que falla el 93%** | **NO** |
-| **Guardar ensucia y ensuciar obliga a guardar** | **NO.** Las pruebas escriben en la memoria de verdad |
-| **11 habilidades construidas y ninguna se llama** | **NO** |
-| **25 de 38 leyes sin nada que las dispare** | **NO** |
-| El trabajo pagado se pisa: un solo hueco para guardarlo | **NO.** Hoy se perdieron 2 rondas pagadas |
+## LO QUE FALTA PARA CERRAR EL CICLO
 
-## 4. QUÉ FALTA PARA TERMINAR LA APLICACIÓN DE MARKETING
+**Publicar de verdad · recoger los datos · el análisis que dice si funcionó.**
 
-**Su estado real, contra su propio mapa: de 17 departamentos hay 1 terminado, 12 a medias y 4 que no existen.**
+Sin esos tres, el ciclo se corta después de las dos versiones y **nunca se aprende nada**. Su
+vigía **no finge que están**: se marca en amarillo y dice que publicar de verdad depende de las
+credenciales.
 
-| Turno | Qué falta | Por qué importa |
-|---|---|---|
-| **1** | **Aprender de los experimentos** | Su propio documento lo llama *"la diferencia entre un generador de contenido y un director de marketing basado en evidencia"*. Sin esto **repite lo que ya sabe que no funciona**. **OJO: ya se intentó 5 veces y falló las 5**; el porqué y la cura están escritos en el plan |
-| **2** | Que cada pieza creativa lleve su ficha | Sin ficha no hay nada que medir |
-| **3** | **Decirle al cliente cómo mejorar su negocio** | Hoy **no existe** |
-| **4** | **Analizar campañas** | Hoy **no existe** |
-| **5** | **Buscar de verdad la huella del cliente en internet** | Hoy solo apunta el dato |
-| **6** | Derechos de autor | **Y hay uno urgente: la marca de un curso ajeno sigue metida en el código, en dos sitios** |
-| **7** | Que la web parezca de agencia | Hoy, en tus palabras, "parece de niños" |
-| **8** | Podcast y voz | No existe |
-| **9** | El jefe que coordina los departamentos | Va después de todo lo anterior |
-| **10** | Auditoría de los almacenes | Riesgo bajo |
-| **11** | Canales reales (WhatsApp, Facebook) | **Depende de trámites tuyos y de terceros** |
-| — | **Imágenes reales** | **PARADO: depende de que actives el cobro de Google** |
+---
 
-**Y una cuenta que resume el rumbo que pediste:** la aplicación tiene **83 piezas, de las cuales 33 llaman a una IA**, y **ninguna habilidad suelta**. El Ingeniero tiene once. Ahí está el trabajo: pasar de IA a programa todo lo que no sea pensar.
+## EL MÉTODO, QUE NO SE SALTA
 
-## 5. LO QUE TE TOCA A TI (nadie más puede)
+1. Mirar qué hace de verdad, no lo que promete su nombre.
+2. **¿Guarda lo que produce?** Si no, se repara la raíz **antes** de enchufar.
+3. **La vigía primero, y nace roja.** Con las dos caras: que sale con datos, y que **sin datos
+   no se inventa nada**.
+4. Si es una cuenta, la aplica el copista. **Gratis.**
+5. Correr **todas** las vigías, no solo la nueva.
+6. Guardar contando **también lo que salió mal**.
 
-- **Activar el cobro de Google** — sin eso no hay imágenes reales.
-- **Los trámites de Facebook** — sin eso no hay canales de verdad.
-- **Probarlo con tus ojos.** Una prueba verde no es prueba: la prueba eres tú viéndolo funcionar.
+Está escrito en `CONTRATO_ENCHUFAR_UNA_PIEZA_DORMIDA.md`.
+
+---
+
+## CÓMO ESTÁ LA HERRAMIENTA
+
+- **636 vigías verdes.** La aplicación: **493 verdes**, 1 marcada a propósito.
+- **Sin instrucciones pendientes de legislar.**
+- El contador de huérfanas **ya existe y ya no miente**: 23 huérfanas reales, 24 candados
+  reconocidos. *Era él mismo el primer huérfano.*
+- **El bucle está roto:** ya no se le pide a un cerebro que juzgue trabajo ya hecho y verde. Lo
+  comprueba un programa en 0,18 segundos y gratis.
+- Al cerebro **solo le llega lo suyo**: de 27.785 letras a que le quepa a uno gratis.
+
+## LOS COMANDOS
+
+```
+cd C:\Ingeniero_VUC; python ingeniero.py arranca
+cd C:\Ingeniero_VUC; python skills/nace_conectada.py
+cd C:\Ingeniero_VUC; python skills/nace_conectada.py --raiz "C:\Users\USER\dev\Asesor Marketing"
+```
