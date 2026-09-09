@@ -383,6 +383,32 @@ def main():
                   % v_final)
         return 0
 
+    if cmd == "juzga" and len(sys.argv) >= 4:
+        # PEDIR UN JUICIO SOBRE TRABAJO YA HECHO (Julio, 2026-09-08).
+        # FALLO REAL de ese dia: se le pidio al equipo que juzgara un enchufe ya aplicado y
+        # probado. Su diagnostico dijo que estaba bien puesto y que no rompia vecinos, y aun
+        # asi el veredicto salio RECHAZADO con este motivo: "la propuesta no realiza ningun
+        # cambio". Claro que no: se le pidio un JUICIO, no un cambio.
+        # El mando solo sabia pedir REPARACIONES, asi que todo lo que aplica el copista se
+        # quedaba sin revisar para siempre y el supervisor no podia quedar satisfecho nunca.
+        # La pieza que revisa sin escribir YA EXISTIA (cuerpo/obrero.py::auditar, hecha para
+        # "esto ya esta hecho, solo revisalo") y no la llamaba nadie. Aqui se enchufa.
+        import json as _js
+        from cerebro import router as _rj
+        from cuerpo import obrero as _oj
+        _proy, _asunto = sys.argv[2], " ".join(sys.argv[3:])
+        _paq = _rj.a_texto(_rj.armar(_proy, _asunto))
+        _hecho = {"archivo": "(ya aplicado)", "diagnostico": _asunto,
+                  "cambio": "el trabajo YA esta en el disco y sus vigias estan verdes",
+                  "texto_viejo": "", "texto_nuevo": ""}
+        _aud, _quien, _avisos = _oj.auditar(_paq, _hecho)
+        for _a in _avisos:
+            print("  aviso     : %s" % _a)
+        print("  lo juzgo  : %s" % _quien)
+        print("  VEREDICTO : %s" % (_aud or {}).get("veredicto", "?"))
+        print("  resumen   : %s" % (_aud or {}).get("resumen_para_el_jefe", ""))
+        return 0
+
     if cmd == "aplicar-guardado" and len(sys.argv) >= 3:
         # EL TRABAJO PAGADO NO SE TIRA (Julio). Fallo real 2026-09-06: el equipo aprobo una
         # reparacion de dmm y no se pudo aplicar por una ruta mal resuelta. El trabajo quedo
