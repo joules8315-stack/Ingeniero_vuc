@@ -130,8 +130,47 @@ def _vigias_verdes(raiz):
     try:
         r = subprocess.run([sys.executable, "-m", "pytest", "-q", "vigias/"],
                            cwd=raiz, capture_output=True, text=True, timeout=300)
-        ultima = [l for l in (r.stdout or "").splitlines() if l.strip()][-1:]
-        return r.returncode == 0, (ultima[0] if ultima else "sin salida")
+        salida = (r.stdout or "") + (r.stderr or "")
+        ultima = [l for l in salida.splitlines() if l.strip()][-1:]
+        if r.returncode == 0:
+            return True, (ultima[0] if ultima else "sin salida")
+        # UNA VIGIA RECIEN NACIDA NO ES UNA AVERIA (Julio, 2026-09-09, y con razon: lo tuvo que
+        # repetir varias veces). El metodo de esta casa MANDA escribir la vigia primero y que
+        # NAZCA ROJA: una vigia que nace verde no probo nada. Este candado contaba esa roja
+        # como algo roto y no dejaba cerrar nunca, empujando a saltarselo. Y esta casa ya tiene
+        # escrito que un candado sin forma honrada de satisfacerlo es peor que no tenerlo.
+        # La casa YA sabia distinguirlo: arnes/guardia_de_guardado.py le pregunta al guardado
+        # si esa vigia es NUEVA o si ya estaba. Aqui se hace lo mismo, no se inventa nada.
+        # Si alguna roja YA ESTABA GUARDADA, eso si es romper algo que estaba verde: se frena.
+        rojos = []
+        for linea in salida.splitlines():
+            linea = linea.strip()
+            if linea.startswith(("FAILED", "ERROR")):
+                arch = linea.split("::")[0].strip()
+                for pre in ("FAILED", "ERROR"):
+                    if arch.startswith(pre):
+                        arch = arch[len(pre):].strip()
+                        break
+                arch = arch.replace("\\", "/")
+                if arch and arch not in rojos:
+                    rojos.append(arch)
+        if not rojos:
+            return False, (ultima[0] if ultima else "sin salida")
+        nuevas, ya_estaban = [], []
+        for arch in rojos:
+            try:
+                rr = subprocess.run(["git", "ls-files", "--error-unmatch", "--", arch],
+                                    cwd=raiz, capture_output=True, text=True, timeout=30)
+                if rr.returncode != 0:
+                    nuevas.append(arch)
+                else:
+                    ya_estaban.append(arch)
+            except Exception:
+                ya_estaban.append(arch)
+        if ya_estaban:
+            return False, (ultima[0] if ultima else "sin salida")
+        return True, ("vigias recien escritas y todavia sin su pieza, que es el metodo y no "
+                      "una averia: " + "; ".join(nuevas))
     except subprocess.TimeoutExpired:
         return None, "las vigias tardaron demasiado"
     except Exception as e:

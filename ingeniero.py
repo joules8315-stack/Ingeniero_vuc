@@ -142,11 +142,44 @@ def vigias(apodo, cuando="antes"):
               f"test_vigia_*.py de la raiz)")
     r = subprocess.run([sys.executable, "-m", "pytest", "-q"] + objetivo,
                        cwd=raiz, capture_output=True, text=True)
-    ultima = [l for l in (r.stdout or "").splitlines() if l.strip()][-1:]
+    _salida = (r.stdout or "") + (r.stderr or "")
+    ultima = [l for l in _salida.splitlines() if l.strip()][-1:]
     resumen = ultima[0] if ultima else "sin salida"
+    # UNA VIGIA RECIEN NACIDA NO ES UNA AVERIA (Julio, 2026-09-09, y lo tuvo que repetir varias
+    # veces). El metodo manda escribir la vigia PRIMERO y que nazca ROJA: una vigia que nace
+    # verde no probo nada. Este mando devolvia fallo por esas rojas, y quien lo llamaba creia
+    # que habia algo roto. Se distingue igual que en arnes/guardia_de_guardado.py: se le
+    # pregunta al guardado si esa vigia es NUEVA o si ya estaba. Si ya estaba, eso SI es romper
+    # algo que estaba verde y se sigue devolviendo fallo.
+    _nuevas, _ya_estaban = [], []
+    if r.returncode != 0:
+        for _ln in _salida.splitlines():
+            _ln = _ln.strip()
+            if _ln.startswith(("FAILED", "ERROR")):
+                _a = _ln.split("::")[0].strip()
+                for _p in ("FAILED", "ERROR"):
+                    if _a.startswith(_p):
+                        _a = _a[len(_p):].strip()
+                        break
+                _a = _a.replace("\\", "/")
+                if not _a or _a in _nuevas or _a in _ya_estaban:
+                    continue
+                try:
+                    _rr = subprocess.run(["git", "ls-files", "--error-unmatch", "--", _a],
+                                         cwd=raiz, capture_output=True, text=True, timeout=30)
+                    if _rr.returncode != 0:
+                        _nuevas.append(_a)
+                    else:
+                        _ya_estaban.append(_a)
+                except Exception:
+                    _ya_estaban.append(_a)
+    if _nuevas and not _ya_estaban:
+        resumen += "  (rojas recien escritas, todavia sin su pieza: es el metodo, no una averia)"
     print(f"VIGIAS de {apodo} ({cuando}): {resumen}")
     estado.apuntar(**{f"vigias_{cuando}": resumen})
-    return 0 if r.returncode == 0 else 1
+    if r.returncode == 0:
+        return 0
+    return 1 if _ya_estaban or not _nuevas else 0
 
 
 def resolver(apodo, problema):
