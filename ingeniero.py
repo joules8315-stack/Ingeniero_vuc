@@ -397,8 +397,36 @@ def main():
         from cerebro import router as _rj
         from cuerpo import obrero as _oj
         _proy, _asunto = sys.argv[2], " ".join(sys.argv[3:])
-        _paq = _rj.a_texto(_rj.armar(_proy, _asunto))
-        _hecho = {"archivo": "(ya aplicado)", "diagnostico": _asunto,
+        # AL CEREBRO SOLO LE LLEGA LO SUYO (Julio, 2026-09-09, repetido varias veces).
+        # CAUSA RAIZ MEDIDA ESE DIA: esta linea cogia el encargo ENTERO y lo usaba como si
+        # fuera "el problema" para que el buscador le armara material. Resultado con numeros:
+        #     lo que se mandaba .......  7.447 letras (el trabajo a juzgar, ya completo)
+        #     el paquete que le pegaba  24.433 letras
+        #     lo que le llegaba ......  27.785 letras  -> solo el 27% era el encargo
+        # Con ese tamano NO LE CABE a ninguno de los cuatro cerebros gratis (aguantan de 19.000
+        # a 30.314): se les salta a todos EN SILENCIO, contesta el de pago, y como no queda
+        # nadie mas SE JUZGA A SI MISMO. Y juzgo mal: dijo "errores de sintaxis graves" sobre un
+        # archivo que compila y cuyas vigias pasan.
+        # Y hay mas: cuando se pide juzgar trabajo YA HECHO, el encargo TRAE DENTRO el codigo.
+        # El paquete no anade nada, solo peso.
+        # LA CURA YA EXISTIA Y NADIE LA LLAMABA: arnes/asignador.py, construido el 2026-09-08,
+        # sabe recortar dejando lo necesario y sabe elegir un cerebro al que le quepa. Aqui se
+        # enchufa. Si por lo que sea no estuviera, se sigue como antes y nada se bloquea.
+        try:
+            sys.path.insert(0, os.path.join(AQUI, "arnes"))
+            import asignador as _asig
+            _paq = _asig.armar_encargo({"objetivo": _asunto, "prueba": "juicio de trabajo hecho"},
+                                       material="")
+        except Exception:
+            _paq = _rj.a_texto(_rj.armar(_proy, _asunto))
+        # EL ENCARGO IBA DOS VECES (Julio, 2026-09-09). Segundo fallo del mismo dia, cazado
+        # midiendo: el texto entero se metia AQUI otra vez, en el diagnostico, ademas de ir ya
+        # en el encargo de arriba. Al auditor le llegaba duplicado: 7.775 del encargo mas 7.447
+        # del diagnostico mas el texto fijo, y volvia a pasarse del tope aunque el recorte
+        # estuviera bien hecho. Recortar por un lado y duplicar por otro no sirve de nada.
+        # Aqui va solo el titular; el detalle ya viaja en el encargo.
+        _hecho = {"archivo": "(ya aplicado)",
+                  "diagnostico": _asunto[:300],
                   "cambio": "el trabajo YA esta en el disco y sus vigias estan verdes",
                   "texto_viejo": "", "texto_nuevo": ""}
         _aud, _quien, _avisos = _oj.auditar(_paq, _hecho)

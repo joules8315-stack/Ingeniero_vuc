@@ -35,7 +35,13 @@ if AQUI not in sys.path:
 # Lo que aguanta el encargo entero. Los cerebros gratis medidos aguantan 19.042 y 20.169
 # letras: con mas, se les salta a TODOS en silencio y acaba escribiendo y revisando el mismo
 # cerebro de pago. Medido el 2026-09-08: eso costo dos o tres rondas por cada cambio.
-TOPE_LETRAS = 19000
+# CORREGIDO EL 2026-09-09, PROBANDOLO DE VERDAD: 19.000 NO BASTABA. Al encargo se le pega
+# DESPUES el texto fijo que se le manda al auditor, que pesa 3.350 letras. Con el tope en
+# 19.000 lo que le llegaba de verdad eran 19.209 y se pasaba por 167 letras del cerebro que
+# aguanta 19.042: se le saltaba igual. Un tope que no cuenta lo que se anade despues no es un
+# tope. Se deja sitio para eso y un margen, y se comprueba MIDIENDO lo que llega, no lo que
+# se manda.
+TOPE_LETRAS = 15000
 
 # Cuantas veces se le insiste al mismo cerebro antes de parar y avisar a Julio.
 INTENTOS = 3
@@ -137,9 +143,18 @@ def armar_encargo(fallo, material, intento=1):
     por el FINAL del material, que es donde vive el relleno, conservando el trozo de la pieza.
     """
     f = fallo or {}
+    # EL OBJETIVO TAMBIEN SE RECORTA (Julio, 2026-09-09). Fallo real medido ese dia: el tope
+    # solo se aplicaba al material, y el objetivo entraba ENTERO. Cuando se pide juzgar trabajo
+    # ya hecho, el objetivo lleva dentro el codigo a juzgar: 7.447 letras coladas por la puerta
+    # de atras. Un tope que deja una puerta abierta no es un tope.
+    # Se conserva el PRINCIPIO del objetivo, que es donde se dice que tenia que pasar.
+    _obj = str(f.get("objetivo") or "(no se pudo leer el mensaje de la prueba)")
+    _sitio_obj = int(TOPE_LETRAS * 0.6)
+    if len(_obj) > _sitio_obj:
+        _obj = _obj[:_sitio_obj] + "\n  ... [se recorto para que le quepa a un cerebro gratis]"
     cabecera = "\n".join([
         "OBJETIVO: esto es lo que tenia que pasar y no paso.",
-        "  " + str(f.get("objetivo") or "(no se pudo leer el mensaje de la prueba)"),
+        "  " + _obj,
         "",
         "LO QUE HAY: la prueba %s del archivo %s se pone ROJA."
         % (f.get("prueba") or "?", f.get("archivo") or "?"),
