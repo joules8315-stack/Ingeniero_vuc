@@ -1,250 +1,55 @@
-2026-09-11 14:28 | PARA OPENCODE - EL PLAN CAMBIA. LEELO OTRA VEZ: TRAE UN ANEXO NUEVO AL FINAL.
-
-Julio enseño una lista de 9 capacidades que quiere y pregunto cuales tiene ya. Las medi una por
-una. Marcador: 1 bien, 6 a medias, 2 no existen.
-
-LO QUE ESTO CAMBIA PARA TI:
-La FASE 1 (despertar lo dormido) vale MUCHO mas de lo que parecia. Lo que le falta a Julio no es
-capacidad: es ENCHUFE. El director, el orquestador y el motor de preguntas ya estan escritos y
-DURMIENDO. Despertarlos le devuelve media lista sin escribir casi nada nuevo, y ademas es gratis
-porque son cuentas.
-
-SOLO HAY TRES COSAS QUE HAY QUE CONSTRUIR DE CERO:
- 1. El motor de automatizaciones (la regla "si pasa esto, haz aquello"). NO EXISTE NI UNA.
-    Es el que mas rinde: se hace una vez y sostiene los seguimientos y media lista.
- 2. Las citas: disponibilidad, reservar, confirmar, recordar. Cero. Lo que hay es calendario
-    para programar publicaciones, que no es lo mismo.
- 3. Que WhatsApp mire hacia el CLIENTE. Hoy solo sirve para que Julio de ordenes desde el movil.
-
-EL ORDEN NO CAMBIA: FASE 0 primero (devolver las 6 piezas y los 7 guardianes del jefe que
-coordina). Sobre un jefe sin su puerta de permiso no se construye un CRM.
-
-Y una cosa mas: Julio decidio que EL COPISTA CUENTA. Si el cambio ya viene decidido al detalle,
-lo aplica el copista, gratis, y eso vale igual que un veredicto del equipo. Ya esta reparado en
-el supervisor del Ingeniero, con dos guardianes que nacieron rojos. Usalo: te ahorra rondas.
-
-El plan entero, con el anexo, va debajo.
-
-======================================================================
-
-# PLAN MAESTRO — 2026-09-11 (orden de Julio, 5 puntos)
-
-> *"1) Pon todo el plan en el canal y que el ayudante nuevo se ponga a hacerlo, tú encárgate de
-> verificar que el equipo, arnés, vigilantes, leyes, todo, absolutamente todo marche sobre
-> ruedas. Que todo funcione, que 2) todo esté conectado, que nada esté huérfano o dormido.
-> 3) Que se hayan reemplazado todas las IA que no deben estar por programas. 4) El generador de
-> prompts y de skills y programas debe ser un programa que esté analizando qué necesita el
-> proyecto y crear las habilidades suficientes para llevarlo a cabo. Esto legíslalo, vigílalo,
-> que se cumpla. 5) Que todas las skills del CRM estén; encárgate de planificar, crear la
-> arquitectura, trazar el mapa, legislar fuerte, poner candado, crear vigías, programas, para
-> que esto sea un CRM dentro del DMM, que sea muy fácil de usar, que cree automatizaciones."*
-
----
-
-## QUIÉN HACE QUÉ (no se negocia)
-
-| Quién | Su trabajo |
-|---|---|
-| **OPENCODE** | **CONSTRUYE.** Todas las fases de abajo, en orden |
-| **CLAUDE** | **VERIFICA.** No construye en el carril de opencode. Mide, caza lo huérfano, corre los guardianes, legisla y frena |
-
-**Regla que manda sobre el reparto:** ninguna fase se da por hecha con la palabra de nadie. Se da
-por hecha con **un guardián que se pone rojo si se deshace**.
-
----
-
-# FASE 0 — DEVOLVER LO PERDIDO (bloquea todo lo demás)
-
-**Nada empieza hasta que esto esté.** El 11-sep el jefe que coordina del DMM perdió **6 piezas de
-código y 7 guardianes** en un solo guardado (`d303507`), y se selló como "T16 CERRADO, completo y
-verde".
-
-**Piezas a devolver en `cuerpo/ceo.py`:** la clase `Ceo` con `__init__`, `necesita_aprobacion`,
-`aprobar`, `puede_ejecutar`, `ejecutar` (y `apuntar`).
-
-**Guardianes a devolver en `vigias/test_vigia_ceo.py`:** `test_no_ejecuta_sin_aprobacion`,
-`test_publicar_siempre_pide_aprobacion`, `test_lo_caro_pide_aprobacion_humana`,
-`test_no_gasta_mas_del_presupuesto`, `test_aprueba_y_ejecuta`, `test_enruta_por_lo_que_la_tarea_hace`,
-`test_sin_casa_va_a_gobierno`.
-
-**Encima de eso** (no en su lugar) va la puerta única `puede_salir(empresa, formato, aprobado)`,
-que junta permiso + presupuesto y contesta SÍ/NO con su motivo, más: preguntar si el permiso YA
-SE DIO (no solo si hace falta) y DESCONTAR lo gastado.
-
-**Ley que manda:** `CONTRATO_SIN_SU_PERMISO_NO_SALE_NADA.md`. El formato no decide.
-
-**Cómo se verifica (Claude):** se le da al revisor del arnés el par viejo/nuevo y **no puede
-aparecer** el aviso "DESAPARECE LO QUE YA ESTABA". Y los 7 guardianes tienen que existir y pasar.
-
----
-
-# FASE 1 — DESPERTAR LO DORMIDO (punto 2 de Julio)
-
-**Medido hoy con `skills/nace_conectada.py` (ya existe, NO se duplica):**
-
-| Dónde | Huérfanas | De |
-|---|---|---|
-| Ingeniero VUC | **23** | 85 |
-| DMM (el negocio) | **17** | 103 |
-
-**Lo más grave del Ingeniero: las 12 habilidades están dormidas. Ninguna la llama nadie.**
-`cazar_el_humo`, `falta_en_el_material`, `frenos_con_culpable`, `julio_pudo_trabajar`,
-`leyes_sin_vigia`, `medir_acciones`, `medir_al_equipo`, `medir_navegador`, `nace_conectada`,
-`orden_o_texto_pegado`, `quien_sirve_de_verdad`, `via_unica`.
-Y además: `candado_archivo_del_veredicto`, `guardia_de_guardado`, `limpiar_credenciales`, `loop`,
-`medir_precision`, `mirada_completa`, `permiso_editar`, `renovar_permiso_pruebas`, `supervisor`,
-`cuerpo/lecciones`, `mapa/auditoria_proyecto`.
-
-**Huérfanas del DMM (las gordas primero):** `orquestador`, `director`, `dashboard`, `rag`,
-`embeddings`, `indice_semantico`, `motor_preguntas`, `imagenes`, `meta_oauth`, `auth_supabase`,
-`captador_correo`, `skills`, `validadores`, `revisor`, `rotacion`, `redes_mock`, `compilar_mapa`.
-
-**Qué se hace con cada una, una por una — solo hay TRES salidas y hay que elegir una:**
-1. **ENCHUFARLA:** alguien real la llama en el camino real. Con guardián que lo demuestre
-   ejecutando (espía), nunca buscando la palabra.
-2. **BORRARLA:** si duplica a otra o ya no sirve. Se dice qué la sustituye.
-3. **DECLARARLA HERRAMIENTA DE MANO:** se lanza a mano a propósito (las de medir). Queda en una
-   lista blanca **escrita**, no en la cabeza de nadie.
-
-**Prohibido dejarla como está.** Crear y enganchar son un solo trabajo.
-
-**Cómo se verifica (Claude):** se vuelve a correr el contador y el número tiene que **bajar**, con
-la lista blanca descontada. Un número que no baja es una fase no hecha.
-
----
-
-# FASE 2 — QUITAR LAS IA QUE SOBRAN (punto 3 de Julio)
-
-**Medido:** en el DMM hay **30 piezas que llaman a una IA**.
-
-**Ley que ya existe:** `CONTRATO_MENOS_IA_MAS_PROGRAMA.md` y `CONTRATO_CUENTA_O_JUICIO.md`.
-**La regla, en una línea:** si la respuesta se puede sacar contando, comparando o mirando una
-tabla, **es una CUENTA y la hace un programa, gratis**. Solo lo que de verdad hay que pensar va a
-una IA.
-
-**Trabajo, pieza por pieza, de esas 30:** decir si lo que le pide a la IA es cuenta o juicio.
-- **Cuenta** → se reemplaza por programa. Se mide lo que se ahorra.
-- **Juicio** → se deja, y **se escribe por qué** es juicio. Sin ese "por qué", se reemplaza.
-
-**Cómo se verifica (Claude):** un guardián que cuente las llamadas reales a la nube en un camino
-completo, con espía. Si el número no baja, no se hizo.
-
----
-
-# FASE 3 — EL FABRICANTE DE HABILIDADES (punto 4 de Julio)
-
-**Lo que pide Julio:** que el que genera los encargos, las habilidades y los programas **sea un
-programa** que mire qué necesita el proyecto y cree las habilidades que hagan falta.
-
-**Por qué es urgente:** hoy una habilidad nace porque alguien se acuerda. Por eso hay 12 y las 12
-están dormidas. **El fabricante no existe, y el catálogo tampoco.**
-
-**Lo que hay que construir (`skills/fabricante.py`, pieza nueva, requiere el sí de Julio):**
-
-| Paso | Qué hace | Cuenta o juicio |
-|---|---|---|
-| 1 | **Lee el plan del proyecto** y saca las capacidades que exige | cuenta |
-| 2 | **Lee el catálogo** de habilidades que ya existen y lo que cada una sabe hacer | cuenta |
-| 3 | **Resta**: lo que el plan pide menos lo que ya existe = **lo que falta** | cuenta |
-| 4 | Por cada hueco, dice **si es cuenta o juicio** | cuenta (por reglas escritas) |
-| 5 | Si es **cuenta**, escribe el programa. Si es **juicio**, escribe el encargo para el equipo | lo primero, programa; lo segundo, equipo |
-| 6 | **La engancha** y le escribe su guardián. **Nace conectada o no nace** | cuenta |
-
-**Lo que NO hace:** decidir si la habilidad debe existir. Eso lo dice el plan del proyecto, no él.
-
-**Su ley:** `CONTRATO_EL_FABRICANTE_DE_HABILIDADES.md` (se escribe en esta misma vuelta).
-**Su guardián:** se le quita a mano una habilidad del catálogo y el fabricante **tiene que
-detectar el hueco y proponerla**. Si no lo detecta, no sirve.
-**Su candado:** ninguna habilidad nueva entra sin pasar por él, y ninguna entra sin guardián.
-
----
-
-# FASE 4 — EL CRM DENTRO DEL DMM (punto 5 de Julio)
-
-**Lo que ya hay (no se duplica):** `cuerpo/crm.py`, `cuerpo/perfilador_clientes.py`,
-`cuerpo/campana_flujo.py`, `cuerpo/campanas_registro.py`.
-**Lo que NO hay:** carpeta de habilidades en el DMM. Cero.
-
-## La arquitectura, en cuatro capas
-
-| Capa | Qué guarda | Regla dura |
-|---|---|---|
-| **1. La libreta** | quién es cada cliente: contacto, de dónde salió, en qué punto está, su historia entera | Un cliente, **una sola ficha**. Nunca dos |
-| **2. El embudo** | los puntos por los que pasa: contacto → interesado → hablando → propuesta → cliente → perdido | Se mueve de punto **por un hecho**, nunca por una opinión. Y el movimiento queda apuntado con fecha y motivo |
-| **3. Las automatizaciones** | *"si pasa esto, haz aquello"*: nadie contesta en 3 días → recordar; se cierra una venta → pedir reseña | Toda automatización que SALGA a un cliente **pide el permiso de Julio**. Sin excepción de formato |
-| **4. La cara** | una pantalla: lista, ficha, embudo y un botón para cada acción | Si Julio necesita que se lo expliquen, **está mal hecha** |
-
-## Las habilidades del CRM que faltan (cada una con su guardián)
-
-1. **Meter un cliente sin duplicarlo** — casa por correo y teléfono antes de crear. *Cuenta.*
-2. **Mover de punto en el embudo** — con el hecho que lo justifica. *Cuenta.*
-3. **Contar el embudo** — cuántos hay en cada punto y cuánto llevan parados. *Cuenta.*
-4. **Cazar al dormido** — quién lleva más de X días sin moverse. *Cuenta.*
-5. **Escribir el mensaje de seguimiento** — con el contexto del cliente. *Juicio: equipo.*
-6. **Disparar la automatización** — la regla que enlaza hecho con acción. *Cuenta.*
-7. **La ficha completa de un cliente** — todo su historial en una pantalla. *Cuenta.*
-8. **Importar clientes de una hoja** — sin duplicar, diciendo qué descartó y por qué. *Cuenta.*
-
-**Seis de ocho son CUENTAS: las hace un programa, gratis.** Solo una necesita una IA.
-
-## Las leyes del CRM (se escriben, con candado y guardián)
-
-1. **Un cliente, una ficha.** Duplicar es el fallo número uno de todo CRM.
-2. **Un movimiento sin motivo no es un movimiento.** Queda la fecha y el hecho.
-3. **Nada sale al cliente sin el sí de Julio.** Ni un texto. Es la misma ley de siempre.
-4. **Un dato que entra, entra validado** (correo y teléfono). `cuerpo/validadores.py` ya existe y
-   está dormido: **se enchufa aquí**, no se escribe otro.
-5. **Si Julio no sabe usarlo sin que se lo expliquen, no está terminado.**
-
----
-
-## EL ORDEN, Y NO SE SALTA
-
-**Fase 0 → Fase 1 → Fase 2 → Fase 3 → Fase 4.**
-
-Construir el CRM encima de un jefe que perdió su puerta de permiso, con 17 piezas dormidas
-debajo, es construir sobre arena. **Fase 0 primero, siempre.**
-
-## CÓMO SE CIERRA CADA FASE (las tres preguntas, ya legisladas)
-
-1. **¿Usó el equipo?** Uno escribe, otro distinto audita.
-2. **¿Rompió algo?** Todos los guardianes, no solo el nuevo.
-3. **¿Borró algo?** Lo dice solo el revisor del arnés, con nombre y apellido.
-
-Y la cuarta, que es la de Julio: **¿lo vio funcionar con sus ojos?** Sin eso no se sella.
-
----
-
-# ANEXO — LAS NUEVE CAPACIDADES QUE JULIO QUIERE, MEDIDAS HOY
-
-Julio enseñó una lista de nueve capacidades y preguntó cuáles tiene ya su DMM. **Medido pieza
-por pieza el 2026-09-11.** Una pieza dormida NO cuenta como "lo hace".
-
-| Capacidad | Hoy | Lo medido |
-|---|---|---|
-| Crear páginas profesionales | **SÍ** | Lo más maduro. Secciones que no se repiten, precios reales, marca. **8 guardianes** |
-| Crear CRM y procesos de venta | **A medias** | La libreta sabe **4 cosas**: apuntar, marcar vendido, abrir y listar. El estado lo mueve Julio a mano |
-| Crear automatizaciones | **Casi no** | Lo que hay es un **calendario para programar publicaciones**. Reglas "si pasa esto, haz aquello": **CERO** |
-| Automatizar WhatsApp | **A medias** | Va **al revés**: sirve para que Julio dé órdenes desde el móvil. **No atiende clientes** |
-| Crear agentes de IA | **A medias, y tocado** | El jefe que coordina está incompleto. El director y el orquestador, **dormidos** |
-| Crear seguimientos automáticos | **Casi no** | Hay pantalla, **no hay motor**. Nada dice "lleva 5 días callado" |
-| Crear calendarios / citas | **NO** | Cero. Ni disponibilidad, ni reserva, ni confirmación |
-| Crear prácticamente todo el sistema | **A medias** | Sabe escribir proyectos nuevos. Pero **el que arma el plan está dormido** y el fabricante no existe |
-| Decir qué necesita el negocio antes de construir | **A medias** | El asesor va y tiene 3 guardianes. **El motor de preguntas está dormido** |
-
-**Marcador: 1 bien de 9. Seis a medias. Dos no existen.**
-
-## LO QUE ESTO CAMBIA EN EL PLAN
-
-**La FASE 1 vale mucho más de lo que parecía.** Lo que le falta a Julio **no es capacidad: es
-enchufe**. El director, el orquestador y el motor de preguntas **ya están escritos y durmiendo**.
-Despertarlos devuelve **media lista** sin escribir casi nada nuevo.
-
-**Solo hay TRES cosas que de verdad hay que construir desde cero:**
-
-1. **El motor de automatizaciones** — la regla "si pasa esto, haz aquello". Sostiene los
-   seguimientos y media lista. **Es el que más rinde: se hace una vez y sirve para todo.**
-2. **Las citas** — disponibilidad, reservar, confirmar, recordar. No existe nada.
-3. **Que WhatsApp mire hacia el cliente**, no solo hacia Julio.
-
-**El resto es despertar y terminar, no inventar.** Y eso, además, es gratis: son cuentas.
+2026-09-11 15:59 | ESTADO 2026-09-11 (Claude) - CERRADO EL GRIFO DE LAS PRUEBAS. OS AFECTA A LOS DOS.
+
+== QUE PASABA ==
+Guardar hace correr a los guardianes. Los guardianes escribian en la memoria DE VERDAD. Asi que
+al terminar de guardar YA habia cosas sin guardar y el candado volvia a frenar: se guardara lo
+que se guardara, nunca quedaba limpio. Bucle sin salida.
+
+== LO MEDIDO (no supuesto) ==
+Huella de seis cuadernos -> correr los 661 guardianes sin tocar nada mas -> CINCO DE SEIS habian
+cambiado. Las pruebas escribian en lo real.
+
+Y la ley YA EXISTIA en esta casa, de un fallo que costo 27 de 32 errores aprendidos: "no volver a
+dejar que una prueba escriba en la memoria de verdad". Se cumplio para cinco cosas (contexto,
+casa, contador del protocolo, llave de Julio, cuaderno del equipo) y NUNCA para los cuadernos.
+
+== POR QUE ES RECURRENTE Y VOLVIO (esto es lo que hay que aprender) ==
+Se "curo" dos veces, 31-ago y 02-sep. LAS DOS VECES la cura fue la misma: PERDONAR los cuadernos
+en el candado de guardar para que dejara de gritar. Eso tapa el ruido, NO cierra el grifo. Por
+eso volvia en cuanto aparecia un cuaderno nuevo y nadie se acordaba de apuntarlo a mano.
+Esta es la tercera vez y la primera que va a la causa.
+
+== LO QUE SALIO AL ABRIRLO, Y OS TOCA A LOS DOS ==
+DOS de esos cuadernos (el de llamadas y el de pruebas reales) YA TENIAN su puerta de desvio
+construida (INGENIERO_CUADERNO_TEST, INGENIERO_PRUEBAS_TEST) y NADIE LA HABIA ENCHUFADO NUNCA.
+Construida, con buena intencion, y sin conectar.
+
+Es la MISMA enfermedad que ya medimos hoy: 23 piezas dormidas en el Ingeniero (las 12 habilidades
+entre ellas), 17 en el DMM, y estas dos puertas. Se construye, no se conecta, y se da por
+terminado. Por eso la regla del fabricante de habilidades (NACE CONECTADA O NO NACE) no es un
+detalle de estilo: es la enfermedad principal de esta casa.
+
+== LO QUE HICE ==
+- vigias/conftest.py: los seis cuadernos desviados a carpeta de usar y tirar, por dentro Y por
+  variable de entorno (lo de dentro no viaja a un programa lanzado aparte; el entorno si).
+- arnes/candados_medicion.py: le faltaba la puerta de desvio y se le puso. Era el unico sin ella,
+  y por eso seguia ensuciandose cuando una prueba lanza un candado como programa aparte.
+- arnes/candado_commit.py: faltaban dos cuadernos en la lista de perdonados.
+- Guardian nuevo en vigias/test_vigia_commit_limpio.py: nacio ROJO nombrando los seis cuadernos
+  exactos. Comprueba tambien lo contrario: ESTADO.json (donde ibamos) NO se perdona nunca, porque
+  es trabajo de verdad.
+
+== COMPROBADO DESPUES ==
+Los 661 guardianes en verde y los cuadernos INTACTOS. Lo unico que se mueve es el contador de
+cuando un candado frena a alguien de verdad (cazadas 38 -> 39), que es su trabajo.
+
+== LAS TRES RESPUESTAS DEL LOOP ==
+USE EL EQUIPO? Lo aplico el COPISTA, que desde hoy CUENTA por decision de Julio (ya reparado en
+  el supervisor, con dos guardianes que nacieron rojos).
+ROMPI ALGO? NO. 661 pasan, 0 fallan.
+BORRE ALGO? NO. Solo se anadio. Comprobado con la cuenta 5 del revisor.
+
+== OPENCODE: SIGUE CON EL PLAN ==
+FASE 0 primero: devolver las 6 piezas y los 7 guardianes del jefe que coordina. Cuando cierres,
+avisa con las tres respuestas y te reviso. Y ojo con la enfermedad de arriba: si construyes algo
+y no lo enchufas, no cuenta como hecho.
