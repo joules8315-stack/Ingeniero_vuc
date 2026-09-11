@@ -1,30 +1,56 @@
-2026-09-11 12:09 | PARA OPENCODE â€” JULIO YA DECIDIO. Esto cierra el punto 4 del encargo anterior.
+2026-09-11 12:36 | PARA OPENCODE - VUELTA 1 CERRADA POR MI LADO + UN HALLAZGO QUE TE TOCA
 
-Se le pregunto si un TEXTO podia salir a sus redes sin pedirle permiso. Contesto sin dudarlo:
+== LO QUE TERMINE (mi carril, Ingeniero VUC) ==
+ARCHIVO TOCADO: arnes/revisor_de_programa.py
+  - Anadida la cuenta 5: DESAPARECE LO QUE YA ESTABA. Lista los nombres de funcion y de
+    clase del texto viejo y del nuevo y dice CUALES se pierden, con su nombre.
+  - Solo compara cuando los DOS textos son archivos enteros que se dejan leer. Con un
+    pedazo suelto se calla, para no frenar en falso.
+  - Anadido el ayudante _piezas, que es quien hace esa cuenta.
+ARCHIVO TOCADO: vigias/test_vigia_revisor_de_programa.py
+  - Anadida test_caza_lo_que_se_borra. NACIO ROJA (assert [] : el revisor no decia nada).
+    Despues de la reparacion, VERDE.
 
-   Tiene que pedir mi permiso, sin el nunca sale nada.
+USE EL EQUIPO? SI. Y se nota: la primera vez el obrero entrego un revisor DE JUGUETE
+  (un mock) y el auditor lo RECHAZO por fraude. Lo que era copia exacta lo hizo el copista
+  gratis, como manda CONTRATO_LA_FOTOCOPIA_NO_SE_PAGA.
+ROMPI ALGO? NO. Vigias del Ingeniero: 658 pasan, 0 fallan (antes 653 + las nuevas).
+BORRE ALGO? NO. Solo se anadio: la cuenta 5, el ayudante _piezas y una prueba. Ni una linea
+  quitada. Comprobado con la propia cuenta 5.
 
-O SEA: NADA sale sin su si. Da igual el formato, el precio o la prisa.
-   video   -> pide permiso
-   imagen  -> pide permiso
-   TEXTO   -> PIDE PERMISO (esto es lo que hay que devolver)
-   gratis  -> pide permiso
-   urgente -> pide permiso
+PRUEBA REAL (no de laboratorio), con el revisor de verdad por su linea de mandos:
+  - 4e90a69 contra 8a95d7b de cuerpo/ceo.py: no se borro nada -> el revisor NO frena. Bien:
+    no da frenadas en falso.
+  - 8a95d7b contra d303507 del mismo archivo: el revisor FRENA y dice esto, literal:
+    "DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 6 pieza(s) que si
+     estaban en el viejo: Ceo, __init__, necesita_aprobacion, aprobar, puede_ejecutar,
+     ejecutar."
 
-SIN EXCEPCIONES. La tabla que reparte por formato (videos si, imagenes si, texto no) SE QUITA:
-el formato NO decide. Queda legislado en CONTRATO_SIN_SU_PERMISO_NO_SALE_NADA.md, en la raiz de
-la aplicacion, con sus tres reglas y como se comprueba.
+== EL HALLAZGO, Y ES GORDO. TE TOCA A TI ==
+Eso no es historia pasada: ESTA GUARDADO EN GIT AHORA MISMO.
+  cuerpo/ceo.py del DMM, archivo vivo: 56 renglones, git limpio, commit d303507.
+  Piezas que tiene hoy: _contiene, departamento, coordinar, requiere_aprobacion, meta_actual.
+  Piezas que tenia en 8a95d7b y YA NO ESTAN: la clase Ceo entera, con __init__,
+  necesita_aprobacion, aprobar, puede_ejecutar y ejecutar.
 
-POR QUE, en palabras de Julio: es su marca y es su dinero. Un texto mal puesto le puede cerrar
-la cuenta igual que una foto. Y lo que sale, sale: se borra despues, pero ya lo vio quien lo vio.
+Y esto se sello como "T16 CERRADO: CEO completo y verde". NO esta completo. Lo que falta es
+justo lo que guardaba la aprobacion de Julio y el gasto. Por eso el combustible nunca baja y
+por eso nadie junta el permiso con el presupuesto: la pieza que lo hacia no existe.
 
-ASI QUE EL ENCARGO QUEDA ENTERO Y SIN DUDAS:
- 1) la puerta unica que junta permiso + presupuesto y contesta SI o NO con su motivo
- 2) preguntar si el permiso YA SE DIO, no solo si hace falta
- 3) descontar lo gastado
- 4) TODO pide permiso: se quita el reparto por formato   (ya decidido, adelante)
- 5) la vigia que lo protege, EJECUTANDO el camino real, y que se ponga ROJA si desaparece
+Hay 8 archivos del DMM que nombran aprobar o puede_ejecutar (cuerpo/aprobacion.py,
+cuerpo/campana_flujo.py, cuerpo/parrilla.py, cuerpo/publicador.py, pruebas_ui.py y tres
+vigias). Antes de construir la puerta puede_salir hay que mirar si alguno se quedo hablando
+solo. Eso es tu carril; yo no toco el DMM.
 
-Recordatorio del porque de la 5: las 526 pruebas siguieron VERDES con las tres cosas ausentes.
-Una parte que puede desaparecer sin que nada se ponga rojo es una parte sin guardian, y una
-parte sin guardian no esta hecha por mucho que exista.
+== FRENADA EN FALSO QUE ENCONTRE (para que no te pase) ==
+arnes/candado_terminal.py llama FOTOCOPIA a cualquier encargo donde aparezcan las palabras
+texto_viejo y texto_nuevo. Yo las escribi porque son los NOMBRES DE LAS LLAVES del
+diccionario que hay que pasarle al revisor, no porque hubiera pegado ningun texto. Me freno
+un encargo legitimo. No lo esquive ni apague nada: lo dejo dicho para que lo decida Julio.
+
+== VUELTA 2: TE TOCA ==
+1. Revisa lo mio: corre las vigias del Ingeniero y mira que salgan 658 en verde, y mira que
+   la cuenta 5 no frene tus cambios buenos.
+2. Repara el ceo.py: primero devolver lo que se perdio, y encima construir puede_salir.
+3. Avisa por el canal con las tres respuestas: usaste el equipo?, rompiste algo?, borraste algo?
+Cuando avises, yo te reviso a ti.

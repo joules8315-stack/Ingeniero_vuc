@@ -112,6 +112,21 @@ def _leidos(arbol):
     return fuera
 
 
+def _piezas(arbol):
+    """Los nombres de funcion y de clase que hay en ese texto, en el orden en que salen.
+
+    Es la cuenta que faltaba. Comparando esta lista antes y despues se ve, sin gastar ni una
+    IA, si un cambio se lleva por delante algo que ya estaba. Se miran tambien las de dentro
+    (los metodos de una clase), porque el 2026-09-11 lo que desaparecio fue justo eso.
+    """
+    fuera = []
+    for n in ast.walk(arbol):
+        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            if n.name not in fuera:
+                fuera.append(n.name)
+    return fuera
+
+
 def revisar(propuesta, tarea=""):
     """Las cuatro cuentas. Devuelve una LISTA de frases; vacia si no encuentra nada.
 
@@ -191,6 +206,41 @@ def revisar(propuesta, tarea=""):
             if palabra not in viejo and palabra not in nuevo:
                 fallos.append("NO HACE LO QUE SE PIDIO: el encargo habla de '%s' y esa palabra "
                               "no aparece ni en el texto viejo ni en el nuevo." % palabra)
+
+        # 5 — DESAPARECE LO QUE YA ESTABA. EL AGUJERO MEDIDO EL 2026-09-11: este revisor
+        # vigilaba que lo NUEVO estuviera bien y NO vigilaba que lo VIEJO siguiera ahi. Por
+        # ese hueco se perdio la puerta del jefe que coordina del DMM (paso de 81 a 56
+        # renglones sin guardar) y NINGUN guardia dijo nada: las 526 vigias siguieron verdes.
+        # Ni el revisor, ni el que aplica los cambios, ni el copista miraban los borrados.
+        #
+        # Es una CUENTA, no un juicio: se listan los nombres de funcion y de clase de cada
+        # texto y se dice cuales estaban y ya no estan. SI es querido borrarlos, se dice y se
+        # sigue; lo que no puede pasar es que se pierdan en silencio.
+        #
+        # SOLO SI LOS DOS TEXTOS SON ARCHIVOS ENTEROS QUE SE DEJAN LEER. Con un pedazo suelto
+        # no se puede comparar nada y acusar seria mentir: es la misma leccion de las dos
+        # frenadas en falso del 2026-09-08. Cuando no se puede comprobar, se calla.
+        if viejo.strip() and not es_un_pedazo(viejo):
+            arbol_viejo = None
+            try:
+                arbol_viejo = ast.parse(viejo)
+            except SyntaxError:
+                try:
+                    arbol_viejo = ast.parse(textwrap.dedent(viejo))
+                except SyntaxError:
+                    arbol_viejo = None
+            except Exception:
+                arbol_viejo = None
+            if arbol_viejo is not None:
+                quedan = _piezas(arbol)
+                perdidas = [n for n in _piezas(arbol_viejo) if n not in quedan]
+                if perdidas:
+                    fallos.append(
+                        "DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante %d "
+                        "pieza(s) que si estaban en el viejo: %s. Si ese borrado es querido, "
+                        "hay que decirlo por escrito; si no, es trabajo que se pierde en "
+                        "silencio, que fue lo que paso el 2026-09-11."
+                        % (len(perdidas), ", ".join(perdidas)))
     except Exception as e:      # un revisor que revienta deja pasar todo
         fallos.append("El revisor no pudo terminar la revision: %s" % str(e)[:140])
     return fallos

@@ -117,3 +117,31 @@ def test_no_opina_solo_cuenta():
     assert "cuenta" in doc and "juicio" in doc, (
         "el revisor tiene que decir POR ESCRITO que solo hace cuentas y que el juicio sigue "
         "siendo del auditor de IA: el programa SE SUMA, NO SUSTITUYE")
+
+
+def test_caza_lo_que_se_borra():
+    """EL AGUJERO MEDIDO EL 2026-09-11: el revisor vigila que lo NUEVO este bien, pero NO
+    vigila que lo VIEJO siga ahi.
+
+    Asi desaparecio la puerta del jefe que coordina del DMM sin que nadie dijera nada: ni el
+    revisor, ni el que aplica los cambios, ni el copista miran los borrados. Las 526 vigias
+    siguieron verdes.
+
+    Se EJECUTA el camino real (revisar). No se busca ninguna palabra dentro de ningun archivo:
+    eso es lo que prohibe CONTRATO_ENCHUFADO_SE_PRUEBA_EJECUTANDO.
+    """
+    r = _revisor()
+    propuesta = {
+        "archivo": "x.py",
+        "texto_viejo": "def alfa():\n    return 1\n\n\ndef beta():\n    return 2\n\n\ndef gamma():\n    return 3\n",
+        "texto_nuevo": "def alfa():\n    return 1\n\n\ndef beta():\n    return 2\n",
+    }
+    fallos = r.revisar(propuesta, tarea="tocar alfa")
+    assert fallos, (
+        "NO FRENO: el texto nuevo hace DESAPARECER la funcion gamma y el revisor no dijo nada. "
+        "Ese es el agujero exacto por el que el 2026-09-11 se perdio la puerta del jefe que "
+        "coordina, con las 526 vigias en verde.")
+    assert any("gamma" in str(f) for f in fallos), (
+        "FRENO, pero no dijo QUE se pierde. Avisar sin nombrar lo que desaparece no sirve: el "
+        "nombre es lo unico que deja decidir si el borrado es querido o es un destrozo. "
+        "Dijo: %s" % fallos)
