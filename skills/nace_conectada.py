@@ -92,8 +92,15 @@ def llamadas_a(nombre, textos, raiz):
     patrones = [
         re.compile(r"\bimport\s+" + re.escape(nombre) + r"\b"),
         re.compile(r"\bfrom\s+" + re.escape(nombre) + r"\s+import\b"),
-        re.compile(r"\bimport\s+[\w.]+\s*\.\s*" + re.escape(nombre) + r"\b"),
+        re.compile(r"\bimport\s+[\w.]+\s*\s*\.\s*" + re.escape(nombre) + r"\b"),
         re.compile(r"\bfrom\s+[\w.]+\s+import\s+[^\n]*\b" + re.escape(nombre) + r"\b"),
+        # CUARTO FALLO cazado el 2026-09-11 ayudando al DMM (Asesor Marketing): el contador no veia
+        # el enchufe con punto DENTRO del from ("from cuerpo.dashboard import leer_dashboard").
+        # Decia huerfana a dashboard, meta_oauth, orquestador, rag, embeddings, indice_semantico y
+        # redes_mock, que SI estan llamandose desde web/servidor.py. Un contador que manda a reparar
+        # lo que ya esta enchufado es peor que no tenerlo: crear una ruta nueva para conseguir que
+        # el numero baje es inventar trabajo, y es justo lo que la ley prohibe.
+        re.compile(r"\bfrom\s+[\w.]+\s*\.\s*" + re.escape(nombre) + r"\s+import\b"),
         re.compile(r"\b" + re.escape(nombre) + r"\s*\."),
         re.compile(r"\b" + re.escape(nombre) + r"\.py\b"),
     ]
