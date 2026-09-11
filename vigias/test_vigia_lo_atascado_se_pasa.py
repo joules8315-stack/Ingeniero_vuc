@@ -51,8 +51,30 @@ def test_la_ley_recoge_las_tres_ordenes():
     assert "SE LE PASA AL OTRO" in t, "no esta legislado que lo atascado se le pasa al otro"
 
 
+def foco_vigente():
+    """Que manda HOY: la herramienta o los proyectos. Se LEE de la ley, no se supone.
+
+    POR QUE SE CAMBIO (2026-09-11): el foco estaba CONGELADO dentro de esta prueba. Cuando Julio
+    lo levanto y mando trabajar en el DMM, este guardian siguio defendiendo una orden de hacia
+    once dias y freno trabajo que Julio acababa de pedir. Un guardian que defiende una orden
+    vieja contra una nueva no protege: estorba. La propia ley ya decia "solo Julio levanta este
+    foco", asi que lo que hay que mirar es LA LEY, no una lista escrita a mano aqui dentro. Es
+    la misma leccion del nombre del companero escrito a mano: se pregunta a quien lo sabe.
+
+    SI NO SE ENCUENTRA LA LINEA, SE DEVUELVE LO MAS ESTRICTO. Asi borrarla no es la forma de
+    apagar el guardian: sin declaracion, manda la herramienta y las tareas de proyectos frenan.
+    """
+    t = _ley().upper()
+    if "FOCO VIGENTE: PROYECTOS" in t:
+        return "proyectos"
+    return "herramienta"
+
+
 def test_el_foco_se_respeta_en_el_reparto_de_verdad():
-    """No vale decirlo: ninguna tarea viva puede ir contra el foco."""
+    """No vale decirlo: ninguna tarea viva puede ir contra el foco QUE ESTE VIGENTE."""
+    if foco_vigente() == "proyectos":
+        pytest.skip("Julio levanto el foco el 2026-09-11 y mando trabajar en el DMM: la ley lo "
+                    "dice con sus palabras. Volvera a morder en cuanto la ley diga HERRAMIENTA.")
     fuera = []
     for t in _tareas():
         if t.get("estado") not in ("asignada", "entregada", "a_corregir"):
@@ -65,6 +87,27 @@ def test_el_foco_se_respeta_en_el_reparto_de_verdad():
     assert not fuera, (
         "hay tarea(s) vivas que tocan un proyecto de Julio en vez de la herramienta, y el foco "
         "dice que ahora se afina la herramienta: %s" % fuera[:3])
+
+
+def test_el_foco_se_lee_de_la_ley_y_sin_declaracion_manda_lo_estricto():
+    """El guardian del foco no se apaga borrando una linea.
+
+    Si la ley no declara foco, foco_vigente() tiene que decir "herramienta", que es lo estricto.
+    Se EJECUTA la funcion de verdad con un texto de ley de mentira; no se busca ninguna palabra
+    dentro de ningun archivo.
+    """
+    import sys as _s
+    v = _s.modules[__name__]
+    guardado = v._ley
+    try:
+        v._ley = lambda: "una ley cualquiera sin ninguna declaracion de foco"
+        assert v.foco_vigente() == "herramienta", (
+            "SIN DECLARACION TIENE QUE MANDAR LO ESTRICTO: si no, bastaria con borrar una linea "
+            "de la ley para apagar el guardian del foco.")
+        v._ley = lambda: "bla bla FOCO VIGENTE: PROYECTOS bla bla"
+        assert v.foco_vigente() == "proyectos", "no lee el foco que Julio declaro"
+    finally:
+        v._ley = guardado
 
 
 def test_cada_tarea_viva_tiene_un_solo_dueno():

@@ -15,6 +15,35 @@ diccionario, y ahi mismo destapo su propio fallo.
 
 Solo Julio levanta este foco. Nadie lo levanta "porque venia bien para probar".
 
+### FOCO VIGENTE: PROYECTOS
+
+**Julio lo levanto el 2026-09-11, con estas palabras:**
+
+> *"Asignale todos los problemas por resolver, lo pesado, lo que cuesta, a opencode, que
+> investigue, que repare todos los danos de raiz."*
+
+> *"Crea el plan de reparaciones y construccion de todo el DMM, y terminalo con opencode, entre
+> ustedes dos."*
+
+**Que cambia:** desde hoy SI se trabaja sobre el DMM. El plan que manda es `PLAN_DMM_COMPLETO.md`,
+en la raiz del DMM, y las tareas estan repartidas en el reparto de verdad.
+
+**Que NO cambia:** el foco no es una excusa. Sigue prohibido tocar un proyecto de Julio **para
+probar la herramienta**; lo que se levanta es trabajar en el DMM **porque Julio lo ha mandado**,
+con su plan y con sus guardianes.
+
+**Como se vuelve atras:** lo dice Julio, y se cambia esta linea a `FOCO VIGENTE: HERRAMIENTA`.
+Nadie mas la toca.
+
+---
+
+**POR QUE ESTO ESTA ESCRITO AQUI Y NO DENTRO DE UNA PRUEBA (2026-09-11):** el foco estaba
+CONGELADO dentro del guardian, asi que cuando Julio lo levanto, el guardian siguio defendiendo una
+orden de hacia once dias y freno trabajo que Julio acababa de mandar. Un guardian que defiende una
+orden vieja contra una nueva no protege: estorba. **Ahora el guardian LEE esta linea.** Y si no la
+encuentra, se pone en lo mas estricto (la herramienta), para que borrarla no sea la forma de
+apagarlo.
+
 ## 1. LA TAREA SE ASIGNA, NO SE OFRECE
 
 **Julio, 2026-08-31:** *"asignale tarea a cline"*.
