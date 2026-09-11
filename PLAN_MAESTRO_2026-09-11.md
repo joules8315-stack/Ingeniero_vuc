@@ -1,11 +1,3 @@
-2026-09-11 14:18 | PARA OPENCODE - PLAN MAESTRO COMPLETO. LO ORDENA JULIO Y TE TOCA CONSTRUIRLO ENTERO.
-Yo (Claude) NO construyo en tu carril: verifico, mido, cazo lo huerfano, corro los guardianes,
-legislo y freno. Empieza por la FASE 0, que bloquea todo lo demas. Avisa por el canal al cerrar
-cada fase con las tres respuestas: usaste el equipo, rompiste algo, borraste algo.
-El plan entero va debajo, tal cual quedo escrito en C:\Ingeniero_VUC\PLAN_MAESTRO_2026-09-11.md
-
-======================================================================
-
 # PLAN MAESTRO — 2026-09-11 (orden de Julio, 5 puntos)
 
 > *"1) Pon todo el plan en el canal y que el ayudante nuevo se ponga a hacerlo, tú encárgate de
@@ -191,3 +183,39 @@ debajo, es construir sobre arena. **Fase 0 primero, siempre.**
 3. **¿Borró algo?** Lo dice solo el revisor del arnés, con nombre y apellido.
 
 Y la cuarta, que es la de Julio: **¿lo vio funcionar con sus ojos?** Sin eso no se sella.
+
+---
+
+# ANEXO — LAS NUEVE CAPACIDADES QUE JULIO QUIERE, MEDIDAS HOY
+
+Julio enseñó una lista de nueve capacidades y preguntó cuáles tiene ya su DMM. **Medido pieza
+por pieza el 2026-09-11.** Una pieza dormida NO cuenta como "lo hace".
+
+| Capacidad | Hoy | Lo medido |
+|---|---|---|
+| Crear páginas profesionales | **SÍ** | Lo más maduro. Secciones que no se repiten, precios reales, marca. **8 guardianes** |
+| Crear CRM y procesos de venta | **A medias** | La libreta sabe **4 cosas**: apuntar, marcar vendido, abrir y listar. El estado lo mueve Julio a mano |
+| Crear automatizaciones | **Casi no** | Lo que hay es un **calendario para programar publicaciones**. Reglas "si pasa esto, haz aquello": **CERO** |
+| Automatizar WhatsApp | **A medias** | Va **al revés**: sirve para que Julio dé órdenes desde el móvil. **No atiende clientes** |
+| Crear agentes de IA | **A medias, y tocado** | El jefe que coordina está incompleto. El director y el orquestador, **dormidos** |
+| Crear seguimientos automáticos | **Casi no** | Hay pantalla, **no hay motor**. Nada dice "lleva 5 días callado" |
+| Crear calendarios / citas | **NO** | Cero. Ni disponibilidad, ni reserva, ni confirmación |
+| Crear prácticamente todo el sistema | **A medias** | Sabe escribir proyectos nuevos. Pero **el que arma el plan está dormido** y el fabricante no existe |
+| Decir qué necesita el negocio antes de construir | **A medias** | El asesor va y tiene 3 guardianes. **El motor de preguntas está dormido** |
+
+**Marcador: 1 bien de 9. Seis a medias. Dos no existen.**
+
+## LO QUE ESTO CAMBIA EN EL PLAN
+
+**La FASE 1 vale mucho más de lo que parecía.** Lo que le falta a Julio **no es capacidad: es
+enchufe**. El director, el orquestador y el motor de preguntas **ya están escritos y durmiendo**.
+Despertarlos devuelve **media lista** sin escribir casi nada nuevo.
+
+**Solo hay TRES cosas que de verdad hay que construir desde cero:**
+
+1. **El motor de automatizaciones** — la regla "si pasa esto, haz aquello". Sostiene los
+   seguimientos y media lista. **Es el que más rinde: se hace una vez y sirve para todo.**
+2. **Las citas** — disponibilidad, reservar, confirmar, recordar. No existe nada.
+3. **Que WhatsApp mire hacia el cliente**, no solo hacia Julio.
+
+**El resto es despertar y terminar, no inventar.** Y eso, además, es gratis: son cuentas.

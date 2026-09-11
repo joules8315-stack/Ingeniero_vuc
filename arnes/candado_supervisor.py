@@ -21,6 +21,53 @@ CONTADOR = os.path.join(AQUI, "memoria", ".supervisor_bloqueos")
 TOPE_BLOQUEOS = 2
 
 
+def hay_trabajo_del_copista(minutos=90):
+    """El copista aplico un cambio hace poco y salio BIEN?
+
+    JULIO, 2026-09-11: "Que el copista cuente, esa es mi decision."
+
+    POR QUE NACE: dos leyes suyas se estaban pisando y dejaban el cierre sin salida honrada.
+    Una dice que LA FOTOCOPIA NO SE PAGA (si el cambio ya viene decidido al detalle lo aplica
+    el copista, gratis, porque llamar al equipo es pagar por una fotocopiadora). La otra dice
+    que SIN VEREDICTO DEL EQUIPO NO SE CIERRA. Se cumplian las dos por separado y aun asi no
+    se podia terminar. Julio decidio que el trabajo del copista CUENTA.
+
+    POR QUE ES SEGURO DESDE HOY: el revisor del arnes ya trae la cuenta 5 (2026-09-11), asi que
+    una aplicacion que se lleve por delante alguna pieza se frena y se dice con nombre. Antes
+    de eso, dejar pasar al copista a ciegas si habria sido un riesgo.
+
+    NO ES UN SELLO DE GOMA. Solo abre si la aplicacion es RECIENTE y salio BIEN, y NO cuenta lo
+    que aplican las pruebas en carpetas temporales: si contara, bastaria con correr los
+    guardianes para abrirse la puerta a si mismo, que es exactamente el verde de mentira que
+    esta casa lleva meses cazando.
+
+    ES UNA CUENTA, NO UN JUICIO: se lee la libreta y se mira la fecha. NUNCA lanza.
+    """
+    import datetime
+    ruta = (os.environ.get("INGENIERO_APLICACIONES")
+            or os.path.join(AQUI, "memoria", "APLICACIONES.log"))
+    try:
+        with open(ruta, encoding="utf-8", errors="replace") as f:
+            lineas = f.readlines()[-300:]
+    except Exception:
+        return False
+    limite = datetime.datetime.now() - datetime.timedelta(minutes=minutos)
+    for linea in reversed(lineas):
+        partes = [p.strip() for p in linea.split("|")]
+        if len(partes) < 3 or partes[1] != "OK":
+            continue
+        sitio = partes[2].lower()
+        if "temp" in sitio or "tmp" in sitio:
+            continue
+        try:
+            cuando = datetime.datetime.fromisoformat(partes[0])
+        except Exception:
+            continue
+        if cuando >= limite:
+            return True
+    return False
+
+
 def _contador():
     return os.environ.get("INGENIERO_SUPERVISOR_CONTADOR") or CONTADOR
 
@@ -103,7 +150,10 @@ def verificar():
         if _toco_codigo(90):
             try:
                 import candado_equipo as _ce
-                if not _ce.veredicto_vigente():
+                # JULIO 2026-09-11: "Que el copista cuente, esa es mi decision." El veredicto
+                # del equipo O el trabajo del copista. Cualquiera de los dos vale: con el
+                # segundo se cumple la ley de que la fotocopia no se paga.
+                if not _ce.veredicto_vigente() and not hay_trabajo_del_copista(90):
                     faltas.append("1) EQUIPO: no hay veredicto del equipo vigente. Para tocar codigo SIEMPRE se "
                                   "usa el equipo:\n     cd C:\\Ingeniero_VUC; python ingeniero.py equipo <proyecto> \"<tarea>\"")
             except Exception:
@@ -112,7 +162,8 @@ def verificar():
         # Si no se puede saber si se toco codigo, se exige el veredicto igual.
         try:
             import candado_equipo as _ce
-            if not _ce.veredicto_vigente():
+            # Mismo criterio que arriba: vale el veredicto del equipo O el trabajo del copista.
+            if not _ce.veredicto_vigente() and not hay_trabajo_del_copista(90):
                 faltas.append("1) EQUIPO: no hay veredicto del equipo vigente. Para tocar codigo SIEMPRE se "
                               "usa el equipo:\n     cd C:\\Ingeniero_VUC; python ingeniero.py equipo <proyecto> \"<tarea>\"")
         except Exception:
