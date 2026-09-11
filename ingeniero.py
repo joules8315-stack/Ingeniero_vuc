@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
-"""ingeniero.py — EL MANDO UNICO del Ingeniero VUC.
+﻿# -*- coding: utf-8 -*-
+"""ingeniero.py â€” EL MANDO UNICO del Ingeniero VUC.
 
 Julio no repite instrucciones: dice el problema y el Ingeniero hace el resto del protocolo.
 
-    python ingeniero.py via                          -> ¿estoy en la ruta y rama correctas? (LO PRIMERO)
+    python ingeniero.py via                          -> Â¿estoy en la ruta y rama correctas? (LO PRIMERO)
     python ingeniero.py arranca                      -> donde ibamos
     python ingeniero.py trabaja dmm "el onboarding no guarda el perfil"
     python ingeniero.py resolver dmm "<problema>"    -> lo resuelve el cerebro GRATIS (Qwen+Gemini)
@@ -16,7 +16,7 @@ Julio no repite instrucciones: dice el problema y el Ingeniero hace el resto del
                                                      -> busca la respuesta ANTES de preguntar
     python ingeniero.py fallos                       -> lo que ya nos paso, para no repetirlo
     python ingeniero.py cuotas                       -> a que cerebro le toca ahora
-    python ingeniero.py buscar-skill "<que necesitas>"     -> ¿ya existe? (propia/proyectos/libreria)
+    python ingeniero.py buscar-skill "<que necesitas>"     -> Â¿ya existe? (propia/proyectos/libreria)
     python ingeniero.py crear-skill <nombre> "<que hace>"  -> la crea el cerebro GRATIS
     python ingeniero.py vigias dmm                   -> corre las vigias del proyecto
     python ingeniero.py mapa                         -> refresca el mapa
@@ -29,7 +29,7 @@ sys.path.insert(0, AQUI)
 
 # MOSTRAR NO PUEDE TUMBAR UN TRABAJO YA HECHO (fallo real 2026-08-25).
 # Se lanzo al equipo, el equipo CONTESTO, y el mando murio al IMPRIMIR la respuesta:
-#   UnicodeEncodeError: 'charmap' codec can't encode character ' ' in position 1178
+#   UnicodeEncodeError: 'charmap' codec can't encode character 'â€¯' in position 1178
 # La consola de Windows usa cp1252 y la respuesta traia un espacio fino, que ahi no existe.
 # Dos danos, y el segundo es el caro: un traceback en la cara de Julio (fallo ya apuntado), y
 # SE PERDIO EL TRABAJO, porque la llave del equipo se guarda DESPUES de imprimir. Un caracter
@@ -47,7 +47,7 @@ import via_canonica                        # noqa: E402
 
 
 def arranca():
-    # LO PRIMERO SIEMPRE: ¿estoy donde debo? (Ley 14)
+    # LO PRIMERO SIEMPRE: Â¿estoy donde debo? (Ley 14)
     print(via_canonica.texto())
     print()
     print(estado.texto())
@@ -192,6 +192,22 @@ def resolver(apodo, problema):
     print(cuotas.estado_texto())
     print()
     print("Trabajando... (el cerebro gratis puede tardar unos minutos; no gasta tokens de Claude)")
+    # AL CEREBRO SOLO LE LLEGA LO SUYO (Julio, 2026-09-09, repetido varias veces).
+    # CAUSA RAIZ MEDIDA ESE DIA: esta linea cogia el paquete ENTERO y se lo daba al obrero.
+    # Resultado con numeros: se mandaron 7.575 letras y al cerebro le llegaron 35.845.
+    # Con ese tamano NO LE CABE a ninguno de los cuatro cerebros gratis (aguantan entre 19.000
+    # y 30.314): se les salta a todos EN SILENCIO, contesta el de pago, y como no queda nadie
+    # mas SE JUZGA A SI MISMO. Y juzgo mal: dijo que el archivo tenia "errores de sintaxis
+    # graves" cuando compila perfecto y sus vigias pasan.
+    # LA CURA YA EXISTIA Y NADIE LA LLAMABA: arnes/asignador.py, construido el 2026-09-08,
+    # sabe recortar dejando lo necesario y sabe elegir un cerebro al que le quepa. Aqui se
+    # enchufa. Si por lo que sea no estuviera, se sigue como antes y nada se bloquea.
+    try:
+        sys.path.insert(0, os.path.join(AQUI, "arnes"))
+        import asignador as _asig
+        pk = _asig.armar_encargo({"objetivo": problema, "prueba": "resolver"}, material=pk)
+    except Exception:
+        pass
     r = obrero.trabajar(pk, problema)
     print()
     print(obrero.veredicto_corto(r))
@@ -213,7 +229,7 @@ TOCAN_PROYECTO = ("trabaja", "resolver", "cruzado", "vigias", "buscar-skill", "c
 
 
 def _via_ok(cmd, apodo=None):
-    """LO PRIMERO (Ley 14): ¿estoy en la ruta y la rama que mandan? Si no, no se toca nada.
+    """LO PRIMERO (Ley 14): Â¿estoy en la ruta y la rama que mandan? Si no, no se toca nada.
     Reparar en la copia equivocada es tirar el trabajo a la basura (fallo real 2026-08-20:
     el Ingeniero apuntaba a una copia de Foto Informe de MAYO habiendo una de JULIO)."""
     if cmd not in TOCAN_PROYECTO:
@@ -371,7 +387,7 @@ def main():
         print()
         # EL MENSAJE NO MIENTE (Julio, 2026-08-27): antes "LLAVE GUARDADA" salia SIEMPRE, incluso
         # cuando el equipo habia RECHAZADO. El candado NO abria (ya esta probado), pero el mensaje
-        # decia "guarda llave" y engañaba. Ahora se dice la verdad: la llave SOLO abre con APROBADO.
+        # decia "guarda llave" y engaÃ±aba. Ahora se dice la verdad: la llave SOLO abre con APROBADO.
         v_final = ((res.get("auditoria") or {}).get("veredicto", "?") or "?").strip().upper()
         # ENCARGO A / plan pieza 2 (Claude, 2026-09-02): cuando el equipo APROBO, se APLICA en disco
         # lo que escribio usando el aplicador probado (cuerpo/aplicador.py): crea el archivo nuevo o
@@ -611,7 +627,7 @@ def main():
         print(open(os.path.join(AQUI, "PROTOCOLO_UNICO.md"), encoding="utf-8")
               .read().split("## LOS 8 PASOS")[0])
         pasos = [
-            ("1 ¿Estoy donde debo?", "via_canonica.py"),
+            ("1 Â¿Estoy donde debo?", "via_canonica.py"),
             ("2 Buscar solo lo necesario", "read_gate.py"),
             ("3 Causa raiz, no sintoma", "candado_diagnostico.py"),
             ("4 Agotar las fuentes antes de preguntar", "candado_preguntar.py"),
@@ -680,7 +696,7 @@ def main():
         return 0
     if cmd == "respondio" and len(sys.argv) >= 3:
         # se apunta QUE se pregunto y QUE contesto Julio; nace SIN EVALUAR
-        from cuerpo import respuestas, estado
+        from cuerpo import respuestas
         p, _, r = " ".join(sys.argv[2:]).partition("::")
         n = respuestas.apuntar(p.strip(), r.strip())
         estado.respondida(p.strip())
@@ -747,3 +763,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+

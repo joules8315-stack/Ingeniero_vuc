@@ -1,0 +1,589 @@
+{
+ "fecha": "2026-09-09",
+ "que": "medicion de las 9 puertas del corredor del cerebro",
+ "como": "1) por receta (misma expresion del codigo) 2) en vivo (pasillo interceptado)",
+ "topes_declarados": {
+  "asignador.TOPE_LETRAS": 15000,
+  "obrero.TOPE_PESADO": 15000,
+  "obrero.TOPE_LOCAL": 26000,
+  "vigia.TOPE_GRATIS (test)": 19000
+ },
+ "capacidades_reales_en_CUOTAS": {
+  "por_cerebro": {
+   "groq": {
+    "mayor_ok": 19042,
+    "no_cupo": 20476,
+    "llamadas": 92,
+    "fallos": 42
+   },
+   "groq20b": {
+    "mayor_ok": 20169,
+    "no_cupo": 20476,
+    "llamadas": 121,
+    "fallos": 34
+   },
+   "gemini": {
+    "mayor_ok": 107349,
+    "no_cupo": null,
+    "llamadas": 179,
+    "fallos": 153
+   },
+   "gemini3": {
+    "mayor_ok": 30314,
+    "no_cupo": null,
+    "llamadas": 136,
+    "fallos": 121
+   },
+   "gemini4": {
+    "mayor_ok": 193689,
+    "no_cupo": null,
+    "llamadas": 373,
+    "fallos": 230
+   },
+   "local": {
+    "mayor_ok": 12887,
+    "no_cupo": null,
+    "llamadas": 74,
+    "fallos": 72
+   },
+   "deepseek": {
+    "mayor_ok": 230668,
+    "no_cupo": null,
+    "llamadas": 637,
+    "fallos": 1
+   },
+   "gemini2": {
+    "mayor_ok": 194297,
+    "no_cupo": null,
+    "llamadas": 270,
+    "fallos": 195
+   },
+   "router": {
+    "mayor_ok": null,
+    "no_cupo": null,
+    "llamadas": 54,
+    "fallos": 54
+   },
+   "router2": {
+    "mayor_ok": null,
+    "no_cupo": null,
+    "llamadas": 54,
+    "fallos": 54
+   },
+   "router3": {
+    "mayor_ok": null,
+    "no_cupo": null,
+    "llamadas": 54,
+    "fallos": 54
+   }
+  },
+  "dormidos_ahora": [],
+  "el_gratis_mas_pequeno_que_aguanta": 19042,
+  "el_local_aguanta": 12887
+ },
+ "paquetes": {
+  "A ronda real 09-09": 11359,
+  "B real guardado (ingeniero__arnes_revisor_de_programa_py_cuenta_los_.md)": 17730
+ },
+ "por_receta": {
+  "A ronda real 09-09": [
+   {
+    "puerta": "P1 auditar (gratis)",
+    "sitio": "cuerpo/obrero.py:664",
+    "receta": "_prompt_auditor(paquete, json(propuesta))",
+    "letras": 18689,
+    "pasa_TOPE_LETRAS": false,
+    "pasa_TOPE_PESADO": false,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P2 auditar (ultimo recurso)",
+    "sitio": "cuerpo/obrero.py:689",
+    "receta": "el mismo _prompt_auditor, pero con pesado=True",
+    "letras": 18689,
+    "pasa_TOPE_LETRAS": false,
+    "pasa_TOPE_PESADO": false,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P3 generar",
+    "sitio": "cuerpo/obrero.py:742",
+    "receta": "_prompt_obrero(paquete, tarea, clase='reparar')",
+    "letras": 14078,
+    "pasa_TOPE_LETRAS": true,
+    "pasa_TOPE_PESADO": true,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P3b generar (vuelta 2, con motivos)",
+    "sitio": "cuerpo/obrero.py:738-742",
+    "receta": "_prompt_obrero(paquete, MOTIVOS + tarea)",
+    "letras": 14236,
+    "pasa_TOPE_LETRAS": true,
+    "pasa_TOPE_PESADO": true,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P3c generar (clase crear/analista)",
+    "sitio": "cuerpo/obrero.py:71-97",
+    "receta": "_prompt_obrero(paquete, tarea, clase='crear')",
+    "letras": 12614,
+    "pasa_TOPE_LETRAS": true,
+    "pasa_TOPE_PESADO": true,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": true
+   },
+   {
+    "puerta": "P4 reparador (ronda 1, a la vez)",
+    "sitio": "cuerpo/cruzado.py:149 <- :183",
+    "receta": "_prompt_obrero(paquete, problema)",
+    "letras": 14078,
+    "pasa_TOPE_LETRAS": true,
+    "pasa_TOPE_PESADO": true,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P5 vigilante (ronda 1, a la vez)",
+    "sitio": "cuerpo/cruzado.py:149 <- :184",
+    "receta": "_prompt_vigilante(paquete, problema)",
+    "letras": 12478,
+    "pasa_TOPE_LETRAS": true,
+    "pasa_TOPE_PESADO": true,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": true
+   },
+   {
+    "puerta": "P6 reparador reintento",
+    "sitio": "cuerpo/cruzado.py:195-198",
+    "receta": "_prompt_obrero(paquete, problema) + INTENTO ANTERIOR RECHAZADO",
+    "letras": 14338,
+    "pasa_TOPE_LETRAS": true,
+    "pasa_TOPE_PESADO": true,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P7 juez",
+    "sitio": "cuerpo/cruzado.py:208-210",
+    "receta": "_prompt_juez(paquete, json(propuesta), json(vigia))",
+    "letras": 17103,
+    "pasa_TOPE_LETRAS": false,
+    "pasa_TOPE_PESADO": false,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P8 consejeros",
+    "sitio": "cuerpo/consejeros.py:95 -> :52",
+    "receta": "consejeros._prompt(pregunta, porque, trozos, fallos)",
+    "letras": 6834,
+    "pasa_TOPE_LETRAS": true,
+    "pasa_TOPE_PESADO": true,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": true
+   },
+   {
+    "puerta": "P9 dudas",
+    "sitio": "cuerpo/dudas.py:140 -> :133-139",
+    "receta": "el prompt literal de _responde_de_verdad",
+    "letras": 1148,
+    "pasa_TOPE_LETRAS": true,
+    "pasa_TOPE_PESADO": true,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": true
+   },
+   {
+    "puerta": "P10 skills",
+    "sitio": "cuerpo/skills.py:194 -> :180-189",
+    "receta": "la variable `tarea` (no lleva paquete: el encargo entero es la tarea)",
+    "letras": 204,
+    "pasa_TOPE_LETRAS": true,
+    "pasa_TOPE_PESADO": true,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": true
+   }
+  ],
+  "B paquete real guardado": [
+   {
+    "puerta": "P1 auditar (gratis)",
+    "sitio": "cuerpo/obrero.py:664",
+    "receta": "_prompt_auditor(paquete, json(propuesta))",
+    "letras": 25060,
+    "pasa_TOPE_LETRAS": false,
+    "pasa_TOPE_PESADO": false,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": false,
+    "pasa_AL_GRATIS_DE_VERDAD": false,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P2 auditar (ultimo recurso)",
+    "sitio": "cuerpo/obrero.py:689",
+    "receta": "el mismo _prompt_auditor, pero con pesado=True",
+    "letras": 25060,
+    "pasa_TOPE_LETRAS": false,
+    "pasa_TOPE_PESADO": false,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": false,
+    "pasa_AL_GRATIS_DE_VERDAD": false,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P3 generar",
+    "sitio": "cuerpo/obrero.py:742",
+    "receta": "_prompt_obrero(paquete, tarea, clase='reparar')",
+    "letras": 20449,
+    "pasa_TOPE_LETRAS": false,
+    "pasa_TOPE_PESADO": false,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": false,
+    "pasa_AL_GRATIS_DE_VERDAD": false,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P3b generar (vuelta 2, con motivos)",
+    "sitio": "cuerpo/obrero.py:738-742",
+    "receta": "_prompt_obrero(paquete, MOTIVOS + tarea)",
+    "letras": 20607,
+    "pasa_TOPE_LETRAS": false,
+    "pasa_TOPE_PESADO": false,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": false,
+    "pasa_AL_GRATIS_DE_VERDAD": false,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P3c generar (clase crear/analista)",
+    "sitio": "cuerpo/obrero.py:71-97",
+    "receta": "_prompt_obrero(paquete, tarea, clase='crear')",
+    "letras": 18985,
+    "pasa_TOPE_LETRAS": false,
+    "pasa_TOPE_PESADO": false,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P4 reparador (ronda 1, a la vez)",
+    "sitio": "cuerpo/cruzado.py:149 <- :183",
+    "receta": "_prompt_obrero(paquete, problema)",
+    "letras": 20449,
+    "pasa_TOPE_LETRAS": false,
+    "pasa_TOPE_PESADO": false,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": false,
+    "pasa_AL_GRATIS_DE_VERDAD": false,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P5 vigilante (ronda 1, a la vez)",
+    "sitio": "cuerpo/cruzado.py:149 <- :184",
+    "receta": "_prompt_vigilante(paquete, problema)",
+    "letras": 18849,
+    "pasa_TOPE_LETRAS": false,
+    "pasa_TOPE_PESADO": false,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P6 reparador reintento",
+    "sitio": "cuerpo/cruzado.py:195-198",
+    "receta": "_prompt_obrero(paquete, problema) + INTENTO ANTERIOR RECHAZADO",
+    "letras": 20709,
+    "pasa_TOPE_LETRAS": false,
+    "pasa_TOPE_PESADO": false,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": false,
+    "pasa_AL_GRATIS_DE_VERDAD": false,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P7 juez",
+    "sitio": "cuerpo/cruzado.py:208-210",
+    "receta": "_prompt_juez(paquete, json(propuesta), json(vigia))",
+    "letras": 23474,
+    "pasa_TOPE_LETRAS": false,
+    "pasa_TOPE_PESADO": false,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": false,
+    "pasa_AL_GRATIS_DE_VERDAD": false,
+    "pasa_AL_LOCAL_DE_VERDAD": false
+   },
+   {
+    "puerta": "P8 consejeros",
+    "sitio": "cuerpo/consejeros.py:95 -> :52",
+    "receta": "consejeros._prompt(pregunta, porque, trozos, fallos)",
+    "letras": 6834,
+    "pasa_TOPE_LETRAS": true,
+    "pasa_TOPE_PESADO": true,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": true
+   },
+   {
+    "puerta": "P9 dudas",
+    "sitio": "cuerpo/dudas.py:140 -> :133-139",
+    "receta": "el prompt literal de _responde_de_verdad",
+    "letras": 1148,
+    "pasa_TOPE_LETRAS": true,
+    "pasa_TOPE_PESADO": true,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": true
+   },
+   {
+    "puerta": "P10 skills",
+    "sitio": "cuerpo/skills.py:194 -> :180-189",
+    "receta": "la variable `tarea` (no lleva paquete: el encargo entero es la tarea)",
+    "letras": 204,
+    "pasa_TOPE_LETRAS": true,
+    "pasa_TOPE_PESADO": true,
+    "pasa_TOPE_LOCAL": true,
+    "pasa_TOPE_GRATIS_declarado": true,
+    "pasa_AL_GRATIS_DE_VERDAD": true,
+    "pasa_AL_LOCAL_DE_VERDAD": true
+   }
+  ]
+ },
+ "notas_de_las_corridas": {
+  "A ronda real 09-09": [
+   {
+    "flujo": "trabajar (auditor RECHAZADO: 3 vueltas)",
+    "resultado": "corrido"
+   },
+   {
+    "flujo": "trabajar (auditor mudo: SIN_AUDITAR)",
+    "resultado": "corrido"
+   },
+   {
+    "flujo": "cruzado.resolver (juez RECHAZADO: 3 rondas)",
+    "resultado": "corrido"
+   },
+   {
+    "flujo": "consejeros.consultar",
+    "resultado": "corrido"
+   },
+   {
+    "flujo": "dudas._responde_de_verdad",
+    "resultado": "corrido"
+   },
+   {
+    "flujo": "skills.crear",
+    "resultado": "NO_EJECUTADO a proposito: escribiria un archivo real en skills/. Su prompt se mide por receta (P10) y no lleva paquete."
+   }
+  ],
+  "B paquete real guardado": [
+   {
+    "flujo": "trabajar (auditor RECHAZADO: 3 vueltas)",
+    "resultado": "corrido"
+   },
+   {
+    "flujo": "trabajar (auditor mudo: SIN_AUDITAR)",
+    "resultado": "corrido"
+   },
+   {
+    "flujo": "cruzado.resolver (juez RECHAZADO: 3 rondas)",
+    "resultado": "corrido"
+   },
+   {
+    "flujo": "consejeros.consultar",
+    "resultado": "corrido"
+   },
+   {
+    "flujo": "dudas._responde_de_verdad",
+    "resultado": "corrido"
+   },
+   {
+    "flujo": "skills.crear",
+    "resultado": "NO_EJECUTADO a proposito: escribiria un archivo real en skills/. Su prompt se mide por receta (P10) y no lleva paquete."
+   }
+  ]
+ },
+ "puertas_en_vivo": [
+  {
+   "puerta": "cuerpo/obrero.py:732",
+   "funcion": "auditar",
+   "veces": 10,
+   "mayor": 21409,
+   "menor": 15038,
+   "escenarios": [
+    "A ronda real 09-09",
+    "B paquete real guardado"
+   ],
+   "pesado": false,
+   "primero": null,
+   "pasa_TOPE_LETRAS": false,
+   "pasa_TOPE_PESADO": false,
+   "pasa_TOPE_GRATIS": false
+  },
+  {
+   "puerta": "cuerpo/obrero.py:757",
+   "funcion": "auditar",
+   "veces": 2,
+   "mayor": 21409,
+   "menor": 15038,
+   "escenarios": [
+    "A ronda real 09-09",
+    "B paquete real guardado"
+   ],
+   "pesado": true,
+   "primero": null,
+   "pasa_TOPE_LETRAS": false,
+   "pasa_TOPE_PESADO": false,
+   "pasa_TOPE_GRATIS": false
+  },
+  {
+   "puerta": "cuerpo/cruzado.py:195",
+   "funcion": "resolver",
+   "veces": 4,
+   "mayor": 20732,
+   "menor": 14361,
+   "escenarios": [
+    "A ronda real 09-09",
+    "B paquete real guardado"
+   ],
+   "pesado": false,
+   "primero": null,
+   "pasa_TOPE_LETRAS": false,
+   "pasa_TOPE_PESADO": false,
+   "pasa_TOPE_GRATIS": false
+  },
+  {
+   "puerta": "cuerpo/obrero.py:815",
+   "funcion": "trabajar",
+   "veces": 8,
+   "mayor": 20608,
+   "menor": 14101,
+   "escenarios": [
+    "A ronda real 09-09",
+    "B paquete real guardado"
+   ],
+   "pesado": false,
+   "primero": null,
+   "pasa_TOPE_LETRAS": false,
+   "pasa_TOPE_PESADO": false,
+   "pasa_TOPE_GRATIS": false
+  },
+  {
+   "puerta": "cuerpo/cruzado.py:149",
+   "funcion": "_correr",
+   "veces": 4,
+   "mayor": 20472,
+   "menor": 12501,
+   "escenarios": [
+    "A ronda real 09-09",
+    "B paquete real guardado"
+   ],
+   "pesado": false,
+   "primero": "groq",
+   "pasa_TOPE_LETRAS": false,
+   "pasa_TOPE_PESADO": false,
+   "pasa_TOPE_GRATIS": false
+  },
+  {
+   "puerta": "cuerpo/cruzado.py:208",
+   "funcion": "resolver",
+   "veces": 6,
+   "mayor": 19820,
+   "menor": 13449,
+   "escenarios": [
+    "A ronda real 09-09",
+    "B paquete real guardado"
+   ],
+   "pesado": false,
+   "primero": null,
+   "pasa_TOPE_LETRAS": false,
+   "pasa_TOPE_PESADO": false,
+   "pasa_TOPE_GRATIS": false
+  },
+  {
+   "puerta": "cuerpo/consejeros.py:95",
+   "funcion": "_correr",
+   "veces": 4,
+   "mayor": 6416,
+   "menor": 6416,
+   "escenarios": [
+    "A ronda real 09-09",
+    "B paquete real guardado"
+   ],
+   "pesado": false,
+   "primero": "groq20b",
+   "pasa_TOPE_LETRAS": true,
+   "pasa_TOPE_PESADO": true,
+   "pasa_TOPE_GRATIS": true
+  },
+  {
+   "puerta": "cuerpo/dudas.py:140",
+   "funcion": "_responde_de_verdad",
+   "veces": 2,
+   "mayor": 1141,
+   "menor": 1141,
+   "escenarios": [
+    "A ronda real 09-09",
+    "B paquete real guardado"
+   ],
+   "pesado": false,
+   "primero": null,
+   "pasa_TOPE_LETRAS": true,
+   "pasa_TOPE_PESADO": true,
+   "pasa_TOPE_GRATIS": true
+  }
+ ],
+ "ojo": "El espia sustituye al pasillo: NINGUNA llamada salio a internet. Los flujos se corrieron de verdad (trabajar, resolver, consultar, dudas).",
+ "cuantas_se_pasan": {
+  "A ronda real 09-09": {
+   "de_cuantas": 12,
+   "se_pasan_del_gratis_real": 0,
+   "cuales": [],
+   "el_gratis_real_aguanta": 19042
+  },
+  "B paquete real guardado": {
+   "de_cuantas": 12,
+   "se_pasan_del_gratis_real": 7,
+   "cuales": [
+    "P1 auditar (gratis)",
+    "P2 auditar (ultimo recurso)",
+    "P3 generar",
+    "P3b generar (vuelta 2, con motivos)",
+    "P4 reparador (ronda 1, a la vez)",
+    "P6 reparador reintento",
+    "P7 juez"
+   ],
+   "el_gratis_real_aguanta": 19042
+  }
+ }
+}

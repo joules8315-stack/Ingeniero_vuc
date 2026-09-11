@@ -1,0 +1,46 @@
+archivo: cuerpo/obrero.py
+funcion: _prompt_obrero
+TEXTO_VIEJO
+def _prompt_obrero(paquete, tarea, clase="reparar"):
+    if clase != "reparar":
+        return f"""Eres el ANALISTA de un ingeniero de software. Tu trabajo es PENSAR y ESCRIBIR un documento
+TEXTO_NUEVO
+def _prompt_obrero(paquete, tarea, clase="reparar"):
+    if clase != "reparar":
+        # CREAR CODIGO O CREAR DOCUMENTO (2026-09-10). Medido: pedir crear vigias/_espia.py
+        # salio RECHAZADO porque el encargo de --crear pedia SIEMPRE el documento entero escrito
+        # en markdown: el gratis obedecio, entrego markdown con extension .py y el auditor lo
+        # rechazo con razon (SyntaxError). El encargo pedia lo contrario de lo que mandaba la
+        # tarea. Si la tarea pide un archivo de CODIGO (.py), el encargo pide CODIGO PYTHON.
+        if re.search(r"[\w/]+\.py\b", str(tarea or "")):
+            return f"""Eres el ANALISTA DE CODIGO de un ingeniero de software. Tu trabajo es PENSAR y ESCRIBIR
+un archivo de CODIGO nuevo. NO vas a cambiar codigo que ya existe: ese archivo todavia no existe.
+
+REGLAS DURAS (si las rompes, tu trabajo se descarta):
+1. NO hay texto viejo que sustituir: el archivo todavia no existe. Lo escribes entero.
+2. CREAR NO ES INVENTAR: el archivo nuevo lo pide la tarea y su ruta viene en la tarea. Que no
+   exista en el material NO es motivo de rechazo: un archivo que aun no existe nunca puede venir
+   en el material.
+3. En "texto_nuevo" va CODIGO PYTHON de verdad, entero y ejecutable: sin markdown, sin cercas de
+   codigo y sin nada de texto fuera del codigo. Lo que haya que explicar va dentro, como
+   comentario o docstring.
+4. El archivo tiene que IMPORTARSE y CORRER: funciones completas de verdad, con sus import, no
+   huecos ni ejemplos. Nada de "aqui iria".
+5. Los nombres son EXACTAMENTE los que pide la tarea: la ruta, las funciones y los atributos.
+   No los cambies ni los mejores.
+6. Trabaja SOLO con el material de abajo. Si te falta algo, pidelo asi y nada mas:
+   NECESITO_LEER: archivo / motivo / que decide / riesgo.
+
+TAREA: {tarea}
+
+Responde SOLO un JSON valido, sin texto alrededor:
+{{"diagnostico": "que has encontrado, en una frase",
+  "archivo": "la ruta del archivo de codigo que creas",
+  "texto_nuevo": "el archivo de CODIGO PYTHON ENTERO Y COMPLETO, ejecutable, sin markdown",
+  "confianza": "alta|media|baja"}}
+
+===== MATERIAL (esto es TODO lo que existe) =====
+{paquete}
+===== FIN DEL MATERIAL =====
+"""
+        return f"""Eres el ANALISTA de un ingeniero de software. Tu trabajo es PENSAR y ESCRIBIR un documento

@@ -1,0 +1,413 @@
+{
+ "status": "ROOT_CAUSE_CONFIRMED",
+ "fecha": "2026-09-09",
+ "modo": "AUDITORIA_EXHAUSTIVA_SIN_MODIFICAR_PRODUCCION",
+ "aviso_alcance": "No se modifico codigo productivo, no se hizo commit ni push, no se creo ninguna ruta alternativa. Solo lectura, medicion y ejecucion de vigias existentes.",
+ "canonical_runtime": {
+  "canonical_path": "C:/Ingeniero_VUC",
+  "rama": "integration/ingeniero-vuc",
+  "head": "46c43b0",
+  "python": "3.10.11",
+  "execution_entrypoint": "ingeniero.py (comandos: equipo, trabaja, juzga, resolver)",
+  "working_tree_status": "SUCIO: 8 archivos modificados + varios anadidos al indice (A). Clave: ingeniero.py y vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py estan SIN COMMITEAR, asi que el verde de la vigia del pasillo no esta respaldado.",
+  "piezas_del_corredor_que_existen": [
+   "cerebro/router.py (armar, a_texto, detectar)",
+   "cuerpo/obrero.py (trabajar, auditar, _prompt_obrero, _preguntar_con_relevo, _validar_en_paquete, _json_de)",
+   "cuerpo/cuotas.py (rankear, _capacidad, fila, desperto, apuntar_no_cupo, cuanto_esperarle)",
+   "cuerpo/aplicador.py (aplicar_cambio)",
+   "cuerpo/fallos.py (memoria de fallos)",
+   "arnes/asignador.py (armar_encargo, elegir_cerebro, pedido_bien_hecho, decidir)",
+   "arnes/copista.py, arnes/revisor_de_programa.py, arnes/portero.py, arnes/reparto.py"
+  ],
+  "piezas_del_corredor_que_NO_EXISTEN": [
+   "DIVISOR/PARTIDOR de paquetes: NO EXISTE ningun def partir/dividir/trocear en cuerpo/, arnes/ ni cerebro/. La ley CONTRATO_NUNCA_SIN_REVISAR (regla 6: un encargo que no le cabe a nadie se parte) esta escrita SIN mecanismo que la cumpla.",
+   "REPARTIDOR como archivo: NO EXISTE repartidor.py. El reparto es cuerpo/cuotas.py::rankear (y arnes/asignador.py::elegir_cerebro). arnes/reparto.py es OTRA cosa: reparto de TAREAS entre IAs, no de paquetes."
+  ]
+ },
+ "first_divergence": {
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "linea": 731,
+  "codigo": "pesado_ahora = not generador",
+  "entrada": "generador=None. Es el caso NORMAL: el mando equipo solo pasa generador si Julio escribe --escribe, y resolver nunca lo pasa.",
+  "salida_esperada": "Elegir un cerebro al que le quepa el encargo (regla de Julio 2026-08-21), gastando primero los gratis.",
+  "salida_real": "pesado=True. En cuerpo/obrero.py:473 la condicion 'if len(prompt) > TOPE_PESADO or pesado:' mete al cerebro DE PAGO el PRIMERO. Los gratis ni compiten, sea cual sea el tamano.",
+  "condicion": "generador is None (o sea: casi siempre)",
+  "causa": "La ley 'lo pesado a DeepSeek' se implemento con una bandera que se ENCIENDE POR AUSENCIA de generador, no por TAMANO: convirtio 'lo pesado va al de pago' en 'se genera en el de pago, siempre'.",
+  "efecto": "Los gratis no escriben nunca (el propio codigo lo declara: 'los cerebros gratis llevan 0 de 72 trabajos reales escritos', ingeniero.py:286). Todo cae en DeepSeek: CUOTAS.json da 627 llamadas y 1 fallo para deepseek, frente a 74/72 del local, 175/152 de gemini, 54/54 de router2 y router3.",
+  "nota_de_orden": "Es el PRIMER desvio en ejecucion y anula todo lo demas: aunque el paquete cupiera en un gratis, la generacion no se le ofrece."
+ },
+ "root_causes": [
+  {
+   "id": "RC1",
+   "titulo": "Enrutado por bandera, no por capacidad",
+   "archivo": "cuerpo/obrero.py:731 y :473",
+   "evidencia": "pesado_ahora = not generador; if len(prompt) > TOPE_PESADO or pesado: turnos = de_pago + turnos",
+   "efecto": "La generacion normal nunca llega a un gratis. Causa mecanica del 0 de 72."
+  },
+  {
+   "id": "RC2",
+   "titulo": "El prompt final se expande por encima del encargo ya recortado",
+   "archivo": "cuerpo/obrero.py:742 + cuerpo/obrero.py:70-134 (_prompt_obrero)",
+   "evidencia": "Medido: encargo 14.858 letras -> prompt real 25.122 (x1,69). _prompt_obrero anade la plantilla fija (5 reglas, ~2.400 letras) y vuelve a meter la TAREA, que ya viaja dentro del encargo como OBJETIVO.",
+   "efecto": "El recorte existe y cumple el tope de 15.000, y da igual: lo que sale no le cabe a groq (19.042) ni a groq20b (20.169)."
+  },
+  {
+   "id": "RC3",
+   "titulo": "El tamano se mide DESPUES de construir el prompt, cuando ya solo se puede saltar",
+   "archivo": "cuerpo/obrero.py:480",
+   "evidencia": "turnos = cuotas.rankear(turnos, len(prompt))",
+   "efecto": "En el unico punto donde se conoce el tamano real, la unica jugada posible es SALTAR al cerebro. Si se saltan todos, contesta el de pago y, como no queda nadie, SE JUZGA A SI MISMO. Nunca se ha puesto cura en ese punto: las 14 reparaciones historicas estan todas antes de esta linea."
+  },
+  {
+   "id": "RC4",
+   "titulo": "El techo de los gratis se corrompe con el tamano INFLADO",
+   "archivo": "cuerpo/obrero.py:599 -> cuerpo/cuotas.py:239-250 (apuntar_no_cupo) -> cuerpo/cuotas.py:270-271 (_capacidad)",
+   "evidencia": "cuotas.apuntar_no_cupo(quien, len(prompt_nube)) usa el prompt INFLADO. En memoria/CUOTAS.json, groq y groq20b quedaron con no_cupo = 20476, por debajo del prompt real (25.122).",
+   "efecto": "DEGRADACION ACUMULATIVA: cada 413 causado por el bulto que el propio sistema infla BAJA EL TECHO del cerebro. El sistema castiga a los gratis por su propio error y luego concluye 'no les cabe'. Con techo 20.476 y prompt 25.122, groq y groq20b se saltan SIEMPRE."
+  },
+  {
+   "id": "RC5",
+   "titulo": "El descarte lo decide un juicio de IA, no un hecho mecanico",
+   "archivo": "cuerpo/obrero.py (veredicto_corto: 'if a.get(invento_algo): SE DESCARTA') + _validar_en_paquete",
+   "evidencia": "El freno mecanico (_validar_en_paquete) SOLO mira nombres de archivo .py/.html/... y solo escribe la marca _fuera_del_paquete: NADIE la usa para parar nada. El descarte real lo firma el auditor IA con 'invento_algo'. Caso real guardado en memoria/ULTIMO_TRABAJO_DEL_EQUIPO.json: se descarto una propuesta por inventar '_recortar_paquete', una FUNCION, que el freno ni mira.",
+   "efecto": "Un cerebro que no ejecuto nada tacha de invalido un trabajo. Es el fallo ya apuntado en la memoria: 'Un cerebro opinando sobre codigo que no ejecuto no es una fuente'."
+  },
+  {
+   "id": "RC6",
+   "titulo": "Cinco fuentes de verdad distintas para el mismo numero (los topes)",
+   "archivo": "arnes/asignador.py:44 (TOPE_LETRAS=15000) | cuerpo/obrero.py:227 (TOPE_PESADO=15000) | cuerpo/obrero.py:226 (TOPE_LOCAL=26000) | vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py:44 (TOPE_GRATIS=19000) | cuerpo/cuotas.py (CAPACIDAD + lo medido)",
+   "evidencia": "TOPE_LOCAL=26000 es el limite duro del codigo, pero el mayor tamano que el local ha aguantado de verdad (CUOTAS.json) es 12.887: el limite del codigo esta al DOBLE de lo que el cerebro aguanta. Por eso el local acumula 74 llamadas y 72 fallos.",
+   "efecto": "Ninguna pieza conoce el tope de las otras. Un recorte que cumple su tope puede incumplir el de al lado."
+  }
+ ],
+ "secondary_causes": [
+  {
+   "id": "SC1",
+   "que": "El reintento hace CRECER el encargo",
+   "archivo": "cuerpo/obrero.py:735-741",
+   "detalle": "for _vuelta in range(3) y si el veredicto es RECHAZADO se acumula motivos_rechazo, que se PEGA al encargo en la vuelta siguiente. El paquete crece en cada vuelta."
+  },
+  {
+   "id": "SC2",
+   "que": "El ultimo recurso de auditoria puede ser el mismo cerebro que genero",
+   "archivo": "cuerpo/obrero.py:687-698",
+   "detalle": "Si la auditoria sale SIN_AUDITAR se reintenta con pesado=True (el de pago). Si el que genero era el de pago, revisa el mismo. Solo se AVISA (linea 697-698), no se impide. Y en ingeniero.py:418 eso acaba en 'trabajo guardado pero NO aplicado'."
+  },
+  {
+   "id": "SC3",
+   "que": "La vigia solo muestra los 3 primeros avisos",
+   "archivo": "cuerpo/obrero.py:788",
+   "detalle": "for aviso in (r.get('avisos') or [])[:3]: los avisos de capacidad ('no le cabe') se pierden si hay mas de tres, y son justo los que explican que paso."
+  },
+  {
+   "id": "SC4",
+   "que": "La dependencia de la cura es silenciosa",
+   "archivo": "ingeniero.py:205-210",
+   "detalle": "try: import asignador ... except Exception: pass. Si el import falla, NADIE se entera y se manda el bulto entero como antes: el desvio es invisible."
+  },
+  {
+   "id": "SC5",
+   "que": "El aplicador rechaza cambios validos por el texto repetido",
+   "archivo": "cuerpo/aplicador.py:107-113",
+   "detalle": "Exige que texto_viejo aparezca UNA sola vez. En obrero.py, la llamada a _preguntar_con_relevo esta escrita en varios sitios: un texto_viejo generico aparece N veces y el cambio se rechaza con 'no se sabe cual es'. Es mecanico, no de IA, y no distingue un cambio bueno de uno malo."
+  }
+ ],
+ "nine_entry_doors": [
+  {"n": 1, "nombre": "GENERAR (el trabajo de verdad)", "archivo": "cuerpo/obrero.py:742", "funcion": "trabajar", "caller": "ingeniero.py:342 (equipo) y ingeniero.py:211 (resolver)", "empaquetador": "_prompt_obrero", "divisor": "NO_EXISTE", "router": "cuotas.rankear (solo salta, no recorta)", "memoria_inyectada": "el bloque LO QUE YA NOS PASO AQUI dentro del paquete", "reintentos": 3, "modelo_final": "deepseek (obligado por pesado=True)", "payload_final": 25122, "consistente": "NO"},
+  {"n": 2, "nombre": "auditar (reintento 1)", "archivo": "cuerpo/obrero.py:664", "funcion": "auditar", "caller": "trabajar:762", "empaquetador": "_prompt_auditor", "divisor": "NO_EXISTE", "router": "cuotas.rankear", "modelo_final": "el gratis que quepa (o de pago)", "payload_final": "NO MEDIDO", "consistente": "NO"},
+  {"n": 3, "nombre": "auditar con el de pago (ultimo recurso)", "archivo": "cuerpo/obrero.py:689", "funcion": "auditar", "caller": "auditar:687-691", "empaquetador": "_prompt_auditor", "divisor": "NO_EXISTE", "router": "pesado=True", "modelo_final": "deepseek (puede ser el MISMO que genero)", "payload_final": "NO MEDIDO", "consistente": "NO"},
+  {"n": 4, "nombre": "los dos ojos del ciclo cruzado", "archivo": "cuerpo/cruzado.py:149", "funcion": "_correr", "caller": "cruzado.resolver", "empaquetador": "_prompt_obrero", "divisor": "NO_EXISTE", "router": "cuotas.rankear", "modelo_final": "el que toque", "payload_final": "NO MEDIDO", "consistente": "NO"},
+  {"n": 5, "nombre": "el reparador (con el intento anterior dentro)", "archivo": "cuerpo/cruzado.py:195", "funcion": "resolver", "caller": "cruzado.resolver", "empaquetador": "_prompt_obrero + 'INTENTO ANTERIOR RECHAZADO'", "divisor": "NO_EXISTE", "modelo_final": "el que toque", "payload_final": "NO MEDIDO (crece: lleva el anterior dentro)", "consistente": "NO"},
+  {"n": 6, "nombre": "el juez", "archivo": "cuerpo/cruzado.py:208", "funcion": "resolver", "caller": "cruzado.resolver", "empaquetador": "_prompt_juez + propuesta + vigia en JSON", "divisor": "NO_EXISTE", "reintentos": 2, "payload_final": "NO MEDIDO", "consistente": "NO"},
+  {"n": 7, "nombre": "los consejeros", "archivo": "cuerpo/consejeros.py:95", "funcion": "_correr", "empaquetador": "prompt propio", "divisor": "NO_EXISTE", "payload_final": "NO MEDIDO", "consistente": "NO"},
+  {"n": 8, "nombre": "responder dudas", "archivo": "cuerpo/dudas.py:140", "funcion": "(pregunta de dudas)", "empaquetador": "prompt propio + TEXTOS", "divisor": "NO_EXISTE", "payload_final": "NO MEDIDO", "consistente": "NO"},
+  {"n": 9, "nombre": "buscar/crear habilidad", "archivo": "cuerpo/skills.py:194", "funcion": "(skill)", "empaquetador": "la propia tarea", "divisor": "NO_EXISTE", "payload_final": "NO MEDIDO", "consistente": "NO"}
+ ],
+ "conclusion_puertas": "SI EXISTE un solo corredor de SALIDA (_preguntar_con_relevo, obrero.py:427) y NUEVE entradas. Ninguna de las nueve recorta, y ninguna usa el divisor porque NO EXISTE. La unica que pasa por el asignador es la de resolver (ingeniero.py:205-210), y lo hace ANTES del inflado, por lo que el recorte no sobrevive. El mando equipo (la puerta de Julio) NO usa el asignador en absoluto.",
+ "medicion_de_las_9_puertas": {
+  "estado": "MEDIDO el 2026-09-09. Cierra el 'paso_sin_tocar_codigo_recomendado' que estaba pendiente: antes solo estaba medido el payload de la puerta 1 (25.122).",
+  "que": "Se midio el tamano REAL del texto que sale hacia el cerebro por las nueve puertas, con material real, y se comparo con los topes que el propio sistema declara y con lo que los cerebros han aguantado de verdad (memoria/CUOTAS.json).",
+  "comando": "python medir_las_nueve_puertas.py",
+  "instrumento": "medir_las_nueve_puertas.py (solo lectura: no escribe en el proyecto, no apunta cuotas, no apunta fallos, no crea skills)",
+  "volcado_completo": "memoria/MEDICION_NUEVE_PUERTAS_2026-09-09.json",
+  "dos_metodos": [
+   "POR RECETA: se reconstruye cada prompt con la MISMA expresion del codigo (misma funcion, mismos argumentos), sin adivinar nada.",
+   "EN VIVO (prueba de verdad): se intercepta _preguntar_con_relevo con un espia que apunta archivo:linea y tamano, y se corren los flujos REALES (obrero.trabajar con 3 vueltas y con auditor mudo, cruzado.resolver con 3 rondas, consejeros.consultar, dudas._responde_de_verdad). El espia SUSTITUYE al pasillo: ninguna llamada salio a internet ni gasto cuota."
+  ],
+  "paquetes_medidos": {
+   "A": "la ronda real del 2026-09-09: 14858 letras (objetivo 7575 + material 34460, el mismo de medir_el_pasillo.py)",
+   "B": "un paquete real guardado y de tamano MEDIANO de memoria/paquetes: 17805 letras (ingeniero__en_arnes_candado_legislar_py_falta_quien.md). No se uso el mayor (158.085) para no exagerar."
+  },
+  "lo_que_los_cerebros_AGUANTAN_de_verdad": {
+   "fuente": "memoria/CUOTAS.json, campo gasto.<cerebro>.mayor_ok (el mayor encargo que contesto bien)",
+   "groq": 19042,
+   "groq20b": 20169,
+   "local": 12887,
+   "gemini": 107349,
+   "gemini2": 194297,
+   "gemini3": 30314,
+   "gemini4": 193689,
+   "deepseek": 230668,
+   "router_router2_router3": "54 llamadas / 54 fallos, sin mayor_ok: no aguantan nada",
+   "el_gratis_real_mas_pequeno_que_aguanta": 19042,
+   "el_local_aguanta": 12887,
+   "topes_que_declara_el_codigo": {"asignador.TOPE_LETRAS": 15000, "obrero.TOPE_PESADO": 15000, "obrero.TOPE_LOCAL": 26000, "vigia.TOPE_GRATIS": 19000}
+  },
+  "escenario_A_ronda_real_0909": {
+   "paquete": 14858,
+   "se_pasan_del_gratis_real": "2 de 12",
+   "cuales": ["P1 auditar (obrero.py:664) 19744 letras (+702)", "P2 auditar (obrero.py:689) 19744 letras (+702)"],
+   "lectura": "Con el paquete de la ronda real, la unica puerta que se pasa es el AUDITOR: y esa es gratis por diseno. Es decir: el paquete NO le cabe al auditor gratis ya desde la primera vuelta."
+  },
+  "escenario_B_paquete_real_guardado": {
+   "paquete": 17805,
+   "se_pasan_del_gratis_real": "8 de 12",
+   "cuales": ["P1 auditar (obrero.py:664) 22691 (+3649)", "P2 auditar (obrero.py:689) 22691 (+3649)", "P3 generar (obrero.py:742) 20524 (+1482)", "P3b generar vuelta 2 (obrero.py:738-742) 20682 (+1640)", "P3c generar clase crear (obrero.py:71-97) 19060 (+18)", "P4 reparador (cruzado.py:149<-183) 20524 (+1482)", "P6 reparador reintento (cruzado.py:195-198) 20784 (+1742)", "P7 juez (cruzado.py:208-210) 21105 (+2063)"],
+   "lectura": "Con un paquete real de tamano normal, 8 de las 12 salidas se pasan del cerebro gratis mas pequeno. Y 6 de ellas (P1, P2, P3, P3b, P6, P7) tambien se pasan del no_cupo=20476 que el propio sistema le apunto a groq y groq20b: el 'no le cabe' se cumple a si mismo. Pasa/baja: P5 vigilante 18924, P8 consejeros 6839, P9 dudas 1148, P10 skills 204."
+  },
+
+  "prompts_medidos_por_receta_con_su_sitio": [
+   "P1 auditar (gratis) | cuerpo/obrero.py:664 | _prompt_auditor(paquete, json(propuesta)) | A=19744 B=22691",
+   "P2 auditar (ultimo recurso) | cuerpo/obrero.py:689 | el mismo _prompt_auditor con pesado=True | A=19744 B=22691",
+   "P3 generar | cuerpo/obrero.py:742 | _prompt_obrero(paquete, tarea, clase='reparar') | A=17577 B=20524",
+   "P3b generar vuelta 2 | cuerpo/obrero.py:738-742 | _prompt_obrero(paquete, MOTIVOS + tarea) | A=17735 B=20682",
+   "P3c generar clase crear/analista | cuerpo/obrero.py:71-97 | _prompt_obrero(paquete, tarea, clase='crear') | A=16113 B=19060",
+   "P4 reparador ronda 1 | cuerpo/cruzado.py:149 <- :183 | _prompt_obrero(paquete, problema) | A=17577 B=20524",
+   "P5 vigilante ronda 1 | cuerpo/cruzado.py:149 <- :184 | _prompt_vigilante(paquete, problema) | A=15977 B=18924",
+   "P6 reparador reintento | cuerpo/cruzado.py:195-198 | _prompt_obrero + 'INTENTO ANTERIOR RECHAZADO' + lo aprendido | A=17837 B=20784",
+   "P7 juez | cuerpo/cruzado.py:208-210 | _prompt_juez(paquete, json(propuesta), json(vigia)) | A=18158 B=21105",
+   "P8 consejeros | cuerpo/consejeros.py:95 -> :52 | _prompt(pregunta, porque, trozos, fallos) | A=6839 B=6839",
+   "P9 dudas | cuerpo/dudas.py:140 -> :133-139 | prompt propio + TEXTOS | A=1148 B=1148",
+   "P10 skills | cuerpo/skills.py:194 -> :180-189 | la variable tarea (no lleva paquete) | A=204 B=204"
+  ],
+  "medido_EN_VIVO": {
+   "nota": "No son cuentas hechas a mano: son los tamanos que de verdad entraron por el pasillo al correr los flujos reales.",
+   "por_puerta": [
+    {"puerta": "cuerpo/obrero.py:742", "funcion": "trabajar", "veces": 8, "menor": 17600, "mayor": 20683, "pesado_en_todas": true},
+    {"puerta": "cuerpo/obrero.py:664", "funcion": "auditar", "veces": 10, "menor": 18537, "mayor": 21484, "pesado_en_todas": false},
+    {"puerta": "cuerpo/obrero.py:689", "funcion": "auditar (ultimo recurso)", "veces": 2, "menor": 18537, "mayor": 21484, "pesado_en_todas": true},
+    {"puerta": "cuerpo/cruzado.py:149", "funcion": "_en_paralelo._correr", "veces": 4, "menor": 16000, "mayor": 20547, "pesado_en_todas": false},
+    {"puerta": "cuerpo/cruzado.py:195", "funcion": "resolver", "veces": 4, "menor": 17860, "mayor": 20807, "pesado_en_todas": false},
+    {"puerta": "cuerpo/cruzado.py:208", "funcion": "resolver (juez)", "veces": 6, "menor": 16948, "mayor": 19895, "pesado_en_todas": false},
+    {"puerta": "cuerpo/consejeros.py:95", "funcion": "_correr", "veces": 4, "menor": 6423, "mayor": 6423, "pesado_en_todas": false},
+    {"puerta": "cuerpo/dudas.py:140", "funcion": "_responde_de_verdad", "veces": 2, "menor": 1141, "mayor": 1141, "pesado_en_todas": false},
+    {"puerta": "cuerpo/skills.py:194", "funcion": "crear", "veces": 0, "nota": "NO se ejecuto a proposito: escribiria un archivo real en skills/. Medido por receta (204 letras)."}
+   ],
+   "confirmacion_de_RC1_en_vivo": "Al correr obrero.trabajar con el generador por defecto (None, el caso normal), las 8 llamadas de GENERAR salieron con pesado=True. Los cerebros gratis no compiten NUNCA. Ya no es una lectura del codigo: es la bandera vista salir asi en vivo.",
+   "contraste_que_lo_demuestra": "En la misma corrida, cruzado.py:149 (que SI reparte con cuotas.fila) salio con primero=groq. Cuando el reparto se hace de verdad, el gratis entra sin problema. Lo que falta no es cerebro gratis: es reparto en la puerta que GENERA."
+  },
+  "hallazgos_nuevos_de_esta_medicion": [
+   "El AUDITOR se pasa del gratis ya en la ronda real del 09-09 (19744 > 19042, +702): la puerta que deberia ser barata es la primera que no le cabe.",
+   "Con un paquete real normal (17805), se pasan 8 de 12 salidas, y 6 tambien se pasan del no_cupo=20476 apuntado a groq/groq20b: 'no le cabe' es una profecia que el propio sistema se cumple.",
+   "El objetivo se cita DOS veces en el prompt final (como TAREA y dentro del paquete, que tambien lo lleva), y el reintento lo anade una tercera: no hay deduplicacion en ninguna puerta.",
+   "El local tiene el techo del codigo al DOBLE de lo que aguanta (TOPE_LOCAL=26000 frente a mayor_ok=12887): por eso acumula 74 llamadas y 72 fallos. Ya no es una sospecha, esta medido.",
+   "Sube el tamano por la escalera entera: paquete A 14858 -> generar 17577 -> reintento 17837 -> auditor 19744. Cada salto es una seccion que se anade sin que nadie compruebe que el que la recibe la aguanta."
+  ],
+  "sigue_sin_medirse": [
+   "La puerta 9 (skills) en vivo: no se ejecuto porque escribe un archivo real. Su prompt no lleva paquete (204 letras), asi que no es la que aprieta.",
+   "El tamano del enumerado TAL CUAL lo recibe el HTTP despues del limpiado de privacidad (prompt_nube): aqui se mide el prompt que entra al pasillo, que es el que decide el enrutado."
+  ]
+ },
+
+ "real_corridor": [
+  "paquete_original: cerebro/router.py::armar(proy, tarea) -> texto plano",
+  "entrada: ingeniero.py comando equipo (linea 339) o resolver (linea 190)",
+  "router: cerebro/router.py::armar y a_texto (a_texto corta a 400 LINEAS, no mide LETRAS)",
+  "repartidor: cuerpo/cuotas.py::rankear (ordena y SALTA por tamano; no recorta)",
+  "divisor: NO_EXISTE (ley escrita en CONTRATO_NUNCA_SIN_REVISAR regla 6, sin mecanismo)",
+  "armar_encargo: arnes/asignador.py:166 (recorta por el FINAL del material y el 60% del objetivo). Solo lo llama resolver (ingeniero.py:208) y juzga (ingeniero.py:467, con material vacio).",
+  "team: ingeniero.py:342 -> obrero.trabajar",
+  "resolver vs equipo: dos caminos distintos; solo resolver tiene el parche del asignador, sin commitear",
+  "judge/auditar: cuerpo/obrero.py:645 auditar (hasta 2 intentos gratis + 1 de pago)",
+  "cross: cuerpo/cruzado.py (9 puertas 4-6)",
+  "advisors: cuerpo/consejeros.py (puerta 7)",
+  "questions: cuerpo/dudas.py (puerta 8)",
+  "skills: cuerpo/skills.py (puerta 9)",
+  "memoria: cuerpo/fallos.py (se lee para el bloque LO QUE YA NOS PASO AQUI; 112 de 121 paquetes lo llevan)",
+  "reintentos: trabajar 3 vueltas; auditar 2+1; cruzado 2",
+  "constructor_final_prompt: cuerpo/obrero.py:70 _prompt_obrero (AQUI se infla)",
+  "_preguntar_con_relevo: cuerpo/obrero.py:427 (salida unica)",
+  "cuotas: cuerpo/cuotas.py (fila, rankear, _capacidad, despierte, dormir, apuntar_no_cupo)",
+  "seleccion_modelo: obrero.py:473 (pesado) -> 480 (rankear por tamano) -> 503/507 (deepseek primero o BLOQUEO F2)",
+  "modelo: los 8 de ORDEN (groq, groq20b, gemini, gemini2, gemini3, gemini4, local, deepseek)",
+  "respuesta_modelo: texto crudo",
+  "parser_resultado: cuerpo/obrero.py:192 _json_de",
+  "clasificador_estado: cuerpo/obrero.py:775-777 (obrero/auditor/propuesta/auditoria/avisos)",
+  "aplicador: cuerpo/aplicador.py::aplicar_cambio (existe y esta probado)",
+  "verificacion: vigias (test_vigia_aplicador.py)",
+  "commit_o_descartado: descarte en 6 condiciones (ver discard_conditions); NO hay registro historico de descartes, solo APLICACIONES.log para lo aplicado"
+ ],
+ "package_sizes": {
+  "paquete_que_manda_Julio": 7575,
+  "encargo_tras_armar_encargo": 14858,
+  "prompt_que_llega_al_cerebro": 25122,
+  "tope_que_la_vigia_declara": 19000,
+  "tope_que_usa_el_asignador": 15000,
+  "tope_que_usa_el_obrero_para_pesado": 15000,
+  "tope_duro_del_local_en_codigo": 26000,
+  "lo_que_el_local_ha_aguantado_de_verdad": 12887,
+  "capacidad_medida_groq": 19042,
+  "capacidad_medida_groq20b": 20169,
+  "gemini3": 30314,
+  "gemini4": 193689,
+  "deepseek": 230668,
+  "paquete_medio_guardado_de_121": 23294,
+  "paquete_mas_grande_guardado": 157272,
+  "no_cupo_grabado_en_CUOTAS_json": 20476,
+  "medido_con": "python medir_el_pasillo.py (reproducible)"
+ },
+ "expansion_points": [
+  {"punto": "cuerpo/obrero.py:70-134 _prompt_obrero", "que_anade": "plantilla fija de reglas (~2.400 letras) + la TAREA, que ya va dentro del encargo como OBJETIVO", "cuanto": "encargo 14.858 -> prompt 25.122 (x1,69)"},
+  {"punto": "cuerpo/obrero.py:735-741", "que_anade": "los motivos de rechazo de la vuelta anterior, pegados al encargo", "cuanto": "crece en cada una de las 3 vueltas"},
+  {"punto": "cuerpo/cruzado.py:196-198", "que_anade": "'INTENTO ANTERIOR RECHAZADO' + lo que fallo + el problema", "cuanto": "crece en cada ronda del ciclo cruzado"},
+  {"punto": "cerebro/router.py::armar (via a_texto)", "que_anade": "el paquete se arma sin mirar el tope de ningun cerebro y a_texto corta por LINEAS", "cuanto": "paquete medio 23.294 letras, ya por encima de todos los gratis"},
+  {"punto": "el bloque de memoria de fallos dentro del paquete", "que_anade": "la seccion LO QUE YA NOS PASO AQUI", "cuanto": "3.292 letras de media = 14% del paquete"}
+ ],
+ "duplication_sources": [
+  {"que": "5 constantes distintas para el tope", "donde": "asignador.TOPE_LETRAS=15000, obrero.TOPE_PESADO=15000, obrero.TOPE_LOCAL=26000, vigia.TOPE_GRATIS=19000, cuotas._capacidad()", "riesgo": "un recorte que cumple uno incumple otro; nadie compara"},
+  {"que": "el problema viaja DOS veces", "donde": "ingeniero.py:211 obrero.trabajar(pk, problema): dentro de pk ya va como OBJETIVO y fuera va como tarea", "riesgo": "duplica el texto mas grande en el prompt final"},
+  {"que": "el paquete se puede normalizar a texto en 3 sitios", "donde": "obrero.trabajar:718, obrero._validar_en_paquete:618, router.a_texto", "riesgo": "tres sitios que deben coincidir y nadie comprueba"},
+  {"que": "dos caminos hacia el mismo trabajo", "donde": "resolver (con asignador, sin commitear) y equipo (sin asignador)", "riesgo": "el arreglo aplica a uno y no al otro: asi vuelve el fallo por la otra puerta"},
+  {"que": "copias viejas de la memoria", "donde": "memoria/FALLOS.json.antes_de_dar_voz, .antes_de_quitar_la_marca_20260824_132733, .bak; ingeniero.py.bak (en el indice git); _ronda2.txt y _ronda_director.txt en la raiz", "riesgo": "varias fuentes que parecen la buena"},
+  {"que": "121 paquetes guardados", "donde": "memoria/paquetes/ (75 de ingeniero, 30 de foto_informe, 13 de dmm)", "riesgo": "el sistema guarda cada paquete y no borra ninguno"},
+  {"que": "router, router2, router3", "donde": "retirados de ORDEN (cuotas.py:45-49) pero siguen con entradas en CUOTAS.json y 54 llamadas / 54 fallos cada uno", "riesgo": "cerebros muertos con historial que envenena las medias"}
+ ],
+ "lost_content": [
+  {"que": "la pieza que hay que reparar puede caerse del trozo", "donde": "arnes/asignador.py:199-205: sitio = TOPE_LETRAS - len(cabecera) - 200; luego trozo = trozo[-sitio:]", "detalle": "Se conserva el FINAL del material. En el paquete real el codigo va en MEDIO. Medido antes: 9 funciones -> 0."},
+  {"que": "el objetivo se recorta al 60% del tope", "donde": "arnes/asignador.py:182-185 (_sitio_obj = TOPE_LETRAS * 0.6)", "detalle": "Si el problema pasa de 9.000 letras, se pierde el final del propio objetivo."},
+  {"que": "la seccion de fallos se recorta junto con el resto", "donde": "el mismo trozo[-sitio:]", "detalle": "La memoria que evita repetir puede caerse sin que nadie lo sepa."},
+  {"que": "NO HAY NINGUNA COMPROBACION de que la pieza reparada siga dentro del prompt final", "donde": "todo el corredor", "detalle": "_validar_en_paquete solo mira nombres de archivo de la RESPUESTA del modelo, nunca el payload que sale."}
+ ],
+ "retry_growth": {
+  "trabajar": "3 vueltas; cada RECHAZADO acumula motivos_rechazo y se pegan al encargo (obrero.py:735-741)",
+  "auditar": "2 intentos gratis + 1 de ultimo recurso de pago (obrero.py:663 y 687-691)",
+  "cruzado": "2 intentos del juez; el reparador lleva dentro el intento anterior",
+  "efecto": "cada vuelta CUESTA DINERO y el paquete crece; en los avisos guardados se ven 34460, 37644, 34766, 36619, 34908, 35657"
+ },
+ "memory_growth": {
+  "que_crece": "la seccion LO QUE YA NOS PASO AQUI (memoria de fallos) viaja DENTRO del paquete",
+  "evidencia": "112 de 121 paquetes la llevan; 3.292 letras de media; 14% del paquete",
+  "detalle": "cuerpo/fallos.py::texto() mete todas las entradas ordenadas por veces: crece con el uso y no se poda",
+  "efecto": "con el tiempo, mas memoria = mas bulto = menos cabe, sin que ninguna pieza relacione las dos cosas"
+ },
+ "routing_order": {
+  "fila": "cuotas.ORDEN = groq, groq20b, gemini, gemini2, gemini3, gemini4, local, deepseek",
+  "paso_1": "obrero.py:473 si len(prompt) > 15000 O pesado -> el de pago primero",
+  "paso_2": "obrero.py:480 rankear(turnos, len(prompt)) -> SALTA a quien no aguanta",
+  "paso_3": "obrero.py:503 si pesado y hay deepseek -> deepseek primero",
+  "paso_4": "obrero.py:507 si pesado y NO hay deepseek -> BLOQUEO F2 (no cae a los gratis)",
+  "efecto_medido": "con generador=None, pesado=True siempre: los gratis quedan fuera de la generacion por diseno, antes de mirar el tamano"
+ },
+ "integrity_status": {
+  "hay_verificacion_de_integridad_del_payload": false,
+  "hay_verificacion_de_que_la_pieza_sobreviva_al_recorte": false,
+  "hay_medicion_del_tamano_final_antes_de_llamar": false,
+  "donde_se_mide_el_tamano": "obrero.py:480, dentro de _preguntar_con_relevo, DESPUES de construir el prompt",
+  "consecuencia": "un recorte que pierde la pieza pasa desapercibido; y un prompt que no cabe solo produce saltos, nunca un recorte"
+ },
+ "dependency_status": {
+  "asignador": "resolver lo importa con try/except pass (ingeniero.py:205-210). Si falla, sigue el bulto y nadie se entera.",
+  "cerebro_de_dmm": "obrero.prestar_cerebro() carga por ruta con importlib (fallo ya vivido el 2026-08-20 por dos paquetes llamados cuerpo)",
+  "portero": "equipo lo importa con try/except (ingeniero.py:326-330)",
+  "vigia_del_pasillo": "MODIFICADA y SIN COMMITEAR: su verde no esta respaldado en git",
+  "efecto": "las dependencias de la cura fallan en silencio: el sistema puede volver al comportamiento viejo sin avisar"
+ },
+ "false_failure_conditions": [
+  {"que": "se declara roto algo que compila", "donde": "el auditor IA dice 'errores de sintaxis graves' y el archivo compila y sus vigias pasan (esta escrito en el codigo y en la vigia del pasillo)", "causa": "el auditor no ejecuta: opina sobre un texto que no le cabe y que le llega duplicado"},
+  {"que": "se marca como invento algo que el propio encargo pedia", "donde": "memoria/ULTIMO_TRABAJO_DEL_EQUIPO.json: invento_algo por '_recortar_paquete'", "causa": "_validar_en_paquete no mira nombres de funcion, y el descarte lo firma la IA"},
+  {"que": "un 413 por bulto inflado se cuenta como 'no le cabe al cerebro'", "donde": "obrero.py:592-601 -> cuotas.apuntar_no_cupo(quien, len(prompt_nube))", "causa": "se usa el tamano INFLADO como si fuera la capacidad del cerebro"},
+  {"que": "un JSON roto cuenta como fallo del cerebro", "donde": "obrero.py:602-603 (else: 'fallo (no es cuota)')", "causa": "un prompt ahogado produce JSON roto; el fallo se apunta al cerebro, no al bulto"}
+ ],
+ "discard_conditions": [
+  {"n": 1, "donde": "cuerpo/obrero.py::veredicto_corto ('if a.get(invento_algo): SE DESCARTA')", "que": "el auditor IA dice invento_algo -> el trabajo se descarta", "tipo": "JUICIO DE IA"},
+  {"n": 2, "donde": "ingeniero.py:418", "que": "obrero == auditor -> 'trabajo guardado pero NO aplicado'", "tipo": "MECANICO (correcto, pero se llega ahi por el bulto)"},
+  {"n": 3, "donde": "ingeniero.py:517", "que": "veredicto != APROBADO -> no se aplica el trabajo guardado", "tipo": "MECANICO"},
+  {"n": 4, "donde": "cuerpo/aplicador.py:90-93", "que": "texto_viejo y texto_nuevo solo difieren en comentarios/docstrings -> 'HUMO: no repara nada'", "tipo": "MECANICO"},
+  {"n": 5, "donde": "cuerpo/aplicador.py:107-113", "que": "texto_viejo no aparece, o aparece MAS DE UNA VEZ -> no se aplica", "tipo": "MECANICO (rechaza cambios validos en archivos con lineas repetidas)"},
+  {"n": 6, "donde": "cuerpo/obrero.py:766-770", "que": "veredicto RECHAZADO -> se acumula motivo y se reintenta; a las 3 vueltas se para", "tipo": "BUCLE"}
+ ],
+ "primer_descarte_demostrado": {
+  "caso": "memoria/ULTIMO_TRABAJO_DEL_EQUIPO.json (ronda real del 2026-09-09)",
+  "quien": "obrero deepseek, auditor deepseek (el mismo)",
+  "veredicto": "RECHAZADO",
+  "primera_condicion_que_provoca_el_descarte": "condicion 1 (auditoria.invento_algo = true por '_recortar_paquete'); despues, condicion 2 (obrero == auditor).",
+  "detalle": "La propuesta era aplicable tecnicamente (el propio auditor reconocio que el problema era no tocar auditar()). Se descarto por el juicio de un cerebro que no ejecuto nada, no por un hecho comprobado."
+ },
+ "false_green_tests": [
+  {
+   "test": "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py::test_lo_que_sale_nunca_pasa_del_tope_de_los_gratis",
+   "clasificacion": "FALSO_VERDE DEMOSTRADO",
+   "por_que": "Mide len(asignador.armar_encargo(...)) = 14.858 <= TOPE_GRATIS(19000) y PASA. Pero eso es el ESCALON INTERMEDIO. Lo que de verdad llega al cerebro es 25.122 (medido hoy). La vigia mide el escalon que si cumple y nunca el que falla.",
+   "prueba": "python -m pytest vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py -q -> '4 passed in 2.39s' CON el fallo dentro"
+  },
+  {
+   "test": "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py::test_quien_manda_trabajo_a_un_cerebro_llama_al_asignador",
+   "clasificacion": "NOMINAL (mejorado, pero sigue sin medir el payload)",
+   "por_que": "Comprueba que la PALABRA 'armar_encargo' aparece en la funcion resolver antes de 'obrero.trabajar'. No comprueba ni el tamano que sale ni que la pieza sobreviva. Su propio docstring reconoce que antes era verde de mentira por mirar el archivo entero.",
+   "nota": "Esta vigia esta MODIFICADA Y SIN COMMITEAR: su verde no esta respaldado en git (git status la marca como ' M')."
+  },
+  {
+   "test": "vigias/test_vigia_paquete_obedecido.py",
+   "clasificacion": "NOMINAL",
+   "por_que": "Hace 'assert _validar_en_paquete in txt' y 'assert _fuera_del_paquete in txt': comprueba que el codigo fuente contiene el nombre. No comprueba que el freno pare algo."
+  },
+  {
+   "test": "vigias/test_vigia_el_texto_largo_no_corta_la_pieza.py",
+   "clasificacion": "A REVISAR",
+   "por_que": "Su nombre promete justo lo que falta (que el texto largo no corte la pieza), pero no se ha verificado aqui que mida el payload final de las 9 puertas."
+  }
+ ],
+ "duplicate_or_legacy_paths": [
+  {"que": "ingeniero.py.bak", "estado": "ANADIDO AL INDICE GIT (A)", "riesgo": "una copia del mando como si fuera codigo"},
+  {"que": "_ronda2.txt y _ronda_director.txt en la raiz", "estado": "sin commitear", "riesgo": "salidas de ronda con el MISMO formato y cifras casi identicas (74/72, 352 vs 351 llamadas): parecen el mismo mensaje repetido"},
+  {"que": "memoria/FALLOS.json.antes_de_dar_voz, .antes_de_quitar_la_marca_20260824_132733, .bak", "estado": "copias de la memoria", "riesgo": "tres historicos que parecen la fuente buena"},
+  {"que": "resolver vs equipo", "estado": "dos caminos para el mismo trabajo; solo resolver tiene el parche del asignador", "riesgo": "el fallo vuelve por el camino sin parche"},
+  {"que": "router, router2, router3", "estado": "retirados de ORDEN pero con entradas en CUOTAS.json y 54/54 fallos", "riesgo": "ruido en las metricas"},
+  {"que": "memoria/paquetes/ con 121 paquetes", "estado": "crece sin poda", "riesgo": "no es una ruta alternativa, pero si una acumulacion sin control"}
+ ],
+ "evidence": [
+  {"que": "la medicion del pasillo", "comando": "python medir_el_pasillo.py", "resultado": "TOPE_LETRAS=15000; encargo=14858 (cumple); prompt real=25122 (NO le cabe a groq 19042 ni a groq20b 20169); inflado x1,69 sobre el encargo y x3,32 sobre lo mandado"},
+  {"que": "el falso verde", "comando": "python -m pytest vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py -q", "resultado": "4 passed in 2.39s CON el fallo dentro"},
+  {"que": "los techos corrompidos", "comando": "ver memoria/CUOTAS.json", "resultado": "groq y groq20b con no_cupo=20476 (por debajo del prompt real 25122); local con mayor_ok=12887 frente a TOPE_LOCAL=26000 en el codigo; deepseek 627 llamadas / 1 fallo"},
+  {"que": "no existe divisor", "comando": "Select-String -Path cuerpo\\*.py,arnes\\*.py,cerebro\\*.py -Pattern 'def partir|def dividir|def trocear'", "resultado": "0 resultados: la ley de partir el encargo no tiene mecanismo"},
+  {"que": "el comando equipo no usa el asignador", "comando": "ver ingeniero.py:339-343", "resultado": "paq = _r.armar(...); res = _o.trabajar(_r.a_texto(paq), tarea, ...): sin asignador"},
+  {"que": "las 9 puertas", "comando": "busqueda de _preguntar_con_relevo", "resultado": "9 llamadas en 5 archivos: obrero.py 664/689/742, cruzado.py 149/195/208, consejeros.py 95, dudas.py 140, skills.py 194"},
+  {"que": "el descarte real", "comando": "ver memoria/ULTIMO_TRABAJO_DEL_EQUIPO.json", "resultado": "RECHAZADO, invento_algo=true por '_recortar_paquete', obrero=auditor=deepseek, vueltas_dadas=3"},
+  {"que": "la memoria de fallos no lo apunta", "comando": "git show HEAD:memoria/FALLOS.json", "resultado": "66 fallos, TODOS de 2026-08; en disco 67 (el unico de septiembre es el ID 67). Los 9 commits del mismo fallo (06 al 09 de septiembre) dejaron 1 solo apunte."},
+  {"que": "la memoria de fallos viaja en el paquete", "comando": "medicion sobre memoria/paquetes", "resultado": "112 de 121 paquetes llevan el bloque 'LO QUE YA NOS PASO AQUI'; 3.292 letras de media; 14% del paquete; paquete medio 23.294 letras"},
+  {"que": "LAS 9 PUERTAS MEDIDAS (cierra el pendiente)", "comando": "python medir_las_nueve_puertas.py", "resultado": "Ronda real (paquete 14858): 2 de 12 salidas se pasan del gratis real (19042) y las dos son el AUDITOR (19744). Paquete real normal (17805): 8 de 12 se pasan, y 6 tambien del no_cupo=20476 apuntado a groq/groq20b. EN VIVO: las 8 llamadas de GENERAR (obrero.py:742) salieron con pesado=True (los gratis no compiten nunca), mientras cruzado.py:149 salio con primero=groq. Volcado: memoria/MEDICION_NUEVE_PUERTAS_2026-09-09.json"}
+ ],
+ "repair_order": [
+  {"orden": 1, "que": "EL PRIMER PUNTO DE DIVERGENCIA", "donde": "cuerpo/obrero.py:731 (pesado_ahora = not generador)", "por_que_primero": "Es el primero en ejecucion y anula todo lo de despues: decide que la generacion normal NUNCA se le ofrezca a un gratis, sea cual sea el tamano. Mientras esto siga, cualquier recorte es decorativo.", "nota": "No se propone aqui COMO repararlo (la auditoria no implementa): solo se declara que es el primero."},
+  {"orden": 2, "que": "PÉRDIDA / CORRUPCIÓN DE IDENTIDAD DEL PAQUETE", "donde": "cuerpo/obrero.py:742 + _prompt_obrero (doble envoltura de la tarea); y cuerpo/obrero.py:599 (el techo se corrompe con el tamano inflado)", "por_que": "El paquete pierde su identidad: lo que sale (25.122) no es lo que se preparo (14.858), y ademas el sistema lo apunta como culpa del cerebro."},
+  {"orden": 3, "que": "RECONSTRUCCION / REEXPANSION INDEBIDA", "donde": "_prompt_obrero (plantilla) y los motivos de rechazo que se pegan en cada vuelta (obrero.py:735-741)", "por_que": "Explica por que el bulto crece y por que la 2a y 3a vuelta son peores que la 1a."},
+  {"orden": 4, "que": "ROUTING TARDIO", "donde": "cuerpo/obrero.py:480", "por_que": "El tamano real se conoce cuando ya solo se puede saltar. Aqui es donde nace el bucle pago -> autojuicio -> descarte."},
+  {"orden": 5, "que": "CONTAMINACION POR REINTENTOS Y MEMORIA", "donde": "el bloque LO QUE YA NOS PASO AQUI dentro del paquete (112 de 121) y los motivos acumulados", "por_que": "Memoria y reintentos meten bulto que crece con el uso."},
+  {"orden": 6, "que": "CLASIFICACION FALSA DE RESULTADOS", "donde": "obrero.py:592-601 (413 contado como 'no le cabe al cerebro') y obrero.py:602-603 (JSON roto contado como fallo del cerebro)", "por_que": "Envenena las metricas y degrada los techos."},
+  {"orden": 7, "que": "DESCARTE INCORRECTO", "donde": "las 6 condiciones de discard_conditions, en especial la 1 (invento_algo por juicio de IA)", "por_que": "Tira trabajo valido ya pagado."},
+  {"orden": 8, "que": "TESTS FALSOS VERDES", "donde": "los 3-4 de false_green_tests", "por_que": "Mientras la prueba mida el papel, cualquier reparacion sale verde sin serlo."},
+  {"orden": 9, "que": "LIMPIEZA DE RUTAS DUPLICADAS", "donde": "los 6 de duplicate_or_legacy_paths", "por_que": "SOLO si la evidencia demuestra que interfieren. No antes."}
+ ],
+ "prohibido": "No proponer diez parches simultaneos. La siguiente intervencion debe atacar PRIMERO el primer desvio demostrado (repair_order 1).",
+ "next_action": {
+  "que": "ESPERAR LA DECISION DE JULIO. No implementar nada.",
+  "paso_sin_tocar_codigo_recomendado": "HECHO el 2026-09-09: las 9 puertas ya estan medidas con el paquete real (ver medicion_de_las_9_puertas y memoria/MEDICION_NUEVE_PUERTAS_2026-09-09.json). El mapa esta completo: no queda ningun dato pendiente que impida decidir.",
+  "si_julio_autoriza_reparar": "Una sola intervencion, en el pasillo (no en cada puerta), y con una vigia que INTERCEPTE _preguntar_con_relevo y compruebe el tamano REAL que sale y que la pieza a reparar sigue dentro. Nada de comprobar que una palabra esta en un archivo.",
+  "lo_que_NO_debe_hacerse": [
+   "Subir limites de contexto como solucion.",
+   "Anadir otro divisor/recortador junto al que ya existe.",
+   "Parchear una puerta mas (van 14 parches y ninguno en el pasillo).",
+   "Dar por bueno el verde de la vigia del pasillo mientras siga sin commitear y sin medir el payload.",
+   "Aceptar 'no le cabe al cerebro' sin comprobar que el tamano que se le mando era su tamano real."
+  ]
+ }
+}
+
+
+
+
+
+
+
+

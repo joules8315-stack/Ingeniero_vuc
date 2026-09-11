@@ -1,0 +1,19 @@
+UN SOLO CAMBIO en la funcion _prompt_obrero de cuerpo/obrero.py. El material trae la funcion ENTERA: copia el texto literal de ahi, nunca de memoria.
+
+EL PROBLEMA, MEDIDO: hoy, cuando la clase NO es reparar (o sea cuando Julio pone la marca --crear), el encargo que recibe el cerebro es SIEMPRE el de ANALISTA de documento, y pide el campo texto_nuevo como el documento entero escrito en markdown. El 2026-09-10 se pidio crear vigias/_espia.py, que es un archivo de CODIGO, y el cerebro gratis hizo exactamente lo que se le pedia: entrego markdown con extension .py, y el auditor lo rechazo con razon (SyntaxError). El encargo pedia lo contrario de lo que la tarea mandaba. Por eso no se ha podido crear ni una pieza nueva de codigo.
+
+EL CAMBIO, con estas palabras: dentro de la rama que se ejecuta cuando la clase NO es reparar (la linea que empieza por if clase !=), ANTES del return que hoy devuelve el encargo de documento, anadir una comprobacion: si la tarea pide un archivo de codigo Python (su texto trae una ruta que termina en .py), devolver un encargo NUEVO de ANALISTA DE CODIGO; si NO la pide (un documento, una guia), devolver el encargo de documento EXACTAMENTE como esta hoy, sin tocarle ni una palabra.
+
+El encargo nuevo de ANALISTA DE CODIGO es una f-string con la misma forma que el de documento (empieza por Eres el..., luego las reglas duras, luego TAREA: {tarea}, luego el JSON de respuesta, y termina con el MATERIAL y su FIN DEL MATERIAL). Sus reglas duras son estas, con estas palabras:
+1. NO hay texto viejo que sustituir: el archivo todavia no existe. Lo escribes entero.
+2. CREAR NO ES INVENTAR: el archivo nuevo lo pide la tarea y su ruta viene en la tarea. Que no exista en el material NO es motivo de rechazo, porque un archivo que aun no existe nunca puede venir en el material.
+3. En texto_nuevo va CODIGO PYTHON de verdad, entero y ejecutable: sin markdown, sin cercas de codigo y sin nada de texto fuera del codigo. Lo que haya que explicar va dentro, como comentario o docstring.
+4. El archivo tiene que IMPORTARSE y CORRER: funciones completas de verdad, no huecos ni ejemplos. Nada de aqui iria.
+5. Los nombres son EXACTAMENTE los que pide la tarea: la ruta, las funciones y los atributos. No los cambies ni los mejores.
+6. NO inventes piezas, funciones ni datos que la tarea no pida. Si te falta material, pide asi y nada mas: NECESITO_LEER: archivo / motivo / que decide / riesgo.
+
+El JSON de respuesta del encargo nuevo es el de siempre (diagnostico, archivo, texto_nuevo, confianza), y en texto_nuevo pone: el archivo de CODIGO PYTHON ENTERO Y COMPLETO, ejecutable, sin markdown.
+
+PARA SABER SI LA TAREA PIDE CODIGO: usa re.search, que YA esta importado en ese archivo; el patron es una ruta que termina en .py.
+
+REGLAS DEL CAMBIO: no se borra ni se cambia ninguna regla del encargo de documento, ni ninguna otra parte de la funcion. Cambia lo MINIMO. El texto_viejo tiene que ser el trozo literal que hoy existe en el material y ser UNICO en el archivo; el texto_nuevo es ese mismo trozo con la comprobacion delante. Si el cambio deja el archivo roto o la funcion partida, el trabajo se descarta.

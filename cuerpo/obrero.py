@@ -17,6 +17,9 @@ AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, AQUI)
 from cerebro import grafo      # noqa: E402
 from cuerpo import cuotas      # noqa: E402
+from cuerpo import cuaderno    # noqa: E402  (el cuaderno de llamadas: registra cada intento)
+sys.path.insert(0, os.path.join(AQUI, "arnes"))
+import asignador               # noqa: E402  (el recortador del pasillo)
 
 _prestado = {}
 
@@ -69,6 +72,42 @@ def disponible():
 # ─── los prompts: cortos, con el paquete dentro, y prohibicion de inventar ──────────
 def _prompt_obrero(paquete, tarea, clase="reparar"):
     if clase != "reparar":
+        # CREAR CODIGO O CREAR DOCUMENTO (2026-09-10). Medido: pedir crear vigias/_espia.py
+        # salio RECHAZADO porque el encargo de --crear pedia SIEMPRE el documento entero escrito
+        # en markdown: el gratis obedecio, entrego markdown con extension .py y el auditor lo
+        # rechazo con razon (SyntaxError). El encargo pedia lo contrario de lo que mandaba la
+        # tarea. Si la tarea pide un archivo de CODIGO (.py), el encargo pide CODIGO PYTHON.
+        if re.search(r"[\w/]+\.py\b", str(tarea or "")):
+            return f"""Eres el ANALISTA DE CODIGO de un ingeniero de software. Tu trabajo es PENSAR y ESCRIBIR
+un archivo de CODIGO nuevo. NO vas a cambiar codigo que ya existe: ese archivo todavia no existe.
+
+REGLAS DURAS (si las rompes, tu trabajo se descarta):
+1. NO hay texto viejo que sustituir: el archivo todavia no existe. Lo escribes entero.
+2. CREAR NO ES INVENTAR: el archivo nuevo lo pide la tarea y su ruta viene en la tarea. Que no
+   exista en el material NO es motivo de rechazo: un archivo que aun no existe nunca puede venir
+   en el material.
+3. En "texto_nuevo" va CODIGO PYTHON de verdad, entero y ejecutable: sin markdown, sin cercas de
+   codigo y sin nada de texto fuera del codigo. Lo que haya que explicar va dentro, como
+   comentario o docstring.
+4. El archivo tiene que IMPORTARSE y CORRER: funciones completas de verdad, con sus import, no
+   huecos ni ejemplos. Nada de "aqui iria".
+5. Los nombres son EXACTAMENTE los que pide la tarea: la ruta, las funciones y los atributos.
+   No los cambies ni los mejores.
+6. Trabaja SOLO con el material de abajo. Si te falta algo, pidelo asi y nada mas:
+   NECESITO_LEER: archivo / motivo / que decide / riesgo.
+
+TAREA: {tarea}
+
+Responde SOLO un JSON valido, sin texto alrededor:
+{{"diagnostico": "que has encontrado, en una frase",
+  "archivo": "la ruta del archivo de codigo que creas",
+  "texto_nuevo": "el archivo de CODIGO PYTHON ENTERO Y COMPLETO, ejecutable, sin markdown",
+  "confianza": "alta|media|baja"}}
+
+===== MATERIAL (esto es TODO lo que existe) =====
+{paquete}
+===== FIN DEL MATERIAL =====
+"""
         return f"""Eres el ANALISTA de un ingeniero de software. Tu trabajo es PENSAR y ESCRIBIR un documento
 nuevo. NO vas a cambiar codigo.
 
@@ -223,8 +262,121 @@ def _maneras_de_leerlo(crudo):
         yield tronco + "]" * max(0, faltan) + "}" * max(0, tronco.count("{") - tronco.count("}"))
 
 
+def _propuesta_cumple(propuesta, clase):
+    """UN PROGRAMA, no una IA: el pedido tiene que LLEVAR lo que se pidio.
+
+    Ley (CONTRATO_EL_EQUIPO_ESCRIBE): "un PROGRAMA comprueba que el pedido este bien hecho",
+    que lleve dentro lo que se pidio. Medido el 2026-09-10 (causa 2): el gratis devolvio un JSON
+    "reparado" por _json_de que tenia diagnostico y archivo pero VACIO de texto_nuevo; el auditor
+    lo vio DUDOSO y el trabajo murio SIN llamar al de pago. El de pago entra SIEMPRE que el
+    gratis falle; aqui el fallo era del programa, no del cerebro. Devuelve (ok, falta): con la
+    falta en terminos que el bucle convierte en motivo de nuevo intento.
+    """
+    if not isinstance(propuesta, dict):
+        return False, f"no devolvio un JSON: {str(propuesta)[:80]}"
+    if clase == "crear":
+        # Crear una pieza entera: si no trae el contenido nuevo, no existe lo que se crea.
+        if not str(propuesta.get("texto_nuevo") or "").strip():
+            return False, "la propuesta NO trae texto_nuevo (el pedido llego incompleto)"
+    else:
+        # Reparar: tiene que decir que toca y con que se reemplaza.
+        if not str(propuesta.get("archivo") or "").strip():
+            return False, "la propuesta NO dice que archivo toca"
+        if "codigo" not in propuesta and "texto_viejo" not in propuesta and "texto_nuevo" not in propuesta:
+            return False, "la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)"
+    return True, ""
+
+
+TOPE_GRATIS = 19000   # MEDIDO 2026-09-09: el mas pequeno de los cerebros gratis aguanta ~19.000.
+                      # A partir de aqui el cerebro se apaga: corta la respuesta a la mitad.
+
+
+def _filtrar_paquete(paquete, archivo=None, tope=None):
+    """Recorta el paquete a lo minimo que necesita el cerebro que lo recibe.
+
+    Medido el 2026-09-10 (Julio: "a un cerebro solo le llega lo suyo"): al auditor le
+    llegaban 24.124 letras y aguanta ~19.000; por eso su respuesta salia cortada a mitad
+    de palabra y el veredicto salia RECHAZADO o SIN_AUDITAR con JSON roto. La vigia verde
+    mentia porque miraba si el mando NOMBRABA al filtro, no si el filtro existia.
+
+    Se conserva SOLO lo que hace falta para juzgar:
+      - la ley que manda (seccion "LA LEY QUE MANDA"),
+      - los trozos EXACTOS del archivo que se toca (si viene), no los de todos los archivos,
+      - la seccion "A QUIEN PUEDE DANAR" (para no romper vecinos).
+    Se descarta el relleno: "ya se reparo antes", bocas de piezas, vigias, listados.
+    """
+    if not isinstance(paquete, str):
+        from cerebro import router as _r
+        paquete = _r.a_texto(paquete)
+    tope = tope or TOPE_GRATIS
+    bloques = {"__cabecera__": []}
+    actual = "__cabecera__"
+    for ln in paquete.splitlines():
+        m = re.match(r"^## (\d+)\.\s+(.*)", ln)
+        if m:
+            actual = "%s. %s" % (m.group(1), m.group(2))
+            bloques[actual] = [ln]
+        else:
+            bloques.setdefault(actual, []).append(ln)
+    ley = next((k for k in bloques if "LA LEY QUE MANDA" in k), None)
+    trozos = next((k for k in bloques if "LOS TROZOS" in k.upper()), None)
+    dana = next((k for k in bloques if "DANAR" in k.upper()), None)
+    salida = list(bloques["__cabecera__"])
+    for k in (ley, dana):
+        if k and k != "__cabecera__":
+            salida += bloques[k]
+    if trozos and archivo:
+        solo = []
+        i = 0
+        t = bloques[trozos]
+        while i < len(t):
+            if t[i].startswith("### `"):
+                j = i + 1
+                while j < len(t) and not t[j].startswith("### `"):
+                    j += 1
+                if archivo in t[i]:
+                    solo += t[i:j]
+                i = j
+            else:
+                solo.append(t[i])
+                i += 1
+        if solo:
+            salida += solo
+    elif trozos:
+        # Sin archivo a que atarse, quedan los bloques de trozos, del mas relevante para abajo
+        # hasta que entre en el tope. El relleno de menor relevancia se suelta primero.
+        t = bloques[trozos]
+        bloques_trozo = []
+        i = 0
+        while i < len(t):
+            if t[i].startswith("### `"):
+                j = i + 1
+                while j < len(t) and not t[j].startswith("### `"):
+                    j += 1
+                m = re.search(r"relevancia\s+([\d\.]+)", t[i])
+                bloques_trozo.append((float(m.group(1)) if m else 0.0, t[i:j]))
+                i = j
+            else:
+                i += 1
+        bloques_trozo.sort(key=lambda x: x[0], reverse=True)
+        resto = salida
+        for _relev, _lines in bloques_trozo:
+            if len("\n".join(resto)) >= tope:
+                break
+            resto = resto + _lines
+        salida = resto
+    # Si aun asi se pasa del tope, se va soltando el relleno del final hasta caber: la cabecera,
+    # la ley y "a quien puede danar" son LO NECESARIO, no se tocan.
+    while len("\n".join(salida)) > tope and len(salida) > len(bloques["__cabecera__"]):
+        salida.pop()
+    return "\n".join(salida)
+
+
 TOPE_LOCAL = 26000    # MEDIDO 2026-08-21: 3/3 hasta 26.000; 28.000/30.000/35.000/40.000 = 0/3 (RECHAZA)
-TOPE_PESADO = 15000   # letras a partir de las cuales los gratis se caen y el de pago va primero
+# TOPE_PESADO ya NO decide el reparto (2026-09-09, punto 1 de la causa raiz): la decision la toma
+# la capacidad MEDIDA (cuotas.rankear). El numero se deja porque `medir_las_nueve_puertas.py` lo
+# lee para su tabla de medidas; borrarlo seria romper un vecino que solo lo mira.
+TOPE_PESADO = 15000   # informativo: capacidad documentada vieja, ya no manda nada
 
 
 def quienes_hay():
@@ -424,10 +576,13 @@ def _deepseek_directo(prompt, temperatura, modelo):
     return d["choices"][0]["message"]["content"]
 
 
-def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False):
+def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False,
+                          clase="", vuelta=0):
     """Pregunta respetando el orden de Julio: Qwen -> Gemini -> local, y VOLVIENDO a Qwen
     en cuanto despierte. Si uno se agota (429/cuota), se le marca la siesta y sigue el de al lado.
-    Devuelve (texto, quien_contesto, avisos)."""
+    Devuelve (texto, quien_contesto, avisos). Cada intento queda anotado en el cuaderno de
+    llamadas (cuerpo/cuaderno.py), que es un PROGRAMA: el por que de cada fallo se MIDE, no se
+    supone (CONTRATO_EL_EQUIPO_ESCRIBE, "el cuaderno de llamadas dira si sigue pasando y cuando")."""
     c, _ = prestar_cerebro()
     if not c:
         return "", "", ["NO_ENCONTRADO: sin cerebro"]
@@ -464,13 +619,40 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
     # Asi que se le aparta aqui y se le guarda para el ULTIMO RECURSO, a solas.
     de_pago = [q for q in turnos if q in cuotas.DE_PAGO]
     turnos = [q for q in turnos if q not in cuotas.DE_PAGO]
-    # Salvo cuando el encargo es PESADO: ahi los gratis no aguantan y el de pago si entra.
-    # SIEMPRE LO PESADO A DEEPSEEK (Julio, 2026-08-21): "el equipo que haga siempre lo pesado
-    # deepseek, no lo olvides nunca." Repartir por TAMANO no bastaba: medido tres veces el mismo
-    # dia, con encargos POR DEBAJO de TOPE_PESADO, los gratis devolvieron propuesta vacia, un 413
-    # y texto ilegible. Se rendian igual. Por eso GENERAR (lo pesado) ya no se reparte por letras:
-    # va a DeepSeek. AUDITAR (lo ligero) sigue siendo gratis, que es donde la ley de coste manda.
-    if len(prompt) > TOPE_PESADO or pesado:
+    # EL FILTRO DEL PASILLO (2026-09-10, la solucion unica): aqui es donde nace de verdad el
+    # fallo recurrente (medido: se mandaban 7.575 letras y llegaban 35.845; la vigia miraba el
+    # papel, no el hecho). Para cuando el prompt llega aqui ya viene inflado (plantilla + tarea
+    # + material del auditor duplicado), y la unica jugada posible era saltar cerebros; saltar
+    # a todos = paga el de pago = se juzga a si mismo. Ahora se RECORTA antes de elegir, UNA
+    # vez, para las 9 puertas. El tope es la capacidad real MEDIDA del gratis mas pequeno que
+    # esta despierto: recortar para el garantiza que ningun gratis quede fuera por tamano.
+    # Se respeta lo "pesado": si Julio pidio de verdad al de pago, no se le recorta su material.
+    if turnos and not pesado:
+        _capas = [cuotas._capacidad(q) for q in turnos]
+        _capas = [c for c in _capas if c > 0]
+        if _capas:
+            _tope_pasillo = min(_capas)
+            if len(prompt) > _tope_pasillo:
+                _antes = len(prompt)
+                _recortado = asignador.recortar_prompt(prompt, _tope_pasillo)
+                if 0 < len(_recortado) < _antes:
+                    prompt = _recortado
+                    avisos.append("el pasillo recorto el encargo de %d a %d letras para que "
+                                  "le quepa a un cerebro gratis (tope medido: %d)"
+                                  % (_antes, len(_recortado), _tope_pasillo))
+    # EL DE PAGO ENTRA SI NADIE GRATIS AGUANTA, NO POR UN TOPE ESCRITO A MANO.
+    # Antes el reparto lo decidia un numero puesto de memoria (15.000 letras) sin mirar a nadie.
+    # Medido el 2026-09-09 (punto 1 de la auditoria de causa raiz): los gratis llevan 0 de 72
+    # trabajos escritos, y en un paquete normal 8 de 12 salidas pasaban ese tope aunque los gratis
+    # SI las aguantaban (un paquete de 14.858 llego a medir 25.122).
+    # Ahora la condicion es la verdad medible: si NINGUN gratis de `turnos` (que ya viene sin los
+    # de pago, arriba) aguanta ese tamano segun la capacidad MEDIDA, entra el de pago de primero;
+    # si algun gratis aguanta, se le da la oportunidad y el de pago queda solo de ultimo recurso.
+    # `pesado` sigue mandando cuando de verdad se pidio trabajo pesado (regla F2 de Julio).
+    # Y sigue en pie la orden de siempre: lo que NO le cabe a nadie va a DeepSeek, y el bloqueo F2
+    # de abajo salta si DeepSeek no esta. AUDITAR (lo ligero) sigue gratis, que es donde manda la
+    # ley de coste.
+    if pesado or not cuotas.rankear(turnos, len(prompt)):
         turnos = de_pago + turnos
         de_pago = []
     # REPARTIDOR POR METRICAS (Julio, 2026-08-21): se asigna por eficiencia, no preguntando a
@@ -520,6 +702,8 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
                 cuotas.apuntar_uso(quien, ok=True)
                 avisos.append("no quedaba ningun cerebro gratis: contesto %s, que SE PAGA"
                               % cuotas.APODO[quien])
+                cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,
+                                 resultado=cuaderno.OK, crudo=(txt or "")[:120])
                 return txt, quien, avisos
             except Exception as e:
                 msg = str(e)
@@ -527,6 +711,8 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
                 if cuotas.es_agote(msg):      # sin saldo cuenta como agotado: a dormir, no insistir
                     cuotas.dormir(quien, msg)
                 avisos.append("%s fallo: %s" % (cuotas.APODO[quien], msg[:90]))
+                cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,
+                                 resultado=cuaderno.ERROR, crudo=msg[:120])
         return "", "", avisos + ["NO_ENCONTRADO: ningun cerebro pudo atender"]
 
     # SOLO CODIGO A LA NUBE (Julio, 2026-08-21). Se tapa AQUI, en el unico sitio por donde sale
@@ -575,8 +761,12 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
             # tapar. Un camino duplicado es un agujero esperando su turno.
             txt = _con_tope(lambda: _pedirle_a(quien), max(tope, cuotas.cuanto_esperarle(quien)))
             if not (txt or "").strip():
+                cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,
+                                 resultado=cuaderno.VACIO, crudo="")
                 raise ValueError("contesto vacio")
             cuotas.apuntar_uso(quien, ok=True, tamano=len(prompt_nube))
+            cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,
+                             resultado=cuaderno.OK, crudo=(txt or "")[:120])
             return txt, quien, avisos
         except TimeoutError as e:
             cuotas.apuntar_uso(quien, ok=False)
@@ -590,6 +780,8 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
                 cuotas.dormir(quien, msg)
                 avisos.append(f"{cuotas.APODO[quien]} se agoto -> pasa el turno")
             elif cuotas.es_no_cupo(msg):
+                cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,
+                                 resultado=cuaderno.NO_CUPO, crudo=msg[:120])
                 # NO LE CABE (CONTRATO_EQUIPO_QUE_AGUANTA, 2026-08-24). Mandarle a dormir no
                 # sirve de nada: no se va a hacer mas grande. Se le BAJA EL TECHO para no
                 # volver a pedirle algo de este tamano.
@@ -600,6 +792,8 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
                 avisos.append(f"{cuotas.APODO[quien]} NO LE CUPO ({len(prompt_nube)} letras) "
                               f"-> se le baja el techo y no se le vuelve a pedir de este tamano")
             else:
+                cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,
+                                 resultado=cuaderno.ERROR, crudo=msg[:120])
                 avisos.append(f"{cuotas.APODO[quien]} fallo (no es cuota): {msg[:90]}")
     return _ultimo_recurso(avisos)          # ningun gratis pudo: ahora si, el de pago
 
@@ -660,10 +854,23 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
         # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa
         auditor_ok = None
         avisos.append("el auditor pedido (%s) era el mismo que genero; se busca otro" % auditor)
+    # AL AUDITOR SOLO LE LLEGA LO SUYO (Julio, 2026-09-10). Antes le llegaba el bulto entero:
+    # medido 24.124 letras y aguanta ~19.000, y por eso la respuesta salia cortada a la mitad.
+    # Se filtra el paquete a lo que de verdad necesita para auditar esta propuesta.
+    archivo_tocado = None
+    if isinstance(propuesta, dict):
+        archivo_tocado = propuesta.get("archivo") or propuesta.get("archivos")
+        if isinstance(archivo_tocado, list) and archivo_tocado:
+            archivo_tocado = archivo_tocado[0]
+        if isinstance(archivo_tocado, str):
+            archivo_tocado = archivo_tocado.strip()
+    material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,
+                                        tope=TOPE_GRATIS - 3344 - 47 -
+                                             len(json.dumps(propuesta, ensure_ascii=False)))
     for _intento in range(2):
         crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
-            _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1,
-            evitar=evitar, primero=auditor_ok)
+            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,
+            evitar=evitar, primero=auditor_ok, clase="auditar", vuelta=_intento + 1)
         avisos += av_intento   # no se pierde lo que dijo el primer intento
         if not crudo_a:
             continue                       # no contesto: se le pide de nuevo
@@ -687,8 +894,8 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
     if (not auditoria or auditoria.get("veredicto") == "SIN_AUDITAR"):
         # intentar con el cerebro de pago, sin apartar a nadie
         crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
-            _prompt_auditor(paquete, json.dumps(propuesta, ensure_ascii=False)), 0.1,
-            primero=None, pesado=True)
+            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,
+            primero=None, pesado=True, clase="auditar", vuelta=3)
         avisos += av_intento
         if crudo_a:
             auditoria = _json_de(crudo_a)
@@ -724,27 +931,61 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
     if not quienes_hay():
         return {"_error": "NO_ENCONTRADO: no hay llave ni modelo local (revisa el .env de DMM)"}
 
-    # GENERAR es lo pesado -> DeepSeek (orden de Julio). AUDITAR es lo ligero -> gratis, abajo.
-    # El pesado NO se queda fijo: si el que llama pidio un generador, ese manda (primero=generador)
-    # y el pesado se apaga para no pisarlo. Si nadie pidio generador, pesado_ahora sale verdadero
-    # y la regla de siempre sigue intacta.
-    pesado_ahora = not generador
+    # GENERAR SE MIDE, NO SE SUPONE (Julio, 2026-09-09, punto 1 de la auditoria de causa raiz).
+    # Antes esto salia de la AUSENCIA de generador: si nadie pedia generador, se daba el encargo
+    # por pesado y el de pago entraba EL PRIMERO sin mirar cuanto medía. Eso dejo a los gratis con
+    # 0 de 72 trabajos: no es que no aguantaran, es que nunca se les pregunto. Y metia el bloqueo
+    # F2 (pesado + sin DeepSeek) en el caso NORMAL, donde nadie habia pedido nada pesado.
+    # Ahora lo unico que enciende el pesado aqui es que el que llama haya pedido DE VERDAD un
+    # generador de pago. Si no pidio nada, o pidio uno gratis, queda apagado y el tamano real lo
+    # mide `cuotas.rankear` dentro del relevo, que ademas salta a quien no aguanta. Lo que de
+    # verdad no le quepa a ningun gratis sigue cayendo en el de pago.
+    pesado_ahora = bool(generador) and generador in cuotas.DE_PAGO
     avisos_totales = []
     motivos_rechazo = []
     vueltas = 0
-    for _vuelta in range(3):
+    propuesta = {}
+    auditoria = {}
+    quien_aud = None
+    for _vuelta in range(4):
         vueltas += 1
         encargo = tarea
         if motivos_rechazo:
             encargo = ("Este trabajo ya se rechazo antes, y estos fueron los motivos:\n" +
                        "\n".join(motivos_rechazo) +
                        "\nArregla todos esos motivos y no repitas el mismo fallo.\n" + tarea)
-        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(paquete, encargo, clase), 0.2,
-                                                      pesado=pesado_ahora, primero=generador)
+        # AL OBRERO SOLO LE LLEGA LO SUYO (Julio, 2026-09-10). Antes le llegaba el bulto entero
+        # y el gratis cortaba la respuesta a la mitad. El filtro le deja la ley, los trozos del
+        # archivo que la tarea nombra (si lo nombra) y quien puede danar.
+        _archivo_tarea = None
+        _m = re.search(r"[\w./\\]*(?:\.py|\.md)\b", str(tarea))
+        if _m:
+            _archivo_tarea = _m.group(0).strip()
+        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,
+                                       tope=TOPE_GRATIS - 2690)
+        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,
+                                                      pesado=pesado_ahora, primero=generador,
+                                                      clase=clase, vuelta=_vuelta + 1)
         avisos_totales += av1
         if not crudo:
             return {"_error": "; ".join(avisos_totales)}
         propuesta = _json_de(crudo)
+        cumple, falta = _propuesta_cumple(propuesta, clase)
+        if not cumple:
+            # PROGRAMA (no IA): el pedido llego incompleto. No se gasta en auditor ni se deja
+            # morir DUDOSO: se anota en el cuaderno, se guarda el motivo y se reintenta. Si se
+            # agotan las vueltas, el bucle cae al ultimo recurso con el cerebro de pago.
+            cuaderno.apuntar(quien_gen, tamano=len(crudo or ""), vuelta=_vuelta + 1, clase=clase,
+                             resultado=cuaderno.VACIO, crudo=(crudo or "")[:120])
+            motivos_rechazo.append(falta)
+            avisos_totales.append(f"{cuotas.APODO.get(quien_gen, quien_gen)} dejo el pedido a mitad "
+                                  f"({falta}) -> se reintenta")
+            if _vuelta + 1 >= 3:
+                # LEY (CONTRATO_EL_EQUIPO_ESCRIBE, regla 1): el de pago entra SIEMPRE que el
+                # gratis falle. Si el gratis dejo el pedido a mitad 3 veces, el de pago lo escribe
+                # entero. Sin esto, el trabajo moria "DUDOSO" sin llamarlo (fallo real 2026-09-10).
+                pesado_ahora = True
+            continue
         inventados = _validar_en_paquete(paquete, propuesta, tarea)
         # Si el obrero dijo NO_ENCONTRADO y PREGUNTA_REQUERIDA, es falta de material, no invento.
         # Eso sale como PREGUNTA al que reparte, no como rechazo.

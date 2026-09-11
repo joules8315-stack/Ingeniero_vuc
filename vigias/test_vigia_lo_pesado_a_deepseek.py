@@ -34,19 +34,28 @@ def _fuente():
 def test_generar_pide_lo_pesado():
     """El trabajo duro NO vuelve por defecto a los cerebros gratis.
 
-    LA LEY CAMBIO el 2026-08-31: lo pesado ya no es fijo. Se calcula con
-    pesado_ahora = not generador, para que cuando alguien pida EXPRESAMENTE un cerebro
-    concreto no se lo pise la regla del pesado (antes se la pisaba, y por eso pedir un
-    revisor concreto no servia de nada: se ignoraba en silencio).
-    Cuando nadie pide generador, pesado_ahora vale verdadero y la regla de Julio sigue
-    INTACTA: lo pesado al de pago.
+    LA LEY CAMBIO otra vez el 2026-09-09 (punto 1 de la auditoria de causa raiz). Antes de esa
+    fecha el pesado se calculaba asi: `pesado_ahora = not generador`, o sea "no me dijeron
+    generador" = "trabajo pesado". Eso ponia al de pago el primero SIEMPRE en el caso normal y
+    dejo a los gratis con 0 de 72 trabajos: no es que no aguantaran, es que nunca se les pregunto.
+
+    LO QUE VIGILA AHORA (ley nueva, mas estricta que la vieja):
+      - pido un generador DE PAGO -> se respeta y el pesado se enciende;
+      - no pido nada -> NO se supone pesado: lo mide la capacidad real;
+      - y lo que de verdad no le cabe a ningun gratis sigue cayendo en DeepSeek, porque la
+        capacidad se mide con cuotas.rankear y si no aguanta nadie entra el de pago.
     """
     txt = _fuente()
-    assert "pesado_ahora = not generador" in txt, (
-        "desaparecio el calculo del pesado: o volvio a ser fijo, o se quito del todo. "
-        "Si es fijo, pedir un cerebro concreto vuelve a no servir de nada")
+    assert "pesado_ahora = not generador" not in txt, (
+        "volvio la suposicion 'no me dijeron generador' = 'trabajo pesado': es el fallo del "
+        "0 de 72 y el que pagaba trabajo que un gratis aguantaba")
+    assert "pesado_ahora = bool(generador) and generador in cuotas.DE_PAGO" in txt, (
+        "no se encuentra el calculo nuevo del pesado: lo unico que puede encenderlo es que se "
+        "haya pedido un generador DE PAGO")
     assert "pesado=pesado_ahora" in txt, (
         "generar ya no pide lo pesado: el trabajo duro volvio a los cerebros gratis")
+    assert "not cuotas.rankear(turnos" in txt, (
+        "el de pago ya no entra por capacidad MEDIDA: se quito la medida del relevo")
 
 
 def test_auditar_sigue_siendo_gratis():

@@ -1059,5 +1059,20 @@
   "quien_lo_caza": "vigias/test_vigia_contestar_cierra_el_recado.py",
   "disparador": "remitente desconocido|recado sin firma|no se cierra al contestar",
   "veces": 1
+ },
+ {
+  "id": 67,
+  "fecha": "2026-09-09",
+  "proyecto": "dmm",
+  "que_paso": "Aplicar el paquete dmm__enchufar_cuerpo_traductor_py_y_cuerpo_ap: enchufar cuerpo/traductor.py y cuerpo/aprobacion.py al chat real que atiende al dueno. Una peticion en palabras de persona se traduce a encargo; cuando la campana esta lista le llega una notificacion DENTRO de la app y el da el si / pide cambios / descarta por chat o microfono; al aprobar queda agendada sola. Sin romper vecinos. Despues prueba real de pantalla (Playwright).",
+  "causa_raiz": "El paquete pide enchufar cuerpo/traductor.py y cuerpo/aprobacion.py al chat real que atiende al dueno, pero el material no contiene el archivo del chat real ni la funcion que lo conecta, por lo que no se puede realizar la integracion sin inventar.",
+  "cura": "No se puede realizar el cambio porque el material no incluye el archivo del chat real ni la funcion que lo conecta con cuerpo/traductor.py y cuerpo/aprobacion.py.",
+  "no_volver_a": "La reparación propuesta no implementa la conexión del traductor y la aprobación al chat real de la aplicación. La prueba B requiere que la petición del usuario en el chat se traduzca y luego se apruebe dentro de la misma aplicación, lo cual no se aborda en la reparación.",
+  "piezas": [
+   "NO_ENCONTRADO"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_enchufar_traductor_aprobacion.py",
+  "disparador": "aplicar un paquete que pide enchufar una pieza al chat real sin traer el archivo de la conexion|traducir la peticion del chat y aprobarla dentro de la misma app sin el material|pedir que lo que se escribe en la app se traduzca y apruebe sin el archivo del chat",
+  "veces": 5
  }
 ]

@@ -53,14 +53,51 @@ def _vivo(ruta):
     return "\n".join(re.sub(r"#.*$", "", ln) for ln in codigo.splitlines())
 
 
+def _fn_resolver():
+    """Devuelve el codigo VIVO (sin comentarios ni docstrings) de LA FUNCION resolver.
+
+    Es la Regla 2 del CONTRATO_ENCHUFADO_SE_PRUEBA_EJECUTANDO.md: cuando no se puede ejecutar
+    (resolver dispara a un cerebro real y eso cuesta), se mira LA FUNCION, nunca el archivo.
+    Un archivo con varios caminos no prueba nada: basta que OTRO camino (equipo) llame al
+    asignador para que la palabra aparezca y esta vigia se ponga verde mintiendo. Justo lo que
+    paso y lo que esta vigia existe para impedir.
+
+    Y se quitan los comentarios y las explicaciones: un comentario que diga "hay que llamar al
+    asignador" es exactamente el pañito de agua tibia que esto viene a matar. Solo cuenta lo que
+    resolver EJECUTA de verdad.
+    """
+    import ingeniero
+    import inspect
+    src = inspect.getsource(ingeniero.resolver)
+    src = re.sub(r'"""(?:.|\n)*?"""', " ", src)
+    src = re.sub(r"'''(?:.|\n)*?'''", " ", src)
+    return "\n".join(re.sub(r"#.*$", "", ln) for ln in src.splitlines())
+
+
 def test_quien_manda_trabajo_a_un_cerebro_llama_al_asignador():
-    """La cura existe desde el 2026-09-08 y no la llamaba nadie. Aqui se exige que la llame."""
-    vivo = _vivo(os.path.join(AQUI, "ingeniero.py"))
-    assert "asignador" in vivo, (
-        "SE SIGUE MANDANDO EL BULTO ENTERO AL CEREBRO. arnes/asignador.py sabe recortar dejando "
-        "lo necesario y sabe elegir a quien le quepa, y NADIE LO LLAMA. Medido: se mandaron "
+    """La cura existe desde el 2026-09-08 y resolver no la llamaba: mandaba el bulto entero.
+
+    Se comprueba DENTRO de resolver, no en todo ingeniero.py (que tiene varios caminos y el
+    mando equipo tambien usa el asignador: un assert sobre el archivo entero es verde de
+    mentira). Se exige que, en resolver, se recorte con el asignador ANTES de llamar al obrero.
+    """
+    src = _fn_resolver()
+    # 1) el recorte ocurre DENTRO de resolver (no en cualquier sitio del archivo)
+    assert "asignador" in src, (
+        "resolver no llama al asignador. Sigue mandando el bulto entero al cerebro: se mandaron "
         "7.575 letras y llegaron 35.845, no le cupo a ninguno de los cuatro gratis, contesto el "
-        "de pago y se juzgo a si mismo.")
+        "de pago y se juzgo a si mismo. Y esto se mide DENTRO de resolver, porque mirar todo el "
+        "archivo era el verde de mentira que esta vigia viene a matar.")
+    # 2) recorta dejando solo lo necesario (armar_encargo), no solo lo nombra
+    assert "armar_encargo" in src, (
+        "resolver nombra el asignador pero no recorta el paquete con el. Nombrarlo no sirve: el "
+        "bulto entero seguiria llegando al cerebro. Tiene que pasarlo por armar_encargo.")
+    # 3) el recorte va ANTES de entregarselo al obrero (el orden es la prueba de que sirve)
+    pos_recorte = src.find("armar_encargo")
+    pos_obrero = src.find("obrero.trabajar")
+    assert -1 < pos_recorte < pos_obrero, (
+        "el recorte del asignador va DESPUES de llamar al obrero, o no esta. Recortar por detras "
+        "no sirve: el bulto entero ya se mando. El orden es la prueba de que el recorte protege.")
 
 
 def test_lo_que_sale_nunca_pasa_del_tope_de_los_gratis():

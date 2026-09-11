@@ -198,12 +198,118 @@ def armar_encargo(fallo, material, intento=1):
     ])
     sitio = TOPE_LETRAS - len(cabecera) - 200
     trozo = str(material or "")
+    # POR PARTES, no por un solo lado (2026-09-10): cortar solo el final dejaba FUERA la pieza
+    # (medido 2026-09-09: 9 funciones -> 0), porque en el paquete real el codigo viaja en el
+    # MEDIO. Se conserva lo que el problema NOMBRA (la ley de Julio: se conserva siempre lo
+    # que el problema nombra y la ley que aplica), el principio (donde vive la ley) y el
+    # final; se tira el relleno del medio.
+    nombres = _nombres(_obj + " " + str(f.get("archivo") or ""))
     if len(trozo) > sitio:
-        # El relleno esta al principio y lo necesario suele estar donde falla: se conserva el
-        # FINAL, que es donde vive el trozo de la pieza. Y se avisa de que se recorto.
-        trozo = ("... [se recorto el relleno del principio para que quepa]\n"
-                 + trozo[-sitio:])
+        trozo = _recortar_material(trozo, sitio, nombres)
     return cabecera + "\n" + trozo
+
+
+def _nombres(texto):
+    """Los nombres de archivo que el texto menciona: lo que NO se puede recortar.
+
+    La ley de Julio (2026-09-09): "se conserva siempre lo que el problema nombra". Un archivo
+    nombrado en la tarea o en la cabecera viaja como seccion '### `archivo`' en el material;
+    esta funcion saca el nombre para poder dejar ESA seccion entera.
+    """
+    nombres = set()
+    for m in re.finditer(r"[\w/]+\.(?:py|js|ts|css|sql|html|md|json)", str(texto or "")):
+        ruta = m.group(0).lower()
+        nombres.add(ruta)
+        nombres.add(ruta.split("/")[-1])
+        nombres.add(ruta.split("/")[-1].split(".")[0])
+        nombres.add(ruta.split("/")[0])
+    return nombres
+
+
+def _seccionar(material):
+    """[(nombre, desde_material, hasta_seccion)] para cada '### `archivo`' del material."""
+    marcas = [(m.start(), m.end(), m.group(1)) for m in re.finditer(r"^### `([^`]+)`",
+                                                                    material or "", re.M)]
+    out = []
+    for i, (a, _b, nombre) in enumerate(marcas):
+        fin_bloque = marcas[i + 1][0] if i + 1 < len(marcas) else len(material)
+        out.append((nombre, a, fin_bloque))
+    return out
+
+
+def _recortar_material(material, presupuesto, nombres):
+    """Recorta `material` a `presupuesto` letras POR PARTES, no por un solo lado.
+
+    Conserva, en orden: (1) las secciones '### `archivo`' que el problema NOMBRA (entera, si
+    cabe), (2) el principio del material (donde vive la ley que aplica), y (3) el final. El
+    codigo del paquete real viaja en el MEDIO; cortar un solo lado lo dejaba fuera (medido:
+    9 funciones -> 0). El aviso se cuenta aparte del presupuesto.
+    """
+    if not material or len(material) <= presupuesto:
+        return material
+    presupuesto = max(0, presupuesto - 180)            # sitio para los separadores
+    if presupuesto <= 0:
+        return material[:60].rstrip() + " ... [recortado]"
+    secciones = _seccionar(material)
+    bloques = []                                       # (prioridad, desde, hasta)
+    for nombre, a, b in secciones:
+        clave = nombre.split("/")[-1].lower().split(".")[0]
+        bloques.append(((0 if clave in nombres else 1), a, b))
+    bloques.append((0, 0, min(len(material), presupuesto // 4)))          # la ley, al principio
+    bloques.append((1, max(0, len(material) - presupuesto // 4), len(material)))  # el final
+    bloques.sort(key=lambda t: (t[0], t[1]))
+    elegidos, usado, ultimo = [], 0, 0
+    for prio, a, b in bloques:
+        a = max(a, ultimo)
+        if b <= a:
+            continue
+        tam = b - a
+        if usado + tam <= presupuesto:
+            elegidos.append((a, b))
+            usado += tam
+            ultimo = b
+        elif prio == 0 and presupuesto - usado > 100:
+            elegidos.append((a, a + (presupuesto - usado)))
+            ultimo = a + (presupuesto - usado)
+            usado = presupuesto
+    piezas = [material[a:b] for a, b in sorted(elegidos)]
+    piezas = [p for p in piezas if p and p.strip()]
+    if not piezas:
+        return material[:max(60, presupuesto)].rstrip() + " ... [recortado]"
+    sep = ("\n\n... [RECORTADO POR PARTES: se tiro solo el relleno del medio; lo nombrado "
+           "quedo dentro] ...\n\n")
+    return sep.join(p.rstrip() for p in piezas)
+
+
+def recortar_prompt(prompt, tope):
+    """EL FILTRO DEL PASILLO (2026-09-10): un solo recorte para las 9 puertas.
+
+    Se llama DENTRO de _preguntar_con_relevo, una sola vez, antes de elegir cerebro. Si el
+    prompt pasa del tope se corta SOLO el bloque del material (lo que va entre '===== MATERIAL'
+    y '===== FIN...') con _recortar_material: por partes y conservando lo que la tarea nombra.
+    La cabecera del prompt (reglas, tarea, esquema JSON, propuesta a auditar) nunca se toca.
+    Si no se encuentra el bloque del material, NO se toca el prompt: romper la instruccion
+    para ahorrar letras seria peor que el ahorro.
+    """
+    if not prompt or len(prompt) <= tope:
+        return prompt
+    inicio = prompt.find("===== MATERIAL")
+    if inicio < 0:
+        return prompt
+    i_fin = prompt.find("===== FIN", inicio)
+    fin = i_fin if i_fin >= 0 else len(prompt)
+    cabeza, material, cola = prompt[:inicio], prompt[inicio:fin], prompt[fin:]
+    presupuesto = tope - len(cabeza) - len(cola)
+    if presupuesto <= 0 or len(material) <= presupuesto:
+        return prompt
+    nombres = _nombres(cabeza)
+    for _ in range(4):
+        material_corto = _recortar_material(material, presupuesto, nombres)
+        nuevo = cabeza + material_corto + cola
+        if len(nuevo) <= tope:
+            return nuevo
+        presupuesto = max(200, presupuesto * 2 // 3)
+    return nuevo
 
 
 def decidir(salida, material="", vigias_nuevas=None, intento=1):

@@ -2,33 +2,33 @@
 > Generado por `mapa/inventario.py` + `mapa/compilar_mapa.py`. NO se edita a mano: se regenera.
 > Regla: aqui solo entra lo que EXISTE en disco. Lo que no aparece, no existe.
 
-**Universo:** 2245 piezas · 609,425 lineas · 4 proyectos.
+**Universo:** 2368 piezas · 631,575 lineas · 4 proyectos.
 
 ## 1. Cuanto hay en cada proyecto
 
 | Proyecto | Piezas |
 |---|---|
 | foto_informe | 1179 |
-| Ingeniero VUC (esta herramienta) | 671 |
-| dmm | 395 |
+| Ingeniero VUC (esta herramienta) | 766 |
+| dmm | 423 |
 
 ## 2. Que tipo de piezas hay
 
 | Rol | Cuantas |
 |---|---|
-| DATO/CONFIG | 1194 |
-| VIGIA | 319 |
-| DOC | 190 |
-| CODIGO | 160 |
-| CONTRATO | 114 |
-| CUERPO (modulo) | 99 |
-| ARNES/CANDADO | 65 |
-| OTRO | 45 |
+| DATO/CONFIG | 1222 |
+| VIGIA | 354 |
+| DOC | 224 |
+| CODIGO | 164 |
+| CONTRATO | 125 |
+| CUERPO (modulo) | 102 |
+| ARNES/CANDADO | 67 |
+| OTRO | 48 |
 | LANZADOR/SCRIPT | 22 |
-| PROTOCOLO/MAPA | 17 |
+| PROTOCOLO/MAPA | 19 |
 | MATRIZ/TABLA_VERDAD | 11 |
 | WEB | 8 |
-| SKILL | 1 |
+| SKILL | 2 |
 
 ## 3. EL CUERPO que ya existe (no se vuelve a construir)
 
@@ -77,8 +77,8 @@ Son **0** contratos. Los que mandan sobre el Ingeniero:
 | foto_informe | `supervisor_full.py` | 1,585 |
 | foto_informe | `COMPARTIR_IA_CODIGO/app_web.html` | 1,424 |
 | foto_informe | `rv3_prueba_integral.py` | 1,307 |
+| dmm | `web/servidor.py` | 1,024 |
 | foto_informe | `test_table_search_unit.py` | 967 |
-| dmm | `web/servidor.py` | 823 |
 
 ## 9. REPETIDERA DETECTADA
 

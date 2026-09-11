@@ -53,6 +53,12 @@ AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Los nombres propios de Python (round, len, print...). No son invento de nadie.
 PROPIOS_DE_PYTHON = set(dir(builtins))
+# Los duendes de MODULO: en todo .py existen (__file__, __name__, __package__...), como
+# en el propio modulo builtins. dir(builtins) trae algunos pero NO __file__ (builtins no
+# tiene archivo), y un .py normal SI: frenar por eso era una frenada en falso (2026-09-10).
+PROPIOS_DE_PYTHON |= {"__file__", "__cached__", "__builtins__", "__annotations__",
+                      "__package__", "__loader__", "__name__", "__doc__",
+                      "__spec__", "__path__", "__debug__"}
 
 
 def sin_ruido(texto):

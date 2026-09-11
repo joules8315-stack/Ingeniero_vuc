@@ -1,0 +1,15 @@
+Crear el archivo NUEVO vigias/_espia.py. Es UNA sola pieza reutilizable: la funcion mirando(objeto, nombre), para usar con with, que sirve para demostrar si una pieza fue llamada DE VERDAD, ejecutando el camino real, en vez de mirar si su nombre aparece escrito en un archivo.
+
+Al salir del with, lo que devuelve tiene exactamente dos cosas: la_llamaron (si o no) y veces (cuantas veces la llamaron dentro del with). Antes de entrar valen falso y cero.
+
+Tiene que valer igual para las dos formas que hay en la casa: para un metodo de un objeto (le pasas el objeto) y para una funcion suelta de un modulo (le pasas el modulo entero).
+
+Reglas que no se pueden romper:
+1. No puede cambiar lo que la pieza vigilada devuelve: el espia mira, no toca el resultado.
+2. No puede dejarla enganchada al terminar: al salir del with todo tiene que quedar como estaba, y una llamada de DESPUES no se puede contar.
+3. No puede tragarse ni cambiar las excepciones que salten dentro del with.
+4. No implementes la clase del objeto (Python no admite tocar clases de C): para el modulo y para el objeto de la casa vale con cambiar el atributo por uno envuelto, guardando el de antes para devolverlo al salir.
+
+El juez de verdad es la vigia vigias/test_vigia_el_espia.py, que hoy esta ROJA porque esta pieza no existe y que pide justo esto: dice SI cuando la llaman, dice NO cuando nadie la llama, no cambia lo que la pieza devuelve, no la deja tocada despues, y tambien vale para una funcion suelta de un modulo. Se escribe para pasar ESA vigia, con esos mismos nombres.
+
+Quien la llama: esa misma vigia la importa como _espia, y despues las vigias de enchufe de la casa la usaran en vez de mirar texto. No hay que tocar ninguna otra pieza.
