@@ -72,6 +72,10 @@ def _nada_toca_lo_real(tmp_path, monkeypatch):
     monkeypatch.setenv("INGENIERO_APLICACIONES", str(tmp_path / "APLICACIONES.log"))
     monkeypatch.setenv("INGENIERO_CUADERNO_TEST", str(tmp_path / "CUADERNO_DE_LLAMADAS.jsonl"))
     monkeypatch.setenv("INGENIERO_PRUEBAS_TEST", str(tmp_path / "pruebas_real"))
+    # Esta ultima se anadio despues de MEDIRLO: con todo lo demas desviado, este cuaderno
+    # seguia ensuciandose porque alguna prueba lanza un candado como PROGRAMA APARTE, y el
+    # desvio hecho por dentro no viaja a otro programa. Solo viaja el entorno.
+    monkeypatch.setenv("INGENIERO_CANDADOS_MEDICION_TEST", str(tmp_path / "CANDADOS_MEDICION.json"))
     monkeypatch.setattr(_cua, "RUTA", str(tmp_path / "CUADERNO_DE_LLAMADAS.jsonl"))
     monkeypatch.setattr(_cm, "RUTA", str(tmp_path / "CANDADOS_MEDICION.json"))
     monkeypatch.setattr(_cd, "RUTA", str(tmp_path / "DIAGNOSTICO.json"))

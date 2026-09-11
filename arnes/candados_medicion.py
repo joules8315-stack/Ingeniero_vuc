@@ -29,16 +29,28 @@ AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUTA = os.path.join(AQUI, "memoria", "CANDADOS_MEDICION.json")
 
 
+def _ruta():
+    """Donde vive el cuaderno. Con puerta de desvio, como los demas cuadernos de la casa.
+
+    POR QUE NACE (2026-09-11): al cerrar el grifo de que las pruebas escriban en la memoria de
+    verdad, cinco de seis cuadernos quedaron intactos y ESTE siguio ensuciandose. El motivo,
+    medido: una prueba lanza un candado como PROGRAMA APARTE, y el desvio hecho por dentro no
+    viaja a otro programa. Lo unico que viaja es una variable de entorno, y este cuaderno era
+    el unico que no tenia. Los demas ya la tenian (unos enchufada y otros dormida).
+    """
+    return os.environ.get("INGENIERO_CANDADOS_MEDICION_TEST") or RUTA
+
+
 def _leer():
     try:
-        return json.load(open(RUTA, encoding="utf-8"))
+        return json.load(open(_ruta(), encoding="utf-8"))
     except Exception:
         return {}
 
 
 def _guardar(d):
-    os.makedirs(os.path.dirname(RUTA), exist_ok=True)
-    json.dump(d, open(RUTA, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    os.makedirs(os.path.dirname(_ruta()), exist_ok=True)
+    json.dump(d, open(_ruta(), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 
 def apuntar(quien, tipo):
