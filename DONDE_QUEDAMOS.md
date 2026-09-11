@@ -1,99 +1,99 @@
-# DÓNDE QUEDAMOS — 2026-09-09
+# DÓNDE QUEDAMOS — 2026-09-11
 
-**Para retomar sin releer nada. Esto es el estado, no un resumen bonito.**
-
----
-
-## LO QUE SE ESTABA HACIENDO
-
-**Construyendo la aplicación de marketting, despertando sus piezas dormidas.**
-
-De 82 piezas, **22 estaban construidas, probadas y sin que nadie las llamara**. El plan las daba
-por *"departamentos que faltan"*. **No faltaban: estaban desenchufadas.**
-
-### Van 12 despertadas. Todas gratis, sin una sola llamada a IA
-
-| Lo que ahora hace y antes no |
-|---|
-| Dice **cuánto cuesta cada clic** |
-| Apunta a **quién escribió** |
-| Cada campaña **cuelga de una meta** que no se pierde |
-| **Reparte** cada pregunta a su departamento |
-| Guarda lo aprendido **con su fuente y su caducidad** |
-| Saca **dos versiones** del mensaje para comparar |
-| Deja **rastro** de todo, y sobrevive al apagón |
-| Sabe **qué sale mañana** |
-| Dice **qué red funciona mejor** |
-| Sabe **qué campaña trajo a qué cliente** |
-| **No paga dos veces** por calcular lo mismo |
-| **Avisa si una red cambia sus reglas** |
-
-**Cuatro de ellas no guardaban nada** y se les reparó la raíz antes de enchufarlas: las metas,
-el historial, el calendario y el grafo. *Enchufar algo que pierde lo que guarda es enchufar humo.*
+**Para retomar sin releer nada.**
 
 ---
 
-## POR DÓNDE SEGUIR — quedan 10
+## EL HALLAZGO DE HOY: FALLÓ EL ARNÉS, Y SE SABE POR QUÉ
 
-### Necesitan una IA de verdad (6). Una ronda del equipo cada una
-`video` (el guion cronometrado) · `perfilador_clientes` (a quién hablarle) ·
-`motor_preguntas` (preguntar solo lo que falta) · `director` (de una idea, el plan entero) ·
-`skills` (que elija su herramienta) · `rotacion` (repartir entre cerebros)
+Julio preguntó: *"mira además por qué lo borró, está faltando a la regla de que construya pero
+sin dañar algo. Falló el arnés."* **Tenía razón, y está comprobado.**
 
-**Empezar por `video`:** es la de más valor visible.
+### El agujero, medido
 
-### Esperan las credenciales de Julio (3). **Van al final, por orden suya**
-| Pieza | Qué hace falta |
+El revisor automático comprueba **cinco cosas**:
+1. que no sea humo · 2. que no quede roto · 3. que no use nombres inventados ·
+4. que haga lo que se pidió · 5. que se pueda leer
+
+**Y no comprueba ni una sola vez si el cambio BORRA algo que ya estaba.**
+
+| Guardia | ¿Vigila los borrados? |
 |---|---|
-| Entrar con contraseña | Cuenta de Supabase |
-| Memoria en la nube | **La misma llave** |
-| Leer los boletines de las redes | Una cuenta de correo **aparte, no la personal** |
+| El revisor automático | **NO** |
+| El que aplica los cambios | **NO** |
+| El copista | **NO** |
+| El guardia de guardado | solo de refilón |
 
-**Son dos llaves, no tres.**
+**Por eso pasó:** la otra IA reescribió el jefe que coordina, **la puerta desapareció**, y
+**ningún guardia dijo nada**. Las 526 pruebas siguieron verdes.
 
-### Y una suelta
-`cola_autonoma` — la lista para que trabaje solo.
+> **El arnés vigila que lo nuevo esté bien. No vigila que lo viejo siga ahí.**
 
 ---
 
-## LO QUE FALTA PARA CERRAR EL CICLO
+## LO QUE PASÓ CON EL JEFE QUE COORDINA
 
-**Publicar de verdad · recoger los datos · el análisis que dice si funcionó.**
+La otra IA hizo algo **bien**: repartió el trabajo en vez de duplicarlo — le pregunta el
+presupuesto al plan y la aprobación a la pieza de aprobación. **Eso se respeta.**
 
-Sin esos tres, el ciclo se corta después de las dos versiones y **nunca se aprende nada**. Su
-vigía **no finge que están**: se marca en amarillo y dice que publicar de verdad depende de las
-credenciales.
+Pero al hacerlo **se perdieron tres cosas**:
+
+| Lo que había | Lo que quedó |
+|---|---|
+| **Una puerta** que juntaba permiso + presupuesto y decía sí o no con su motivo | Dos piezas sueltas. **Nadie las junta** |
+| Saber si el permiso **ya se dio** | Solo dice si **hace falta** |
+| **Descontar** lo gastado | Nadie descuenta: el combustible nunca baja |
+
+**Y un cambio de criterio:** antes publicar pedía permiso siempre; después, **un texto salía solo**.
+
+---
+
+## LA DECISIÓN DE JULIO, YA TOMADA
+
+> *"Tiene que pedir mi permiso, sin él nunca sale nada."*
+
+**Legislado** en `CONTRATO_SIN_SU_PERMISO_NO_SALE_NADA.md` (en la aplicación). Sin excepciones
+por formato, precio ni prisa. **El formato no decide.**
+
+---
+
+## LO QUE SIGUE, EN ORDEN
+
+### 1 · La vigía de la puerta — **ya escrita, falta guardarla**
+`vigias/test_vigia_sin_su_permiso_no_sale_nada.py` (en la aplicación). Nace **roja**. Exige:
+un texto sin permiso **no sale** · ningún formato se libra · con el permiso **sí sale** ·
+sin presupuesto tampoco · y el que publica no saca nada sin aprobar.
+
+### 2 · La puerta única — **es lo que falta construir**
+En el jefe que coordina: **`puede_salir(empresa, formato, aprobado)`** → devuelve **sí/no y el
+motivo**, mirando **las dos cosas**: ¿tiene el permiso?, ¿queda combustible?
+
+**Es una CUENTA, no un juicio: lo hace un programa, gratis.** Todo lo que necesita ya existe
+(el plan sabe del combustible, la pieza de aprobación guarda los síes).
+
+### 3 · TAPAR EL AGUJERO DEL ARNÉS ← **lo más importante**
+Que el revisor automático **cuente si el cambio borra algo**: si el texto nuevo tiene **menos
+funciones** que el viejo, **frena y dice cuáles desaparecen**.
+
+**Sin esto, volverá a pasar con cualquier otra pieza.**
+
+### 4 · Avisado a la otra IA
+Ya se le mandó por el canal el encargo entero y la decisión de Julio. **No se tocó nada de su
+trabajo.**
 
 ---
 
 ## EL MÉTODO, QUE NO SE SALTA
+1. **La vigía primero, y nace roja.**
+2. **De enchufe, con espía: se ejecuta el camino real**, nunca se busca la palabra en el archivo.
+3. Si es una cuenta, **la aplica el copista, gratis**. La IA solo para lo que es juicio.
+4. **Correr todas las vigías**, no solo la nueva.
+5. Guardar contando **también lo que salió mal**.
 
-1. Mirar qué hace de verdad, no lo que promete su nombre.
-2. **¿Guarda lo que produce?** Si no, se repara la raíz **antes** de enchufar.
-3. **La vigía primero, y nace roja.** Con las dos caras: que sale con datos, y que **sin datos
-   no se inventa nada**.
-4. Si es una cuenta, la aplica el copista. **Gratis.**
-5. Correr **todas** las vigías, no solo la nueva.
-6. Guardar contando **también lo que salió mal**.
+## CÓMO SE COMPRUEBA QUE QUEDÓ BIEN
+- Se intenta sacar **un texto sin permiso** → **no sale**.
+- Se da el permiso → **sale**.
+- Se ejecuta con coste → **el combustible baja**.
+- **Se borra a mano la puerta → alguna vigía se pone roja.**
 
-Está escrito en `CONTRATO_ENCHUFAR_UNA_PIEZA_DORMIDA.md`.
-
----
-
-## CÓMO ESTÁ LA HERRAMIENTA
-
-- **636 vigías verdes.** La aplicación: **493 verdes**, 1 marcada a propósito.
-- **Sin instrucciones pendientes de legislar.**
-- El contador de huérfanas **ya existe y ya no miente**: 23 huérfanas reales, 24 candados
-  reconocidos. *Era él mismo el primer huérfano.*
-- **El bucle está roto:** ya no se le pide a un cerebro que juzgue trabajo ya hecho y verde. Lo
-  comprueba un programa en 0,18 segundos y gratis.
-- Al cerebro **solo le llega lo suyo**: de 27.785 letras a que le quepa a uno gratis.
-
-## LOS COMANDOS
-
-```
-cd C:\Ingeniero_VUC; python ingeniero.py arranca
-cd C:\Ingeniero_VUC; python skills/nace_conectada.py
-cd C:\Ingeniero_VUC; python skills/nace_conectada.py --raiz "C:\Users\USER\dev\Asesor Marketing"
-```
+**Y la prueba de verdad: que Julio intente publicar algo sin dar su sí, y no salga.**
