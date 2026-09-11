@@ -70,3 +70,45 @@ def test_el_guardian_no_grita_por_sus_propios_cuadernos():
     assert not cc._es_cuaderno("memoria/ESTADO.json"), (
         "SE PERDONO DE MAS: donde ibamos NO es un cuaderno de candado, es trabajo de verdad. "
         "Si deja de gritar, se pierde el sitio por donde ibamos.")
+
+
+def test_ninguna_prueba_escribe_en_los_cuadernos_de_verdad():
+    """LA CAUSA DE FONDO DEL GUARDIAN QUE SE MUERDE LA COLA (2026-09-11).
+
+    MEDIDO ESE DIA, no supuesto: se tomo la huella de seis cuadernos, se corrieron los 661
+    guardianes sin tocar nada mas, y CINCO DE SEIS habian cambiado. Los guardianes escriben en
+    la memoria DE VERDAD.
+
+    Y esta casa YA TIENE ESA LEY ESCRITA, de un fallo que costo 27 de 32 errores aprendidos:
+    "no volver a dejar que una prueba escriba en la memoria de verdad". Se curo para unas cosas
+    (el contexto, la casa, el contador del protocolo, la llave de Julio y el cuaderno del
+    equipo) y NUNCA para estas. Las dos curas del 31-ago y del 02-sep fueron PERDONAR los
+    cuadernos en el candado de guardar: eso tapa el sintoma, no cierra el grifo.
+
+    Esta prueba cierra el grifo y lo vigila. Mira DONDE APUNTA cada cuaderno mientras se
+    prueba: si apunta a la memoria de verdad, ROJA.
+    """
+    import sys
+    sys.path.insert(0, AQUI)
+    sys.path.insert(0, os.path.join(AQUI, "arnes"))
+    from cuerpo import cuaderno as _cua
+    import candados_medicion as _cm
+    import candado_diagnostico as _cd
+    import candado_memoria as _cmem
+    import candado_prueba_real as _cpr
+    real = os.path.join(AQUI, "memoria").lower().replace("\\", "/")
+    sitios = {
+        "el cuaderno de llamadas": _cua.RUTA,
+        "la medicion de los candados": _cm.RUTA,
+        "el diagnostico": _cd.RUTA,
+        "los avisos ya dados": _cmem.AVISADOS,
+        "las pruebas reales": _cpr.PRUEBAS,
+        "las aplicaciones del copista": os.environ.get("INGENIERO_APLICACIONES", ""),
+    }
+    tocan = [n for n, r in sitios.items()
+             if (not str(r)) or str(r).lower().replace("\\", "/").startswith(real)]
+    assert not tocan, (
+        "UNA PRUEBA ESTA ESCRIBIENDO EN LA MEMORIA DE VERDAD, que es justo lo que esta casa "
+        "tiene prohibido desde que costo 27 de 32 errores aprendidos. Ademas es lo que hace "
+        "que el guardian se muerda la cola: guardar ensucia, y por eso nunca queda limpio. "
+        "Apuntan a lo real: %s" % tocan)

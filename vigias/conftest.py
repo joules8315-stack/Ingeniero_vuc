@@ -48,4 +48,33 @@ def _nada_toca_lo_real(tmp_path, monkeypatch):
     # desvia a la carpeta de mentira para que ninguna comprobacion ensucie el registro de verdad.
     import candado_equipo as ce
     monkeypatch.setattr(ce, "AQUI", str(tmp_path))
+    # LOS CUADERNOS DE VERDAD NO SE TOCAN (2026-09-11, TERCERA vuelta del mismo fallo).
+    #
+    # MEDIDO ese dia: se tomo la huella de seis cuadernos, se corrieron los 661 guardianes sin
+    # tocar nada mas, y CINCO DE SEIS habian cambiado. Las pruebas escribian en la memoria de
+    # verdad, que es justo lo que esta casa tiene prohibido desde que costo 27 de 32 errores
+    # aprendidos ("no volver a dejar que una prueba escriba en la memoria de verdad").
+    #
+    # Y ademas era la causa del GUARDIAN QUE SE MUERDE LA COLA: guardar hace correr a los
+    # guardianes, los guardianes ensucian los cuadernos, y al terminar de guardar ya hay cosas
+    # sin guardar. Se "curo" dos veces (31-ago y 02-sep) PERDONANDO los cuadernos en el candado
+    # de guardar. Eso tapa el sintoma. Esto cierra el grifo.
+    #
+    # OJO CON LO QUE SALIO AL MIRARLO: dos de ellos (el cuaderno de llamadas y las pruebas
+    # reales) YA TENIAN su puerta de desvio construida (INGENIERO_CUADERNO_TEST,
+    # INGENIERO_PRUEBAS_TEST) y NADIE la habia enchufado nunca. Es la misma enfermedad de las
+    # piezas dormidas: construida, con buena intencion, y sin conectar.
+    import candado_diagnostico as _cd
+    import candado_memoria as _cmem
+    import candado_prueba_real as _cpr
+    import candados_medicion as _cm
+    from cuerpo import cuaderno as _cua
+    monkeypatch.setenv("INGENIERO_APLICACIONES", str(tmp_path / "APLICACIONES.log"))
+    monkeypatch.setenv("INGENIERO_CUADERNO_TEST", str(tmp_path / "CUADERNO_DE_LLAMADAS.jsonl"))
+    monkeypatch.setenv("INGENIERO_PRUEBAS_TEST", str(tmp_path / "pruebas_real"))
+    monkeypatch.setattr(_cua, "RUTA", str(tmp_path / "CUADERNO_DE_LLAMADAS.jsonl"))
+    monkeypatch.setattr(_cm, "RUTA", str(tmp_path / "CANDADOS_MEDICION.json"))
+    monkeypatch.setattr(_cd, "RUTA", str(tmp_path / "DIAGNOSTICO.json"))
+    monkeypatch.setattr(_cmem, "AVISADOS", str(tmp_path / ".avisos_ya_dados.json"))
+    monkeypatch.setattr(_cpr, "PRUEBAS", str(tmp_path / "pruebas_real"))
     yield
