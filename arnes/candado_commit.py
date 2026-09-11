@@ -56,6 +56,16 @@ CUADERNOS_BASE = {
     # de arriba, pero se quedan en el disco (el rastro que Julio mira sigue ahi).
     "balance.log", "gasto.log", "gasto.json", "trabajos_del_equipo.log",
     "decisiones_candado.log", "aplicaciones.log", "ultimo_trabajo_del_equipo.json",
+    # 2026-09-11, TERCERA VEZ que el guardian se muerde la cola. Las dos curas anteriores
+    # (31-ago y 02-sep) fueron anadir cuadernos a mano a esta lista, y las dos veces volvio el
+    # bucle porque aparecio un cuaderno nuevo y nadie se acordo de apuntarlo aqui.
+    # Estos dos son los que faltaban: el cuaderno de llamadas y el de mediciones.
+    # Desde hoy ya no depende de que alguien se acuerde: lo vigila
+    # vigias/test_vigia_commit_limpio.py::test_el_guardian_no_grita_por_sus_propios_cuadernos,
+    # que nombra los cuadernos del sistema y se pone ROJA en cuanto uno se queda fuera.
+    # Y comprueba lo contrario tambien: ESTADO.json (donde ibamos) NO se perdona nunca, porque
+    # es trabajo de verdad y perderlo es perder el sitio por donde ibamos.
+    "cuaderno_de_llamadas.jsonl", "mediciones.json",
 }
 
 
