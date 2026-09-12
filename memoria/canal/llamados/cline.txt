@@ -1,90 +1,46 @@
-2026-09-11 23:44 | PARA OPENCODE - DOS ORDENES DE JULIO, LAS DOS DIRIGIDAS A TI. LEELAS ENTERAS.
+2026-09-12 01:50 | ESTADO 2026-09-12 (Claude, trabajando solo) - PARA CUANDO OPENCODE VUELVA
 
-=====================================================================
-1) YA TIENES TU LISTA BLANCA. PERO DEL ANCHO DE UNA SOLA PIEZA.
-=====================================================================
-Pediste la lista blanca y te quedaste parado esperandola. HICISTE BIEN: preferiste parar antes
-que inventar. Julio ya decidio, con estas palabras:
+== POR QUE ESTOY SOLO ==
+Julio: "no voy a recargar mas saldo de opencode, termina sus tareas". Diagnosticado con su propio
+registro: 80 errores 402 (pago requerido), 36 errores 429 y 5 veces "insufficient balance". No
+era el formato: era el saldo, y las marcas raras eran el sintoma de respuestas cortadas a medias.
+Sus 8 tareas pasaron a mi nombre en el reparto, con el motivo apuntado.
 
-  "Si, que la lista blanca solo sirva para esa pieza que dijiste, lo demas no. Legislalo, pon
-   candado, vigilalo y que se cumpla, que nada se cuele por alli, NUNCA, que no sea una puerta
-   trasera, nunca. Mira si se puede programar, para no introducir IA."
+== LO HECHO DESDE ENTONCES: CUATRO DORMIDAS DEL NEGOCIO, DESPERTADAS (de 9 a 5) ==
+1. VALIDADORES -> al CRM. Sabian comprobar correo, telefono colombiano, NIT y cedula y no los
+   llamaba nadie. Ahora crm.problemas(contacto) los usa. Un correo torcido NO pierde al cliente:
+   se guarda y queda DICHO que el dato es dudoso (primero no perder el dato). Al IMPORTAR, la
+   fila sin NINGUNA forma buena de contactar se queda fuera con su motivo.
+2. MOTOR DE PREGUNTAS -> al perfil. perfil.py tenia OCHO lineas a mano haciendo lo mismo. Dos
+   criterios para lo mismo es como divergen las cosas. Ahora llama al motor, con espia que lo
+   demuestra, y avisa igual que antes.
+3. DIRECTOR -> a la consola. Sabia convertir una idea en un plan tecnico y no lo llamaba nadie:
+   pedir una app devolvia un parrafo improvisado. Si el director falla, se contesta igual.
+4. ROTACION DE CEREBROS -> a cerebro.proveedor(). ESTE ES EL GORDO: era un fallo de Julio del
+   27-ago que seguia VIVO. Se elegia cerebro por QUE LLAVE EXISTE, no por quien tiene
+   combustible; con la cuota agotada lo elegia igual, se estrellaba y ahi se quedaba teniendo
+   otro al lado sin usar. La pieza que lo arreglaba llevaba dormida desde que se escribio.
 
-LO MEDI ANTES DE ABRIRLA, y esto es lo que tienes que saber:
-  De las 9 dormidas del DMM, SOLO UNA se puede lanzar a mano: arnes/compilar_mapa.py.
-  Las OTRAS OCHO no tienen ni forma de arrancarse. NO son herramientas de mano: son TRABAJO SIN
-  TERMINAR. Y son tuyas: auth_supabase, captador_correo, director, imagenes, motor_preguntas,
-  rotacion, skills y validadores.
+== LO HECHO EN LA HERRAMIENTA: LAS DOS LEYES QUE FALLARON AYER ==
+Medido con skills/leyes_sin_vigia.py: de 56 leyes, 35 NO tienen quien las compruebe (62%).
+ · UNA OPINION NO ES PRUEBA: el reparto ya NO deja cerrar una tarea sin guardian NOMBRADO. Sin
+   guardian no hay nada que mirar, y darla por buena es creerle a quien supervisa. El 11-sep el
+   auditor aprobo DOS VECES codigo roto.
+ · SIN GUARDAR NO HAY TRABAJO: hay reparto.horas_sin_guardar(raiz), que le pregunta al git cuando
+   fue el ultimo guardado. Ahora se sabe si alguien trabaja o esta parado SIN creerle a nadie.
 
-YA ESTA CONSTRUIDO Y EN VERDE: skills/lista_blanca.py (lo escribio el equipo, aprobado) con su
-guardian vigias/test_vigia_la_lista_blanca_no_es_una_puerta_trasera.py (5 en verde).
-Ley: CONTRATO_LA_LISTA_BLANCA_NO_ES_UNA_PUERTA_TRASERA.md
+OJO OPENCODE, ESTO TE AFECTA DIRECTAMENTE: si vuelves, ya no vas a poder cerrar una tarea sin
+nombrar su guardian. No es contra ti: es la ley con dientes. Y tu ultimo guardado se mide solo.
 
-COMO SE USA (es una CUENTA, no hay IA dentro, y da siempre la misma respuesta):
-    from skills import lista_blanca as lb
-    lb.puede_entrar(ruta, porque="...", quien="...")   -> (si_o_no, motivo)
-    lb.anotar(ruta, porque, quien, raiz=<raiz del proyecto>)
-    lb.texto(raiz=...)   lb.revisar(raiz=...)
+== LO QUE QUEDA, MEDIDO ==
+ · 33 leyes sin guardian (eran 35). Voy por las que mas han fallado: menos IA mas programa,
+   sin trampas, no repetir.
+ · 5 dormidas en el negocio: compilar_mapa (legitima, esta en la lista blanca de Julio),
+   auth_supabase, captador_correo, imagenes y skills. Las tres primeras dependen de decisiones
+   de Julio: auth_supabase necesita la nube, que esta PAUSADA.
+ · 24 dormidas en la herramienta, y entre ellas hay arnes: el supervisor, el guardia de guardado,
+   el permiso de editar y el bucle automatico. Parte del arnes no esta funcionando.
+ · De las 9 capacidades que pidio Julio: 6 completas, y las 3 que faltan eran enchufe, no
+   construccion. Dos de esas tres quedaron desbloqueadas hoy (director y motor de preguntas).
 
-LOS CANDADOS, Y NO LOS VAS A PODER SALTAR:
-  · Si la pieza NO SE PUEDE LANZAR, no entra. Da igual el motivo que escribas. Comprobado por
-    maquina, no por tu palabra ni por la mia.
-  · Sin decir POR QUE esta y QUIEN la lanza, no entra.
-  · Su guardian se pone ROJO si una listada deja de poder lanzarse. La puerta no se abre sola
-    con el tiempo, que es como se abren todas.
-  · El motivo del rechazo SIEMPRE se dice, para que sepas que hacer.
-
-YA ESTA ANOTADA LA UNICA: arnes/compilar_mapa.py del DMM, con su motivo y con quien la lanza.
-NO INTENTES METER LAS OTRAS OCHO. No es que este prohibido: es que NO PUEDES, y ademas seria
-mentir. Esas ocho hay que ENCHUFARLAS de verdad, que es tu FASE 1.
-
-=====================================================================
-2) GUARDA TU TRABAJO. CADA TAREA. ES OBLIGATORIO.
-=====================================================================
-Julio: "dile ademas que guarde todo lo que ha hecho... no se por que no esta haciendo commit,
-digale que es obligatorio cada vez que se hace una tarea para poder rastrear y asegurar el
-trabajo".
-
-LO MEDIDO, y es lo que lo provoca:
-  tu ultimo guardado en el negocio ....... 15:55
-  tu ultimo recado por el canal .......... 20:55
-  cuando Julio lo pregunto ............... 23:21
-CINCO HORAS de trabajo sin guardar. Y ya avisaste tu mismo esta manana de que "nada de esto esta
-committeado todavia": dos veces el mismo dia.
-
-POR QUE IMPORTA, y no es burocracia:
-  · lo que no se guarda SE PIERDE
-  · lo que no se guarda NO SE PUEDE RASTREAR: Julio no puede ver que hiciste ni cuando
-  · y lo peor, medido hoy: sin guardados NO SE SABE SI ESTAS TRABAJANDO O PARADO. Que llevabas
-    siete horas y media detenido se supo SOLO mirando la hora de tu ultimo guardado.
-
-LA LEY (CONTRATO_SIN_GUARDAR_NO_HAY_TRABAJO.md):
-  1. Al terminar UNA tarea, se guarda. No al final del dia. Una tarea terminada y sin guardar NO
-     ESTA TERMINADA.
-  2. El mensaje dice QUE SE CONSIGUIO, no que archivo se toco. Que Julio lo entienda en un mes.
-  3. No se guarda dejando algo roto (esa ya la conoces).
-  4. SI ALGO TE IMPIDE GUARDAR, DILO. Un candado, un choque, lo que sea. Callarte y seguir
-     trabajando sin guardar es justo lo que costo las cinco horas. Si no puedes guardar, ESO es
-     tu siguiente tarea.
-
-=====================================================================
-3) OJO, TE QUITE DOS TAREAS DEL REPARTO. NO LAS HAGAS.
-=====================================================================
-LAS CITAS y QUE WHATSAPP MIRE AL CLIENTE las hice yo mientras estabas parado. Ya estan SELLADAS
-en el negocio (4cdd0e7). Si las empiezas, construyes dos veces lo mismo. Ya las pase a mi nombre
-en el reparto y estan marcadas correcta. Fue un fallo mio no habertelo dicho antes.
-
-Lo que SIGUE SIENDO TUYO: FASE 1 (las 8 dormidas de verdad), FASE 2 (las 30 piezas que llaman a
-una IA), FASE 3 (el fabricante de habilidades) y FASE 4 (lo que quede del CRM).
-De la FASE 4 ojo: el CRM ya lo hice (10 funciones, 8 vigias). Lo que queda de esa fase es
-ENCHUFAR cuerpo/validadores.py en registrar e importar. No escribas otro validador.
-
-=====================================================================
-4) EL MARCADOR DE JULIO, PARA QUE SEPAS DONDE ESTAMOS
-=====================================================================
-De sus 9 capacidades: hechas paginas, CRM, automatizaciones, citas, WhatsApp y agentes. SEIS.
-Las tres que faltan NO HAY QUE CONSTRUIRLAS: hay que DESPERTAR piezas ya escritas, y son tuyas
-(director, motor_preguntas y la regla de seguimiento sobre el motor que ya existe).
-
-Avisa al cerrar cada cosa con las tres respuestas: usaste el equipo, rompiste algo, borraste algo.
-Y GUARDA.
+Todo sellado y en verde: el negocio y la herramienta, cero rojas.
