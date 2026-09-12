@@ -34,6 +34,11 @@ def _texto_de_las_vigias():
         for n in os.listdir(carpeta):
             if not n.endswith(".py"):
                 continue
+            # EL NOMBRE DEL ARCHIVO TAMBIEN CUENTA (2026-09-12). Un guardian que se llama
+            # test_vigia_no_repetir.py esta protegiendo a CONTRATO_NO_REPETIR aunque por dentro
+            # no la nombre. Sin esto, el contador la daba por huerfana y mandaba a repararla:
+            # el mismo fallo que tuvo el contador de piezas dormidas, que decia 17 cuando eran 10.
+            trozos.append(n)
             try:
                 with open(os.path.join(carpeta, n), encoding="utf-8", errors="ignore") as f:
                     trozos.append(f.read())
@@ -48,7 +53,19 @@ def revisar():
     for ley in _leyes():
         nombre = ley[:-3]                      # sin el .md
         corto = nombre.replace("CONTRATO_", "")
-        (con if (nombre in texto or corto in texto) else sin).append(ley)
+        # UN CONTADOR QUE MIENTE MANDA A REPARAR LO SANO (reparado el 2026-09-12).
+        #
+        # Antes se buscaba el nombre TAL CUAL, en mayusculas, dentro del texto de las vigias.
+        # Asi, CONTRATO_NO_REPETIR salia como "sin guardian" teniendo uno que se llama
+        # test_vigia_no_repetir.py, en minusculas. Es el mismo fallo que tuvo el contador de
+        # piezas dormidas, que decia 17 cuando eran 10 y mandaba a "reparar" lo ya enchufado.
+        #
+        # Ahora se compara SIN distinguir mayusculas, y se mira tambien el NOMBRE DEL ARCHIVO de
+        # cada vigia: un guardian que se llama como su ley la esta protegiendo, aunque por dentro
+        # no la nombre. Lo que NO se hace es perdonar por parecido vago: tiene que aparecer el
+        # nombre entero de la ley.
+        _t = texto.lower()
+        (con if (nombre.lower() in _t or corto.lower() in _t) else sin).append(ley)
     return {"todas": _leyes(), "con_vigia": con, "sin_vigia": sin}
 
 
