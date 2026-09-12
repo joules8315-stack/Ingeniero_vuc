@@ -88,9 +88,13 @@ hashes = defaultdict(list); nombres = defaultdict(list)
 for raiz, etiqueta in RAICES:
     if not os.path.isdir(raiz):
         continue
+    from cerebro.piezas import es_nombre_reservado as _reservado, barrer_reservados as _barrer
+    _barrer(raiz)
     for dp, dns, fns in os.walk(raiz):
         dns[:] = [d for d in dns if d not in EXCLUIR_DIR]
+        dns[:] = [d for d in dns if not _reservado(d)]
         for fn in fns:
+            if _reservado(fn): continue
             ext = os.path.splitext(fn)[1].lower()
             if ext in EXCLUIR_EXT: continue
             full = os.path.join(dp, fn)

@@ -26,6 +26,38 @@ CARPETAS = ["skills", "arnes", "cuerpo", "cerebro", "mapa", "web"]
 # Esas carpetas NO cuentan como llamadores: las vigias son pruebas, no uso.
 FUERA = {"vigias", "__pycache__", ".git", "memoria", "node_modules", "docs_build", ".venv"}
 
+# NOMBRES RESERVADOS DE WINDOWS (2026-09-12, causa raiz del "nul que tumba el mapa"):
+# un archivo llamado 'nul' (o con, aux, prn, com1..lpt9) hace que os.path.relpath reviente con
+# "path is on mount '\\.\nul'" y un borrado normal no lo alcanza: hay que pasar por \\?\. Aqui se
+# saltan al escanear y se barren solos cuando aparecen.
+_RESERVADOS = {"nul", "con", "aux", "prn"} | {
+    "com%d" % i for i in range(1, 10)} | {"lpt%d" % i for i in range(1, 10)}
+
+
+def _es_nombre_reservado(nombre):
+    """True si el nombre (archivo o carpeta) es reservado de Windows.
+    El punto se mira por delante: en Windows 'nul.txt' tambien es el dispositivo 'nul'."""
+    return (nombre or "").split(".", 1)[0].strip().lower() in _RESERVADOS
+
+
+def _barrer_reservados(raiz):
+    """Borra SOLO los archivos con nombre reservado de Windows que haya bajo `raiz`.
+    Los borra de verdad con la ruta larga \\?\, que es la unica que alcanza a un archivo cuyo
+    nombre Windows trata como dispositivo. No toca nada mas: cuenta pura, cero juicio."""
+    borrados = 0
+    for dp, dns, fns in os.walk(raiz):
+        dns[:] = [d for d in dns if d not in FUERA]
+        dns[:] = [d for d in dns if not _es_nombre_reservado(d)]
+        for fn in fns:
+            if not _es_nombre_reservado(fn):
+                continue
+            try:
+                os.remove("\\\\?\\" + os.path.join(dp, fn))
+            except Exception:
+                continue
+            borrados += 1
+    return borrados
+
 
 def sin_texto_muerto(codigo):
     """Quita los textos entre triples comillas de los dos tipos y todo lo que va
@@ -122,6 +154,8 @@ def revisar(solo=None, raiz=None):
     que se nombra a si mismo no cuenta. Ordenado por llamadas de menor a mayor."""
     if raiz is None:
         raiz = AQUI
+    _reservado = _es_nombre_reservado
+    _barrer_reservados(raiz)
     # Recoger todas las piezas (archivos .py en las carpetas permitidas)
     piezas = {}
     for carpeta in CARPETAS:
@@ -129,6 +163,8 @@ def revisar(solo=None, raiz=None):
         if not os.path.isdir(ruta_carpeta):
             continue
         for nombre_archivo in os.listdir(ruta_carpeta):
+            if _reservado(nombre_archivo):
+                continue
             if nombre_archivo.endswith(".py") and not nombre_archivo.startswith("__"):
                 ruta_abs = os.path.join(ruta_carpeta, nombre_archivo)
                 ruta_rel = os.path.relpath(ruta_abs, raiz)
@@ -155,7 +191,10 @@ def revisar(solo=None, raiz=None):
         for raiz_dir, dirs, archivos in os.walk(ruta_carpeta):
             # Excluir carpetas de FUERA
             dirs[:] = [d for d in dirs if d not in FUERA]
+            dirs[:] = [d for d in dirs if not _reservado(d)]
             for nombre_archivo in archivos:
+                if _reservado(nombre_archivo):
+                    continue
                 if nombre_archivo.endswith(".py"):
                     ruta_abs = os.path.join(raiz_dir, nombre_archivo)
                     ruta_rel = os.path.relpath(ruta_abs, raiz)
@@ -193,22 +232,68 @@ def revisar(solo=None, raiz=None):
 
 
 def huerfanas(raiz=None):
-    """Solo las que tienen cero llamadas."""
-    return [r for r in revisar(raiz=raiz) if r["llamadas"] == 0]
+    """Solo las que tienen cero llamadas y NO estan en la lista blanca.
+
+    La lista blanca es la de herramientas de mano (skills/lista_blanca.py, memoria/lista_blanca.json):
+    son piezas que se lanzan a proposito, y por eso el contador de dormidas NO las cuenta.
+    Se lee con el desvio respetado por lista_blanca, que es TIERRA del contador: la misma pregunta
+    (misma raiz, mismo archivo de lista) da siempre la misma respuesta."""
+    r = revisar(raiz=raiz)
+    blancas = _leer_lista_blanca(raiz)
+    return [x for x in r
+            if x["llamadas"] == 0
+            and x["ruta"].replace("\\", "/") not in blancas]
 
 
-def informe(r=None):
+def _leer_lista_blanca(raiz):
+    """Devuelve las rutas relativas (con /) de las piezas anotadas en la lista blanca.
+
+    Se lee el archivo memoria/lista_blanca.json del proyecto (o el que apunte la variable
+    INGENIERO_LISTA_BLANCA), igual que lo lee skills/lista_blanca.py. Nunca revienta: si no
+    existe o esta roto, se devuelve un conjunto vacio y el contador cuenta sin perdonar nada."""
+    import json as _json
+    r = raiz if raiz is not None else AQUI
+    desvio = os.environ.get("INGENIERO_LISTA_BLANCA", "").strip()
+    ruta = desvio if desvio else os.path.join(r, "memoria", "lista_blanca.json")
+    blancas = set()
+    try:
+        with open(ruta, encoding="utf-8") as f:
+            datos = _json.load(f)
+        for pieza in datos.get("piezas", []):
+            if isinstance(pieza, dict) and pieza.get("ruta"):
+                ap = os.path.abspath(pieza["ruta"])
+                try:
+                    rel = os.path.relpath(ap, os.path.abspath(r)).replace("\\", "/")
+                except Exception:
+                    rel = ""
+                if rel and rel != ".":
+                    blancas.add(rel)
+    except (OSError, ValueError, AttributeError):
+        pass
+    return blancas
+
+
+def informe(r=None, raiz=None):
     """Texto simple que dice cuantas huerfanas hay de cuantas piezas, las lista
     con 0 llamadas <ruta>, avisa de que cada huerfana es TRABAJO SIN TERMINAR y de
     que crear y enganchar son UN SOLO trabajo, y al final cuantas conectadas y
-    cuantas de ellas son candados."""
+    cuantas de ellas son candados.
+
+    Las herramientas de mano (lista blanca) NO cuentan como huerfanas: se lanzan
+    a proposito, y por eso el contador de dormidas no las cuenta."""
     if r is None:
         r = revisar()
-    huerfanas_lista = [x for x in r if x["llamadas"] == 0]
-    conectadas = [x for x in r if x["llamadas"] > 0]
+    blancas = _leer_lista_blanca(raiz)
+    huerfanas_lista = [x for x in r
+                       if x["llamadas"] == 0
+                       and x["ruta"].replace("\\", "/") not in blancas]
+    conectadas = [x for x in r
+                  if x["llamadas"] > 0
+                  and x["ruta"].replace("\\", "/") not in blancas]
     candados_conectados = [x for x in conectadas if x["candado"]]
     lineas = []
-    lineas.append(f"HUERFANAS: {len(huerfanas_lista)} de {len(r)} piezas")
+    lineas.append(f"HUERFANAS: {len(huerfanas_lista)} de {len(r)} piezas "
+                  f"({len(blancas)} de mano no cuentan)")
     for h in huerfanas_lista:
         lineas.append(f"  0 llamadas {h['ruta']}")
     if huerfanas_lista:
@@ -240,5 +325,5 @@ if __name__ == "__main__":
             else:
                 print(f"CONECTADA: {res['pieza']} ({res['ruta']}) — {res['llamadas']} llamadas")
     else:
-        print(informe(revisar(raiz=raiz)))
+        print(informe(revisar(raiz=raiz), raiz=raiz))
     sys.exit(0)

@@ -1,60 +1,54 @@
-# PENDIENTE — EL REVISOR FRENA EN FALSO CUANDO EL ENCARGO LLEVA CODIGO ADJUNTO
+# CORREGIDO — NO ERA UN FRENO EN FALSO. ERA UN ERROR MIO, DOS VECES
 
-**Cazado el 2026-09-12 por la noche. Apuntado como freno en falso. NO se reparo.**
+**Escrito el 2026-09-12 de noche, y CORREGIDO esa misma noche antes de darlo por bueno.**
 
-## QUE PASO, EN ORDEN
+## LO QUE ESCRIBI PRIMERO, Y ESTABA MAL
 
-Se le pidio al equipo la vigia que tiene que cazar el objetivo duplicado. El equipo **la APROBO**:
+Escribi que el revisor frenaba en falso cuando el encargo lleva codigo adjunto, y que eso chocaba
+con la regla de adjuntar siempre el codigo. **Era una conclusion apresurada.** Se apunto un freno
+en falso en el medidor y ese apunte hay que quitarlo o corregirlo.
 
-    VEREDICTO: APROBADO
-    resumen: Se crea el archivo de vigia pedido con pruebas que cubren el diagnostico, sin
-             modificar ni danar codigo existente.
+## LO QUE PASABA DE VERDAD
 
-Y aun asi **no se escribio**, porque el revisor de programa la freno con esto:
+Para pedirle al equipo una pieza NUEVA existe una marca: `--crear`. **Yo no la puse. Dos veces.**
 
-    - NO HACE LO QUE SE PIDIO: el encargo habla de 'NECESITO_LEER' y esa palabra no aparece
-    - NO HACE LO QUE SE PIDIO: el encargo habla de 'TOPE_LETRAS' y esa palabra no aparece
-    - NO HACE LO QUE SE PIDIO: el encargo habla de '_sitio_obj' y esa palabra no aparece
+Sin esa marca, al obrero le llega el encargo de REPARAR, que exige decir "el texto de antes" y "el
+texto de despues". Pero un archivo que todavia no existe **no tiene texto de antes**. Asi que el
+obrero rellenaba ese hueco con lo mismo que ponia en el de despues, y entonces saltaban dos
+guardianes, los dos con razon:
 
-**Las tres son falsas.** Esas palabras estan en el **codigo que se adjunto** al encargo para que
-el obrero pudiera trabajar. No son cosas que la vigia nueva tenga que contener. El revisor
-compara las palabras del encargo entero contra el archivo nuevo, y cuando el encargo lleva codigo
-pegado dentro — que es justo lo que manda hacer el candado de memoria — **todas las palabras de
-ese codigo se convierten en exigencias falsas**.
+- el que aplica: "el archivo no existe en esa ruta" — porque si viene un texto de antes, entiende
+  que se queria cambiar algo que ya estaba, y **no crea nada por su cuenta**. Correcto.
+- el revisor: "el texto nuevo es igual al viejo, eso no repara nada" — correcto tambien, porque
+  eran identicos.
 
-## POR QUE ES GRAVE Y NO UN DETALLE
+Y las quejas de "esta palabra no aparece" eran consecuencia de lo mismo: si lo entregado esta
+vacio, **ninguna** palabra del encargo aparece. No era que sobraran palabras del codigo adjunto.
 
-Choca con una regla que el propio sistema obliga a cumplir:
+## Y LO PEOR: ESTABA ESCRITO Y AVISADO
 
-> "NO VUELVAS A mandar al equipo un encargo que nombra renglones de un archivo sin comprobar
-> ANTES que ese trozo va adjunto."
+En `ingeniero.py`, junto a esa marca, hay un comentario del 2026-09-06 que describe exactamente lo
+que me paso:
 
-O sea: **si adjuntas el codigo como manda una regla, la otra te frena.** Cuanto mejor se prepara
-el encargo, mas probable es el freno. Es una trampa que se cierra sola.
+> "pedir crear un archivo nuevo acababa SIEMPRE en el encargo de reparar, que exige un texto_viejo
+> que no existe, y el obrero se rendia."
 
-Ya esta apuntado en el medidor de frenos en falso: `revisor_de_programa -> (0 cazadas, 1 freno
-falso)`. Esa cuenta existe precisamente para esto y llevaba muerta hasta el 11 de septiembre.
+Ya estaba cazado, ya estaba reparado, y ya estaba explicado. **Yo no lo lei y culpe al arnes.**
 
-## Y ALGO MAS, QUE ES EL COLMO: EL FALLO SE MORDIO A SI MISMO
+## LA LECCION, QUE ES LA QUE VALE
 
-En ese mismo intento quedo escrito:
+Cuando un guardian frena tres veces seguidas, la primera sospecha tiene que ser **que el que pide
+lo esta pidiendo mal**, no que el guardian este roto. Acusar al guardian es la salida comoda y
+lleva a romper la proteccion que funciona. Es la misma ley que Julio exige desde el principio:
+**causa raiz antes que reparacion**, y la causa raiz aqui era el que mandaba el encargo.
+
+## LO QUE SI QUEDA EN PIE DE LA NOTA ANTERIOR
+
+Una sola cosa, y esa si esta medida:
 
     GPT-OSS 120B no le cabe (20762 letras, aguanta 19042) -> se le salta
     GPT-OSS 20B  no le cabe (20762 letras, aguanta 20169) -> se le salta
 
-El encargo para reparar el objetivo duplicado **salio de 20.762 letras y no le cupo a ninguno de
-los dos**, por el mismo objetivo duplicado que iba a reparar. Si la reparacion estuviera hecha,
-habria cabido en los dos. La averia se defiende sola: bloquea al que viene a arreglarla.
-
-## LO QUE SE PROPONE (pendiente del si de Julio)
-
-Que el revisor mire solo **lo que se pide de nuevo**, no el material adjunto. Lo mas simple y sin
-IA: que el encargo separe con una marca clara la parte de "codigo adjunto, esto es material" de la
-parte de "esto es lo que tienes que escribir", y que el revisor compare solo contra la segunda.
-
-Es cuenta, no juicio: lo hace un programa gratis.
-
-## LO QUE NO SE HIZO Y POR QUE
-
-No se reparo esta noche: Julio dijo de parar, y tocar el revisor pide paquete y veredicto. Se
-apunta con su medicion para que manana no haya que volver a descubrirlo.
+El encargo para reparar el objetivo duplicado no le cupo a ninguno de los dos **por el propio
+objetivo duplicado**. Eso sigue siendo cierto y sigue sin reparar: la averia estorba a quien viene
+a arreglarla. Se esquiva recortando el encargo, pero la reparacion sigue haciendo falta.

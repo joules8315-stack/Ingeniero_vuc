@@ -79,22 +79,40 @@ def _llano(texto):
                    if unicodedata.category(c) != "Mn")
 
 
+# Lista de patrones que NO son órdenes (avisos de máquina, etc.)
+EXCLUIR_DE_ORDEN = (
+    "background command",
+    "monitor event",
+    "stream ended",
+    "exit code",
+    "task-notification",
+    "system-reminder",
+)
+
 def parece_una_orden(texto):
     """True si Julio esta MANDANDO algo; False si pregunta, saluda o comenta.
 
-    Tiene que ser preciso en los dos sentidos. Si se le escapan ordenes, la ley no se cumple
-    (que es lo que Julio denuncio el 2026-08-31). Si apunta cualquier cosa, el cierre se
-    bloquea siempre, alguien acaba apagando el candado, y eso protege menos que no tenerlo.
+    Ahora la detección se basa en excluir los casos que claramente no son órdenes:
+    - avisos de máquina (empiezan con '<' o contienen palabras clave),
+    - preguntas (terminan con '?'),
+    - textos demasiado cortos.
+    Todo lo demás se considera una orden.
     """
     texto = (texto or "").strip()
     if not texto:
         return False
+    # a) Aviso de máquina
+    if texto.startswith("<"):
+        return False
+    if any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN):
+        return False
+    # b) Pregunta
     if texto.rstrip().endswith("?"):
-        return False                       # preguntar no es mandar
+        return False
+    # c) Demasiado corto
     if len(texto.split()) < MINIMO_PALABRAS:
-        return False                       # "ok", "gracias": ruido
-    llano = _llano(texto)
-    return any(marca in llano for marca in MARCAS_DE_MANDO)
+        return False
+    return True
 
 
 def apuntar_lo_que_dijo_julio(texto):

@@ -47,66 +47,67 @@ def informe(nombre, marca, segundos):
         print("       %-5s %-46s %s %6.0f ms" % (p["metodo"], corta[:46], p["codigo"], p["ms"]))
 
 
-email, clave = credenciales()
-if not email or not clave:
-    print("NO_ENCONTRADO: no se pudieron leer las credenciales del archivo")
-    sys.exit(1)
+if __name__ == "__main__":
+    email, clave = credenciales()
+    if not email or not clave:
+        print("NO_ENCONTRADO: no se pudieron leer las credenciales del archivo")
+        sys.exit(1)
 
-with sync_playwright() as p:
-    nav = p.chromium.launch(headless=True)
-    pag = nav.new_page()
-    pag.on("response", apuntar)
+    with sync_playwright() as p:
+        nav = p.chromium.launch(headless=True)
+        pag = nav.new_page()
+        pag.on("response", apuntar)
 
-    print("=== CUANTO TARDA CADA ACCION (navegador de verdad) ===")
-    print()
+        print("=== CUANTO TARDA CADA ACCION (navegador de verdad) ===")
+        print()
 
-    # 1) abrir
-    m = time.time(); t0 = time.time()
-    pag.goto(URL, wait_until="domcontentloaded", timeout=45000)
-    pag.wait_for_timeout(1500)
-    informe("abrir el programa", m, time.time() - t0)
+        # 1) abrir
+        m = time.time(); t0 = time.time()
+        pag.goto(URL, wait_until="domcontentloaded", timeout=45000)
+        pag.wait_for_timeout(1500)
+        informe("abrir el programa", m, time.time() - t0)
 
-    # 2) entrar
-    try:
-        pag.fill("input[type=email], #email, input[name=email]", email)
-        pag.fill("input[type=password], #password, input[name=password]", clave)
-    except Exception as e:
-        print("  no se pudieron rellenar los campos:", str(e)[:90]); nav.close(); sys.exit(1)
-    m = time.time(); t0 = time.time()
-    pag.click("#loginBtn")
-    try:
-        pag.wait_for_selector("#loginBtn", state="hidden", timeout=45000)
-    except Exception:
-        pag.wait_for_timeout(6000)
-    pag.wait_for_timeout(3000)
-    informe("ENTRAR (login)", m, time.time() - t0)
-
-    # 3) que se ve ahora
-    try:
-        visible = pag.inner_text("body")[:220].replace("\n", " ")
-    except Exception:
-        visible = ""
-    print()
-    print("  ya dentro, se ve: %s" % visible[:200])
-
-    # 4) los botones que hay dentro (para saber que se puede medir)
-    print()
-    print("  BOTONES DISPONIBLES DENTRO:")
-    vistos = []
-    for b in pag.query_selector_all("button"):
+        # 2) entrar
         try:
-            if b.is_visible():
-                t = (b.inner_text() or "").strip().replace("\n", " ")
-                if t and t not in vistos:
-                    vistos.append(t)
+            pag.fill("input[type=email], #email, input[name=email]", email)
+            pag.fill("input[type=password], #password, input[name=password]", clave)
+        except Exception as e:
+            print("  no se pudieron rellenar los campos:", str(e)[:90]); nav.close(); sys.exit(1)
+        m = time.time(); t0 = time.time()
+        pag.click("#loginBtn")
+        try:
+            pag.wait_for_selector("#loginBtn", state="hidden", timeout=45000)
         except Exception:
-            pass
-    for t in vistos[:18]:
-        print("     -", t[:58])
+            pag.wait_for_timeout(6000)
+        pag.wait_for_timeout(3000)
+        informe("ENTRAR (login)", m, time.time() - t0)
 
-    nav.close()
+        # 3) que se ve ahora
+        try:
+            visible = pag.inner_text("body")[:220].replace("\n", " ")
+        except Exception:
+            visible = ""
+        print()
+        print("  ya dentro, se ve: %s" % visible[:200])
 
-json.dump(peticiones, open("MEDICION_ACCIONES.json", "w", encoding="utf-8"),
-          ensure_ascii=False, indent=1)
-print()
-print("  (el detalle quedo en MEDICION_ACCIONES.json)")
+        # 4) los botones que hay dentro (para saber que se puede medir)
+        print()
+        print("  BOTONES DISPONIBLES DENTRO:")
+        vistos = []
+        for b in pag.query_selector_all("button"):
+            try:
+                if b.is_visible():
+                    t = (b.inner_text() or "").strip().replace("\n", " ")
+                    if t and t not in vistos:
+                        vistos.append(t)
+            except Exception:
+                pass
+        for t in vistos[:18]:
+            print("     -", t[:58])
+
+        nav.close()
+
+    json.dump(peticiones, open("MEDICION_ACCIONES.json", "w", encoding="utf-8"),
+              ensure_ascii=False, indent=1)
+    print()
+    print("  (el detalle quedo en MEDICION_ACCIONES.json)")

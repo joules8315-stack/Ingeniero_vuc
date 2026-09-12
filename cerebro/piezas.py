@@ -16,6 +16,41 @@ EXCLUIR_EXT = {".pyc", ".exe", ".dll", ".zip", ".png", ".jpg", ".jpeg", ".gif", 
                ".pdf", ".docx", ".xlsx", ".log", ".dat", ".bin", ".so", ".lnk"}
 TOPE_BYTES = 3_000_000
 
+# NOMBRES RESERVADOS DE WINDOWS (Julio, 2026-09-12): un archivo llamado 'nul' (o con, aux, prn,
+# com1..com9, lpt1..lpt9) hace que os.path.relpath reviente con "path is on mount '\\.\nul'" y deja
+# ciego el mapa entero. Windows los trata como dispositivos, no como archivos, y un borrado normal
+# no los alcanza: hay que pasar por la ruta larga \\?\. Aqui se abrazan: se saltan al escanear y se
+# barren solos cuando aparecen.
+RESERVADOS_WINDOWS = {"nul", "con", "aux", "prn"} | {
+    "com%d" % i for i in range(1, 10)} | {"lpt%d" % i for i in range(1, 10)}
+
+
+def es_nombre_reservado(nombre):
+    """True si este nombre (de archivo o carpeta) es reservado de Windows.
+    El punto se mira por delante: en Windows 'nul.txt' tambien es el dispositivo 'nul'."""
+    base = (nombre or "").split(".", 1)[0].strip().lower()
+    return base in RESERVADOS_WINDOWS
+
+
+def barrer_reservados(raiz):
+    """BORRA SOLO los archivos con nombre reservado de Windows (nul, con, aux, ...) que haya bajo
+    `raiz`. Los borra de verdad con la ruta larga \\?\, que es la unica que alcanza un archivo cuyo
+    nombre Windows trata como dispositivo. No toca nada mas: cuenta pura, cero juicio."""
+    borrados = 0
+    for dp, dns, fns in os.walk(raiz):
+        dns[:] = [d for d in dns if d not in EXCLUIR_DIR]
+        dns[:] = [d for d in dns if not es_nombre_reservado(d)]
+        for fn in fns:
+            if not es_nombre_reservado(fn):
+                continue
+            full = os.path.join(dp, fn)
+            try:
+                os.remove("\\\\?\\" + full)
+            except Exception:
+                continue
+            borrados += 1
+    return borrados
+
 
 def rol(rel, nombre):
     """El ROL manda: dice como se trata la pieza y en que capa entra."""
@@ -188,10 +223,14 @@ def imports(ruta_abs):
 def escanear(raiz):
     """Devuelve la lista de FICHAS del proyecto. No devuelve contenido: devuelve fichas."""
     raiz = os.path.abspath(raiz)
+    barrer_reservados(raiz)
     fichas = []
     for dp, dns, fns in os.walk(raiz):
         dns[:] = [d for d in dns if d not in EXCLUIR_DIR]
+        dns[:] = [d for d in dns if not es_nombre_reservado(d)]
         for fn in fns:
+            if es_nombre_reservado(fn):
+                continue
             ext = os.path.splitext(fn)[1].lower()
             if ext in EXCLUIR_EXT:
                 continue

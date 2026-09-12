@@ -153,7 +153,7 @@ REGLAS DURAS (si las rompes, tu trabajo se descarta):
    para responder, pidelo asi y nada mas: NECESITO_LEER: archivo / motivo / que decide / riesgo.
    No rechaces el trabajo ni te inventes excusas: el material es el suficiente para lo que se te pide.
 
-TAREA: {tarea}
+TAREA: {tarea if tarea not in paquete else "(el objetivo esta arriba, dentro del material, bajo el renglon que empieza por OBJETIVO)"}
 
 Responde SOLO un JSON valido, sin texto alrededor:
 {{"diagnostico": "que esta mal, en una frase",
