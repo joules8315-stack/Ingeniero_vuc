@@ -1,36 +1,45 @@
-2026-09-11 17:26 | PARA OPENCODE - FASE 0 SUPERVISADA Y CORRECTA. SIGUE CON LA FASE 1.
+2026-09-11 19:44 | PARA OPENCODE - DOS PIEZAS MIAS CERRADAS. LO QUE TE AFECTA VA MARCADO.
 
-Te la he verificado yo, no te la doy por buena de palabra:
-  - Las 6 piezas estan de vuelta en cuerpo/ceo.py: Ceo, __init__, necesita_aprobacion, aprobar,
-    puede_ejecutar, ejecutar y apuntar. 56 renglones -> 115.
-  - Y ademas ya esta puede_salir. Eso era la FASE 0b.
-  - 12 guardianes del jefe en VERDE.
-  - LA TERCERA PREGUNTA, la que se nos escapo el otro dia: le di al revisor del arnes el par
-    (lo guardado en d303507 contra lo vivo) y dice "nada mecanico que objetar". NO BORRASTE NADA.
+== 1. EL MOTOR DE AUTOMATIZACIONES: HECHO Y SELLADO (62c84e2) ==
+cuerpo/automatizador.py, 11 vigias en verde, suite del DMM 553 verdes 0 rojas.
+TE AFECTA: NO escribas tu propio disparador para las citas ni para los seguimientos del CRM.
+Usa este. Su boca:
+    crear_regla(empresa, cuando, entonces, si=None)
+    disparar(empresa, hecho, datos=None, hacer=None)
+    reglas / apagar / encender / historial / esperando_permiso / texto
+Una condicion es [campo, operador, valor]; operadores: igual, distinto, mayor, menor,
+mayor_o_igual, menor_o_igual, contiene, existe.
 
-Las dos tareas quedan marcadas CORRECTA en el reparto de verdad.
+OJO CON LA LEY DEL PERMISO, QUE ME EQUIVOQUE Y ME LO CAZO EL AUDITOR: yo habia puesto una lista
+de formatos (mensaje, whatsapp, correo, publicar) y solo esos pedian permiso. La Regla 3 dice
+LITERAL que el formato no decide nunca y que no se vuelve a escribir esa tabla, porque TODO PIDE
+PERMISO. Asi que es al reves: una accion se ejecuta sin preguntar SOLO si trae interno en cierto;
+todo lo demas espera el si de Julio, incluido un formato que no existe todavia. EL QUE CALLA,
+PIDE PERMISO. Si en tu carril pones una lista de formatos, te la voy a rechazar.
 
-A3 TAMBIEN COMPROBADO, no hace falta que lo mires: busque quien llamaba a lo que se habia
-perdido. Los aprobar() que hay en el DMM llaman a publicador.aprobar y campana_flujo.aprobar, que
-existen los dos. NADIE se quedo hablando solo. La perdida no arrastro a ningun vecino.
+== 2. EL CRM YA ES UN CRM: HECHO, sellandose ahora ==
+cuerpo/crm.py pasa de 4 funciones a 10, sin tocar las que ya existian (registrar, marcar_venta,
+cargar, listar, _leer, _escribir) porque las usan web/servidor.py y cuatro vigias.
+Nuevo: _ruta, mover(cid, estado, motivo), embudo, dormidos(dias), ficha(cid), importar(filas),
+_envejecer (solo pruebas). 8 vigias nuevas en verde y los 4 vecinos en verde.
 
-== TU SIGUIENTE: FASE 1, DESPERTAR LAS 17 DORMIDAS ==
-Por orden de lo que devuelven: orquestador, director, motor_preguntas, dashboard, rag,
-embeddings, indice_semantico, validadores, skills, imagenes, auth_supabase, meta_oauth,
-captador_correo, revisor, rotacion, redes_mock, compilar_mapa.
-Por CADA una, UNA de tres salidas y por escrito: enchufarla / borrarla / declararla herramienta
-de mano. Prohibido dejarla como esta.
-Las tres primeras son las que mas devuelven: director y orquestador desbloquean "crear
-practicamente todo el sistema", y motor_preguntas desbloquea "decirme que necesita mi negocio".
-Y validadores se enchufa en el CRM, no se escribe otro.
+TE AFECTA: la FASE 1 te pide despertar cuerpo/validadores.py. ENCHUFALO AQUI, en registrar y en
+importar, para que el correo y el telefono entren validados. No escribas otro validador.
 
-== REPARTO NUEVO: JULIO ME MANDO CONSTRUIR TAMBIEN ==
-Julio, hoy: "Toma otro pedazo del DMM y sigue construyendolo... estamos muy demorados y debe
-terminar antes del lunes."
-Me quedo con EL MOTOR DE AUTOMATIZACIONES (la regla "si pasa esto, haz aquello"), que estaba en
-tu lista. Ya lo he movido en el reparto para que no lo cojamos los dos. Sera cuerpo/automatizador.py
-y su guardian vigias/test_vigia_motor_automatizaciones.py. TU NO LO TOQUES.
-Cuando este, lo tendras para las citas y para los seguimientos del CRM: no escribas tu propio
-disparador, usa el mio.
+== TRES AVERIAS REALES QUE SALIERON, POR SI LAS VES EN TU CARRIL ==
+1. cuerpo/crm.py escribia SIEMPRE en el archivo real: sus propias vigias ensuciaban los clientes
+   de verdad de Julio, justo lo que prohibe la T9. Ya tiene su puerta de desvio (DMM_CRM).
+   MIRA SI ALGUNA DE TUS 17 DORMIDAS TIENE EL MISMO AGUJERO: es la averia del dia.
+2. Un cliente recien apuntado contaba como olvidado. Ahora nace con su fecha.
+3. La cuenta de dias restaba NUMEROS en vez de fechas: 20260911 menos 30 daba 20260881, que no
+   es ninguna fecha, y el 31 de agosto se quedaba fuera en silencio.
+Ninguna de las tres se vio leyendo: las cazo la vigia. Escribela SIEMPRE primero y que nazca roja.
 
-NO TOCO NADA MAS DE TU CARRIL. Sigo verificando lo tuyo segun entregues.
+== Y ALGO QUE TE SIRVE ==
+El revisor del arnes freno al equipo solo, gratis, cuando intento meter codigo con nombres que no
+existen. Si te pasa, no es un capricho: mira lo que te dice, suele tener razon.
+
+== TU ESTADO ==
+Sigues con la FASE 1, las 17 dormidas. Avisa al cerrar con las tres respuestas (usaste el equipo,
+rompiste algo, borraste algo) y te superviso. Recuerda el orden: director, orquestador y
+motor_preguntas son las que mas devuelven.

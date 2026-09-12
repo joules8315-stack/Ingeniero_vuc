@@ -6931,5 +6931,50 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.2
+ },
+ {
+  "id": 151,
+  "cuando": "2026-09-11 19:21",
+  "proyecto": "dmm",
+  "problema": "el CRM del negocio: la libreta cuerpo/crm.py solo sabe apuntar, marcar vendido, abrir y listar; faltan no duplicar por correo o telefono, mover de punto del embudo con su motivo, contar el embudo, cazar clientes dormidos, la ficha completa e importar de una hoja",
+  "flujos": [
+   "crm",
+   "ficha",
+   "negocio"
+  ],
+  "piezas": [
+   "cuerpo/crm.py",
+   "cuerpo/ficha.py",
+   "cuerpo/grafo_negocio.py",
+   "cuerpo/negocio.py"
+  ],
+  "trozos": [
+   "cuerpo/crm.py:54-60",
+   "cuerpo/crm.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_CRM_Y_ANALISTA_DATOS.md",
+   "CONTRATO_INTELIGENCIA_NEGOCIO.md",
+   "CONTRATO_CAMPANAS_Y_CLIENTES.md",
+   "CONTRATO_CUERPO_Y_RAG.md",
+   "CONTRATO_DASHBOARD.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_cada_campana_lleva_su_ficha.py",
+   "vigias/test_vigia_crm_analista.py",
+   "vigias/test_vigia_el_negocio_sabe_que_esta_unido_con_que.py",
+   "vigias/test_vigia_ficha.py",
+   "vigias/test_vigia_grafo_negocio.py",
+   "vigias/test_vigia_los_resultados_traen_los_numeros_del_negocio.py",
+   "vigias/test_vigia_negocio.py",
+   "vigias/test_vigia_quien_escribe_queda_en_el_crm.py"
+  ],
+  "lineas_paquete": 197,
+  "lineas_proyecto": 38826,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.5
  }
 ]
