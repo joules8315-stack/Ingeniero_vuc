@@ -25,6 +25,28 @@ filtros que ya se habian reparado. **Los filtros no fallaron.** Se midio el cami
 Y groq (GPT-OSS 120B), que es **el que mejor escribe del equipo con un 65% de acierto**, aguanta
 19.042. Se le saltaba por 2.581 letras. Esas 2.581 letras eran basura repetida.
 
+## Y HAY ALGO PEOR: LA COPIA SE SALTA EL TOPE QUE JULIO YA HABIA PUESTO
+
+El 2026-09-09 Julio ya habia cazado que el objetivo entraba entero mientras solo se recortaba el
+material, y se puso un tope: dentro del encargo, el objetivo se recorta al 60% del tope (9.000
+letras). **Ese tope funciona.** Medido con un objetivo de 30.000 letras:
+
+| | letras |
+|---|---|
+| objetivo que entra | 30.000 |
+| recortado DENTRO del encargo | **9.002** — el tope del 9-sep cumple |
+| pero en el sobre final aparecen | **39.002** |
+| **la segunda copia va SIN NINGUN RECORTE** | **30.000** |
+
+La copia de fuera **no pasa por el tope**. Entra entera. En el codigo del 9 de septiembre estan
+escritas las palabras de Julio para ese mismo fallo:
+
+> "Un tope que deja una puerta abierta no es un tope."
+
+**La puerta sigue abierta, un paso mas alla.** Se tapo la primera y la segunda quedo sin tapar,
+porque el tope se puso donde se llena el sobre y no donde se cierra. Es exactamente la causa de
+fondo de esta ley, demostrada sobre el fallo anterior de Julio.
+
 ## LA CAUSA DE FONDO, QUE ES LO QUE HAY QUE GUARDAR
 
 **El filtro mide SU parte y se da por bueno. Nadie mide el sobre cerrado.**
