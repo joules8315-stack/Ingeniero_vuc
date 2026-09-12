@@ -6976,5 +6976,49 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.5
+ },
+ {
+  "id": 152,
+  "cuando": "2026-09-11 20:40",
+  "proyecto": "dmm",
+  "problema": "cuando la nube no responde el almacen cae a guardar en el computador EN SILENCIO y Julio no se entera; hace falta que el fallo quede apuntado, que haya un aviso en sus palabras y que se vea en la pantalla del menu",
+  "flujos": [
+   "almacen",
+   "menu",
+   "nube"
+  ],
+  "piezas": [
+   "probar_nube.py",
+   "cuerpo/almacen.py",
+   "cuerpo/indice_nube.py",
+   "web/menu.py"
+  ],
+  "trozos": [
+   "cuerpo/almacen.py:85-94",
+   "probar_nube.py:1-40",
+   "cuerpo/indice_nube.py:1-40",
+   "cuerpo/almacen.py:1-40",
+   "web/menu.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_MENU_MARKETING_MANAGER.md",
+   "CONTRATO_MAESTRO_DMM_AGENCIA.md",
+   "CONTRATO_NUNCA_ASUMAS.md",
+   "CONTRATO_OBJETIVO_MARKETING_MANAGER.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_almacen_persiste.py",
+   "vigias/test_vigia_cerebro_es_nube.py",
+   "vigias/test_vigia_indice_nube.py",
+   "vigias/test_vigia_la_nube_no_se_cae_en_silencio.py",
+   "vigias/test_vigia_menu_cobertura.py"
+  ],
+  "lineas_paquete": 310,
+  "lineas_proyecto": 39298,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.2
  }
 ]
