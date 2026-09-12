@@ -335,10 +335,52 @@ def turno(disponibles=None):
     return ""
 
 
+def acierto_de(quien):
+    """Cuenta los renglones donde ese cerebro escribio y devuelve que parte acabo en APROBADO.
+    Entre 0 y 1. None con menos de tres trabajos. NUNCA lanza."""
+    # SE REUSA AQUI, QUE ES LA CONSTANTE QUE YA EXISTE ARRIBA EN ESTE MISMO ARCHIVO.
+    #
+    # FALLO CAZADO EL 2026-09-12, y es de libro: la primera version usaba una constante CASA que
+    # NO EXISTE en esta pieza. Eso reventaba, el "nunca lanza" se lo tragaba en silencio, y
+    # acierto_de devolvia "sin datos" para todos PARA SIEMPRE. La vigia estaba verde porque las
+    # pruebas le ponen los aciertos a mano; en la casa real no funcionaba nada.
+    #
+    # NO SE VIO LEYENDO: se vio corriendolo contra el registro de verdad, que tiene 1424
+    # renglones. Un "nunca lanza" mal puesto no protege: ESCONDE. Por eso se mira tambien que la
+    # cuenta de la casa real de un numero, no solo que la vigia este verde.
+    #
+    # Y SE MIRA QUIEN ESCRIBIO, NO EL RENGLON ENTERO: el nombre de un cerebro aparece tambien
+    # como REVISOR, y contar esos renglones le atribuiria al obrero el trabajo de otro.
+    try:
+        ruta = os.path.join(AQUI, "memoria", "TRABAJOS_DEL_EQUIPO.log")
+        if not os.path.exists(ruta):
+            return None
+        total = 0
+        aprobados = 0
+        with open(ruta, encoding="utf-8", errors="replace") as _f:
+            _renglones = _f.read().splitlines()
+        for linea in _renglones:
+            partes = [p.strip() for p in linea.split("|")]
+            if len(partes) < 4:
+                continue
+            if partes[1].replace("escribio", "").strip() != quien:
+                continue
+            total += 1
+            if partes[3].startswith("APROBADO"):
+                aprobados += 1
+        if total < 3:
+            return None
+        return aprobados / total
+    except Exception:
+        return None
+
+
 def fila(disponibles=None):
-    """Todos los que pueden atender, en orden. Para intentar uno tras otro en la misma llamada."""
-    return [q for q in ORDEN
-            if (disponibles is None or q in disponibles) and desperto(q)]
+    """Todos los que pueden atender, en orden. Para intentar uno tras otro en la misma llamada.
+    Ordenados por acierto de mayor a menor; los que no tienen dato van al final, en su orden de siempre."""
+    candidatos = [q for q in ORDEN
+                  if (disponibles is None or q in disponibles) and desperto(q)]
+    return sorted(candidatos, key=lambda q: (acierto_de(q) is not None, acierto_de(q) or 0.0), reverse=True)
 
 
 def estado_texto():
