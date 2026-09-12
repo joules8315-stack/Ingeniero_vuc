@@ -360,6 +360,48 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
             leyes.append(f)
     vigias = sorted([f for f in fichas if f["rol"] == "VIGIA"], key=lambda x: x["id"])
 
+    # SI EL PROBLEMA ES DE PANTALLA, EL PAQUETE TRAE LA PANTALLA. SIEMPRE.
+    #
+    # Es la ley de la vigia 8, de un fallo REAL del 2026-08-20: el paquete del onboarding traia
+    # el motor (perfil.py) pero NO la cara, que es donde esta el formulario que de verdad guarda.
+    # Julio no vive el motor: vive el formulario.
+    #
+    # POR QUE SE CONVIERTE EN GARANTIA HOY (2026-09-11): hasta ahora la cara entraba SI PUNTUABA
+    # bastante, y eso no es una garantia, es suerte. Se rompio solo al crear una pieza nueva
+    # (cuerpo/citas.py): por hablar de empresas y de guardar se colo en los primeros puestos y
+    # EMPUJO FUERA a la pantalla. Una ley que depende de quien puntue mas alto no es una ley.
+    #
+    # LAS TILDES SE QUITAN CON LA MISMA REGLA QUE USA EL INDICE (trozos._sin_tildes). Es la
+    # leccion del buscador que decia NO_ENCONTRADO sobre el medidor: filtrar la consulta con un
+    # criterio distinto al del indice degrada todo el grafo en silencio.
+    _PALABRAS_DE_PANTALLA = ("pantalla", "formulario", "boton", "web", "onboarding", "menu",
+                             "panel", "vista", "pagina", "clic", "click", "interfaz")
+    # LA CARA SE BUSCA POR EL GRAFO, NO POR EL NOMBRE. Es la cura que ya quedo escrita el
+    # 2026-08-20: "quien IMPORTA una pieza del flujo pertenece al flujo". web/servidor.py no se
+    # llama "onboarding", asi que buscarlo por el nombre nunca lo encuentra; lo que lo encuentra
+    # es seguir el hilo de quien llama a las piezas elegidas. Comprobado hoy: para este problema
+    # no habia NI UNA cara entre las candidatas, asi que no bastaba con reordenar.
+    _p = trozos._sin_tildes((problema or "").lower())
+    if any(w in _p for w in _PALABRAS_DE_PANTALLA):
+        if not any(str(f.get("id", "")).startswith("web/") for f in codigo):
+            # Se busca en TODO el inventario del proyecto, no entre las candidatas: comprobado
+            # hoy, para este problema no habia NI UNA cara entre ellas, asi que reordenar no
+            # servia de nada. Se elige la cara que mas palabras comparte con el problema, y si
+            # ninguna comparte, la que mas veces la llaman (el servidor suele ser esa).
+            _caras = [p for p in g["piezas"] if str(p.get("id", "")).startswith("web/")]
+            if _caras:
+                _pals = set(trozos._palabras(_p))
+
+                def _parecido(p):
+                    return len(_pals & set(trozos._palabras(str(p.get("id", "")) + " " +
+                                                            str(p.get("boca", "")))))
+
+                _caras.sort(key=_parecido, reverse=True)
+                _cara = _caras[0]
+                codigo = (list(codigo[:-1]) + [_cara]) if codigo else [_cara]
+                if _cara not in fichas:
+                    fichas = list(fichas) + [_cara]
+
     # cross-flow: a quien puede danar tocar esto
     dana = []
     for f in codigo[:4]:
