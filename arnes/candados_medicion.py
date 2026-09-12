@@ -74,6 +74,27 @@ def cazado(quien):
         pass
 
 
+def tabla():
+    """Cada candado con sus DOS numeros juntos: {candado: (cazadas, frenos_falsos)}.
+
+    POR QUE NACE (2026-09-12): la ley CONTRATO_ALARMA_QUE_GRITA_EN_FALSO dice que una alarma que
+    suena sin motivo se arregla o se apaga, porque ensena a ignorarla y el dia que suene de
+    verdad nadie le hara caso. Para aplicarla hay que poder COMPARAR lo que un candado caza con
+    lo que frena en falso, y aqui solo habia un resumen en texto, que sirve para leerlo pero no
+    para compararlo.
+
+    ES UNA CUENTA: se devuelven los numeros tal cual, sin opinar sobre cual esta mal.
+    """
+    d = _leer()
+    fuera = {}
+    for quien, datos in (d or {}).items():
+        if not isinstance(datos, dict):
+            continue
+        fuera[quien] = (int(datos.get("cazadas", 0) or 0),
+                        int(datos.get("frenos_falsos", 0) or 0))
+    return fuera
+
+
 def resumen():
     """Tabla de cada candado: cuantas veces cazo y cuantas freno en falso. Marca los que sobran."""
     d = _leer()
