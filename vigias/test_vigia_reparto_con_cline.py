@@ -62,7 +62,12 @@ def test_dos_no_pueden_coger_la_misma_tarea(cuaderno_de_mentira):
 
 def test_lo_entregado_no_se_da_por_bueno_sin_vigia_verde(cuaderno_de_mentira):
     """EL CORAZON: 'si es correcta, dale otra tarea, sino, dile que corrija'."""
-    reparto.asignar("cline", "reparar el diccionario envenenado")
+    # La tarea nace CON su guardian nombrado (2026-09-12). Desde que la ley "una opinion no es
+    # prueba" tiene quien la haga cumplir, una tarea sin guardian nombrado no se puede cerrar:
+    # no habria nada que mirar, y darla por buena seria creerle a quien supervisa. Esta prueba
+    # sigue comprobando lo suyo (sin verde no se cierra), ahora con el guardian puesto.
+    reparto.asignar("cline", "reparar el diccionario envenenado",
+                    vigia="vigias/test_vigia_diccionario_de_julio.py")
     reparto.entregada("cline", "reparar el diccionario envenenado")
 
     estado, que_hacer = reparto.supervisar("cline", "reparar el diccionario envenenado",

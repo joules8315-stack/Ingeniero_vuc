@@ -54,7 +54,10 @@ def test_tarea_viva_devuelve_dueno_y_no_lo_pisa(temporales):
 def test_estado_correcta_no_cuenta_como_viva(temporales):
     """Una tarea supervisada correcta ya no es viva: se puede pedir de nuevo."""
     tarea = "reparar el diccionario"
-    reparto.asignar("claude", tarea)
+    # Con su guardian nombrado (2026-09-12): desde que la ley "una opinion no es prueba" tiene
+    # quien la haga cumplir, una tarea sin guardian nombrado no se cierra. Lo que esta prueba
+    # comprueba es otra cosa (que una correcta deja de estar viva), y sigue igual.
+    reparto.asignar("claude", tarea, vigia="vigias/test_vigia_diccionario_de_julio.py")
     estado, _ = reparto.supervisar("claude", tarea, True)  # la cierra como correcta
     assert estado == "correcta"
     r = p.decidir("ingeniero", tarea)
