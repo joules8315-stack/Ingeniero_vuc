@@ -17,6 +17,8 @@ puerta trasera cerrada con candado de opencode) · `CONTRATO_CREAR_PIEZA_NUEVA.m
 - ✅ Autorrevisión (40 de 102 aprobadas) · ✅ se aplicaba lo que el revisor de programa frenaba
 - ✅ Revisor frenaba por palabras de contexto · ✅ revisor acusaba de "no existe" nombres importados más arriba (11/11)
 - ✅ Puerta trasera de opencode: `opencode.json` en herramienta, negocio y global, probado. **Julio debe cerrar y reabrir su ventana de Big Pickle.**
+- ⏳ `guardar_trabajo_pagado` está definida DOS veces en `arnes/candado_equipo.py` (renglones 260 y 296): dejar una sola, con el equipo.
+- ⏳ Falta la prueba del CAMINO COMPLETO de crear código (el equipo crea una pieza nueva y queda en el disco), en carpeta temporal de la prueba, NUNCA una pieza de juguete dentro de `cuerpo/`.
 - ⏳ **El aplicador solo acepta UN cambio por ronda** (un arreglo de 4 cambios = 4 rondas pagadas). SIGUIENTE a reparar.
 - ⏳ Los cerebros gratis contestan vacío: escribir con `--escribe deepseek --revisa gemini4`.
 - ⏳ Medir siempre cuántas rondas aprobadas llegan al disco y que muerda (punto E). Hoy desde las curas: 14 de 17.
