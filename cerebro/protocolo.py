@@ -135,6 +135,7 @@ LEYES_DURAS = [
     ("Todo lo que se habla se legisla", "candado + vigia, sin romper lo que sirve"),
     ("Todo queda limpio y en commit", "lo nuevo se indexa; el guardia lo exige"),
     ("Pruebas reales, no autovalidacion", "Playwright abre el navegador y comprueba de verdad"),
+    ("Atento al canal: el que manda, espera", "mensaje a Claude por el canal: revisar cada 5 minutos y esperar una hora en total; al vencer sin respuesta, avisar (Julio 2026-09-13)"),
 ]
 
 

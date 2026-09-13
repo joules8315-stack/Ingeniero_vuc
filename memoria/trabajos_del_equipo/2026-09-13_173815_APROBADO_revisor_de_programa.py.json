@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "La regla 3 comprueba los nombres solo sobre el trozo nuevo, y si el cambio usa os o sys importados mas arriba del archivo, fuera del trozo, acusa 'USA UN NOMBRE QUE NO EXISTE' y frena trabajo bueno.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        conocidos = _conocidos(arbol)",
+  "texto_nuevo": "        conocidos = set(_conocidos(arbol))\n        # FRENADA EN FALSO CAZADA EL 2026-09-13: acusaba de no existir a os y sys, que estaban importados\n        # mas arriba del archivo, fuera del trozo. Si el archivo existe y el trozo viejo esta en el, los\n        # nombres se comprueban tambien sobre el archivo tal como quedaria despues del cambio.\n        try:\n            _ruta_total = str(p.get(\"archivo\") or \"\")\n            if _ruta_total and os.path.isfile(_ruta_total) and viejo:\n                with open(_ruta_total, encoding=\"utf-8-sig\", errors=\"replace\") as _ft:\n                    _contenido_total = _ft.read()\n                if viejo in _contenido_total:\n                    _arbol_total = ast.parse(_contenido_total.replace(viejo, nuevo, 1))\n                    conocidos = conocidos | set(_conocidos(_arbol_total))\n        except Exception:\n            pass",
+  "cambio": "Sustituir la linea 'conocidos = _conocidos(arbol)' por el bloque que ademas lee el archivo completo, aplica el cambio sobre el contenido total y une los nombres conocidos del archivo entero, para que os y sys importados mas arriba no se acusen como inexistentes.",
+  "codigo": "        conocidos = set(_conocidos(arbol))\n        # FRENADA EN FALSO CAZADA EL 2026-09-13: acusaba de no existir a os y sys, que estaban importados\n        # mas arriba del archivo, fuera del trozo. Si el archivo existe y el trozo viejo esta en el, los\n        # nombres se comprueban tambien sobre el archivo tal como quedaria despues del cambio.\n        try:\n            _ruta_total = str(p.get(\"archivo\") or \"\")\n            if _ruta_total and os.path.isfile(_ruta_total) and viejo:\n                with open(_ruta_total, encoding=\"utf-8-sig\", errors=\"replace\") as _ft:\n                    _contenido_total = _ft.read()\n                if viejo in _contenido_total:\n                    _arbol_total = ast.parse(_contenido_total.replace(viejo, nuevo, 1))\n                    conocidos = conocidos | set(_conocidos(_arbol_total))\n        except Exception:\n            pass",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py: las 11 pruebas verdes, incluida la de no acusar nombres importados mas arriba en el archivo y la que sigue cazando un nombre que no esta en ningun sitio.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Reparación aprobada: se evita falso error de nombres importados fuera del trozo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -183,3 +183,38 @@ def test_sigue_cazando_lo_que_esta_en_el_archivo(tmp_path):
     assert any("calcular_precio" in str(f) for f in fallos), (
         "Se pidio tocar una funcion que SI esta en el archivo y el cambio ni la menciona; eso "
         "hay que seguir cazandolo")
+
+
+def test_no_acusa_nombres_importados_mas_arriba(tmp_path):
+    """NACE ROJA: el revisor mira solo el trozo nuevo y acusa de NO EXISTE a nombres que si
+    estan importados mas arriba en el archivo. Asi freno una ronda buena diciendo que os y sys
+    no existian."""
+    r = _revisor()
+    archivo = tmp_path / "con_imports.py"
+    archivo.write_text("import os\nimport sys\n\n\ndef f():\n    return 1\n", encoding="utf-8")
+    propuesta = {
+        "archivo": str(archivo),
+        "texto_viejo": "def f():\n    return 1\n",
+        "texto_nuevo": "def f():\n    return os.path.join('a', sys.argv[0])\n",
+    }
+    fallos = r.revisar(propuesta, tarea="que f use la ruta")
+    assert not any("NO EXISTE" in str(f) for f in fallos), (
+        "Acuso de no existir nombres que estan importados mas arriba en el archivo; asi frena "
+        "trabajo bueno. Dijo: %s" % fallos)
+
+
+def test_sigue_cazando_un_nombre_que_no_esta_en_ningun_sitio(tmp_path):
+    """Debe seguir verde: un nombre que no se importa en ningun sitio del archivo tiene que
+    seguir siendo cazado, porque en cuanto se corra revienta."""
+    r = _revisor()
+    archivo = tmp_path / "sin_re.py"
+    archivo.write_text("import os\n\n\ndef f(t):\n    return t\n", encoding="utf-8")
+    propuesta = {
+        "archivo": str(archivo),
+        "texto_viejo": "def f(t):\n    return t\n",
+        "texto_nuevo": "def f(t):\n    return re.sub('a', 'b', t)\n",
+    }
+    fallos = r.revisar(propuesta, tarea="que f cambie letras")
+    assert any("re" in str(f) and "NO EXISTE" in str(f) for f in fallos), (
+        "Dejo pasar un nombre que no se importa en ningun sitio del archivo; en cuanto se corra, "
+        "revienta")

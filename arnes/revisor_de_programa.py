@@ -183,7 +183,20 @@ def revisar(propuesta, tarea=""):
         # Cuando no se puede comprobar, se calla. Frenar lo bueno ensena a ignorar los frenos.
         if es_un_pedazo(nuevo):
             return fallos
-        conocidos = _conocidos(arbol)
+        conocidos = set(_conocidos(arbol))
+        # FRENADA EN FALSO CAZADA EL 2026-09-13: acusaba de no existir a os y sys, que estaban importados
+        # mas arriba del archivo, fuera del trozo. Si el archivo existe y el trozo viejo esta en el, los
+        # nombres se comprueban tambien sobre el archivo tal como quedaria despues del cambio.
+        try:
+            _ruta_total = str(p.get("archivo") or "")
+            if _ruta_total and os.path.isfile(_ruta_total) and viejo:
+                with open(_ruta_total, encoding="utf-8-sig", errors="replace") as _ft:
+                    _contenido_total = _ft.read()
+                if viejo in _contenido_total:
+                    _arbol_total = ast.parse(_contenido_total.replace(viejo, nuevo, 1))
+                    conocidos = conocidos | set(_conocidos(_arbol_total))
+        except Exception:
+            pass
         ya_dicho = set()
         for nombre in _leidos(arbol):
             if nombre not in conocidos and nombre not in ya_dicho:

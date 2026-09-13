@@ -123,3 +123,11 @@ y **por qué** (qué protege cada uno). La llave es una, pero su efecto es quir�
 hace falta y nada más.
 - **Candado:** `arnes/autorizacion.py` (la llave) + `arnes/candado_equipo.py` (cómo decide abrir).
 - **Vigía:** `vigias/test_vigia_llave_unica.py`.
+
+### L16 — EL QUE ENVÍA POR EL CANAL A CLAUDE QUEDA ATENTO (Julio, 2026-09-13)
+Cuando una IA envía un mensaje por el canal a `claude`, el que envió **queda atento**: revisa
+cada 5 minutos si llegó respuesta y **espera una hora en total** (desde el envío). Si la
+respuesta llega, la recoge; si se cumple la hora sin respuesta, avisa por el canal y por escrito
+que se venció la espera. No se delega la espera en nadie más: el que manda es el que espera.
+- **Candado:** `arnes/candado_atento_canal.py`.
+- **Vigía:** `vigias/test_vigia_atento_al_canal.py`.

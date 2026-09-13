@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El revisor de programa acusa de 'NO EXISTE' a nombres (os, sys) que si estan importados en el archivo, porque solo mira el trozo nuevo y no el archivo entero tal como quedaria; hay que anadir dos pruebas al final de la vigia.",
+  "archivo": "vigias/test_vigia_revisor_de_programa.py",
+  "funcion": "final del archivo (tras test_caza_lo_que_se_borra)",
+  "texto_viejo": "    fallos = r.revisar(propuesta, tarea=\"reparar la funcion calcular_precio\")\n    assert any(\"calcular_precio\" in str(f) for f in fallos), (\n        \"Se pidio tocar una funcion que SI esta en el archivo y el cambio ni la menciona; eso \"\n        \"hay que seguir cazandolo\")",
+  "texto_nuevo": "    fallos = r.revisar(propuesta, tarea=\"reparar la funcion calcular_precio\")\n    assert any(\"calcular_precio\" in str(f) for f in fallos), (\n        \"Se pidio tocar una funcion que SI esta en el archivo y el cambio ni la menciona; eso \"\n        \"hay que seguir cazandolo\")\n\n\ndef test_no_acusa_nombres_importados_mas_arriba(tmp_path):\n    \"\"\"NACE ROJA: el revisor mira solo el trozo nuevo y acusa de NO EXISTE a nombres que si\n    estan importados mas arriba en el archivo. Asi freno una ronda buena diciendo que os y sys\n    no existian.\"\"\"\n    r = _revisor()\n    archivo = tmp_path / \"con_imports.py\"\n    archivo.write_text(\"import os\\nimport sys\\n\\n\\ndef f():\\n    return 1\\n\", encoding=\"utf-8\")\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": \"def f():\\n    return os.path.join('a', sys.argv[0])\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"que f use la ruta\")\n    assert not any(\"NO EXISTE\" in str(f) for f in fallos), (\n        \"Acuso de no existir nombres que estan importados mas arriba en el archivo; asi frena \"\n        \"trabajo bueno. Dijo: %s\" % fallos)\n\n\ndef test_sigue_cazando_un_nombre_que_no_esta_en_ningun_sitio(tmp_path):\n    \"\"\"Debe seguir verde: un nombre que no se importa en ningun sitio del archivo tiene que\n    seguir siendo cazado, porque en cuanto se corra revienta.\"\"\"\n    r = _revisor()\n    archivo = tmp_path / \"sin_re.py\"\n    archivo.write_text(\"import os\\n\\n\\ndef f(t):\\n    return t\\n\", encoding=\"utf-8\")\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f(t):\\n    return t\\n\",\n        \"texto_nuevo\": \"def f(t):\\n    return re.sub('a', 'b', t)\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"que f cambie letras\")\n    assert any(\"re\" in str(f) and \"NO EXISTE\" in str(f) for f in fallos), (\n        \"Dejo pasar un nombre que no se importa en ningun sitio del archivo; en cuanto se corra, \"\n        \"revienta\")",
+  "cambio": "Anadir al final del archivo, despues del ultimo assert de test_caza_lo_que_se_borra, dos renglones en blanco y las dos pruebas nuevas: test_no_acusa_nombres_importados_mas_arriba (nace roja) y test_sigue_cazando_un_nombre_que_no_esta_en_ningun_sitio (debe seguir verde). No tocar nada mas.",
+  "codigo": "def test_no_acusa_nombres_importados_mas_arriba(tmp_path):\n    \"\"\"NACE ROJA: el revisor mira solo el trozo nuevo y acusa de NO EXISTE a nombres que si\n    estan importados mas arriba en el archivo. Asi freno una ronda buena diciendo que os y sys\n    no existian.\"\"\"\n    r = _revisor()\n    archivo = tmp_path / \"con_imports.py\"\n    archivo.write_text(\"import os\\nimport sys\\n\\n\\ndef f():\\n    return 1\\n\", encoding=\"utf-8\")\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": \"def f():\\n    return os.path.join('a', sys.argv[0])\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"que f use la ruta\")\n    assert not any(\"NO EXISTE\" in str(f) for f in fallos), (\n        \"Acuso de no existir nombres que estan importados mas arriba en el archivo; asi frena \"\n        \"trabajo bueno. Dijo: %s\" % fallos)\n\n\ndef test_sigue_cazando_un_nombre_que_no_esta_en_ningun_sitio(tmp_path):\n    \"\"\"Debe seguir verde: un nombre que no se importa en ningun sitio del archivo tiene que\n    seguir siendo cazado, porque en cuanto se corra revienta.\"\"\"\n    r = _revisor()\n    archivo = tmp_path / \"sin_re.py\"\n    archivo.write_text(\"import os\\n\\n\\ndef f(t):\\n    return t\\n\", encoding=\"utf-8\")\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f(t):\\n    return t\\n\",\n        \"texto_nuevo\": \"def f(t):\\n    return re.sub('a', 'b', t)\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"que f cambie letras\")\n    assert any(\"re\" in str(f) and \"NO EXISTE\" in str(f) for f in fallos), (\n        \"Dejo pasar un nombre que no se importa en ningun sitio del archivo; en cuanto se corra, \"\n        \"revienta\")",
+  "vigia": "Ejecutar pytest sobre vigias/test_vigia_revisor_de_programa.py: test_no_acusa_nombres_importados_mas_arriba debe pasar a verde cuando el revisor compruebe los nombres sobre el archivo entero tal como quedaria, y test_sigue_cazando_un_nombre_que_no_esta_en_ningun_sitio debe seguir verde.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple con añadir las dos pruebas requeridas sin inventar ni romper nada"
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}
