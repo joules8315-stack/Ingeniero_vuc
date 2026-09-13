@@ -68,6 +68,23 @@ corrida con llaves del paso N6.
 - **Informe C, línea final** ("124 soleados... SEA/SAR/SPA"): no tiene sentido; no se usa.
 - **"Comparar vigías antes/después es de los ojos de Julio"** (informe C): es una cuenta; va en H11.
 
+## SUBPLAN URGENTE: EL TRABAJO PAGADO NO SE TIRA (Julio: "Repara primero la herramienta que hace desechar trabajo pago")
+
+Investigó el ayudante (tarea P), verificó y corrigió la dirección. Medido: en 7 días, 46 de 96 rondas
+aprobadas no llegaron al disco; de 102 aprobadas reales, 40 las revisó el mismo cerebro que las escribió.
+
+**Reparado el 2026-09-13 (commit 76b9327), cada uno con vigía roja primero:** la marca NO_ENCONTRADO
+ya no impide crear archivos · añadir al final ya no es "humo" · la marca BOM de `ingeniero.py` ya no
+tira todo cambio · cada ronda se archiva con su nombre y `aplicar-guardado` acepta cuál aplicar.
+
+**APROBADO POR JULIO (2026-09-13, "Apruebo A a F"):**
+- **A.** Nadie revisa su propio trabajo: sin otro revisor, queda archivado "pendiente de revisión".
+- **B.** Tras aplicar se corre la vigía del encargo; si sigue roja, no cuenta como aprobado.
+- **C.** No se aplica lo que el revisor de programa frenó; el aviso de llave dice la verdad.
+- **D.** Si el trozo de antes no coincide, el trabajo no se tira: se archiva y se pide solo el trozo exacto.
+- **E.** Medir cada semana qué cerebro gratis contesta vacío y no darle trabajos grandes.
+- **F.** Corregir la vigía del guardia (`test_vigia_el_guardia_se_acuerda_y_frena.py`, rota por NameError).
+
 ## ORDEN DE EJECUCIÓN PROPUESTO
 
 **Fase 1 — entregar el DMM (ayudante, una reparación por orden):**

@@ -1,0 +1,63 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini3",
+ "propuesta": {
+  "diagnostico": "Falta la funcion veredicto_para_aplicar en arnes/candado_equipo.py, por eso las 4 pruebas de la vigia dan AttributeError.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "veredicto_para_aplicar (funcion nueva, se inserta justo antes de main)",
+  "texto_viejo": "def main():",
+  "texto_nuevo": "def veredicto_para_aplicar(res, guardado):\n    \"\"\"EL VEREDICTO QUE MANDA (Julio, 2026-09-13).\n\n    guardar_veredicto puede cambiar el APROBADO del auditor a RECHAZADO_POR_EL_PROGRAMA\n    cuando el revisor de programa encuentra un fallo, pero el comando equipo decidia con\n    el del auditor y aplicaba codigo roto. Aqui manda lo guardado.\n    Lo vigila vigias/test_vigia_no_se_aplica_lo_frenado.py.\n    \"\"\"\n    try:\n        if isinstance(guardado, dict):\n            v = str(guardado.get(\"veredicto\") or \"\").strip()\n            if v:\n                return v.upper()\n        if isinstance(res, dict):\n            auditoria = res.get(\"auditoria\")\n            if isinstance(auditoria, dict):\n                v = str(auditoria.get(\"veredicto\") or \"\").strip()\n                if v:\n                    return v.upper()\n        return \"?\"\n    except Exception:\n        return \"?\"\n\n\ndef main():",
+  "cambio": "Insertar la funcion nueva veredicto_para_aplicar(res, guardado) justo antes de def main():, con dos renglones en blanco de separacion. No se toca nada mas del archivo.",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_no_se_aplica_lo_frenado.py (las 4 pruebas deben quedar verdes), y siguen verdes vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py y vigias/test_vigia_nunca_sin_revisar.py",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_fuera_de_casa.py",
+   "vigias/test_vigia_no_se_aplica_lo_frenado.py",
+   "vigias/test_vigia_nunca_sin_revisar.py",
+   "vigias/test_vigia_siempre_con_equipo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_equipo_siempre.py",
+   "test_vigia_fuera_de_casa.py",
+   "test_vigia_siempre_con_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta implementa exactamente la función veredicto_para_aplicar requerida en arnes/candado_equipo.py respetando al pie de la letra la lógica, docstring y punto de inserción antes de def main()."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) fallo (no es cuota): contesto vacio",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso gemini3",
+  "vueltas_dadas: 1"
+ ]
+}

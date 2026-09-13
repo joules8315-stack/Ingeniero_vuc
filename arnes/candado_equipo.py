@@ -318,6 +318,30 @@ def guardar_trabajo_pagado(res):
     return None
 
 
+def veredicto_para_aplicar(res, guardado):
+    """EL VEREDICTO QUE MANDA (Julio, 2026-09-13).
+
+    guardar_veredicto puede cambiar el APROBADO del auditor a RECHAZADO_POR_EL_PROGRAMA
+    cuando el revisor de programa encuentra un fallo, pero el comando equipo decidia con
+    el del auditor y aplicaba codigo roto. Aqui manda lo guardado.
+    Lo vigila vigias/test_vigia_no_se_aplica_lo_frenado.py.
+    """
+    try:
+        if isinstance(guardado, dict):
+            v = str(guardado.get("veredicto") or "").strip()
+            if v:
+                return v.upper()
+        if isinstance(res, dict):
+            auditoria = res.get("auditoria")
+            if isinstance(auditoria, dict):
+                v = str(auditoria.get("veredicto") or "").strip()
+                if v:
+                    return v.upper()
+        return "?"
+    except Exception:
+        return "?"
+
+
 def main():
     import autorizacion
     # Solo Julio apaga, por comando (autorizar-off) y con autorizacion escrita: candados abiertos.

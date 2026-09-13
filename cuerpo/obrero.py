@@ -890,12 +890,16 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
     if auditor and quien_aud != auditor:
         avisos.append("se pidio auditar a %s y no esta disponible: reviso %s" % (auditor, quien_aud))
 
-    # Si no hay auditor, intentar con el cerebro de pago (aunque sea el mismo que genero).
+    # Si no hay auditor, intentar con el cerebro de pago, PERO APARTANDO SIEMPRE AL QUE ESCRIBIO.
+    # NADIE REVISA SU PROPIO TRABAJO (Julio, 2026-09-13). Antes aqui no se apartaba a nadie y el que
+    # escribio acababa revisandose: medido, 40 de 102 rondas aprobadas en 7 dias, que por ley no se
+    # aplican y la ronda siguiente borraba. El intento con el de pago se mantiene (ley de Julio, lo
+    # vigila test_vigia_lo_pesado_a_deepseek.py); si no queda nadie distinto, queda SIN_AUDITAR y el
+    # trabajo ya esta archivado para revisarlo despues. Lo vigila test_vigia_nadie_revisa_su_propio_trabajo.py
     if (not auditoria or auditoria.get("veredicto") == "SIN_AUDITAR"):
-        # intentar con el cerebro de pago, sin apartar a nadie
         crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
             _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,
-            primero=None, pesado=True, clase="auditar", vuelta=3)
+            evitar=evitar, primero=None, pesado=True, clase="auditar", vuelta=3)
         avisos += av_intento
         if crudo_a:
             auditoria = _json_de(crudo_a)

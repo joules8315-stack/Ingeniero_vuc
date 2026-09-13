@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py::auditar, cuando no hay auditor se llama a _preguntar_con_relevo sin pasar evitar, de modo que el que escribio puede acabar revisandose a si mismo.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    # Si no hay auditor, intentar con el cerebro de pago (aunque sea el mismo que genero).\n    if (not auditoria or auditoria.get(\"veredicto\") == \"SIN_AUDITAR\"):\n        # intentar con el cerebro de pago, sin apartar a nadie\n        crudo_a, quien_aud, av_intento = _preguntar_con_relevo(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,\n            primero=None, pesado=True, clase=\"auditar\", vuelta=3)\n        avisos += av_intento",
+  "texto_nuevo": "    # Si no hay auditor, intentar con el cerebro de pago, PERO APARTANDO SIEMPRE AL QUE ESCRIBIO.\n    # NADIE REVISA SU PROPIO TRABAJO (Julio, 2026-09-13). Antes aqui no se apartaba a nadie y el que\n    # escribio acababa revisandose: medido, 40 de 102 rondas aprobadas en 7 dias, que por ley no se\n    # aplican y la ronda siguiente borraba. El intento con el de pago se mantiene (ley de Julio, lo\n    # vigila test_vigia_lo_pesado_a_deepseek.py); si no queda nadie distinto, queda SIN_AUDITAR y el\n    # trabajo ya esta archivado para revisarlo despues. Lo vigila test_vigia_nadie_revisa_su_propio_trabajo.py\n    if (not auditoria or auditoria.get(\"veredicto\") == \"SIN_AUDITAR\"):\n        crudo_a, quien_aud, av_intento = _preguntar_con_relevo(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,\n            evitar=evitar, primero=None, pesado=True, clase=\"auditar\", vuelta=3)\n        avisos += av_intento",
+  "cambio": "Sustituir el bloque de 7 renglones de auditar por el bloque nuevo: se anade evitar=evitar a la llamada de _preguntar_con_relevo y se cambian los comentarios. Nada mas del archivo se toca.",
+  "codigo": "    # Si no hay auditor, intentar con el cerebro de pago, PERO APARTANDO SIEMPRE AL QUE ESCRIBIO.\n    # NADIE REVISA SU PROPIO TRABAJO (Julio, 2026-09-13). Antes aqui no se apartaba a nadie y el que\n    # escribio acababa revisandose: medido, 40 de 102 rondas aprobadas en 7 dias, que por ley no se\n    # aplican y la ronda siguiente borraba. El intento con el de pago se mantiene (ley de Julio, lo\n    # vigila test_vigia_lo_pesado_a_deepseek.py); si no queda nadie distinto, queda SIN_AUDITAR y el\n    # trabajo ya esta archivado para revisarlo despues. Lo vigila test_vigia_nadie_revisa_su_propio_trabajo.py\n    if (not auditoria or auditoria.get(\"veredicto\") == \"SIN_AUDITAR\"):\n        crudo_a, quien_aud, av_intento = _preguntar_con_relevo(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,\n            evitar=evitar, primero=None, pesado=True, clase=\"auditar\", vuelta=3)\n        avisos += av_intento",
+  "vigia": "vigias/test_vigia_nadie_revisa_su_propio_trabajo.py (test_el_ultimo_intento_tambien_aparta_al_que_escribio y test_sin_otro_revisor_no_sale_aprobado_por_si_mismo), mas vigias/test_vigia_lo_pesado_a_deepseek.py y vigias/test_vigia_trabajar_respeta_generador_auditor.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Se añadió el parámetro evitar a la llamada de _preguntar_con_relevo para evitar que el autor se revise a sí mismo, solucionando el fallo detectado."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

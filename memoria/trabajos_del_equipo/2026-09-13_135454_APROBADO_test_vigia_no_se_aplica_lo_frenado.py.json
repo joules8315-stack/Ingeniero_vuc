@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Falta el archivo de pruebas vigias/test_vigia_no_se_aplica_lo_frenado.py que compruebe que un veredicto frenado por el programa no se aplica; la funcion veredicto_para_aplicar se implementara despues en arnes/candado_equipo.py, no aqui.",
+  "archivo": "vigias/test_vigia_no_se_aplica_lo_frenado.py",
+  "funcion": "archivo nuevo completo (docstring de cabecera + imports + las cuatro funciones test_)",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "\"\"\"VIGIA — UN VEREDICTO QUE EL PROGRAMA FRENO NO ABRE PUERTAS NI SE APLICA.\n\nLo que protege:\n  Que la decision final de aplicar un cambio en disco use el veredicto que MANDA.\n  Si el revisor de programa (_fallos_mecanicos) freno y guardo\n  \"RECHAZADO_POR_EL_PROGRAMA\", ese veredicto manda sobre el del auditor.\n  Un veredicto que el programa rechazo NO se aplica y NO dice LLAVE GUARDADA.\n\nLo visto el 2026-09-13 en una ronda real:\n  arnes/candado_equipo.py::guardar_veredicto llamo al revisor de programa, encontro\n  un fallo, cambio el veredicto a \"RECHAZADO_POR_EL_PROGRAMA\" y lo guardo asi.\n  Pero ingeniero.py, comando equipo, IGNORO ese resultado: calculo v_final con el\n  veredicto del AUDITOR y con eso APLICO el cambio en disco y dijo \"LLAVE GUARDADA\".\n  Ese dia la salida dijo \"EL REVISOR DE PROGRAMA FRENA ... EL CODIGO QUEDA ROTO\"\n  y a continuacion \"APLICADO en disco\".\n\nLa ley:\n  Un veredicto que el programa rechazo no abre puertas ni se aplica.\n\nEstas pruebas nacen ROJAS: la funcion veredicto_para_aplicar todavia no existe en\narnes/candado_equipo.py. Se implementara despues, con el equipo.\n\"\"\"\n\nimport os\nimport sys\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, \"arnes\"))\nimport candado_equipo\n\n\ndef test_si_el_programa_frena_manda_el_programa():\n    res = {\"auditoria\": {\"veredicto\": \"APROBADO\"}}\n    guardado = {\"veredicto\": \"RECHAZADO_POR_EL_PROGRAMA\"}\n    assert candado_equipo.veredicto_para_aplicar(res, guardado) == \"RECHAZADO_POR_EL_PROGRAMA\", \\\n        \"el auditor aprobo, el programa freno, y se iba a aplicar codigo roto\"\n\n\ndef test_sin_guardado_manda_el_auditor():\n    assert candado_equipo.veredicto_para_aplicar({\"auditoria\": {\"veredicto\": \" aprobado \"}}, None) == \"APROBADO\", \\\n        \"sin veredicto del programa, manda el del auditor, en mayusculas y sin espacios\"\n\n\ndef test_sin_nada_no_se_inventa_una_aprobacion():\n    assert candado_equipo.veredicto_para_aplicar({}, None) == \"?\", \\\n        \"sin auditoria y sin guardado no se inventa una aprobacion: se devuelve ?\"\n    assert candado_equipo.veredicto_para_aplicar(None, None) == \"?\", \\\n        \"sin res y sin guardado no se inventa una aprobacion: se devuelve ?\"\n\n\ndef test_el_camino_real_guardar_y_decidir(monkeypatch, tmp_path):\n    monkeypatch.setenv(\"INGENIERO_VEREDICTO_TEST\", str(tmp_path / \"veredicto.json\"))\n    monkeypatch.setenv(\"INGENIERO_BALANCE_EQUIPO\", str(tmp_path / \"trabajos.log\"))\n    monkeypatch.setattr(candado_equipo, \"AQUI\", str(tmp_path))\n    monkeypatch.setattr(candado_equipo, \"_fallos_mecanicos\",\n                        lambda tarea, archivos=None: [\"EL CODIGO QUEDA ROTO en el renglon 8\"])\n    guardado = candado_equipo.guardar_veredicto(\n        \"tarea\", [\"vigias/de_prueba.py\"], \"deepseek\", \"gemini4\", \"APROBADO\")\n    res = {\"auditoria\": {\"veredicto\": \"APROBADO\"}}\n    assert candado_equipo.veredicto_para_aplicar(res, guardado) != \"APROBADO\", \\\n        \"el revisor de programa freno y la decision final seguia diciendo APROBADO\"\n",
+  "cambio": "Crear el archivo NUEVO vigias/test_vigia_no_se_aplica_lo_frenado.py con docstring de cabecera (lo que protege, lo visto el 2026-09-13, la ley), imports os/sys, el bloque PARA IMPORTAR con AQUI y sys.path.insert, y las cuatro funciones test_ sin decoradores, usando monkeypatch y tmp_path. NO se toca arnes/candado_equipo.py en esta ronda: la funcion veredicto_para_aplicar se implementara despues, con el equipo, y por eso estas pruebas nacen ROJAS.",
+  "codigo": "\"\"\"VIGIA — UN VEREDICTO QUE EL PROGRAMA FRENO NO ABRE PUERTAS NI SE APLICA.\n\nLo que protege:\n  Que la decision final de aplicar un cambio en disco use el veredicto que MANDA.\n  Si el revisor de programa (_fallos_mecanicos) freno y guardo\n  \"RECHAZADO_POR_EL_PROGRAMA\", ese veredicto manda sobre el del auditor.\n  Un veredicto que el programa rechazo NO se aplica y NO dice LLAVE GUARDADA.\n\nLo visto el 2026-09-13 en una ronda real:\n  arnes/candado_equipo.py::guardar_veredicto llamo al revisor de programa, encontro\n  un fallo, cambio el veredicto a \"RECHAZADO_POR_EL_PROGRAMA\" y lo guardo asi.\n  Pero ingeniero.py, comando equipo, IGNORO ese resultado: calculo v_final con el\n  veredicto del AUDITOR y con eso APLICO el cambio en disco y dijo \"LLAVE GUARDADA\".\n  Ese dia la salida dijo \"EL REVISOR DE PROGRAMA FRENA ... EL CODIGO QUEDA ROTO\"\n  y a continuacion \"APLICADO en disco\".\n\nLa ley:\n  Un veredicto que el programa rechazo no abre puertas ni se aplica.\n\nEstas pruebas nacen ROJAS: la funcion veredicto_para_aplicar todavia no existe en\narnes/candado_equipo.py. Se implementara despues, con el equipo.\n\"\"\"\n\nimport os\nimport sys\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, \"arnes\"))\nimport candado_equipo\n\n\ndef test_si_el_programa_frena_manda_el_programa():\n    res = {\"auditoria\": {\"veredicto\": \"APROBADO\"}}\n    guardado = {\"veredicto\": \"RECHAZADO_POR_EL_PROGRAMA\"}\n    assert candado_equipo.veredicto_para_aplicar(res, guardado) == \"RECHAZADO_POR_EL_PROGRAMA\", \\\n        \"el auditor aprobo, el programa freno, y se iba a aplicar codigo roto\"\n\n\ndef test_sin_guardado_manda_el_auditor():\n    assert candado_equipo.veredicto_para_aplicar({\"auditoria\": {\"veredicto\": \" aprobado \"}}, None) == \"APROBADO\", \\\n        \"sin veredicto del programa, manda el del auditor, en mayusculas y sin espacios\"\n\n\ndef test_sin_nada_no_se_inventa_una_aprobacion():\n    assert candado_equipo.veredicto_para_aplicar({}, None) == \"?\", \\\n        \"sin auditoria y sin guardado no se inventa una aprobacion: se devuelve ?\"\n    assert candado_equipo.veredicto_para_aplicar(None, None) == \"?\", \\\n        \"sin res y sin guardado no se inventa una aprobacion: se devuelve ?\"\n\n\ndef test_el_camino_real_guardar_y_decidir(monkeypatch, tmp_path):\n    monkeypatch.setenv(\"INGENIERO_VEREDICTO_TEST\", str(tmp_path / \"veredicto.json\"))\n    monkeypatch.setenv(\"INGENIERO_BALANCE_EQUIPO\", str(tmp_path / \"trabajos.log\"))\n    monkeypatch.setattr(candado_equipo, \"AQUI\", str(tmp_path))\n    monkeypatch.setattr(candado_equipo, \"_fallos_mecanicos\",\n                        lambda tarea, archivos=None: [\"EL CODIGO QUEDA ROTO en el renglon 8\"])\n    guardado = candado_equipo.guardar_veredicto(\n        \"tarea\", [\"vigias/de_prueba.py\"], \"deepseek\", \"gemini4\", \"APROBADO\")\n    res = {\"auditoria\": {\"veredicto\": \"APROBADO\"}}\n    assert candado_equipo.veredicto_para_aplicar(res, guardado) != \"APROBADO\", \\\n        \"el revisor de programa freno y la decision final seguia diciendo APROBADO\"\n",
+  "vigia": "vigias/test_vigia_no_se_aplica_lo_frenado.py (las cuatro pruebas nacen ROJAS hasta que exista veredicto_para_aplicar en arnes/candado_equipo.py)",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "ingeniero.py (comando equipo)",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_sin_equipo_no_se_guarda.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El archivo de pruebas se añadió correctamente, cumpliendo el diagnóstico sin inventar nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso gemini3",
+  "GPT-OSS 120B (Groq) no le cabe (19614 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 4"
+ ]
+}
