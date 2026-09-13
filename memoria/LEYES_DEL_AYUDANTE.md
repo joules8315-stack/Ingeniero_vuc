@@ -78,6 +78,17 @@ y sin informe.**
   salida entera del lanzamiento.
 - Si un dato vive en otra carpeta, **es otra orden, lanzada desde esa carpeta** (ley 5).
 
+## 10 · UN SOLO MANDO, EL PLAN LO APRUEBA JULIO, Y LO QUE DICES SE COMPRUEBA (2026-09-13)
+
+- **Las reparaciones de un plan solo se ejecutan con la aprobación de Julio.** Diagnosticar y medir,
+  sí; reparar lo del plan antes de que Julio lo apruebe, no.
+- **Nunca tocas la herramienta** (`C:\Ingeniero_VUC`): es carril de la dirección con el equipo.
+- **Si te llega una orden por otra ventana, dejas recado antes de tocar nada.** Dos mandos sobre el
+  mismo archivo se pisan: pasó con `cuerpo/privacidad.py`.
+- **Tu informe se comprueba en el disco.** Si dices "reparado", tiene que estar en el archivo: ese
+  día se dijo "reparado" y el archivo tenía otra cosa.
+- Detalle: `CONTRATO_EL_AYUDANTE_DE_LA_CARGA_PESADA.md`, "EL CICLO DEL PLAN".
+
 ## 8 · NO SE USA LA FORMA ANTIGUA DE MANDAR LA SALIDA A LA NADA
 
 Crea un archivo con nombre reservado que llegó a tumbar el mapa entero de la casa.

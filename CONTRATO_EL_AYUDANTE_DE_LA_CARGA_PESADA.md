@@ -75,6 +75,43 @@ exacta de una vigía inestable). La dirección comprobó sus hallazgos en el có
 5. **Nunca a la vez que otra corrida de la suite del negocio.** La dirección no sella el negocio
    mientras él trabaja en esa carpeta.
 
+## EL CICLO DEL PLAN: EL AYUDANTE DIAGNOSTICA, JULIO APRUEBA, EL AYUDANTE EJECUTA, LA DIRECCIÓN VERIFICA (2026-09-13)
+
+> Julio: *"BP te va a pasar un plan donde: 1) encuentra todos los fallos de raiz, tanto de dmm, como
+> del ingeniero, basado en leyes, mapas, s1, s2, s3, s4. 2) Analiza si la información es correcta,
+> corrige si debes hacerlo y me pasas el plan para aprobación. 3) Una vez aprobado por mi se
+> ejecuta, le das la orden a bp para que ejecute lo mas pesado, incluido las reparaciones. 4) Tu te
+> dedicas a verificar que todo se cumpla, ordenando las pruebas respectivas al ayudante. Legisla
+> fuerte, pon candados, vigias, aplica arnes y asegurate que se cumpla. Sin excusas, ni alucinaciones."*
+
+**LOS CUATRO PASOS, EN ESTE ORDEN Y SIN SALTAR NINGUNO:**
+
+1. **DIAGNÓSTICO (ayudante).** Fallos de raíz del negocio y de la herramienta, cada uno con
+   `archivo:renglón`, la ley o sesión del curso (S1–S4) que incumple, y cómo se comprobó.
+   Una orden por carpeta (ley 9): una para el negocio, otra para la herramienta.
+2. **VERIFICACIÓN (dirección).** Cada hallazgo se comprueba **en el código o ejecutándolo** antes de
+   pasar al plan. Lo que no se sostiene se corrige o se tira, y **se dice cuál se tiró y por qué**.
+3. **APROBACIÓN (Julio).** El plan se le presenta en simple. **Sin su aprobación no se ejecuta ni
+   una reparación del plan.** Una IA no puede aprobarlo por él.
+4. **EJECUCIÓN (ayudante) Y VERIFICACIÓN (dirección).** El ayudante hace lo pesado y las reparaciones
+   del negocio (con las reglas de "TAMBIÉN REPARA"). La dirección le ordena las pruebas de cada
+   paso y **no da nada por hecho sin verlo en el disco o en la prueba**.
+
+**LO QUE DICE EL AYUDANTE SE COMPRUEBA EN EL DISCO.** Medido el 2026-09-13: el ayudante informó por
+el canal que había dejado en `cuerpo/privacidad.py` un patrón "de 2+ letras" y "30 passed". En el
+disco estaba **otro** patrón, el que midió la dirección. Un informe no es un hecho hasta verlo.
+
+**UN SOLO MANDO.** Si el ayudante recibe órdenes por otra ventana, **deja recado en el canal antes de
+tocar nada**, y **nunca toca la herramienta** (`C:\Ingeniero_VUC`): ese carril es de la dirección con
+el equipo. Dos mandos sobre el mismo archivo se pisan, y ya pasó con `cuerpo/privacidad.py`.
+
+**CANDADO Y VIGÍA QUE HACEN CUMPLIR ESTO** (se programan con el equipo como primer punto del plan
+aprobado; mientras no existan, lo vigila la dirección y se dice que falta):
+- un archivo de aprobación que **solo crea un comando que corre Julio**; sin él, la orden de
+  reparación al ayudante no se arma;
+- una vigía que comprueba que una orden de reparación sin aprobación se frena, y que la aprobación
+  no la puede escribir una IA.
+
 ## LA REGLA DEL TRABAJO QUE NO SE QUEDA A MEDIAS
 
 Su cuenta se quedo sin saldo (80 errores de cobro en su registro) y puede volver a caerse a mitad.
