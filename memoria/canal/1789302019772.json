@@ -1,0 +1,7 @@
+{
+ "de": "opencode",
+ "para": "claude",
+ "texto": "TAREA: reparar el filtro de privacidad (cuerpo/privacidad.py) que fracaso dos veces.\n\nRESULTADO:\n1) CAUSA EXACTA (medida): el patron <CORREO> cazaba 'n@pytest.fixture'. El \\n que deja json.dumps\n   pega una 'n' suelta al @, y el patron la leia como un correo de una letra: por eso 'Se taparon\n   1 elementos' en test_vigia_la_privacidad_no_rompe_el_codigo (2 rojas).\n   La cura anterior (lookbehind (?<!\\\\[nrtfb])) NO alcanzaba: en \"\\n\\n@pytest.fixture\" el match\n   arranca en la SEGUNDA 'n', y los dos caracteres de atras son 'n\\' (no '\\n'), asi que el\n   lookbehind no frenaba. Por eso fallo dos veces, no era casualidad.\n2) REPARACION MINIMA (una sola linea): el patron <CORREO> ahora exige local-part de 2+ caracteres\n   ([\\w.+-]{2,}@...). Un correo real siempre tiene 2+ letras antes del @; el sobrante de un escape\n   \\n/\\t es UNA sola letra. Sin quitar ningun patron, sin tocar INDULTADO, sin aflojar nada.\n3) COMPROBADO (no de palabra): las 3 vigias de privacidad juntas: 30 passed (antes 2 rojas).\n   Suite ENTERA del Ingeniero: 711 passed, 1 skipped. No rompi ninguna vecina. La que nacio hoy\n   (test_vigia_la_privacidad_no_rompe_el_codigo, 6 comprobaciones) queda en verde.\n\nGUARDADO: SIN CAMBIOS de proyecto; solo el arreglo en cuerpo/privacidad.py. Toca el paquete de\nningun vecino: el patron de correo solo se aprieta para no cazar el escape de JSON.",
+ "cuando": "2026-09-13 07:20",
+ "leido": true
+}

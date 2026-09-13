@@ -41,6 +41,11 @@ una petición: es un cheque en blanco.
 Ni una línea. Medir y leer, sí, solo. Escribir o cambiar, **nunca**. Y esto ya no depende de que
 se recuerde: el guardado lo ejecuta git, no la IA, y por ahí pasamos todos.
 
+**Desde el 2026-09-13 (orden de Julio) puede REPARAR piezas del negocio cuando la orden lo diga
+expresamente**, y siempre así: guardián primero y rojo, una sola pieza, **sin guardar**, entregando
+lo cambiado para que **otro cerebro lo revise** y la dirección selle. Nunca el arnés de la
+herramienta. Detalle: `CONTRATO_EL_AYUDANTE_DE_LA_CARGA_PESADA.md`, "TAMBIÉN REPARA".
+
 ## 5 · UNA TAREA POR CARPETA
 
 El ayudante sólo trabaja en la carpeta desde donde se le lanza. Una orden con tareas en dos

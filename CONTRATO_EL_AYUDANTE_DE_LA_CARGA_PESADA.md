@@ -53,6 +53,28 @@ lo decide la direccion. Un reporte no es una reparacion.
 - **Se cierra con tres renglones y no valen menos:** que tarea, que resultado en numeros, y que se
   guardo. Sin los tres, se da por no hecha.
 
+## LA ORDEN DE JULIO DEL 2026-09-13: TAMBIÉN REPARA
+
+> *"asigna trabajo a bp: coordinado para que no se pisen: 1) trabajo pesado. 2) Trabajo de
+> reparación, ya que ha demostrado ser bueno en este aspecto."*
+
+**Por qué se lo ha ganado, medido esa madrugada:** cuatro tareas seguidas entregadas con números
+comprobables (suite 614/614, auditoría con `archivo:renglón`, inventario de 22 pantallas, la causa
+exacta de una vigía inestable). La dirección comprobó sus hallazgos en el código y **eran ciertos**.
+
+**CÓMO REPARA, sin romper las otras leyes:**
+
+1. **Solo piezas del NEGOCIO** (su carril). **El arnés y las leyes de la herramienta siguen siendo
+   de la dirección con el equipo.** Así no se pisan: carpetas distintas.
+2. **Una reparación por orden, pequeña y completa.** Si su sesión se corta, lo que queda a medias es
+   una sola pieza sin guardar, que se ve con `git status` y no ensucia nada más.
+3. **Guardián primero, y nace ROJO.** Espía que demuestre **ejecutando** que la pieza queda llamada.
+4. **Él escribe, pero NO GUARDA.** Entrega en su respuesta final lo que cambió, archivo por archivo,
+   y la suite entera corrida. **Un cerebro distinto lo revisa** y la dirección sella. Así se cumple
+   la ley 6: uno escribe y otro revisa. Escribir él solo y guardar él solo sigue prohibido.
+5. **Nunca a la vez que otra corrida de la suite del negocio.** La dirección no sella el negocio
+   mientras él trabaja en esa carpeta.
+
 ## LA REGLA DEL TRABAJO QUE NO SE QUEDA A MEDIAS
 
 Su cuenta se quedo sin saldo (80 errores de cobro en su registro) y puede volver a caerse a mitad.
