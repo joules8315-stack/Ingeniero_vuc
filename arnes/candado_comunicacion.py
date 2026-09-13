@@ -132,11 +132,33 @@ def main():
     pend = mensajes_pendientes(qu)
     faltas = []
     if pend:
-        faltas.append("Tienes mensajes de Cline/DeepSeek en el canal SIN responder (F4):\n"
+        # SE CONTESTA A QUIEN ESCRIBIO, NO A UN NOMBRE ESCRITO A MANO.
+        #
+        # JULIO LO REPITIO, y con razon: "repara que no se envie mas recados a cline, sino a bp,
+        # cuantas veces lo tengo que repetir?". Cada repeticion suya es un fallo de esta casa.
+        #
+        # Este aviso hacia algo absurdo: ENSENABA el nombre de quien habia escrito el recado, y a
+        # renglon seguido mandaba contestarle A OTRO, porque el nombre estaba clavado a mano.
+        # Resultado: los recados se le mandaban a quien ya no trabaja, mientras el companero de
+        # verdad esperaba en su canal. Y ademas daba la sensacion de haber avisado.
+        #
+        # Es la MISMA enfermedad que perdia 7 de cada 10 ordenes de Julio, que hundia al mejor
+        # cerebro en la fila, y que buscaba una funcion por un numero de renglon: algo que hay que
+        # SABER, congelado dentro del codigo en vez de preguntarselo a quien lo sabe. Aqui el que
+        # lo sabe es el propio recado: lo firma su remitente, y de ahi se saca el nombre.
+        _quienes = []
+        for _m in pend[:4]:
+            _de = str(_m.get("de", "") or "").strip()
+            if _de and _de.lower() not in ("?", "desconocido") and _de not in _quienes:
+                _quienes.append(_de)
+        if not _quienes:
+            _quienes = [_companero_de_ahora()]
+        faltas.append("Tienes recados en el canal SIN responder (F4):\n"
                       + "\n".join("   - de %s: %s" % (m.get("de", "?"), m.get("texto", "")[:120])
                                   for m in pend[:4])
-                      + "\n   Responde por el canal antes de terminar:\n"
-                        "     cd C:\\Ingeniero_VUC; python arnes/canal.py enviar cline \"<tu respuesta>\"")
+                      + "\n   Contestale a QUIEN TE ESCRIBIO, antes de terminar:\n"
+                      + "\n".join("     python arnes/canal.py enviar %s \"<tu respuesta>\"" % q
+                                  for q in _quienes))
     # Comunicacion obligatoria con el companero activo y DeepSeek (Julio 2026-08-24): si hizo trabajo y no
     # escribio por el canal al companero actual ni a deepseek, se le exige.
     try:
