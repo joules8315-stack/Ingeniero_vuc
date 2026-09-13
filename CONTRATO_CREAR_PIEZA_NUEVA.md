@@ -79,6 +79,32 @@ ESCRIBE y nadie comprueba despues que el llamador exista de verdad en el codigo.
 
 ---
 
+### Regla 7 — CREAR CODIGO NUEVO ES UN DERECHO CON CRITERIO, Y SIEMPRE CON PLAN APROBADO (Julio, 2026-09-13)
+
+> *"Recuerda que todos deben tener la posibilidad de construir codigo nuevo, no es una carcel, pero este
+> codigo debe contribuir a los proyectos especificos basado en el mapa, plan de trabajo, arquitectura, leyes,
+> tablas, matriz y todo el equipo creado para ese fin en el ingeniero, sin dañar lo que ya sirve, para lo
+> cual son los vigias, el arnes y el resto del equipo. Si no viola eso, debe poder crear codigo nuevo, porque
+> dentro de las habilidades esta que debe mejorar continuamente, lo que implica codigo nuevo, pero la
+> creacion de este codigo debe tener criterio, debe crearse el plan, mostramelo, siempre, y despues que yo lo
+> apruebe, modifique o desapruebe, se ejecuta, tal como digo, como acuerde hacerlo, ninguna otra manera es permitida."*
+
+1. **Vale para todos:** Claude, el equipo y el ayudante. Nadie tiene prohibido crear código; la herramienta no es una cárcel.
+2. **El código nuevo tiene que servir a un proyecto concreto** y apoyarse en su mapa, su plan de trabajo, su
+   arquitectura, sus leyes, tablas y matriz. **Sin dañar lo que ya sirve**: para eso están las vigías y el arnés.
+3. **SIEMPRE con plan mostrado a Julio antes de ejecutar.** Julio lo aprueba, lo modifica o lo desaprueba, y se ejecuta
+   **tal como él lo acordó**. **No hay otra forma permitida**: ni escribir a escondidas (el candado de opencode cierra esa
+   puerta en la herramienta), ni ampliar el plan por cuenta propia.
+4. **Lo que impida crear código bueno y aprobado es un fallo de la herramienta** y se repara como tal. Medido el
+   2026-09-13: en 7 días, 46 de 96 rondas aprobadas no llegaron al disco. Por eso **se mide siempre** cuántas rondas
+   aprobadas llegan al disco (punto E del plan de raíz): lo que no se mide vuelve sin que nadie lo vea.
+
+**Por qué volvía aunque "ya estaba reparado":** cada vez se reparó una causa suelta con su vigía, y nadie medía el
+resultado final. Los frenos del revisor se ignoraban (y así no se veían sus frenos en falso) y el trabajo aprobado
+se pisaba sin dejar rastro. Causas cerradas el 2026-09-13: la marca NO_ENCONTRADO, el falso humo al añadir, la marca BOM
+de `ingeniero.py`, el trabajo pisado, la autorrevisión, la privacidad que rompía decoradores, el revisor que frenaba
+por palabras de contexto, y aplicar lo que el revisor frenó.
+
 ## POR QUE NACEN HUERFANAS — medido el 2026-09-08, y duele
 
 Esta misma ley es huerfana. Su seccion "COMO SE COMPRUEBA QUE SE CUMPLE" describe una vigia con
