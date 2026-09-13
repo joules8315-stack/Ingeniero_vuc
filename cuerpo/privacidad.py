@@ -48,7 +48,12 @@ PATRONES = [
                            r"(?:[\"'][^\"'\n]{8,}[\"']"
                            r"|(?=[A-Za-z0-9_\-]*\d)[A-Za-z0-9_\-]{12,}"
                            r"(?![\w\-]*\s*[\(\[]))")),
-    ("<CORREO>", re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.]{2,}\b")),
+    # 2026-09-13: escape de JSON causa falsos positivos. El \n de json.dumps deja una 'n' pegada
+    # al @ ("\n@pytest.fixture") y el patron la leia como un correo de una letra. La cura que no
+    # alcanzo (mirar el escape de atras) fallaba porque en "\n\n@" el match arranca en la segunda
+    # 'n'. Lo que discrimina de verdad: un correo real tiene local-part de 2+ caracteres; el
+    # sobrante de un escape \n/\t es UNA sola letra. Vigia: test_vigia_la_privacidad_no_rompe_el_codigo.
+    ("<CORREO>", re.compile(r"(?:(?<![\w.+\\-])|(?<=\\[nrtfb]))[\w.+-]+@[\w-]+\.[\w.]{2,}\b")),
     ("<TARJETA>", re.compile(r"(?<![\w.])(?:\d[ -]?){13,19}(?![\w.])")),
     ("<DOCUMENTO>", re.compile(r"\b\d{7,8}[-\s]?[A-Za-z]\b")),
     ("<TELEFONO>", re.compile(r"(?<![\w.])(?:\+\d{1,3}[ -]?)?(?:\d[ -]?){8,13}\d(?![\w.])")),
