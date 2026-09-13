@@ -1,0 +1,57 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "ingeniero.py tira a la basura el diccionario que devuelve candado_equipo.guardar_veredicto, y luego decide con el veredicto del auditor, pudiendo aplicar en disco un cambio que el revisor de programa dio por roto",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "        _ce.guardar_veredicto(tarea, tocados, res.get(\"obrero\"), res.get(\"auditor\"),\n                              (res.get(\"auditoria\") or {}).get(\"veredicto\", \"?\"))",
+  "texto_nuevo": "        # SE GUARDA LO QUE DEVUELVE (2026-09-13): su veredicto puede ser RECHAZADO_POR_EL_PROGRAMA y ese manda.\n        _guardado = _ce.guardar_veredicto(tarea, tocados, res.get(\"obrero\"), res.get(\"auditor\"),\n                                          (res.get(\"auditoria\") or {}).get(\"veredicto\", \"?\"))",
+  "cambio": "Guardar en la variable _guardado el diccionario que devuelve _ce.guardar_veredicto, en vez de descartarlo, para que el paso 2 pueda usar candado_equipo.veredicto_para_aplicar(res, guardado). No se toca nada mas de ingeniero.py.",
+  "codigo": "        # SE GUARDA LO QUE DEVUELVE (2026-09-13): su veredicto puede ser RECHAZADO_POR_EL_PROGRAMA y ese manda.\n        _guardado = _ce.guardar_veredicto(tarea, tocados, res.get(\"obrero\"), res.get(\"auditor\"),\n                                          (res.get(\"auditoria\") or {}).get(\"veredicto\", \"?\"))",
+  "vigia": "vigias/test_vigia_no_se_aplica_lo_frenado.py (4 passed) comprueba que candado_equipo.veredicto_para_aplicar(res, guardado) frena lo que el revisor de programa dio por roto; en el paso 2 se usara con esta variable _guardado.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "via_canonica.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La modificación guarda el diccionario devuelto, corrige el diagnóstico, no introduce elementos inexistentes, no afecta a los módulos vecinos y respeta todas las reglas contractuales."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19052 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

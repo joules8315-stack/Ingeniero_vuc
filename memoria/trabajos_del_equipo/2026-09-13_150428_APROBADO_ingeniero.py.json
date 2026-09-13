@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "v_final se calcula con el veredicto del AUDITOR, y con v_final se decide APLICAR en disco y decir 'LLAVE GUARDADA', aunque el revisor de programa haya frenado.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "        v_final = ((res.get(\"auditoria\") or {}).get(\"veredicto\", \"?\") or \"?\").strip().upper()",
+  "texto_nuevo": "        # MANDA EL VEREDICTO GUARDADO (2026-09-13): si el revisor de programa freno, no se aplica ni se da llave,\n        # aunque el auditor aprobara. Lo vigila vigias/test_vigia_no_se_aplica_lo_frenado.py\n        v_final = _ce.veredicto_para_aplicar(res, _guardado)",
+  "cambio": "Sustituir el calculo de v_final basado en el veredicto del auditor por la llamada a _ce.veredicto_para_aplicar(res, _guardado), que devuelve el veredicto guardado (puede ser RECHAZADO_POR_EL_PROGRAMA) o, si no hay, el del auditor en mayusculas.",
+  "codigo": "        # MANDA EL VEREDICTO GUARDADO (2026-09-13): si el revisor de programa freno, no se aplica ni se da llave,\n        # aunque el auditor aprobara. Lo vigila vigias/test_vigia_no_se_aplica_lo_frenado.py\n        v_final = _ce.veredicto_para_aplicar(res, _guardado)",
+  "vigia": "vigias/test_vigia_no_se_aplica_lo_frenado.py (4 passed): comprueba que si el revisor de programa frena, no se aplica en disco ni se da llave aunque el auditor apruebe.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py",
+   "arnes/asignador.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_diagnostico.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "via_canonica.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, usa solo código existente, no rompe vecinos y respeta todas las reglas del contrato."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

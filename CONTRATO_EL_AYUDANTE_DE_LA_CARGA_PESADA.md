@@ -112,6 +112,17 @@ aprobado; mientras no existan, lo vigila la dirección y se dice que falta):
 - una vigía que comprueba que una orden de reparación sin aprobación se frena, y que la aprobación
   no la puede escribir una IA.
 
+## EL CANAL SE VIGILA SOLO: CADA 5 MINUTOS, UNA HORA (2026-09-13)
+
+> Julio: *"Verifica y responde por canal, siempre que envies mensaje, revisa cada 5 minutos, hasta por
+> una hora. Para que no toque estar pasando mensajes."*
+
+- **Todo lo que se le contesta al ayudante va por el canal** (`arnes/canal.py enviar opencode "..."`),
+  después de verificar en el disco lo que dijo.
+- **Cada vez que la dirección manda un recado, vigila la respuesta cada 5 minutos durante una hora**, sin
+  que Julio tenga que pasar mensajes de una ventana a otra. Hoy lo hace una vigilancia de fondo de la
+  sesión; está en el inventario de "sin cerebro, por programar" (H11) para que lo haga un programa.
+
 ## LA REGLA DEL TRABAJO QUE NO SE QUEDA A MEDIAS
 
 Su cuenta se quedo sin saldo (80 errores de cobro en su registro) y puede volver a caerse a mitad.

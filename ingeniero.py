@@ -378,8 +378,9 @@ def main():
                 pid = pz.get("id") if isinstance(pz, dict) else str(pz)
                 if pid and pid not in tocados:
                     tocados.append(pid)
-        _ce.guardar_veredicto(tarea, tocados, res.get("obrero"), res.get("auditor"),
-                              (res.get("auditoria") or {}).get("veredicto", "?"))
+        # SE GUARDA LO QUE DEVUELVE (2026-09-13): su veredicto puede ser RECHAZADO_POR_EL_PROGRAMA y ese manda.
+        _guardado = _ce.guardar_veredicto(tarea, tocados, res.get("obrero"), res.get("auditor"),
+                                          (res.get("auditoria") or {}).get("veredicto", "?"))
         # Ya esta a salvo. AHORA se ensena, y si mostrar falla, no se pierde nada.
         try:
             print(_o.veredicto_corto(res))
@@ -390,7 +391,9 @@ def main():
         # EL MENSAJE NO MIENTE (Julio, 2026-08-27): antes "LLAVE GUARDADA" salia SIEMPRE, incluso
         # cuando el equipo habia RECHAZADO. El candado NO abria (ya esta probado), pero el mensaje
         # decia "guarda llave" y engaÃ±aba. Ahora se dice la verdad: la llave SOLO abre con APROBADO.
-        v_final = ((res.get("auditoria") or {}).get("veredicto", "?") or "?").strip().upper()
+        # MANDA EL VEREDICTO GUARDADO (2026-09-13): si el revisor de programa freno, no se aplica ni se da llave,
+        # aunque el auditor aprobara. Lo vigila vigias/test_vigia_no_se_aplica_lo_frenado.py
+        v_final = _ce.veredicto_para_aplicar(res, _guardado)
         # ENCARGO A / plan pieza 2 (Claude, 2026-09-02): cuando el equipo APROBO, se APLICA en disco
         # lo que escribio usando el aplicador probado (cuerpo/aplicador.py): crea el archivo nuevo o
         # cambia el texto aprobado, y comprueba que el .py no quede roto ANTES de confirmar. Si el
