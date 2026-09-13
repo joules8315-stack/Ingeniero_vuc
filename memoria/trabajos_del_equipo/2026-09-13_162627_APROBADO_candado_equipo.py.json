@@ -1,0 +1,69 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini3",
+ "propuesta": {
+  "diagnostico": "El veredicto se guarda en un unico archivo que se PISA en cada ronda, asi que de las aprobaciones anteriores no queda rastro y el guardia cree que se escribio a solas.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "guardar_veredicto",
+  "texto_viejo": "    os.makedirs(os.path.dirname(_ruta_veredicto()), exist_ok=True)\n    json.dump(d, open(_ruta_veredicto(), \"w\", encoding=\"utf-8\"), ensure_ascii=False, indent=1)",
+  "texto_nuevo": "    os.makedirs(os.path.dirname(_ruta_veredicto()), exist_ok=True)\n    json.dump(d, open(_ruta_veredicto(), \"w\", encoding=\"utf-8\"), ensure_ascii=False, indent=1)\n    # EL CUADERNO QUE NO SE PISA (Julio, 2026-09-12: \"que se acuerde de todo\"). Cada veredicto anade un\n    # renglon junto al archivo de veredicto; el guardia de guardado lo lee para recordar las ultimas 24 h.\n    try:\n        _cuaderno_recientes = os.path.join(os.path.dirname(_ruta_veredicto()), \".veredictos_recientes.jsonl\")\n        with open(_cuaderno_recientes, \"a\", encoding=\"utf-8\") as _fr:\n            _fr.write(json.dumps({\"cuando\": d[\"cuando\"], \"archivos\": d[\"archivos\"],\n                                  \"veredicto\": d[\"veredicto\"],\n                                  \"reviso_a_si_mismo\": d[\"reviso_a_si_mismo\"]},\n                                 ensure_ascii=False) + \"\\n\")\n    except Exception:\n        pass    # perder un apunte no puede tumbar el trabajo del equipo",
+  "cambio": "Anadir, justo despues de los dos renglones que ya escriben el archivo de veredicto (y sin tocar nada mas del archivo), el bloque que abre en modo append el cuaderno .veredictos_recientes.jsonl junto al archivo de veredicto y escribe un renglon JSON por veredicto con cuando, archivos, veredicto y reviso_a_si_mismo. El bloque va dentro de try/except para que un fallo al apuntar no tumbe el trabajo del equipo.",
+  "codigo": "    # EL CUADERNO QUE NO SE PISA (Julio, 2026-09-12: \"que se acuerde de todo\"). Cada veredicto anade un\n    # renglon junto al archivo de veredicto; el guardia de guardado lo lee para recordar las ultimas 24 h.\n    try:\n        _cuaderno_recientes = os.path.join(os.path.dirname(_ruta_veredicto()), \".veredictos_recientes.jsonl\")\n        with open(_cuaderno_recientes, \"a\", encoding=\"utf-8\") as _fr:\n            _fr.write(json.dumps({\"cuando\": d[\"cuando\"], \"archivos\": d[\"archivos\"],\n                                  \"veredicto\": d[\"veredicto\"],\n                                  \"reviso_a_si_mismo\": d[\"reviso_a_si_mismo\"]},\n                                 ensure_ascii=False) + \"\\n\")\n    except Exception:\n        pass    # perder un apunte no puede tumbar el trabajo del equipo",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py: tras guardar un veredicto debe existir, junto al archivo de veredicto, el cuaderno .veredictos_recientes.jsonl con un renglon por veredicto (los 4 fallos rojos que hoy no pasan).",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_fuera_de_casa.py",
+   "vigias/test_vigia_no_se_aplica_lo_frenado.py",
+   "vigias/test_vigia_nunca_sin_revisar.py",
+   "vigias/test_vigia_siempre_con_equipo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "guardia_de_guardado.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "test_vigia_equipo_siempre.py",
+   "test_vigia_fuera_de_casa.py",
+   "test_vigia_no_se_aplica_lo_frenado.py",
+   "test_vigia_nunca_sin_revisar.py",
+   "test_vigia_siempre_con_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Propuesta impecable: reproduce exactamente la sustitución y el bloque de cuaderno append solicitado sin tocar nada más."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19058 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) fallo (no es cuota): contesto vacio",
+  "GPT-OSS 20B (Groq) no le cabe (21274 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso gemini3",
+  "vueltas_dadas: 3"
+ ]
+}

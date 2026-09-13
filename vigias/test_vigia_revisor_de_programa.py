@@ -145,3 +145,41 @@ def test_caza_lo_que_se_borra():
         "FRENO, pero no dijo QUE se pierde. Avisar sin nombrar lo que desaparece no sirve: el "
         "nombre es lo unico que deja decidir si el borrado es querido o es un destrozo. "
         "Dijo: %s" % fallos)
+
+
+def test_no_frena_por_rutas_ni_nombres_de_contexto(tmp_path):
+    """Frenada en falso medida el 2026-09-13; la ruta de la herramienta y el nombre del plan
+    frenaban rondas buenas."""
+    r = _revisor()
+    archivo = tmp_path / "vigia_de_prueba.py"
+    archivo.write_text("import pytest\n\n\ndef test_uno():\n    assert True\n", encoding="utf-8")
+    propuesta = {
+        "archivo": str(archivo),
+        "texto_viejo": "import pytest\n",
+        "texto_nuevo": "import pytest\nimport os\n",
+    }
+    tarea = (
+        "en la carpeta C:\\Ingeniero_VUC, segun PLAN_DE_RAIZ_2026-09-13.md, anadir import os; "
+        "hoy falla test_vigia_otra_de_contexto y lo cuida candado_de_contexto")
+    fallos = r.revisar(propuesta, tarea=tarea)
+    assert not any("NO HACE LO QUE SE PIDIO" in str(f) for f in fallos), (
+        "Freno en falso por palabras de contexto que no estan en el archivo; un candado que "
+        "frena lo legitimo ensena a ignorarlos todos. Dijo: %s" % fallos)
+
+
+def test_sigue_cazando_lo_que_esta_en_el_archivo(tmp_path):
+    """Debe quedar verde tras la cura: lo que SI esta en el archivo se sigue cazando."""
+    r = _revisor()
+    archivo = tmp_path / "precios_de_prueba.py"
+    archivo.write_text(
+        "def calcular_precio(x):\n    return x\n\n\ndef otra():\n    return 1\n",
+        encoding="utf-8")
+    propuesta = {
+        "archivo": str(archivo),
+        "texto_viejo": "def otra():\n    return 1\n",
+        "texto_nuevo": "def otra():\n    return 2\n",
+    }
+    fallos = r.revisar(propuesta, tarea="reparar la funcion calcular_precio")
+    assert any("calcular_precio" in str(f) for f in fallos), (
+        "Se pidio tocar una funcion que SI esta en el archivo y el cambio ni la menciona; eso "
+        "hay que seguir cazandolo")

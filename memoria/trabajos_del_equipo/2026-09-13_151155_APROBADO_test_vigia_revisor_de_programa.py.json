@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Faltan las dos pruebas nuevas al final de vigias/test_vigia_revisor_de_programa.py: una que nace roja por frenos en falso con rutas y nombres de contexto, y otra que debe quedar verde cazando lo que si esta en el archivo.",
+  "archivo": "vigias/test_vigia_revisor_de_programa.py",
+  "funcion": "test_caza_lo_que_se_borra (final del archivo)",
+  "texto_viejo": "        \"Ese es el agujero exacto por el que el 2026-09-11 se perdio la puerta del jefe que \"\n        \"coordina, con las 526 vigias en verde.\")\n    assert any(\"gamma\" in str(f) for f in fallos), (\n        \"FRENO, pero no dijo QUE se pierde. Avisar sin nombrar lo que desaparece no sirve: el \"\n        \"nombre es lo unico que deja decidir si el borrado es querido o es un destrozo. \"\n        \"Dijo: %s\" % fallos)",
+  "texto_nuevo": "        \"Ese es el agujero exacto por el que el 2026-09-11 se perdio la puerta del jefe que \"\n        \"coordina, con las 526 vigias en verde.\")\n    assert any(\"gamma\" in str(f) for f in fallos), (\n        \"FRENO, pero no dijo QUE se pierde. Avisar sin nombrar lo que desaparece no sirve: el \"\n        \"nombre es lo unico que deja decidir si el borrado es querido o es un destrozo. \"\n        \"Dijo: %s\" % fallos)\n\n\ndef test_no_frena_por_rutas_ni_nombres_de_contexto(tmp_path):\n    \"\"\"Frenada en falso medida el 2026-09-13; la ruta de la herramienta y el nombre del plan\n    frenaban rondas buenas.\"\"\"\n    r = _revisor()\n    archivo = tmp_path / \"vigia_de_prueba.py\"\n    archivo.write_text(\"import pytest\\n\\n\\ndef test_uno():\\n    assert True\\n\", encoding=\"utf-8\")\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"import pytest\\n\",\n        \"texto_nuevo\": \"import pytest\\nimport os\\n\",\n    }\n    tarea = (\n        \"en la carpeta C:\\\\Ingeniero_VUC, segun PLAN_DE_RAIZ_2026-09-13.md, anadir import os; \"\n        \"hoy falla test_vigia_otra_de_contexto y lo cuida candado_de_contexto\")\n    fallos = r.revisar(propuesta, tarea=tarea)\n    assert not any(\"NO HACE LO QUE SE PIDIO\" in str(f) for f in fallos), (\n        \"Freno en falso por palabras de contexto que no estan en el archivo; un candado que \"\n        \"frena lo legitimo ensena a ignorarlos todos. Dijo: %s\" % fallos)\n\n\ndef test_sigue_cazando_lo_que_esta_en_el_archivo(tmp_path):\n    \"\"\"Debe quedar verde tras la cura: lo que SI esta en el archivo se sigue cazando.\"\"\"\n    r = _revisor()\n    archivo = tmp_path / \"precios_de_prueba.py\"\n    archivo.write_text(\n        \"def calcular_precio(x):\\n    return x\\n\\n\\ndef otra():\\n    return 1\\n\",\n        encoding=\"utf-8\")\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def otra():\\n    return 1\\n\",\n        \"texto_nuevo\": \"def otra():\\n    return 2\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"reparar la funcion calcular_precio\")\n    assert any(\"calcular_precio\" in str(f) for f in fallos), (\n        \"Se pidio tocar una funcion que SI esta en el archivo y el cambio ni la menciona; eso \"\n        \"hay que seguir cazandolo\")",
+  "cambio": "Anadir al final del archivo, tras el ultimo assert de test_caza_lo_que_se_borra, dos renglones en blanco y las dos pruebas nuevas enteras: test_no_frena_por_rutas_ni_nombres_de_contexto(tmp_path) y test_sigue_cazando_lo_que_esta_en_el_archivo(tmp_path). No tocar nada mas.",
+  "codigo": "\n\ndef test_no_frena_por_rutas_ni_nombres_de_contexto(tmp_path):\n    \"\"\"Frenada en falso medida el 2026-09-13; la ruta de la herramienta y el nombre del plan\n    frenaban rondas buenas.\"\"\"\n    r = _revisor()\n    archivo = tmp_path / \"vigia_de_prueba.py\"\n    archivo.write_text(\"import pytest\\n\\n\\ndef test_uno():\\n    assert True\\n\", encoding=\"utf-8\")\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"import pytest\\n\",\n        \"texto_nuevo\": \"import pytest\\nimport os\\n\",\n    }\n    tarea = (\n        \"en la carpeta C:\\\\Ingeniero_VUC, segun PLAN_DE_RAIZ_2026-09-13.md, anadir import os; \"\n        \"hoy falla test_vigia_otra_de_contexto y lo cuida candado_de_contexto\")\n    fallos = r.revisar(propuesta, tarea=tarea)\n    assert not any(\"NO HACE LO QUE SE PIDIO\" in str(f) for f in fallos), (\n        \"Freno en falso por palabras de contexto que no estan en el archivo; un candado que \"\n        \"frena lo legitimo ensena a ignorarlos todos. Dijo: %s\" % fallos)\n\n\ndef test_sigue_cazando_lo_que_esta_en_el_archivo(tmp_path):\n    \"\"\"Debe quedar verde tras la cura: lo que SI esta en el archivo se sigue cazando.\"\"\"\n    r = _revisor()\n    archivo = tmp_path / \"precios_de_prueba.py\"\n    archivo.write_text(\n        \"def calcular_precio(x):\\n    return x\\n\\n\\ndef otra():\\n    return 1\\n\",\n        encoding=\"utf-8\")\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def otra():\\n    return 1\\n\",\n        \"texto_nuevo\": \"def otra():\\n    return 2\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"reparar la funcion calcular_precio\")\n    assert any(\"calcular_precio\" in str(f) for f in fallos), (\n        \"Se pidio tocar una funcion que SI esta en el archivo y el cambio ni la menciona; eso \"\n        \"hay que seguir cazandolo\")",
+  "vigia": "Ejecutar pytest vigias/test_vigia_revisor_de_programa.py: la prueba 1 debe nacer ROJA hoy (freno en falso por rutas y nombres de contexto) y quedar verde tras la cura del revisor; la prueba 2 debe quedar verde ya hoy y seguir verde tras la cura.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "arnes/candado_equipo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Se añaden las dos pruebas solicitadas sin alterar el resto del archivo, cumpliendo los requisitos y sin romper dependencias."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19067 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "La vigia falla con NameError: name 'candado_equipo' is not defined porque el archivo no importa candado_equipo ni guardia_de_guardado arriba.",
+  "archivo": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+  "funcion": "cabecera del archivo (imports, antes del renglon vacio tras 'import pytest')",
+  "texto_viejo": "import pytest\n\n# LO ORDENA JULIO (2026-09-12): \"Ninguna IA, ninguna, puede pasar a trabajar en estos proyectos sin equipo, arnes y vigias. Obligalo, que no le quede opcion.\" Y sobre el guardia: \"que se acuerde de todo\".",
+  "texto_nuevo": "import pytest\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, \"arnes\"))\nimport candado_equipo\nimport guardia_de_guardado\n\n# LO ORDENA JULIO (2026-09-12): \"Ninguna IA, ninguna, puede pasar a trabajar en estos proyectos sin equipo, arnes y vigias. Obligalo, que no le quede opcion.\" Y sobre el guardia: \"que se acuerde de todo\".",
+  "cambio": "Meter los cuatro renglones (AQUI, sys.path.insert, import candado_equipo, import guardia_de_guardado) justo despues de 'import pytest' y antes del renglon vacio, sin tocar nada mas del archivo.",
+  "codigo": "AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, \"arnes\"))\nimport candado_equipo\nimport guardia_de_guardado",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py debe pasar de 8 fallos por NameError a verde (las pruebas que importan candado_equipo y guardia_de_guardado ya no lanzan NameError).",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/guardia_de_guardado.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "guardia_de_guardado.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación añade los imports requeridos sin inventar nada y no rompe nada."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

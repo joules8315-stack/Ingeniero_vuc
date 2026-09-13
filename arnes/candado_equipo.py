@@ -132,6 +132,17 @@ def guardar_veredicto(tarea, archivos, obrero, auditor, veredicto):
          "fallos_del_programa": fallos_del_programa}
     os.makedirs(os.path.dirname(_ruta_veredicto()), exist_ok=True)
     json.dump(d, open(_ruta_veredicto(), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    # EL CUADERNO QUE NO SE PISA (Julio, 2026-09-12: "que se acuerde de todo"). Cada veredicto anade un
+    # renglon junto al archivo de veredicto; el guardia de guardado lo lee para recordar las ultimas 24 h.
+    try:
+        _cuaderno_recientes = os.path.join(os.path.dirname(_ruta_veredicto()), ".veredictos_recientes.jsonl")
+        with open(_cuaderno_recientes, "a", encoding="utf-8") as _fr:
+            _fr.write(json.dumps({"cuando": d["cuando"], "archivos": d["archivos"],
+                                  "veredicto": d["veredicto"],
+                                  "reviso_a_si_mismo": d["reviso_a_si_mismo"]},
+                                 ensure_ascii=False) + "\n")
+    except Exception:
+        pass    # perder un apunte no puede tumbar el trabajo del equipo
     # EL CUADERNO DEL EQUIPO (Julio, 2026-09-02, preguntandolo por tercera vez: "que pasa con el
     # equipo, que no lo veo trabajando?"). Y tenia razon aunque el equipo SI trabajase: el
     # veredicto de arriba se SOBRESCRIBE en cada trabajo, asi que solo sobrevivia el ultimo. De

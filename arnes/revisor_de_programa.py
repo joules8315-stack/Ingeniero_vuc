@@ -202,7 +202,23 @@ def revisar(propuesta, tarea=""):
         limpia = re.sub(r"[\w/\\.]+\.(?:py|md|json|txt|js|html|css|sql|cfg|config)\b", " ", tarea)
         for jerga in ("texto_viejo", "texto_nuevo"):
             limpia = limpia.replace(jerga, " ")
+        # FRENADA EN FALSO CAZADA EL 2026-09-13: la ruta de la carpeta de la herramienta y el nombre del
+        # plan frenaban rondas buenas. Se quitan las rutas de Windows y los nombres de archivo con guiones,
+        # y si el archivo que se cambia EXISTE, solo cuentan las palabras que estan en ese archivo: las demas
+        # son contexto del encargo. Si no existe, se sigue como antes. Lo vigila la vigia del revisor.
+        limpia = re.sub(r"[A-Za-z]:\\[^\s,;]*", " ", limpia)
+        limpia = re.sub(r"[\w/\\.-]+\.(?:py|md|json|txt|js|html|css|sql|cfg|config)\b", " ", limpia)
+        contenido_archivo = None
+        try:
+            ruta_archivo = str(p.get("archivo") or "")
+            if ruta_archivo and os.path.isfile(ruta_archivo):
+                with open(ruta_archivo, encoding="utf-8-sig", errors="replace") as fa:
+                    contenido_archivo = fa.read()
+        except Exception:
+            contenido_archivo = None
         for palabra in set(re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\b", limpia)):
+            if contenido_archivo is not None and palabra not in contenido_archivo:
+                continue
             if palabra not in viejo and palabra not in nuevo:
                 fallos.append("NO HACE LO QUE SE PIDIO: el encargo habla de '%s' y esa palabra "
                               "no aparece ni en el texto viejo ni en el nuevo." % palabra)

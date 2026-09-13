@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Faltan los imports de candado_equipo y guardia_de_guardado arriba del archivo, y dos pruebas los importan dentro de la funcion despues de usarlos en monkeypatch.setattr, lo que los vuelve variables locales.",
+  "archivo": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+  "funcion": "cabecera del archivo (tras 'import pytest') y las funciones test_dos_aprobaciones_seguidas_cubren_las_dos y test_guardar_el_veredicto_lo_apunta_en_el_cuaderno",
+  "texto_viejo": "import pytest\n\n# LO ORDENA JULIO (2026-09-12)",
+  "texto_nuevo": "import pytest\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, \"arnes\"))\nimport candado_equipo\nimport guardia_de_guardado\n\n# LO ORDENA JULIO (2026-09-12)",
+  "cambio": "1) Insertar cuatro renglones (AQUI, sys.path.insert, import candado_equipo, import guardia_de_guardado) justo despues de 'import pytest'. 2) Quitar de test_dos_aprobaciones_seguidas_cubren_las_dos los cinco renglones: '# Simular la importacion de guardia_de_guardado', 'AQUI = ...', 'sys.path.insert(...)', 'import guardia_de_guardado', 'import candado_equipo'. 3) Lo mismo en test_guardar_el_veredicto_lo_apunta_en_el_cuaderno.",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py (las 11 pruebas; tras el cambio ya no debe salir NameError y solo debe quedar un UnboundLocalError en test_lo_aprobado_por_el_equipo_si_se_guarda)",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/guardia_de_guardado.py",
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación añade los imports necesarios y elimina los locales, corrige los errores sin romper nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25515 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (25515 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

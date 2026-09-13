@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la vigia que comprueba que opencode no puede escribir en la herramienta ni salir de su carpeta, ni desde el negocio tocar la herramienta.",
+  "archivo": "vigias/test_vigia_opencode_no_escribe_en_la_herramienta.py",
+  "funcion": "archivo nuevo completo (docstring, import, AQUI, NEGOCIO, herramienta_cerrada, y las tres pruebas test_)",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "import json\nimport os\n\nimport pytest\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nNEGOCIO = r\"C:\\Users\\USER\\dev\\Asesor Marketing\"\n\nREGLAS_TERMINAL = [\n    \"* > *\",\n    \"*>>*\",\n    \"rm *\",\n    \"mv *\",\n    \"cp *\",\n    \"git add*\",\n    \"git commit*\",\n    \"git checkout*\",\n    \"git reset*\",\n]\n\n\ndef herramienta_cerrada(cfg):\n    abierto = []\n    permiso = cfg.get(\"permission\") or {}\n    if permiso.get(\"edit\") != \"deny\":\n        abierto.append(\"se puede escribir archivos (edit no es deny)\")\n    if permiso.get(\"external_directory\") != \"deny\":\n        abierto.append(\"se puede salir de la carpeta (external_directory no es deny)\")\n    bash = permiso.get(\"bash\") or {}\n    if not isinstance(bash, dict):\n        abierto.append(\"la terminal no tiene reglas\")\n        return abierto\n    for regla in REGLAS_TERMINAL:\n        if bash.get(regla) != \"deny\":\n            abierto.append(\"la terminal permite: \" + regla)\n    return abierto\n\n\ndef test_la_herramienta_no_deja_escribir_a_opencode():\n    cfg = json.load(open(os.path.join(AQUI, \"opencode.json\"), encoding=\"utf-8\"))\n    abierto = herramienta_cerrada(cfg)\n    assert not abierto, (\n        \"la puerta trasera esta abierta otra vez: el ayudante podria escribir en la \"\n        \"herramienta sin equipo; Julio lo prohibio. Abierto: \" + str(abierto)\n    )\n\n\ndef test_el_negocio_no_deja_tocar_la_herramienta():\n    ruta = os.path.join(NEGOCIO, \"opencode.json\")\n    if not os.path.exists(ruta):\n        pytest.skip(\"el negocio no esta en esta maquina\")\n    ext = (json.load(open(ruta, encoding=\"utf-8\")).get(\"permission\") or {}).get(\n        \"external_directory\"\n    ) or {}\n    assert isinstance(ext, dict) and ext.get(\"C:\\\\Ingeniero_VUC\\\\*\") == \"deny\", (\n        \"desde el negocio se podria escribir o leer la herramienta\"\n    )\n\n\ndef test_la_vigia_caza_un_candado_aflojado():\n    flojo = {\"permission\": {\"edit\": \"allow\", \"external_directory\": \"ask\", \"bash\": {\"*\": \"allow\"}}}\n    abierto = herramienta_cerrada(flojo)\n    assert any(\"edit\" in a for a in abierto) and any(\"git add*\" in a for a in abierto), (\n        \"la vigia no se entera de un candado aflojado, asi no protege nada\"\n    )",
+  "cambio": "Crear el archivo nuevo vigias/test_vigia_opencode_no_escribe_en_la_herramienta.py con el docstring que explica que protege (fecha 2026-09-13, frase de Julio \"No puede hacerlo, nunca mas\", y que el candado se probo de verdad haciendo que el ayudante intentara escribir), los imports json/os/pytest, las constantes AQUI y NEGOCIO, la funcion auxiliar herramienta_cerrada(cfg) que devuelve la lista de lo que esta ABIERTO, y las tres pruebas test_la_herramienta_no_deja_escribir_a_opencode, test_el_negocio_no_deja_tocar_la_herramienta y test_la_vigia_caza_un_candado_aflojado.",
+  "codigo": "import json\nimport os\n\nimport pytest\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nNEGOCIO = r\"C:\\Users\\USER\\dev\\Asesor Marketing\"\n\nREGLAS_TERMINAL = [\n    \"* > *\",\n    \"*>>*\",\n    \"rm *\",\n    \"mv *\",\n    \"cp *\",\n    \"git add*\",\n    \"git commit*\",\n    \"git checkout*\",\n    \"git reset*\",\n]\n\n\ndef herramienta_cerrada(cfg):\n    abierto = []\n    permiso = cfg.get(\"permission\") or {}\n    if permiso.get(\"edit\") != \"deny\":\n        abierto.append(\"se puede escribir archivos (edit no es deny)\")\n    if permiso.get(\"external_directory\") != \"deny\":\n        abierto.append(\"se puede salir de la carpeta (external_directory no es deny)\")\n    bash = permiso.get(\"bash\") or {}\n    if not isinstance(bash, dict):\n        abierto.append(\"la terminal no tiene reglas\")\n        return abierto\n    for regla in REGLAS_TERMINAL:\n        if bash.get(regla) != \"deny\":\n            abierto.append(\"la terminal permite: \" + regla)\n    return abierto\n\n\ndef test_la_herramienta_no_deja_escribir_a_opencode():\n    cfg = json.load(open(os.path.join(AQUI, \"opencode.json\"), encoding=\"utf-8\"))\n    abierto = herramienta_cerrada(cfg)\n    assert not abierto, (\n        \"la puerta trasera esta abierta otra vez: el ayudante podria escribir en la \"\n        \"herramienta sin equipo; Julio lo prohibio. Abierto: \" + str(abierto)\n    )\n\n\ndef test_el_negocio_no_deja_tocar_la_herramienta():\n    ruta = os.path.join(NEGOCIO, \"opencode.json\")\n    if not os.path.exists(ruta):\n        pytest.skip(\"el negocio no esta en esta maquina\")\n    ext = (json.load(open(ruta, encoding=\"utf-8\")).get(\"permission\") or {}).get(\n        \"external_directory\"\n    ) or {}\n    assert isinstance(ext, dict) and ext.get(\"C:\\\\Ingeniero_VUC\\\\*\") == \"deny\", (\n        \"desde el negocio se podria escribir o leer la herramienta\"\n    )\n\n\ndef test_la_vigia_caza_un_candado_aflojado():\n    flojo = {\"permission\": {\"edit\": \"allow\", \"external_directory\": \"ask\", \"bash\": {\"*\": \"allow\"}}}\n    abierto = herramienta_cerrada(flojo)\n    assert any(\"edit\" in a for a in abierto) and any(\"git add*\" in a for a in abierto), (\n        \"la vigia no se entera de un candado aflojado, asi no protege nada\"\n    )",
+  "vigia": "pytest vigias/test_vigia_opencode_no_escribe_en_la_herramienta.py — las tres pruebas deben pasar; la tercera demuestra que si alguien afloja edit o git add* la vigia se pone roja.",
+  "puede_danar": [
+   "opencode.json de la herramienta",
+   "opencode.json del negocio",
+   "vigias/test_vigia_opencode_no_escribe_en_la_herramienta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, crea la vigía solicitada sin inventar recursos ni dañar vecinos."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

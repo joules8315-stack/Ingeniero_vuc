@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "La vigia falla con NameError porque el archivo no importa candado_equipo ni guardia_de_guardado al principio.",
+  "archivo": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+  "funcion": "cabecera del archivo (imports iniciales)",
+  "texto_viejo": "import json\nimport os\nimport sys\nimport time\nimport pytest",
+  "texto_nuevo": "import json\nimport os\nimport sys\nimport time\nimport pytest\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, \"arnes\"))\nimport candado_equipo\nimport guardia_de_guardado",
+  "cambio": "Anadir tras los cinco imports iniciales las cuatro lineas que calculan AQUI, insertan la carpeta arnes en sys.path e importan candado_equipo y guardia_de_guardado.",
+  "codigo": "AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, \"arnes\"))\nimport candado_equipo\nimport guardia_de_guardado",
+  "vigia": "Ejecutar vigias/test_vigia_el_guardia_se_acuerda_y_frena.py y comprobar que las 8 pruebas que fallaban con NameError: name 'candado_equipo' is not defined ya no fallan por ese motivo.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/guardia_de_guardado.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "guardia_de_guardado.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación añade los imports faltantes de candado_equipo y guardia_de_guardado, corrige el NameError y no introduce cambios innecesarios."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19085 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

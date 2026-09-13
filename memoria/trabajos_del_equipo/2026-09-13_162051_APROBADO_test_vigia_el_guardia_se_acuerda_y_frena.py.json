@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Dentro de test_lo_aprobado_por_el_equipo_si_se_guarda hay un 'import candado_equipo' despues de usar candado_equipo, lo que lo vuelve variable local y provoca UnboundLocalError; el import ya esta arriba del archivo.",
+  "archivo": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+  "funcion": "test_lo_aprobado_por_el_equipo_si_se_guarda",
+  "texto_viejo": "    import candado_equipo\n\n    # Simular el guardado de un veredicto aprobado",
+  "texto_nuevo": "\n    # Simular el guardado de un veredicto aprobado",
+  "cambio": "Quitar el renglon 'import candado_equipo' que esta dentro de la funcion, dejando solo la linea en blanco y el comentario.",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py::test_lo_aprobado_por_el_equipo_si_se_guarda debe pasar sin UnboundLocalError",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/guardia_de_guardado.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "guardia_de_guardado.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio elimina la importación local que causa UnboundLocalError, solucionando el fallo sin afectar a otros módulos."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

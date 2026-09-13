@@ -112,6 +112,28 @@ aprobado; mientras no existan, lo vigila la dirección y se dice que falta):
 - una vigía que comprueba que una orden de reparación sin aprobación se frena, y que la aprobación
   no la puede escribir una IA.
 
+## LA PUERTA TRASERA CERRADA CON CANDADO DE OPENCODE (2026-09-13)
+
+> Julio: *"Repara la puerta trasera que uso bp, con la cual escribio directamente en una carpeta. No puede
+> hacerlo, nunca más, ya esto lo he dicho y lo habias reparado, resulta que no esta hecho ya que sucedio el fallo."*
+
+**Por qué no estaba hecho:** la ley 10 existía solo ESCRITA. Los candados que frenan son hooks de Claude Code y
+el ayudante trabaja con opencode, que nunca pasa por ellos. El 2026-09-13 a las 15:08 escribió un contrato, un
+candado y una vigía dentro de la herramienta y cambió `cerebro/protocolo.py`.
+
+**El candado (en el propio opencode, comprobado haciéndole intentar escribir):**
+- `C:\Ingeniero_VUC\opencode.json`: `edit: deny` (la herramienta de escribir archivos desaparece), `external_directory: deny`,
+  y en la terminal se prohíben las redirecciones a archivo, borrar, copiar, mover, crear carpetas y `git add/commit/checkout/reset/restore/stash/rm/mv`.
+  Leer, correr pruebas y mandar recados por el canal siguen permitidos.
+- `C:\Users\USER\dev\Asesor Marketing\opencode.json` y la configuración global de opencode: `external_directory` a
+  `C:\Ingeniero_VUC` → `deny` (ni escribir ni leer la herramienta desde fuera, aunque alguien diga "sí").
+- **Probado el 2026-09-13:** dentro de la herramienta, `echo > archivo` y `git add` quedan bloqueados y la herramienta de
+  escribir no aparece; desde el negocio, escribir y leer en la herramienta quedan bloqueados. No se creó ningún archivo.
+
+**Límite honesto:** dentro de la herramienta, un programa de Python escrito a propósito podría escribir igual. Para eso
+está la segunda barrera: el guardia del guardado no deja guardar nada sin revisión del equipo. Una sesión de opencode
+abierta ANTES del candado sigue con la configuración vieja hasta que se cierra y se vuelve a abrir.
+
 ## EL CANAL SE VIGILA SOLO: CADA 5 MINUTOS, UNA HORA (2026-09-13)
 
 > Julio: *"Verifica y responde por canal, siempre que envies mensaje, revisa cada 5 minutos, hasta por

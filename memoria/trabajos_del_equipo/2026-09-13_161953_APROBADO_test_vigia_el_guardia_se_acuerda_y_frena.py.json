@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Dentro de test_guardar_el_veredicto_lo_apunta_en_el_cuaderno hay un 'import candado_equipo' despues de usar candado_equipo, lo que lo vuelve variable local y produce UnboundLocalError; el import ya esta arriba del archivo.",
+  "archivo": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+  "funcion": "test_guardar_el_veredicto_lo_apunta_en_el_cuaderno",
+  "texto_viejo": "    import guardia_de_guardado\n    import candado_equipo\n\n    candado_equipo.guardar_veredicto(\"tarea\", [\"x_de_prueba.py\"], \"groq\", \"deepseek\", \"APROBADO\")",
+  "texto_nuevo": "    import guardia_de_guardado\n\n    candado_equipo.guardar_veredicto(\"tarea\", [\"x_de_prueba.py\"], \"groq\", \"deepseek\", \"APROBADO\")",
+  "cambio": "Quitar el renglon 'import candado_equipo' que esta dentro de la funcion test_guardar_el_veredicto_lo_apunta_en_el_cuaderno, dejando solo el import de guardia_de_guardado y la llamada a candado_equipo.guardar_veredicto.",
+  "codigo": "    import guardia_de_guardado\n\n    candado_equipo.guardar_veredicto(\"tarea\", [\"x_de_prueba.py\"], \"groq\", \"deepseek\", \"APROBADO\")",
+  "vigia": "Ejecutar vigias/test_vigia_el_guardia_se_acuerda_y_frena.py y comprobar que test_guardar_el_veredicto_lo_apunta_en_el_cuaderno pasa sin UnboundLocalError y que el cuaderno .veredictos_recientes.jsonl tiene un renglon con veredicto APROBADO y x_de_prueba.py en archivos.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/guardia_de_guardado.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "guardia_de_guardado.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio elimina la importación local que causaba UnboundLocalError, sin inventar nada ni romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19068 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

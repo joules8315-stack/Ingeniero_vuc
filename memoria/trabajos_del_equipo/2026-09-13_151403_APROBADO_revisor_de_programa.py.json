@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "La regla 4 'NO HACE LO QUE SE PIDIO' frena en falso porque cuenta cualquier palabra con guion bajo del encargo, incluidas rutas de Windows y nombres de planes con guiones que ningun cambio lleva.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        for palabra in set(re.findall(r\"\\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\\b\", limpia)):\n            if palabra not in viejo and palabra not in nuevo:\n                fallos.append(\"NO HACE LO QUE SE PIDIO: el encargo habla de '%s' y esa palabra \"\n                              \"no aparece ni en el texto viejo ni en el nuevo.\" % palabra)",
+  "texto_nuevo": "        # FRENADA EN FALSO CAZADA EL 2026-09-13: la ruta de la carpeta de la herramienta y el nombre del\n        # plan frenaban rondas buenas. Se quitan las rutas de Windows y los nombres de archivo con guiones,\n        # y si el archivo que se cambia EXISTE, solo cuentan las palabras que estan en ese archivo: las demas\n        # son contexto del encargo. Si no existe, se sigue como antes. Lo vigila la vigia del revisor.\n        limpia = re.sub(r\"[A-Za-z]:\\\\[^\\s,;]*\", \" \", limpia)\n        limpia = re.sub(r\"[\\w/\\\\.-]+\\.(?:py|md|json|txt|js|html|css|sql|cfg|config)\\b\", \" \", limpia)\n        contenido_archivo = None\n        try:\n            ruta_archivo = str(p.get(\"archivo\") or \"\")\n            if ruta_archivo and os.path.isfile(ruta_archivo):\n                with open(ruta_archivo, encoding=\"utf-8-sig\", errors=\"replace\") as fa:\n                    contenido_archivo = fa.read()\n        except Exception:\n            contenido_archivo = None\n        for palabra in set(re.findall(r\"\\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\\b\", limpia)):\n            if contenido_archivo is not None and palabra not in contenido_archivo:\n                continue\n            if palabra not in viejo and palabra not in nuevo:\n                fallos.append(\"NO HACE LO QUE SE PIDIO: el encargo habla de '%s' y esa palabra \"\n                              \"no aparece ni en el texto viejo ni en el nuevo.\" % palabra)",
+  "cambio": "Sustituir el bucle de la regla 4 por la version que limpia rutas de Windows y nombres de archivo con guiones, y que si el archivo de la propuesta existe solo cuenta las palabras que aparecen en ese archivo.",
+  "codigo": "        # FRENADA EN FALSO CAZADA EL 2026-09-13: la ruta de la carpeta de la herramienta y el nombre del\n        # plan frenaban rondas buenas. Se quitan las rutas de Windows y los nombres de archivo con guiones,\n        # y si el archivo que se cambia EXISTE, solo cuentan las palabras que estan en ese archivo: las demas\n        # son contexto del encargo. Si no existe, se sigue como antes. Lo vigila la vigia del revisor.\n        limpia = re.sub(r\"[A-Za-z]:\\\\[^\\s,;]*\", \" \", limpia)\n        limpia = re.sub(r\"[\\w/\\\\.-]+\\.(?:py|md|json|txt|js|html|css|sql|cfg|config)\\b\", \" \", limpia)\n        contenido_archivo = None\n        try:\n            ruta_archivo = str(p.get(\"archivo\") or \"\")\n            if ruta_archivo and os.path.isfile(ruta_archivo):\n                with open(ruta_archivo, encoding=\"utf-8-sig\", errors=\"replace\") as fa:\n                    contenido_archivo = fa.read()\n        except Exception:\n            contenido_archivo = None\n        for palabra in set(re.findall(r\"\\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\\b\", limpia)):\n            if contenido_archivo is not None and palabra not in contenido_archivo:\n                continue\n            if palabra not in viejo and palabra not in nuevo:\n                fallos.append(\"NO HACE LO QUE SE PIDIO: el encargo habla de '%s' y esa palabra \"\n                              \"no aparece ni en el texto viejo ni en el nuevo.\" % palabra)",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py: las 9 pruebas verdes, incluida la nueva de contexto (freno en falso por la ruta de la carpeta y el nombre del plan), la que exige seguir cazando la funcion que SI esta en el archivo y la antigua que usa un archivo que no existe.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Revisión aprobada: corrige el falso freno de la regla 4 sin romper pruebas ni introducir código inexistente."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}
