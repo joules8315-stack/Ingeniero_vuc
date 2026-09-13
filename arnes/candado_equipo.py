@@ -293,42 +293,6 @@ def guardar_trabajo_pagado(res):
     return None
 
 
-def guardar_trabajo_pagado(res):
-  """EL TRABAJO PAGADO NO SE PISA (Julio, 2026-09-13: "Repara primero la herramienta que hace desechar trabajo pago"). Antes el comando equipo guardaba siempre en un unico archivo y la ronda siguiente lo borraba: asi se perdio el 2026-09-12 la memoria de veredictos de 24 h ya aprobada. Ahora ademas se archiva cada ronda con su propio nombre. Lo vigila vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py."""
-  try:
-    base = os.environ.get("INGENIERO_TRABAJOS_TEST") or os.path.join(AQUI, "memoria")
-    os.makedirs(base, exist_ok=True)
-    with open(os.path.join(base, "ULTIMO_TRABAJO_DEL_EQUIPO.json"), "w", encoding="utf-8") as f:
-      json.dump(res, f, ensure_ascii=False, indent=1)
-    carpeta = os.path.join(base, "trabajos_del_equipo")
-    os.makedirs(carpeta, exist_ok=True)
-    auditoria = res.get("auditoria") if isinstance(res, dict) else None
-    veredicto = "SIN_VEREDICTO"
-    if isinstance(auditoria, dict) and auditoria.get("veredicto"):
-      veredicto = str(auditoria["veredicto"]).upper()
-    veredicto = "".join(c for c in veredicto if c.isalnum() or c == "_") or "SIN_VEREDICTO"
-    propuesta = res.get("propuesta") if isinstance(res, dict) else None
-    nombre_archivo = "sin_archivo"
-    if isinstance(propuesta, dict):
-      archivo = propuesta.get("archivo")
-      if not archivo and isinstance(propuesta.get("archivos"), list) and propuesta["archivos"]:
-        archivo = propuesta["archivos"][0]
-      if archivo:
-        nombre_archivo = os.path.basename(str(archivo))
-    nombre_archivo = "".join(c for c in nombre_archivo if c.isalnum() or c in "._-") or "sin_archivo"
-    sello = time.strftime("%Y-%m-%d_%H%M%S")
-    ruta = os.path.join(carpeta, sello + "_" + veredicto + "_" + nombre_archivo + ".json")
-    n = 2
-    while os.path.exists(ruta):
-      ruta = os.path.join(carpeta, sello + "_" + veredicto + "_" + nombre_archivo + "_" + str(n) + ".json")
-      n += 1
-    with open(ruta, "w", encoding="utf-8") as f:
-      json.dump(res, f, ensure_ascii=False, indent=1)
-    return ruta
-  except Exception:
-    return None
-
-
 def veredicto_para_aplicar(res, guardado):
     """EL VEREDICTO QUE MANDA (Julio, 2026-09-13).
 
