@@ -53,6 +53,48 @@ Si al buscar se encuentra la respuesta, **se actua con ella**, no se pide confir
 decidido. Una decision escrita de Julio es una decision, no un borrador. Volver a consultarla es
 otra forma de hacerle repetir.
 
+## LOS PERMISOS SE BUSCAN ANTES DE PEDIRSE (Julio, 2026-09-12)
+
+> "No tanto que no pida permisos: **debe primero buscar en los archivos si eso es permitido**,
+> porque no hacemos nada que este pidiendo permisos que no estan autorizados. **Lo mismo para ti.**
+> Ya sobre esto hemos legislado; ahora **haz que el ayudante lo cumpla siempre**."
+
+**El caso que lo origina, y es instructivo porque salio medio bien:** el ayudante buscó en los
+archivos antes de pedir permiso, citó el contrato que manda y el encargo vigente, y **aun asi
+pidio permiso** para mandar un reporte que el mismo acababa de demostrar que estaba permitido.
+
+Hizo la primera mitad y le falto la segunda. **Buscar sirve para DECIDIR, no para acompanar la
+pregunta.**
+
+### Los cuatro pasos, en orden
+
+1. **Se busca** en los contratos, los planes y lo que Julio ya dijo.
+2. **Si dice que si** → se hace. **No se pregunta.** Preguntar por algo ya autorizado le hace
+   perder el tiempo igual que preguntarle lo que ya contesto.
+3. **Si dice que no** → no se hace, y se dice **que ley lo prohibe**.
+4. **Solo si no aparece en ninguno** → se pregunta **a la direccion**, diciendo donde se busco.
+   Nunca a Julio ([[CONTRATO_A_JULIO_NO_SE_LE_PIDE_FIRMAR_LO_QUE_NO_PUEDE_JUZGAR]]).
+
+### Lo que YA esta permitido y no se vuelve a preguntar nunca
+
+Esta lista es corta y cerrada a proposito, para que se lea entera de un vistazo y nadie tenga que
+recordarla: todo lo de aqui es **medir**, y medir no toca nada ni puede romper nada.
+
+- leer cualquier archivo de los dos proyectos,
+- correr las suites de pruebas,
+- escribir en la carpeta temporal,
+- mandar lo que sea por el canal,
+- usar cualquier contador o medida que ya exista.
+
+### Lo que sigue necesitando el si de la direccion
+
+- tocar cualquier archivo de los proyectos,
+- borrar cualquier cosa,
+- cambiar cualquier configuracion.
+
+Y se pide **diciendo que archivo, que cambia y a quien puede danar**. Sin esas tres cosas, no es
+una peticion: es un cheque en blanco.
+
 ## COMO SE COMPRUEBA QUE SE CUMPLE, SIN QUE NADIE SE ACUERDE
 
 NO con un contador que haya que subir a mano: asi murio el contador de repeticiones de Julio, y

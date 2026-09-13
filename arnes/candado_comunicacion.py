@@ -103,6 +103,25 @@ def mensajes_pendientes(quien):
             continue
         if m.get("respondido"):
             continue
+        # UN RECADO CONTESTADO YA NO ESTA PENDIENTE, AUNQUE NADIE LO HAYA MARCADO.
+        #
+        # FALLO CAZADO EL 2026-09-12: la marca "respondido" NO LA PONIA NADIE NUNCA. Ni el canal
+        # al enviar, ni ninguna pieza. Asi que un recado se quedaba pendiente PARA SIEMPRE, y el
+        # cierre se bloqueaba una y otra vez aunque ya se hubiera contestado tres veces. Julio lo
+        # sufrio en directo: "otra vez marcando el puto fallo, REPARALO".
+        #
+        # Y PEOR: un recado firmado como desconocido no tenia a quien contestarle, asi que era
+        # imposible de cerrar por definicion. Una trampa, no un guardian.
+        #
+        # NO SE ARREGLA CON UNA MARCA QUE ALGUIEN TENGA QUE PONER: asi murio el contador de
+        # repeticiones de Julio. Se DEDUCE de lo que ya quedo escrito solo: si esta IA le escribio
+        # por el canal a quien mando el recado DESPUES de recibirlo, esta contestado. Y si el
+        # recado no trae firma, vale haberle escrito al companero de ahora, que es el unico a
+        # quien se puede contestar.
+        _de = str(m.get("de", "") or "").strip()
+        _a_quien = _de if _de and _de.lower() not in ("?", "desconocido") else _companero_de_ahora()
+        if _a_quien and _a_quien != quien and _escribio_a(quien, _a_quien):
+            continue
         out.append(m)
     return out
 
