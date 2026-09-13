@@ -74,6 +74,56 @@ def _bandeja():
     return os.environ.get("INGENIERO_BUZON_BANDEJA", "").strip() or BANDEJA
 
 
+def _ya_se_le_contesto(recado):
+    """Verdadero si a quien mando ese recado ya se le contesto DESPUES de recibirlo.
+
+    POR QUE EXISTE: la marca de recado leido NO LA PONIA NADIE NUNCA, ni el canal al enviar ni
+    ninguna pieza. Asi que un recado se quedaba pendiente PARA SIEMPRE y bloqueaba el trabajo una
+    y otra vez aunque ya se hubiera contestado tres veces. Julio lo sufrio en directo el
+    2026-09-12, y uno firmado como desconocido era imposible de cerrar por definicion: eso no es
+    un guardian, es una trampa.
+
+    NO SE ARREGLA CON UNA MARCA QUE ALGUIEN TENGA QUE PONER, ni con una variable de entorno que
+    nadie pone: asi murio el contador de repeticiones, y asi este mismo candado llego a bloquear
+    a Claude ensenandole sus propios mensajes. Se DEDUCE de lo que ya quedo escrito solo, mirando
+    la propia bandeja.
+
+    Las fechas se comparan como TEXTO: con la forma AAAA-MM-DD HH:MM el orden alfabetico y el del
+    tiempo son el mismo, asi que no hace falta convertir nada.
+    """
+    # 1. Remitente del recado
+    remitente = recado.get("de", "").strip().lower()
+    if not remitente or remitente in ("?", "desconocido"):
+        remitente = _companero_activo()
+        if not remitente:
+            return True  # no hay a quien exigir respuesta
+    # 2. Quien corre ahora
+    yo = _quien().strip().lower()
+    if not yo:
+        return True  # no se puede exigir respuesta
+    # 3. Nadie tiene que contestarse a si mismo
+    if remitente == yo:
+        return True
+    # 4. Buscar en la bandeja un recado mas nuevo que cumpla las condiciones
+    try:
+        bandeja = _bandeja()
+        for ruta in glob.glob(os.path.join(bandeja, "*.json")):
+            try:
+                with open(ruta, "r", encoding="utf-8") as f:
+                    otro = json.load(f)
+            except Exception:
+                continue
+            if (
+                otro.get("de", "").strip().lower() == yo and
+                otro.get("para", "").strip().lower() == remitente and
+                otro.get("cuando", "") >= recado.get("cuando", "")
+            ):
+                return True
+    except Exception:
+        return True  # ante la duda se deja pasar: un candado que atasca acaba apagado
+    return False
+
+
 def mensajes_pendientes():
     """Mensajes PARa el agente activo (o para todos) SIN leer, que vienen de OTRO agente.
 
@@ -93,6 +143,21 @@ def mensajes_pendientes():
             except Exception:
                 continue
             if m.get("leido"):
+                continue
+            # UN RECADO CONTESTADO YA NO ESTA PENDIENTE, AUNQUE NADIE LO HAYA MARCADO.
+            #
+            # FALLO CAZADO EL 2026-09-12, el mismo que tenia el candado de comunicacion: la marca
+            # de leido NO LA PONIA NADIE NUNCA. Ni el canal al enviar, ni ninguna pieza. Asi que
+            # un recado se quedaba pendiente PARA SIEMPRE y bloqueaba el trabajo una y otra vez
+            # aunque ya se hubiera contestado tres veces. Julio lo sufrio en directo.
+            #
+            # NO SE ARREGLA CON UNA MARCA QUE ALGUIEN TENGA QUE PONER, ni con una variable de
+            # entorno que nadie pone: asi murio el contador de repeticiones y asi este mismo
+            # candado llego a bloquear a Claude ensenandole sus propios mensajes. Se DEDUCE de lo
+            # que ya quedo escrito solo, mirando el propio canal: si se le escribio a quien mando
+            # el recado DESPUES de recibirlo, esta contestado. Y ante la duda, se deja pasar: un
+            # candado que atasca acaba apagado, y eso protege menos que no tenerlo.
+            if _ya_se_le_contesto(m):
                 continue
             todos.append(m)
     # deducir si todo vino de un mismo emisor (para el caso 'sin identidad')
