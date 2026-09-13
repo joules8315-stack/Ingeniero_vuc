@@ -60,6 +60,19 @@ GUARDADO: <el commit, o SIN CAMBIOS>
 `NO_ENCONTRADO`. **Inventar sale más caro que no saber**: un culpable inventado hace que se repare
 lo que no estaba roto.
 
+## 9 · NADA FUERA DE SU CARPETA: NI ESCRIBIR, NI LEER, NI EL CANAL (2026-09-13)
+
+**Medido esa madrugada, tres órdenes seguidas:** el programa del ayudante **corta la tarea en seco**
+en cuanto una herramienta pide tocar una carpeta que no es la suya (`external_directory ...
+auto-rejecting`). Se murieron así: crear una carpeta temporal, leer `arnes/canal.py` de la
+herramienta desde el negocio, y leer los registros de Claude. **No avisa: la tarea termina "bien"
+y sin informe.**
+
+- La orden **solo nombra rutas dentro de la carpeta desde donde se lanza.**
+- **El informe va en su respuesta final**, no en un archivo ni por el canal. La dirección recoge la
+  salida entera del lanzamiento.
+- Si un dato vive en otra carpeta, **es otra orden, lanzada desde esa carpeta** (ley 5).
+
 ## 8 · NO SE USA LA FORMA ANTIGUA DE MANDAR LA SALIDA A LA NADA
 
 Crea un archivo con nombre reservado que llegó a tumbar el mapa entero de la casa.
