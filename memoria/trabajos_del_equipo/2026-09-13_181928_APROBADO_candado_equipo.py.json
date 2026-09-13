@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "guardar_trabajo_pagado esta definida dos veces en arnes/candado_equipo.py (renglones 260 y 296) y hay que dejar una sola con la misma logica y comportamiento.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "guardar_trabajo_pagado",
+  "texto_viejo": "def guardar_trabajo_pagado(res):\n  \"\"\"EL TRABAJO PAGADO NO SE PISA (Julio, 2026-09-13: \"Repara primero la herramienta que hace desechar trabajo pago\"). Antes el comando equipo guardaba siempre en un unico archivo y la ronda siguiente lo borraba: asi se perdio el 2026-09-12 la memoria de veredictos de 24 h ya aprobada. Ahora ademas se archiva cada ronda con su propio nombre. Lo vigila vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py.\"\"\"\n  try:\n    base = os.environ.get(\"INGENIERO_TRABAJOS_TEST\") or os.path.join(AQUI, \"memoria\")\n    os.makedirs(base, exist_ok=True)\n    with open(os.path.join(base, \"ULTIMO_TRABAJO_DEL_EQUIPO.json\"), \"w\", encoding=\"utf-8\") as f:\n      json.dump(res, f, ensure_ascii=False, indent=1)\n    carpeta = os.path.join(base, \"trabajos_del_equipo\")\n    os.makedirs(carpeta, exist_ok=True)\n    auditoria = res.get(\"auditoria\") if isinstance(res, dict) else None\n    veredicto = \"SIN_VEREDICTO\"\n    if isinstance(auditoria, dict) and auditoria.get(\"veredicto\"):\n      veredicto = str(auditoria[\"veredicto\"]).upper()\n    veredicto = \"\".join(c for c in veredicto if c.isalnum() or c == \"_\") or \"SIN_VEREDICTO\"\n    propuesta = res.get(\"propuesta\") if isinstance(res, dict) else None\n    nombre_archivo = \"sin_archivo\"\n    if isinstance(propuesta, dict):\n      archivo = propuesta.get(\"archivo\")\n      if not archivo and isinstance(propuesta.get(\"archivos\"), list) and propuesta[\"archivos\"]:\n        archivo = propuesta[\"archivos\"][0]\n      if archivo:\n        nombre_archivo = os.path.basename(str(archivo))\n    nombre_archivo = \"\".join(c for c in nombre_archivo if c.isalnum() or c in \"._-\") or \"sin_archivo\"\n    sello = time.strftime(\"%Y-%m-%d_%H%M%S\")\n    ruta = os.path.join(carpeta, sello + \"_\" + veredicto + \"_\" + nombre_archivo + \".json\")\n    n = 2\n    while os.path.exists(ruta):\n      ruta = os.path.join(carpeta, sello + \"_\" + veredicto + \"_\" + nombre_archivo + \"_\" + str(n) + \".json\")\n      n += 1\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n      json.dump(res, f, ensure_ascii=False, indent=1)\n    return ruta\n  except Exception:\n    return None",
+  "texto_nuevo": "def guardar_trabajo_pagado(res):\n  \"\"\"EL TRABAJO PAGADO NO SE PISA (Julio, 2026-09-13: \"Repara primero la herramienta que hace desechar trabajo pago\"). Antes el comando equipo guardaba siempre en un unico archivo y la ronda siguiente lo borraba: asi se perdio el 2026-09-12 la memoria de veredictos de 24 h ya aprobada. Ahora ademas se archiva cada ronda con su propio nombre. Lo vigila vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py.\"\"\"\n  try:\n    base = os.environ.get(\"INGENIERO_TRABAJOS_TEST\") or os.path.join(AQUI, \"memoria\")\n    os.makedirs(base, exist_ok=True)\n    with open(os.path.join(base, \"ULTIMO_TRABAJO_DEL_EQUIPO.json\"), \"w\", encoding=\"utf-8\") as f:\n      json.dump(res, f, ensure_ascii=False, indent=1)\n    carpeta = os.path.join(base, \"trabajos_del_equipo\")\n    os.makedirs(carpeta, exist_ok=True)\n    auditoria = res.get(\"auditoria\") if isinstance(res, dict) else None\n    veredicto = \"SIN_VEREDICTO\"\n    if isinstance(auditoria, dict) and auditoria.get(\"veredicto\"):\n      veredicto = str(auditoria[\"veredicto\"]).upper()\n    veredicto = \"\".join(c for c in veredicto if c.isalnum() or c == \"_\") or \"SIN_VEREDICTO\"\n    propuesta = res.get(\"propuesta\") if isinstance(res, dict) else None\n    nombre_archivo = \"sin_archivo\"\n    if isinstance(propuesta, dict):\n      archivo = propuesta.get(\"archivo\")\n      if not archivo and isinstance(propuesta.get(\"archivos\"), list) and propuesta[\"archivos\"]:\n        archivo = propuesta[\"archivos\"][0]\n      if archivo:\n        nombre_archivo = os.path.basename(str(archivo))\n    nombre_archivo = \"\".join(c for c in nombre_archivo if c.isalnum() or c in \"._-\") or \"sin_archivo\"\n    sello = time.strftime(\"%Y-%m-%d_%H%M%S\")\n    ruta = os.path.join(carpeta, sello + \"_\" + veredicto + \"_\" + nombre_archivo + \".json\")\n    n = 2\n    while os.path.exists(ruta):\n      ruta = os.path.join(carpeta, sello + \"_\" + veredicto + \"_\" + nombre_archivo + \"_\" + str(n) + \".json\")\n      n += 1\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n      json.dump(res, f, ensure_ascii=False, indent=1)\n    return ruta\n  except Exception:\n    return None",
+  "cambio": "Dejar UNA sola definicion de guardar_trabajo_pagado: conservar la primera (renglon 260) tal cual y BORRAR por completo la segunda definicion duplicada (renglon 296) con su mismo cuerpo, para que no quede ninguna copia. No se cambia la logica ni el comportamiento.",
+  "codigo": "def guardar_trabajo_pagado(res):\n  \"\"\"EL TRABAJO PAGADO NO SE PISA (Julio, 2026-09-13: \"Repara primero la herramienta que hace desechar trabajo pago\"). Antes el comando equipo guardaba siempre en un unico archivo y la ronda siguiente lo borraba: asi se perdio el 2026-09-12 la memoria de veredictos de 24 h ya aprobada. Ahora ademas se archiva cada ronda con su propio nombre. Lo vigila vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py.\"\"\"\n  try:\n    base = os.environ.get(\"INGENIERO_TRABAJOS_TEST\") or os.path.join(AQUI, \"memoria\")\n    os.makedirs(base, exist_ok=True)\n    with open(os.path.join(base, \"ULTIMO_TRABAJO_DEL_EQUIPO.json\"), \"w\", encoding=\"utf-8\") as f:\n      json.dump(res, f, ensure_ascii=False, indent=1)\n    carpeta = os.path.join(base, \"trabajos_del_equipo\")\n    os.makedirs(carpeta, exist_ok=True)\n    auditoria = res.get(\"auditoria\") if isinstance(res, dict) else None\n    veredicto = \"SIN_VEREDICTO\"\n    if isinstance(auditoria, dict) and auditoria.get(\"veredicto\"):\n      veredicto = str(auditoria[\"veredicto\"]).upper()\n    veredicto = \"\".join(c for c in veredicto if c.isalnum() or c == \"_\") or \"SIN_VEREDICTO\"\n    propuesta = res.get(\"propuesta\") if isinstance(res, dict) else None\n    nombre_archivo = \"sin_archivo\"\n    if isinstance(propuesta, dict):\n      archivo = propuesta.get(\"archivo\")\n      if not archivo and isinstance(propuesta.get(\"archivos\"), list) and propuesta[\"archivos\"]:\n        archivo = propuesta[\"archivos\"][0]\n      if archivo:\n        nombre_archivo = os.path.basename(str(archivo))\n    nombre_archivo = \"\".join(c for c in nombre_archivo if c.isalnum() or c in \"._-\") or \"sin_archivo\"\n    sello = time.strftime(\"%Y-%m-%d_%H%M%S\")\n    ruta = os.path.join(carpeta, sello + \"_\" + veredicto + \"_\" + nombre_archivo + \".json\")\n    n = 2\n    while os.path.exists(ruta):\n      ruta = os.path.join(carpeta, sello + \"_\" + veredicto + \"_\" + nombre_archivo + \"_\" + str(n) + \".json\")\n      n += 1\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n      json.dump(res, f, ensure_ascii=False, indent=1)\n    return ruta\n  except Exception:\n    return None",
+  "vigia": "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py debe comprobar que guardar_trabajo_pagado aparece UNA sola vez en arnes/candado_equipo.py y que sigue guardando ULTIMO_TRABAJO_DEL_EQUIPO.json y archivando cada ronda en trabajos_del_equipo.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "ULTIMO_TRABAJO_DEL_EQUIPO.js",
+   "autorizacion.py",
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion elimina la definicion duplicada de la funcion guardar_trabajo_pagado en arnes/candado_equipo.py, cumpliendo con el diagnostico sin introducir errores ni inventar codigo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19416 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso groq20b",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 3"
+ ]
+}

@@ -99,6 +99,29 @@ ESCRIBE y nadie comprueba despues que el llamador exista de verdad en el codigo.
    2026-09-13: en 7 días, 46 de 96 rondas aprobadas no llegaron al disco. Por eso **se mide siempre** cuántas rondas
    aprobadas llegan al disco (punto E del plan de raíz): lo que no se mide vuelve sin que nadie lo vea.
 
+### Regla 8 — EL CÓDIGO NUEVO PASA POR LAS TRES IA DE PAGO (Julio, 2026-09-13)
+
+> *"Tengo 3 ia pagas, que cuando sea crear codigo nuevo pase la decisión por las 3 pagas, tu piensas, deepseek
+> construye, opencode revisa. y un programa copia y vigila. Yo apruebo el plan y solo lo que se diga alli, se
+> ejecuta, nada más. prohibido tocar otras cosas. Esto ultimo ya esta legislado, falta que se cumpla."*
+> Aprobado el detalle: *"si, aprobado, haz como dices."*
+
+1. **Claude piensa** y escribe el plan (no escribe código).
+2. **Julio aprueba, modifica o desaprueba** el plan.
+3. **DeepSeek construye.**
+4. **opencode (Big Pickle) revisa**, y para aprobar tiene que correr las pruebas: una opinión no basta.
+5. **Un programa aplica y vigila**; las vigías comprueban que no se rompe nada.
+6. **Solo se toca lo que dice el plan.** Para que se cumpla y no dependa de acordarse: el plan aprobado lleva la lista
+   exacta de lo que se puede tocar, y un programa frena todo lo demás.
+
+**SOLO PARA CÓDIGO NUEVO** (Julio: *"que quede claro, eso solo para codigo nuevo, nada mas"*). Las reparaciones siguen
+su camino de siempre: vigía roja primero, el equipo o el ayudante reparan, la dirección comprueba con la prueba real.
+
+**ESTADO:** aprobado por Julio. Faltan las tres piezas que lo hacen cumplir (Big Pickle como revisor del equipo, plan con
+lista de archivos, freno de lo que no esté en la lista): su plan detallado se le presenta a Julio ANTES de construir.
+Del plan de Big Pickle de los 3 bloqueos quedan aprobados: la prueba del camino completo de crear código (en carpeta
+temporal de la prueba, NUNCA una pieza de juguete dentro del negocio) y dejar una sola copia de la función que archiva el trabajo.
+
 **Por qué volvía aunque "ya estaba reparado":** cada vez se reparó una causa suelta con su vigía, y nadie medía el
 resultado final. Los frenos del revisor se ignoraban (y así no se veían sus frenos en falso) y el trabajo aprobado
 se pisaba sin dejar rastro. Causas cerradas el 2026-09-13: la marca NO_ENCONTRADO, el falso humo al añadir, la marca BOM
