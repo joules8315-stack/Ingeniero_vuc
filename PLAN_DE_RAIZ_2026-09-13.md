@@ -1,7 +1,8 @@
 # PLAN DE RAÍZ — DMM Y HERRAMIENTA — 2026-09-13
 
-**Estado: ESPERANDO LA APROBACIÓN DE JULIO.** Sin su aprobación no se ejecuta ninguna reparación
-de este plan (`CONTRATO_EL_AYUDANTE_DE_LA_CARGA_PESADA.md`, "EL CICLO DEL PLAN").
+**Estado: APROBADO ENTERO POR JULIO el 2026-09-13** (respuesta a la pregunta de aprobación en la
+sesión de Claude: "Apruebo todo"). Antes: "trabaja en loop hasta terminar". Se ejecuta con el ciclo de
+`CONTRATO_EL_AYUDANTE_DE_LA_CARGA_PESADA.md`, "EL CICLO DEL PLAN".
 
 **De dónde sale:** diagnósticos del ayudante (tareas A, B, D, G-ING y su plan R1–R7), la prueba
 real con Playwright del DMM (18 pasos, S1→S4) y lo que encontró la dirección trabajando.

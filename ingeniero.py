@@ -346,11 +346,13 @@ def main():
         # (aprobado, rechazado o sin revisar: un rechazo tambien dice algo y vale dinero). Se
         # guarda antes de mostrar porque ya paso que la pantalla reventaba con una letra rara y
         # se perdia todo.
+        # EL TRABAJO PAGADO NO SE PISA (Julio, 2026-09-13). Antes se guardaba solo en un archivo unico
+        # que la ronda siguiente borraba. Ahora cada ronda queda ademas archivada con su nombre y se puede
+        # aplicar despues con: python ingeniero.py aplicar-guardado <proyecto> <ruta>
         try:
-            _ult = os.path.join(AQUI, "memoria", "ULTIMO_TRABAJO_DEL_EQUIPO.json")
-            os.makedirs(os.path.dirname(_ult), exist_ok=True)
-            with open(_ult, "w", encoding="utf-8") as _f:
-                _json.dump(res, _f, ensure_ascii=False, indent=1)
+            _archivado = _ce.guardar_trabajo_pagado(res)
+            if _archivado:
+                print("TRABAJO ARCHIVADO (no se pierde): %s" % _archivado)
         except Exception:
             pass    # guardar es la prueba, pero no puede tumbar el trabajo
         # PRIMERO SE GUARDA, DESPUES SE ENSENA (fallo real 2026-08-25).
@@ -505,7 +507,11 @@ def main():
         from cerebro import router as _r2
         from cuerpo import aplicador as _ap
         _proy = sys.argv[2]
-        _ruta = os.path.join(AQUI, "memoria", "ULTIMO_TRABAJO_DEL_EQUIPO.json")
+        # EL TRABAJO ARCHIVADO SE PUEDE APLICAR (Julio, 2026-09-13: que no se pierda trabajo pagado).
+        # Cada ronda se archiva con su nombre en memoria/trabajos_del_equipo/ (candado_equipo.guardar_trabajo_pagado);
+        # con un tercer argumento se aplica ESE trabajo sin volver a pagar. Sin el, el ultimo, como antes.
+        # Lo vigila vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py
+        _ruta = sys.argv[3] if len(sys.argv) >= 4 else os.path.join(AQUI, "memoria", "ULTIMO_TRABAJO_DEL_EQUIPO.json")
         if not os.path.exists(_ruta):
             print("NO_ENCONTRADO: no hay ningun trabajo del equipo guardado.")
             return 1

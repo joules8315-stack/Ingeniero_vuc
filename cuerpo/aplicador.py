@@ -36,6 +36,12 @@ def aplicar_cambio(propuesta, raiz=None):
     texto_viejo = propuesta.get("texto_viejo", "")
     texto_nuevo = propuesta.get("texto_nuevo", "")
     codigo = propuesta.get("codigo", "")
+    # 2026-09-13: se perdieron dos rondas ya aprobadas por esto. Lo vigila vigias/test_vigia_aplicador.py.
+    # La marca NO_ENCONTRADO la pone el obrero cuando no hay trozo: no es texto.
+    if texto_viejo.strip().upper() == "NO_ENCONTRADO":
+        texto_viejo = ""
+    if texto_nuevo.strip().upper() == "NO_ENCONTRADO":
+        texto_nuevo = ""
     # La ruta del obrero es relativa al PROYECTO, no al Ingeniero. Si nos dieron la carpeta del
     # proyecto y la ruta no es absoluta, se resuelve contra ella. Una ruta absoluta se respeta
     # tal cual: si el obrero ya dijo donde exactamente, no se le corrige.
@@ -87,6 +93,44 @@ def aplicar_cambio(propuesta, raiz=None):
             _apuntar_log(False, archivo, funcion, f"no se pudo crear: {e}")
             return False, f"No se pudo crear el archivo: {e}"
 
+    # 2026-09-13, el obrero pide anadir al final poniendo el mismo renglon de ancla antes y despues y lo nuevo en codigo; se tomaba por humo y se perdia una ronda ya aprobada; lo vigila vigias/test_vigia_aplicador.py.
+    if os.path.exists(archivo) and texto_viejo and texto_viejo == texto_nuevo and codigo:
+        with open(archivo, "r", encoding="utf-8") as f:
+            contenido = f.read()
+        nuevo_contenido = contenido
+        if not nuevo_contenido.endswith("\n"):
+            nuevo_contenido += "\n"
+        nuevo_contenido += "\n" + codigo
+        if not codigo.endswith("\n"):
+            nuevo_contenido += "\n"
+
+        # Sustituir en un temporal al lado.
+        dir_archivo = os.path.dirname(archivo) or "."
+        fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(nuevo_contenido)
+
+            # Si termina en .py, validar sintaxis con ast.parse.
+            if archivo.endswith(".py"):
+                try:
+                    with open(tmp_path, "r", encoding="utf-8") as f:
+                        ast.parse(f.read())
+                except SyntaxError as e:
+                    os.remove(tmp_path)
+                    _apuntar_log(False, archivo, funcion, f"sintaxis rota: {e}")
+                    return False, f"El cambio deja el codigo roto (renglon {e.lineno}): {e.msg}"
+
+            # Mover el temporal encima del original.
+            os.replace(tmp_path, archivo)
+            _apuntar_log(True, archivo, funcion, "codigo anadido al final")
+            return True, "Codigo anadido al final."
+        except Exception as e:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            _apuntar_log(False, archivo, funcion, f"error al aplicar: {e}")
+            return False, f"Error al aplicar el cambio: {e}"
+
     if texto_viejo and texto_nuevo:
         if _quitar_ruido(texto_viejo) == _quitar_ruido(texto_nuevo):
             _apuntar_log(False, archivo, funcion, "cambio humo: solo toca comentarios")
@@ -123,7 +167,8 @@ def aplicar_cambio(propuesta, raiz=None):
         # Si termina en .py, validar sintaxis con ast.parse.
         if archivo.endswith(".py"):
             try:
-                with open(tmp_path, "r", encoding="utf-8") as f:
+                # 2026-09-13: ingeniero.py tiene la marca BOM y ast.parse la tomaba por error: se tiraba todo cambio aprobado. Lo vigila vigias/test_vigia_aplicador.py
+                with open(tmp_path, "r", encoding="utf-8-sig") as f:
                     ast.parse(f.read())
             except SyntaxError as e:
                 os.remove(tmp_path)

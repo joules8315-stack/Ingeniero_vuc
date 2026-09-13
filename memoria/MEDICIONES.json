@@ -7434,5 +7434,535 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.3
+ },
+ {
+  "id": 162,
+  "cuando": "2026-09-13 08:47",
+  "proyecto": "dmm",
+  "problema": "N1 del plan de raiz: las pantallas se quedan en blanco hasta 2-5 minutos esperando a un cerebro (nube 120s, PC 300s) sin avisar en pantalla. Tope corto de espera y si no contesta mostrar aviso honesto de borrador como ya usa la parrilla",
+  "flujos": [
+   "cerebro",
+   "parrilla",
+   "plan"
+  ],
+  "piezas": [
+   "cuerpo/cerebro.py",
+   "cuerpo/parrilla.py",
+   "cuerpo/plan.py",
+   "web/web_c.py",
+   "cuerpo/generadores.py",
+   "cuerpo/roles_ingeniero.py",
+   "cuerpo/brazos.py"
+  ],
+  "trozos": [
+   "web/web_c.py:31-37",
+   "cuerpo/roles_ingeniero.py:65-104",
+   "cuerpo/plan.py:1-40",
+   "web/web_c.py:289-328",
+   "web/web_c.py:291-338",
+   "cuerpo/brazos.py:63-70"
+  ],
+  "leyes": [
+   "CONTRATO_CEREBRO_OPERATIVO.md",
+   "CONTRATO_PRODUCTO_Y_PLAN.md",
+   "PLAN_DE_ATAQUE.md",
+   "PLAN_DMM_COMPLETO.md",
+   "PLAN_LAS_15_QUE_FALTAN.md",
+   "PLAN_LO_QUE_FALTA_2026-09-12.md",
+   "PLAN_SIGUIENTE_IA.md",
+   "plan_ingeniero.txt",
+   "CONTRATO_ACCESO_Y_GOOGLE.md",
+   "CONTRATO_AHORRO_DE_TOKENS.md",
+   "CONTRATO_ASESOR_ORQUESTADOR.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_cerebro_es_nube.py",
+   "vigias/test_vigia_cerebro_gemini.py",
+   "vigias/test_vigia_cerebro_operativo.py",
+   "vigias/test_vigia_parrilla_combustible.py",
+   "vigias/test_vigia_plan_blindado.py",
+   "vigias/test_vigia_plan_completo.py",
+   "vigias/test_vigia_revisor_arnes_cerebro.py"
+  ],
+  "lineas_paquete": 364,
+  "lineas_proyecto": 42459,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.1
+ },
+ {
+  "id": 163,
+  "cuando": "2026-09-13 08:54",
+  "proyecto": "dmm",
+  "problema": "N1: necesito los trozos exactos de las pantallas que se quedan colgadas esperando al cerebro: web/bloque_campana_crear.py, web/bloque_campanas.py, web/bloque_resultados.py y del aviso honesto de borrador que ya usa la parrilla en pantalla (cuerpo/parrilla.py) y de web/servidor.py donde se montan esas rutas",
+  "flujos": [
+   "cerebro",
+   "parrilla",
+   "campanas"
+  ],
+  "piezas": [
+   "cuerpo/campanas_registro.py",
+   "cuerpo/cerebro.py",
+   "cuerpo/parrilla.py",
+   "web/bloque_campanas.py",
+   "web/bloque_campana_crear.py",
+   "web/bloque_resultados.py",
+   "web/servidor.py",
+   "web/web_c.py",
+   "cuerpo/generadores.py",
+   "cuerpo/roles_ingeniero.py",
+   "cuerpo/brazos.py"
+  ],
+  "trozos": [
+   "cuerpo/parrilla.py:1-80",
+   "web/bloque_resultados.py:1-80",
+   "web/bloque_campanas.py:1-47",
+   "web/bloque_campana_crear.py:1-39",
+   "web/servidor.py:321-360",
+   "web/servidor.py:513-552",
+   "web/servidor.py:1025-1064",
+   "web/servidor.py:1-40",
+   "web/servidor.py:117-147",
+   "web/servidor.py:929-968"
+  ],
+  "leyes": [
+   "CONTRATO_ANALISIS_COMPETENCIA_Y_CAMPANAS.md",
+   "CONTRATO_CAMPANAS_Y_CLIENTES.md",
+   "CONTRATO_CEREBRO_OPERATIVO.md",
+   "matriz_verdad.py",
+   "CONTRATO_ASESOR_ORQUESTADOR.md",
+   "CONTRATO_CARPETAS.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_bloque_campanas.py",
+   "vigias/test_vigia_campanas_registro.py",
+   "vigias/test_vigia_cerebro_es_nube.py",
+   "vigias/test_vigia_cerebro_gemini.py",
+   "vigias/test_vigia_cerebro_operativo.py",
+   "vigias/test_vigia_parrilla_combustible.py",
+   "vigias/test_vigia_revisor_arnes_cerebro.py"
+  ],
+  "lineas_paquete": 703,
+  "lineas_proyecto": 42459,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 98.3
+ },
+ {
+  "id": 164,
+  "cuando": "2026-09-13 08:56",
+  "proyecto": "dmm",
+  "problema": "N1 (parte 2 de 2): necesito el trozo exacto de web/servidor.py de las rutas que llaman a un cerebro o internet y se quedan colgadas: /campanas/crear (campana_flujo), /campanas/aprobar, /parrilla (GET o el que genera la semana), /resultados (GET, panel_resultados/analista), /competencia o donde se busque la competencia; y el contenido de las vigias que protegen cuerpo/cerebro.py: test_vigia_cerebro_es_nube, test_vigia_cerebro_gemini, test_vigia_cerebro_operativo, test_vigia_revisor_arnes_cerebro. La reparacion ya decidida del plan: tope corto de espera en las pantallas y, si no contesta, el aviso honesto de borrador que ya usa la parrilla.",
+  "flujos": [
+   "analista",
+   "campana_flujo",
+   "cerebro"
+  ],
+  "piezas": [
+   "cuerpo/analista.py",
+   "cuerpo/cerebro.py",
+   "web/servidor.py",
+   "web/web_c.py",
+   "cuerpo/generadores.py",
+   "cuerpo/parrilla.py",
+   "cuerpo/roles_ingeniero.py"
+  ],
+  "trozos": [
+   "cuerpo/cerebro.py:1-80",
+   "web/servidor.py:993-1032",
+   "web/servidor.py:385-424",
+   "web/servidor.py:513-552",
+   "web/servidor.py:641-680",
+   "web/servidor.py:865-904",
+   "web/servidor.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_CEREBRO_OPERATIVO.md",
+   "CONTRATO_CRM_Y_ANALISTA_DATOS.md",
+   "CONTRATO_ANALISIS_COMPETENCIA_Y_CAMPANAS.md",
+   "matriz_verdad.py",
+   "PLAN_LAS_15_QUE_FALTAN.md",
+   "CONTRATOS_PAGINAS_E_D_B.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_analista.py",
+   "vigias/test_vigia_cerebro_es_nube.py",
+   "vigias/test_vigia_cerebro_gemini.py",
+   "vigias/test_vigia_cerebro_operativo.py",
+   "vigias/test_vigia_crm_analista.py",
+   "vigias/test_vigia_revisor_arnes_cerebro.py"
+  ],
+  "lineas_paquete": 514,
+  "lineas_proyecto": 42459,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 98.8
+ },
+ {
+  "id": 165,
+  "cuando": "2026-09-13 08:59",
+  "proyecto": "dmm",
+  "problema": "N1 (parte 3): necesito el trozo EXACTO de web/servidor.py donde arrancan estas rutas que llaman a cerebro/internet y hoy se cuelgan, para envolverlas con tope corto y aviso de borrador: (a) la ruta /campanas/crear completa (desde 'self.path.rstrip(\" /\\) == \\/campanas/crear\\' hasta su _responder), (b) la ruta /resultados GET completa (hasta su _responder), (c) el INICIO de la ruta /parrilla donde se construyen las variables nota_ia y aviso (el aviso BORRADORES), (d) la ruta /parrilla donde se llama parrilla.generar_semana y la espera con llave. No quiero las vigias, solo estos trozos de servidor.py",
+  "flujos": [
+   "cerebro",
+   "parrilla",
+   "campanas"
+  ],
+  "piezas": [
+   "cuerpo/campanas_registro.py",
+   "cuerpo/cerebro.py",
+   "cuerpo/parrilla.py",
+   "web/bloque_campanas.py",
+   "web/servidor.py",
+   "web/web_c.py",
+   "cuerpo/generadores.py",
+   "cuerpo/roles_ingeniero.py",
+   "cuerpo/brazos.py"
+  ],
+  "trozos": [
+   "web/servidor.py:385-424",
+   "web/servidor.py:641-680",
+   "web/servidor.py:1025-1064",
+   "web/servidor.py:929-968",
+   "web/servidor.py:513-552",
+   "web/servidor.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_ANALISIS_COMPETENCIA_Y_CAMPANAS.md",
+   "CONTRATO_CAMPANAS_Y_CLIENTES.md",
+   "CONTRATO_CEREBRO_OPERATIVO.md",
+   "CONTRATO_INTEGRACION_WEB_MOTOR.md",
+   "CONTRATO_ASESOR_ORQUESTADOR.md",
+   "CONTRATO_AUDITORIA_ECONOMICA.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_bloque_campanas.py",
+   "vigias/test_vigia_campanas_registro.py",
+   "vigias/test_vigia_cerebro_es_nube.py",
+   "vigias/test_vigia_cerebro_gemini.py",
+   "vigias/test_vigia_cerebro_operativo.py",
+   "vigias/test_vigia_parrilla_combustible.py",
+   "vigias/test_vigia_revisor_arnes_cerebro.py"
+  ],
+  "lineas_paquete": 441,
+  "lineas_proyecto": 42459,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.0
+ },
+ {
+  "id": 166,
+  "cuando": "2026-09-13 12:00",
+  "proyecto": "dmm",
+  "problema": "N1 (parte 4, ultima): necesito los trozos exactos de cuerpo/campana_flujo.py (disenar y aprobar y como llama al cerebro), web/panel_resultados.py (armar_datos y como llama al cerebro y su respaldo), cuerpo/brazos.py (buscar, _pedir y analizar_competencia con su timeout de red), cuerpo/aprendizaje.py (interpretar_y_aprender si llama al cerebro). Es para la reparacion N1 del plan de raiz: tope corto de espera en las pantallas que llaman a cerebro/internet y si no contesta aviso honesto de borrador como la parrilla. Ya tengo servidor.py y cerebro.py.",
+  "flujos": [
+   "aprendizaje",
+   "brazos",
+   "campana_flujo"
+  ],
+  "piezas": [
+   "cuerpo/aprendizaje.py",
+   "cuerpo/brazos.py",
+   "cuerpo/campana_flujo.py",
+   "web/panel_resultados.py",
+   "web/servidor.py",
+   "cuerpo/cerebro.py",
+   "web/web_c.py",
+   "cuerpo/generadores.py",
+   "cuerpo/parrilla.py",
+   "cuerpo/roles_ingeniero.py"
+  ],
+  "trozos": [
+   "cuerpo/cerebro.py:1-80",
+   "web/panel_resultados.py:23-111",
+   "cuerpo/brazos.py:81-106",
+   "cuerpo/campana_flujo.py:158-159",
+   "cuerpo/brazos.py:63-70",
+   "web/servidor.py:993-1032",
+   "cuerpo/brazos.py:1-40",
+   "web/servidor.py:865-904",
+   "web/servidor.py:1025-1064",
+   "cuerpo/aprendizaje.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_CEREBRO_OPERATIVO.md",
+   "matriz_verdad.py",
+   "PLAN_LO_QUE_FALTA_2026-09-12.md",
+   "PLAN_SIGUIENTE_IA.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_aprendizaje.py",
+   "vigias/test_vigia_brazos.py"
+  ],
+  "lineas_paquete": 599,
+  "lineas_proyecto": 42459,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 98.6
+ },
+ {
+  "id": 167,
+  "cuando": "2026-09-13 12:06",
+  "proyecto": "dmm",
+  "problema": "N1 parte 5: necesito el trozo exacto del cuerpo/campana_flujo.py completo (disenar lineas 4 a 157, como llama al cerebro y si tiene respaldo cuando el cerebro falla o tarda) y el guion exacto de la PRUEBA REAL de 18 pasos de Playwright con la que se midio el fallo de pantallas en blanco, para repetirla igual despues de reparar N1. Tambien si sirve el trozo de cuerpo/brazos.py lineas 44 a 62 y 70 a 81 (_parsear, _consulta, _consulta_competencia)",
+  "flujos": [
+   "brazos",
+   "campana_flujo",
+   "cerebro"
+  ],
+  "piezas": [
+   "cuerpo/brazos.py",
+   "cuerpo/cerebro.py",
+   "cuerpo/campana_flujo.py",
+   "web/web_c.py",
+   "cuerpo/generadores.py",
+   "cuerpo/parrilla.py",
+   "cuerpo/roles_ingeniero.py"
+  ],
+  "trozos": [
+   "cuerpo/brazos.py:46-60",
+   "cuerpo/brazos.py:73-78",
+   "cuerpo/campana_flujo.py:97-136"
+  ],
+  "leyes": [
+   "CONTRATO_CEREBRO_OPERATIVO.md",
+   "matriz_verdad.py",
+   "CONTRATO_WEB_DMM_PRUEBA_REAL.md",
+   "PLAN_DMM_COMPLETO.md",
+   "PROTOCOLO_DEL_CHAT.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_brazos.py",
+   "vigias/test_vigia_cerebro_es_nube.py",
+   "vigias/test_vigia_cerebro_gemini.py",
+   "vigias/test_vigia_cerebro_operativo.py",
+   "vigias/test_vigia_revisor_arnes_cerebro.py"
+  ],
+  "lineas_paquete": 229,
+  "lineas_proyecto": 42459,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.5
+ },
+ {
+  "id": 168,
+  "cuando": "2026-09-13 12:08",
+  "proyecto": "dmm",
+  "problema": "N1 parte 6 (la ultima que pido): necesito los trozos EXACTOS que voy a editar para el fix N1. 1) cuerpo/cerebro.py lineas 80-178 completas (las funciones _preguntar_local, _preguntar_gemini, _preguntar_groq y preguntar con sus timeouts y la cascada de fallos), 2) web/servidor.py do_GET la ruta /resultados completa (desde 'self.path.rstrip(\" /\\) == \\/resultados\\' hasta su _responder) y la ruta /parrilla completa desde donde define nota_ia hasta su _responder. 3) web/servidor.py do_POST la ruta /campanas/crear completa (desde el if hasta su _responder). 4) cuerpo/parrilla.py lineas 83-137 (generar_semana y semana_actual) para ver como _texto_de_pieza maneja el fallo del cerebro. Solo esto.",
+  "flujos": [
+   "cerebro",
+   "parrilla",
+   "campanas"
+  ],
+  "piezas": [
+   "cuerpo/campanas_registro.py",
+   "cuerpo/cerebro.py",
+   "cuerpo/parrilla.py",
+   "web/bloque_campanas.py",
+   "web/servidor.py",
+   "web/web_c.py",
+   "cuerpo/generadores.py",
+   "cuerpo/roles_ingeniero.py",
+   "cuerpo/brazos.py"
+  ],
+  "trozos": [
+   "cuerpo/cerebro.py:94-106",
+   "cuerpo/parrilla.py:83-112",
+   "cuerpo/parrilla.py:122-136",
+   "cuerpo/cerebro.py:82-91",
+   "cuerpo/cerebro.py:139-161",
+   "cuerpo/parrilla.py:59-80",
+   "cuerpo/cerebro.py:164-177",
+   "web/servidor.py:321-360",
+   "cuerpo/cerebro.py:33-72",
+   "web/servidor.py:513-552",
+   "web/servidor.py:641-680",
+   "web/servidor.py:929-968",
+   "web/servidor.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_ANALISIS_COMPETENCIA_Y_CAMPANAS.md",
+   "CONTRATO_CAMPANAS_Y_CLIENTES.md",
+   "CONTRATO_CEREBRO_OPERATIVO.md",
+   "CONTRATO_INTEGRACION_WEB_MOTOR.md",
+   "matriz_verdad.py",
+   "PROTOCOLO_DEL_CHAT.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_bloque_campanas.py",
+   "vigias/test_vigia_campanas_registro.py",
+   "vigias/test_vigia_cerebro_es_nube.py",
+   "vigias/test_vigia_cerebro_gemini.py",
+   "vigias/test_vigia_cerebro_operativo.py",
+   "vigias/test_vigia_parrilla_combustible.py",
+   "vigias/test_vigia_revisor_arnes_cerebro.py"
+  ],
+  "lineas_paquete": 599,
+  "lineas_proyecto": 42459,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 98.6
+ },
+ {
+  "id": 169,
+  "cuando": "2026-09-13 12:11",
+  "proyecto": "dmm",
+  "problema": "N1 parte 7 (ultima para el fix): la funcion cuerpo/campana_flujo.py disenar lineas 4-96 completas (donde llama al asesor/cerebro, si tiene try/except y que devuelve cuando el cerebro falla o tarda), y la ruta web/servidor.py /campanas/crear completa del do_POST desde el punto donde construye 'camp = campana_flujo.disenar(...)' hasta su _responder final (lineas 966-1000 aprox). Tambien la ruta web/servidor.py /resultados GET completa hasta su _responder (lineas 294-320 aprox). Solo esto.",
+  "flujos": [
+   "asesor",
+   "campana_flujo",
+   "cerebro"
+  ],
+  "piezas": [
+   "cuerpo/asesor.py",
+   "cuerpo/cerebro.py",
+   "cuerpo/campana_flujo.py",
+   "web/servidor.py",
+   "web/web_c.py",
+   "cuerpo/generadores.py",
+   "cuerpo/parrilla.py",
+   "cuerpo/roles_ingeniero.py"
+  ],
+  "trozos": [
+   "web/servidor.py:961-1000",
+   "web/servidor.py:353-392",
+   "cuerpo/campana_flujo.py:1-40",
+   "web/servidor.py:865-904",
+   "web/servidor.py:44-85",
+   "web/servidor.py:117-147"
+  ],
+  "leyes": [
+   "CONTRATO_ASESOR_MARKETING_Y_SKILLS.md",
+   "CONTRATO_ASESOR_ORQUESTADOR.md",
+   "CONTRATO_CEREBRO_OPERATIVO.md",
+   "matriz_verdad.py",
+   "CONTRATO_CUERPO_Y_RAG.md",
+   "CONTRATO_INTEGRACION_WEB_MOTOR.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_asesor_orquestador.py",
+   "vigias/test_vigia_asesor_skills.py",
+   "vigias/test_vigia_cerebro_es_nube.py",
+   "vigias/test_vigia_cerebro_gemini.py",
+   "vigias/test_vigia_cerebro_operativo.py",
+   "vigias/test_vigia_revisor_arnes_cerebro.py"
+  ],
+  "lineas_paquete": 425,
+  "lineas_proyecto": 42459,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.0
+ },
+ {
+  "id": 170,
+  "cuando": "2026-09-13 12:26",
+  "proyecto": "ingeniero",
+  "problema": "Se pierde trabajo pago, mas nunca debe pasar, porque no permite crear trabajo nuevo: la herramienta no deja crear codigo nuevo. Investiga la causa real. Es un problema con las ordenes de reparacion: el trabajo pago generado por las IAs no se guarda o no se aplica o el arnes bloquea crear archivos nuevos. Quiero el paquete con la ley que manda, las piezas del aplicador/guardia/candados/arnes y los trozos exactos.",
+  "flujos": [
+   "piezas",
+   "trozos",
+   "aplicador"
+  ],
+  "piezas": [
+   "cerebro/piezas.py",
+   "cerebro/trozos.py",
+   "cuerpo/aplicador.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "mapa/inventario.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cuerpo/aplicador.py:65-104",
+   "cuerpo/respuestas.py:1-40",
+   "cuerpo/dudas.py:1-40",
+   "mapa/inventario.py:97-136",
+   "cuerpo/dudas.py:116-145",
+   "mapa/inventario.py:129-152"
+  ],
+  "leyes": [
+   "CONTRATO_CEREBRO_ROTO_SE_APARTA.md",
+   "CONTRATO_LA_IA_CARA_NUNCA_ESCRIBE.md",
+   "CONTRATO_MEDIR_A_LOS_GRATIS.md",
+   "CONTRATO_NADIE_ENTRA_SIN_ARNES.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_aplicador.py"
+  ],
+  "lineas_paquete": 418,
+  "lineas_proyecto": 179124,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 171,
+  "cuando": "2026-09-13 12:28",
+  "proyecto": "ingeniero",
+  "problema": "Parte 2 del paquete de 'se pierde trabajo pago, no permite crear trabajo nuevo': necesito los trozos exactos de la causa. 1) cuerpo/aplicador.py COMPLETO de 1 a 65 (donde esta la marca NO_ENCONTRADO y la comprobacion de humo y por que no crea archivo nuevo), 2) cuerpo/aplicador.py 104-187 (el resto de aplicar_cambio), 3) la vigia vigias/test_vigia_aplicador.py completa, 4) ingeniero.py las lineas 370-480 donde el comando del equipo decide APLICAR o DESCARTAR la reparacion y usa aplicar_cambio y el aviso final, 5) si existe, el arnes que bloquea crear archivos nuevos o el guardia del guardado (guardia_de_guardado.py).",
+  "flujos": [
+   "trozos",
+   "aplicador",
+   "ingeniero"
+  ],
+  "piezas": [
+   "ingeniero.py",
+   "cerebro/trozos.py",
+   "cuerpo/aplicador.py",
+   "vigias/test_vigia_aplicador.py",
+   "arnes/guardia_de_guardado.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "ingeniero.py:120-182",
+   "vigias/test_vigia_aplicador.py:62-65",
+   "ingeniero.py:385-424",
+   "ingeniero.py:417-456",
+   "arnes/guardia_de_guardado.py:1-40",
+   "cuerpo/aplicador.py:65-104",
+   "ingeniero.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_COMO_EL_INGENIERO_CONSTRUYE_UN_PROYECTO.md",
+   "CONTRATO_EL_INGENIERO_CONSTRUYE_COMO_FUE_CONSTRUIDO.md",
+   "CONTRATO_INGENIERO_VUC.md",
+   "mapa/MAPA_INGENIERO.json",
+   "mapa/MAPA_INGENIERO.md",
+   "cerebro/protocolo.py",
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_roles_ingeniero.py",
+   "vigias/test_vigia_aplicador.py",
+   "vigias/test_vigia_modo_ingeniero_siempre.py"
+  ],
+  "lineas_paquete": 556,
+  "lineas_proyecto": 179556,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.7
  }
 ]
