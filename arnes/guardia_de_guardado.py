@@ -148,6 +148,49 @@ def _cubierto_por_equipo(archivos):
     return all(os.path.basename(a).lower() in bases for a in codigo)
 
 
+def se_puede_guardar_sin_equipo(cubierto, llave_de_julio):
+    """Devuelve (verdadero_o_falso, explicacion). ES LA LEY DE JULIO DEL 2026-09-12.
+
+    Sus palabras: "Ninguna IA, ninguna, puede pasar a trabajar en estos proyectos sin equipo,
+    arnes y vigias. Obligalo, que no le quede opcion. De igual manera tu. Nada queda a la
+    alucinacion, a su memoria."
+
+    POR QUE VIVE AQUI Y NO EN UN CANDADO DE CLAUDE: los candados de Claude son de Claude, van
+    enganchados a SUS herramientas. Otra IA NUNCA LLEGA A VERLOS. No es que se los salte: es que
+    nunca pasa por delante. Esa es la causa raiz, medida el 2026-09-12, de por que el ayudante
+    pudo tocar la lista blanca a solas y meter diecisiete piezas firmadas con el nombre de Julio.
+
+    El guardado es LA UNICA PUERTA POR LA QUE PASAN TODOS, porque lo ejecuta git y no la IA. Aqui
+    da igual quien escriba.
+
+    Y LA CASA YA SABIA ESTO Y NO ACTUABA: _cubierto_por_equipo existia desde el 2026-09-02 y su
+    respuesta SOLO SE APUNTABA EN UN REGISTRO. Se dejaba pasar igual. Apuntar sin frenar es lo
+    mismo que no saber.
+
+    cubierto: lo que devuelve _cubierto_por_equipo. True, False o None.
+    llave_de_julio: el motivo que Julio escriba, o vacio si no hay llave.
+    """
+    try:
+        # 1. Lo que no es codigo no necesita equipo: un documento o una nota se escriben solos.
+        if cubierto is None:
+            return True, "No es codigo: un documento o una nota no necesitan equipo."
+        # 2. Lo reviso el equipo: adelante.
+        if cubierto is True:
+            return True, "Lo reviso el equipo."
+        # 3. LA LLAVE DE JULIO. La casa es suya y el siempre puede abrir. Pero una llave que se
+        #    gira sin explicar nada es una puerta trasera con otro nombre: abrir tiene que COSTAR
+        #    ESCRIBIR, y lo escrito queda. Ninguna IA puede girar esta llave.
+        if isinstance(llave_de_julio, str) and len(llave_de_julio.strip()) >= 20:
+            return True, "Abre la llave de Julio, y queda escrito su motivo: " + llave_de_julio.strip()
+        # 4. Todo lo demas: se escribio a solas y no entra.
+        return False, ("Esto se escribio A SOLAS, sin que nadie del equipo lo revisara, y asi no "
+                       "entra. Pidele al equipo que lo mire y vuelve a guardar.")
+    except Exception:
+        # Si algo va raro, se cae del lado seguro: NO se guarda.
+        return False, ("No se pudo comprobar si el equipo reviso esto, asi que no entra. "
+                       "Ante la duda no se guarda.")
+
+
 def _apuntar_balance(raiz, tipo, archivos):
     """Deja una linea en el BALANCE.log: que hizo el equipo y que se hizo a mano. A prueba de
     fallos: si no se puede escribir, el guardia no se cae."""

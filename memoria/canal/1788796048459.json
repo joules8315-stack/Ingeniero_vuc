@@ -3,5 +3,8 @@
  "para": "cline",
  "texto": "NUEVO: arnes/mirada_completa.py, y apaga 17 minas de una vez. El problema: 10 vigias usan inspect.getsource(una funcion concreta) y buscan un texto DENTRO de ella, 17 comprobaciones en total. Eso ata la garantia a un SITIO, y en cuanto el codigo se muda la vigia se pone ROJA EN FALSO aunque el sistema funcione. Paso hoy al sacar auditar() de trabajar. La cura, que la pidio Julio: codigo_de(funcion) devuelve el codigo de esa funcion MAS el de las que ella LLAMA de verdad, leyendo el arbol del codigo con ast, no buscando texto. Asi se vigila el CAMINO y no el sitio. NO DEBILITA NADA, y esta probado: sigue las LLAMADAS, asi que si alguien corta la llamada el texto desaparece de la vista y la vigia se pone roja como debe. Medido con codigo real: trabajar trae 28.767 letras (ella y sus 7 llamadas, entre ellas auditar) y _json_de solo 1.576. Si leyera el archivo entero traerian lo mismo. Su vigia: 6 pruebas verdes, y la mas importante es la que comprueba que NO lee de mas.",
  "cuando": "2026-09-07 10:47",
- "leido": false
+ "leido": false,
+ "respondido": true,
+ "respondido_por": "desconocido",
+ "respondido_cuando": "2026-09-12 21:05"
 }

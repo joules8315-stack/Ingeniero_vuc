@@ -65,8 +65,25 @@ def test_existe_quien_diga_con_quien_se_trabaja():
 
 
 def test_el_companero_de_ahora_es_continue():
-    assert _companero().activo() == "cline", (
-        "el companero de ahora no es `cline`, y Julio lo mando el 2026-09-02")
+    # JULIO LO CAMBIO OTRA VEZ EL 2026-09-12, y lo dijo con estas palabras, enfadado y con razon:
+    #
+    #   "Ojo, le estas mandando cosas a cline, NO ES A BP, de opencode."
+    #
+    # Lo dijo porque el guardian de comunicacion le estaba obligando a la direccion a escribirle
+    # recados a alguien que ya no trabaja, mientras el companero de verdad (Big Pickle, que corre
+    # en opencode) esperaba en su propio canal. Un recado al que no trabaja no es comunicacion:
+    # es ruido que ademas da la sensacion de haber avisado.
+    #
+    # LA HISTORIA SE CONSERVA, porque la memoria no olvida por que: el 2026-08-31 Julio mando
+    # trabajar con continue en vez de cline; el 2026-09-02 volvio a cline; y hoy pasa a opencode.
+    # No es capricho: es que el companero que de verdad esta entregando trabajo ha ido cambiando,
+    # y esta vigia existe justamente para que el nombre de la casa SIEMPRE sea el de quien
+    # trabaja, y no el de quien trabajaba.
+    #
+    # ESTA VIGIA NO SE AFLOJA: sigue exigiendo un nombre EXACTO y sigue frenando si alguien lo
+    # cambia sin que Julio lo haya dicho. Lo unico que cambia es cual es ese nombre hoy.
+    assert _companero().activo() == "opencode", (
+        "el companero de ahora no es `opencode` (Big Pickle), y Julio lo mando el 2026-09-12")
 
 
 def test_cline_esta_fuera_y_se_sabe_por_que():

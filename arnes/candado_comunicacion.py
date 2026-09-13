@@ -24,7 +24,41 @@ AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BANDEJA = os.path.join(AQUI, "memoria", "canal")
 CONTADOR = os.path.join(AQUI, "memoria", ".comunicacion_bloqueos")
 TOPE_BLOQUEOS = 2
-DESTINOS = ("cline", "4ojos", "deepseek")
+# EL NOMBRE DEL COMPANERO NO SE ESCRIBE A MANO: SE LE PREGUNTA A QUIEN LO SABE.
+#
+# FALLO CAZADO POR JULIO EL 2026-09-12, y es la TERCERA vez que esta misma enfermedad muerde en
+# esta casa. Sus palabras, enfadado y con razon:
+#
+#     "Ojo, le estas mandando cosas a cline, NO ES A BP, de opencode."
+#
+# Esta lista decia cline, y obligaba a la direccion a mandarle recados a alguien que ya no
+# trabaja, mientras el companero de verdad esperaba en su propio canal. Un recado al que no
+# trabaja no es comunicacion: es ruido que ademas da la sensacion de haber avisado.
+#
+# YA HABIA PASADO IGUAL el 2026-08-31 con el candado del buzon, y la cura quedo escrita entonces:
+# "que pregunte por el companero activo a arnes/companero.py, que es el UNICO sitio donde vive esa
+# respuesta; no se escribe a mano el nombre del companero dentro de una pieza".
+#
+# Y ES LA MISMA ENFERMEDAD que perdia 7 de cada 10 ordenes de Julio (una lista de palabras de
+# mando escrita a mano) y que la fila de cerebros ordenada a mano. Lo que hay que saber SE LE
+# PREGUNTA A QUIEN LO SABE; lo que se congela dentro del codigo envejece en silencio.
+#
+# ESTO NO DEPENDE DE NINGUNA VARIABLE QUE NADIE PONE, que es el otro fallo ya pagado aqui: le
+# pregunta a la pieza, y si esa pieza no contesta, se queda con los de siempre. Cae del lado
+# seguro: pedir de mas es ruido, pedir de menos es no avisar a nadie.
+def _companero_de_ahora():
+    """Quien es HOY el companero. Se lo pregunta a la pieza que lo sabe, nunca se adivina."""
+    try:
+        import companero
+        activo = (companero.activo() or "").strip()
+        if activo:
+            return activo
+    except Exception:
+        pass
+    return "cline"          # ultimo recurso: mejor pedir uno que no pedir ninguno
+
+
+DESTINOS = tuple(dict.fromkeys((_companero_de_ahora(), "cline", "4ojos", "deepseek")))
 
 
 def _quien():
