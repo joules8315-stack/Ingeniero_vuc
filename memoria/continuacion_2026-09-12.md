@@ -1,4 +1,34 @@
-# DONDE QUEDAMOS — 2026-09-12 (Julio: "guarda todo, seguimos mañana, que no quede trabajo por fuera")
+# DONDE QUEDAMOS — 2026-09-12 (tanda 2 nocturna: guardado para limpieza)
+
+## ESTADO TRAS LA TANDA (verificado con pruebas reales)
+- **Guardián del `nul` HECHO**: `cerebro/piezas.py` (RESERVADOS_WINDOWS, es_nombre_reservado, barrer_reservados en escanear), `mapa/inventario.py` (mismo patrón), `skills/nace_conectada.py` (copia autónoma local, sin importar cerebro). Borra SOLO archivos con nombre reservado (nul, con, aux, prn, com1-9, lpt1-9) usando ruta larga `\\?\`. Verificado en lab con un `nul` real. `medir_las_nueve_puertas.py:209` NO vulnerable (usa marco.filename); DMM protegido y NO tocado.
+- **Lista blanca HECHA**: `memoria/lista_blanca.json` con las 17 de mano (anotadas vía `lb.anotar(ruta, porque, 'Julio')`). Se añadió `if __name__ == "__main__":` a `skills/medir_acciones.py` y `skills/medir_navegador.py` (exigido por el candado de anotar).
+- **nace_conectada ↔ lista_blanca CONECTADO**: `_leer_lista_blanca(raiz)` (respeta INGENIERO_LISTA_BLANCA), `huerfanas()`/`informe()` excluyen blancas. Resultado: **HUERFANAS: 6 de 86 (17 de mano no cuentan)**. La 6 restantes = las del plan ENCHUFAR.
+- **Hook git INSTALADO**: `git config core.hooksPath hooks` → `hooks/pre-commit` corre `arnes/guardia_de_guardado.py`. El guardia corre pytest completo (verde). OJO: los "cuelgues" de pytest eran procesos python huérfanos del guardia; con limpieza corre en ~152s.
+- **Suite completa VERDE**: `python -m pytest -q vigias/` → 697 passed, 1 skipped.
+- **CORRECCIÓN AL PLAN (confirmada con vigía)**: `arnes/permiso_editar.py` **NO se borra**. `vigias/test_vigia_equipo_total.py:59-61` lo importa y exige `hay_permiso(...) is False`. Queda como llave retirada que la vigía prueba.
+
+## DECISIONES DE JULIO (tomadas vía pregunta esta tanda)
+- `candado_archivo_del_veredicto.py` → conectarlo en `candado_equipo.guardar_veredicto` (patrón revisor_de_programa: tumbar el APROBADO si el archivo reparado no es del encargo).
+- `limpiar_credenciales.py` → conectarlo al cierre de sección en `candado_prueba_real`.
+- Julio pidió PARAR para limpiar: los enchufes NO se tocan aún, quedan anotados abajo.
+
+## ENCHUFES PENDIENTES (de los 6; decisión de Julio ya tomada)
+1. `candado_archivo_del_veredicto.py` → enganchar en `arnes/candado_equipo.py::guardar_veredicto` (import + revisar_veredicto; vigía test_vigia_archivo_del_veredicto conforme).
+2. `limpiar_credenciales.py` → llamar `limpiar()` al final de `candado_prueba_real.marcar()`.
+3. `cuerpo/lecciones.py` → `apuntar()` no se llama en ningún flujo; **sigue esperando que Julio diga dónde** (al sellar / flujo paquete / a mano). PREGUNTA_REQUERIDA vigente.
+4. Hechos ya: nace_conectada↔lista_blanca, guardia_de_guardado→hook git. `permiso_editar.py` NO se borra (ver arriba).
+
+## COMO SE REANUDA
+```
+cd C:\Ingeniero_VUC
+python -m pytest -q vigias/
+python skills\nace_conectada.py            # ver 6 de 86
+```
+Siguiente trabajo real: los enchufes 1 y 2 (según decisión de Julio), y preguntar lo de lecciones.
+
+---
+## ANTES DE LA TANDA — lo que quedaba de ayer (2026-09-12, "guarda todo, seguimos mañana")
 
 ## EL PLAN QUE VA (aprobado por Julio)
 Descargar a Claude de la carga. opencode (esta herramienta) hace: 3 dormidas del negocio (DMM), correr/reportar suites, 24 dormidas de la herramienta (incluyen partes del arnés que no funcionan). Claude hace: 26 leyes sin guardián, dirigir al equipo, comprobarlo suyo, causa raíz. Carriles separados, aviso al cerrar, tres preguntas.
