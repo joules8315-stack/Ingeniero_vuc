@@ -79,6 +79,14 @@ def _es_cuaderno(ruta):
     if base in CUADERNOS_BASE:
         return True
     n = ruta.replace("\\", "/").lower()
+    # UNA REGLA Y NO UNA LISTA (2026-09-14, CUARTA VEZ que el guardian se muerde la cola). Las tres
+    # curas anteriores anadieron nombres a mano y el bucle volvio con cada nota nueva. En la RAIZ de
+    # memoria, las notas ocultas y los registros los escriben los candados: no son trabajo de Julio.
+    # Las subcarpetas (trabajo pagado archivado, paquetes) y ESTADO.json siguen contando.
+    _en_raiz_de_memoria = n.startswith("memoria/") and n.count("/") == 1
+    if _en_raiz_de_memoria and (base.startswith(".") or base.endswith((".log", ".jsonl"))
+                                or base in ("respuestas.json", "indice_metodo.json")):
+        return True
     # el canal (mensajes AI-AI), las pruebas reales y los apuntes de llamadas tambien los escriben
     # los candados; no son trabajo que Julio pida guardar, y ensucian en cada corrida.
     return ("/canal/" in n or "/pruebas_real/" in n or "/.git/" in n)

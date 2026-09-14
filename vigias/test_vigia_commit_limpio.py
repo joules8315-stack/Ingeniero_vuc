@@ -72,6 +72,41 @@ def test_el_guardian_no_grita_por_sus_propios_cuadernos():
         "Si deja de gritar, se pierde el sitio por donde ibamos.")
 
 
+def test_una_regla_y_no_una_lista_perdona_las_notas_nuevas():
+    """EL GUARDIAN SE MUERDE LA COLA, CUARTA VEZ (2026-09-14). Tres curas anadieron nombres a mano
+    y el bucle volvio con cada nota nueva. Esta prueba exige una REGLA: cualquier nota oculta o
+    registro nuevo de la raiz de memoria se perdona, aunque nadie lo apunte; el trabajo no."""
+    import sys
+    sys.path.insert(0, os.path.join(AQUI, "arnes"))
+    import candado_commit as cc
+    notas = [
+        "memoria/.legislacion_pendiente.json",
+        "memoria/RESPUESTAS.json",
+        "memoria/.veredictos_recientes.jsonl",
+        "memoria/.buzon_bloqueos",
+        "memoria/INDICE_METODO.json",
+        "memoria/.nota_que_aun_no_existe",
+        "memoria/REGISTRO_QUE_AUN_NO_EXISTE.log",
+    ]
+    no_perdonadas = [r for r in notas if not cc._es_cuaderno(r)]
+    assert not no_perdonadas, (
+        "EL GUARDIAN SE MUERDE LA COLA OTRA VEZ: estas notas las escriben los candados y cuentan "
+        "como trabajo sin guardar; con una lista a mano volvera con cada nota nueva: %s" % no_perdonadas)
+    trabajo = [
+        "memoria/ESTADO.json",
+        "memoria/continuacion_2026-09-13.md",
+        "memoria/trabajos_del_equipo/2026-09-14_043642_APROBADO_guardia_de_guardado.py.json",
+        "memoria/trabajos_sin_revisar/big_pickle.patch",
+        "memoria/paquetes/.oculto_de_prueba.md",
+        "arnes/candado_commit.py",
+        "vigias/.oculta.log",
+    ]
+    perdonado_de_mas = [r for r in trabajo if cc._es_cuaderno(r)]
+    assert not perdonado_de_mas, (
+        "SE PERDONO DE MAS: esto es trabajo de verdad (donde ibamos, trabajo pagado, codigo) y "
+        "tiene que seguir exigiendo guardarse: %s" % perdonado_de_mas)
+
+
 def test_ninguna_prueba_escribe_en_los_cuadernos_de_verdad():
     """LA CAUSA DE FONDO DEL GUARDIAN QUE SE MUERDE LA COLA (2026-09-11).
 

@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La vigia solo prueba una lista a mano de cuadernos; falta la prueba que exige una REGLA para que las notas ocultas y registros nuevos de la raiz de memoria se perdonen solos.",
+  "archivo": "vigias/test_vigia_commit_limpio.py",
+  "funcion": "test_el_guardian_no_grita_por_sus_propios_cuadernos",
+  "texto_viejo": "    assert not cc._es_cuaderno(\"memoria/ESTADO.json\"), (\n        \"SE PERDONO DE MAS: donde ibamos NO es un cuaderno de candado, es trabajo de verdad. \"\n        \"Si deja de gritar, se pierde el sitio por donde ibamos.\")",
+  "texto_nuevo": "    assert not cc._es_cuaderno(\"memoria/ESTADO.json\"), (\n        \"SE PERDONO DE MAS: donde ibamos NO es un cuaderno de candado, es trabajo de verdad. \"\n        \"Si deja de gritar, se pierde el sitio por donde ibamos.\")\n\n\ndef test_una_regla_y_no_una_lista_perdona_las_notas_nuevas():\n    \"\"\"EL GUARDIAN SE MUERDE LA COLA, CUARTA VEZ (2026-09-14). Tres curas anadieron nombres a mano\n    y el bucle volvio con cada nota nueva. Esta prueba exige una REGLA: cualquier nota oculta o\n    registro nuevo de la raiz de memoria se perdona, aunque nadie lo apunte; el trabajo no.\"\"\"\n    import sys\n    sys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n    import candado_commit as cc\n    notas = [\n        \"memoria/.legislacion_pendiente.json\",\n        \"memoria/RESPUESTAS.json\",\n        \"memoria/.veredictos_recientes.jsonl\",\n        \"memoria/.buzon_bloqueos\",\n        \"memoria/INDICE_METODO.json\",\n        \"memoria/.nota_que_aun_no_existe\",\n        \"memoria/REGISTRO_QUE_AUN_NO_EXISTE.log\",\n    ]\n    no_perdonadas = [r for r in notas if not cc._es_cuaderno(r)]\n    assert not no_perdonadas, (\n        \"EL GUARDIAN SE MUERDE LA COLA OTRA VEZ: estas notas las escriben los candados y cuentan \"\n        \"como trabajo sin guardar; con una lista a mano volvera con cada nota nueva: %s\" % no_perdonadas)\n    trabajo = [\n        \"memoria/ESTADO.json\",\n        \"memoria/continuacion_2026-09-13.md\",\n        \"memoria/trabajos_del_equipo/2026-09-14_043642_APROBADO_guardia_de_guardado.py.json\",\n        \"memoria/trabajos_sin_revisar/big_pickle.patch\",\n        \"memoria/paquetes/.oculto_de_prueba.md\",\n        \"arnes/candado_commit.py\",\n        \"vigias/.oculta.log\",\n    ]\n    perdonado_de_mas = [r for r in trabajo if cc._es_cuaderno(r)]\n    assert not perdonado_de_mas, (\n        \"SE PERDONO DE MAS: esto es trabajo de verdad (donde ibamos, trabajo pagado, codigo) y \"\n        \"tiene que seguir exigiendo guardarse: %s\" % perdonado_de_mas)",
+  "cambio": "Anadir al final de la prueba test_el_guardian_no_grita_por_sus_propios_cuadernos, tras el assert de ESTADO.json, dos renglones en blanco y la nueva prueba test_una_regla_y_no_una_lista_perdona_las_notas_nuevas. No se toca nada mas del archivo.",
+  "codigo": "def test_una_regla_y_no_una_lista_perdona_las_notas_nuevas():\n    \"\"\"EL GUARDIAN SE MUERDE LA COLA, CUARTA VEZ (2026-09-14). Tres curas anadieron nombres a mano\n    y el bucle volvio con cada nota nueva. Esta prueba exige una REGLA: cualquier nota oculta o\n    registro nuevo de la raiz de memoria se perdona, aunque nadie lo apunte; el trabajo no.\"\"\"\n    import sys\n    sys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n    import candado_commit as cc\n    notas = [\n        \"memoria/.legislacion_pendiente.json\",\n        \"memoria/RESPUESTAS.json\",\n        \"memoria/.veredictos_recientes.jsonl\",\n        \"memoria/.buzon_bloqueos\",\n        \"memoria/INDICE_METODO.json\",\n        \"memoria/.nota_que_aun_no_existe\",\n        \"memoria/REGISTRO_QUE_AUN_NO_EXISTE.log\",\n    ]\n    no_perdonadas = [r for r in notas if not cc._es_cuaderno(r)]\n    assert not no_perdonadas, (\n        \"EL GUARDIAN SE MUERDE LA COLA OTRA VEZ: estas notas las escriben los candados y cuentan \"\n        \"como trabajo sin guardar; con una lista a mano volvera con cada nota nueva: %s\" % no_perdonadas)\n    trabajo = [\n        \"memoria/ESTADO.json\",\n        \"memoria/continuacion_2026-09-13.md\",\n        \"memoria/trabajos_del_equipo/2026-09-14_043642_APROBADO_guardia_de_guardado.py.json\",\n        \"memoria/trabajos_sin_revisar/big_pickle.patch\",\n        \"memoria/paquetes/.oculto_de_prueba.md\",\n        \"arnes/candado_commit.py\",\n        \"vigias/.oculta.log\",\n    ]\n    perdonado_de_mas = [r for r in trabajo if cc._es_cuaderno(r)]\n    assert not perdonado_de_mas, (\n        \"SE PERDONO DE MAS: esto es trabajo de verdad (donde ibamos, trabajo pagado, codigo) y \"\n        \"tiene que seguir exigiendo guardarse: %s\" % perdonado_de_mas)",
+  "vigia": "La propia prueba nueva test_una_regla_y_no_una_lista_perdona_las_notas_nuevas: nace roja contra el candado actual (lista a mano) y debe ponerse verde cuando candado_commit._es_cuaderno aplique la regla de nota oculta o registro en la raiz de memoria mas RESPUESTAS.json e INDICE_METODO.json, sin perdonar trabajo.",
+  "puede_danar": [
+   "arnes/candado_commit.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_memoria.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candados_medicion.py",
+   "cerebro/trozos.py",
+   "vigias/test_vigia_respuestas.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_diagnostico.py",
+   "candado_memoria.py",
+   "candado_prueba_real.py",
+   "candados_medicion.py",
+   "test_vigia_respuestas.py",
+   "trozos.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Añade la prueba requerida sin violar normas ni introducir inventos."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

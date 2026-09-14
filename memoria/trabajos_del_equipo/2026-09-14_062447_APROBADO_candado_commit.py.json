@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "El guardian se muerde la cola por cuarta vez: _es_cuaderno solo perdona una lista a mano de cuadernos, y cada nota nueva (oculta, .log o .jsonl) en la raiz de memoria vuelve a provocar el bucle.",
+  "archivo": "arnes/candado_commit.py",
+  "funcion": "_es_cuaderno",
+  "texto_viejo": "    base = os.path.basename(ruta).lower()\n    if base in CUADERNOS_BASE:\n        return True\n    n = ruta.replace(\"\\\\\", \"/\").lower()",
+  "texto_nuevo": "    base = os.path.basename(ruta).lower()\n    if base in CUADERNOS_BASE:\n        return True\n    n = ruta.replace(\"\\\\\", \"/\").lower()\n    # UNA REGLA Y NO UNA LISTA (2026-09-14, CUARTA VEZ que el guardian se muerde la cola). Las tres\n    # curas anteriores anadieron nombres a mano y el bucle volvio con cada nota nueva. En la RAIZ de\n    # memoria, las notas ocultas y los registros los escriben los candados: no son trabajo de Julio.\n    # Las subcarpetas (trabajo pagado archivado, paquetes) y ESTADO.json siguen contando.\n    _en_raiz_de_memoria = n.startswith(\"memoria/\") and n.count(\"/\") == 1\n    if _en_raiz_de_memoria and (base.startswith(\".\") or base.endswith((\".log\", \".jsonl\"))\n                                or base in (\"respuestas.json\", \"indice_metodo.json\")):\n        return True",
+  "cambio": "Anadir, justo despues de la linea 'n = ruta.replace(\"\\\\\", \"/\").lower()' y antes del 'return' final, la regla que perdona en la RAIZ de memoria (memoria/ con un solo '/') toda nota oculta (empieza por punto) y todo registro (.log o .jsonl), mas respuestas.json e indice_metodo.json por nombre. No se toca nada mas del archivo.",
+  "codigo": "    # UNA REGLA Y NO UNA LISTA (2026-09-14, CUARTA VEZ que el guardian se muerde la cola). Las tres\n    # curas anteriores anadieron nombres a mano y el bucle volvio con cada nota nueva. En la RAIZ de\n    # memoria, las notas ocultas y los registros los escriben los candados: no son trabajo de Julio.\n    # Las subcarpetas (trabajo pagado archivado, paquetes) y ESTADO.json siguen contando.\n    _en_raiz_de_memoria = n.startswith(\"memoria/\") and n.count(\"/\") == 1\n    if _en_raiz_de_memoria and (base.startswith(\".\") or base.endswith((\".log\", \".jsonl\"))\n                                or base in (\"respuestas.json\", \"indice_metodo.json\")):\n        return True",
+  "vigia": "vigias/test_vigia_commit_limpio.py, prueba test_una_regla_y_no_una_lista_perdona_las_notas_nuevas, y todas las demas de esa vigia (incluida la que exige que memoria/ESTADO.json siga contando como trabajo).",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_commit.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_memoria.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candados_medicion.py",
+   "arnes/via_canonica.py",
+   "cerebro/trozos.py",
+   "vigias/test_vigia_commit_limpio.py",
+   "vigias/test_vigia_el_guardian_no_cuenta_sus_cuadernos.py",
+   "vigias/test_vigia_respuestas.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_memoria.py",
+   "candado_prueba_real.py",
+   "candados_medicion.py",
+   "test_vigia_el_guardian_no_cuenta_sus_cuadernos.py",
+   "test_vigia_respuestas.py",
+   "trozos.py",
+   "via_canonica.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación añade la regla correcta sin inventar nada y no rompe nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}
