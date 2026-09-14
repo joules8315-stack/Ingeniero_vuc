@@ -11,6 +11,18 @@ puerta trasera cerrada con candado de opencode) · `CONTRATO_CREAR_PIEZA_NUEVA.m
    avisar a Julio al terminar cada punto, con la hora. **No dar estimaciones de horas sin descontar lo que se pierde.**
 3. **Coordinar con Big Pickle** (Julio lo tiene corriendo en su ventana): que no ensucie el trabajo de la dirección.
 
+## LISTADO MEDIDO DE LO QUE RETRASA (2026-09-14, pedido por Julio; registros del 13-14 sep)
+1. Lo aprobado no se guarda al momento: 30 rondas aprobadas, ninguna guardada al aprobarse → REPARANDOSE (guardar_en_la_historia + llamada en equipo y aplicar-guardado).
+2. candado_memoria frena la 1a vez casi cada accion ("repite la misma accion"): ~1.480 veces en 2 sesiones → SIGUIENTE a reparar (el mayor desperdicio).
+3. Candados de cierre: F8 guardar 199 (bucle YA reparado 0f4db7b) · ordenes sin legislar 161 (captura textos del sistema como ordenes de Julio) · comunicacion F4 57 · jerga 40 → sin reparar.
+4. Revisor de programa: 18 de 55 rondas frenadas (3 motivos en falso ya reparados); medir cuantos siguen en falso.
+5. Un solo cambio por ronda → sin reparar.
+6. Big Pickle: 27 cortes por carpeta externa (resuelto con candados), 9 errores de servidor, 3 cupo.
+7. Guardado corre toda la bateria (3-5 min herramienta, ~12 negocio): con tope de 15 min el negocio podria quedar frenado → riesgo abierto.
+8. Nadie mide solo las rondas aprobadas que llegan al disco → sin reparar.
+9. Clasificador de seguridad de Claude: 11 bloqueos.
+Alcance de las 3 IA corregido: SOLO crear codigo nuevo (CONTRATO_CREAR_PIEZA_NUEVA regla 8). Cada freno: frena → causa raiz → que se dano → se repara de una vez.
+
 ## ACTUALIZACION 2026-09-14 04:50 (lo hecho en la noche)
 - ✅ H4: el guardia se acuerda de TODAS las aprobaciones de 24 h y FRENA el codigo sin equipo (c36b28e, llave de Julio; probado en vivo: 4 archivos con 4 aprobaciones distintas pasaron).
 - ✅ Big Pickle obligado: candado global cerrado por defecto (Foto Informe y cualquier carpeta), herramienta cerrada, negocio repara pero no guarda/deshace/borra; ventana de Julio recargada SIN cerrarla (`/global/dispose` + `/instance/dispose`, comprobado con `/config`). Probado en real. Ley en CONTRATO_EL_AYUDANTE (TODAS LAS PUERTAS Y VENTANAS CERRADAS). Vigia 5/5 saboteada. (adb7153, 3bfb09c)
