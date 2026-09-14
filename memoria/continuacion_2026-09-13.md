@@ -12,6 +12,12 @@ puerta trasera cerrada con candado de opencode) · `CONTRATO_CREAR_PIEZA_NUEVA.m
 3. **Coordinar con Big Pickle** (Julio lo tiene corriendo en su ventana): que no ensucie el trabajo de la dirección.
 
 ## >>> AL VOLVER DEL CLEAR (2026-09-14 ~08:00) — POR AQUI SE SIGUE, EN ESTE ORDEN <<<
+**LA FORENSE DE BIG PICKLE LLEGO (08:50) Y ESTA GUARDADA: `memoria/FORENSE_BIG_PICKLE_2026-09-14.md`.** Leerla antes de nada:
+confirma C1 (candado de memoria, el mayor desperdicio), C6 (un cambio por ronda) y C7 (ya curada); C2-C4 a medias; revisor 34 de
+91 rondas (37%) sin clasificar falsos; 5 parejas de leyes contradictorias (ayudante escribe/no escribe; fotocopia gratis/guardia
+sin equipo; vigia nace roja/no se guarda con rojas; sin nombres de archivo/pedir archivo:renglon; ley 9 sin canal/ley 2 canal);
+~6h30 de esperas grandes de pruebas en 3 dias; hallazgo: LO_QUE_JULIO_YA_DIJO.json guarda texto del sistema como palabras de Julio.
+Con ella se arma la lista de contradicciones para Julio (con recomendacion) y el orden de reparaciones.
 Leyes nuevas de hoy, TODAS en CONTRATO_CREAR_PIEZA_NUEVA.md (regla 8 y siguientes) y en la memoria permanente
 `decisiones-julio-2026-09-14`: las 3 IA SOLO para crear codigo nuevo · cada freno: frena → causa raiz → que se daño → se
 repara · los candados BLOQUEAN, AVISAN y DICEN LA CAUSA (prohibido proponer quitarlos o aflojarlos) · en bucle · aprobado =
