@@ -11,6 +11,33 @@ puerta trasera cerrada con candado de opencode) · `CONTRATO_CREAR_PIEZA_NUEVA.m
    avisar a Julio al terminar cada punto, con la hora. **No dar estimaciones de horas sin descontar lo que se pierde.**
 3. **Coordinar con Big Pickle** (Julio lo tiene corriendo en su ventana): que no ensucie el trabajo de la dirección.
 
+## >>> AL VOLVER DEL CLEAR (2026-09-14 ~08:00) — POR AQUI SE SIGUE, EN ESTE ORDEN <<<
+Leyes nuevas de hoy, TODAS en CONTRATO_CREAR_PIEZA_NUEVA.md (regla 8 y siguientes) y en la memoria permanente
+`decisiones-julio-2026-09-14`: las 3 IA SOLO para crear codigo nuevo · cada freno: frena → causa raiz → que se daño → se
+repara · los candados BLOQUEAN, AVISAN y DICEN LA CAUSA (prohibido proponer quitarlos o aflojarlos) · en bucle · aprobado =
+guardado al momento · si la reparacion no funciona se apunta en la memoria de fallos.
+
+1. **PRIMERO — LA HABILIDAD DEL METODO DE TRABAJO (orden de Julio antes del clear):** *"Esto que es metodo de trabajo, que lo
+   he repetido cientos de veces, conviertelo en skills, para que no se olvide, crea la habilidad con programa, para que no
+   dependa de tu memoria [...] legislalo, crea candados vigias, y asegurate con programas que todo funcione, que todo nazca
+   conectado, que tenga programas vigias para cumplir la instruccion y que no dañe nada."* Es CODIGO NUEVO → plan corto a Julio y
+   luego las 3 IA. Contenido del metodo: frena → causa raiz medida → que se daño (herramienta o trabajo) → reparar (vigia roja
+   primero; si es codigo nuevo, 3 IA) → probar con el MISMO trabajo que se freno → aprobado = guardado → si no funciono, apuntarlo
+   en fallos y repetir. Nace conectada (la llama la ronda del equipo y el cierre) y con vigia que lo haga cumplir.
+2. **Comprobar en real el guardado al momento:** la primera ronda del equipo tras el clear debe imprimir "GUARDADO AL MOMENTO".
+   Si no, es la primera reparacion a hacer (y se apunta que no funciono).
+3. **Candados que digan la causa exacta al bloquear** (memoria, ordenes sin legislar, comunicacion, jerga): que regla, palabra o
+   archivo lo disparo. Luego investigar los falsos y reparar la raiz. SIN aflojarlos.
+4. **Big Pickle esta ESPERANDO por el canal** (Julio le dijo esperar hasta 3 horas). Tiene en cola: N1c (medir donde se cuelgan las
+   5 pantallas del DMM; orden en el scratchpad de la sesion, `orden_bp_N1c_donde_espera.txt`) y la FORENSE de la herramienta
+   (`orden_bp_forense.txt`: confirmar/tumbar causas C1-C7, leyes contradictorias, cuellos de botella, hallazgos nuevos). De una en una.
+5. **Lista de leyes contradictorias** con recomendacion → a Julio para que decida (aprobado por el).
+6. Frenos que siguen: un cambio por ronda · medicion automatica de rondas aprobadas que llegan al disco · aplicar-guardado que deje
+   la aprobacion (encargos escritos en el scratchpad: `encargo_vigia_recuperar_con_aprobacion.txt` y `encargo_cura_...`; se bloqueo
+   por el clasificador de seguridad, repetir).
+7. Despues, DMM: N1c → reparar la causa medida de las pantallas colgadas (la reparacion N1/N1b NO funciono, apuntado en fallos id 68)
+   → N2 fechas pasadas → N3-N6 → lista de pruebas de Julio.
+
 ## LISTADO MEDIDO DE LO QUE RETRASA (2026-09-14, pedido por Julio; registros del 13-14 sep)
 1. Lo aprobado no se guarda al momento: 30 rondas aprobadas, ninguna guardada al aprobarse → REPARANDOSE (guardar_en_la_historia + llamada en equipo y aplicar-guardado).
 2. candado_memoria frena la 1a vez casi cada accion ("repite la misma accion"): ~1.480 veces en 2 sesiones → SIGUIENTE a reparar (el mayor desperdicio).

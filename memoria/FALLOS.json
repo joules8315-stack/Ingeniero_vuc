@@ -1074,5 +1074,21 @@
   "quien_lo_caza": "vigias/test_vigia_enchufar_traductor_aprobacion.py",
   "disparador": "aplicar un paquete que pide enchufar una pieza al chat real sin traer el archivo de la conexion|traducir la peticion del chat y aprobarla dentro de la misma app sin el material|pedir que lo que se escribe en la app se traduzca y apruebe sin el archivo del chat",
   "veces": 5
+ },
+ {
+  "id": 68,
+  "fecha": "2026-09-14",
+  "proyecto": "dmm",
+  "que_paso": "REPARACION QUE NO FUNCIONO: N1 y N1b (el cerebro del PC solo se usa si LM Studio contesta y tiene el modelo cargado) se guardaron el 2026-09-13 y la prueba real del DMM con navegador sigue con las MISMAS 5 pantallas colgadas (crear, medir y aprobar campana, resultados, competencia)",
+  "causa_raiz": "NO CONFIRMADA: la espera no venia solo del cerebro del PC. Se reparo lo que se supuso sin medir primero donde se quedaba esperando cada pantalla. La medicion (N1c) se corto dos veces por los candados de Big Pickle (python -c bloqueado, carpeta temporal rechazada).",
+  "cura": "PENDIENTE: medir primero con el mismo trabajo frenado (N1c: pila del servidor a los 15 s en cada ruta) y reparar la causa medida.",
+  "no_volver_a": "reparar una espera sin haber medido antes donde se queda esperando; y dar por arreglado algo sin repetir la prueba real que lo freno",
+  "piezas": [
+   "cuerpo/cerebro.py",
+   "web/servidor.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_dmm_se_construye_a_si_mismo.py",
+  "disparador": "pantallas colgadas|se cuelga|Timeout 20000|TimeoutError|no descuelga",
+  "veces": 1
  }
 ]

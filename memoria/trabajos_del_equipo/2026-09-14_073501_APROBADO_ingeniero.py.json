@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La ronda del comando equipo aprueba y aplica el cambio pero no lo guarda en git al momento, por lo que el trabajo aprobado queda solo en disco y se pierde.",
+  "archivo": "ingeniero.py",
+  "funcion": "equipo",
+  "texto_viejo": "                _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)\n                if _ok:\n                    print(\"APLICADO en disco (lo escribio el equipo): %s\" % prop.get(\"archivo\"))\n                else:",
+  "texto_nuevo": "                _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)\n                if _ok:\n                    print(\"APLICADO en disco (lo escribio el equipo): %s\" % prop.get(\"archivo\"))\n                    # LO APROBADO SE GUARDA AL MOMENTO (Julio, 2026-09-14): \"que se guarde de una vez el trabajo\n                    # realizado y aprobado [...] eso si explica la perdida de trabajo\". Si el guardia frena, se dice\n                    # por que y el trabajo sigue en el disco y archivado.\n                    _okg, _msgg = _ce.guardar_en_la_historia(\n                        _raiz or AQUI, [prop.get(\"archivo\")],\n                        \"EQUIPO APROBADO Y APLICADO (%s escribe, %s revisa): %s\\n\\n%s\"\n                        % (res.get(\"obrero\"), res.get(\"auditor\"), prop.get(\"archivo\"), str(tarea)[:400]))\n                    if _okg:\n                        print(\"GUARDADO AL MOMENTO: %s\" % _msgg)\n                    else:\n                        print(\"NO SE GUARDO (el trabajo sigue en el disco y archivado). POR QUE: %s\" % _msgg)\n                else:",
+  "cambio": "Anadir, justo despues del print de APLICADO en disco y dentro del if _ok, la llamada a _ce.guardar_en_la_historia con _raiz or AQUI, la lista [prop.get(\"archivo\")] y el mensaje de equipo aprobado, imprimiendo GUARDADO AL MOMENTO si _okg o el motivo si no. No se toca nada mas del archivo.",
+  "codigo": "                    _okg, _msgg = _ce.guardar_en_la_historia(\n                        _raiz or AQUI, [prop.get(\"archivo\")],\n                        \"EQUIPO APROBADO Y APLICADO (%s escribe, %s revisa): %s\\n\\n%s\"\n                        % (res.get(\"obrero\"), res.get(\"auditor\"), prop.get(\"archivo\"), str(tarea)[:400]))\n                    if _okg:\n                        print(\"GUARDADO AL MOMENTO: %s\" % _msgg)\n                    else:\n                        print(\"NO SE GUARDO (el trabajo sigue en el disco y archivado). POR QUE: %s\" % _msgg)",
+  "vigia": "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py (4/4 verde): comprueba que tras aprobar y aplicar, el archivo queda guardado en git al momento y que si el guardado falla se informa el motivo sin perder el trabajo.",
+  "puede_danar": [
+   "ingeniero.py",
+   "arnes/candado_equipo.py",
+   "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada, no rompe vecinos y respeta todas las reglas del contrato."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19059 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

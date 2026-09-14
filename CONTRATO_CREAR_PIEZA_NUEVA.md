@@ -135,6 +135,34 @@ trabajo por algun motivo, despues de ubicar causa raiz, se repara de una vez, cu
 1. **Frena** (no deja pasar). 2. **Se verifica por qué frenó**: causa de raíz, medida. 3. **Qué se dañó: la herramienta o
 el trabajo.** 4. **Se repara de una vez**, con su vigía. Avisar sin reparar no cuenta como tratar un freno.
 
+**LOS CANDADOS BLOQUEAN, AVISAN Y DICEN LA CAUSA (Julio, 2026-09-14):** *"no, que bloqueen y avisen, que ademas digan la causa
+por la bloquean. para asi: 1) que se investigue, 2) encuentre causa raiz 3) y se repare la causa raiz."*
+- **Ningún candado se afloja ni pasa a ser solo un aviso.** Se propuso convertir cuatro (memoria, órdenes sin legislar,
+  comunicación, jerga) en avisos que no bloquean: **Julio lo rechazó.**
+- **Cada bloqueo dice su causa exacta**: qué regla, qué palabra o qué archivo lo disparó. Un bloqueo que no dice por qué no
+  se puede investigar, y lo que no se investiga no se repara: se repite.
+- **Cada bloqueo que se repite se investiga hasta la raíz y se repara la raíz** (si bloqueó en falso, se repara el candado
+  con su vigía; si bloqueó con razón, se repara el trabajo).
+- **Medido el 2026-09-14** (dos sesiones): aviso de memoria ~1.480, órdenes sin legislar 161, comunicación 57, jerga 40.
+
+**EL CICLO DE REPARAR, EN BUCLE Y SIN SALIDAS FÁCILES (Julio, 2026-09-14):** *"Tienes que trabajar en loop. Cuando vayas a
+reparar el fallo, si es codigo nuevo, tienes que usar el equipo pago [...] lo pruebas con el mismo trabajo que estaban haciendo
+y freno el programa."* · *"1) si se aprueba el trabajo se guarda, commit. 2) Si sigue dañado, se repite el paso de buscar causa
+raiz y se guarda que la reparación no funciono. No veo que aprendas de los errores, veo fallos recurrentes y no los puedes
+resolver porque no sabes las limitantes. 2,1) Siempre piensas en volarte los candados, eso es estupido, por eso todo marcha mal."*
+1. **En bucle:** frena → causa raíz → se repara → se prueba → sigue con el siguiente, sin esperar a que Julio lo pida.
+2. **Si la reparación necesita código NUEVO**, va por las 3 IA de pago (regla 8), y **se prueba con el MISMO trabajo que
+   el programa frenó**, no con un caso de laboratorio.
+3. **Aprobado = guardado en ese momento** (commit). Desde 2026-09-14 la ronda del equipo lo hace sola (`guardar_en_la_historia`).
+4. **Si sigue dañado:** se repite la búsqueda de la causa raíz y **se apunta que esa reparación NO funcionó** (qué se
+   intentó, por qué falló, qué límite se descubrió) en la memoria de fallos. Lo que no se apunta, se vuelve a intentar igual.
+5. **PROHIBIDO proponer quitar, aflojar o convertir en aviso un candado para "desatascar".** Si un candado estorba, se
+   averigua por qué frena y se repara la causa (el candado en falso o el trabajo), sin quitarle la mordida.
+
+**LO QUE JULIO APROBÓ TAL CUAL ESE DÍA:** (a) traerle la lista de leyes que se contradicen, cada una con la recomendación
+de la dirección, para que decida cuál manda; (b) un solo mando para Big Pickle: recibe órdenes solo por el canal, de una
+en una, para que dos sesiones no gasten el mismo cupo ni se pisen.
+
 **ESTADO:** aprobado por Julio. Faltan las tres piezas que lo hacen cumplir (Big Pickle como revisor del equipo, plan con
 lista de archivos, freno de lo que no esté en la lista): su plan detallado se le presenta a Julio ANTES de construir.
 Del plan de Big Pickle de los 3 bloqueos quedan aprobados: la prueba del camino completo de crear código (en carpeta

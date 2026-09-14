@@ -427,6 +427,17 @@ def main():
                 _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)
                 if _ok:
                     print("APLICADO en disco (lo escribio el equipo): %s" % prop.get("archivo"))
+                    # LO APROBADO SE GUARDA AL MOMENTO (Julio, 2026-09-14): "que se guarde de una vez el trabajo
+                    # realizado y aprobado [...] eso si explica la perdida de trabajo". Si el guardia frena, se dice
+                    # por que y el trabajo sigue en el disco y archivado.
+                    _okg, _msgg = _ce.guardar_en_la_historia(
+                        _raiz or AQUI, [prop.get("archivo")],
+                        "EQUIPO APROBADO Y APLICADO (%s escribe, %s revisa): %s\n\n%s"
+                        % (res.get("obrero"), res.get("auditor"), prop.get("archivo"), str(tarea)[:400]))
+                    if _okg:
+                        print("GUARDADO AL MOMENTO: %s" % _msgg)
+                    else:
+                        print("NO SE GUARDO (el trabajo sigue en el disco y archivado). POR QUE: %s" % _msgg)
                 else:
                     print("EL EQUIPO APROBO, pero no se pudo aplicar: %s" % _msg)
         if v_final == "APROBADO":
