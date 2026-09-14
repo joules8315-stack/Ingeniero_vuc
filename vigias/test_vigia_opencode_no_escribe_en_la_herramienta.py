@@ -33,6 +33,13 @@ def herramienta_cerrada(cfg):
     for regla in REGLAS_TERMINAL:
         if bash.get(regla) != "deny":
             abierto.append("la terminal permite: " + regla)
+    # VENTANA TRASERA CAZADA EL 2026-09-13: con la terminal abierta por defecto, una lista de
+    # prohibiciones siempre deja huecos. Big Pickle escribio codigo con python -c y esta vigia seguia verde.
+    if bash.get("*") != "deny":
+        abierto.append("la terminal esta abierta por defecto (la regla * no es deny)")
+    for regla in ("*python -c*", "*&&*"):
+        if bash.get(regla) != "deny":
+            abierto.append("la terminal permite: " + regla)
     return abierto
 
 

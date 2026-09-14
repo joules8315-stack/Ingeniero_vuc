@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La vigia solo exige que esten prohibidas las reglas de REGLAS_TERMINAL, pero no exige que la terminal este cerrada por defecto (\"*\": \"deny\"), asi que un candado con \"*\": \"allow\" y una lista de prohibiciones puede pasar verde aunque Big Pickle use python -c o &&.",
+  "archivo": "vigias/test_vigia_opencode_no_escribe_en_la_herramienta.py",
+  "funcion": "herramienta_cerrada",
+  "texto_viejo": "    for regla in REGLAS_TERMINAL:\n        if bash.get(regla) != \"deny\":\n            abierto.append(\"la terminal permite: \" + regla)\n    return abierto",
+  "texto_nuevo": "    for regla in REGLAS_TERMINAL:\n        if bash.get(regla) != \"deny\":\n            abierto.append(\"la terminal permite: \" + regla)\n    # VENTANA TRASERA CAZADA EL 2026-09-13: con la terminal abierta por defecto, una lista de\n    # prohibiciones siempre deja huecos. Big Pickle escribio codigo con python -c y esta vigia seguia verde.\n    if bash.get(\"*\") != \"deny\":\n        abierto.append(\"la terminal esta abierta por defecto (la regla * no es deny)\")\n    for regla in (\"*python -c*\", \"*&&*\"):\n        if bash.get(regla) != \"deny\":\n            abierto.append(\"la terminal permite: \" + regla)\n    return abierto",
+  "cambio": "Anadir dentro de herramienta_cerrada, justo antes del return abierto, la comprobacion de que bash[\"*\"] sea \"deny\" y la comprobacion explicita de que \"*python -c*\" y \"*&&*\" sean \"deny\", para que la vigia cace el candado abierto por defecto.",
+  "codigo": "    # VENTANA TRASERA CAZADA EL 2026-09-13: con la terminal abierta por defecto, una lista de\n    # prohibiciones siempre deja huecos. Big Pickle escribio codigo con python -c y esta vigia seguia verde.\n    if bash.get(\"*\") != \"deny\":\n        abierto.append(\"la terminal esta abierta por defecto (la regla * no es deny)\")\n    for regla in (\"*python -c*\", \"*&&*\"):\n        if bash.get(regla) != \"deny\":\n            abierto.append(\"la terminal permite: \" + regla)",
+  "vigia": "vigias/test_vigia_opencode_no_escribe_en_la_herramienta.py, incluida test_la_vigia_caza_un_candado_aflojado, debe seguir verde con el opencode.json actual (terminal \"*\": \"deny\" y prohibidos \"*python -c*\" y \"*&&*\"), y ponerse roja si se afloja \"*\" a \"allow\" o se quitan esas prohibiciones.",
+  "puede_danar": [
+   "vigias/test_vigia_opencode_no_escribe_en_la_herramienta.py",
+   "arnes/guardia_de_guardado.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta añade la comprobación de \"*\" y de \"*python -c*\" / \"*&&*\" sin inventar nada, corrige el diagnóstico y no rompe pruebas ni contratos."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}
