@@ -11,6 +11,15 @@ puerta trasera cerrada con candado de opencode) · `CONTRATO_CREAR_PIEZA_NUEVA.m
    avisar a Julio al terminar cada punto, con la hora. **No dar estimaciones de horas sin descontar lo que se pierde.**
 3. **Coordinar con Big Pickle** (Julio lo tiene corriendo en su ventana): que no ensucie el trabajo de la dirección.
 
+## ACTUALIZACION 2026-09-14 04:50 (lo hecho en la noche)
+- ✅ H4: el guardia se acuerda de TODAS las aprobaciones de 24 h y FRENA el codigo sin equipo (c36b28e, llave de Julio; probado en vivo: 4 archivos con 4 aprobaciones distintas pasaron).
+- ✅ Big Pickle obligado: candado global cerrado por defecto (Foto Informe y cualquier carpeta), herramienta cerrada, negocio repara pero no guarda/deshace/borra; ventana de Julio recargada SIN cerrarla (`/global/dispose` + `/instance/dispose`, comprobado con `/config`). Probado en real. Ley en CONTRATO_EL_AYUDANTE (TODAS LAS PUERTAS Y VENTANAS CERRADAS). Vigia 5/5 saboteada. (adb7153, 3bfb09c)
+- ✅ El guardia se colgaba (5 h 30 min) y dejaba guardar sin probar: entrada cerrada + si no terminan NO se guarda (3c1a243; guardado real en 2 min 41 s).
+- ✅ Revisor de programa frenaba en falso al crear archivos nuevos (3c1a243).
+- ✅ via_canonica ya no grita por las notas de los candados (c36b28e).
+- ⏳ SIGUE: el candado de cierre sigue viendo como "sin guardar" las notas que los candados escriben solos (bucle al terminar). · El aplicador acepta UN cambio por ronda. · Medicion automatica de rondas aprobadas que llegan al disco. · Recuperar trabajo archivado (`aplicar-guardado`) no deja aprobacion: el guardia no lo deja guardar.
+- ⏳ DESPUES: DMM (N1c pantallas colgadas: medir donde esperan; N2 fechas pasadas; N3–N6).
+
 ## LO QUE NOS FRENA (estado)
 - ✅ Marca NO_ENCONTRADO no dejaba crear archivos · ✅ "añadir al final" tomado por humo · ✅ marca BOM de ingeniero.py tiraba todo cambio
 - ✅ Trabajo aprobado pisado → se archiva en `memoria/trabajos_del_equipo/` y `aplicar-guardado <proy> <ruta>` lo recupera
