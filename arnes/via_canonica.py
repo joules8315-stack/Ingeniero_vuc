@@ -74,7 +74,21 @@ def ultimo_commit(ruta):
 
 
 def hay_cambios_sin_guardar(ruta):
-    return bool(_git(ruta, "status", "--porcelain"))
+    s = _git(ruta, "status", "--porcelain")
+    if not s:
+        return False
+    # EL BUCLE DE LOS CANDADOS (Julio, 2026-09-13): los cuadernos que los propios candados
+    # escriben cada vez que actuan (memoria/CANDADOS_MEDICION.json y demas) dejan el git siempre
+    # "sucio", y aqui se gritaba "hay cambios SIN GUARDAR" a cada rato, sin haber trabajo real.
+    # Se usa el MISMO filtro que candado_commit para no definir la lista dos veces: solo se
+    # ignoran los cuadernos de los candados; el codigo real sin guardar sigue gritando igual.
+    try:
+        import candado_commit
+        resto = [ln for ln in s.splitlines()
+                 if not candado_commit._es_cuaderno(ln[3:].strip())]
+        return bool(resto)
+    except Exception:
+        return bool(s)
 
 
 def gemelos(ruta_buena):

@@ -131,21 +131,49 @@ def _cubierto_por_equipo(archivos):
     """¿Lo que se va a guardar lleva veredicto del equipo? (Julio, 2026-09-02)
 
     Asi el balance sabe, en cada guardado y sin que nadie lo cuente a mano, si esto fue del
-    equipo o a mano. Devuelve True (equipo), False (a mano) o None (no toca codigo)."""
+    equipo o a mano. Devuelve True (equipo), False (a mano) o None (no toca codigo).
+
+    EL CUADERNO (Julio, 2026-09-12, "que se acuerde de todo"): cada veredicto se anade a
+    .veredictos_recientes.jsonl, junto al veredicto. Aqui se LEE, y cuenta TODO lo aprobado en
+    las ultimas 24 h, no solo el ultimo. Un permiso de ayer no vale para hoy, un rechazado no
+    vale, revisarse a si mismo no es equipo, y un renglon roto no tumba al guardia: se salta."""
     codigo = [a for a in archivos
               if a.lower().endswith((".py", ".js", ".html", ".ts", ".jsx", ".tsx", ".css", ".sql"))]
     if not codigo:
         return None                                   # nada que atribuir: no toca codigo
     ruta = os.environ.get("INGENIERO_VEREDICTO_TEST") or \
         os.path.join(AQUI, "memoria", ".veredicto_equipo.json")
+    aprobados = []
+    ahora = time.time()
+    cuaderno = os.path.join(os.path.dirname(ruta), ".veredictos_recientes.jsonl")
     try:
-        d = json.load(open(ruta, encoding="utf-8"))
+        with open(cuaderno, encoding="utf-8") as f:
+            for linea in f:
+                linea = linea.strip()
+                if not linea:
+                    continue
+                try:
+                    d = json.loads(linea)
+                except Exception:
+                    continue                          # renglon roto: se salta, no se cae
+                if str(d.get("veredicto", "")).upper() != "APROBADO":
+                    continue                          # un rechazado no abre
+                if d.get("reviso_a_si_mismo"):
+                    continue                          # revisarse a si mismo no es equipo
+                try:
+                    cuando = float(d.get("cuando", 0) or 0)
+                except Exception:
+                    continue
+                if ahora - cuando > 24 * 3600:
+                    continue                          # un permiso de ayer no vale para hoy
+                aprobados.extend(os.path.basename(str(a)).lower()
+                                for a in d.get("archivos", []))
     except Exception:
-        d = None
-    if not d or str(d.get("veredicto", "")).upper() != "APROBADO":
+        pass                                          # si no se lee, no hay cubiertos
+    if not aprobados:
         return False
-    bases = set(os.path.basename(str(a)).lower() for a in d.get("archivos", []))
-    return all(os.path.basename(a).lower() in bases for a in codigo)
+    cubiertos = set(aprobados)
+    return all(os.path.basename(a).lower() in cubiertos for a in codigo)
 
 
 def se_puede_guardar_sin_equipo(cubierto, llave_de_julio):
@@ -296,8 +324,21 @@ def main():
 
     # EL BALANCE (Julio, 2026-09-02): cada guardado apunta si fue del equipo o a mano, para que
     # nadie tenga que contar a mano cuanto trabaja cada quien (memoria/BALANCE.log).
+    # Y EL FRENO (Julio, 2026-09-12): apuntar sin frenar es lo mismo que no saber. Codigo sin
+    # veredicto del equipo no se guarda, lo escriba quien lo escriba; solo abre la llave de Julio
+    # con un motivo de 20 letras o mas. Por eso se conecta aqui, en la unica puerta por la que
+    # pasa todo guardado (la ejecuta git y no la IA).
     try:
         cub = _cubierto_por_equipo(archivos)
+        llave_de_julio = os.environ.get("JULIO_LO_AUTORIZA", "")
+        se_puede, motivo = se_puede_guardar_sin_equipo(cub, llave_de_julio)
+        if not se_puede:
+            _apuntar(raiz, "FRENADO: trabajo a solas -> " + motivo)
+            sys.stderr.write(
+                "\nGUARDIA: NO SE GUARDA. " + motivo + "\n\n"
+                "  Pidele al equipo que revises esta tarea y vuelve a guardar:\n"
+                "     python ingeniero.py equipo <proyecto> \"<la misma tarea el equipo>\"\n\n")
+            return 1
         if cub is True:
             _apuntar_balance(raiz, "equipo", archivos)
         elif cub is False:

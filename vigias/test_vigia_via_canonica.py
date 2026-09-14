@@ -71,3 +71,36 @@ def test_el_sellado_exige_la_rama_canonica():
     """Los commits se guardan donde mandan, no donde toque."""
     s = open(os.path.join(AQUI, "sellar.sh"), encoding="utf-8").read()
     assert "RAMA_OK" in s and "BLOQUEADO" in s, "sellar.sh no protege la rama canonica"
+
+
+# EL BUCLE DE LOS CANDADOS (Julio, 2026-09-13): los candados escriben sus propios cuadernos
+# (memoria/CANDADOS_MEDICION.json, memoria/GASTO.log y demas) CADA VEZ que actuan. Ese archivo
+# de mediciones reescrito deja el git siempre "sucio", y la via canonica grita "hay cambios SIN
+# GUARDAR" a cada rato aunque no haya trabajo de Julio sin guardar. Es lo que Julio siente como
+# "me pide permiso a cada rato" y lo que hace perder minutos en cada cierre.
+
+def test_los_cuadernos_de_los_candados_NO_son_trabajo_sin_guardar(monkeypatch):
+    """Si lo unico sucio son los cuadernos que los candados reescriben solos, NO es trabajo
+    sin guardar: la via canonica no debe gritar."""
+    def _falso(ruta, *args):
+        if 'status' in args:
+            return (" M memoria/CANDADOS_MEDICION.json\n"
+                    " M memoria/GASTO.log\n"
+                    " M memoria/GUARDIA.log\n")
+        return ""
+    monkeypatch.setattr(via_canonica, "_git", _falso)
+    assert via_canonica.hay_cambios_sin_guardar("C:/x") is False, (
+        "los cuadernos de los candados hicieron gritar 'hay cambios SIN GUARDAR'. Es un bucle: "
+        "el candado se ensucia solo al medir. Solo el trabajo de verdad debe contar.")
+
+
+def test_el_codigo_real_SI_es_trabajo_sin_guardar(monkeypatch):
+    """NO se afloja: codigo real sucio tiene que seguir gritando igual de fuerte."""
+    def _falso(ruta, *args):
+        if 'status' in args:
+            return " M cuerpo/obrero.py\n"
+        return ""
+    monkeypatch.setattr(via_canonica, "_git", _falso)
+    assert via_canonica.hay_cambios_sin_guardar("C:/x") is True, (
+        "hay codigo real sin guardar y la via canonica no grita: se aflojo el candado, y eso "
+        "esta prohibido. Solo los cuadernos de los candados deben ignorarse.")
