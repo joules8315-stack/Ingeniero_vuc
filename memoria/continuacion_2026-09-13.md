@@ -28,7 +28,12 @@ guardado al momento · si la reparacion no funciona se apunta en la memoria de f
    Si no, es la primera reparacion a hacer (y se apunta que no funciono).
 3. **Candados que digan la causa exacta al bloquear** (memoria, ordenes sin legislar, comunicacion, jerga): que regla, palabra o
    archivo lo disparo. Luego investigar los falsos y reparar la raiz. SIN aflojarlos.
-4. **Big Pickle esta ESPERANDO por el canal** (Julio le dijo esperar hasta 3 horas). Tiene en cola: N1c (medir donde se cuelgan las
+4. **ACTUALIZADO 08:45:** la medicion N1c de Big Pickle (lanzada antes) TERMINO SIN INFORME: se enredo depurando su propio
+   programa de medir y volvio a intentar escribir en C:\Users\USER\AppData\Local\Temp\opencode (fuera de su carpeta) → cortado.
+   Leccion: la orden N1c tiene que decirle que el programa de medir lo escriba DENTRO de la carpeta del negocio (ahi puede) y lo
+   borre al terminar... NO puede borrar: que lo deje y la direccion lo quita. La FORENSE arranco sola a las 08:42 (cola): su
+   informe se recupera con `opencode session list` y `opencode export <id>` (la salida de la sesion de Claude se pierde con el clear).
+   **Big Pickle esta ESPERANDO por el canal** (Julio le dijo esperar hasta 3 horas). Tiene en cola: N1c (medir donde se cuelgan las
    5 pantallas del DMM; orden en el scratchpad de la sesion, `orden_bp_N1c_donde_espera.txt`) y la FORENSE de la herramienta
    (`orden_bp_forense.txt`: confirmar/tumbar causas C1-C7, leyes contradictorias, cuellos de botella, hallazgos nuevos). De una en una.
 5. **Lista de leyes contradictorias** con recomendacion → a Julio para que decida (aprobado por el).
