@@ -3,6 +3,14 @@
 Estado: **APROBADO POR JULIO el 2026-09-14** ("si, acepto"). Los puntos 7 a 13 se anadieron despues de su
 aprobacion (salen de sus propias palabras que el resumen habia dejado fuera, y de la medicion del sueño del PC):
 se le informaron en la misma respuesta.
+**Correcciones de Julio a los puntos 7, 8 y 12 + proxima mejora (pasos 0 y 1): APROBADAS el 2026-09-14** ("si, aprobado el plan,
+haz asi segun el plan, mira que no se desvie").
+
+## EN EJECUCION AHORA
+- **Paso 0** y **Paso 1**, juntos. Son reparaciones de piezas que ya existen (el contador de frenos y el aplicador)
+  -> **equipo estandar de IA gratis**, no las 3 IA de pago. Lo que pueda hacer un programa, lo hace un programa.
+- Orden obligado: paquete -> 5 preguntas -> vigias antes -> vigia que nace roja -> equipo repara -> verde -> equipo aprueba
+  -> guardado al momento -> vigias despues -> prueba real. NO se toca nada fuera de los pasos 0 y 1.
 Base: `memoria/FORENSE_BIG_PICKLE_2026-09-14.md` + medicion de Claude del mismo dia.
 
 ## A. MEDICION (hecha con busquedas en las conversaciones y registros, sin IA)
@@ -50,6 +58,8 @@ Base: `memoria/FORENSE_BIG_PICKLE_2026-09-14.md` + medicion de Claude del mismo 
    requerimiento -> analisis pidiendo la informacion -> raiz(es) -> legislar, candado, vigias (y vigia de
    no romper), nace conectado, en los archivos exactos -> herramientas -> repartir -> ejecutar ->
    supervisar -> aprobar (tras reparar la roja de nacimiento) -> guardar, o volver a buscar la raiz.
+6. **Dos equipos, dos acciones (no se contradicen)**: si ya existe ley o pieza -> equipo estandar de IA gratis;
+   si es codigo nuevo -> Claude + Big Pickle + DeepSeek. **Por encima de todo: si lo puede hacer un programa, lo hace un programa.**
 
 ## C. PLAN (orden propuesto, cada paso con su vigia; ninguno quita un candado protector)
 
@@ -63,17 +73,23 @@ Base: `memoria/FORENSE_BIG_PICKLE_2026-09-14.md` + medicion de Claude del mismo 
 6. **El metodo de B5 como programa fijo** que une las piezas que ya existen; la IA solo llena los huecos que exigen escribir, y el programa rechaza lo que no venga del material.
 
 ### Anadido (lo que el resumen habia dejado fuera)
-7. **Que el PC no se duerma mientras corren las pruebas** (ver A5). El programa del guardado le pide a Windows
-   mantenerse despierto solo mientras corre, y lo suelta al terminar. No se toca la configuracion de energia de Julio.
+7. ~~Que el PC no se duerma mientras corren las pruebas~~ **SACADO: Julio lo arreglo desde la configuracion.**
 8. **Preguntar en vez de asumir, por programa**: si falta un dato, el programa exige `PREGUNTA_REQUERIDA` o
-   `NECESITO_LEER`; una respuesta que nombra algo que no esta en el material se rechaza sola (`NO_ENCONTRADO`).
+   `NECESITO_LEER`. **Correccion de Julio:** lo que se rechaza NO se queda en rechazo: se investiga la causa y se
+   repara. Y el programa distingue: en codigo NUEVO es normal que lo nombrado aun no exista; en lo que ya existe, si es error.
 9. **Cada papel del equipo con instrucciones fijas (skill)**: obrero, revisor, medidor, copista. Nadie hace "lo que le da la gana".
 10. **Pasos c.3.1 a c.3.5 y c.4 del metodo, uno por uno en el programa**: legislar, candado, vigias + vigia de no romper,
     nace conectado, solo en los archivos exactos, y buscar la herramienta antes de crear.
 11. **Registros limpios**: "lo que Julio ya dijo" y el candado de legislar no toman texto del sistema ni resumenes como
     ordenes, y existe el estado "espera aprobacion de Julio".
-12. **Las otras 2 leyes que chocan** (forense parte 2, pares 1 y 4): "nunca codigo sin equipo" frente a "puede reparar";
-    "nada de nombres de archivo" frente a "decir que archivo". Se armonizan por su intencion.
+12. **Las otras 2 leyes que "chocan" — correccion de Julio: no chocan, son dos publicos/dos equipos:**
+    a) Big Pickle: solo entra en codigo nuevo (ver B6). Se corrige la regla vieja del 2026-09-13 ("puede REPARAR")
+       en las leyes del ayudante, que quedo reemplazada.
+    b) "Nada de nombres de archivo" es para hablarle a Julio; "decir que archivo" es para cuando el ayudante pide
+       permiso a la direccion. El programa que revisa la jerga debe saber A QUIEN se le habla.
+
+### Hallazgo 2026-09-14 tarde
+- Cada guardado deja una nota nueva de los candados que pide otro guardado (bucle). Lo destapa el paso 0; se cura en el 11.
 13. **Regla permanente**: toda mejora futura se pregunta primero "¿esto lo puede hacer un programa en vez de una IA?".
 
 ## A5. Por que un guardado tardo 47 minutos (medido en el registro de Windows)
