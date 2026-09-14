@@ -1,6 +1,8 @@
 # PLAN PARA EL CUELLO DE BOTELLA — 2026-09-14
 
-Estado: **ESPERA APROBACION DE JULIO** (nada de esto se ha tocado todavia).
+Estado: **APROBADO POR JULIO el 2026-09-14** ("si, acepto"). Los puntos 7 a 13 se anadieron despues de su
+aprobacion (salen de sus propias palabras que el resumen habia dejado fuera, y de la medicion del sueño del PC):
+se le informaron en la misma respuesta.
 Base: `memoria/FORENSE_BIG_PICKLE_2026-09-14.md` + medicion de Claude del mismo dia.
 
 ## A. MEDICION (hecha con busquedas en las conversaciones y registros, sin IA)
@@ -59,3 +61,24 @@ Base: `memoria/FORENSE_BIG_PICKLE_2026-09-14.md` + medicion de Claude del mismo 
 4. **Pruebas en paralelo + clasificador automatico** de por que fallo + tiempo limite (nunca mas 3 horas colgada) + reintento solo si es fallo tonto. Mientras corren, el equipo sigue con otras tareas.
 5. **Armonia de leyes** segun B1-B3 (estados de la vigia: nacio roja -> verde -> aprobada -> guardada; copista = equipo; carpeta del ayudante con canal).
 6. **El metodo de B5 como programa fijo** que une las piezas que ya existen; la IA solo llena los huecos que exigen escribir, y el programa rechaza lo que no venga del material.
+
+### Anadido (lo que el resumen habia dejado fuera)
+7. **Que el PC no se duerma mientras corren las pruebas** (ver A5). El programa del guardado le pide a Windows
+   mantenerse despierto solo mientras corre, y lo suelta al terminar. No se toca la configuracion de energia de Julio.
+8. **Preguntar en vez de asumir, por programa**: si falta un dato, el programa exige `PREGUNTA_REQUERIDA` o
+   `NECESITO_LEER`; una respuesta que nombra algo que no esta en el material se rechaza sola (`NO_ENCONTRADO`).
+9. **Cada papel del equipo con instrucciones fijas (skill)**: obrero, revisor, medidor, copista. Nadie hace "lo que le da la gana".
+10. **Pasos c.3.1 a c.3.5 y c.4 del metodo, uno por uno en el programa**: legislar, candado, vigias + vigia de no romper,
+    nace conectado, solo en los archivos exactos, y buscar la herramienta antes de crear.
+11. **Registros limpios**: "lo que Julio ya dijo" y el candado de legislar no toman texto del sistema ni resumenes como
+    ordenes, y existe el estado "espera aprobacion de Julio".
+12. **Las otras 2 leyes que chocan** (forense parte 2, pares 1 y 4): "nunca codigo sin equipo" frente a "puede reparar";
+    "nada de nombres de archivo" frente a "decir que archivo". Se armonizan por su intencion.
+13. **Regla permanente**: toda mejora futura se pregunta primero "¿esto lo puede hacer un programa en vez de una IA?".
+
+## A5. Por que un guardado tardo 47 minutos (medido en el registro de Windows)
+- El PC **se durmio por inactividad** a las 12:42 y desperto a las 13:25 (43 min) con las pruebas a medio correr.
+  Trabajo real: unos 4-5 min.
+- Coinciden igual los otros guardados lentos: 12-sep 13:07 (48 min, durmio 45), 13-sep 22:39 (1h19, durmio 75),
+  14-sep 08:33 (44 min, durmio 40).
+- Los dos de 3 horas (13-sep 04:15 y 04:17) **no** coinciden con sueño: siguen siendo "guardia colgada" (forense). Sin explicar aun.
