@@ -234,3 +234,34 @@ def test_crear_un_archivo_nuevo_no_frena_por_palabras_de_contexto(tmp_path):
     assert not any("NO HACE LO QUE SE PIDIO" in str(f) for f in fallos), (
         "Freno la creacion de un archivo nuevo por palabras que el encargo solo usa para contar "
         "como esta hoy otro archivo; asi se tiran rondas buenas ya aprobadas. Dijo: " + str(fallos))
+
+
+def test_no_acusa_de_roto_un_trozo_que_acaba_donde_empieza_la_funcion_siguiente(tmp_path):
+    """NACE ROJA (2026-09-14): el trozo suelto parece incompleto, pero el archivo completo queda bien."""
+    r = _revisor()
+    archivo = tmp_path / "con_dos_funciones.py"
+    archivo.write_text("def a():\n    return 1\n\n\ndef b():\n    return 2\n", encoding="utf-8")
+    propuesta = {
+        "archivo": str(archivo),
+        "texto_viejo": "def b():",
+        "texto_nuevo": "def c():\n    return 3\n\n\ndef b():",
+    }
+    fallos = r.revisar(propuesta, tarea="anadir la funcion c antes de b")
+    assert not any("QUEDA ROTO" in str(f) for f in fallos), (
+        "Acuso de roto un trozo que dentro del archivo completo queda bien; asi se tiro una "
+        "reparacion ya aprobada el 2026-09-14. Dijo: " + str(fallos))
+
+
+def test_sigue_cazando_un_archivo_que_de_verdad_queda_roto(tmp_path):
+    """Debe seguir verde: si el archivo completo queda roto, se frena."""
+    r = _revisor()
+    archivo = tmp_path / "se_rompe.py"
+    archivo.write_text("def a():\n    return 1\n", encoding="utf-8")
+    propuesta = {
+        "archivo": str(archivo),
+        "texto_viejo": "    return 1\n",
+        "texto_nuevo": "    return (1\n",
+    }
+    fallos = r.revisar(propuesta, tarea="cambiar lo que devuelve a")
+    assert any("QUEDA ROTO" in str(f) for f in fallos), (
+        "Dejo pasar un cambio que deja el archivo completo roto; en cuanto se corra, revienta. Dijo: " + str(fallos))

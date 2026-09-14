@@ -293,6 +293,31 @@ def guardar_trabajo_pagado(res):
     return None
 
 
+def guardar_en_la_historia(raiz, archivos, mensaje):
+    """LO APROBADO SE GUARDA AL MOMENTO (Julio, 2026-09-14): "que se guarde de una vez el trabajo realizado
+    y aprobado, que es algo que no se viene haciendo y eso si explica la perdida de trabajo".
+
+    Guarda en git SOLO los archivos que el equipo aprobo y se aplicaron, con la entrada de teclado cerrada
+    (con ella abierta un guardado se colgo 5 h 30 min). Pasa por el guardia de guardado como todo guardado:
+    si el guardia frena, devuelve (False, motivo) y el archivo sigue en el disco y archivado. NUNCA lanza.
+    """
+    import subprocess
+    try:
+        rutas = [str(a) for a in (archivos or []) if a]
+        if not rutas:
+            return False, "no hay archivos aprobados que guardar"
+        comun = dict(cwd=raiz, capture_output=True, text=True, stdin=subprocess.DEVNULL)
+        r = subprocess.run(["git", "add", "--"] + rutas, timeout=60, **comun)
+        if r.returncode != 0:
+            return False, "no se pudo preparar el guardado: " + ((r.stderr or "") + (r.stdout or ""))[-300:]
+        r = subprocess.run(["git", "commit", "-q", "-m", str(mensaje), "--"] + rutas, timeout=1800, **comun)
+        if r.returncode != 0:
+            return False, "EL GUARDIA NO DEJO GUARDAR: " + ((r.stderr or "") + (r.stdout or ""))[-600:]
+        return True, "guardado en la historia: " + ", ".join(rutas)
+    except Exception as e:
+        return False, "no se pudo guardar: %s" % str(e)[:200]
+
+
 def veredicto_para_aplicar(res, guardado):
     """EL VEREDICTO QUE MANDA (Julio, 2026-09-13).
 

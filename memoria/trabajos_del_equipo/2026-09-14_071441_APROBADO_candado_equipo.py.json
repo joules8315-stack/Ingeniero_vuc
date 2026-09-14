@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Falta la funcion guardar_en_la_historia en arnes/candado_equipo.py, por lo que el trabajo aprobado y aplicado no se guarda en git al momento y se pierde.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "guardar_en_la_historia (nueva, se inserta antes de veredicto_para_aplicar)",
+  "texto_viejo": "def veredicto_para_aplicar(res, guardado):",
+  "texto_nuevo": "def guardar_en_la_historia(raiz, archivos, mensaje):\n    \"\"\"LO APROBADO SE GUARDA AL MOMENTO (Julio, 2026-09-14): \"que se guarde de una vez el trabajo realizado\n    y aprobado, que es algo que no se viene haciendo y eso si explica la perdida de trabajo\".\n\n    Guarda en git SOLO los archivos que el equipo aprobo y se aplicaron, con la entrada de teclado cerrada\n    (con ella abierta un guardado se colgo 5 h 30 min). Pasa por el guardia de guardado como todo guardado:\n    si el guardia frena, devuelve (False, motivo) y el archivo sigue en el disco y archivado. NUNCA lanza.\n    \"\"\"\n    import subprocess\n    try:\n        rutas = [str(a) for a in (archivos or []) if a]\n        if not rutas:\n            return False, \"no hay archivos aprobados que guardar\"\n        comun = dict(cwd=raiz, capture_output=True, text=True, stdin=subprocess.DEVNULL)\n        r = subprocess.run([\"git\", \"add\", \"--\"] + rutas, timeout=60, **comun)\n        if r.returncode != 0:\n            return False, \"no se pudo preparar el guardado: \" + ((r.stderr or \"\") + (r.stdout or \"\"))[-300:]\n        r = subprocess.run([\"git\", \"commit\", \"-q\", \"-m\", str(mensaje), \"--\"] + rutas, timeout=1800, **comun)\n        if r.returncode != 0:\n            return False, \"EL GUARDIA NO DEJO GUARDAR: \" + ((r.stderr or \"\") + (r.stdout or \"\"))[-600:]\n        return True, \"guardado en la historia: \" + \", \".join(rutas)\n    except Exception as e:\n        return False, \"no se pudo guardar: %s\" % str(e)[:200]\n\n\ndef veredicto_para_aplicar(res, guardado):",
+  "cambio": "Insertar la funcion guardar_en_la_historia justo antes de la funcion veredicto_para_aplicar, sin tocar nada mas del archivo.",
+  "codigo": "def guardar_en_la_historia(raiz, archivos, mensaje):\n    \"\"\"LO APROBADO SE GUARDA AL MOMENTO (Julio, 2026-09-14): \"que se guarde de una vez el trabajo realizado\n    y aprobado, que es algo que no se viene haciendo y eso si explica la perdida de trabajo\".\n\n    Guarda en git SOLO los archivos que el equipo aprobo y se aplicaron, con la entrada de teclado cerrada\n    (con ella abierta un guardado se colgo 5 h 30 min). Pasa por el guardia de guardado como todo guardado:\n    si el guardia frena, devuelve (False, motivo) y el archivo sigue en el disco y archivado. NUNCA lanza.\n    \"\"\"\n    import subprocess\n    try:\n        rutas = [str(a) for a in (archivos or []) if a]\n        if not rutas:\n            return False, \"no hay archivos aprobados que guardar\"\n        comun = dict(cwd=raiz, capture_output=True, text=True, stdin=subprocess.DEVNULL)\n        r = subprocess.run([\"git\", \"add\", \"--\"] + rutas, timeout=60, **comun)\n        if r.returncode != 0:\n            return False, \"no se pudo preparar el guardado: \" + ((r.stderr or \"\") + (r.stdout or \"\"))[-300:]\n        r = subprocess.run([\"git\", \"commit\", \"-q\", \"-m\", str(mensaje), \"--\"] + rutas, timeout=1800, **comun)\n        if r.returncode != 0:\n            return False, \"EL GUARDIA NO DEJO GUARDAR: \" + ((r.stderr or \"\") + (r.stdout or \"\"))[-600:]\n        return True, \"guardado en la historia: \" + \", \".join(rutas)\n    except Exception as e:\n        return False, \"no se pudo guardar: %s\" % str(e)[:200]",
+  "vigia": "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py (4 pruebas) debe quedar verde; y las vigias vecinas del candado del equipo (test_vigia_el_guardia_se_acuerda_y_frena, test_vigia_el_trabajo_pagado_no_se_pisa, test_vigia_equipo_siempre, test_vigia_fuera_de_casa, test_vigia_no_se_aplica_lo_frenado, test_vigia_nunca_sin_revisar, test_vigia_siempre_con_equipo) siguen verdes.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_fuera_de_casa.py",
+   "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py",
+   "vigias/test_vigia_no_se_aplica_lo_frenado.py",
+   "vigias/test_vigia_nunca_sin_revisar.py",
+   "vigias/test_vigia_siempre_con_equipo.py"
+  ],
+  "preguntas": [
+   "Quien llama a guardar_en_la_historia y con que raiz, archivos y mensaje (el material no muestra el punto de llamada en el comando equipo)."
+  ],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "test_vigia_equipo_siempre.py",
+   "test_vigia_fuera_de_casa.py",
+   "test_vigia_no_se_aplica_lo_frenado.py",
+   "test_vigia_nunca_sin_revisar.py",
+   "test_vigia_siempre_con_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La función se añadió correctamente y no rompe nada."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -164,11 +164,32 @@ def revisar(propuesta, tarea=""):
             try:
                 arbol = ast.parse(textwrap.dedent(nuevo))
             except SyntaxError:
-                if es_un_pedazo(nuevo):
-                    return fallos       # pedazo suelto: no hay nada que se pueda comprobar
-                fallos.append("EL CODIGO QUEDA ROTO en el renglon %s: %s. Asi no arranca."
-                              % (getattr(e, "lineno", "?"), e.msg))
-                return fallos
+                # FRENADA EN FALSO CAZADA EL 2026-09-14: un trozo que acababa donde empieza la funcion
+                # siguiente no se dejaba leer suelto y se acuso de roto, aunque el archivo completo quedaba
+                # bien. Antes de acusar, se lee el archivo tal como quedaria con el cambio.
+                _completo = None
+                try:
+                    _ruta_s = str(p.get("archivo") or "")
+                    if _ruta_s and os.path.isfile(_ruta_s) and viejo:
+                        with open(_ruta_s, encoding="utf-8-sig", errors="replace") as _fs:
+                            _todo = _fs.read()
+                        if viejo in _todo:
+                            _completo = _todo.replace(viejo, nuevo, 1)
+                except Exception:
+                    _completo = None
+                if _completo is not None:
+                    try:
+                        arbol = ast.parse(_completo)
+                    except SyntaxError as e2:
+                        fallos.append("EL CODIGO QUEDA ROTO en el renglon %s del archivo completo: %s. Asi no arranca."
+                                      % (getattr(e2, "lineno", "?"), e2.msg))
+                        return fallos
+                else:
+                    if es_un_pedazo(nuevo):
+                        return fallos       # pedazo suelto: no hay nada que se pueda comprobar
+                    fallos.append("EL CODIGO QUEDA ROTO en el renglon %s: %s. Asi no arranca."
+                                  % (getattr(e, "lineno", "?"), e.msg))
+                    return fallos
         except Exception as e:
             fallos.append("No se pudo leer el codigo nuevo: %s" % str(e)[:120])
             return fallos

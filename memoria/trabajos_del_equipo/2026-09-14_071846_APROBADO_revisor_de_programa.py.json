@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "La regla 2 (SINTAXIS) de revisar acusa de 'QUEDA ROTO' un trozo que termina donde empieza la funcion siguiente, porque solo comprueba la sintaxis del trozo suelto y no del archivo completo tal como quedaria.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "            except SyntaxError:\n                if es_un_pedazo(nuevo):\n                    return fallos       # pedazo suelto: no hay nada que se pueda comprobar\n                fallos.append(\"EL CODIGO QUEDA ROTO en el renglon %s: %s. Asi no arranca.\"\n                              % (getattr(e, \"lineno\", \"?\"), e.msg))\n                return fallos",
+  "texto_nuevo": "            except SyntaxError:\n                # FRENADA EN FALSO CAZADA EL 2026-09-14: un trozo que acababa donde empieza la funcion\n                # siguiente no se dejaba leer suelto y se acuso de roto, aunque el archivo completo quedaba\n                # bien. Antes de acusar, se lee el archivo tal como quedaria con el cambio.\n                _completo = None\n                try:\n                    _ruta_s = str(p.get(\"archivo\") or \"\")\n                    if _ruta_s and os.path.isfile(_ruta_s) and viejo:\n                        with open(_ruta_s, encoding=\"utf-8-sig\", errors=\"replace\") as _fs:\n                            _todo = _fs.read()\n                        if viejo in _todo:\n                            _completo = _todo.replace(viejo, nuevo, 1)\n                except Exception:\n                    _completo = None\n                if _completo is not None:\n                    try:\n                        arbol = ast.parse(_completo)\n                    except SyntaxError as e2:\n                        fallos.append(\"EL CODIGO QUEDA ROTO en el renglon %s del archivo completo: %s. Asi no arranca.\"\n                                      % (getattr(e2, \"lineno\", \"?\"), e2.msg))\n                        return fallos\n                else:\n                    if es_un_pedazo(nuevo):\n                        return fallos       # pedazo suelto: no hay nada que se pueda comprobar\n                    fallos.append(\"EL CODIGO QUEDA ROTO en el renglon %s: %s. Asi no arranca.\"\n                                  % (getattr(e, \"lineno\", \"?\"), e.msg))\n                    return fallos",
+  "cambio": "En la regla 2 (SINTAXIS) de revisar, dentro del except SyntaxError del segundo ast.parse (el del dedent), sustituir el bloque que acusa directamente de roto por: primero intentar leer el archivo completo con el cambio hecho (si el archivo existe y viejo esta en el); si el archivo completo se deja leer, seguir con ese arbol; si el archivo completo tampoco se deja leer, acusar QUEDA ROTO del archivo completo; si no se puede comprobar el archivo, mantener el comportamiento de hoy (pedazo suelto se calla, resto acusa).",
+  "codigo": "            except SyntaxError:\n                # FRENADA EN FALSO CAZADA EL 2026-09-14: un trozo que acababa donde empieza la funcion\n                # siguiente no se dejaba leer suelto y se acuso de roto, aunque el archivo completo quedaba\n                # bien. Antes de acusar, se lee el archivo tal como quedaria con el cambio.\n                _completo = None\n                try:\n                    _ruta_s = str(p.get(\"archivo\") or \"\")\n                    if _ruta_s and os.path.isfile(_ruta_s) and viejo:\n                        with open(_ruta_s, encoding=\"utf-8-sig\", errors=\"replace\") as _fs:\n                            _todo = _fs.read()\n                        if viejo in _todo:\n                            _completo = _todo.replace(viejo, nuevo, 1)\n                except Exception:\n                    _completo = None\n                if _completo is not None:\n                    try:\n                        arbol = ast.parse(_completo)\n                    except SyntaxError as e2:\n                        fallos.append(\"EL CODIGO QUEDA ROTO en el renglon %s del archivo completo: %s. Asi no arranca.\"\n                                      % (getattr(e2, \"lineno\", \"?\"), e2.msg))\n                        return fallos\n                else:\n                    if es_un_pedazo(nuevo):\n                        return fallos       # pedazo suelto: no hay nada que se pueda comprobar\n                    fallos.append(\"EL CODIGO QUEDA ROTO en el renglon %s: %s. Asi no arranca.\"\n                                  % (getattr(e, \"lineno\", \"?\"), e.msg))\n                    return fallos",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py::test_no_acusa_de_roto_un_trozo_que_acaba_donde_empieza_la_funcion_siguiente (debe quedar verde) y test_sigue_cazando_un_archivo_que_de_verdad_queda_roto (debe seguir verde).",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El parche corrige el falso error de sintaxis sin introducir código nuevo ni romper dependencias, manteniendo todas las vigias verdes."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}
