@@ -117,6 +117,24 @@ ESCRIBE y nadie comprueba despues que el llamador exista de verdad en el codigo.
 **SOLO PARA CÓDIGO NUEVO** (Julio: *"que quede claro, eso solo para codigo nuevo, nada mas"*). Las reparaciones siguen
 su camino de siempre: vigía roja primero, el equipo o el ayudante reparan, la dirección comprueba con la prueba real.
 
+**EL ALCANCE EXACTO, sin interpretación (Julio, 2026-09-14):** *"este cambio solo aplica a codigo nuevo [...] lo que venia
+rechazando el sistema, porque no traia codigo, algo que no tiene logica, ya que por eso es crear un codigo nuevo. Esto solo
+se aplica a ese trabajo especifico y a nada mas, no es otra puerta trasera. De resto sigue trabajando como venimos haciendo
+[...] Porque sino gastan a lo pendejo y alucinan."*
+- **Para qué existe:** el sistema rechazaba CREAR código porque "no traía código viejo" que cambiar, cuando crear es
+  justamente eso. Las 3 IA son el camino **solo para crear un archivo de código que no existe**.
+- **NO se usa para:** reparar, cambiar un archivo que ya existe, vigías, candados, leyes ni ninguna otra tarea. Todo eso
+  sigue por el equipo de siempre. Usar las 3 IA fuera de crear código nuevo gasta de más y hace alucinar.
+- **No abre ninguna puerta:** no se salta el guardia, ni la vigía roja primero, ni la aprobación del plan por Julio.
+- **Error de la dirección que motivó esto (2026-09-14):** se propuso hacer por las 3 IA dos reparaciones de la herramienta
+  (el guardado inmediato y el vigilante). Estaba mal: son reparaciones y van por el equipo de siempre.
+
+**CADA FRENO SE TRATA ASÍ, NO SE AVISA Y YA (Julio, 2026-09-14):** *"No necesito que me diga, necesito que frene, que se
+verifique porque se frena, y se repare, verificando porque fallo, la causa raiz, y que se daño, fue la herramienta, o el
+trabajo por algun motivo, despues de ubicar causa raiz, se repara de una vez, cuantas veces lo tengo que repetir?"*
+1. **Frena** (no deja pasar). 2. **Se verifica por qué frenó**: causa de raíz, medida. 3. **Qué se dañó: la herramienta o
+el trabajo.** 4. **Se repara de una vez**, con su vigía. Avisar sin reparar no cuenta como tratar un freno.
+
 **ESTADO:** aprobado por Julio. Faltan las tres piezas que lo hacen cumplir (Big Pickle como revisor del equipo, plan con
 lista de archivos, freno de lo que no esté en la lista): su plan detallado se le presenta a Julio ANTES de construir.
 Del plan de Big Pickle de los 3 bloqueos quedan aprobados: la prueba del camino completo de crear código (en carpeta
