@@ -70,3 +70,27 @@ def test_la_vigia_caza_un_candado_aflojado():
     assert any("edit" in a for a in abierto) and any("git add*" in a for a in abierto), (
         "la vigia no se entera de un candado aflojado, asi no protege nada"
     )
+
+
+def test_el_candado_global_cierra_todas_las_demas_carpetas():
+    ruta = os.path.join(os.path.expanduser("~"), ".config", "opencode", "opencode.json")
+    if not os.path.exists(ruta):
+        ruta = os.path.join(AQUI, "arnes", "opencode_global.json")
+    assert os.path.exists(ruta), (
+        "no hay candado global de opencode: en Foto Informe y en cualquier otra carpeta el ayudante "
+        "puede escribir de todo; es la ventana trasera que Julio mando cerrar el 2026-09-13")
+    abierto = herramienta_cerrada(json.load(open(ruta, encoding="utf-8")))
+    assert not abierto, "el candado global quedo abierto: " + str(abierto)
+
+
+def test_en_el_negocio_repara_pero_no_guarda_deshace_ni_borra():
+    ruta = os.path.join(NEGOCIO, "opencode.json")
+    if not os.path.exists(ruta):
+        pytest.skip("el negocio no esta en esta maquina")
+    bash = (json.load(open(ruta, encoding="utf-8")).get("permission") or {}).get("bash") or {}
+    faltan = [r for r in ("git add*", "git commit*", "git checkout*", "git reset*", "git restore*",
+                          "git stash*", "git clean*", "rm *", "del *", "Remove-Item*")
+              if bash.get(r) != "deny"]
+    assert not faltan, (
+        "en el negocio el ayudante podria guardar, deshacer o borrar sin que la direccion corra las "
+        "pruebas antes; asi puede estropear lo que ya sirve. Falta prohibir: " + str(faltan))

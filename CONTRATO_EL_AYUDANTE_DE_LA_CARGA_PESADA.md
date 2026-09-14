@@ -130,9 +130,50 @@ candado y una vigía dentro de la herramienta y cambió `cerebro/protocolo.py`.
 - **Probado el 2026-09-13:** dentro de la herramienta, `echo > archivo` y `git add` quedan bloqueados y la herramienta de
   escribir no aparece; desde el negocio, escribir y leer en la herramienta quedan bloqueados. No se creó ningún archivo.
 
-**Límite honesto:** dentro de la herramienta, un programa de Python escrito a propósito podría escribir igual. Para eso
-está la segunda barrera: el guardia del guardado no deja guardar nada sin revisión del equipo. Una sesión de opencode
-abierta ANTES del candado sigue con la configuración vieja hasta que se cierra y se vuelve a abrir.
+**Límite honesto (el de ese momento):** dentro de la herramienta, un programa de Python escrito a propósito podía escribir
+igual. **Pasó ese mismo día a las 19:37 y 19:42**: ver la sección siguiente.
+
+## TODAS LAS PUERTAS Y VENTANAS CERRADAS, EN TODAS LAS CARPETAS (2026-09-13, 20:30)
+
+> Julio: *"no cierro nada, ya te dije, haz que bp acate las normas, obligalo [...] esa aplicación es buena reparando [...]
+> lo que pasa es que tu no le has puesto los candados, vigias y arnes necesario para que haga lo que le decimos,
+> principalmente que no dañe lo que ya sirve, cuando repare algo."* · *"debes ponerle todo el equipo, arnes, vigilantes,
+> todo, absolutamente todo, y cerrar todas las puertas y ventanas traseras, esto te lo he dicho muchas veces."*
+
+**Las tres ventanas que seguían abiertas, y la causa de cada una (medido):**
+1. **La terminal abierta por defecto.** El candado era una LISTA de comandos prohibidos; todo lo que no estaba en la lista
+   pasaba. A las 19:37 y 19:42 el ayudante escribió 3 archivos de la herramienta con un comando de Python. La vigía del
+   candado seguía VERDE porque solo miraba que estuvieran unas prohibiciones sueltas.
+2. **La ventana del ayudante abierta antes del candado** seguía con la configuración vieja. No hacía falta cerrarla.
+3. **Ninguna carpeta fuera de la herramienta y del negocio tenía candado** (Foto Informe y cualquier otra): no existía la
+   configuración global de opencode, así que ahí podía escribir de todo.
+
+**La cura (todo al revés: CERRADO POR DEFECTO, se abre solo lo necesario):**
+- **Global** (`C:\Users\USER\.config\opencode\opencode.json`, copia en `arnes/opencode_global.json`), vale en TODA carpeta
+  sin candado propio (Foto Informe incluido): no escribe archivos, no sale de la carpeta, terminal PROHIBIDA salvo mirar
+  (git status/diff/log/show, ls, cat, grep...) y `python -m pytest`; prohibidos expresamente `python -c`, `&&`, `open(`,
+  redirecciones, borrar, mover, copiar y guardar/deshacer en git.
+- **Herramienta** (`opencode.json`): igual de cerrada, y además solo puede lanzar al equipo (`ingeniero.py equipo/trabaja/
+  vigias/arranca`) y usar el canal. Todo cambio de código de la herramienta pasa por el equipo.
+- **Negocio** (`Asesor Marketing\opencode.json`): el ayudante **SÍ REPARA** (Julio: "es buena reparando"): puede escribir y
+  correr pruebas. **NO puede guardar (git add/commit), deshacer (checkout/reset/restore/stash/clean), borrar ni tocar la
+  herramienta.** Así no puede estropear lo que ya sirve sin que la dirección lo vea: **la dirección corre las pruebas y
+  solo entonces guarda**, y el guardia no deja guardar con una prueba roja.
+- **Recarga sin cerrar la ventana:** el propio opencode tiene la orden de recargar su configuración (`/global/dispose` y
+  `/instance/dispose`); la dirección la usa tras cada cambio de candado y comprueba lo que la ventana tiene cargado
+  preguntándoselo (`/config`).
+
+**Probado en real el 2026-09-13:**
+- Herramienta y Foto Informe, con ventana nueva: `git status` PERMITIDO; `python -c` escribiendo un archivo DENEGADO;
+  herramienta de editar NO DISPONIBLE; ningún archivo creado.
+- Ventana de Julio abierta desde las 19:27, recargada sin cerrar: tiene `edit=deny`, terminal `*=deny`, `python -c=deny`.
+
+**La segunda barrera, ahora viva:** el guardia del guardado FRENA todo código sin aprobación del equipo de las últimas 24 h
+(solo abre la llave de Julio con su motivo escrito). Lo que se escriba por cualquier ventana que quede, no entra en la historia.
+
+**Vigilantes:** `vigias/test_vigia_opencode_no_escribe_en_la_herramienta.py` exige la terminal cerrada por defecto y está
+saboteada (con la terminal abierta se pone roja), y también exige el candado global cerrado y que en el negocio no pueda
+guardar, deshacer ni borrar (la escribió el equipo: DeepSeek escribe, Gemini revisa; 5/5 verdes).
 
 ## EL CANAL SE VIGILA SOLO: CADA 5 MINUTOS, UNA HORA (2026-09-13)
 

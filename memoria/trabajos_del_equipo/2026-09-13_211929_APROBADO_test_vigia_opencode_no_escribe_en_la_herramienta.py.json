@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La vigia no exige el candado global de opencode ni que en el negocio el ayudante repare pero no guarde, deshaga ni borre",
+  "archivo": "vigias/test_vigia_opencode_no_escribe_en_la_herramienta.py",
+  "funcion": "final del archivo (tras la funcion herramienta_cerrada)",
+  "texto_viejo": "    abierto = herramienta_cerrada(flojo)\n    assert any(\"edit\" in a for a in abierto) and any(\"git add*\" in a for a in abierto), (\n        \"la vigia no se entera de un candado aflojado, asi no protege nada\"\n    )",
+  "texto_nuevo": "    abierto = herramienta_cerrada(flojo)\n    assert any(\"edit\" in a for a in abierto) and any(\"git add*\" in a for a in abierto), (\n        \"la vigia no se entera de un candado aflojado, asi no protege nada\"\n    )\n\n\ndef test_el_candado_global_cierra_todas_las_demas_carpetas():\n    ruta = os.path.join(os.path.expanduser(\"~\"), \".config\", \"opencode\", \"opencode.json\")\n    if not os.path.exists(ruta):\n        ruta = os.path.join(AQUI, \"arnes\", \"opencode_global.json\")\n    assert os.path.exists(ruta), (\n        \"no hay candado global de opencode: en Foto Informe y en cualquier otra carpeta el ayudante \"\n        \"puede escribir de todo; es la ventana trasera que Julio mando cerrar el 2026-09-13\")\n    abierto = herramienta_cerrada(json.load(open(ruta, encoding=\"utf-8\")))\n    assert not abierto, \"el candado global quedo abierto: \" + str(abierto)\n\n\ndef test_en_el_negocio_repara_pero_no_guarda_deshace_ni_borra():\n    ruta = os.path.join(NEGOCIO, \"opencode.json\")\n    if not os.path.exists(ruta):\n        pytest.skip(\"el negocio no esta en esta maquina\")\n    bash = (json.load(open(ruta, encoding=\"utf-8\")).get(\"permission\") or {}).get(\"bash\") or {}\n    faltan = [r for r in (\"git add*\", \"git commit*\", \"git checkout*\", \"git reset*\", \"git restore*\",\n                          \"git stash*\", \"git clean*\", \"rm *\", \"del *\", \"Remove-Item*\")\n              if bash.get(r) != \"deny\"]\n    assert not faltan, (\n        \"en el negocio el ayudante podria guardar, deshacer o borrar sin que la direccion corra las \"\n        \"pruebas antes; asi puede estropear lo que ya sirve. Falta prohibir: \" + str(faltan))",
+  "cambio": "Anadir al final del archivo, tras el ultimo assert existente, dos renglones en blanco y las dos pruebas nuevas: test_el_candado_global_cierra_todas_las_demas_carpetas y test_en_el_negocio_repara_pero_no_guarda_deshace_ni_borra. No se toca nada mas del archivo.",
+  "codigo": "\n\ndef test_el_candado_global_cierra_todas_las_demas_carpetas():\n    ruta = os.path.join(os.path.expanduser(\"~\"), \".config\", \"opencode\", \"opencode.json\")\n    if not os.path.exists(ruta):\n        ruta = os.path.join(AQUI, \"arnes\", \"opencode_global.json\")\n    assert os.path.exists(ruta), (\n        \"no hay candado global de opencode: en Foto Informe y en cualquier otra carpeta el ayudante \"\n        \"puede escribir de todo; es la ventana trasera que Julio mando cerrar el 2026-09-13\")\n    abierto = herramienta_cerrada(json.load(open(ruta, encoding=\"utf-8\")))\n    assert not abierto, \"el candado global quedo abierto: \" + str(abierto)\n\n\ndef test_en_el_negocio_repara_pero_no_guarda_deshace_ni_borra():\n    ruta = os.path.join(NEGOCIO, \"opencode.json\")\n    if not os.path.exists(ruta):\n        pytest.skip(\"el negocio no esta en esta maquina\")\n    bash = (json.load(open(ruta, encoding=\"utf-8\")).get(\"permission\") or {}).get(\"bash\") or {}\n    faltan = [r for r in (\"git add*\", \"git commit*\", \"git checkout*\", \"git reset*\", \"git restore*\",\n                          \"git stash*\", \"git clean*\", \"rm *\", \"del *\", \"Remove-Item*\")\n              if bash.get(r) != \"deny\"]\n    assert not faltan, (\n        \"en el negocio el ayudante podria guardar, deshacer o borrar sin que la direccion corra las \"\n        \"pruebas antes; asi puede estropear lo que ya sirve. Falta prohibir: \" + str(faltan))",
+  "vigia": "vigias/test_vigia_opencode_no_escribe_en_la_herramienta.py en verde con los candados actuales: la prueba global exige que herramienta_cerrada no devuelva nada abierto sobre el candado global, y la del negocio exige que git add/commit/checkout/reset/restore/stash/clean, rm, del y Remove-Item esten en deny",
+  "puede_danar": [
+   "vigias/test_vigia_opencode_no_escribe_en_la_herramienta.py",
+   "arnes/opencode_global.json",
+   "el candado del negocio opencode.json"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el requerimiento, añade las pruebas solicitadas sin alterar el resto del archivo."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}
