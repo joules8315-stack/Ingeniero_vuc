@@ -229,7 +229,13 @@ def revisar(propuesta, tarea=""):
                     contenido_archivo = fa.read()
         except Exception:
             contenido_archivo = None
+        # FRENADA EN FALSO CAZADA EL 2026-09-14: al CREAR un archivo nuevo contaba como obligatoria cualquier
+        # palabra del encargo, aunque solo contara como esta hoy otro archivo, y tiro una vigia ya aprobada.
+        # Al crear no se puede separar lo pedido del contexto: ese juicio es del revisor de IA.
+        _creando_archivo_nuevo = contenido_archivo is None and not (viejo or "").strip()
         for palabra in set(re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\b", limpia)):
+            if _creando_archivo_nuevo:
+                break
             if contenido_archivo is not None and palabra not in contenido_archivo:
                 continue
             if palabra not in viejo and palabra not in nuevo:

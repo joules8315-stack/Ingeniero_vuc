@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Las vigias se lanzan con la entrada abierta y sin capturar TimeoutExpired, por lo que una prueba que espera datos cuelga el guardado y al pararlo se deja guardar sin probar.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "    try:\n        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\", \"vigias/\"],\n                           cwd=raiz, capture_output=True, text=True, timeout=900)\n    except Exception as e:\n        return True, \"no se pudieron correr las vigias (%s): se deja pasar\" % str(e)[:60]",
+  "texto_nuevo": "    # LA ENTRADA CERRADA Y EL TOPE QUE FRENA (2026-09-14): con la entrada abierta, una prueba que esperaba\n    # datos colgo un guardado 5 horas y media; al pararlo se dejo guardar SIN PROBAR. Ahora la entrada va\n    # cerrada, y si las vigias no terminan a tiempo NO se guarda: no probar no es lo mismo que pasar.\n    try:\n        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\", \"vigias/\"],\n                           cwd=raiz, capture_output=True, text=True, timeout=900,\n                           stdin=subprocess.DEVNULL)\n    except subprocess.TimeoutExpired:\n        return False, (\"las vigias NO terminaron en 15 minutos: no se guarda sin probar. \"\n                       \"Algo se quedo esperando; hay que ver cual se cuelga\")\n    except Exception as e:\n        return True, \"no se pudieron correr las vigias (%s): se deja pasar\" % str(e)[:60]",
+  "cambio": "En _vigias, sustituir el bloque try/except que lanza pytest: anadir stdin=subprocess.DEVNULL al subprocess.run y anadir una rama except subprocess.TimeoutExpired que devuelve (False, aviso) antes del except Exception general.",
+  "codigo": "    # LA ENTRADA CERRADA Y EL TOPE QUE FRENA (2026-09-14): con la entrada abierta, una prueba que esperaba\n    # datos colgo un guardado 5 horas y media; al pararlo se dejo guardar SIN PROBAR. Ahora la entrada va\n    # cerrada, y si las vigias no terminan a tiempo NO se guarda: no probar no es lo mismo que pasar.\n    try:\n        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\", \"vigias/\"],\n                           cwd=raiz, capture_output=True, text=True, timeout=900,\n                           stdin=subprocess.DEVNULL)\n    except subprocess.TimeoutExpired:\n        return False, (\"las vigias NO terminaron en 15 minutos: no se guarda sin probar. \"\n                       \"Algo se quedo esperando; hay que ver cual se cuelga\")\n    except Exception as e:\n        return True, \"no se pudieron correr las vigias (%s): se deja pasar\" % str(e)[:60]",
+  "vigia": "vigias/test_vigia_el_guardia_no_se_cuelga.py (sus 3 pruebas: entrada cerrada, TimeoutExpired frena, falta pytest deja pasar), y siguen verdes vigias/test_vigia_el_guardia_se_acuerda_y_frena.py y vigias/test_vigia_sin_equipo_no_se_guarda.py",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/guardia_de_guardado.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no introduce elementos inexistentes y no afecta a pruebas vecinas."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -239,9 +239,16 @@ def _vigias(raiz):
     carpeta = os.path.join(raiz, "vigias")
     if not os.path.isdir(carpeta):
         return True, "este proyecto no tiene vigias (se deja pasar)"
+    # LA ENTRADA CERRADA Y EL TOPE QUE FRENA (2026-09-14): con la entrada abierta, una prueba que esperaba
+    # datos colgo un guardado 5 horas y media; al pararlo se dejo guardar SIN PROBAR. Ahora la entrada va
+    # cerrada, y si las vigias no terminan a tiempo NO se guarda: no probar no es lo mismo que pasar.
     try:
         r = subprocess.run([sys.executable, "-m", "pytest", "-q", "vigias/"],
-                           cwd=raiz, capture_output=True, text=True, timeout=900)
+                           cwd=raiz, capture_output=True, text=True, timeout=900,
+                           stdin=subprocess.DEVNULL)
+    except subprocess.TimeoutExpired:
+        return False, ("las vigias NO terminaron en 15 minutos: no se guarda sin probar. "
+                       "Algo se quedo esperando; hay que ver cual se cuelga")
     except Exception as e:
         return True, "no se pudieron correr las vigias (%s): se deja pasar" % str(e)[:60]
     salida = (r.stdout or "") + (r.stderr or "")

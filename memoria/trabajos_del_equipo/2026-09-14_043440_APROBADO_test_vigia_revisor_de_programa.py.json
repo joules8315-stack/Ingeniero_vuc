@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El revisor de programa frena en falso la creacion de un archivo NUEVO cuando el encargo contiene palabras con guion bajo (como capture_output) que solo describen como esta hoy otro archivo; falta la prueba que lo vigile.",
+  "archivo": "vigias/test_vigia_revisor_de_programa.py",
+  "funcion": "test_no_frena_por_rutas_ni_nombres_de_contexto (final del archivo, tras la ultima prueba)",
+  "texto_viejo": "    assert any(\"re\" in str(f) and \"NO EXISTE\" in str(f) for f in fallos), (\n        \"Dejo pasar un nombre que no se importa en ningun sitio del archivo; en cuanto se corra, \"\n        \"revienta\")",
+  "texto_nuevo": "    assert any(\"re\" in str(f) and \"NO EXISTE\" in str(f) for f in fallos), (\n        \"Dejo pasar un nombre que no se importa en ningun sitio del archivo; en cuanto se corra, \"\n        \"revienta\")\n\n\ndef test_crear_un_archivo_nuevo_no_frena_por_palabras_de_contexto(tmp_path):\n    r = _revisor()\n    nuevo_archivo = tmp_path / \"vigia_nueva_que_no_existe.py\"\n    propuesta = {\n        \"archivo\": str(nuevo_archivo),\n        \"texto_viejo\": \"\",\n        \"texto_nuevo\": \"def test_algo():\\n    assert 1 == 1\\n\",\n    }\n    tarea = (\"Crear la vigia nueva. Hoy el guardia hace subprocess.run con capture_output y \"\n             \"timeout_largo, y la funcion _vigias devuelve paso y mensaje.\")\n    fallos = r.revisar(propuesta, tarea=tarea)\n    assert not any(\"NO HACE LO QUE SE PIDIO\" in str(f) for f in fallos), (\n        \"Freno la creacion de un archivo nuevo por palabras que el encargo solo usa para contar \"\n        \"como esta hoy otro archivo; asi se tiran rondas buenas ya aprobadas. Dijo: \" + str(fallos))",
+  "cambio": "Anadir al final del archivo, tras la ultima prueba existente, dos renglones en blanco y la prueba nueva test_crear_un_archivo_nuevo_no_frena_por_palabras_de_contexto, que crea una propuesta para un archivo que NO existe y comprueba que el revisor no la frena por palabras de contexto del encargo (capture_output, timeout_largo, _vigias). Las claves de la propuesta se escriben con su nombre real entre comillas: \"texto_viejo\" y \"texto_nuevo\".",
+  "codigo": "def test_crear_un_archivo_nuevo_no_frena_por_palabras_de_contexto(tmp_path):\n    r = _revisor()\n    nuevo_archivo = tmp_path / \"vigia_nueva_que_no_existe.py\"\n    propuesta = {\n        \"archivo\": str(nuevo_archivo),\n        \"texto_viejo\": \"\",\n        \"texto_nuevo\": \"def test_algo():\\n    assert 1 == 1\\n\",\n    }\n    tarea = (\"Crear la vigia nueva. Hoy el guardia hace subprocess.run con capture_output y \"\n             \"timeout_largo, y la funcion _vigias devuelve paso y mensaje.\")\n    fallos = r.revisar(propuesta, tarea=tarea)\n    assert not any(\"NO HACE LO QUE SE PIDIO\" in str(f) for f in fallos), (\n        \"Freno la creacion de un archivo nuevo por palabras que el encargo solo usa para contar \"\n        \"como esta hoy otro archivo; asi se tiran rondas buenas ya aprobadas. Dijo: \" + str(fallos))",
+  "vigia": "La propia prueba nueva: al correrla contra el revisor actual debe salir ROJA (porque hoy frena el archivo nuevo por capture_output/timeout_largo/_vigias) y VERDE cuando el revisor descarte las palabras de contexto tambien en archivos nuevos. Ademas, correr la vigia entera dos veces seguidas para confirmar que las otras pruebas siguen verdes.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Aprobado, la prueba añadida corrige el diagnóstico sin inventar nada ni afectar a otros tests."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

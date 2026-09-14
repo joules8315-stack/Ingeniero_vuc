@@ -218,3 +218,19 @@ def test_sigue_cazando_un_nombre_que_no_esta_en_ningun_sitio(tmp_path):
     assert any("re" in str(f) and "NO EXISTE" in str(f) for f in fallos), (
         "Dejo pasar un nombre que no se importa en ningun sitio del archivo; en cuanto se corra, "
         "revienta")
+
+
+def test_crear_un_archivo_nuevo_no_frena_por_palabras_de_contexto(tmp_path):
+    r = _revisor()
+    nuevo_archivo = tmp_path / "vigia_nueva_que_no_existe.py"
+    propuesta = {
+        "archivo": str(nuevo_archivo),
+        "texto_viejo": "",
+        "texto_nuevo": "def test_algo():\n    assert 1 == 1\n",
+    }
+    tarea = ("Crear la vigia nueva. Hoy el guardia hace subprocess.run con capture_output y "
+             "timeout_largo, y la funcion _vigias devuelve paso y mensaje.")
+    fallos = r.revisar(propuesta, tarea=tarea)
+    assert not any("NO HACE LO QUE SE PIDIO" in str(f) for f in fallos), (
+        "Freno la creacion de un archivo nuevo por palabras que el encargo solo usa para contar "
+        "como esta hoy otro archivo; asi se tiran rondas buenas ya aprobadas. Dijo: " + str(fallos))

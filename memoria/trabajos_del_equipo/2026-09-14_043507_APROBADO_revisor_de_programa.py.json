@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "La regla 4 del revisor cuenta como obligatoria cualquier palabra con guion bajo del encargo cuando se CREA un archivo nuevo (contenido_archivo es None y viejo esta vacio), frenando vigias legitimas ya aprobadas por el revisor de IA.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        for palabra in set(re.findall(r\"\\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\\b\", limpia)):\n            if contenido_archivo is not None and palabra not in contenido_archivo:\n                continue\n            if palabra not in viejo and palabra not in nuevo:",
+  "texto_nuevo": "        # FRENADA EN FALSO CAZADA EL 2026-09-14: al CREAR un archivo nuevo contaba como obligatoria cualquier\n        # palabra del encargo, aunque solo contara como esta hoy otro archivo, y tiro una vigia ya aprobada.\n        # Al crear no se puede separar lo pedido del contexto: ese juicio es del revisor de IA.\n        _creando_archivo_nuevo = contenido_archivo is None and not (viejo or \"\").strip()\n        for palabra in set(re.findall(r\"\\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\\b\", limpia)):\n            if _creando_archivo_nuevo:\n                break\n            if contenido_archivo is not None and palabra not in contenido_archivo:\n                continue\n            if palabra not in viejo and palabra not in nuevo:",
+  "cambio": "Insertar antes del bucle for la variable _creando_archivo_nuevo (True si contenido_archivo es None y viejo esta vacio) y dentro del bucle, antes de las comprobaciones existentes, un break cuando _creando_archivo_nuevo sea True, de modo que al crear un archivo entero la regla 4 no se aplique. Si el archivo existe, el comportamiento no cambia.",
+  "codigo": "        # FRENADA EN FALSO CAZADA EL 2026-09-14: al CREAR un archivo nuevo contaba como obligatoria cualquier\n        # palabra del encargo, aunque solo contara como esta hoy otro archivo, y tiro una vigia ya aprobada.\n        # Al crear no se puede separar lo pedido del contexto: ese juicio es del revisor de IA.\n        _creando_archivo_nuevo = contenido_archivo is None and not (viejo or \"\").strip()\n        for palabra in set(re.findall(r\"\\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\\b\", limpia)):\n            if _creando_archivo_nuevo:\n                break\n            if contenido_archivo is not None and palabra not in contenido_archivo:\n                continue\n            if palabra not in viejo and palabra not in nuevo:",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py::test_crear_un_archivo_nuevo_no_frena_por_palabras_de_contexto (debe quedar verde) y la prueba que sigue cazando que no se toca la funcion pedida en un archivo que existe (debe seguir verde).",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio corrige la regla 4 sin inventar nada y no rompe nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19062 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

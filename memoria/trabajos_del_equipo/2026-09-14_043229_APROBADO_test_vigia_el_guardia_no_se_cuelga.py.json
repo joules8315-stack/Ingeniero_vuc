@@ -1,0 +1,23 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la vigia nueva que exige cerrar stdin en subprocess.run y frenar el guardado cuando las vigias no terminan; nace roja a proposito contra el guardia actual.",
+  "archivo": "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+  "texto_nuevo": "\"\"\"VIGIA — EL GUARDIA NO SE CUELGA.\n\nQUE PROTEGE:\n    Que el guardia de guardado (arnes/guardia_de_guardado.py) lance las vigias con la\n    entrada de teclado CERRADA (stdin=subprocess.DEVNULL) y que, si las vigias NO\n    terminan (TimeoutExpired), el guardia FRENE el guardado en vez de dejar pasar.\n\nEL FALLO, MEDIDO:\n    El 2026-09-13/14 un guardado se quedo COLGADO 5 horas y media (de 22:56 a 04:27).\n    El guardia lanzaba las vigias con subprocess.run SIN cerrar stdin, y alguna prueba\n    se quedo esperando datos por esa entrada que nunca llegaron. El tope de 900 segundos\n    no lo corto. Al parar a mano la corrida colgada, el guardia apunto\n    \"no se pudieron correr las vigias: se deja pasar\" y DEJO GUARDAR SIN PROBAR.\n    Dos dias antes una corrida igual tardo 1 hora 19 minutos.\n    Big Pickle corrio las mismas vigias con la entrada cerrada: 759 verdes en 4 minutos.\n\nLO QUE DICE JULIO:\n    \"que mas no permite que avancemos, porque hasta que lo que nos frena no se repare,\n     seguimos perdiendo tiempo y dinero\".\n\nNOTA AL REVISOR:\n    Esta vigia NACE ROJA a proposito (pruebas 1 y 2). Exige una reparacion que todavia\n    no esta hecha en arnes/guardia_de_guardado.py. Que falle hoy contra el codigo actual\n    NO es un error: se escribe la vigia primero, luego la cura.\n    La prueba 3 (pytest ausente) NO se cambia: si falta la herramienta de pruebas, se\n    avisa y se deja pasar, como dice su ley.\n\"\"\"\n\nimport os\nimport subprocess\nimport sys\nimport types\n\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, \"arnes\"))\nimport guardia_de_guardado  # noqa: E402\n\n\ndef _preparar_raiz(tmp_path):\n    \"\"\"Crea la carpeta vigias/ que _vigias espera encontrar en la raiz.\"\"\"\n    os.makedirs(tmp_path / \"vigias\")\n    return str(tmp_path)\n\n\ndef test_las_vigias_se_lanzan_con_la_entrada_cerrada(tmp_path, monkeypatch):\n    \"\"\"Las vigias se lanzan con stdin=subprocess.DEVNULL.\n\n    NACE ROJA: hoy el guardia lanza subprocess.run sin cerrar la entrada.\n    \"\"\"\n    raiz = _preparar_raiz(tmp_path)\n    kwargs_vistos = []\n\n    def falso(*args, **kwargs):\n        kwargs_vistos.append(kwargs)\n        return types.SimpleNamespace(returncode=0, stdout=\"1 passed\", stderr=\"\")\n\n    monkeypatch.setattr(guardia_de_guardado.subprocess, \"run\", falso)\n\n    guardia_de_guardado._vigias(raiz)\n\n    assert kwargs_vistos, \"no se llamo a subprocess.run: la vigia no puede juzgar nada\"\n    assert kwargs_vistos[0].get(\"stdin\") is subprocess.DEVNULL, (\n        \"las vigias se lanzan con la entrada abierta; una prueba que espera datos por \"\n        \"ahi cuelga el guardado para siempre (paso 5 horas y media el 2026-09-13)\"\n    )\n\n\ndef test_si_las_vigias_no_terminan_NO_se_deja_guardar(tmp_path, monkeypatch):\n    \"\"\"Si las vigias no terminan (TimeoutExpired), el guardia FRENA.\n\n    NACE ROJA: hoy el guardia atrapa cualquier excepcion y devuelve (True, ...).\n    \"\"\"\n    raiz = _preparar_raiz(tmp_path)\n\n    def falso(*args, **kwargs):\n        raise subprocess.TimeoutExpired(cmd=\"pytest\", timeout=900)\n\n    monkeypatch.setattr(guardia_de_guardado.subprocess, \"run\", falso)\n\n    paso, mensaje = guardia_de_guardado._vigias(raiz)\n\n    assert paso is False, (\n        \"las vigias no terminaron y el guardia dejo guardar sin probar; asi entra \"\n        \"codigo roto sin que nadie lo vea\"\n    )\n\n\ndef test_si_pytest_no_esta_se_sigue_dejando_pasar_con_aviso(tmp_path, monkeypatch):\n    \"\"\"Si falta la herramienta de pruebas, se avisa y se deja pasar (su ley).\n\n    Esto NO se cambia.\n    \"\"\"\n    raiz = _preparar_raiz(tmp_path)\n\n    def falso(*args, **kwargs):\n        raise FileNotFoundError(\"no hay python\")\n\n    monkeypatch.setattr(guardia_de_guardado.subprocess, \"run\", falso)\n\n    paso, mensaje = guardia_de_guardado._vigias(raiz)\n\n    assert paso is True\n    assert \"no se pudieron correr\" in mensaje\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple con crear la vigía solicitada sin inventar ni romper nada, listo para la futura cura."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}
