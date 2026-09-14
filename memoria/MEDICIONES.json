@@ -8131,5 +8131,97 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.6
+ },
+ {
+  "id": 176,
+  "cuando": "2026-09-13 19:32",
+  "proyecto": "ingeniero",
+  "problema": "El guardia de guardado no frena el trabajo hecho a solas y no recuerda todas las aprobaciones recientes; apunta cada aprobacion en un cuaderno pero todavia no lo lee. Su prueba tiene 3 pruebas fallando",
+  "flujos": [
+   "cuaderno",
+   "trabajo",
+   "prueba"
+  ],
+  "piezas": [
+   "cuerpo/cuaderno.py",
+   "memoria/rescate/rv3_prueba_real_velocidad.py"
+  ],
+  "trozos": [
+   "cuerpo/cuaderno.py:1-40",
+   "memoria/rescate/rv3_prueba_real_velocidad.py:33-72",
+   "memoria/rescate/rv3_prueba_real_velocidad.py:129-168"
+  ],
+  "leyes": [
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_ENCHUFADO_SE_PRUEBA_EJECUTANDO.md",
+   "CONTRATO_SIN_GUARDAR_NO_HAY_TRABAJO.md",
+   "CONTRATO_TRABAJO_CON_CLINE.md",
+   "CONTRATO_UNA_OPINION_NO_ES_PRUEBA.md",
+   "memoria/paquetes/foto_informe__rv3_prueba_matriz_de_roles_py_no_puede_m.md",
+   "CONTRATO_APUNTA_Y_REPARA.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_cuaderno_de_llamadas.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_nadie_revisa_su_propio_trabajo.py",
+   "vigias/test_vigia_prueba_real.py"
+  ],
+  "lineas_paquete": 257,
+  "lineas_proyecto": 184566,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
+ },
+ {
+  "id": 177,
+  "cuando": "2026-09-13 19:34",
+  "proyecto": "ingeniero",
+  "problema": "El guardia de guardado (arnes/guardia_de_guardado.py) no lee el cuaderno de veredictos que el mismo escribe (.veredictos_recientes.jsonl); _cubierto_por_equipo olvida aprobaciones y main() no frena el trabajo a solas. 3 pruebas fallan en vigias/test_vigia_el_guardia_se_acuerda_y_frena.py. Necesito los trozos exactos de arnes/guardia_de_guardado.py y el cuaderno donde candado_equipo.guardar_veredicto apunta",
+  "flujos": [
+   "trozos",
+   "cuaderno",
+   "escribe"
+  ],
+  "piezas": [
+   "cerebro/trozos.py",
+   "cuerpo/cuaderno.py",
+   "arnes/guardia_de_guardado.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "arnes/guardia_de_guardado.py:265-310",
+   "arnes/guardia_de_guardado.py:130-148",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py:1-40",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py:129-168",
+   "arnes/guardia_de_guardado.py:151-191",
+   "arnes/guardia_de_guardado.py:51-66"
+  ],
+  "leyes": [
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_LA_IA_CARA_NUNCA_ESCRIBE.md",
+   "cerebro/protocolo.py",
+   "CONTRATO_APUNTA_Y_REPARA.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_cuaderno_de_llamadas.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_no_se_escribe_en_otro_proyecto.py",
+   "vigias/test_vigia_opencode_no_escribe_en_la_herramienta.py",
+   "vigias/test_vigia_se_elige_quien_escribe.py"
+  ],
+  "lineas_paquete": 449,
+  "lineas_proyecto": 184874,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
  }
 ]
