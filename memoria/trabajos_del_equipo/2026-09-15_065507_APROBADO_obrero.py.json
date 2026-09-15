@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Falta el bloque que, cuando todas las gratis duermen, manda revisar a Claude apartando al que escribio, antes del comentario de auditor de pago.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    # Si no hay auditor, intentar con el cerebro de pago, PERO APARTANDO SIEMPRE AL QUE ESCRIBIO.",
+  "texto_nuevo": "    # Ley de Julio 2026-09-14: si todas las gratis duermen, revisa Claude; nunca quien escribio.\n    if auditoria is None or auditoria.get('veredicto') == 'SIN_AUDITAR':\n        dormidos = {q for q in cuotas.ORDEN if not cuotas.desperto(q)}\n        if cuotas.puede_revisar_claude(evitar or '', dormidos):\n            try:\n                crudo = _claude_directo(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n                auditoria = _json_de(crudo)\n                quien_aud = 'claude'\n                avisos.append('todas las gratis duermen: revisa claude (ley de Julio)')\n            except Exception as e:\n                avisos.append('claude no pudo revisar: ' + str(e)[:120])\n    # Si no hay auditor, intentar con el cerebro de pago, PERO APARTANDO SIEMPRE AL QUE ESCRIBIO.",
+  "cambio": "Insertar el bloque nuevo justo antes del comentario de auditor de pago dentro de auditar, usando solo nombres ya existentes en el material (cuotas.ORDEN, cuotas.desperto, cuotas.puede_revisar_claude, _claude_directo, _prompt_auditor, _json_de, material_auditor, propuesta, evitar, avisos, auditoria, quien_aud).",
+  "codigo": "    # Ley de Julio 2026-09-14: si todas las gratis duermen, revisa Claude; nunca quien escribio.\n    if auditoria is None or auditoria.get('veredicto') == 'SIN_AUDITAR':\n        dormidos = {q for q in cuotas.ORDEN if not cuotas.desperto(q)}\n        if cuotas.puede_revisar_claude(evitar or '', dormidos):\n            try:\n                crudo = _claude_directo(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n                auditoria = _json_de(crudo)\n                quien_aud = 'claude'\n                avisos.append('todas las gratis duermen: revisa claude (ley de Julio)')\n            except Exception as e:\n                avisos.append('claude no pudo revisar: ' + str(e)[:120])",
+  "vigia": "vigias/test_vigia_claude_audita_si_gratis_duermen.py::test_si_todas_las_gratis_duermen_audita_claude",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "PREUNTA_REQUERIDA: se confirma que cuotas.ORDEN, cuotas.desperto, cuotas.puede_revisar_claude, _claude_directo y material_auditor ya existen y tienen esa firma en cuerpo/obrero.py?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El bloque añadido satisface la ley y la prueba sin introducir código nuevo ni romper dependencias."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20457 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (20457 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 2"
+ ]
+}

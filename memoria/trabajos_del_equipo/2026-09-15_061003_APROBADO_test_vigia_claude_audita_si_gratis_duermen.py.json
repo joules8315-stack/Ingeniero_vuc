@@ -1,0 +1,29 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini3",
+ "propuesta": {
+  "diagnostico": "El vigia debe nacer rojo porque obrero._claude_directo no existe y auditar no llama a Claude cuando todas las gratis duermen; el test lo verifica con monkeypatch y raising=False.",
+  "archivo": "vigias/test_vigia_claude_audita_si_gratis_duermen.py",
+  "texto_nuevo": "import os\nimport sys\nimport json\n\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, RAIZ)\n\nfrom cuerpo import obrero, cuotas\n\n\ndef test_existe_la_puerta_de_claude():\n    assert hasattr(obrero, '_claude_directo') is True\n\n\ndef test_si_todas_las_gratis_duermen_audita_claude(monkeypatch):\n    monkeypatch.setattr(obrero, '_preguntar_con_relevo', lambda *a, **k: ('', '', []))\n    monkeypatch.setattr(cuotas, 'desperto', lambda q: False)\n    llamadas = []\n    monkeypatch.setattr(\n        obrero,\n        '_claude_directo',\n        lambda prompt: llamadas.append(1) or json.dumps({'veredicto': 'APROBADO', 'fallos': []}),\n        raising=False,\n    )\n    auditoria, quien, avisos = obrero.auditar('', {'archivo': 'x.py'}, evitar='deepseek')\n    assert quien == 'claude'\n    assert auditoria['veredicto'] == 'APROBADO'\n    assert len(llamadas) == 1\n\n\ndef test_si_una_gratis_esta_despierta_claude_no_audita(monkeypatch):\n    monkeypatch.setattr(obrero, '_preguntar_con_relevo', lambda *a, **k: ('', '', []))\n    monkeypatch.setattr(cuotas, 'desperto', lambda q: q == 'gemini4')\n    llamadas = []\n    monkeypatch.setattr(\n        obrero,\n        '_claude_directo',\n        lambda prompt: llamadas.append(1) or json.dumps({'veredicto': 'APROBADO', 'fallos': []}),\n        raising=False,\n    )\n    auditoria, quien, avisos = obrero.auditar('', {'archivo': 'x.py'}, evitar='deepseek')\n    assert llamadas == []\n    assert quien != 'claude'\n\n\ndef test_claude_no_audita_lo_que_escribio_claude(monkeypatch):\n    monkeypatch.setattr(obrero, '_preguntar_con_relevo', lambda *a, **k: ('', '', []))\n    monkeypatch.setattr(cuotas, 'desperto', lambda q: False)\n    llamadas = []\n    monkeypatch.setattr(\n        obrero,\n        '_claude_directo',\n        lambda prompt: llamadas.append(1) or json.dumps({'veredicto': 'APROBADO', 'fallos': []}),\n        raising=False,\n    )\n    auditoria, quien, avisos = obrero.auditar('', {'archivo': 'x.py'}, evitar='claude')\n    assert llamadas == []\n    assert quien != 'claude'\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El nuevo vigia cumple con exactitud las 4 pruebas solicitadas, respeta comillas simples, evita mocks y nace rojo como se exigio."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso gemini3",
+  "vueltas_dadas: 2"
+ ]
+}

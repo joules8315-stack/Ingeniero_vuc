@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "Falta la funcion _claude_directo(prompt) en cuerpo/obrero.py, que llama a Claude por linea de comandos cuando todas las gratis duermen",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_preguntar_con_relevo",
+  "texto_viejo": "def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False,",
+  "texto_nuevo": "# Ley Julio 2026-09-14: Claude revisa lo de DeepSeek solo cuando todas las gratis duermen.\ndef _claude_directo(prompt):\n    import shutil, subprocess\n    exe = shutil.which('claude')\n    if not exe:\n        raise RuntimeError('no encuentro el programa claude en el PATH')\n    r = subprocess.run([exe, '-p'], input=prompt, capture_output=True, text=True, encoding='utf-8', timeout=300)\n    if r.returncode != 0 or not (r.stdout or '').strip():\n        raise RuntimeError((r.stderr or '')[:200])\n    return r.stdout\n\n\ndef _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False,",
+  "cambio": "Insertar la funcion _claude_directo justo antes de la linea que empieza por 'def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False,'",
+  "codigo": "# Ley Julio 2026-09-14: Claude revisa lo de DeepSeek solo cuando todas las gratis duermen.\ndef _claude_directo(prompt):\n    import shutil, subprocess\n    exe = shutil.which('claude')\n    if not exe:\n        raise RuntimeError('no encuentro el programa claude en el PATH')\n    r = subprocess.run([exe, '-p'], input=prompt, capture_output=True, text=True, encoding='utf-8', timeout=300)\n    if r.returncode != 0 or not (r.stdout or '').strip():\n        raise RuntimeError((r.stderr or '')[:200])\n    return r.stdout",
+  "vigia": "vigias/test_vigia_claude_audita_si_gratis_duermen.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación añade la función _claude_directo siguiendo exactamente las instrucciones técnicas, respetando la ubicación, los imports internos y las restricciones de formato."
+ },
+ "avisos": [
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso gemini2",
+  "vueltas_dadas: 1"
+ ]
+}

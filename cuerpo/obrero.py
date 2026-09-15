@@ -576,6 +576,18 @@ def _deepseek_directo(prompt, temperatura, modelo):
     return d["choices"][0]["message"]["content"]
 
 
+# Ley Julio 2026-09-14: Claude revisa lo de DeepSeek solo cuando todas las gratis duermen.
+def _claude_directo(prompt):
+    import shutil, subprocess
+    exe = shutil.which('claude')
+    if not exe:
+        raise RuntimeError('no encuentro el programa claude en el PATH')
+    r = subprocess.run([exe, '-p'], input=prompt, capture_output=True, text=True, encoding='utf-8', timeout=300)
+    if r.returncode != 0 or not (r.stdout or '').strip():
+        raise RuntimeError((r.stderr or '')[:200])
+    return r.stdout
+
+
 def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False,
                           clase="", vuelta=0):
     """Pregunta respetando el orden de Julio: Qwen -> Gemini -> local, y VOLVIENDO a Qwen
@@ -890,6 +902,17 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
     if auditor and quien_aud != auditor:
         avisos.append("se pidio auditar a %s y no esta disponible: reviso %s" % (auditor, quien_aud))
 
+    # Ley de Julio 2026-09-14: si todas las gratis duermen, revisa Claude; nunca quien escribio.
+    if auditoria is None or auditoria.get('veredicto') == 'SIN_AUDITAR':
+        dormidos = {q for q in cuotas.ORDEN if not cuotas.desperto(q)}
+        if cuotas.puede_revisar_claude(evitar or '', dormidos):
+            try:
+                crudo = _claude_directo(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))
+                auditoria = _json_de(crudo)
+                quien_aud = 'claude'
+                avisos.append('todas las gratis duermen: revisa claude (ley de Julio)')
+            except Exception as e:
+                avisos.append('claude no pudo revisar: ' + str(e)[:120])
     # Si no hay auditor, intentar con el cerebro de pago, PERO APARTANDO SIEMPRE AL QUE ESCRIBIO.
     # NADIE REVISA SU PROPIO TRABAJO (Julio, 2026-09-13). Antes aqui no se apartaba a nadie y el que
     # escribio acababa revisandose: medido, 40 de 102 rondas aprobadas en 7 dias, que por ley no se

@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "En auditar, cuando no hay auditor o su veredicto es SIN_AUDITAR, no se intenta revisar con Claude aunque todas las gratis duerman, incumpliendo la ley de Julio 2026-09-14.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    # Si no hay auditor, intentar con el cerebro de pago, PERO APARTANDO SIEMPRE AL QUE ESCRIBIO.",
+  "texto_nuevo": "    # Ley de Julio 2026-09-14: si todas las gratis duermen, revisa Claude; nunca quien escribio.\n    if auditoria is None or auditoria.get('veredicto') == 'SIN_AUDITAR':\n        dormidos = {q for q in cuotas.ORDEN if not cuotas.desperto(q)}\n        if cuotas.puede_revisar_claude(evitar or '', dormidos):\n            try:\n                crudo = _claude_directo(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n                auditoria = _json_de(crudo)\n                quien_aud = 'claude'\n                avisos.append('todas las gratis duermen: revisa claude (ley de Julio)')\n            except Exception as e:\n                avisos.append('claude no pudo revisar: ' + str(e)[:120])\n    # Si no hay auditor, intentar con el cerebro de pago, PERO APARTANDO SIEMPRE AL QUE ESCRIBIO.",
+  "cambio": "Insertar, justo antes del comentario '# Si no hay auditor, intentar con el cerebro de pago, PERO APARTANDO SIEMPRE AL QUE ESCRIBIO.', el bloque nuevo que, si auditoria es None o su veredicto es SIN_AUDITAR, calcula los dormidos, comprueba cuotas.puede_revisar_claude y, dentro de try, llama a _claude_directo con _prompt_auditor, parsea con _json_de, marca quien_aud='claude' y anade el aviso de la ley; en except anade aviso con las primeras 120 letras del error.",
+  "codigo": "    # Ley de Julio 2026-09-14: si todas las gratis duermen, revisa Claude; nunca quien escribio.\n    if auditoria is None or auditoria.get('veredicto') == 'SIN_AUDITAR':\n        dormidos = {q for q in cuotas.ORDEN if not cuotas.desperto(q)}\n        if cuotas.puede_revisar_claude(evitar or '', dormidos):\n            try:\n                crudo = _claude_directo(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n                auditoria = _json_de(crudo)\n                quien_aud = 'claude'\n                avisos.append('todas las gratis duermen: revisa claude (ley de Julio)')\n            except Exception as e:\n                avisos.append('claude no pudo revisar: ' + str(e)[:120])",
+  "vigia": "vigias/test_vigia_claude_audita_si_gratis_duermen.py::test_si_todas_las_gratis_duermen_audita_claude",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "¿El nombre exacto del atributo de cuotas que lista los cerebros es ORDEN y el metodo que dice si uno desperto es desperto(q)?",
+   "¿La funcion cuotas.puede_revisar_claude existe con esa firma (evitar, dormidos)?",
+   "¿Existe _claude_directo y recibe el prompt como unico argumento?",
+   "¿La variable material_auditor esta definida antes de este punto en auditar?",
+   "¿La variable quien_aud es la que devuelve auditar como quien reviso?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini4 y no esta disponible: reviso ",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 1"
+ ]
+}
