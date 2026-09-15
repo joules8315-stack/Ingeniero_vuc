@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "Falta crear el archivo NUEVO memoria/ORDENES.json con las 6 ordenes requeridas, y crear cuerpo/capataz.py con la funcion leer_lista().",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "leer_lista",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "Crear el archivo NUEVO cuerpo/capataz.py con UNA SOLA funcion completa: def leer_lista(): que lee memoria/ORDENES.json con encoding utf-8 y devuelve la lista de dicts de ordenes en el orden del archivo. Si el archivo no existe o el json esta roto, devuelve []. Y crear el archivo NUEVO memoria/ORDENES.json con la lista de 6 ordenes en el orden exacto y con los campos id, titulo, pieza, encargo, vigia, prueba_real, comando, estado, paso_fallido, fallos_seguidos; encargo, vigia, prueba_real y comando vacios en esta ronda.",
+  "codigo": "import json\nimport os\n\n\ndef leer_lista():\n    ruta = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'memoria', 'ORDENES.json')\n    try:\n        with open(ruta, encoding='utf-8') as f:\n            datos = json.load(f)\n    except (FileNotFoundError, json.JSONDecodeError):\n        return []\n    if not isinstance(datos, list):\n        return []\n    return datos\n\n\n# ===== memoria/ORDENES.json =====\n[\n  {\n    \"id\": 1,\n    \"titulo\": \"Los recados del canal no se pierden\",\n    \"pieza\": \".opencode/plugins/canal_buzon.js (y arnes/canal.py)\",\n    \"encargo\": \"\",\n    \"vigia\": \"\",\n    \"prueba_real\": \"\",\n    \"comando\": \"\",\n    \"estado\": \"pendiente\",\n    \"paso_fallido\": \"\",\n    \"fallos_seguidos\": 0\n  },\n  {\n    \"id\": 2,\n    \"titulo\": \"Revisor opencode/claude cuando todas las gratis duermen (candado en el programa)\",\n    \"pieza\": \"ingeniero.py\",\n    \"encargo\": \"\",\n    \"vigia\": \"\",\n    \"prueba_real\": \"\",\n    \"comando\": \"\",\n    \"estado\": \"pendiente\",\n    \"paso_fallido\": \"\",\n    \"fallos_seguidos\": 0\n  },\n  {\n    \"id\": 3,\n    \"titulo\": \"Recortar el encargo al auditor para que una gratis no se agote en una pasada\",\n    \"pieza\": \"cuerpo/obrero.py\",\n    \"encargo\": \"\",\n    \"vigia\": \"\",\n    \"prueba_real\": \"\",\n    \"comando\": \"\",\n    \"estado\": \"pendiente\",\n    \"paso_fallido\": \"\",\n    \"fallos_seguidos\": 0\n  },\n  {\n    \"id\": 4,\n    \"titulo\": \"Informe horario de avance que Windows corre solo y deja mensaje a claude\",\n    \"pieza\": \"cuerpo/capataz.py\",\n    \"encargo\": \"\",\n    \"vigia\": \"\",\n    \"prueba_real\": \"\",\n    \"comando\": \"\",\n    \"estado\": \"pendiente\",\n    \"paso_fallido\": \"\",\n    \"fallos_seguidos\": 0\n  },\n  {\n    \"id\": 5,\n    \"titulo\": \"Guardar con el guardia el arreglo del obrero (respuesta completa) ya aplicado y sin guardar\",\n    \"pieza\": \"cuerpo/obrero.py\",\n    \"encargo\": \"\",\n    \"vigia\": \"\",\n    \"prueba_real\": \"\",\n    \"comando\": \"\",\n    \"estado\": \"pendiente\",\n    \"paso_fallido\": \"\",\n    \"fallos_seguidos\": 0\n  },\n  {\n    \"id\": 6,\n    \"titulo\": \"Tanda 1: 1b test_caza_pruebas_con_simuladores, luego 1c 1d 1e\",\n    \"pieza\": \"vigias/test_vigia_revisor_de_programa.py\",\n    \"encargo\": \"\",\n    \"vigia\": \"\",\n    \"prueba_real\": \"\",\n    \"comando\": \"\",\n    \"estado\": \"pendiente\",\n    \"paso_fallido\": \"\",\n    \"fallos_seguidos\": 0\n  }\n]",
+  "vigia": "Una prueba que llame a capataz.leer_lista() con memoria/ORDENES.json presente y compruebe que devuelve 6 dicts en el orden 1..6; y con el archivo ausente o json roto compruebe que devuelve [].",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "memoria/ORDENES.json"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 3"
+ ]
+}

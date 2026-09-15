@@ -1,0 +1,68 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "Al archivo cuerpo/capataz.py le falta la cuarta funcion lanzar_al_equipo(encargo) que ejecute con subprocess, desde la raiz C:\\Ingeniero_VUC, el comando 'python ingeniero.py equipo ingeniero' con encargo como argumento y devuelva (retcode, salida).",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "lanzar_al_equipo (funcion nueva, se agrega al final del archivo, despues de marcar_estado)",
+  "texto_viejo": "    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2)\n    return True",
+  "texto_nuevo": "    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2)\n    return True\n\n\ndef lanzar_al_equipo(encargo):\n    raiz = r\"C:\\Ingeniero_VUC\"\n    resultado = subprocess.run(\n        [\"python\", \"ingeniero.py\", \"equipo\", \"ingeniero\", encargo],\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n    )\n    return resultado.returncode, resultado.stdout",
+  "cambio": "Agregar al final de cuerpo/capataz.py la funcion nueva lanzar_al_equipo(encargo) que corre con subprocess desde la raiz C:\\Ingeniero_VUC el comando 'python ingeniero.py equipo ingeniero' pasando encargo como argumento, captura la salida de texto y devuelve la tupla (retcode, salida). Ademas hay que anadir 'import subprocess' arriba, junto a los imports existentes, porque el archivo solo importa json y os.",
+  "codigo": "import subprocess\n\n\ndef lanzar_al_equipo(encargo):\n    raiz = r\"C:\\Ingeniero_VUC\"\n    resultado = subprocess.run(\n        [\"python\", \"ingeniero.py\", \"equipo\", \"ingeniero\", encargo],\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n    )\n    return resultado.returncode, resultado.stdout",
+  "vigia": "Una vigia que llame a capataz.lanzar_al_equipo('prueba') y compruebe que devuelve una tupla de dos elementos, que el primero es un entero (retcode) y el segundo es texto (salida), y que el comando se ejecuto desde C:\\Ingeniero_VUC.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "arnes/asignador.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "via_canonica.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini2 y no esta disponible: reviso ",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 1"
+ ]
+}

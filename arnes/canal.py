@@ -111,8 +111,6 @@ def leer(para=None):
             continue                      # no es tuyo: ni se muestra ni se marca leido
         if m.get("leido"):
             continue
-        m["leido"] = True
-        json.dump(m, open(ruta, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         salida.append(m)
     return salida
 

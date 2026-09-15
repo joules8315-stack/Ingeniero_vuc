@@ -1,0 +1,66 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Falta en cuerpo/capataz.py la funcion lanzar_al_equipo(encargo) y el import subprocess que la tarea pide agregar.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "lanzar_al_equipo",
+  "texto_viejo": "import json\nimport os\n\n\ndef leer_lista():",
+  "texto_nuevo": "import json\nimport os\nimport subprocess\n\n\ndef lanzar_al_equipo(encargo):\n    raiz = r\"C:\\Ingeniero_VUC\"\n    resultado = subprocess.run(\n        [\"python\", \"ingeniero.py\", \"equipo\", \"ingeniero\", encargo],\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n    )\n    return (resultado.returncode, resultado.stdout)\n\n\ndef leer_lista():",
+  "cambio": "Agregar 'import subprocess' junto a los imports existentes y agregar la funcion lanzar_al_equipo(encargo) antes de leer_lista(), sin tocar las funciones existentes.",
+  "codigo": "import subprocess\n\n\ndef lanzar_al_equipo(encargo):\n    raiz = r\"C:\\Ingeniero_VUC\"\n    resultado = subprocess.run(\n        [\"python\", \"ingeniero.py\", \"equipo\", \"ingeniero\", encargo],\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n    )\n    return (resultado.returncode, resultado.stdout)",
+  "vigia": "Una prueba que llame a lanzar_al_equipo('prueba') y compruebe que devuelve una tupla (retcode entero, salida de texto) y que el comando se ejecuto desde C:\\Ingeniero_VUC.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "ingeniero.py",
+   "arnes/asignador.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "via_canonica.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta añade la función y el import solicitados sin tocar nada más, cumpliendo el encargo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

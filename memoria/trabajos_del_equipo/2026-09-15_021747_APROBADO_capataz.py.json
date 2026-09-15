@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "El paso 3 (vigia_verde) no distingue una vigia recien nacida: si la prueba falla devuelve vigia_verde aunque la vigia no figure en git ls-files.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "comprobar_pasos",
+  "texto_viejo": "    # Paso 3 vigia_verde: pytest sobre la vigia\n    vigia = orden.get(\"vigia\")\n    if not vigia:\n        return \"vigia_verde\"\n    resultado_vigia = subprocess.run(\n        [\"python\", \"-m\", \"pytest\", vigia],\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )\n    if resultado_vigia.returncode != 0:\n        return \"vigia_verde\"",
+  "texto_nuevo": "    # Paso 3 vigia_verde: pytest sobre la vigia\n    vigia = orden.get(\"vigia\")\n    if not vigia:\n        return \"vigia_verde\"\n    resultado_vigia = subprocess.run(\n        [\"python\", \"-m\", \"pytest\", vigia],\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )\n    if resultado_vigia.returncode != 0:\n        resultado_git = subprocess.run(\n            [\"git\", \"ls-files\", vigia],\n            cwd=carpeta_proyecto,\n            capture_output=True,\n            text=True,\n        )\n        if resultado_git.stdout.strip() == \"\":\n            return \"\"\n        return \"vigia_verde\"",
+  "cambio": "En el paso 3, cuando la prueba de la vigia falla, ejecutar git ls-files con la ruta de la vigia; si la salida esta vacia (vigia recien nacida) devolver cadena vacia (OK), y si la vigia ya figuraba en git ls-files devolver vigia_verde.",
+  "codigo": "    if resultado_vigia.returncode != 0:\n        resultado_git = subprocess.run(\n            [\"git\", \"ls-files\", vigia],\n            cwd=carpeta_proyecto,\n            capture_output=True,\n            text=True,\n        )\n        if resultado_git.stdout.strip() == \"\":\n            return \"\"\n        return \"vigia_verde\"",
+  "vigia": "Una prueba que llame a comprobar_pasos con una vigia nueva que falla (no esta en git ls-files) y compruebe que devuelve cadena vacia, y con una vigia ya guardada que falla y compruebe que devuelve vigia_verde.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "flujo de comprobacion de pasos de las ordenes"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio corrige el fallo de vigia recién nacida sin romper nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

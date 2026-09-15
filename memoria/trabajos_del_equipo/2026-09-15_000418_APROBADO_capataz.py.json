@@ -1,0 +1,62 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta agregar la funcion siguiente_pendiente() al final de cuerpo/capataz.py, sin tocar leer_lista ni ningun otro archivo.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "leer_lista",
+  "texto_viejo": "    if isinstance(datos, list):\n        return datos\n    return []",
+  "texto_nuevo": "    if isinstance(datos, list):\n        return datos\n    return []\n\n\ndef siguiente_pendiente():\n    for orden in leer_lista():\n        if orden.get(\"estado\") == \"pendiente\":\n            return orden\n    return None",
+  "cambio": "Agregar al final del archivo la funcion siguiente_pendiente() que llama a leer_lista(), recorre las ordenes en orden y devuelve la primera cuyo estado sea exactamente 'pendiente' (el dict completo), o None si no hay ninguna.",
+  "codigo": "def siguiente_pendiente():\n    for orden in leer_lista():\n        if orden.get(\"estado\") == \"pendiente\":\n            return orden\n    return None",
+  "vigia": "Una prueba que cargue una lista con ordenes de estados variados y compruebe que siguiente_pendiente() devuelve el primer dict con estado 'pendiente' y None cuando no hay ninguno.",
+  "puede_danar": [
+   "cuerpo/capataz.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Añade correctamente la función solicitada sin tocar código existente ni violar contratos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a groq20b y no esta disponible: reviso ",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a groq20b y no esta disponible: reviso groq",
+  "vueltas_dadas: 2"
+ ]
+}

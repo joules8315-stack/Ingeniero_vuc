@@ -1,0 +1,69 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "Falta en cuerpo/capataz.py la cuarta funcion lanzar_al_equipo(encargo) que ejecute con subprocess el comando 'python ingeniero.py equipo ingeniero' desde la raiz C:\\Ingeniero_VUC pasando encargo como argumento y devuelva (retcode, salida).",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "lanzar_al_equipo",
+  "texto_viejo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):",
+  "texto_nuevo": "def lanzar_al_equipo(encargo):\n    raiz = r\"C:\\Ingeniero_VUC\"\n    resultado = subprocess.run(\n        [\"python\", \"ingeniero.py\", \"equipo\", \"ingeniero\", encargo],\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n    )\n    return resultado.returncode, resultado.stdout\n\n\ndef marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):",
+  "cambio": "Anadir al inicio del archivo el import subprocess y agregar la funcion lanzar_al_equipo(encargo) justo antes de marcar_estado, sin tocar leer_lista, siguiente_pendiente ni marcar_estado.",
+  "codigo": "import subprocess\n\n\ndef lanzar_al_equipo(encargo):\n    raiz = r\"C:\\Ingeniero_VUC\"\n    resultado = subprocess.run(\n        [\"python\", \"ingeniero.py\", \"equipo\", \"ingeniero\", encargo],\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n    )\n    return resultado.returncode, resultado.stdout",
+  "vigia": "Una vigia que llame a lanzar_al_equipo('prueba') y compruebe que devuelve una tupla de dos elementos, que el primero es un entero (retcode) y el segundo es texto (salida capturada), y que el comando se ejecuto desde C:\\Ingeniero_VUC.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "arnes/asignador.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "via_canonica.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a groq y no esta disponible: reviso ",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 1"
+ ]
+}

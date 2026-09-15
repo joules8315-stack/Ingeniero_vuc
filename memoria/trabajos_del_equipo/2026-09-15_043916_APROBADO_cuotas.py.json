@@ -1,0 +1,33 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta en cuerpo/cuotas.py la funcion puede_revisar_claude(escritor, dormidos) que exige la ley de Julio 2026-09-14: Claude solo revisa lo de DeepSeek mientras todas las IA gratis duermen.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "puede_revisar_claude",
+  "texto_viejo": "    L.append(f -> le toca a: {APODO.get(t, 'NINGUNO (todos agotados)')})\n    return \\n.join(L)",
+  "texto_nuevo": "    L.append(f -> le toca a: {APODO.get(t, 'NINGUNO (todos agotados)')})\n    return \\n.join(L)\n\n\ndef puede_revisar_claude(escritor, dormidos):\n    \"\"\"Ley Julio 2026-09-14: Claude revisa lo de DeepSeek SOLO si TODOS los gratis duermen.\"\"\"\n    if escritor == \"claude\":\n        return False\n    gratis = [q for q in ORDEN if not q.startswith(\"deepseek\")]\n    return all(q in dormidos for q in gratis)",
+  "cambio": "Anadir al final del archivo, justo despues de la funcion que termina con las dos lineas literales indicadas, la funcion nueva puede_revisar_claude(escritor, dormidos) que devuelve False si escritor es claude, calcula gratis como los nombres de ORDEN que no empiezan por deepseek, y devuelve True solo si todos los gratis estan en dormidos.",
+  "codigo": "def puede_revisar_claude(escritor, dormidos):\n    \"\"\"Ley Julio 2026-09-14: Claude revisa lo de DeepSeek SOLO si TODOS los gratis duermen.\"\"\"\n    if escritor == \"claude\":\n        return False\n    gratis = [q for q in ORDEN if not q.startswith(\"deepseek\")]\n    return all(q in dormidos for q in gratis)",
+  "vigia": "vigias/test_vigia_claude_revisa_cuando_gratis_duermen.py",
+  "puede_danar": [
+   "cuerpo/cuotas.py"
+  ],
+  "preguntas": [],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La función solicitada se añadió correctamente, cumple la ley y no afecta a otros componentes."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19070 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

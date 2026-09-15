@@ -1,0 +1,59 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini3",
+ "propuesta": {
+  "diagnostico": "El archivo vigias/test_vigia_revisor_de_programa.py termina hoy en el assert del test que dejo pasar un cambio roto, y hay que anadir despues una prueba nueva que caza el uso de simuladores en aplicar_cambios.",
+  "archivo": "vigias/test_vigia_revisor_de_programa.py",
+  "funcion": "test_crear_un_archivo_nuevo_no_frena_por_palabras_de_contexto (final del archivo)",
+  "texto_viejo": "    assert any(QUEDA ROTO in str(f) for f in fallos), (\n        Dejo pasar un cambio que deja el archivo completo roto; en cuanto se corra, revienta. Dijo:  + str(fallos))",
+  "texto_nuevo": "    assert any(QUEDA ROTO in str(f) for f in fallos), (\n        Dejo pasar un cambio que deja el archivo completo roto; en cuanto se corra, revienta. Dijo:  + str(fallos))\n\n\ndef test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"vigias/test_vigia_varios_cambios_en_una_ronda.py\"\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"\",\n        \"texto_nuevo\": (\n            \"class MockAplicador:\\n\"\n            \"    def aplicar_cambios(self, cambios):\\n\"\n            \"        return True\\n\"\n        ),\n    }\n    tarea = (\"Escribir las pruebas llamando a la funcion REAL \"\n             \"cuerpo.aplicador.aplicar_cambios sin simuladores.\")\n    fallos = r.revisar(propuesta, tarea=tarea)\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"Dejo pasar pruebas que simulan aplicar_cambios en vez de llamar a la funcion real; \"\n        \"asi la prueba no prueba nada. Dijo: \" + str(fallos))",
+  "cambio": "Anadir al final del archivo, tras el assert del test existente, una linea en blanco y la funcion test_caza_pruebas_con_simuladores con sangria de 4 espacios, usando tmp_path, el helper _revisor() y una propuesta con archivo vigias/test_vigia_varios_cambios_en_una_ronda.py, texto_viejo vacio y texto_nuevo con la clase MockAplicador cuyo metodo aplicar_cambios devuelve True; la tarea pide escribir las pruebas llamando a la funcion REAL cuerpo.aplicador.aplicar_cambios sin simuladores, y el assert final busca la palabra Mock en los fallos.",
+  "codigo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"vigias/test_vigia_varios_cambios_en_una_ronda.py\"\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"\",\n        \"texto_nuevo\": (\n            \"class MockAplicador:\\n\"\n            \"    def aplicar_cambios(self, cambios):\\n\"\n            \"        return True\\n\"\n        ),\n    }\n    tarea = (\"Escribir las pruebas llamando a la funcion REAL \"\n             \"cuerpo.aplicador.aplicar_cambios sin simuladores.\")\n    fallos = r.revisar(propuesta, tarea=tarea)\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"Dejo pasar pruebas que simulan aplicar_cambios en vez de llamar a la funcion real; \"\n        \"asi la prueba no prueba nada. Dijo: \" + str(fallos))",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py::test_caza_pruebas_con_simuladores debe pasar en verde, y el archivo debe seguir importando sin error de sintaxis.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_aplicador.py",
+   "cuerpo/aplicador.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py",
+   "test_vigia_aplicador.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta sigue al pie de la letra el encargo, usando el helper y los datos exactos pedidos sin tocar nada más."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}

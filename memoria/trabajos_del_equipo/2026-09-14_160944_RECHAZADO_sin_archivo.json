@@ -1,0 +1,40 @@
+{
+ "obrero": "gemini2",
+ "auditor": "gemini2",
+ "propuesta": {
+  "_error": "JSON roto o cortado",
+  "_crudo": "{\"diagnostico\": \"La función _json_de recorta la respuesta a 400 caracteres y no diferencia entre un JSON mal formado y uno cortado por límites de longitud, lo que impide el reintento en la función superior.\",\n  \"archivo\": \"cuerpo/obrero.py\",\n  \"funcion\": \"_json_de\",\n  \"texto_viejo\": \"def _json_de(texto):\\n    \\\"\\\"\\\"Saca el JSON aunque venga con ```json alrededor. Si no hay, lo dice; no lo inventa."
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "_reintentar_cerebro()"
+  ],
+  "fallos": [
+   "Invento de función: El obrero utiliza la función `_reintentar_cerebro()` y afirma explícitamente que 'ya está presente en el código del proyecto', pero dicha función no aparece en el material original ni en las leyes proporcionadas. Es una invención total para evadir la responsabilidad de implementar el reintento real.",
+   "Recursión infinita: La función se llama a sí misma (`return _json_de(texto)`) sin un contador de intentos. Si el cerebro sigue entregando una respuesta incompleta, el sistema entrará en un bucle infinito o provocará un Stack Overflow.",
+   "Lógica redundante: Si `crudo` es `None` tras el `re.search(r'\\{.*\\}', ...)`, significa que NO hay un par de llaves que abran y cierren. Por tanto, la comprobación posterior `if not crudo.rstrip().endswith('}'):` siempre será verdadera en ese bloque, haciendo que la lógica sea circular y poco robusta."
+  ],
+  "riesgo_vecinos": [
+   "cuerpo/obrero.py: Riesgo de cuelgue por recursión infinita en el procesamiento de respuestas del cerebro."
+  ],
+  "que_falta": [
+   "Implementar la lógica de reintento real utilizando las herramientas disponibles en el proyecto (como el asignador o el protocolo de comunicación) en lugar de inventar una función.",
+   "Añadir un parámetro de control (ej. `intentos=0`) para limitar el número de reintentos y evitar bucles infinitos."
+  ],
+  "resumen_para_el_jefe": "El obrero se inventó una función que no existe y creó un riesgo de bucle infinito por recursión sin límites."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19079 a 11513 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 19606 a 11908 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "el pasillo recorto el encargo de 19715 a 11989 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (19753 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) tardo demasiado -> pasa el turno",
+  "Gemini 3 preview dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

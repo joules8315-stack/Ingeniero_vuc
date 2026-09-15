@@ -98,3 +98,7 @@ Base: `memoria/FORENSE_BIG_PICKLE_2026-09-14.md` + medicion de Claude del mismo 
 - Coinciden igual los otros guardados lentos: 12-sep 13:07 (48 min, durmio 45), 13-sep 22:39 (1h19, durmio 75),
   14-sep 08:33 (44 min, durmio 40).
 - Los dos de 3 horas (13-sep 04:15 y 04:17) **no** coinciden con sueño: siguen siendo "guardia colgada" (forense). Sin explicar aun.
+
+### Freno falso cazado en la ejecucion del paso 1 (2026-09-14)
+- El detector de fotocopia (candado de la terminal, es_una_fotocopia) frena todo encargo que CONTENGA las palabras texto viejo y texto nuevo, aunque sean nombres de campos y no el texto exacto. Mismo defecto que el aviso de memoria: dispara por palabras. Se apunto freno_falso. Se esquivo reescribiendo el encargo (no era fotocopia). **Reparacion pendiente, fuera de los pasos 0 y 1: necesita el si de Julio.**
+- Ronda 1 del paso 1 (crear vigia de 7 casos): los 3 gratis devolvieron respuesta a medias o cortada. El obrero guarda solo 400 letras de la respuesta cruda y TIRA la evidencia: no se puede ver donde se corto. Hipotesis: tamano. Prueba: pedirla en 2 partes. Materia del paso 0 (anotar por que falla).

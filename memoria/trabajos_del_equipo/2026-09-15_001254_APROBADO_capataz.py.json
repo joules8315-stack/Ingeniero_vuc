@@ -1,0 +1,33 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Falta la tercera función marcar_estado en cuerpo/capataz.py, que debe leer la lista, buscar la orden por id, actualizar estado/paso_fallido/fallos_seguidos y reescribir entero memoria/ORDENES.json.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "marcar_estado",
+  "texto_viejo": "def siguiente_pendiente():\n    for orden in leer_lista():\n        if orden.get(\"estado\") == \"pendiente\":\n            return orden\n    return None",
+  "texto_nuevo": "def siguiente_pendiente():\n    for orden in leer_lista():\n        if orden.get(\"estado\") == \"pendiente\":\n            return orden\n    return None\n\n\ndef marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    lista = leer_lista()\n    encontrada = False\n    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            orden[\"paso_fallido\"] = paso_fallido\n            orden[\"fallos_seguidos\"] = fallos_seguidos\n            encontrada = True\n            break\n    if not encontrada:\n        return False\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2)\n    return True",
+  "cambio": "Agregar al final de cuerpo/capataz.py la función marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0) que arma la ruta de memoria/ORDENES.json igual que leer_lista, busca el dict con id igual a orden_id, le asigna estado, paso_fallido y fallos_seguidos, reescribe entero el JSON con encoding utf-8 e indent=2, y devuelve True si la encontró y guardó, False si no.",
+  "codigo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    lista = leer_lista()\n    encontrada = False\n    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            orden[\"paso_fallido\"] = paso_fallido\n            orden[\"fallos_seguidos\"] = fallos_seguidos\n            encontrada = True\n            break\n    if not encontrada:\n        return False\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2)\n    return True",
+  "vigia": "Una prueba que llame a marcar_estado con un id existente y compruebe que devuelve True y que memoria/ORDENES.json quedó reescrito con los tres campos; y con un id inexistente compruebe que devuelve False y que el archivo no cambió.",
+  "puede_danar": [
+   "memoria/ORDENES.json",
+   "cuerpo/capataz.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Función marcada_estado añadida correctamente, sin inventar nada y cumpliendo el contrato."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}

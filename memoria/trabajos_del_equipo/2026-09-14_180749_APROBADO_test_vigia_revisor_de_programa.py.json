@@ -1,0 +1,42 @@
+{
+ "obrero": "gemini4",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "Se debe agregar una nueva función de prueba al final del archivo vigias/test_vigia_revisor_de_programa.py.",
+  "archivo": "vigias/test_vigia_revisor_de_programa.py",
+  "funcion": "test_caza_pruebas_con_simuladores",
+  "texto_viejo": "    assert any(\"QUEDA ROTO\" in str(f) for f in fallos), (\n        \"Dejo pasar un cambio que deja el archivo completo roto; en cuanto se corra, revienta. Dijo: \" + str(fallos))\n```",
+  "texto_nuevo": "    assert any(\"QUEDA ROTO\" in str(f) for f in fallos), (\n        \"Dejo pasar un cambio que deja el archivo completo roto; en cuanto se corra, revienta. Dijo: \" + str(fallos))\n\ndef test_caza_pruebas_con_simuladores(tmp_path):\n    \"\"\"Nace roja porque el revisor todavia no caza simuladores.\"\"\"\n    r = _revisor()\n    archivo = tmp_path / \"vigias/test_vigia_varios_cambios_en_una_ronda.py\"\n    # El texto de antes es vacio porque la clase MockAplicador es nueva\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"\",\n        \"texto_nuevo\": \"class MockAplicador:\\n    def aplicar_cambios(self):\n        return True\\n\",\n    }\n    tarea = 'Escribir las pruebas de aplicar_cambios llamando a la funcion REAL cuerpo.aplicador.aplicar_cambios, sin simuladores'\n    fallos = r.revisar(propuesta, tarea=tarea)\n    assert any(\"Mock\" in str(f) for f in fallos), \"No detecto el uso de Mock\"\n```",
+  "cambio": "Agregar la función `test_caza_pruebas_con_simuladores` al final del archivo `vigias/test_vigia_revisor_de_programa.py`.",
+  "codigo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    \"\"\"Nace roja porque el revisor todavia no caza simuladores.\"\"\"\n    r = _revisor()\n    archivo = tmp_path / \"vigias/test_vigia_varios_cambios_en_una_ronda.py\"\n    # El texto de antes es vacio porque la clase MockAplicador es nueva\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"\",\n        \"texto_nuevo\": \"class MockAplicador:\\n    def aplicar_cambios(self):\n        return True\\n\",\n    }\n    tarea = 'Escribir las pruebas de aplicar_cambios llamando a la funcion REAL cuerpo.aplicador.aplicar_cambios, sin simuladores'\n    fallos = r.revisar(propuesta, tarea=tarea)\n    assert any(\"Mock\" in str(f) for f in fallos), \"No detecto el uso de Mock\"\n",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion cumple el encargo: agrega la funcion nueva al final del archivo vigia, usa el helper _revisor() y tmp_path como pide el paquete, el texto de antes son las ultimas lineas exactas del archivo (test_sigue_cazando_un_archivo_que_de_verdad_queda_roto), y no toca ninguna linea existente. No inventa archivos ni funciones: _revisor() existe en el material y la funcion nueva es lo que el encargo pide expresamente crear."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) fallo (no es cuota): contesto vacio",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 2"
+ ]
+}

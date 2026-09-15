@@ -1,0 +1,61 @@
+{
+ "obrero": "groq",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "El bloque que permite pasar archivos del arnés sin veredicto del equipo permite guardar sin revisión",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "main",
+  "texto_viejo": "    if \"/arnes/\" in rel:\n        _apuntar_frenada(fp, \"DEJO PASAR: es el propio arnes\")\n        if os.path.exists(fp):                       # solo si el candado YA existe (reparar, no crear)\n            return 0                                    # hay que poder arreglar el propio candado",
+  "texto_nuevo": "",
+  "cambio": "Eliminar el tramo que detecta '/arnes/' y permite pasar archivos del arnés sin veredicto del equipo",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_sin_equipo_no_se_guarda.py",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_fuera_de_casa.py",
+   "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py",
+   "vigias/test_vigia_no_se_aplica_lo_frenado.py",
+   "vigias/test_vigia_nunca_sin_revisar.py",
+   "vigias/test_vigia_siempre_con_equipo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "test_vigia_equipo_siempre.py",
+   "test_vigia_fuera_de_casa.py",
+   "test_vigia_lo_aprobado_se_guarda_al_momento.py",
+   "test_vigia_no_se_aplica_lo_frenado.py",
+   "test_vigia_nunca_sin_revisar.py",
+   "test_vigia_siempre_con_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio elimina la excepción que permitía guardar archivos del arnés sin veredicto del equipo, cumpliendo la regla y sin romper nada."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

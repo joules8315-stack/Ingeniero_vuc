@@ -34,6 +34,29 @@ sys.path.insert(0, AQUI)
 sys.path.insert(0, os.path.join(AQUI, "arnes"))
 
 
+def test_caza_pruebas_con_simuladores(tmp_path):
+    r = _revisor()
+    archivo = tmp_path / "ejemplo.py"
+    archivo.write_text("def f():\n    return 1\n", encoding="utf-8")
+
+    class MockAplicador:
+        def aplicar(self, propuesta):
+            return True
+
+    propuesta = {
+        "archivo": str(archivo),
+        "texto_viejo": "def f():\n    return 1\n",
+        "texto_nuevo": (
+            "from unittest.mock import MagicMock\n"
+            "aplicador = MagicMock()\n"
+        ),
+    }
+    fallos = r.revisar(propuesta, tarea="probar la funcion real cuerpo.aplicador.aplicar_cambios")
+    assert any("Mock" in str(f) for f in fallos), (
+        "NO CAZO la prueba con simuladores: el revisor debe avisar cuando el cambio trae "
+        "un Mock o un simulador en vez de la reparacion real. Dijo: " + str(fallos))
+
+
 def _revisor():
     try:
         import revisor_de_programa

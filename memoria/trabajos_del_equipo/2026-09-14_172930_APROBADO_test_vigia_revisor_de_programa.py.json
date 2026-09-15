@@ -1,0 +1,38 @@
+{
+ "obrero": "groq",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Falta agregar la prueba que detecte simuladores Mock",
+  "archivo": "vigias/test_vigia_revisor_de_programa.py",
+  "funcion": "test_caza_pruebas_con_simuladores",
+  "texto_viejo": "",
+  "texto_nuevo": "def test_caza_pruebas_con_simuladores():\n    \"\"\"Esta prueba nace roja porque el revisor todavía no caza simuladores.\n    Verifica que r.revisar detecte el uso de una clase Mock en la propuesta.\n    \"\"\"\n    import revisor_de_programa as r\n\n    propuesta = {\n        \"archivo\": \"vigias/test_vigia_varios_cambios_en_una_ronda.py\",\n        \"texto_viejo\": \"\",\n        \"texto_nuevo\": \"class MockAplicador:\\n    def aplicar_cambios(self):\\n        return True\\n\"\n    }\n    tarea = \"Escribir las pruebas de aplicar_cambios llamando a la funcion REAL cuerpo.aplicador.aplicar_cambios, sin simuladores\"\n\n    resultados = r.revisar(propuesta, tarea)\n    assert any(\"Mock\" in fallo for fallo in resultados), (\n        \"El revisor no detectó el simulador Mock en la propuesta\"\n    )\n",
+  "cambio": "Agregar función de prueba que verifica detección de simuladores Mock",
+  "codigo": "def test_caza_pruebas_con_simuladores():\n    \"\"\"Esta prueba nace roja porque el revisor todavía no caza simuladores.\n    Verifica que r.revisar detecte el uso de una clase Mock en la propuesta.\n    \"\"\"\n    import revisor_de_programa as r\n\n    propuesta = {\n        \"archivo\": \"vigias/test_vigia_varios_cambios_en_una_ronda.py\",\n        \"texto_viejo\": \"\",\n        \"texto_nuevo\": \"class MockAplicador:\\n    def aplicar_cambios(self):\\n        return True\\n\"\n    }\n    tarea = \"Escribir las pruebas de aplicar_cambios llamando a la funcion REAL cuerpo.aplicador.aplicar_cambios, sin simuladores\"\n\n    resultados = r.revisar(propuesta, tarea)\n    assert any(\"Mock\" in fallo for fallo in resultados), (\n        \"El revisor no detectó el simulador Mock en la propuesta\"\n    )",
+  "vigia": "test_caza_pruebas_con_simuladores",
+  "puede_danar": [
+   "arnes/copista.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_aplicador.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "copista.py",
+   "revisor_de_programa.py",
+   "test_vigia_aplicador.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta añade la prueba solicitada sin inventar nada y no rompe nada."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

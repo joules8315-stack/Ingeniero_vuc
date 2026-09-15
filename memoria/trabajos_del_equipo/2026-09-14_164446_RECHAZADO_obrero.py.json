@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "La funcion _json_de recorta el crudo a 400 letras al guardarlo y _json_en no reintenta cuando el JSON llega roto o cortado, perdiendo trabajo ya pagado.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_json_de",
+  "texto_viejo": "    for intento in _maneras_de_leerlo(crudo):\n        try:\n            return json.loads(intento)\n        except Exception:\n            continue\n    return {\"_error\": \"JSON roto o cortado\", \"_crudo\": crudo}",
+  "texto_nuevo": "    for intento in _maneras_de_leerlo(crudo):\n        try:\n            return json.loads(intento)\n        except Exception:\n            continue\n    return {\"_error\": \"JSON roto o cortado\", \"_crudo\": crudo}",
+  "cambio": "NO_ENCONTRADO: el material solo trae el trozo de _json_de (lineas 231-249) y el inicio de trabajar (913-1022). No aparece la funcion _json_en ni los DOS sitios donde se guarda el crudo recortado a 400 letras. Sin ver el texto literal de esos sitios no se puede proponer el cambio minimo sin inventar.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO: no se puede escribir la vigia sin ver el codigo real de _json_en y de los dos sitios que recortan a 400.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "PREGUNTA_REQUERIDA: donde esta exactamente la funcion _json_en y los dos sitios que recortan el crudo a 400 letras dentro de cuerpo/obrero.py, para poder copiar su texto literal y sustituirlo sin inventar."
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La propuesta no contiene ninguna reparación de código.",
+   "El texto_nuevo es idéntico al texto_viejo, por lo que no se aplica ningún cambio.",
+   "El obrero se rinde alegando falta de material en lugar de intentar la reparación con los trozos suministrados o proponer la lógica necesaria.",
+   "No se cumple ni el PASO 1 ni el PASO 2 del encargo."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno, el código permanece inalterado."
+  ],
+  "que_falta": [
+   "Eliminar el recorte de 400 letras en los puntos de guardado del crudo.",
+   "Implementar la lógica de reintento en la función que llama (_json_en) dentro del bucle de vueltas.",
+   "Escribir el código de la vigía solicitado."
+  ],
+  "resumen_para_el_jefe": "El obrero ha devuelto una propuesta vacía alegando falta de material; no se ha reparado nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20061 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "vueltas_dadas: 4"
+ ]
+}

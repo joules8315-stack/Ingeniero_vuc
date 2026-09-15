@@ -143,6 +143,10 @@ def revisar(propuesta, tarea=""):
         if not nuevo.strip():
             return ["La propuesta no trae texto nuevo: no hay nada que aplicar."]
 
+        # 0 — SIMULADORES: una prueba con simuladores no prueba la pieza de verdad.
+        if re.search(r'MagicMock|unittest\.mock|\bMock\w*', nuevo):
+            fallos.append('USA SIMULADOR (Mock) EN VEZ DE LO REAL: una prueba con simuladores no prueba la pieza de verdad.')
+
         # 1 — HUMO: el cambio solo toca comentarios y no repara nada.
         if viejo.strip() and sin_ruido(viejo) == sin_ruido(nuevo):
             fallos.append("HUMO: quitando comentarios y lineas en blanco, el texto nuevo es "

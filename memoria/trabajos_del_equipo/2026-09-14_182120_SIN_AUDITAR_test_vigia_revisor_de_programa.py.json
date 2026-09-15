@@ -1,0 +1,63 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "El archivo vigias/test_vigia_revisor_de_programa.py no existe en el material y hay que crearlo con las dos lineas finales exactas y la funcion test_caza_pruebas_con_simuladores descrita en el encargo.",
+  "archivo": "vigias/test_vigia_revisor_de_programa.py",
+  "funcion": "test_caza_pruebas_con_simuladores",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "    assert any(QUEDA ROTO in str(f) for f in fallos), (\n        Dejo pasar un cambio que deja el archivo completo roto; en cuanto se corra, revienta. Dijo:  + str(fallos))\n\n\ndef test_caza_pruebas_con_simuladores(tmp_path):\n    revisor = _revisor(tmp_path)\n    propuesta = {\n        \"cambios\": [\n            {\n                \"archivo\": \"vigias/test_vigia_varios_cambios_en_una_ronda.py\",\n                \"funcion\": \"test_varios_pedazos_en_dos_archivos_se_aplican_todos\",\n                \"texto_viejo\": \"return 1\",\n                \"texto_nuevo\": \"return 10\",\n            }\n        ]\n    }\n\n    class MockAplicador:\n        def aplicar_cambios(self, propuesta):\n            return True\n\n    fallos = revisor.revisar(propuesta, aplicador=MockAplicador())\n    assert any(\"Mock\" in str(f) for f in fallos)",
+  "cambio": "Crear el archivo vigias/test_vigia_revisor_de_programa.py terminando exactamente en las dos lineas indicadas, luego una linea en blanco, y luego la funcion test_caza_pruebas_con_simuladores con tmp_path, helper _revisor, la propuesta con archivo vigias/test_vigia_varios_cambios_en_una_ronda.py, la clase MockAplicador con aplicar_cambios que devuelve True, y el assert que busca Mock en los fallos.",
+  "codigo": "    assert any(QUEDA ROTO in str(f) for f in fallos), (\n        Dejo pasar un cambio que deja el archivo completo roto; en cuanto se corra, revienta. Dijo:  + str(fallos))\n\n\ndef test_caza_pruebas_con_simuladores(tmp_path):\n    revisor = _revisor(tmp_path)\n    propuesta = {\n        \"cambios\": [\n            {\n                \"archivo\": \"vigias/test_vigia_varios_cambios_en_una_ronda.py\",\n                \"funcion\": \"test_varios_pedazos_en_dos_archivos_se_aplican_todos\",\n                \"texto_viejo\": \"return 1\",\n                \"texto_nuevo\": \"return 10\",\n            }\n        ]\n    }\n\n    class MockAplicador:\n        def aplicar_cambios(self, propuesta):\n            return True\n\n    fallos = revisor.revisar(propuesta, aplicador=MockAplicador())\n    assert any(\"Mock\" in str(f) for f in fallos)",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_varios_cambios_en_una_ronda.py"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: el material no trae el contenido completo del archivo vigias/test_vigia_revisor_de_programa.py ni la definicion del helper _revisor ni la firma exacta de revisor.revisar; se redacta la funcion segun lo descrito en el encargo, pero no se puede verificar literalmente contra el original archivado de la ronda 18:07."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 3"
+ ]
+}

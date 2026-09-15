@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "Falta en cuerpo/capataz.py la cuarta funcion buscar_pieza(nombre) que consulte mapa/MAPA_INGENIERO.json y devuelva True/False segun exista la pieza, sin tocar las tres funciones existentes.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "buscar_pieza",
+  "texto_viejo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):",
+  "texto_nuevo": "def buscar_pieza(nombre):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"mapa\", \"MAPA_INGENIERO.json\")\n    try:\n        with open(ruta, encoding=\"utf-8\") as f:\n            datos = json.load(f)\n    except (FileNotFoundError, json.JSONDecodeError, OSError):\n        return False\n    if isinstance(datos, dict):\n        piezas = datos.get(\"piezas\", [])\n    elif isinstance(datos, list):\n        piezas = datos\n    else:\n        return False\n    for pieza in piezas:\n        if isinstance(pieza, dict) and pieza.get(\"nombre\") == nombre:\n            return True\n    return False\n\n\ndef marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):",
+  "cambio": "Agregar al final del archivo cuerpo/capataz.py, antes de la definicion de marcar_estado, la nueva funcion buscar_pieza(nombre) que abre mapa/MAPA_INGENIERO.json en utf-8, recorre sus piezas y devuelve True si alguna tiene nombre igual a la cadena recibida, False si no esta o si el archivo no existe o no se puede leer. No se modifica ninguna de las tres funciones existentes.",
+  "codigo": "def buscar_pieza(nombre):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"mapa\", \"MAPA_INGENIERO.json\")\n    try:\n        with open(ruta, encoding=\"utf-8\") as f:\n            datos = json.load(f)\n    except (FileNotFoundError, json.JSONDecodeError, OSError):\n        return False\n    if isinstance(datos, dict):\n        piezas = datos.get(\"piezas\", [])\n    elif isinstance(datos, list):\n        piezas = datos\n    else:\n        return False\n    for pieza in piezas:\n        if isinstance(pieza, dict) and pieza.get(\"nombre\") == nombre:\n            return True\n    return False",
+  "vigia": "Un test que llame a buscar_pieza con un nombre que exista en mapa/MAPA_INGENIERO.json y compruebe True, y con un nombre inexistente y compruebe False; ademas, renombrando temporalmente el archivo, comprobar que devuelve False sin lanzar excepcion.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "mapa/MAPA_INGENIERO.json"
+  ],
+  "preguntas": [],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini y no esta disponible: reviso ",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 1"
+ ]
+}

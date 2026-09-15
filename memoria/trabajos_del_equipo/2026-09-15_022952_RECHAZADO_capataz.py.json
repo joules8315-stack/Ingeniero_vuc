@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "marcar_estado quedo cortada en 'lista = leer_lista()' y el cuerpo que le falta quedo pegado al final de comprobar_pasos despues de su return final.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "marcar_estado",
+  "texto_viejo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    lista = leer_lista()",
+  "texto_nuevo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    lista = leer_lista()\n    encontrada = False\n    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            orden[\"paso_fallido\"] = paso_fallido\n            orden[\"fallos_seguidos\"] = fallos_seguidos\n            encontrada = True\n            break\n    if not encontrada:\n        return False\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2)\n    return True",
+  "cambio": "Completar marcar_estado pegandole el cuerpo que quedo colgado al final de comprobar_pasos (recorrer la lista buscando la orden por id, poner estado/paso_fallido/fallos_seguidos, escribir con json.dump y devolver True; si no esta devolver False).",
+  "codigo": "    encontrada = False\n    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            orden[\"paso_fallido\"] = paso_fallido\n            orden[\"fallos_seguidos\"] = fallos_seguidos\n            encontrada = True\n            break\n    if not encontrada:\n        return False\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2)\n    return True",
+  "vigia": "Importar cuerpo/capataz.py sin error y comprobar que marcar_estado devuelve True al encontrar la orden y False si no esta, y que comprobar_pasos termina limpio en su return '' sin lineas extranas.",
+  "puede_danar": [
+   "cuerpo/capataz.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La propuesta es incompleta: no elimina el código huérfano al final de la función `comprobar_pasos`.",
+   "El diagnóstico y el material original exigen explícitamente borrar las líneas sobrantes después del `return ''` en `comprobar_pasos` para dejarla limpia, y la propuesta solo se ocupa de `marcar_estado`."
+  ],
+  "riesgo_vecinos": [
+   "La función `comprobar_pasos` seguirá teniendo código muerto e inaccesible al final, manteniendo el archivo mal armado."
+  ],
+  "que_falta": [
+   "Incluir la eliminación del bloque de código que quedó pegado después del `return ''` en la función `comprobar_pasos` (líneas 115 a 127 del material original)."
+  ],
+  "resumen_para_el_jefe": "Reparación incompleta: arregla marcar_estado pero ignora la orden de limpiar el código basura en comprobar_pasos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini4",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini2",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini2",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini2",
+  "vueltas_dadas: 4"
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini",
+ "propuesta": {
+  "diagnostico": "La clase MockAplicador esta fuera de la propuesta que recibe r.revisar, asi el revisor nunca la ve y no puede cazar el simulador; ademas la tarea dice 'reparar f' en vez de probar la funcion real cuerpo.aplicador.aplicar_cambios.",
+  "archivo": "vigias/test_vigia_revisor_de_programa.py",
+  "funcion": "test_caza_pruebas_con_simuladores",
+  "texto_viejo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"ejemplo.py\"\n    archivo.write_text(\"def f():\\n    return 1\\n\", encoding=\"utf-8\")\n\n    class MockAplicador:\n        def aplicar(self, propuesta):\n            return True\n\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": \"def f():\\n    return 2\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"reparar f\")\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"NO CAZO la prueba con simuladores: el revisor debe avisar cuando el cambio trae \"\n        \"un Mock o un simulador en vez de la reparacion real. Dijo: \" + str(fallos))",
+  "texto_nuevo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"ejemplo.py\"\n    archivo.write_text(\"def f():\\n    return 1\\n\", encoding=\"utf-8\")\n\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": (\n            \"from unittest.mock import MagicMock\\n\"\n            \"\\n\"\n            \"\\n\"\n            \"class MockAplicador:\\n\"\n            \"    def aplicar(self, propuesta):\\n\"\n            \"        return True\\n\"\n            \"\\n\"\n            \"\\n\"\n            \"aplicador = MagicMock()\\n\"\n            \"\\n\"\n            \"\\n\"\n            \"def f():\\n\"\n            \"    return 2\\n\"\n        ),\n    }\n    fallos = r.revisar(propuesta, tarea=\"probar la funcion REAL cuerpo.aplicador.aplicar_cambios\")\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"NO CAZO la prueba con simuladores: el revisor debe avisar cuando el cambio trae \"\n        \"un Mock o un simulador en vez de la reparacion real. Dijo: \" + str(fallos))",
+  "cambio": "Mover la clase MockAplicador y su metodo aplicar DENTRO del texto_nuevo de la propuesta (junto con from unittest.mock import MagicMock y aplicador = MagicMock()), quitar la clase del cuerpo de la prueba, y cambiar la tarea de 'reparar f' a 'probar la funcion REAL cuerpo.aplicador.aplicar_cambios'. El assert se queda igual.",
+  "codigo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"ejemplo.py\"\n    archivo.write_text(\"def f():\\n    return 1\\n\", encoding=\"utf-8\")\n\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": (\n            \"from unittest.mock import MagicMock\\n\"\n            \"\\n\"\n            \"\\n\"\n            \"class MockAplicador:\\n\"\n            \"    def aplicar(self, propuesta):\\n\"\n            \"        return True\\n\"\n            \"\\n\"\n            \"\\n\"\n            \"aplicador = MagicMock()\\n\"\n            \"\\n\"\n            \"\\n\"\n            \"def f():\\n\"\n            \"    return 2\\n\"\n        ),\n    }\n    fallos = r.revisar(propuesta, tarea=\"probar la funcion REAL cuerpo.aplicador.aplicar_cambios\")\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"NO CAZO la prueba con simuladores: el revisor debe avisar cuando el cambio trae \"\n        \"un Mock o un simulador en vez de la reparacion real. Dijo: \" + str(fallos))",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py::test_caza_pruebas_con_simuladores",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_aplicador.py",
+   "arnes/copista.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "copista.py",
+   "ejemplo.py",
+   "revisor_de_programa.py",
+   "test_vigia_aplicador.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta es impecable, sigue al pie de la letra las instrucciones del problema moviendo el Mock dentro de la propuesta y actualizando la tarea."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso gemini",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso gemini",
+  "vueltas_dadas: 2"
+ ]
+}

@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "La funcion test_caza_pruebas_con_simuladores define la clase MockAplicador fuera de la propuesta que se le pasa al revisor, por eso el revisor nunca la ve y no puede cazar el uso de simuladores.",
+  "archivo": "vigias/test_vigia_revisor_de_programa.py",
+  "funcion": "test_caza_pruebas_con_simuladores",
+  "texto_viejo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"ejemplo.py\"\n    archivo.write_text(\"def f():\\n    return 1\\n\", encoding=\"utf-8\")\n\n    class MockAplicador:\n        def aplicar(self, propuesta):\n            return True\n\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": \"def f():\\n    return 2\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"reparar f\")\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"NO CAZO la prueba con simuladores: el revisor debe avisar cuando el cambio trae \"\n        \"un Mock o un simulador en vez de la reparacion real. Dijo: \" + str(fallos))",
+  "texto_nuevo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"ejemplo.py\"\n    archivo.write_text(\"def f():\\n    return 1\\n\", encoding=\"utf-8\")\n\n    class MockAplicador:\n        def aplicar_cambios(self, propuesta):\n            return True\n\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"\",\n        \"texto_nuevo\": (\n            \"class MockAplicador:\\n\"\n            \"    def aplicar_cambios(self, propuesta):\\n\"\n            \"        return True\\n\"\n        ),\n    }\n    tarea = \"Escribir las pruebas llamando a la funcion REAL cuerpo aplicar_cambios y nada de simuladores\"\n    fallos = r.revisar(propuesta, tarea=tarea)\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"No detecto el uso de Mock\"\n    )",
+  "cambio": "Reemplazar la funcion entera test_caza_pruebas_con_simuladores: la clase MockAplicador real con su metodo aplicar_cambios debe seguir existiendo como codigo real dentro de la funcion (class y def con sangria, antes del dict), y ademas su misma definicion como string multilinea debe ir inyectada en el campo texto_nuevo de la propuesta. El texto_viejo de la propuesta queda vacio (dos comillas). La tarea debe decir que se escriban las pruebas llamando a la funcion REAL cuerpo aplicar_cambios y nada de simuladores. El assert debe comprobar que Mock aparezca en str de los fallos con mensaje No detecto el uso de Mock. Sangria de 4 espacios. No tocar otras funciones ni el helper def _revisor.",
+  "codigo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"ejemplo.py\"\n    archivo.write_text(\"def f():\\n    return 1\\n\", encoding=\"utf-8\")\n\n    class MockAplicador:\n        def aplicar_cambios(self, propuesta):\n            return True\n\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"\",\n        \"texto_nuevo\": (\n            \"class MockAplicador:\\n\"\n            \"    def aplicar_cambios(self, propuesta):\\n\"\n            \"        return True\\n\"\n        ),\n    }\n    tarea = \"Escribir las pruebas llamando a la funcion REAL cuerpo aplicar_cambios y nada de simuladores\"\n    fallos = r.revisar(propuesta, tarea=tarea)\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"No detecto el uso de Mock\"\n    )",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py::test_caza_pruebas_con_simuladores debe pasar en verde: el revisor debe devolver fallos que contengan Mock al recibir la propuesta con el string multilinea de MockAplicador en texto_nuevo.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Reemplazo correcto, sin invento ni daños."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}

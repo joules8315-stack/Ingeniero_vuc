@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Faltan los dos archivos nuevos pedidos: cuerpo/capataz.py y memoria/ORDENES.json, que no existen en el material porque son creaciones nuevas.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "leer_lista",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "import json\nimport os\n\n\ndef leer_lista():\n    ruta = os.path.join(\n        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),\n        \"memoria\",\n        \"ORDENES.json\",\n    )\n    try:\n        with open(ruta, \"r\", encoding=\"utf-8\") as f:\n            datos = json.load(f)\n    except (OSError, ValueError):\n        return []\n    if not isinstance(datos, list):\n        return []\n    return datos\n",
+  "cambio": "Crear el archivo NUEVO cuerpo/capataz.py con una sola funcion completa leer_lista() que lee memoria/ORDENES.json en utf-8 con ruta absoluta derivada de la carpeta del proyecto (subiendo un nivel desde cuerpo) y devuelve la lista de dicts en el orden del archivo; si no existe, el json esta roto o no es lista, devuelve [].",
+  "codigo": "import json\nimport os\n\n\ndef leer_lista():\n    ruta = os.path.join(\n        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),\n        \"memoria\",\n        \"ORDENES.json\",\n    )\n    try:\n        with open(ruta, \"r\", encoding=\"utf-8\") as f:\n            datos = json.load(f)\n    except (OSError, ValueError):\n        return []\n    if not isinstance(datos, list):\n        return []\n    return datos\n",
+  "vigia": "Una prueba que importe cuerpo.capataz.leer_lista y compruebe: (a) con memoria/ORDENES.json valido devuelve 6 dicts en orden; (b) si el archivo no existe devuelve []; (c) si el json esta roto devuelve []; (d) si el json no es lista devuelve [].",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "ingeniero.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación crea los archivos y funciones solicitados, cumpliendo con el diagnóstico y sin inventar ni romper nada."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 3"
+ ]
+}

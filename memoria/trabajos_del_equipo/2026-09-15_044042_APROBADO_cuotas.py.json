@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta la funcion puede_revisar_claude(escritor, dormidos) en cuerpo/cuotas.py, con su comentario de una linea citando la ley.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "se_paso_de_su_marca / turno / acierto_de (bloque final que termina con 'return \\n.join(L)')",
+  "texto_viejo": "    L.append(f -> le toca a: {APODO.get(t, 'NINGUNO (todos agotados)')})\n    return \\n.join(L)",
+  "texto_nuevo": "    L.append(f -> le toca a: {APODO.get(t, 'NINGUNO (todos agotados)')})\n    return \\n.join(L)\n\n\ndef puede_revisar_claude(escritor, dormidos):\n    # Ley Julio 2026-09-14: Claude revisa a DeepSeek solo si TODAS las IA gratis duermen.\n    if escritor == \"claude\":\n        return False\n    gratis = [q for q in ORDEN if not q.startswith(\"deepseek\")]\n    return all(q in dormidos for q in gratis)",
+  "cambio": "Anadir al final del archivo, justo despues de las dos lineas indicadas, la funcion puede_revisar_claude(escritor, dormidos) con un comentario de una linea que cita la ley, sin importar nada nuevo y con menos de 12 lineas.",
+  "codigo": "def puede_revisar_claude(escritor, dormidos):\n    # Ley Julio 2026-09-14: Claude revisa a DeepSeek solo si TODAS las IA gratis duermen.\n    if escritor == \"claude\":\n        return False\n    gratis = [q for q in ORDEN if not q.startswith(\"deepseek\")]\n    return all(q in dormidos for q in gratis)",
+  "vigia": "vigias/test_vigia_claude_revisa_cuando_gratis_duermen.py",
+  "puede_danar": [
+   "cuerpo/cuotas.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación añade la función solicitada sin inventar nada ni romper el código existente."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19070 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) no le cabe (20154 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) fallo (no es cuota): contesto vacio",
+  "vueltas_dadas: 2"
+ ]
+}

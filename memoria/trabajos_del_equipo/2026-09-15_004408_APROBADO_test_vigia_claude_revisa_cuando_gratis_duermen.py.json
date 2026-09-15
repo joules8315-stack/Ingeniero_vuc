@@ -1,0 +1,23 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_claude_revisa_cuando_gratis_duermen.py que verifica la ley de que Claude solo revisa a DeepSeek cuando todas las IA gratis estan dormidas, y debe nacer rojo porque cuotas.puede_revisar_claude aun no existe.",
+  "archivo": "vigias/test_vigia_claude_revisa_cuando_gratis_duermen.py",
+  "texto_nuevo": "import os\nimport sys\n\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, RAIZ)\n\nfrom cuerpo import cuotas\n\n\ndef _gratis():\n    \"\"\"La lista de cerebros gratis es cuotas.ORDEN sin deepseek.\"\"\"\n    return [n for n in cuotas.ORDEN if n != \"deepseek\"]\n\n\ndef test_si_todas_las_gratis_duermen_claude_puede_revisar_a_deepseek():\n    dormidos = set(_gratis())\n    assert cuotas.puede_revisar_claude(\"deepseek\", dormidos) is True\n\n\ndef test_si_una_gratis_esta_despierta_claude_no_revisa():\n    dormidos = set(_gratis()) - {\"gemini4\"}\n    assert cuotas.puede_revisar_claude(\"deepseek\", dormidos) is False\n\n\ndef test_claude_no_revisa_lo_que_escribio_claude():\n    dormidos = set(_gratis())\n    assert cuotas.puede_revisar_claude(\"claude\", dormidos) is False\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico creando el test requerido sin inventar nada y sin afectar a otros componentes."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

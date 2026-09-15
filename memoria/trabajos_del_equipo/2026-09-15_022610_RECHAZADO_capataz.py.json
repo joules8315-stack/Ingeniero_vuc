@@ -1,0 +1,52 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta la funcion procesar_siguiente() en cuerpo/capataz.py; el guardado real de marcar_estado quedo mal ubicado dentro de comprobar_pasos tras el return '', pero la tarea pide solo agregar procesar_siguiente() sin tocar lo existente.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "procesar_siguiente",
+  "texto_viejo": "def comprobar_pasos(orden):",
+  "texto_nuevo": "def procesar_siguiente():\n    orden = siguiente_pendiente()\n    if not orden:\n        return (None, 'sin_pendientes')\n    paso = comprobar_pasos(orden)\n    if paso == '':\n        marcar_estado(orden['id'], 'hecha')\n        return (orden, 'hecha')\n    marcar_estado(orden['id'], 'pendiente', paso_fallido=paso, fallos_seguidos=(orden.get('fallos_seguidos') or 0) + 1)\n    return (orden, paso)\n\n\ndef comprobar_pasos(orden):",
+  "cambio": "Insertar la funcion procesar_siguiente() justo antes de la definicion de comprobar_pasos, sin modificar ninguna funcion existente. La funcion llama a siguiente_pendiente(), comprobar_pasos() y marcar_estado() con la firma exacta indicada.",
+  "codigo": "def procesar_siguiente():\n    orden = siguiente_pendiente()\n    if not orden:\n        return (None, 'sin_pendientes')\n    paso = comprobar_pasos(orden)\n    if paso == '':\n        marcar_estado(orden['id'], 'hecha')\n        return (orden, 'hecha')\n    marcar_estado(orden['id'], 'pendiente', paso_fallido=paso, fallos_seguidos=(orden.get('fallos_seguidos') or 0) + 1)\n    return (orden, paso)",
+  "vigia": "Una prueba que llame a procesar_siguiente() con una orden pendiente cuyo comprobar_pasos devuelva '' y verifique que marcar_estado fue llamada con ('hecha') y el retorno sea (orden, 'hecha'); y otra con paso fallido que verifique marcar_estado con paso_fallido y fallos_seguidos incrementado.",
+  "puede_danar": [
+   "cuerpo/capataz.py::comprobar_pasos",
+   "memoria/ORDENES.json"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "ORDENES.js"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "La función `siguiente_pendiente()` no existe en el material proporcionado. El código propuesto la llama, pero no está definida ni importada en `cuerpo/capataz.py` ni en ningún otro lugar referenciado."
+  ],
+  "fallos": [
+   "La función `siguiente_pendiente()` es inventada, ya que no se encuentra en el material original ni se especifica su existencia.",
+   "La función `marcar_estado()` se llama con argumentos que no coinciden exactamente con la firma proporcionada en el material ('orden_id', 'estado', 'paso_fallido', 'fallos_seguidos'). El código propuesto la llama con `orden['id']`, `hecha` o `pendiente`, `paso_fallido=paso`, `fallos_seguidos=(orden.get('fallos_seguidos') or 0) + 1`. Si bien el material indica que `marcar_estado` existe, la forma en que se llama en la función `procesar_siguiente` podría ser problemática si los nombres de los argumentos son estrictos.",
+   "El diagnóstico menciona que el guardado de `marcar_estado` quedó mal ubicado en `comprobar_pasos`. La propuesta, al insertar `procesar_siguiente` antes de `comprobar_pasos`, no corrige esta supuesta mala ubicación, sino que introduce una nueva función que a su vez llama a `comprobar_pasos` y `marcar_estado`."
+  ],
+  "riesgo_vecinos": [
+   "La función `comprobar_pasos` en `cuerpo/capataz.py` podría verse afectada si la inserción de `procesar_siguiente` altera el orden de ejecución o las expectativas de las llamadas internas, aunque la propuesta indica que no se modifica `comprobar_pasos` directamente.",
+   "El archivo `memoria/ORDENES.json` podría verse afectado indirectamente si `marcar_estado` no se ejecuta correctamente debido a la invención de `siguiente_pendiente()` o a la discrepancia en los argumentos de `marcar_estado`."
+  ],
+  "que_falta": [
+   "La definición de la función `siguiente_pendiente()`."
+  ],
+  "resumen_para_el_jefe": "La reparación inventa una función esencial (`siguiente_pendiente`) y podría tener problemas con la firma de `marcar_estado`, además de no abordar el problema de ubicación de `marcar_estado` mencionado en el diagnóstico."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini4",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini4",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini4",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 4"
+ ]
+}

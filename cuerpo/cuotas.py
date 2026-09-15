@@ -383,6 +383,14 @@ def fila(disponibles=None):
     return sorted(candidatos, key=lambda q: (acierto_de(q) is not None, acierto_de(q) or 0.0), reverse=True)
 
 
+def puede_revisar_claude(escritor, dormidos):
+    # Ley Julio 2026-09-14: Claude revisa a DeepSeek solo si todas las IA gratis duermen.
+    if escritor == 'claude':
+        return False
+    gratis = [q for q in ORDEN if not q.startswith('deepseek')]
+    return all(q in dormidos for q in gratis)
+
+
 def estado_texto():
     d = _leer()
     L = ["RELEVO DE CEREBROS GRATIS (orden de Julio: Qwen -> Gemini -> local -> vuelta a Qwen)"]

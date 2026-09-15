@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la funcion puede_revisar_claude(escritor, dormidos) en cuerpo/cuotas.py, y la reparacion anterior fallaba por no definir ORDEN y por inconsistencia en el nombre del parametro 'escritor'.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "estado_texto (se inserta justo antes)",
+  "texto_viejo": "def estado_texto():",
+  "texto_nuevo": "def puede_revisar_claude(escritor, dormidos):\n    # Ley Julio 2026-09-14: Claude revisa a DeepSeek solo si todas las IA gratis duermen.\n    if escritor == 'claude':\n        return False\n    gratis = [q for q in ORDEN if not q.startswith('deepseek')]\n    return all(q in dormidos for q in gratis)\n\n\ndef estado_texto():",
+  "cambio": "Insertar la funcion puede_revisar_claude(escritor, dormidos) justo antes de la linea 'def estado_texto():', usando la lista ORDEN ya existente en el archivo, sin importar nada nuevo, con comillas simples y un comentario que cita la ley.",
+  "codigo": "def puede_revisar_claude(escritor, dormidos):\n    # Ley Julio 2026-09-14: Claude revisa a DeepSeek solo si todas las IA gratis duermen.\n    if escritor == 'claude':\n        return False\n    gratis = [q for q in ORDEN if not q.startswith('deepseek')]\n    return all(q in dormidos for q in gratis)",
+  "vigia": "vigias/test_vigia_claude_revisa_cuando_gratis_duermen.py",
+  "puede_danar": [
+   "cuerpo/cuotas.py::estado_texto",
+   "cuerpo/cuotas.py::turno"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada, no rompe vecinos y respeta todas las reglas."
+ },
+ "avisos": [
+  "GPT-OSS 20B (Groq) fallo (no es cuota): contesto vacio",
+  "se pidio auditar a gemini2 y no esta disponible: reviso gemini4",
+  "GPT-OSS 20B (Groq) no le cabe (20301 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini2 y no esta disponible: reviso groq",
+  "vueltas_dadas: 2"
+ ]
+}

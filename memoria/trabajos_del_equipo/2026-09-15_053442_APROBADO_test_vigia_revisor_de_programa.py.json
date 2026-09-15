@@ -1,0 +1,63 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini",
+ "propuesta": {
+  "diagnostico": "La propuesta de test_caza_pruebas_con_simuladores no trae ningun simulador en el texto_nuevo, asi el revisor nunca lo ve y no puede cazarlo.",
+  "archivo": "vigias/test_vigia_revisor_de_programa.py",
+  "funcion": "test_caza_pruebas_con_simuladores",
+  "texto_viejo": "    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": \"def f():\\n    return 2\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"reparar f\")",
+  "texto_nuevo": "    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": (\n            \"from unittest.mock import MagicMock\\n\"\n            \"aplicador = MagicMock()\\n\"\n        ),\n    }\n    fallos = r.revisar(propuesta, tarea=\"probar la funcion real cuerpo.aplicador.aplicar_cambios\")",
+  "cambio": "Sustituir el bloque de la propuesta y la llamada a r.revisar dentro de test_caza_pruebas_con_simuladores: el texto_nuevo pasa a ser un pedazo de prueba que hace 'from unittest.mock import MagicMock' y 'aplicador = MagicMock()' en vez de usar la funcion real, y la tarea de r.revisar pide probar la funcion REAL cuerpo.aplicador.aplicar_cambios. Se deja intacta la clase MockAplicador y el assert.",
+  "codigo": "    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": (\n            \"from unittest.mock import MagicMock\\n\"\n            \"aplicador = MagicMock()\\n\"\n        ),\n    }\n    fallos = r.revisar(propuesta, tarea=\"probar la funcion real cuerpo.aplicador.aplicar_cambios\")",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py::test_caza_pruebas_con_simuladores",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_aplicador.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py",
+   "test_vigia_aplicador.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta corrige exactamente lo solicitado en el test, introduciendo el simulador en el texto_nuevo y ajustando la tarea de revisión."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview tardo demasiado -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini2 y no esta disponible: reviso ",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "se pidio auditar a gemini2 y no esta disponible: reviso gemini",
+  "vueltas_dadas: 2"
+ ]
+}

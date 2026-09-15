@@ -1,0 +1,22 @@
+{
+ "obrero": "groq",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Archivo de pruebas creado según contrato, importando aplicador y llamando a aplicar_cambios que aún no existe",
+  "archivo": "vigias/test_vigia_varios_cambios_en_una_ronda.py",
+  "texto_nuevo": "import os\nimport sys\nimport pytest\n\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, RAIZ)\n\nfrom cuerpo import aplicador\n\n\ndef _escribir(path, contenido):\n    path.write_text(contenido, encoding=\"utf-8\")\n\n\ndef _leer(path):\n    return path.read_text(encoding=\"utf-8\")\n\n\ndef test_varios_pedazos_en_dos_archivos_se_aplican_todos(tmp_path):\n    f1 = tmp_path / \"a.py\"\n    f2 = tmp_path / \"b.py\"\n    _escribir(f1, \"def foo():\\n    return 1\\n\\ndef bar():\\n    return 2\\n\")\n    _escribir(f2, \"def baz():\\n    return 3\\n\")\n    pedazos = [\n        {\"archivo\": str(f1), \"funcion\": \"foo\", \"antes\": \"return 1\", \"despues\": \"return 10\"},\n        {\"archivo\": str(f1), \"funcion\": \"bar\", \"antes\": \"return 2\", \"despues\": \"return 20\"},\n        {\"archivo\": str(f2), \"funcion\": \"baz\", \"antes\": \"return 3\", \"despues\": \"return 30\"},\n    ]\n    resultado = aplicador.aplicar_cambios(pedazos)\n    assert resultado is True\n    assert \"return 10\" in _leer(f1)\n    assert \"return 20\" in _leer(f1)\n    assert \"return 30\" in _leer(f2)\n\n\ndef test_si_un_pedazo_no_encaja_no_cambia_ningun_archivo(tmp_path):\n    f1 = tmp_path / \"c.py\"\n    f2 = tmp_path / \"d.py\"\n    contenido1 = \"def alfa():\\n    pass\\n\"\n    contenido2 = \"def beta():\\n    pass\\n\"\n    _escribir(f1, contenido1)\n    _escribir(f2, contenido2)\n    pedazos = [\n        {\"archivo\": str(f1), \"funcion\": \"alfa\", \"antes\": \"no_existe\", \"despues\": \"pass\"},\n        {\"archivo\": str(f2), \"funcion\": \"beta\", \"antes\": \"pass\", \"despues\": \"pass\"},\n    ]\n    resultado = aplicador.aplicar_cambios(pedazos)\n    assert resultado is False\n    assert _leer(f1) == contenido1\n    assert _leer(f2) == contenido2\n\n\ndef test_si_un_pedazo_rompe_la_sintaxis_no_cambia_nada(tmp_path):\n    f = tmp_path / \"e.py\"\n    original = \"def gamma():\\n    return 5\\n\"\n    _escribir(f, original)\n    pedazos = [\n        {\"archivo\": str(f), \"funcion\": \"gamma\", \"antes\": \"return 5\", \"despues\": \"def broken(:\"},\n    ]\n    resultado = aplicador.aplicar_cambios(pedazos)\n    assert resultado is False\n    assert _leer(f) == original\n\n\ndef test_un_solo_pedazo_como_hoy_sigue_funcionando(tmp_path):\n    f = tmp_path / \"f.py\"\n    _escribir(f, \"def delta():\\n    return 7\\n\")\n    pedazo = {\"archivo\": str(f), \"funcion\": \"delta\", \"antes\": \"return 7\", \"despues\": \"return 70\"}\n    resultado = aplicador.aplicar_cambio(pedazo)\n    assert resultado is True\n    assert \"return 70\" in _leer(f)\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El test crea la vigia solicitada y provocará el AttributeError esperado, cumpliendo el contrato sin inventar nada ni romper vecinos."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,33 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Falta al final de cuerpo/cuotas.py la funcion puede_revisar_claude(escritor, dormidos) que exige la ley de Julio 2026-09-14.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "puede_revisar_claude",
+  "texto_viejo": "",
+  "texto_nuevo": "def puede_revisar_claude(escritor, dormidos):\n    \"\"\"Ley Julio 2026-09-14: Claude revisa lo de DeepSeek solo si TODOS los gratis duermen.\"\"\"\n    if escritor == \"claude\":\n        return False\n    gratis = [q for q in ORDEN if not q.startswith(\"deepseek\")]\n    for q in gratis:\n        if q not in dormidos:\n            return False\n    return True",
+  "cambio": "Anadir al final de cuerpo/cuotas.py la funcion puede_revisar_claude(escritor, dormidos): devuelve False si escritor es claude; calcula gratis como los nombres de ORDEN que no empiezan por deepseek; devuelve True solo si todos los gratis estan en dormidos, si falta uno devuelve False. Con un comentario de una linea citando la ley. Menos de 12 lineas, sin tocar lo existente ni importar nada.",
+  "codigo": "def puede_revisar_claude(escritor, dormidos):\n    \"\"\"Ley Julio 2026-09-14: Claude revisa lo de DeepSeek solo si TODOS los gratis duermen.\"\"\"\n    if escritor == \"claude\":\n        return False\n    gratis = [q for q in ORDEN if not q.startswith(\"deepseek\")]\n    for q in gratis:\n        if q not in dormidos:\n            return False\n    return True",
+  "vigia": "vigias/test_vigia_claude_revisa_cuando_gratis_duermen.py",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Función añadida correctamente, cumple requisitos y no rompe nada."
+ },
+ "avisos": [
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

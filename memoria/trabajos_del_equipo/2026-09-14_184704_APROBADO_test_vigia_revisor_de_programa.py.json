@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini3",
+ "propuesta": {
+  "diagnostico": "Falta la funcion test_caza_pruebas_con_simuladores (con tmp_path, MockAplicador y el assert que busca 'Mock') justo antes del helper _revisor, y el intento anterior la mutilo.",
+  "archivo": "vigias/test_vigia_revisor_de_programa.py",
+  "funcion": "_revisor",
+  "texto_viejo": "def _revisor():",
+  "texto_nuevo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"ejemplo.py\"\n    archivo.write_text(\"def f():\\n    return 1\\n\", encoding=\"utf-8\")\n\n    class MockAplicador:\n        def aplicar(self, propuesta):\n            return True\n\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": \"def f():\\n    return 2\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"reparar f\")\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"NO CAZO la prueba con simuladores: el revisor debe avisar cuando el cambio trae \"\n        \"un Mock o un simulador en vez de la reparacion real. Dijo: \" + str(fallos))\n\n\ndef _revisor():",
+  "cambio": "Insertar la funcion test_caza_pruebas_con_simuladores (con tmp_path, la clase MockAplicador y el assert que busca la palabra Mock en los fallos) inmediatamente antes de la linea def _revisor():, dejando una linea en blanco entre ambas.",
+  "codigo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"ejemplo.py\"\n    archivo.write_text(\"def f():\\n    return 1\\n\", encoding=\"utf-8\")\n\n    class MockAplicador:\n        def aplicar(self, propuesta):\n            return True\n\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": \"def f():\\n    return 2\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"reparar f\")\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"NO CAZO la prueba con simuladores: el revisor debe avisar cuando el cambio trae \"\n        \"un Mock o un simulador en vez de la reparacion real. Dijo: \" + str(fallos))\n\n\ndef _revisor():",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py — la propia prueba test_caza_pruebas_con_simuladores comprueba que el revisor detecta el uso de Mock/simuladores en los fallos.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "ejemplo.py",
+   "revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta inserta con precisión la función de prueba test_caza_pruebas_con_simuladores antes de def _revisor(): siguiendo al pie de la letra las instrucciones del paquete."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "vueltas_dadas: 2"
+ ]
+}

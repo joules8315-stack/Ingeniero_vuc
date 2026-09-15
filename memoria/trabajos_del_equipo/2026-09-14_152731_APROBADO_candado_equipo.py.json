@@ -1,0 +1,32 @@
+{
+ "obrero": "groq",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "el bloque que permite pasar archivos de arnes sin veredicto está presente",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "main",
+  "texto_viejo": "    rel = fp.replace(\"\\\\\", \"/\").lower()\n    if \"/arnes/\" in rel:\n        _apuntar_frenada(fp, \"DEJO PASAR: es el propio arnes\")\n        if os.path.exists(fp):                       # solo si el candado YA existe (reparar, no crear)\n            return 0",
+  "texto_nuevo": "",
+  "cambio": "eliminar completamente el bloque que deja pasar los archivos de arnes sin veredicto",
+  "codigo": "",
+  "vigia": "prueba que al invocar main con una ruta que contenga '/arnes/' y que el archivo exista, la función ya no retorna 0 sino que sigue el flujo normal exigiendo veredicto (por ejemplo, verifica que se llama _apuntar_frenada con el mensaje correspondiente y que no se devuelve 0 inmediatamente)",
+  "puede_danar": [
+   "arnes/candado_equipo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El bloque que permite pasar archivos de arnes sin veredicto se elimina correctamente, cumpliendo el requisito."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19071 a 13144 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta la funcion comprobar_pasos(orden) en cuerpo/capataz.py; hay que crearla entera con los 5 pasos en orden y devolver el nombre del primer paso que falle o cadena vacia.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "comprobar_pasos",
+  "texto_viejo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):",
+  "texto_nuevo": "def comprobar_pasos(orden):\n    pieza = orden.get(\"pieza\")\n    vigia = orden.get(\"vigia\")\n    comando = orden.get(\"comando\")\n\n    # Paso 1 ronda\n    if not pieza:\n        return \"ronda\"\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    carpeta_trabajos = os.path.join(carpeta_proyecto, \"memoria\", \"trabajos_del_equipo\")\n    base = os.path.splitext(os.path.basename(pieza))[0]\n    candidatos = []\n    try:\n        for nombre in os.listdir(carpeta_trabajos):\n            if base in nombre and \"APROBADO\" in nombre:\n                ruta = os.path.join(carpeta_trabajos, nombre)\n                try:\n                    candidatos.append((os.path.getmtime(ruta), ruta))\n                except OSError:\n                    continue\n    except OSError:\n        return \"ronda\"\n    if not candidatos:\n        return \"ronda\"\n    candidatos.sort()\n    ruta_aprobado = candidatos[-1][1]\n    try:\n        with open(ruta_aprobado, encoding=\"utf-8\") as f:\n            datos = json.load(f)\n    except (FileNotFoundError, json.JSONDecodeError, OSError):\n        return \"ronda\"\n    obrero = datos.get(\"obrero\")\n    auditor = datos.get(\"auditor\")\n    if not obrero or not auditor or obrero == auditor:\n        return \"ronda\"\n\n    # Paso 2 aplicada\n    if not pieza:\n        return \"aplicada\"\n    if not os.path.exists(pieza):\n        return \"aplicada\"\n\n    # Paso 3 vigia_verde\n    if not vigia:\n        return \"vigia_verde\"\n    resultado_vigia = subprocess.run(\n        [\"python\", \"-m\", \"pytest\", vigia],\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )\n    if resultado_vigia.returncode != 0:\n        return \"vigia_verde\"\n\n    # Paso 4 prueba_real\n    if not comando:\n        return \"prueba_real\"\n    resultado_comando = subprocess.run(\n        comando,\n        shell=True,\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )\n    if resultado_comando.returncode != 0:\n        return \"prueba_real\"\n\n    # Paso 5 guardado\n    if not comando:\n        return \"guardado\"\n    return \"\"\n\n\ndef marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):",
+  "cambio": "Anadir la funcion comprobar_pasos(orden) justo antes de marcar_estado, sin tocar las funciones existentes. Evalua los 5 pasos en orden (ronda, aplicada, vigia_verde, prueba_real, guardado), devuelve el nombre del primer paso que falle o cadena vacia si todos pasan. En el paso 5 no reejecuta el comando: si comando no esta vacio devuelve cadena vacia (todo OK); si falta el comando devuelve 'guardado'.",
+  "codigo": "def comprobar_pasos(orden):\n    pieza = orden.get(\"pieza\")\n    vigia = orden.get(\"vigia\")\n    comando = orden.get(\"comando\")\n\n    # Paso 1 ronda\n    if not pieza:\n        return \"ronda\"\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    carpeta_trabajos = os.path.join(carpeta_proyecto, \"memoria\", \"trabajos_del_equipo\")\n    base = os.path.splitext(os.path.basename(pieza))[0]\n    candidatos = []\n    try:\n        for nombre in os.listdir(carpeta_trabajos):\n            if base in nombre and \"APROBADO\" in nombre:\n                ruta = os.path.join(carpeta_trabajos, nombre)\n                try:\n                    candidatos.append((os.path.getmtime(ruta), ruta))\n                except OSError:\n                    continue\n    except OSError:\n        return \"ronda\"\n    if not candidatos:\n        return \"ronda\"\n    candidatos.sort()\n    ruta_aprobado = candidatos[-1][1]\n    try:\n        with open(ruta_aprobado, encoding=\"utf-8\") as f:\n            datos = json.load(f)\n    except (FileNotFoundError, json.JSONDecodeError, OSError):\n        return \"ronda\"\n    obrero = datos.get(\"obrero\")\n    auditor = datos.get(\"auditor\")\n    if not obrero or not auditor or obrero == auditor:\n        return \"ronda\"\n\n    # Paso 2 aplicada\n    if not pieza:\n        return \"aplicada\"\n    if not os.path.exists(pieza):\n        return \"aplicada\"\n\n    # Paso 3 vigia_verde\n    if not vigia:\n        return \"vigia_verde\"\n    resultado_vigia = subprocess.run(\n        [\"python\", \"-m\", \"pytest\", vigia],\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )\n    if resultado_vigia.returncode != 0:\n        return \"vigia_verde\"\n\n    # Paso 4 prueba_real\n    if not comando:\n        return \"prueba_real\"\n    resultado_comando = subprocess.run(\n        comando,\n        shell=True,\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )\n    if resultado_comando.returncode != 0:\n        return \"prueba_real\"\n\n    # Paso 5 guardado\n    if not comando:\n        return \"guardado\"\n    return \"\"",
+  "vigia": "Una prueba que llame a comprobar_pasos con una orden completa y correcta (pieza existente, vigia verde, comando que devuelve 0, aprobado con obrero!=auditor) y compruebe que devuelve cadena vacia; y otra que le quite el comando y compruebe que devuelve 'guardado', y que le quite la vigia y devuelva 'vigia_verde', y que le quite la pieza y devuelva 'ronda'.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "Se inventa el uso de los módulos 'os', 'json' y 'subprocess' sin que estén declarados en el material original ni en la propuesta."
+  ],
+  "fallos": [
+   "El código propuesto utiliza las librerías 'os', 'json' y 'subprocess' sin que estas estén importadas en el archivo 'cuerpo/capataz.py'. Esto es un fallo grave ya que el código no podrá ejecutarse.",
+   "En el Paso 5 'guardado', la lógica 'if not comando: return \"guardado\"' es incorrecta. Si 'comando' no está vacío, debería devolver una cadena vacía indicando que todo está OK, tal como se especifica en el material ('si el campo comando no esta vacio, devolver OK sin volver a ejecutarlo'). La implementación actual devuelve 'guardado' si el comando está vacío, lo cual es un error lógico y no cumple con el requisito.",
+   "El Paso 2 'aplicada' tiene la condición 'if not pieza: return \"aplicada\"'. Sin embargo, el Paso 1 'ronda' ya verifica 'if not pieza: return \"ronda\"'. Si 'pieza' está ausente, la función devolverá 'ronda' y nunca llegará a evaluar el Paso 2, haciendo esta comprobación redundante e incorrecta en su posición."
+  ],
+  "riesgo_vecinos": [
+   "El código propuesto modifica el archivo 'cuerpo/capataz.py' y, aunque no se indica explícitamente que la nueva función sea llamada desde otro lugar, la introducción de nuevas dependencias (os, json, subprocess) podría afectar a otros módulos que dependan de este archivo si no están preparados para ellas."
+  ],
+  "que_falta": [
+   "Faltan las importaciones de los módulos 'os', 'json' y 'subprocess' al inicio del archivo 'cuerpo/capataz.py'."
+  ],
+  "resumen_para_el_jefe": "La reparación propuesta introduce dependencias no declaradas, contiene errores lógicos en la validación de pasos y no cumple con la especificación del Paso 5. Requiere correcciones significativas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 4"
+ ]
+}

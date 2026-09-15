@@ -8314,5 +8314,1221 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.3
+ },
+ {
+  "id": 180,
+  "cuando": "2026-09-14 14:21",
+  "proyecto": "ingeniero",
+  "problema": "Pasos 0 y 1 del plan aprobado del cuello de botella. PASO 0: cada candado que frena debe anotar por que freno y despues si acerto (si la accion siguiente fue identica y paso, el freno no sirvio; si la prueba paso o fallo). Hoy el contador de frenos solo suma cazadas y frenos_falsos nunca se mide. PASO 1: el aplicador y el comando equipo aplican un solo pedazo (texto viejo -> nuevo) por ronda; se necesita que una aprobacion del equipo aplique varios pedazos juntos, todos o ninguno. El revisor de programa frena 'no hace lo que se pidio' porque cada ronda lleva un pedazo y el encargo describe el arreglo completo.",
+  "flujos": [
+   "aplicador",
+   "equipo",
+   "prueba"
+  ],
+  "piezas": [
+   "cuerpo/aplicador.py",
+   "memoria/rescate/rv3_prueba_real_velocidad.py",
+   "skills/medir_al_equipo.py"
+  ],
+  "trozos": [
+   "skills/medir_al_equipo.py:1-40",
+   "memoria/rescate/rv3_prueba_real_velocidad.py:193-216",
+   "cuerpo/aplicador.py:1-40",
+   "cuerpo/aplicador.py:161-187",
+   "memoria/rescate/rv3_prueba_real_velocidad.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_ENCHUFADO_SE_PRUEBA_EJECUTANDO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_UNA_OPINION_NO_ES_PRUEBA.md",
+   "memoria/paquetes/foto_informe__rv3_prueba_matriz_de_roles_py_no_puede_m.md",
+   "CONTRATO_NO_SE_MEZCLAN_LOS_FALLOS.md",
+   "memoria/PLAN_CUELLO_DE_BOTELLA_2026-09-14.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_aplicador.py",
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_prueba_real.py",
+   "vigias/test_vigia_siempre_con_equipo.py",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py"
+  ],
+  "lineas_paquete": 402,
+  "lineas_proyecto": 189422,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 181,
+  "cuando": "2026-09-14 15:09",
+  "proyecto": "ingeniero",
+  "problema": "Que claude nunca mas pueda trabajar sin equipo. Que todo el trabajo pesado lo haga big pickle o deepseek, nunca claude, que tiene la misma mision. Y que big pickle tampoco pueda trabajar bajo ninguna circunstancia sin el equipo.",
+  "flujos": [
+   "equipo",
+   "trabajo",
+   "nunca"
+  ],
+  "piezas": [
+   "skills/medir_al_equipo.py"
+  ],
+  "trozos": [
+   "skills/medir_al_equipo.py:70-98"
+  ],
+  "leyes": [
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_LA_IA_CARA_NUNCA_ESCRIBE.md",
+   "CONTRATO_NUNCA_A_SOLAS.md",
+   "CONTRATO_NUNCA_MAS_GASTO_GRANDE.md",
+   "CONTRATO_NUNCA_SIN_REVISAR.md",
+   "CONTRATO_SIN_GUARDAR_NO_HAY_TRABAJO.md",
+   "CONTRATO_TRABAJO_CON_CLINE.md",
+   "CONTRATO_NADIE_ENTRA_SIN_ARNES.md",
+   "CONTRATO_EL_AYUDANTE_DE_LA_CARGA_PESADA.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_nadie_revisa_su_propio_trabajo.py",
+   "vigias/test_vigia_nunca_mas_gasto_grande.py",
+   "vigias/test_vigia_nunca_sin_revisar.py",
+   "vigias/test_vigia_siempre_con_equipo.py",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py"
+  ],
+  "lineas_paquete": 234,
+  "lineas_proyecto": 190322,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
+ },
+ {
+  "id": 182,
+  "cuando": "2026-09-14 15:10",
+  "proyecto": "ingeniero",
+  "problema": "Cerrar toda salida de trabajo sin equipo para Claude y para Big Pickle (opencode), sin interruptor ni con orden de Julio. Huecos usados el 2026-09-14: el copista aplica textos que no vienen de un veredicto APROBADO; la llave de 90 minutos abre archivos enteros y no el contenido aprobado; por PowerShell y Bash se escribio, se marcaron ordenes con candado_legislar y se manipulo git add y git reset sin equipo; INGENIERO_OFF y autorizar-off apagan candados; el candado del equipo deja tocar siempre los .md, los archivos nuevos y el arnes; opencode puede escribir con sus propias herramientas.",
+  "flujos": [
+   "julio",
+   "equipo",
+   "trabajo"
+  ],
+  "piezas": [
+   "skills/julio_pudo_trabajar.py",
+   "skills/medir_al_equipo.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cuerpo/privacidad.py:1-40",
+   "skills/medir_al_equipo.py:70-98",
+   "skills/julio_pudo_trabajar.py:65-81"
+  ],
+  "leyes": [
+   "CONTRATO_A_JULIO_NO_SE_LE_PIDE_FIRMAR_LO_QUE_NO_PUEDE_JUZGAR.md",
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_SIN_GUARDAR_NO_HAY_TRABAJO.md",
+   "CONTRATO_TRABAJO_CON_CLINE.md",
+   "cerebro/protocolo.py",
+   "skills/quien_sirve_de_verdad.py",
+   "CONTRATO_AUTONOMIA_CLINE.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_autorizacion_de_julio.py",
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_diccionario_de_julio.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_nadie_revisa_su_propio_trabajo.py",
+   "vigias/test_vigia_siempre_con_equipo.py",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py"
+  ],
+  "lineas_paquete": 285,
+  "lineas_proyecto": 190611,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
+ },
+ {
+  "id": 183,
+  "cuando": "2026-09-14 15:11",
+  "proyecto": "ingeniero",
+  "problema": "Ninguna IA trabaja sin equipo por ninguna via. Piezas: arnes/candado_equipo.py (main, cubre, veredicto_vigente, el permiso de tocar siempre .md, archivos nuevos y arnes), arnes/copista.py (copiar sin comprobar veredicto aprobado), arnes/candado_terminal.py (solo vigila Bash, no PowerShell), arnes/autorizacion.py (autorizada, autorizar-off, INGENIERO_OFF), arnes/guardia_de_guardado.py (aprobaciones de 24 horas), .claude/settings.json (que herramientas cubre cada candado) y opencode.json (permisos de Big Pickle).",
+  "flujos": [
+   "piezas",
+   "equipo",
+   "via"
+  ],
+  "piezas": [
+   "cerebro/piezas.py",
+   "skills/medir_al_equipo.py",
+   "skills/via_unica.py",
+   "arnes/candado_equipo.py",
+   "arnes/copista.py",
+   "arnes/candado_terminal.py",
+   "arnes/autorizacion.py",
+   "arnes/guardia_de_guardado.py",
+   "ingeniero.py",
+   "mapa/inventario.py"
+  ],
+  "trozos": [
+   "arnes/autorizacion.py:63-77",
+   "arnes/candado_equipo.py:168-176",
+   "arnes/candado_equipo.py:179-205",
+   "arnes/guardia_de_guardado.py:300-358",
+   "arnes/candado_terminal.py:276-352",
+   "arnes/copista.py:82-105",
+   "arnes/copista.py:108-144",
+   "arnes/autorizacion.py:80-87",
+   "arnes/candado_equipo.py:1-40",
+   "arnes/candado_terminal.py:1-40",
+   "arnes/candado_terminal.py:193-232",
+   "arnes/guardia_de_guardado.py:130-176",
+   "arnes/autorizacion.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_UNA_SOLA_VIA.md",
+   "CONTRATO_NADIE_ENTRA_SIN_ARNES.md",
+   "skills/quien_sirve_de_verdad.py",
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_BUZON_DE_CLINE.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_siempre_con_equipo.py",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py",
+   "vigias/test_vigia_via_canonica.py"
+  ],
+  "lineas_paquete": 765,
+  "lineas_proyecto": 190972,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.6
+ },
+ {
+  "id": 184,
+  "cuando": "2026-09-14 15:18",
+  "proyecto": "ingeniero",
+  "problema": "Ninguna IA trabaja sin equipo por ninguna via, en ningun repo (ingeniero, dmm, mvp): siempre con el equipo, modo ingeniero. Piezas: arnes/candado_equipo.py, la pieza que aplica los cambios al disco, arnes/candado_terminal.py (solo vigila un tipo de terminal, no el otro), arnes/autorizacion.py, arnes/guardia_de_guardado.py, .claude/settings.json y opencode.json (permisos de Big Pickle). Que claude nunca mas trabaje sin equipo; el trabajo pesado lo hacen big pickle o deepseek, nunca claude; big pickle tampoco puede trabajar sin equipo bajo ninguna circunstancia.",
+  "flujos": [
+   "piezas",
+   "ingeniero",
+   "pieza"
+  ],
+  "piezas": [
+   "ingeniero.py",
+   "cerebro/piezas.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_terminal.py",
+   "arnes/autorizacion.py",
+   "arnes/guardia_de_guardado.py",
+   "mapa/inventario.py"
+  ],
+  "trozos": [
+   "arnes/candado_equipo.py:1-40",
+   "arnes/candado_terminal.py:1-40",
+   "arnes/guardia_de_guardado.py:1-40",
+   "arnes/autorizacion.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_COMO_EL_INGENIERO_CONSTRUYE_UN_PROYECTO.md",
+   "CONTRATO_CREAR_PIEZA_NUEVA.md",
+   "CONTRATO_EL_INGENIERO_CONSTRUYE_COMO_FUE_CONSTRUIDO.md",
+   "CONTRATO_ENCHUFAR_UNA_PIEZA_DORMIDA.md",
+   "CONTRATO_INGENIERO_VUC.md",
+   "CONTRATO_LA_PIEZA_SE_ENTREGA_ENTERA.md",
+   "mapa/MAPA_INGENIERO.json",
+   "mapa/MAPA_INGENIERO.md",
+   "CONTRATO_NADIE_ENTRA_SIN_ARNES.md",
+   "CONTRATO_NUNCA_SIN_REVISAR.md",
+   "cerebro/protocolo.py",
+   "skills/quien_sirve_de_verdad.py"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_rag_encuentra_pieza_correcta.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_roles_ingeniero.py",
+   "vigias/test_vigia_el_texto_largo_no_corta_la_pieza.py",
+   "vigias/test_vigia_la_pieza_se_busca_por_nombre.py",
+   "vigias/test_vigia_modo_ingeniero_siempre.py",
+   "vigias/test_vigia_trae_la_pieza_correcta.py"
+  ],
+  "lineas_paquete": 429,
+  "lineas_proyecto": 191878,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 185,
+  "cuando": "2026-09-14 15:21",
+  "proyecto": "ingeniero",
+  "problema": "Julio 2026-09-14: nadie escribe codigo a solas en ningun repo (ingeniero, dmm, mvp), ni siquiera reparando al propio equipo. Hoy el arnes permite escribir el propio ingeniero sin equipo: en arnes/candado_equipo.py la excepcion 'lo que no estorba: el propio arnes, si el candado se rompe hay que poder arreglarlo', y en arnes/candado_terminal.py la excepcion 'trabajar en el propio Ingeniero pasa siempre'. Quitar esas excepciones: reparar al equipo tambien se hace con el equipo. Que el flujo no se convierta en ley contradictoria.",
+  "flujos": [
+   "julio",
+   "ingeniero",
+   "equipo"
+  ],
+  "piezas": [
+   "ingeniero.py",
+   "skills/julio_pudo_trabajar.py",
+   "skills/medir_al_equipo.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_terminal.py"
+  ],
+  "trozos": [
+   "arnes/candado_equipo.py:1-40",
+   "arnes/candado_equipo.py:216-246",
+   "arnes/candado_terminal.py:276-352",
+   "arnes/candado_terminal.py:1-40",
+   "arnes/candado_equipo.py:385-424"
+  ],
+  "leyes": [
+   "CONTRATO_A_JULIO_NO_SE_LE_PIDE_FIRMAR_LO_QUE_NO_PUEDE_JUZGAR.md",
+   "CONTRATO_COMO_EL_INGENIERO_CONSTRUYE_UN_PROYECTO.md",
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_EL_INGENIERO_CONSTRUYE_COMO_FUE_CONSTRUIDO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_INGENIERO_VUC.md",
+   "mapa/MAPA_INGENIERO.json",
+   "mapa/MAPA_INGENIERO.md",
+   "cerebro/protocolo.py",
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_BUZON_DE_CLINE.md",
+   "CONTRATO_CEREBRO_DEL_PC.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_roles_ingeniero.py",
+   "vigias/test_vigia_autorizacion_de_julio.py",
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_diccionario_de_julio.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_modo_ingeniero_siempre.py",
+   "vigias/test_vigia_siempre_con_equipo.py",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py"
+  ],
+  "lineas_paquete": 467,
+  "lineas_proyecto": 191653,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 186,
+  "cuando": "2026-09-14 15:23",
+  "proyecto": "ingeniero",
+  "problema": "Necesito los trozos exactos de las excepciones que permiten escribir a solas: en arnes/candado_equipo.py el bloque LO QUE NO ESTORBA con la excepcion del propio arnes y la funcion main; en arnes/candado_terminal.py el bloque NO ESTORBA que deja trabajar en el propio Ingeniero y la funcion main; el contenido de .claude/settings.json que lista que herramientas cubre cada candado; y opencode.json que lista los permisos de Big Pickle. Julio 2026-09-14: nadie trabaja sin el equipo, ni siquiera reparando al propio equipo.",
+  "flujos": [
+   "trozos",
+   "julio",
+   "ingeniero"
+  ],
+  "piezas": [
+   "ingeniero.py",
+   "cerebro/trozos.py",
+   "skills/julio_pudo_trabajar.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_terminal.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "arnes/candado_equipo.py:179-205",
+   "arnes/candado_terminal.py:276-352",
+   "arnes/candado_equipo.py:1-40",
+   "arnes/candado_terminal.py:1-40",
+   "arnes/candado_equipo.py:216-246",
+   "arnes/candado_terminal.py:159-169",
+   "arnes/candado_equipo.py:385-424"
+  ],
+  "leyes": [
+   "CONTRATO_A_JULIO_NO_SE_LE_PIDE_FIRMAR_LO_QUE_NO_PUEDE_JUZGAR.md",
+   "CONTRATO_COMO_EL_INGENIERO_CONSTRUYE_UN_PROYECTO.md",
+   "CONTRATO_EL_INGENIERO_CONSTRUYE_COMO_FUE_CONSTRUIDO.md",
+   "CONTRATO_INGENIERO_VUC.md",
+   "mapa/MAPA_INGENIERO.json",
+   "mapa/MAPA_INGENIERO.md",
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_EL_AYUDANTE_DE_LA_CARGA_PESADA.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md",
+   "CONTRATO_NADIE_ENTRA_SIN_ARNES.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_roles_ingeniero.py",
+   "vigias/test_vigia_autorizacion_de_julio.py",
+   "vigias/test_vigia_diccionario_de_julio.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_modo_ingeniero_siempre.py"
+  ],
+  "lineas_paquete": 516,
+  "lineas_proyecto": 192353,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.7
+ },
+ {
+  "id": 187,
+  "cuando": "2026-09-14 15:36",
+  "proyecto": "ingeniero",
+  "problema": "Julio quiere una lista completa, absolutamente de todo, de lo que dentro del Ingeniero VUC se puede reemplazar por un programa (script) en vez de IA: tareas repetitivas, lectura, generacion de paquetes, vigias, todo. Quiere saber exactamente que hoy hace la IA pero podria hacerlo un programa.",
+  "flujos": [
+   "julio",
+   "ingeniero",
+   "lista"
+  ],
+  "piezas": [
+   "ingeniero.py",
+   "skills/julio_pudo_trabajar.py",
+   "skills/lista_blanca.py"
+  ],
+  "trozos": [
+   "ingeniero.py:120-182",
+   "ingeniero.py:1-40",
+   "ingeniero.py:185-224",
+   "ingeniero.py:449-488",
+   "ingeniero.py:673-712",
+   "ingeniero.py:289-328",
+   "ingeniero.py:705-744"
+  ],
+  "leyes": [
+   "CONTRATO_A_JULIO_NO_SE_LE_PIDE_FIRMAR_LO_QUE_NO_PUEDE_JUZGAR.md",
+   "CONTRATO_COMO_EL_INGENIERO_CONSTRUYE_UN_PROYECTO.md",
+   "CONTRATO_EL_INGENIERO_CONSTRUYE_COMO_FUE_CONSTRUIDO.md",
+   "CONTRATO_INGENIERO_VUC.md",
+   "CONTRATO_LA_LISTA_BLANCA_NO_ES_UNA_PUERTA_TRASERA.md",
+   "mapa/MAPA_INGENIERO.json",
+   "mapa/MAPA_INGENIERO.md",
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_precios_parsea_lista.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_roles_ingeniero.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_webc_precios_de_lista.py",
+   "vigias/test_vigia_autorizacion_de_julio.py",
+   "vigias/test_vigia_diccionario_de_julio.py",
+   "vigias/test_vigia_la_lista_blanca_no_crece_sola.py",
+   "vigias/test_vigia_la_lista_blanca_no_es_una_puerta_trasera.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_modo_ingeniero_siempre.py"
+  ],
+  "lineas_paquete": 530,
+  "lineas_proyecto": 193083,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.7
+ },
+ {
+  "id": 188,
+  "cuando": "2026-09-14 15:47",
+  "proyecto": "ingeniero",
+  "problema": "TANDA 1: que la ronda del equipo la juzgue un programa en todo lo mecanico. Necesito los trozos exactos de: obrero.py (como guarda la respuesta de la IA y por que guarda 400 letras), el revisor de programa (arnes/revisor_de_programa.py) y donde se ensambla la ronda del equipo (quien llama al revisor, quien audita). Tambien necesito saber como se corre python ingeniero.py equipo",
+  "flujos": [
+   "trozos",
+   "obrero",
+   "ingeniero"
+  ],
+  "piezas": [
+   "ingeniero.py",
+   "cerebro/trozos.py",
+   "cuerpo/obrero.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "arnes/revisor_de_programa.py:1-80",
+   "ingeniero.py:257-296",
+   "cuerpo/obrero.py:1-40",
+   "ingeniero.py:1-40",
+   "ingeniero.py:321-360",
+   "cuerpo/obrero.py:839-911",
+   "cuerpo/obrero.py:913-1022"
+  ],
+  "leyes": [
+   "CONTRATO_COMO_EL_INGENIERO_CONSTRUYE_UN_PROYECTO.md",
+   "CONTRATO_EL_INGENIERO_CONSTRUYE_COMO_FUE_CONSTRUIDO.md",
+   "CONTRATO_INGENIERO_VUC.md",
+   "mapa/MAPA_INGENIERO.json",
+   "mapa/MAPA_INGENIERO.md",
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_roles_ingeniero.py",
+   "vigias/test_vigia_el_obrero_repara_por_texto.py",
+   "vigias/test_vigia_modo_ingeniero_siempre.py"
+  ],
+  "lineas_paquete": 703,
+  "lineas_proyecto": 193762,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.6
+ },
+ {
+  "id": 189,
+  "cuando": "2026-09-14 15:50",
+  "proyecto": "ingeniero",
+  "problema": "Necesito los trozos exactos de dos cosas para la Tanda 1: (a) la funcion _json_de y _preguntar_con_relevo y el bloque donde trabaja reintenta cuando el crudo viene roto o cortado en cuerpo/obrero.py (lineas 230-330 y 700-800), para ver que guarda 400 letras; (b) la funcion revisar completa de arnes/revisor_de_programa.py (lineas 130-327), para saber que comprobaciones ya frenan por programa y cuales faltan (simuladores Mock, imports repetidos, cambios en archivos no nombrados). Tambien los trozos de vigias/test_vigia_revisor_de_programa.py para no duplicar.",
+  "flujos": [
+   "trozos",
+   "obrero",
+   "dos"
+  ],
+  "piezas": [
+   "cerebro/trozos.py",
+   "cuerpo/obrero.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "vigias/test_vigia_revisor_de_programa.py:1-80",
+   "cuerpo/obrero.py:231-249",
+   "arnes/revisor_de_programa.py:1-40",
+   "arnes/revisor_de_programa.py:129-168",
+   "cuerpo/obrero.py:839-911",
+   "cuerpo/obrero.py:913-1022",
+   "arnes/revisor_de_programa.py:257-296"
+  ],
+  "leyes": [
+   "CONTRATO_DOS_TRABAJANDO.md",
+   "CONTRATO_EL_DISPARADOR_VA_EN_LOS_DOS_SENTIDOS.md",
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md",
+   "CONTRATO_APUNTA_Y_REPARA.md",
+   "CONTRATO_AUDITORIA_DE_PROYECTO.md",
+   "CONTRATO_CEREBRO_ROTO_SE_APARTA.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_onboarding_no_pregunta_dos_veces.py",
+   "vigias/test_vigia_el_objetivo_no_va_dos_veces.py",
+   "vigias/test_vigia_el_obrero_repara_por_texto.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "lineas_paquete": 621,
+  "lineas_proyecto": 194514,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.7
+ },
+ {
+  "id": 190,
+  "cuando": "2026-09-14 16:53",
+  "proyecto": "ingeniero",
+  "problema": "revisa el canal para la instruccion de claude",
+  "flujos": [
+   "canal"
+  ],
+  "piezas": [
+   "cuerpo/obrero.py",
+   "arnes/candado_atento_canal.py",
+   "arnes/candado_comunicacion.py",
+   "arnes/modo_ingeniero.py"
+  ],
+  "trozos": [
+   "arnes/candado_atento_canal.py:183-216",
+   "arnes/candado_comunicacion.py:146-204",
+   "arnes/candado_comunicacion.py:1-40",
+   "arnes/candado_atento_canal.py:1-40",
+   "cuerpo/obrero.py:527-547"
+  ],
+  "leyes": [
+   "CONTRATO_ATENTO_AL_CANAL.md",
+   "CONTRATO_APUNTA_Y_REPARA.md",
+   "CONTRATO_AUDITORIA_DE_PROYECTO.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_atento_al_canal.py",
+   "vigias/test_vigia_canal_automatico.py"
+  ],
+  "lineas_paquete": 347,
+  "lineas_proyecto": 195489,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 191,
+  "cuando": "2026-09-14 17:08",
+  "proyecto": "ingeniero",
+  "problema": "TANDA 1: 1a el obrero guarda la respuesta COMPLETA de la IA y vuelve a pedir la cortada; 1b rechazar pruebas con simuladores cuando se pide lo real; 1c rechazar imports o definiciones repetidas; 1d rechazar cambios en archivos que el encargo no nombra; 1e correr la vigia de verdad: nace roja por la razon correcta, despues verde. La tanda 3 y la parte de registros de la 4 van juntas justo despues de la tanda 1, con el bucle de guardado. Ademas: confirmar si las rondas aprobadas del candado del equipo (15:25-15:29) quedaron aplicadas y guardadas.",
+  "flujos": [
+   "obrero",
+   "pide",
+   "equipo"
+  ],
+  "piezas": [
+   "cuerpo/obrero.py",
+   "skills/medir_al_equipo.py"
+  ],
+  "trozos": [
+   "cuerpo/obrero.py:176-228",
+   "cuerpo/obrero.py:913-1022",
+   "cuerpo/obrero.py:63-69",
+   "cuerpo/obrero.py:769-808",
+   "cuerpo/obrero.py:577-616",
+   "cuerpo/obrero.py:252-262"
+  ],
+  "leyes": [
+   "CONTRATO_A_JULIO_NO_SE_LE_PIDE_FIRMAR_LO_QUE_NO_PUEDE_JUZGAR.md",
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_SIN_OBJETIVO_NO_SE_PIDE_NADA.md",
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md",
+   "CONTRATO_BUZON_DE_CLINE.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_web_formulario_pide_obligatorios.py",
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_el_obrero_repara_por_texto.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_siempre_con_equipo.py",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py"
+  ],
+  "lineas_paquete": 465,
+  "lineas_proyecto": 195880,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 192,
+  "cuando": "2026-09-14 17:21",
+  "proyecto": "ingeniero",
+  "problema": "TANDA 1 puntos 1b, 1c y 1d: en arnes/revisor_de_programa.py hay que darle a la funcion revisar() tres cuentas nuevas para que rechace (1b) pruebas con simuladores cuando se pide lo real (el caso exacto es el trabajo archivado 2026-09-14_143850 que propuso un MockAplicador), (1c) imports o definiciones repetidas (el caso exacto es el trabajo archivado 2026-09-14_150232 que duplicaba import os, import sys y RAIZ), y (1d) cambios en archivos que el encargo no nombra. Necesito los trozos exactos de: las funciones de prueba de vigias/test_vigia_revisor_de_programa.py para saber donde se anaden los tests nuevos, el tramo final de las funciones revisar y _piezas o las que sean de arnes/revisor_de_programa.py a partir de la linea 296, y las funciones auxiliares de revisor_de_programa.py que sirven para leer archivos o saber que archivos toca la propuesta. No propongas cambios todavia: solo dame el material exacto.",
+  "flujos": [
+   "trozos",
+   "pide",
+   "trabajo"
+  ],
+  "piezas": [
+   "cerebro/trozos.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "arnes/revisor_de_programa.py:115-127",
+   "vigias/test_vigia_revisor_de_programa.py:188-203",
+   "vigias/test_vigia_revisor_de_programa.py:62-71",
+   "arnes/revisor_de_programa.py:129-168",
+   "arnes/revisor_de_programa.py:225-264"
+  ],
+  "leyes": [
+   "CONTRATO_A_JULIO_NO_SE_LE_PIDE_FIRMAR_LO_QUE_NO_PUEDE_JUZGAR.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_SIN_GUARDAR_NO_HAY_TRABAJO.md",
+   "CONTRATO_SIN_OBJETIVO_NO_SE_PIDE_NADA.md",
+   "CONTRATO_TRABAJO_CON_CLINE.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md",
+   "CONTRATO_MEDIR_A_LOS_GRATIS.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_web_formulario_pide_obligatorios.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_nadie_revisa_su_propio_trabajo.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "lineas_paquete": 340,
+  "lineas_proyecto": 196434,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 193,
+  "cuando": "2026-09-14 17:23",
+  "proyecto": "ingeniero",
+  "problema": "TANDA 1 puntos 1b, 1c y 1d: material exacto para pegar tres cuentas nuevas en la funcion revisar() de arnes/revisor_de_programa.py. Necesito el tramo final de esa funcion desde la linea 264 hasta su return (para saber donde y como se anade una cuenta mas a la lista de fallos), y la funcion informe (lineas 305-327) para ver el contrato de salida. Tambien quiero ver si alguna pieza del paquete llama a revisar() y como arma la propuesta que le pasa (dict con archivo/texto_viejo/texto_nuevo y la tarea como cadena), para que la cuenta nueva de 1d (rechazar cambios en archivos que el encargo no nombra) sepa de donde sacar la lista de archivos que toca la propuesta. No propongas cambios todavia: solo el material.",
+  "flujos": [
+   "fallos",
+   "pieza",
+   "lista"
+  ],
+  "piezas": [
+   "cuerpo/fallos.py",
+   "skills/lista_blanca.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "arnes/revisor_de_programa.py:305-313",
+   "arnes/revisor_de_programa.py:1-40",
+   "arnes/revisor_de_programa.py:129-168",
+   "arnes/revisor_de_programa.py:225-264"
+  ],
+  "leyes": [
+   "CONTRATO_CREAR_PIEZA_NUEVA.md",
+   "CONTRATO_ENCHUFAR_UNA_PIEZA_DORMIDA.md",
+   "CONTRATO_LA_LISTA_BLANCA_NO_ES_UNA_PUERTA_TRASERA.md",
+   "CONTRATO_LA_PIEZA_SE_ENTREGA_ENTERA.md",
+   "CONTRATO_MEMORIA_DE_FALLOS.md",
+   "CONTRATO_NO_SE_MEZCLAN_LOS_FALLOS.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_precios_parsea_lista.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_rag_encuentra_pieza_correcta.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_webc_precios_de_lista.py",
+   "vigias/test_vigia_el_texto_largo_no_corta_la_pieza.py",
+   "vigias/test_vigia_fallos_de_verdad_avisan.py",
+   "vigias/test_vigia_la_lista_blanca_no_crece_sola.py",
+   "vigias/test_vigia_la_lista_blanca_no_es_una_puerta_trasera.py",
+   "vigias/test_vigia_la_pieza_se_busca_por_nombre.py",
+   "vigias/test_vigia_trae_la_pieza_correcta.py"
+  ],
+  "lineas_paquete": 497,
+  "lineas_proyecto": 196823,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.7
+ },
+ {
+  "id": 194,
+  "cuando": "2026-09-14 17:24",
+  "proyecto": "ingeniero",
+  "problema": "Material de insercion para TANDA 1 1b/1c/1d en arnes/revisor_de_programa.py y vigias/test_vigia_revisor_de_programa.py. Necesito: (a) el tramo final de la funcion revisar() desde la linea 264 hasta donde devuelve la lista de fallos (para saber exactamente donde termina el try y el return); (b) el tramo 40-62 de vigias/test_vigia_revisor_de_programa.py que contiene el helper _revisor() y las importaciones iniciales del archivo, para que los tests nuevos que escriba el equipo sigan el patron exacto; (c) si la funcion revisar() se llama en algun otro sitio ademas de candado_equipo.py (para saber quien arma la propuesta y que campos trae). No propongas cambios todavia: solo el material exacto.",
+  "flujos": [
+   "fallos",
+   "equipo",
+   "lista"
+  ],
+  "piezas": [
+   "cuerpo/fallos.py",
+   "skills/lista_blanca.py",
+   "skills/medir_al_equipo.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "arnes/candado_equipo.py",
+   "ingeniero.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "vigias/test_vigia_revisor_de_programa.py:37-45",
+   "arnes/revisor_de_programa.py:1-40",
+   "arnes/revisor_de_programa.py:129-168",
+   "arnes/candado_equipo.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_LA_LISTA_BLANCA_NO_ES_UNA_PUERTA_TRASERA.md",
+   "CONTRATO_MEMORIA_DE_FALLOS.md",
+   "CONTRATO_NO_SE_MEZCLAN_LOS_FALLOS.md",
+   "CONTRATO_AL_CEREBRO_SOLO_LO_SUYO.md",
+   "CONTRATO_APUNTA_Y_REPARA.md",
+   "CONTRATO_AUDITORIA_DE_PROYECTO.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_precios_parsea_lista.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_webc_precios_de_lista.py",
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_fallos_de_verdad_avisan.py",
+   "vigias/test_vigia_la_lista_blanca_no_crece_sola.py",
+   "vigias/test_vigia_la_lista_blanca_no_es_una_puerta_trasera.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_siempre_con_equipo.py",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py"
+  ],
+  "lineas_paquete": 379,
+  "lineas_proyecto": 197370,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 195,
+  "cuando": "2026-09-14 17:25",
+  "proyecto": "ingeniero",
+  "problema": "Necesito SOLO el tramo final de la funcion revisar() de arnes/revisor_de_programa.py, desde la linea 264 hasta donde termina la funcion y hace return antes de informe() en la linea 305. Es el cierre del try/except y el return. Busca la funcion POR NOMBRE (cerebro/piezas.py::funcion_completa busca por nombre, no por numeros a mano) y dame el trozo entero de ese tramo. Es lo unico que falta para saber exactamente donde se pegan tres cuentas nuevas: la de simuladores (1b), la de imports o definiciones repetidas (1c) y la de cambios en archivos que el encargo no nombra (1d). No propongas cambios: solo ese tramo de la funcion.",
+  "flujos": [
+   "piezas",
+   "cerebro",
+   "antes"
+  ],
+  "piezas": [
+   "cerebro/piezas.py",
+   "memoria/rescate/RESCATE__test_vigia_cerebro_gemini.py",
+   "arnes/revisor_de_programa.py",
+   "mapa/inventario.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "arnes/revisor_de_programa.py:305-313",
+   "cerebro/piezas.py:214-220",
+   "arnes/revisor_de_programa.py:1-40",
+   "arnes/revisor_de_programa.py:161-200",
+   "cerebro/piezas.py:81-126",
+   "arnes/revisor_de_programa.py:225-264",
+   "cerebro/piezas.py:129-171"
+  ],
+  "leyes": [
+   "CONTRATO_AL_CEREBRO_SOLO_LO_SUYO.md",
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md",
+   "CONTRATO_ANTES_DE_PREGUNTAR_SE_BUSCA.md",
+   "CONTRATO_ANTES_DE_REPARAR_SE_BUSCA_LA_CURA.md",
+   "CONTRATO_CEREBRO_DEL_PC.md",
+   "CONTRATO_CEREBRO_ROTO_SE_APARTA.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_cerebro_es_nube.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_cerebro_gemini.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_revisor_arnes_cerebro.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "vigias/test_vigia_el_cerebro_es_el_que_pido.py"
+  ],
+  "lineas_paquete": 489,
+  "lineas_proyecto": 197810,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 196,
+  "cuando": "2026-09-14 17:26",
+  "proyecto": "ingeniero",
+  "problema": "Recien pedi el tramo 264-305 de arnes/revisor_de_programa.py y vino la cuenta 5 DESAPARECE LO QUE YA ESTABA pero cortada en la linea ~296. Necesito LO QUE ESTA ENTRE la linea 296 y la 305 de ese archivo: como termina el append de DESAPARECE (la frase completa de perdidas), el cierre del for, las 8-10 lineas finales de la funcion revisar() incluyendo el return fallos y el except general. Es solo ese mini-tramo (renglones 296-305). Es para que el equipo sepa exactamente donde pega las tres cuentas nuevas (1b simuladores, 1c imports repetidos, 1d archivos no nombrados) antes del return. NO incluyas leyes ni otras piezas: solo ese tramo del archivo.",
+  "flujos": [
+   "piezas",
+   "fallos",
+   "antes"
+  ],
+  "piezas": [
+   "cerebro/piezas.py",
+   "cuerpo/fallos.py",
+   "arnes/revisor_de_programa.py",
+   "mapa/inventario.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "arnes/revisor_de_programa.py:1-40",
+   "arnes/revisor_de_programa.py:257-296",
+   "arnes/revisor_de_programa.py:129-168"
+  ],
+  "leyes": [
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md",
+   "CONTRATO_ANTES_DE_PREGUNTAR_SE_BUSCA.md",
+   "CONTRATO_ANTES_DE_REPARAR_SE_BUSCA_LA_CURA.md",
+   "CONTRATO_MEMORIA_DE_FALLOS.md",
+   "CONTRATO_NO_SE_MEZCLAN_LOS_FALLOS.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md",
+   "CONTRATO_AL_CEREBRO_SOLO_LO_SUYO.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_fallos_de_verdad_avisan.py"
+  ],
+  "lineas_paquete": 329,
+  "lineas_proyecto": 198348,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 197,
+  "cuando": "2026-09-14 17:27",
+  "proyecto": "ingeniero",
+  "problema": "Material FINAL y exacto para lanzar el encargo TANDA 1 1b al equipo sobre arnes/revisor_de_programa.py: (1) el cierre entero de la funcion revisar() desde donde dice 'DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva' (linea 296) hasta el return y el except final (linea 304), no hoja con cuenta nueva, es el termino de la funcion; (2) las lineas 1-48 de vigias/test_vigia_revisor_de_programa.py para ver las importaciones y el primer test (necesito el patron de como empieza el archivo para que el equipo agregue una vigia nueva); (3) que el paquete no traiga leyes extensas ni otras piezas, solo estos dos tramos.",
+  "flujos": [
+   "piezas",
+   "dos",
+   "equipo"
+  ],
+  "piezas": [
+   "cerebro/piezas.py",
+   "skills/medir_al_equipo.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "mapa/inventario.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "vigias/test_vigia_revisor_de_programa.py:1-40",
+   "vigias/test_vigia_revisor_de_programa.py:223-236",
+   "arnes/revisor_de_programa.py:1-40",
+   "vigias/test_vigia_revisor_de_programa.py:122-147",
+   "arnes/revisor_de_programa.py:129-168"
+  ],
+  "leyes": [
+   "CONTRATO_DOS_TRABAJANDO.md",
+   "CONTRATO_EL_DISPARADOR_VA_EN_LOS_DOS_SENTIDOS.md",
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md",
+   "CONTRATO_NADIE_ENTRA_SIN_ARNES.md",
+   "CONTRATO_AL_CEREBRO_SOLO_LO_SUYO.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_onboarding_no_pregunta_dos_veces.py",
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_el_objetivo_no_va_dos_veces.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_siempre_con_equipo.py",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py"
+  ],
+  "lineas_paquete": 369,
+  "lineas_proyecto": 198721,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 198,
+  "cuando": "2026-09-14 17:31",
+  "proyecto": "ingeniero",
+  "problema": "Necesito el tramo FINAL de vigias/test_vigia_revisor_de_programa.py para pegar una linea de prueba nueva: el cierre del archivo desde la linea 239 (donde empieza test_no_acusa_de_roto_un_trozo_que_acaba_donde_empieza_la_funcion_siguiente) hasta la linea 268 (fin de archivo, donde termina test_sigue_cazando_un_archivo_que_de_verdad_queda_roto). Ese tramo final se usara como texto_viejo de pegado: el obrero agrega la funcion nueva DESPUES de esas lineas y el aplicador necesita verlas exactas. Solo eso, nada mas: el tramo final del archivo de la vigia.",
+  "flujos": [
+   "aplicador",
+   "obrero",
+   "prueba"
+  ],
+  "piezas": [
+   "cuerpo/aplicador.py",
+   "cuerpo/obrero.py",
+   "memoria/rescate/rv3_prueba_real_velocidad.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "vigias/test_vigia_revisor_de_programa.py:255-267",
+   "vigias/test_vigia_revisor_de_programa.py:239-252",
+   "vigias/test_vigia_revisor_de_programa.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_ENCHUFADO_SE_PRUEBA_EJECUTANDO.md",
+   "CONTRATO_UNA_OPINION_NO_ES_PRUEBA.md",
+   "memoria/paquetes/foto_informe__rv3_prueba_matriz_de_roles_py_no_puede_m.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md",
+   "CONTRATO_RUTA_DE_ACCESO.md",
+   "CONTRATO_AL_CEREBRO_SOLO_LO_SUYO.md",
+   "CONTRATO_APUNTA_Y_REPARA.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_aplicador.py",
+   "vigias/test_vigia_el_obrero_repara_por_texto.py",
+   "vigias/test_vigia_prueba_real.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "lineas_paquete": 282,
+  "lineas_proyecto": 199224,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
+ },
+ {
+  "id": 199,
+  "cuando": "2026-09-14 18:22",
+  "proyecto": "ingeniero",
+  "problema": "El equipo debe escribir en vigias/test_vigia_revisor_de_programa.py (268 lineas, cabe entera) la funcion test_caza_pruebas_con_simuladores al final. Necesito que el paquete traiga: (1) la vigia ENTERA (para que el equipo vea el helper _revisor() de las lineas 1-40 y las dos ultimas lineas reales del archivo, que son las que terminan con los dos parrafos del assert any QUEDA ROTO), (2) la firma exacta de arnes/revisor_de_programa.py::revisar para que sepa como llamarla, y (3) el caso medido 2026-09-14 (el equipo entrego un MockAplicador cuando se pidio la funcion real). Es material para relanzar el encargo ya aprobado 2 veces pero sin aplicar.",
+  "flujos": [
+   "dos",
+   "equipo",
+   "2026"
+  ],
+  "piezas": [
+   "memoria/rescate/app_web_reparada_2026-08-21.html",
+   "memoria/rescate/app_web_reparada_2026-08-24.html",
+   "memoria/rescate/RESCATE__puerta_borrador_2026-09-10.py",
+   "skills/medir_al_equipo.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "vigias/test_vigia_revisor_de_programa.py:37-45",
+   "arnes/revisor_de_programa.py:1-40",
+   "arnes/revisor_de_programa.py:129-168",
+   "arnes/revisor_de_programa.py:225-264"
+  ],
+  "leyes": [
+   "CONTRATO_DOS_TRABAJANDO.md",
+   "CONTRATO_EL_DISPARADOR_VA_EN_LOS_DOS_SENTIDOS.md",
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md",
+   "PLAN_DE_RAIZ_2026-09-13.md",
+   "PLAN_MAESTRO_2026-09-11.md",
+   "memoria/PLAN_CUELLO_DE_BOTELLA_2026-09-14.md",
+   "memoria/PLAN_REPARACION_TRES_BLOQUEOS_2026-09-13.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md",
+   "CONTRATO_CEREBRO_ROTO_SE_APARTA.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_onboarding_no_pregunta_dos_veces.py",
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_el_objetivo_no_va_dos_veces.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_siempre_con_equipo.py",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py"
+  ],
+  "lineas_paquete": 335,
+  "lineas_proyecto": 199826,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 200,
+  "cuando": "2026-09-14 18:51",
+  "proyecto": "ingeniero",
+  "problema": "Continuo la Tanda 1. El punto 1b quedo listo (vigia test_caza_pruebas_con_simuladores nace roja en vigias/test_vigia_revisor_de_programa.py). Sigo con el punto 1c del plan 2026-09-13: la cuenta del revisor de programa que caza las pruebas FATAL/basuras/inventos que los cerebros aprueban (ejemplo medido 2026-09-13 15:11: una vigia archivada como APROBADA con prueba 4 rota percibida por el cerebro roto). Necesito: el trozo exacto de arnes/revisor_de_programa.py donde queda agregar la cuenta (cuando el equipo aprueba algo roto por la razon equivocada), el material y su boca, y las vigias que protegen.",
+  "flujos": [
+   "cerebro",
+   "equipo",
+   "prueba"
+  ],
+  "piezas": [
+   "memoria/rescate/RESCATE__test_vigia_cerebro_gemini.py",
+   "memoria/rescate/rv3_prueba_real_velocidad.py",
+   "skills/medir_al_equipo.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "vigias/test_vigia_revisor_de_programa.py:37-54",
+   "vigias/test_vigia_revisor_de_programa.py:1-40",
+   "vigias/test_vigia_revisor_de_programa.py:118-129",
+   "arnes/revisor_de_programa.py:1-40",
+   "arnes/revisor_de_programa.py:129-168"
+  ],
+  "leyes": [
+   "CONTRATO_AL_CEREBRO_SOLO_LO_SUYO.md",
+   "CONTRATO_CEREBRO_DEL_PC.md",
+   "CONTRATO_CEREBRO_ROTO_SE_APARTA.md",
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_ENCHUFADO_SE_PRUEBA_EJECUTANDO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_UNA_OPINION_NO_ES_PRUEBA.md",
+   "memoria/paquetes/foto_informe__rv3_prueba_matriz_de_roles_py_no_puede_m.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md",
+   "cerebro/protocolo.py"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_cerebro_es_nube.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_cerebro_gemini.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_revisor_arnes_cerebro.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_prueba_real.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_siempre_con_equipo.py",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py"
+  ],
+  "lineas_paquete": 417,
+  "lineas_proyecto": 200350,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 201,
+  "cuando": "2026-09-14 21:53",
+  "proyecto": "ingeniero",
+  "problema": "Reparar el canal interno AI-AI: el plugin canal_buzon.js LEE el canal (y marca los recados como leidos) ANTES de comprobar si conoce la sesion; cuando opencode se reinicia no conoce la sesion: marca leido y NO inyecta, y el recado se pierde. Vigia que nace roja: recado + sin sesion - sigue sin leer. Reparacion: el vigilante no llama a leerCanal si no hay sessionID, y si una inyeccion falla el recado vuelve a quedar sin leer.",
+  "flujos": [
+   "antes",
+   "canal",
+   "lee"
+  ],
+  "piezas": [
+   "arnes/mirada_completa.py",
+   "arnes/candado_buzon.py",
+   "arnes/candado_commit.py",
+   "arnes/canal.py"
+  ],
+  "trozos": [
+   "arnes/canal.py:96-117",
+   "arnes/canal.py:1-40",
+   "arnes/candado_buzon.py:65-104",
+   "arnes/canal.py:120-131",
+   "arnes/candado_buzon.py:206-263",
+   "arnes/candado_buzon.py:127-178",
+   "arnes/candado_commit.py:65-104"
+  ],
+  "leyes": [
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md",
+   "CONTRATO_ANTES_DE_PREGUNTAR_SE_BUSCA.md",
+   "CONTRATO_ANTES_DE_REPARAR_SE_BUSCA_LA_CURA.md",
+   "CONTRATO_ATENTO_AL_CANAL.md",
+   "CONTRATO_SIN_GUARDAR_NO_HAY_TRABAJO.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_dashboard_lee_campos.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_precios_lee_docx.py",
+   "vigias/test_vigia_atento_al_canal.py",
+   "vigias/test_vigia_canal_automatico.py",
+   "vigias/test_vigia_paquete_no_lee_repo_entero.py"
+  ],
+  "lineas_paquete": 490,
+  "lineas_proyecto": 202087,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 202,
+  "cuando": "2026-09-14 22:04",
+  "proyecto": "ingeniero",
+  "problema": "Crear EL CAPATAZ: un PROGRAMA sin IA que garantiza que los ayudantes hagan lo ordenado y de la forma correcta. Lee una LISTA DE ORDENES (cada orden trae que pieza, encargo chico para el equipo, su vigia, y el comando de su PRUEBA REAL); toma la siguiente orden pendiente en orden; la lanza al equipo (python ingeniero.py equipo ...) y si la ronda cae relanza con gratis LISTA o espera la siesta, sin parar; comprueba por programa (vigia nacio roja, ronda APROBADA por dos cerebros distintos, aplicada en disco, vigia verde, prueba real pasa, guardado con el guardia) y solo si todo pasa marca HECHA; si algo falla apunta el paso y relanza, tres fallos seguidos = BLOQUEADA con causa y aviso por el canal; ningun ayudante puede marcar hecha una orden (si se toca a mano vuelve a pendiente); cada hora deja por el canal a claude ordenes hechas de verdad, rondas hechas y caidas con motivo, y HORA EN CERO en grande; Windows lo corre solo. Incluye EL VIGILANTE DE CAIDAS: cada minuto detecta caidas por su huella en los registros (recado perdido, ronda SIN_AUDITAR, guardado frenado, inactividad mas de 20 min), clasifica la causa por tabla de huellas, repara con la cura conocida, y si la huella NO esta en la tabla abre una orden de reparacion con la evidencia (archivo y renglon) para que el equipo la cure.",
+  "flujos": [
+   "fallos",
+   "canal",
+   "ingeniero"
+  ],
+  "piezas": [
+   "ingeniero.py",
+   "cuerpo/fallos.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "ingeniero.py:673-712",
+   "ingeniero.py:49-82",
+   "ingeniero.py:225-264",
+   "ingeniero.py:737-776",
+   "ingeniero.py:321-360"
+  ],
+  "leyes": [
+   "CONTRATO_ATENTO_AL_CANAL.md",
+   "CONTRATO_COMO_EL_INGENIERO_CONSTRUYE_UN_PROYECTO.md",
+   "CONTRATO_EL_INGENIERO_CONSTRUYE_COMO_FUE_CONSTRUIDO.md",
+   "CONTRATO_INGENIERO_VUC.md",
+   "CONTRATO_MEMORIA_DE_FALLOS.md",
+   "CONTRATO_NO_SE_MEZCLAN_LOS_FALLOS.md",
+   "mapa/MAPA_INGENIERO.json",
+   "mapa/MAPA_INGENIERO.md",
+   "CONTRATO_UNA_OPINION_NO_ES_PRUEBA.md",
+   "CONTRATO_CREAR_PIEZA_NUEVA.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_roles_ingeniero.py",
+   "vigias/test_vigia_atento_al_canal.py",
+   "vigias/test_vigia_canal_automatico.py",
+   "vigias/test_vigia_fallos_de_verdad_avisan.py",
+   "vigias/test_vigia_modo_ingeniero_siempre.py"
+  ],
+  "lineas_paquete": 365,
+  "lineas_proyecto": 202859,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
  }
 ]

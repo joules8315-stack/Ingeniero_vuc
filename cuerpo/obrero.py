@@ -239,14 +239,14 @@ def _json_de(texto):
         # entero, o sea que se perdia trabajo bueno ya hecho. Se intenta cerrar lo que llego.
         i = texto.find("{")
         if i < 0:
-            return {"_error": "el cerebro no devolvio JSON", "_crudo": texto[:400]}
+            return {"_error": "el cerebro no devolvio JSON", "_crudo": texto}
         crudo = texto[i:]
     for intento in _maneras_de_leerlo(crudo):
         try:
             return json.loads(intento)
         except Exception:
             continue
-    return {"_error": "JSON roto o cortado", "_crudo": crudo[:400]}
+    return {"_error": "JSON roto o cortado", "_crudo": crudo}
 
 
 def _maneras_de_leerlo(crudo):

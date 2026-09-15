@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "El revisor por programa no detecta cuando una prueba usa simuladores (Mock) en vez de la pieza real, por lo que deja pasar pruebas que no prueban nada de verdad.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        # 1 — HUMO: el cambio solo toca comentarios y no repara nada.",
+  "texto_nuevo": "        # 0 — SIMULADORES: una prueba con simuladores no prueba la pieza de verdad.\n        if re.search(r'MagicMock|unittest\\.mock|\\bMock\\w*', nuevo):\n            fallos.append('USA SIMULADOR (Mock) EN VEZ DE LO REAL: una prueba con simuladores no prueba la pieza de verdad.')\n\n        # 1 — HUMO: el cambio solo toca comentarios y no repara nada.",
+  "cambio": "Anadir, justo antes de la linea de comentario '# 1 — HUMO: el cambio solo toca comentarios y no repara nada.', un bloque de 4 lineas que, si en el texto nuevo aparece MagicMock, unittest.mock o una palabra que empiece por Mock (usando re, ya importado), anade a fallos la frase 'USA SIMULADOR (Mock) EN VEZ DE LO REAL: una prueba con simuladores no prueba la pieza de verdad.' con comillas simples. No tocar nada mas.",
+  "codigo": "        # 0 — SIMULADORES: una prueba con simuladores no prueba la pieza de verdad.\n        if re.search(r'MagicMock|unittest\\.mock|\\bMock\\w*', nuevo):\n            fallos.append('USA SIMULADOR (Mock) EN VEZ DE LO REAL: una prueba con simuladores no prueba la pieza de verdad.')\n",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py::test_caza_pruebas_con_simuladores",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio añade la detección de simuladores y cumple con el diagnóstico sin romper nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19069 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

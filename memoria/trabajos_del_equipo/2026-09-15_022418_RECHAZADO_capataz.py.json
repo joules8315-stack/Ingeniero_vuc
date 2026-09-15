@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta la funcion procesar_siguiente() en cuerpo/capataz.py; hay que agregarla al final del archivo sin tocar las funciones existentes.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "procesar_siguiente",
+  "texto_viejo": "    # Paso 5 guardado: si el comando no esta vacio ya se corrio en el paso 4\n    return \"\"\n    encontrada = False\n    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            orden[\"paso_fallido\"] = paso_fallido\n            orden[\"fallos_seguidos\"] = fallos_seguidos\n            encontrada = True\n            break\n    if not encontrada:\n        return False\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2)\n    return True",
+  "texto_nuevo": "    # Paso 5 guardado: si el comando no esta vacio ya se corrio en el paso 4\n    return \"\"\n    encontrada = False\n    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            orden[\"paso_fallido\"] = paso_fallido\n            orden[\"fallos_seguidos\"] = fallos_seguidos\n            encontrada = True\n            break\n    if not encontrada:\n        return False\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2)\n    return True\n\n\ndef procesar_siguiente():\n    orden = siguiente_pendiente()\n    if orden is None:\n        return (None, \"sin_pendientes\")\n    paso = comprobar_pasos(orden)\n    if paso == \"\":\n        marcar_estado(orden[\"id\"], \"hecha\")\n        return (orden, \"hecha\")\n    marcar_estado(\n        orden[\"id\"],\n        \"pendiente\",\n        paso_fallido=paso,\n        fallos_seguidos=orden.get(\"fallos_seguidos\", 0) + 1,\n    )\n    return (orden, paso)",
+  "cambio": "Agregar al final de cuerpo/capataz.py la funcion procesar_siguiente() que llama a siguiente_pendiente(), comprobar_pasos() y marcar_estado() con los argumentos exactos definidos en el material.",
+  "codigo": "def procesar_siguiente():\n    orden = siguiente_pendiente()\n    if orden is None:\n        return (None, \"sin_pendientes\")\n    paso = comprobar_pasos(orden)\n    if paso == \"\":\n        marcar_estado(orden[\"id\"], \"hecha\")\n        return (orden, \"hecha\")\n    marcar_estado(\n        orden[\"id\"],\n        \"pendiente\",\n        paso_fallido=paso,\n        fallos_seguidos=orden.get(\"fallos_seguidos\", 0) + 1,\n    )\n    return (orden, paso)",
+  "vigia": "Una prueba que llame a procesar_siguiente() con una orden pendiente cuyo comprobar_pasos devuelva cadena vacia y compruebe que marcar_estado recibe ('id', 'hecha'); y otra con un paso fallido que compruebe que marcar_estado recibe ('id', 'pendiente', paso_fallido=paso, fallos_seguidos=fallos+1).",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "memoria/ORDENES.json"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "ORDENES.js"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "La función `procesar_siguiente` utiliza `siguiente_pendiente`, `comprobar_pasos` y `marcar_estado`. Si bien `siguiente_pendiente` y `comprobar_pasos` existen en el material, `marcar_estado` no es llamada directamente por `procesar_siguiente` en el código propuesto, sino que se llama a `marcar_estado` dentro de la lógica de `procesar_siguiente` con argumentos que no se corresponden con la definición de `marcar_estado` en el material original. Específicamente, se llama a `marcar_estado` con `paso_fallido=paso` y `fallos_seguidos=orden.get('fallos_seguidos', 0) + 1`, pero la definición de `marcar_estado` en el material original (`cuerpo/capataz.py:37-40`) no incluye estos parámetros. Esto implica que se está intentando usar una versión de `marcar_estado` que no existe en el material proporcionado."
+  ],
+  "fallos": [
+   "La función `procesar_siguiente` intenta llamar a `marcar_estado` con argumentos (`paso_fallido`, `fallos_seguidos`) que no existen en la definición de `marcar_estado` proporcionada en el material original. Esto es un invento porque se asume la existencia de parámetros en una función que no están definidos."
+  ],
+  "riesgo_vecinos": [
+   "El archivo `cuerpo/capataz.py` es modificado, lo que podría afectar a cualquier otra función que dependa de su estructura o de las funciones existentes en él. Sin embargo, el diagnóstico indica que es una reparación aislada y el material no detalla dependencias directas de `procesar_siguiente` con otras funciones existentes más allá de las que llama."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación intenta usar una función (`marcar_estado`) con argumentos que no existen en el material original, lo que constituye un invento y rompe la lógica esperada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini4",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini4",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini4",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 4"
+ ]
+}

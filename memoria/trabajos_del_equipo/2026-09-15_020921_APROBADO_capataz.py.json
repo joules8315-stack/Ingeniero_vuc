@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta la funcion comprobar_pasos(orden) en cuerpo/capataz.py; hay que agregarla sin tocar lo existente y sin rutas absolutas, integrándola al flujo del capataz.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "comprobar_pasos (nueva funcion, se agrega al final del archivo, despues de marcar_estado)",
+  "texto_viejo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    lista = leer_lista()",
+  "texto_nuevo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    lista = leer_lista()\n\n\ndef comprobar_pasos(orden):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n\n    # Paso 1 ronda: buscar el archivo mas reciente APROBADO de la pieza\n    pieza = orden.get(\"pieza\")\n    if not pieza:\n        return \"ronda\"\n    base = os.path.splitext(os.path.basename(pieza))[0]\n    carpeta_trabajos = os.path.join(carpeta_proyecto, \"memoria\", \"trabajos_del_equipo\")\n    candidatos = []\n    try:\n        for nombre in os.listdir(carpeta_trabajos):\n            if base in nombre and \"APROBADO\" in nombre:\n                ruta_cand = os.path.join(carpeta_trabajos, nombre)\n                candidatos.append((os.path.getmtime(ruta_cand), ruta_cand))\n    except OSError:\n        return \"ronda\"\n    if not candidatos:\n        return \"ronda\"\n    candidatos.sort(reverse=True)\n    ruta_ronda = candidatos[0][1]\n    try:\n        with open(ruta_ronda, encoding=\"utf-8\") as f:\n            datos_ronda = json.load(f)\n    except (OSError, json.JSONDecodeError):\n        return \"ronda\"\n    obrero = datos_ronda.get(\"obrero\")\n    auditor = datos_ronda.get(\"auditor\")\n    if not obrero or not auditor or obrero == auditor:\n        return \"ronda\"\n\n    # Paso 2 aplicada: la ruta del campo pieza existe en disco\n    if not os.path.exists(pieza):\n        return \"aplicada\"\n\n    # Paso 3 vigia_verde: pytest sobre la vigia\n    vigia = orden.get(\"vigia\")\n    if not vigia:\n        return \"vigia_verde\"\n    resultado_vigia = subprocess.run(\n        [\"python\", \"-m\", \"pytest\", vigia],\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )\n    if resultado_vigia.returncode != 0:\n        return \"vigia_verde\"\n\n    # Paso 4 prueba_real: correr el comando de la orden\n    comando = orden.get(\"comando\")\n    if not comando:\n        return \"prueba_real\"\n    resultado_prueba = subprocess.run(\n        comando,\n        shell=True,\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )\n    if resultado_prueba.returncode != 0:\n        return \"prueba_real\"\n\n    # Paso 5 guardado: si el comando no esta vacio ya se corrio en el paso 4\n    return \"\"",
+  "cambio": "Agregar al final de cuerpo/capataz.py la funcion comprobar_pasos(orden) que evalua los 5 pasos en orden (ronda, aplicada, vigia_verde, prueba_real, guardado) y devuelve el nombre del primer paso fallido o cadena vacia. Usa rutas relativas a la raiz del proyecto calculada con os.path.dirname(os.path.dirname(os.path.abspath(__file__))), reutiliza los imports json, os y subprocess ya presentes, y no modifica ninguna funcion existente.",
+  "codigo": "def comprobar_pasos(orden):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n\n    # Paso 1 ronda: buscar el archivo mas reciente APROBADO de la pieza\n    pieza = orden.get(\"pieza\")\n    if not pieza:\n        return \"ronda\"\n    base = os.path.splitext(os.path.basename(pieza))[0]\n    carpeta_trabajos = os.path.join(carpeta_proyecto, \"memoria\", \"trabajos_del_equipo\")\n    candidatos = []\n    try:\n        for nombre in os.listdir(carpeta_trabajos):\n            if base in nombre and \"APROBADO\" in nombre:\n                ruta_cand = os.path.join(carpeta_trabajos, nombre)\n                candidatos.append((os.path.getmtime(ruta_cand), ruta_cand))\n    except OSError:\n        return \"ronda\"\n    if not candidatos:\n        return \"ronda\"\n    candidatos.sort(reverse=True)\n    ruta_ronda = candidatos[0][1]\n    try:\n        with open(ruta_ronda, encoding=\"utf-8\") as f:\n            datos_ronda = json.load(f)\n    except (OSError, json.JSONDecodeError):\n        return \"ronda\"\n    obrero = datos_ronda.get(\"obrero\")\n    auditor = datos_ronda.get(\"auditor\")\n    if not obrero or not auditor or obrero == auditor:\n        return \"ronda\"\n\n    # Paso 2 aplicada: la ruta del campo pieza existe en disco\n    if not os.path.exists(pieza):\n        return \"aplicada\"\n\n    # Paso 3 vigia_verde: pytest sobre la vigia\n    vigia = orden.get(\"vigia\")\n    if not vigia:\n        return \"vigia_verde\"\n    resultado_vigia = subprocess.run(\n        [\"python\", \"-m\", \"pytest\", vigia],\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )\n    if resultado_vigia.returncode != 0:\n        return \"vigia_verde\"\n\n    # Paso 4 prueba_real: correr el comando de la orden\n    comando = orden.get(\"comando\")\n    if not comando:\n        return \"prueba_real\"\n    resultado_prueba = subprocess.run(\n        comando,\n        shell=True,\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )\n    if resultado_prueba.returncode != 0:\n        return \"prueba_real\"\n\n    # Paso 5 guardado: si el comando no esta vacio ya se corrio en el paso 4\n    return \"\"",
+  "vigia": "Una prueba que llame a comprobar_pasos con ordenes de mentira: una sin pieza (debe devolver 'ronda'), una con pieza inexistente (debe devolver 'aplicada'), una sin vigia (debe devolver 'vigia_verde'), una sin comando (debe devolver 'prueba_real'), y una con todo correcto (debe devolver ''). Ademas, comprobar que la funcion no usa rutas absolutas y que no se modifico ninguna funcion existente de capataz.py.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion agrega la funcion comprobar_pasos correctamente, sin inventar nada ni romper nada existente."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 3"
+ ]
+}

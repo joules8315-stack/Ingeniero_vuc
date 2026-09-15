@@ -1,0 +1,61 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "Falta agregar la funcion comprobar_pasos(orden) en cuerpo/capataz.py con los 5 pasos, el import de glob, y el manejo de campos faltantes vigia/comando, sin tocar lo existente.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "comprobar_pasos",
+  "texto_viejo": "import json\nimport os\nimport subprocess\n\n\ndef lanzar_al_equipo(encargo):",
+  "texto_nuevo": "import glob\nimport json\nimport os\nimport subprocess\n\n\ndef comprobar_pasos(orden):\n    if not orden.get(\"vigia\"):\n        return \"vigia_verde\"\n    if not orden.get(\"comando\"):\n        return \"prueba_real\"\n\n    pieza = orden.get(\"pieza\", \"\")\n    base = os.path.splitext(os.path.basename(pieza))[0]\n    carpeta = os.path.join(\n        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),\n        \"memoria\",\n        \"trabajos_del_equipo\",\n    )\n    patron = os.path.join(carpeta, \"*%s*APROBADO*\" % base)\n    candidatos = glob.glob(patron)\n    if not candidatos:\n        return \"ronda\"\n    mas_reciente = max(candidatos, key=os.path.getmtime)\n    try:\n        with open(mas_reciente, encoding=\"utf-8\") as f:\n            datos = json.load(f)\n    except (FileNotFoundError, json.JSONDecodeError, OSError):\n        return \"ronda\"\n    obrero = datos.get(\"obrero\")\n    auditor = datos.get(\"auditor\")\n    if not obrero or not auditor or obrero == auditor:\n        return \"ronda\"\n\n    if not os.path.exists(pieza):\n        return \"aplicada\"\n\n    resultado_vigia = subprocess.run(\n        [\"python\", \"-m\", \"pytest\", \"-q\", orden.get(\"vigia\")],\n        capture_output=True,\n        text=True,\n    )\n    if resultado_vigia.returncode != 0:\n        return \"vigia_verde\"\n\n    resultado_prueba = subprocess.run(\n        orden.get(\"comando\"),\n        shell=True,\n        capture_output=True,\n        text=True,\n    )\n    if resultado_prueba.returncode != 0:\n        return \"prueba_real\"\n\n    return \"\"\n\n\ndef lanzar_al_equipo(encargo):",
+  "cambio": "Anadir import glob al inicio y agregar la funcion comprobar_pasos(orden) justo antes de lanzar_al_equipo, sin modificar ninguna funcion existente.",
+  "codigo": "import glob\nimport json\nimport os\nimport subprocess\n\n\ndef comprobar_pasos(orden):\n    if not orden.get(\"vigia\"):\n        return \"vigia_verde\"\n    if not orden.get(\"comando\"):\n        return \"prueba_real\"\n\n    pieza = orden.get(\"pieza\", \"\")\n    base = os.path.splitext(os.path.basename(pieza))[0]\n    carpeta = os.path.join(\n        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),\n        \"memoria\",\n        \"trabajos_del_equipo\",\n    )\n    patron = os.path.join(carpeta, \"*%s*APROBADO*\" % base)\n    candidatos = glob.glob(patron)\n    if not candidatos:\n        return \"ronda\"\n    mas_reciente = max(candidatos, key=os.path.getmtime)\n    try:\n        with open(mas_reciente, encoding=\"utf-8\") as f:\n            datos = json.load(f)\n    except (FileNotFoundError, json.JSONDecodeError, OSError):\n        return \"ronda\"\n    obrero = datos.get(\"obrero\")\n    auditor = datos.get(\"auditor\")\n    if not obrero or not auditor or obrero == auditor:\n        return \"ronda\"\n\n    if not os.path.exists(pieza):\n        return \"aplicada\"\n\n    resultado_vigia = subprocess.run(\n        [\"python\", \"-m\", \"pytest\", \"-q\", orden.get(\"vigia\")],\n        capture_output=True,\n        text=True,\n    )\n    if resultado_vigia.returncode != 0:\n        return \"vigia_verde\"\n\n    resultado_prueba = subprocess.run(\n        orden.get(\"comando\"),\n        shell=True,\n        capture_output=True,\n        text=True,\n    )\n    if resultado_prueba.returncode != 0:\n        return \"prueba_real\"\n\n    return \"\"",
+  "vigia": "Una prueba que llame a comprobar_pasos con ordenes simuladas (sin vigia, sin comando, sin ronda aprobada, con pieza inexistente, con vigia en rojo, con comando en rojo) y compruebe que devuelve el nombre del paso correcto o cadena vacia.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Violación del orden exacto: El encargo exige devolver el nombre del primer paso que falla 'en este orden exacto' (1. ronda, 2. aplicada, 3. vigia_verde...). Sin embargo, la propuesta comprueba si faltan los campos 'vigia' (paso 3) y 'comando' (paso 4) al principio de la función, antes de ejecutar el paso 1 y 2. Si el paso 1 fallara pero el campo 'vigia' no existiera, la función devolvería erróneamente 'vigia_verde' en lugar de 'ronda'.",
+   "Omisión del paso 5: El encargo define explícitamente 5 pasos, incluyendo '5) guardado'. La propuesta ignora completamente este paso en su lógica."
+  ],
+  "riesgo_vecinos": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "que_falta": [
+   "Mover las comprobaciones de existencia de campos 'vigia' y 'comando' a sus respectivos pasos dentro del flujo secuencial para respetar el 'orden exacto'.",
+   "Implementar o mencionar el paso 5 (guardado) para cumplir con la totalidad del encargo."
+  ]
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini4",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini2",
+  "se pidio auditar a groq20b y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini2",
+  "vueltas_dadas: 4"
+ ]
+}

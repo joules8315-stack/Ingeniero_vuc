@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "La funcion _json_de recorta el texto crudo a 400 letras en los dos sitios donde lo devuelve, perdiendo el trabajo bueno que llego cortado.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_json_de",
+  "texto_viejo": "        if i < 0:\n            return {\"_error\": \"el cerebro no devolvio JSON\", \"_crudo\": texto[:400]}\n        crudo = texto[i:]\n    for intento in _maneras_de_leerlo(crudo):\n        try:\n            return json.loads(intento)\n        except Exception:\n            continue\n    return {\"_error\": \"JSON roto o cortado\", \"_crudo\": crudo[:400]}",
+  "texto_nuevo": "        if i < 0:\n            return {\"_error\": \"el cerebro no devolvio JSON\", \"_crudo\": texto}\n        crudo = texto[i:]\n    for intento in _maneras_de_leerlo(crudo):\n        try:\n            return json.loads(intento)\n        except Exception:\n            continue\n    return {\"_error\": \"JSON roto o cortado\", \"_crudo\": crudo}",
+  "cambio": "Quitar los dos recortes a 400 letras: en el return de 'el cerebro no devolvio JSON' devolver texto entero en vez de texto[:400], y en el return de 'JSON roto o cortado' devolver crudo entero en vez de crudo[:400].",
+  "codigo": "        if i < 0:\n            return {\"_error\": \"el cerebro no devolvio JSON\", \"_crudo\": texto}\n        crudo = texto[i:]\n    for intento in _maneras_de_leerlo(crudo):\n        try:\n            return json.loads(intento)\n        except Exception:\n            continue\n    return {\"_error\": \"JSON roto o cortado\", \"_crudo\": crudo}",
+  "vigia": "Una prueba que llame a _json_de con un texto sin JSON y con un JSON cortado, y compruebe que '_crudo' trae el texto completo (mas de 400 letras) y no un recorte.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio elimina la truncación de 400 caracteres en los errores de JSON, cumpliendo el diagnóstico sin romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19080 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}

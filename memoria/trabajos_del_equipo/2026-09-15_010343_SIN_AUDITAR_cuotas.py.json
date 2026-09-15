@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "Falta en cuerpo/cuotas.py la funcion puede_revisar_claude(escritor, dormidos) que exige la ley de Julio 2026-09-14 y que el vigia test_vigia_claude_revisa_cuando_gratis_duermen.py espera.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "puede_revisar_claude",
+  "texto_viejo": "    L.append(f -> le toca a: {APODO.get(t, 'NINGUNO (todos agotados)')})\n    return \\n.join(L)",
+  "texto_nuevo": "    L.append(f -> le toca a: {APODO.get(t, 'NINGUNO (todos agotados)')})\n    return \\n.join(L)\n\n\ndef puede_revisar_claude(escritor, dormidos):\n    \"\"\"Ley Julio 2026-09-14: Claude revisa lo de DeepSeek solo si TODAS las IA gratis duermen.\"\"\"\n    if escritor == \"claude\":\n        return False\n    gratis = [q for q in ORDEN if not q.startswith(\"deepseek\")]\n    return all(q in dormidos for q in gratis)",
+  "cambio": "Anadir al final del archivo, justo despues de las dos lineas que cierran la funcion anterior, la funcion nueva puede_revisar_claude(escritor, dormidos) con la regla exacta: False si escritor es claude; True solo si todos los nombres de ORDEN que no empiezan por deepseek estan en dormidos; False si falta alguno. Sin imports nuevos, con comentario de una linea citando la ley.",
+  "codigo": "def puede_revisar_claude(escritor, dormidos):\n    \"\"\"Ley Julio 2026-09-14: Claude revisa lo de DeepSeek solo si TODAS las IA gratis duermen.\"\"\"\n    if escritor == \"claude\":\n        return False\n    gratis = [q for q in ORDEN if not q.startswith(\"deepseek\")]\n    return all(q in dormidos for q in gratis)",
+  "vigia": "vigias/test_vigia_claude_revisa_cuando_gratis_duermen.py",
+  "puede_danar": [
+   "cuerpo/cuotas.py",
+   "vigias/test_vigia_claude_revisa_cuando_gratis_duermen.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini4 y no esta disponible: reviso ",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La clase MockAplicador esta definida en el propio test y nunca viaja dentro de la propuesta que recibe r.revisar, asi que el revisor no la ve y no puede cazar el simulador.",
+  "archivo": "vigias/test_vigia_revisor_de_programa.py",
+  "funcion": "test_caza_pruebas_con_simuladores",
+  "texto_viejo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"ejemplo.py\"\n    archivo.write_text(\"def f():\\n    return 1\\n\", encoding=\"utf-8\")\n\n    class MockAplicador:\n        def aplicar(self, propuesta):\n            return True\n\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": \"def f():\\n    return 2\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"reparar f\")\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"NO CAZO la prueba con simuladores: el revisor debe avisar cuando el cambio trae \"\n        \"un Mock o un simulador en vez de la reparacion real. Dijo: \" + str(fallos))",
+  "texto_nuevo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"ejemplo.py\"\n    archivo.write_text(\"def f():\\n    return 1\\n\", encoding=\"utf-8\")\n\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": (\n            \"from unittest.mock import MagicMock\\n\"\n            \"\\n\"\n            \"\\n\"\n            \"def f():\\n\"\n            \"    aplicador = MagicMock()\\n\"\n            \"    return aplicador.aplicar_cambios()\\n\"\n        ),\n    }\n    fallos = r.revisar(propuesta, tarea=\"probar la funcion REAL cuerpo.aplicador.aplicar_cambios\")\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"NO CAZO la prueba con simuladores: el revisor debe avisar cuando el cambio trae \"\n        \"un Mock o un simulador en vez de la reparacion real. Dijo: \" + str(fallos))",
+  "cambio": "Mover la definicion del simulador (class MockAplicador) fuera del cuerpo del test y meterla dentro del texto_nuevo de la propuesta que se le pasa a r.revisar, usando from unittest.mock import MagicMock y aplicador = MagicMock(), de modo que el revisor vea el Mock en el cambio propuesto. La tarea pasa a pedir que se pruebe la funcion REAL cuerpo.aplicador.aplicar_cambios. El assert se queda igual.",
+  "codigo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"ejemplo.py\"\n    archivo.write_text(\"def f():\\n    return 1\\n\", encoding=\"utf-8\")\n\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": (\n            \"from unittest.mock import MagicMock\\n\"\n            \"\\n\"\n            \"\\n\"\n            \"def f():\\n\"\n            \"    aplicador = MagicMock()\\n\"\n            \"    return aplicador.aplicar_cambios()\\n\"\n        ),\n    }\n    fallos = r.revisar(propuesta, tarea=\"probar la funcion REAL cuerpo.aplicador.aplicar_cambios\")\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"NO CAZO la prueba con simuladores: el revisor debe avisar cuando el cambio trae \"\n        \"un Mock o un simulador en vez de la reparacion real. Dijo: \" + str(fallos))",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py::test_caza_pruebas_con_simuladores debe quedar verde: el revisor ve el Mock dentro del texto_nuevo de la propuesta y devuelve al menos un fallo que contiene la palabra Mock.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_aplicador.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "ejemplo.py",
+   "revisor_de_programa.py",
+   "test_vigia_aplicador.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no usa código inexistente y no afecta a los módulos vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

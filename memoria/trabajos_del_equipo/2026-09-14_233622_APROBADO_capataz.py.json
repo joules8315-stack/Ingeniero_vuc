@@ -1,0 +1,33 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Falta crear el archivo nuevo cuerpo/capataz.py con la funcion leer_lista() que lea memoria/ORDENES.json y devuelva la lista o [] ante cualquier fallo.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "leer_lista",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "import json\nimport os\n\n\ndef leer_lista():\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    try:\n        with open(ruta, encoding=\"utf-8\") as f:\n            datos = json.load(f)\n    except (FileNotFoundError, json.JSONDecodeError, OSError):\n        return []\n    if isinstance(datos, list):\n        return datos\n    return []\n",
+  "cambio": "Crear el archivo NUEVO cuerpo/capataz.py con una sola funcion leer_lista() que abre memoria/ORDENES.json en utf-8 con ruta absoluta derivada de la carpeta del proyecto (un nivel arriba de cuerpo), lee el json, y devuelve la lista si es lista; si no existe, esta roto o no es lista, devuelve [].",
+  "codigo": "import json\nimport os\n\n\ndef leer_lista():\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    try:\n        with open(ruta, encoding=\"utf-8\") as f:\n            datos = json.load(f)\n    except (FileNotFoundError, json.JSONDecodeError, OSError):\n        return []\n    if isinstance(datos, list):\n        return datos\n    return []\n",
+  "vigia": "Una vigia que cree un memoria/ORDENES.json con una lista y compruebe que leer_lista() la devuelve igual; y que con archivo ausente, json roto y json que no es lista, devuelva [].",
+  "puede_danar": [
+   "nadie: la pieza es nueva y nadie la importa todavia"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El archivo cuerpo/capataz.py con leer_lista() se crea correctamente y cumple el diagnóstico sin violar contratos ni afectar vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 1"
+ ]
+}

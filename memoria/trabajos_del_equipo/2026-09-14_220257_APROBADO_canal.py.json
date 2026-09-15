@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "canal.leer marca el recado como leido (m['leido']=True y lo reescribe) antes de saber si se puede entregar, asi que si la entrega falla el recado queda perdido",
+  "archivo": "arnes/canal.py",
+  "funcion": "leer",
+  "texto_viejo": "        if m.get(\"leido\"):\n            continue\n        m[\"leido\"] = True\n        json.dump(m, open(ruta, \"w\", encoding=\"utf-8\"), ensure_ascii=False, indent=1)\n        salida.append(m)\n    return salida",
+  "texto_nuevo": "        if m.get(\"leido\"):\n            continue\n        salida.append(m)\n    return salida",
+  "cambio": "Quitar de canal.leer el marcado y la reescritura del recado como leido; leer solo devuelve los pendientes sin tocar el archivo. El marcado como leido debe ocurrir despues de entregado de verdad (lo hara quien entrega, no el lector).",
+  "codigo": "        if m.get(\"leido\"):\n            continue\n        salida.append(m)\n    return salida",
+  "vigia": "vigias/test_vigia_comunicacion.py y vigias/test_vigia_contestar_cierra_el_recado.py: con una sesion activa, si la entrega falla, el recado sigue sin leer en el archivo; al arrancar con sesion se entregan los pendientes y el recado pasa",
+  "puede_danar": [
+   "arnes/llamar.py",
+   "arnes/loop.py",
+   "vigias/test_vigia_comunicacion.py",
+   "vigias/test_vigia_contestar_cierra_el_recado.py"
+  ],
+  "preguntas": [
+   "Quien y en que momento exacto debe marcar el recado como leido despues de entregarlo de verdad (que funcion o pieza asume ese marcado ahora que leer no lo hace)?",
+   "El vigilante canal_buzon.js vive fuera del proyecto (C:\\Users\\USER\\AppData\\Local\\Temp\\opencode\\canal_buzon.js) y no viene en el material: se debe curar tambien en este encargo o va aparte?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "llamar.py",
+   "loop.py",
+   "test_vigia_comunicacion.py",
+   "test_vigia_contestar_cierra_el_recado.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio elimina la marca de leído en leer, cumpliendo el diagnóstico sin romper vecinos ni contratos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}

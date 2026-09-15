@@ -1,0 +1,62 @@
+{
+ "obrero": "gemini4",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Se debe añadir el código para el revisor de programa al final del archivo de tests especificado, asegurando que no se modifica el código existente y se cumplen las condiciones del contrato.",
+  "archivo": "vigias/test_vigia_varios_cambios_en_una_ronda.py",
+  "funcion": "test_revisor_sigue_frenando_lo_que_falta",
+  "texto_viejo": "    pass\n",
+  "texto_nuevo": "    pass\n\ndef test_revisor_mira_la_lista_entera():\n    # Propuesta con cambios en nombre_uno y nombre_dos\n    propuesta = {\n        \"cambios\": [\n            {\"archivo\": \"no_existe_a.py\", \"funcion\": \"func_a\", \"texto_viejo\": \"x = 0\", \"texto_nuevo\": \"x = nombre_uno = 1\"},\n            {\"archivo\": \"no_existe_b.py\", \"funcion\": \"func_b\", \"texto_viejo\": \"y = 0\", \"texto_nuevo\": \"y = nombre_dos = 2\"}\n        ]\n    }\n    # Tarea que pide cambiar nombre_uno y nombre_dos\n    tarea = [\"nombre_uno\", \"nombre_dos\"]\n    \n    # Se espera que no haya fallos porque ambos cambios son válidos y se encuentran\n    fallos = revisor_de_programa.revisar(propuesta, tarea)\n    assert fallos == [], f\"Se esperaban cero fallos, pero se obtuvieron: {fallos}\"\n\ndef test_revisor_sigue_frenando_lo_que_falta():\n    # Propuesta con cambios en nombre_uno y nombre_dos\n    propuesta = {\n        \"cambios\": [\n            {\"archivo\": \"no_existe_a.py\", \"funcion\": \"func_a\", \"texto_viejo\": \"x = 0\", \"texto_nuevo\": \"x = nombre_uno = 1\"},\n            {\"archivo\": \"no_existe_b.py\", \"funcion\": \"func_b\", \"texto_viejo\": \"y = 0\", \"texto_nuevo\": \"y = nombre_dos = 2\"}\n        ]\n    }\n    # Tarea que pide cambiar nombre_uno y nombre_tres (nombre_tres no existe en la propuesta)\n    tarea = [\"nombre_uno\", \"nombre_tres\"]\n    \n    # Se espera al menos un fallo porque nombre_tres no se encuentra en los cambios propuestos\n    fallos = revisor_de_programa.revisar(propuesta, tarea)\n    assert len(fallos) >= 1, \"Se esperaba al menos un fallo\"\n    assert \"NO HACE LO QUE SE PIDIO\" in fallos[0], \"El fallo no indica que no hace lo que se pidió\"\n    assert \"nombre_tres\" in fallos[0], \"El fallo no menciona nombre_tres\"\n",
+  "cambio": "Añadir al final del archivo `vigias/test_vigia_varios_cambios_en_una_ronda.py` las dos funciones de test para `revisor_de_programa` y el código necesario para importarlo.",
+  "codigo": "import os\nimport sys\n\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(RAIZ, \"arnes\"))\nimport revisor_de_programa\n\ndef test_revisor_mira_la_lista_entera():\n    # Propuesta con cambios en nombre_uno y nombre_dos\n    propuesta = {\n        \"cambios\": [\n            {\"archivo\": \"no_existe_a.py\", \"funcion\": \"func_a\", \"texto_viejo\": \"x = 0\", \"texto_nuevo\": \"x = nombre_uno = 1\"},\n            {\"archivo\": \"no_existe_b.py\", \"funcion\": \"func_b\", \"texto_viejo\": \"y = 0\", \"texto_nuevo\": \"y = nombre_dos = 2\"}\n        ]\n    }\n    # Tarea que pide cambiar nombre_uno y nombre_dos\n    tarea = [\"nombre_uno\", \"nombre_dos\"]\n    \n    # Se espera que no haya fallos porque ambos cambios son válidos y se encuentran\n    fallos = revisor_de_programa.revisar(propuesta, tarea)\n    assert fallos == [], f\"Se esperaban cero fallos, pero se obtuvieron: {fallos}\"\n\ndef test_revisor_sigue_frenando_lo_que_falta():\n    # Propuesta con cambios en nombre_uno y nombre_dos\n    propuesta = {\n        \"cambios\": [\n            {\"archivo\": \"no_existe_a.py\", \"funcion\": \"func_a\", \"texto_viejo\": \"x = 0\", \"texto_nuevo\": \"x = nombre_uno = 1\"},\n            {\"archivo\": \"no_existe_b.py\", \"funcion\": \"func_b\", \"texto_viejo\": \"y = 0\", \"texto_nuevo\": \"y = nombre_dos = 2\"}\n        ]\n    }\n    # Tarea que pide cambiar nombre_uno y nombre_tres (nombre_tres no existe en la propuesta)\n    tarea = [\"nombre_uno\", \"nombre_tres\"]\n    \n    # Se espera al menos un fallo porque nombre_tres no se encuentra en los cambios propuestos\n    fallos = revisor_de_programa.revisar(propuesta, tarea)\n    assert len(fallos) >= 1, \"Se esperaba al menos un fallo\"\n    assert \"NO HACE LO QUE SE PIDIO\" in fallos[0], \"El fallo no indica que no hace lo que se pidió\"\n    assert \"nombre_tres\" in fallos[0], \"El fallo no menciona nombre_tres\"\n",
+  "vigia": "vigias/test_vigia_varios_cambios_en_una_ronda.py",
+  "puede_danar": [
+   "arnes/copista.py",
+   "vigias/test_vigia_aplicador.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "copista.py",
+   "no_existe_b.py",
+   "test_vigia_aplicador.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Duplica importaciones (import os, import sys) y la definición de RAIZ que ya existen en el archivo, violando la regla de no tocar código existente.",
+   "Añade código (RAIZ, sys.path.insert, import revisor_de_programa) que excede lo solicitado; solo se requerían sys.path.insert y la importación, no la redefinición de RAIZ ni los imports repetidos.",
+   "Incumple el contrato que especifica que al final del archivo solo se deben añadir las dos funciones de test y la importación, no redefinir variables ni volver a importar módulos."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Eliminar los imports y la redefinición de RAIZ duplicados; dejar únicamente el sys.path.insert y la importación de revisor_de_programa antes de las dos funciones de test."
+  ],
+  "resumen_para_el_jefe": "Rechazado porque introduce imports y redefiniciones ya presentes, excediendo lo requerido y violando la instrucción de no modificar código existente."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) fallo (no es cuota): contesto vacio",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "DeepSeek (SE PAGA) fallo: tardo mas de 300.0s",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) fallo (no es cuota): contesto vacio",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "DeepSeek (SE PAGA) fallo: tardo mas de 300.0s",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 4"
+ ]
+}

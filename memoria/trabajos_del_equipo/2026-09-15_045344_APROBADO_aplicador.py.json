@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini",
+ "propuesta": {
+  "diagnostico": "Falta la funcion aplicar_cambios que aplique varios pedazos en una ronda, todos o ninguno, con validacion previa y escritura atomica.",
+  "archivo": "cuerpo/aplicador.py",
+  "funcion": "aplicar_cambio",
+  "texto_viejo": "def aplicar_cambio(propuesta, raiz=None):",
+  "texto_nuevo": "# Ley: CONTRATO_VARIOS_CAMBIOS_EN_UNA_RONDA.md (Julio 2026-09-14): varios pedazos en una sola ronda, se aplican TODOS o NINGUNO.\ndef aplicar_cambios(propuesta, raiz=None):\n    pedazos = propuesta.get('cambios') if isinstance(propuesta, dict) else []\n    if not pedazos:\n        return False, 'No hay cambios que aplicar.'\n    contenidos = {}\n    for pedazo in pedazos:\n        ruta = pedazo['archivo']\n        if raiz and not os.path.isabs(ruta):\n            ruta = os.path.normpath(os.path.join(raiz, ruta))\n        if ruta not in contenidos:\n            with open(ruta, 'r', encoding='utf-8') as f:\n                contenidos[ruta] = f.read()\n        viejo = pedazo.get('texto_viejo', '')\n        nuevo = pedazo.get('texto_nuevo', '')\n        if not viejo or contenidos[ruta].count(viejo) != 1:\n            return False, f'El texto de antes no aparece exactamente una vez en {ruta}; no se aplico nada.'\n        contenidos[ruta] = contenidos[ruta].replace(viejo, nuevo, 1)\n    for ruta, texto in contenidos.items():\n        if ruta.endswith('.py'):\n            try:\n                ast.parse(texto)\n            except SyntaxError as e:\n                return False, f'Sintaxis rota en {ruta} (renglon {e.lineno}); no se aplico nada.'\n    for ruta, texto in contenidos.items():\n        dir_archivo = os.path.dirname(ruta) or '.'\n        fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix='.tmp')\n        try:\n            with os.fdopen(fd, 'w', encoding='utf-8') as f:\n                f.write(texto)\n            os.replace(tmp_path, ruta)\n            _apuntar_log(True, ruta, '?', 'cambio aplicado en ronda')\n        except Exception as e:\n            if os.path.exists(tmp_path):\n                os.remove(tmp_path)\n            _apuntar_log(False, ruta, '?', f'error al aplicar: {e}')\n            return False, f'Error al aplicar el cambio en {ruta}: {e}'\n    return True, f'Se aplicaron {len(pedazos)} pedazos en {len(contenidos)} archivos.'\n\n\ndef aplicar_cambio(propuesta, raiz=None):",
+  "cambio": "Insertar la funcion aplicar_cambios justo antes de la linea 'def aplicar_cambio(propuesta, raiz=None):', dejando dos lineas en blanco y repitiendo esa linea al final.",
+  "codigo": "# Ley: CONTRATO_VARIOS_CAMBIOS_EN_UNA_RONDA.md (Julio 2026-09-14): varios pedazos en una sola ronda, se aplican TODOS o NINGUNO.\ndef aplicar_cambios(propuesta, raiz=None):\n    pedazos = propuesta.get('cambios') if isinstance(propuesta, dict) else []\n    if not pedazos:\n        return False, 'No hay cambios que aplicar.'\n    contenidos = {}\n    for pedazo in pedazos:\n        ruta = pedazo['archivo']\n        if raiz and not os.path.isabs(ruta):\n            ruta = os.path.normpath(os.path.join(raiz, ruta))\n        if ruta not in contenidos:\n            with open(ruta, 'r', encoding='utf-8') as f:\n                contenidos[ruta] = f.read()\n        viejo = pedazo.get('texto_viejo', '')\n        nuevo = pedazo.get('texto_nuevo', '')\n        if not viejo or contenidos[ruta].count(viejo) != 1:\n            return False, f'El texto de antes no aparece exactamente una vez en {ruta}; no se aplico nada.'\n        contenidos[ruta] = contenidos[ruta].replace(viejo, nuevo, 1)\n    for ruta, texto in contenidos.items():\n        if ruta.endswith('.py'):\n            try:\n                ast.parse(texto)\n            except SyntaxError as e:\n                return False, f'Sintaxis rota en {ruta} (renglon {e.lineno}); no se aplico nada.'\n    for ruta, texto in contenidos.items():\n        dir_archivo = os.path.dirname(ruta) or '.'\n        fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix='.tmp')\n        try:\n            with os.fdopen(fd, 'w', encoding='utf-8') as f:\n                f.write(texto)\n            os.replace(tmp_path, ruta)\n            _apuntar_log(True, ruta, '?', 'cambio aplicado en ronda')\n        except Exception as e:\n            if os.path.exists(tmp_path):\n                os.remove(tmp_path)\n            _apuntar_log(False, ruta, '?', f'error al aplicar: {e}')\n            return False, f'Error al aplicar el cambio en {ruta}: {e}'\n    return True, f'Se aplicaron {len(pedazos)} pedazos en {len(contenidos)} archivos.'\n\n\ndef aplicar_cambio(propuesta, raiz=None):",
+  "vigia": "vigias/test_vigia_varios_cambios_en_una_ronda.py",
+  "puede_danar": [
+   "arnes/copista.py",
+   "vigias/test_vigia_aplicador.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "copista.py",
+   "test_vigia_aplicador.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta implementa la función aplicar_cambios exactamente como se solicita, cumpliendo con todas las restricciones de líneas, comillas y dependencias."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) fallo (no es cuota): contesto vacio",
+  "GPT-OSS 20B (Groq) no le cabe (20716 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso gemini",
+  "vueltas_dadas: 2"
+ ]
+}

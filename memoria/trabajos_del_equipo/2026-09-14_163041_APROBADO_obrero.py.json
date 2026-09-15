@@ -1,0 +1,40 @@
+{
+ "obrero": "groq20b",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "se corta el texto completo cuando no se puede leer el JSON",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_json_de",
+  "texto_viejo": "if i < 0:\n    return {\"_error\": \"el cerebro no devolvio JSON\", \"_crudo\": texto[:400]}\nreturn {\"_error\": \"JSON roto o cortado\", \"_crudo\": crudo[:400]}",
+  "texto_nuevo": "if i < 0:\n    return {\"_error\": \"el cerebro no devolvio JSON\", \"_crudo\": texto}\nreturn {\"_error\": \"JSON roto o cortado\", \"_crudo\": crudo}",
+  "cambio": "reemplazar los cortes de 400 caracteres por el texto completo en los dos retornos de error",
+  "codigo": "    if i < 0:\n        return {\"_error\": \"el cerebro no devolvio JSON\", \"_crudo\": texto}\n    # ...\n    return {\"_error\": \"JSON roto o cortado\", \"_crudo\": crudo}",
+  "vigia": "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno. Los vecinos listados (asignador y la propia vigía) se beneficiarán de recibir el rastro completo del error para el diagnóstico, que es precisamente lo que se busca."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación cumple exactamente con lo pedido: elimina el límite de 400 caracteres en los mensajes de error de la función _json_de para devolver el texto íntegro."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini3",
+ "propuesta": {
+  "diagnostico": "La funcion test_caza_pruebas_con_simuladores define la clase MockAplicador fuera de la propuesta que se le pasa al revisor, por lo que el revisor nunca la ve y la prueba no prueba nada.",
+  "archivo": "vigias/test_vigia_revisor_de_programa.py",
+  "funcion": "test_caza_pruebas_con_simuladores",
+  "texto_viejo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"ejemplo.py\"\n    archivo.write_text(\"def f():\\n    return 1\\n\", encoding=\"utf-8\")\n\n    class MockAplicador:\n        def aplicar(self, propuesta):\n            return True\n\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def f():\\n    return 1\\n\",\n        \"texto_nuevo\": \"def f():\\n    return 2\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"reparar f\")\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"NO CAZO la prueba con simuladores: el revisor debe avisar cuando el cambio trae \"\n        \"un Mock o un simulador en vez de la reparacion real. Dijo: \" + str(fallos))",
+  "texto_nuevo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"test_vigia_varios_cambios_en_una_ronda.py\"\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"\",\n        \"texto_nuevo\": (\n            \"class MockAplicador:\\n\"\n            \"    def aplicar_cambios(self, propuesta):\\n\"\n            \"        return True\\n\"\n        ),\n    }\n    fallos = r.revisar(\n        propuesta,\n        tarea=(\n            \"escribir las pruebas de aplicar_cambios llamando a la funcion REAL \"\n            \"cuerpo.aplicador.aplicar_cambios y no a un simulador\"\n        ),\n    )\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"NO CAZO la prueba con simuladores: el revisor debe avisar cuando el cambio trae \"\n        \"un Mock o un simulador en vez de la reparacion real. Dijo: \" + str(fallos))",
+  "cambio": "Mover la clase MockAplicador (con su metodo aplicar_cambios que devuelve True) DENTRO del texto_nuevo de la propuesta que se le pasa a r.revisar; dejar texto_viejo vacio; apuntar el campo archivo a la ruta relativa de test_vigia_varios_cambios_en_una_ronda.py dentro de tmp_path; y que la tarea pida escribir las pruebas de aplicar_cambios llamando a la funcion REAL cuerpo.aplicador.aplicar_cambios y no a un simulador. El assert final sigue buscando la palabra Mock en los fallos.",
+  "codigo": "def test_caza_pruebas_con_simuladores(tmp_path):\n    r = _revisor()\n    archivo = tmp_path / \"test_vigia_varios_cambios_en_una_ronda.py\"\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"\",\n        \"texto_nuevo\": (\n            \"class MockAplicador:\\n\"\n            \"    def aplicar_cambios(self, propuesta):\\n\"\n            \"        return True\\n\"\n        ),\n    }\n    fallos = r.revisar(\n        propuesta,\n        tarea=(\n            \"escribir las pruebas de aplicar_cambios llamando a la funcion REAL \"\n            \"cuerpo.aplicador.aplicar_cambios y no a un simulador\"\n        ),\n    )\n    assert any(\"Mock\" in str(f) for f in fallos), (\n        \"NO CAZO la prueba con simuladores: el revisor debe avisar cuando el cambio trae \"\n        \"un Mock o un simulador en vez de la reparacion real. Dijo: \" + str(fallos))",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py::test_caza_pruebas_con_simuladores debe pasar en verde y ademas debe fallar si se quita la palabra Mock del texto_nuevo (prueba negativa), confirmando que el revisor ve la clase dentro de la propuesta.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_aplicador.py",
+   "arnes/copista.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "copista.py",
+   "revisor_de_programa.py",
+   "test_vigia_aplicador.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) fallo (no es cuota): contesto vacio",
+  "GPT-OSS 20B (Groq) fallo (no es cuota): contesto vacio",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}

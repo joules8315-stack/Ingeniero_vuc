@@ -17,6 +17,46 @@ def _apuntar_log(ok, archivo, funcion, detalle):
         pass  # no debe tumbar la aplicacion
 
 
+# Ley: CONTRATO_VARIOS_CAMBIOS_EN_UNA_RONDA.md (Julio 2026-09-14): varios pedazos en una sola ronda, se aplican TODOS o NINGUNO.
+def aplicar_cambios(propuesta, raiz=None):
+    pedazos = propuesta.get('cambios') if isinstance(propuesta, dict) else []
+    if not pedazos:
+        return False, 'No hay cambios que aplicar.'
+    contenidos = {}
+    for pedazo in pedazos:
+        ruta = pedazo['archivo']
+        if raiz and not os.path.isabs(ruta):
+            ruta = os.path.normpath(os.path.join(raiz, ruta))
+        if ruta not in contenidos:
+            with open(ruta, 'r', encoding='utf-8') as f:
+                contenidos[ruta] = f.read()
+        viejo = pedazo.get('texto_viejo', '')
+        nuevo = pedazo.get('texto_nuevo', '')
+        if not viejo or contenidos[ruta].count(viejo) != 1:
+            return False, f'El texto de antes no aparece exactamente una vez en {ruta}; no se aplico nada.'
+        contenidos[ruta] = contenidos[ruta].replace(viejo, nuevo, 1)
+    for ruta, texto in contenidos.items():
+        if ruta.endswith('.py'):
+            try:
+                ast.parse(texto)
+            except SyntaxError as e:
+                return False, f'Sintaxis rota en {ruta} (renglon {e.lineno}); no se aplico nada.'
+    for ruta, texto in contenidos.items():
+        dir_archivo = os.path.dirname(ruta) or '.'
+        fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix='.tmp')
+        try:
+            with os.fdopen(fd, 'w', encoding='utf-8') as f:
+                f.write(texto)
+            os.replace(tmp_path, ruta)
+            _apuntar_log(True, ruta, '?', 'cambio aplicado en ronda')
+        except Exception as e:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            _apuntar_log(False, ruta, '?', f'error al aplicar: {e}')
+            return False, f'Error al aplicar el cambio en {ruta}: {e}'
+    return True, f'Se aplicaron {len(pedazos)} pedazos en {len(contenidos)} archivos.'
+
+
 def aplicar_cambio(propuesta, raiz=None):
     """Aplica la propuesta del obrero al disco. Devuelve (ok, mensaje).
 
