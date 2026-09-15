@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "claude",
+ "propuesta": {
+  "diagnostico": "El programita de recados usaba marca 'canal-' (opencode exige 'prt') y leia el canal antes de conocer la sesion, botando el recado; el vigia debe nacer rojo exigiendo marca prt_, lectura con --sin-marcar y marcar solo despues de entregar.",
+  "archivo": "vigias/test_vigia_recados_no_se_pierden.py",
+  "texto_nuevo": "import os\nimport sys\nimport json\n\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(RAIZ, 'arnes'))\nimport canal\n\nRUTA_PROGRAMITA = os.path.join(RAIZ, '.opencode', 'plugins', 'canal_buzon.js')\n\n\ndef test_leer_sin_marcar_no_marca(monkeypatch, tmp_path):\n    monkeypatch.setenv('INGENIERO_CANAL_TEST', str(tmp_path))\n    canal.enviar('opencode', 'hola', de='claude')\n    msgs = canal.leer('opencode', marcar=False)\n    assert len(msgs) == 1\n    msgs2 = canal.leer('opencode', marcar=False)\n    assert len(msgs2) == 1\n\n\ndef test_marcar_despues_de_entregar(monkeypatch, tmp_path):\n    monkeypatch.setenv('INGENIERO_CANAL_TEST', str(tmp_path))\n    canal.enviar('opencode', 'hola', de='claude')\n    msgs = canal.leer('opencode', marcar=False)\n    assert len(msgs) == 1\n    canal.marcar_leidos([m['ruta'] for m in msgs])\n    msgs2 = canal.leer('opencode', marcar=False)\n    assert len(msgs2) == 0\n\n\ndef test_el_programita_usa_marca_prt_y_no_lee_sin_sesion():\n    assert os.path.exists(RUTA_PROGRAMITA), 'no existe el programita: ' + RUTA_PROGRAMITA\n    with open(RUTA_PROGRAMITA, 'r', encoding='utf-8') as f:\n        texto = f.read()\n    assert 'prt_' in texto\n    assert 'canal-' + chr(34) not in texto\n    assert 'canal-' + 'Date' not in texto\n    assert '--sin-marcar' in texto\n\n\ndef test_el_programita_marca_solo_despues_de_entregar():\n    assert os.path.exists(RUTA_PROGRAMITA), 'no existe el programita: ' + RUTA_PROGRAMITA\n    with open(RUTA_PROGRAMITA, 'r', encoding='utf-8') as f:\n        texto = f.read()\n    assert chr(34) + 'marcar' + chr(34) in texto\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El archivo de vigia se pidio crear expresamente con su ruta exacta y usa solo las llamadas que el encargo dicta al pie (canal.enviar/leer(marcar=False)/marcar_leidos, m['ruta'], chr(34) para las comillas dobles, --sin-marcar, prt_, y canal- ni con comillas ni con Date): hace las 4 pruebas pedidas, nace roja porque el programita esta renombrado y no existe, no toca ningun vecino y no cambia nada de mas. Aprobado."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini4 y no esta disponible: reviso ",
+  "todas las gratis duermen: revisa claude (ley de Julio)",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,61 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "canal.leer marca leido y guarda el mensaje al leerlo, antes de entregarlo, y ademas no expone la ruta del archivo, por lo que el recado se pierde si el que lee no lo entrega.",
+  "archivo": "arnes/canal.py",
+  "funcion": "leer",
+  "texto_viejo": "def leer(para=None):\n    \"\"\"Los mensajes pendientes PARA ESTA IA (o los de \"*\"/\"todos\"). Los ajenos no se tocan\n    ni se marcan leidos, para no robarselos al destinatario real (fix 4ojos tras la auditoria\n    de Claude: antes leer 'se comia' los mensajes de todos).\"\"\"\n    para = para or _quien()\n    salida = []\n    if not os.path.isdir(_bandeja()):\n        return salida\n    for ruta in sorted(glob.glob(os.path.join(_bandeja(), \"*.json\"))):\n        try:\n            m = json.load(open(ruta, encoding=\"utf-8\"))\n        except Exception:\n            continue\n        destino = str(m.get(\"para\", \"\")).strip()\n        if destino not in (para, \"*\", \"todos\", \"todas\", \"todos los\"):\n            continue                      # no es tuyo: ni se muestra ni se marca leido\n        if m.get(\"leido\"):\n            continue\n        salida.append(m)\n    return salida",
+  "texto_nuevo": "def leer(para=None, marcar=True):\n    \"\"\"Los mensajes pendientes PARA ESTA IA (o los de \"*\"/\"todos\"). Los ajenos no se tocan\n    ni se marcan leidos, para no robarselos al destinatario real (fix 4ojos tras la auditoria\n    de Claude: antes leer 'se comia' los mensajes de todos).\n    Fallo 2026-09-15: se marcaba leido al leerlo, antes de entregarlo, y se perdia.\n    Con marcar=False no escribe nada; solo devuelve, con su ruta, para entregar despues.\"\"\"\n    para = para or _quien()\n    salida = []\n    if not os.path.isdir(_bandeja()):\n        return salida\n    for ruta in sorted(glob.glob(os.path.join(_bandeja(), \"*.json\"))):\n        try:\n            m = json.load(open(ruta, encoding=\"utf-8\"))\n        except Exception:\n            continue\n        destino = str(m.get(\"para\", \"\")).strip()\n        if destino not in (para, \"*\", \"todos\", \"todas\", \"todos los\"):\n            continue                      # no es tuyo: ni se muestra ni se marca leido\n        if m.get(\"leido\"):\n            continue\n        m[\"ruta\"] = ruta\n        salida.append(m)\n        if marcar:\n            try:\n                m[\"leido\"] = True\n                json.dump(m, open(ruta, \"w\", encoding=\"utf-8\"), ensure_ascii=False, indent=2)\n            except Exception:\n                pass\n    return salida\n\n\n# Fallo 2026-09-15: el recado se marcaba leido al leerlo, antes de entregarlo, y se perdia.\ndef marcar_leidos(rutas):\n    \"\"\"Marca leido=True en cada ruta y lo guarda. Nunca lanza. Devuelve cuantas marco.\"\"\"\n    marcados = 0\n    for ruta in rutas:\n        try:\n            m = json.load(open(ruta, encoding=\"utf-8\"))\n            m[\"leido\"] = True\n            json.dump(m, open(ruta, \"w\", encoding=\"utf-8\"), ensure_ascii=False, indent=2)\n            marcados += 1\n        except Exception:\n            continue\n    return marcados",
+  "cambio": "En arnes/canal.py, sustituir la funcion leer entera por la version con firma leer(para=None, marcar=True) que anade la clave ruta a cada mensaje devuelto y solo marca leido y guarda si marcar es verdadero; y anadir debajo, tras dos lineas en blanco, la funcion nueva marcar_leidos(rutas) con try/except por ruta que devuelve cuantas marco, con un comentario de una linea arriba de cada una citando el fallo 2026-09-15.",
+  "codigo": "def leer(para=None, marcar=True):\n    \"\"\"Los mensajes pendientes PARA ESTA IA (o los de \"*\"/\"todos\"). Los ajenos no se tocan\n    ni se marcan leidos, para no robarselos al destinatario real (fix 4ojos tras la auditoria\n    de Claude: antes leer 'se comia' los mensajes de todos).\n    Fallo 2026-09-15: se marcaba leido al leerlo, antes de entregarlo, y se perdia.\n    Con marcar=False no escribe nada; solo devuelve, con su ruta, para entregar despues.\"\"\"\n    para = para or _quien()\n    salida = []\n    if not os.path.isdir(_bandeja()):\n        return salida\n    for ruta in sorted(glob.glob(os.path.join(_bandeja(), \"*.json\"))):\n        try:\n            m = json.load(open(ruta, encoding=\"utf-8\"))\n        except Exception:\n            continue\n        destino = str(m.get(\"para\", \"\")).strip()\n        if destino not in (para, \"*\", \"todos\", \"todas\", \"todos los\"):\n            continue                      # no es tuyo: ni se muestra ni se marca leido\n        if m.get(\"leido\"):\n            continue\n        m[\"ruta\"] = ruta\n        salida.append(m)\n        if marcar:\n            try:\n                m[\"leido\"] = True\n                json.dump(m, open(ruta, \"w\", encoding=\"utf-8\"), ensure_ascii=False, indent=2)\n            except Exception:\n                pass\n    return salida\n\n\n# Fallo 2026-09-15: el recado se marcaba leido al leerlo, antes de entregarlo, y se perdia.\ndef marcar_leidos(rutas):\n    \"\"\"Marca leido=True en cada ruta y lo guarda. Nunca lanza. Devuelve cuantas marco.\"\"\"\n    marcados = 0\n    for ruta in rutas:\n        try:\n            m = json.load(open(ruta, encoding=\"utf-8\"))\n            m[\"leido\"] = True\n            json.dump(m, open(ruta, \"w\", encoding=\"utf-8\"), ensure_ascii=False, indent=2)\n            marcados += 1\n        except Exception:\n            continue\n    return marcados",
+  "vigia": "vigias/test_vigia_recados_no_se_pierden.py pruebas 1 y 2",
+  "puede_danar": [
+   "arnes/llamar.py",
+   "arnes/asignador.py",
+   "arnes/canal.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio corrige el marcado de leídos y añade la ruta, cumpliendo el diagnóstico sin romper dependencias."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini2 y no esta disponible: reviso ",
+  "claude no pudo revisar: Command '['C:\\\\Users\\\\USER\\\\AppData\\\\Roaming\\\\npm\\\\claude.CMD', '-p']' timed out after 300 seconds",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini2 y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 2"
+ ]
+}

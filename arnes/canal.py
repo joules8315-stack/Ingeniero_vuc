@@ -93,10 +93,12 @@ def _llamar(para, texto):
         pass
 
 
-def leer(para=None):
+def leer(para=None, marcar=True):
     """Los mensajes pendientes PARA ESTA IA (o los de "*"/"todos"). Los ajenos no se tocan
     ni se marcan leidos, para no robarselos al destinatario real (fix 4ojos tras la auditoria
-    de Claude: antes leer 'se comia' los mensajes de todos)."""
+    de Claude: antes leer 'se comia' los mensajes de todos).
+    Fallo 2026-09-15: se marcaba leido al leerlo, antes de entregarlo, y se perdia.
+    Con marcar=False no escribe nada; solo devuelve, con su ruta, para entregar despues."""
     para = para or _quien()
     salida = []
     if not os.path.isdir(_bandeja()):
@@ -111,8 +113,30 @@ def leer(para=None):
             continue                      # no es tuyo: ni se muestra ni se marca leido
         if m.get("leido"):
             continue
+        m["ruta"] = ruta
         salida.append(m)
+        if marcar:
+            try:
+                m["leido"] = True
+                json.dump(m, open(ruta, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+            except Exception:
+                pass
     return salida
+
+
+# Fallo 2026-09-15: el recado se marcaba leido al leerlo, antes de entregarlo, y se perdia.
+def marcar_leidos(rutas):
+    """Marca leido=True en cada ruta y lo guarda. Nunca lanza. Devuelve cuantas marco."""
+    marcados = 0
+    for ruta in rutas:
+        try:
+            m = json.load(open(ruta, encoding="utf-8"))
+            m["leido"] = True
+            json.dump(m, open(ruta, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+            marcados += 1
+        except Exception:
+            continue
+    return marcados
 
 
 def texto_leer(para=None):
