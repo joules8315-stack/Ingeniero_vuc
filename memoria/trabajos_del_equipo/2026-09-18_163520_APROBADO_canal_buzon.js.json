@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "leerCanal no pasa --sin-marcar y devuelve solo el texto de additionalContext, sin las rutas; falta la funcion marcarCanal para marcar los recados ya leidos.",
+  "archivo": ".opencode/plugins/canal_buzon.js",
+  "funcion": "leerCanal",
+  "texto_viejo": "function leerCanal() {\n  try {\n    const out = execFileSync(\n      PYTHON,\n      [\"arnes\\\\canal.py\", \"leer\"],\n      { cwd: INGENIERO, encoding: \"utf-8\", timeout: 15000,\n        env: { ...process.env, INGENIERO_QUIEN: QUIEN } },\n    );\n    const texto = (out || \"\").trim();\n    if (!texto) return \"\";\n    try {\n      const j = JSON.parse(texto);\n      const ctx = j.hookSpecificOutput && j.hookSpecificOutput.additionalContext;\n      return typeof ctx === \"string\" ? ctx : \"\";\n    } catch {\n      return \"\";\n    }\n  } catch {\n    return \"\";\n  }\n}",
+  "texto_nuevo": "function leerCanal() {\n  try {\n    const out = execFileSync(\n      PYTHON,\n      [\"arnes\\\\canal.py\", \"leer\", \"--sin-marcar\"],\n      { cwd: INGENIERO, encoding: \"utf-8\", timeout: 15000,\n        env: { ...process.env, INGENIERO_QUIEN: QUIEN } },\n    );\n    const texto = (out || \"\").trim();\n    if (!texto) return null;\n    try {\n      const j = JSON.parse(texto);\n      const ctx = j.additionalContext;\n      const rutas = j.rutas;\n      if (typeof ctx === \"string\" && ctx) return { ctx, rutas };\n      return null;\n    } catch {\n      return null;\n    }\n  } catch {\n    return null;\n  }\n}\n\nfunction marcarCanal(rutas) {\n  try {\n    if (!rutas || !rutas.length) return;\n    execFileSync(\n      PYTHON,\n      [\"arnes\\\\canal.py\", \"marcar\", ...rutas],\n      { cwd: INGENIERO, encoding: \"utf-8\", timeout: 15000,\n        env: { ...process.env, INGENIERO_QUIEN: QUIEN } },\n    );\n  } catch (e) {\n    log(\"marcarCanal fallo: \" + e);\n  }\n}",
+  "cambio": "Sustituir la funcion leerCanal entera por la version que pasa --sin-marcar, parsea {additionalContext, rutas} y devuelve {ctx, rutas} o null; y agregar debajo la funcion marcarCanal(rutas) que llama a canal.py marcar con las rutas y nunca lanza (try/catch con log).",
+  "codigo": "function leerCanal() {\n  try {\n    const out = execFileSync(\n      PYTHON,\n      [\"arnes\\\\canal.py\", \"leer\", \"--sin-marcar\"],\n      { cwd: INGENIERO, encoding: \"utf-8\", timeout: 15000,\n        env: { ...process.env, INGENIERO_QUIEN: QUIEN } },\n    );\n    const texto = (out || \"\").trim();\n    if (!texto) return null;\n    try {\n      const j = JSON.parse(texto);\n      const ctx = j.additionalContext;\n      const rutas = j.rutas;\n      if (typeof ctx === \"string\" && ctx) return { ctx, rutas };\n      return null;\n    } catch {\n      return null;\n    }\n  } catch {\n    return null;\n  }\n}\n\nfunction marcarCanal(rutas) {\n  try {\n    if (!rutas || !rutas.length) return;\n    execFileSync(\n      PYTHON,\n      [\"arnes\\\\canal.py\", \"marcar\", ...rutas],\n      { cwd: INGENIERO, encoding: \"utf-8\", timeout: 15000,\n        env: { ...process.env, INGENIERO_QUIEN: QUIEN } },\n    );\n  } catch (e) {\n    log(\"marcarCanal fallo: \" + e);\n  }\n}",
+  "vigia": "vigias/test_vigia_comunicacion.py y vigias/test_vigia_recados_no_se_pierden.py (comprueban que leer no marca y que marcarCanal marca los recados leidos)",
+  "puede_danar": [
+   "arnes/canal.py",
+   "vigias/test_vigia_comunicacion.py",
+   "vigias/test_vigia_contestar_cierra_el_recado.py",
+   "vigias/test_vigia_recados_no_se_pierden.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_comunicacion.py",
+   "test_vigia_contestar_cierra_el_recado.py",
+   "test_vigia_recados_no_se_pierden.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El trozo corta en la linea 40 (export const CanalBuzonPlugin...); el que llame a leerCanal dentro del plugin (fuera del material) recibe ahora {ctx,rutas}|null en vez de un string: toca confirmar que ese receptor no hace concatenacion de texto ni espera el formato hookSpecificOutput viej o.",
+   "vigias/test_vigia_contestar_cierra_el_recado.py vigila a arnes/canal.py y podria esperar el JSON antiguo; el paquete no trae su codigo, asi que queda pendiente de comprobar tras el cambio.",
+   "Se asume que arnes/canal.py ya soporta 'leer --sin-marcar' y 'marcar' (el contrato lo ordena con esas palabras exactas y el paquete lo da por hecho); si no fuera asi, marcarCanal tragaria el error en silencio y los recados quedarian sin marcar."
+  ],
+  "que_falta": [
+   "Correr vigias/test_vigia_comunicacion.py, vigias/test_vigia_contestar_cierra_el_recado.py y vigias/test_vigia_recados_no_se_pierden.py para confirmar que nadie espera el formato viejo y que marcarCanal efectivamente marca."
+  ],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo que el encargo ordena: agrega --sin-marcar a leerCanal, devuelve {ctx, rutas} o null segun el contrato y crea marcarCanal con try/catch y log, sin inventar nada (PYTHON, INGENIERO, QUIEN, log y execFileSync ya estan en el material); solo resta verificar con las vigias que el resto del archivo y canal.py aguantan el formato nuevo."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

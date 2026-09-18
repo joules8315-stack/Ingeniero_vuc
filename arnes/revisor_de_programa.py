@@ -81,6 +81,8 @@ def sin_ruido(texto):
 def _conocidos(arbol):
     """Todo nombre que en ese texto SI existe: lo importado, lo definido, lo asignado, los
     argumentos, los de except y los de global. Mas los nombres propios de Python."""
+    if arbol is None:
+        return set()
     vistos = set(PROPIOS_DE_PYTHON)
     for n in ast.walk(arbol):
         if isinstance(n, ast.Import):
@@ -105,6 +107,8 @@ def _conocidos(arbol):
 
 def _leidos(arbol):
     """Los nombres que el texto LEE: los que tienen que existir de antes."""
+    if arbol is None:
+        return []
     fuera = []
     for n in ast.walk(arbol):
         if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load):
@@ -162,8 +166,48 @@ def revisar(propuesta, tarea=""):
         # porque ensena a ignorarlos todos. Por eso, si es un pedazo y no se deja leer entero,
         # NO se acusa de nada: no se puede comprobar, y callar es mas honrado que gritar.
         arbol = None
+        _ruta_js = str(p.get('archivo') or '')
+        _es_js = _ruta_js.lower().endswith(('.js', '.mjs', '.cjs'))
+        if _es_js:
+            _texto_js = None
+            if es_un_pedazo(nuevo) and _ruta_js and os.path.isfile(_ruta_js) and viejo:
+                try:
+                    with open(_ruta_js, encoding='utf-8-sig', errors='replace') as _fj:
+                        _todo_js = _fj.read()
+                    if viejo in _todo_js:
+                        _texto_js = _todo_js.replace(viejo, nuevo, 1)
+                except Exception:
+                    _texto_js = None
+            elif not es_un_pedazo(nuevo):
+                _texto_js = nuevo
+            if _texto_js is not None:
+                _sufijo = os.path.splitext(_ruta_js)[1] or '.js'
+                if _sufijo == '.js' and re.search(r'(?m)^\s*(import|export)\b', _texto_js):
+                    _sufijo = '.mjs'
+                _tmp_js = None
+                try:
+                    import tempfile
+                    import subprocess
+                    _fd, _tmp_js = tempfile.mkstemp(suffix=_sufijo)
+                    with os.fdopen(_fd, 'w', encoding='utf-8') as _ftmp:
+                        _ftmp.write(_texto_js)
+                    _flags = 0x08000000 if os.name == 'nt' else 0
+                    _res = subprocess.run(['node', '--check', _tmp_js], capture_output=True, text=True, timeout=20, shell=False, creationflags=_flags)
+                    if _res.returncode != 0:
+                        fallos.append('EL CODIGO QUEDA ROTO (node): ' + (_res.stderr or '')[:200])
+                        return fallos
+                except FileNotFoundError:
+                    pass
+                except Exception:
+                    pass
+                finally:
+                    if _tmp_js:
+                        try:
+                            os.remove(_tmp_js)
+                        except Exception:
+                            pass
         try:
-            arbol = ast.parse(nuevo)
+            arbol = ast.parse(nuevo) if not _es_js else None
         except SyntaxError as e:
             try:
                 arbol = ast.parse(textwrap.dedent(nuevo))

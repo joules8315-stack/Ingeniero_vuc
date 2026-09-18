@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "El respeto al revisor fijo (bigpickle) no distingue cuando el auditor pedido es bigpickle, y _propuesta_cumple no marca incompleta la propuesta cuando aparece NO_ENCONTRADO en cualquiera de los campos del cambio.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_propuesta_cumple",
+  "texto_viejo": "    if not isinstance(propuesta, dict):\n        return False, f\"no devolvio un JSON: {str(propuesta)[:80]}\"\n    if clase == \"crear\":\n        # Crear una pieza entera: si no trae el contenido nuevo, no existe lo que se crea.\n        if not str(propuesta.get(\"texto_nuevo\") or \"\").strip():\n            return False, \"la propuesta NO trae texto_nuevo (el pedido llego incompleto)\"\n    else:\n        # Reparar: tiene que decir que toca y con que se reemplaza.\n        if not str(propuesta.get(\"archivo\") or \"\").strip():\n            return False, \"la propuesta NO dice que archivo toca\"\n        if \"codigo\" not in propuesta and \"texto_viejo\" not in propuesta and \"texto_nuevo\" not in propuesta:\n            return False, \"la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)\"\n    return True, \"\"",
+  "texto_nuevo": "    if not isinstance(propuesta, dict):\n        return False, f\"no devolvio un JSON: {str(propuesta)[:80]}\"\n    # La marca NO_ENCONTRADO se detecta en CUALQUIERA de los campos del cambio\n    # (el codigo y los textos de intercambio): si alguno trae la marca, la propuesta\n    # queda incompleta y nunca puede recibir APROBADO.\n    for _campo in (\"codigo\", \"texto_viejo\", \"texto_nuevo\"):\n        if \"NO_ENCONTRADO\" in str(propuesta.get(_campo) or \"\"):\n            return False, f\"la propuesta trae NO_ENCONTRADO en {_campo} (el pedido llego incompleto)\"\n    if clase == \"crear\":\n        # Crear una pieza entera: si no trae el contenido nuevo, no existe lo que se crea.\n        if not str(propuesta.get(\"texto_nuevo\") or \"\").strip():\n            return False, \"la propuesta NO trae texto_nuevo (el pedido llego incompleto)\"\n    else:\n        # Reparar: tiene que decir que toca y con que se reemplaza.\n        if not str(propuesta.get(\"archivo\") or \"\").strip():\n            return False, \"la propuesta NO dice que archivo toca\"\n        if \"codigo\" not in propuesta and \"texto_viejo\" not in propuesta and \"texto_nuevo\" not in propuesta:\n            return False, \"la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)\"\n    return True, \"\"",
+  "cambio": "Anadir al principio de _propuesta_cumple un bucle que recorra los campos codigo, texto_viejo y texto_nuevo y devuelva incompleta si alguno contiene la marca NO_ENCONTRADO.",
+  "codigo": "    for _campo in (\"codigo\", \"texto_viejo\", \"texto_nuevo\"):\n        if \"NO_ENCONTRADO\" in str(propuesta.get(_campo) or \"\"):\n            return False, f\"la propuesta trae NO_ENCONTRADO en {_campo} (el pedido llego incompleto)\"",
+  "vigia": "Una vigia que pase a _propuesta_cumple una propuesta con NO_ENCONTRADO en codigo, en texto_viejo o en texto_nuevo y compruebe que devuelve ok=False y que nunca recibe APROBADO.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "cerebro/trozos.py",
+   "vigias/test_vigia_respuestas.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "Para el punto A (respeto al revisor fijo solo para bigpickle y restaurar el ultimo intento pesado para los demas) y el punto C (ajustar test_vigia_claude_audita_si_gratis_duermen), el material solo trae el inicio de auditar hasta la linea 'if not crudo_a: continue'; falta el resto de auditar y el contenido de test_vigia_claude_audita_si_gratis_duermen para poder cambiar el texto exacto sin inventar."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_respuestas.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "trozos.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "resumen_para_el_jefe": "el revisor pedido (groq20b) no estaba; no se llama a otro cerebro en su lugar"
+ },
+ "avisos": [
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq20b y no esta disponible: reviso gemini4",
+  "el revisor pedido (groq20b) no estaba: queda SIN_AUDITAR y archivado para su revision",
+  "vueltas_dadas: 1"
+ ]
+}

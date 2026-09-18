@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En _piezas(arbol), cuando llega arbol=None (archivos JavaScript), ast.walk(None) revienta; falta el retorno temprano vacio.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "_piezas",
+  "texto_viejo": "def _piezas(arbol):",
+  "texto_nuevo": "def _piezas(arbol):\n    if arbol is None:\n        return []",
+  "cambio": "Agregar como primera sentencia del cuerpo de _piezas (despues del docstring) 'if arbol is None:' devolviendo vacio del MISMO tipo que _piezas devuelve al final.",
+  "codigo": "if arbol is None:\n    return []",
+  "vigia": "Llamar _piezas(None) y comprobar que devuelve vacio del mismo tipo que el retorno final, sin lanzar excepcion.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "los llamadores de _piezas"
+  ],
+  "preguntas": [
+   "Cual es el tipo exacto que _piezas devuelve al final (lista, tupla, conjunto) para devolver vacio del MISMO tipo?"
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El retorno vacío [] puede no coincidir con el tipo de dato que _piezas devuelve habitualmente, incumpliendo la regla de devolver el mismo tipo que el retorno final.",
+   "No se verifica ni documenta cuál es el tipo exacto de retorno, lo que puede generar incoherencias en los llamadores."
+  ],
+  "riesgo_vecinos": [
+   "Los llamadores de _piezas podrían recibir una lista en lugar del tipo esperado (por ejemplo, tupla o conjunto) y fallar en tiempo de ejecución."
+  ],
+  "que_falta": [
+   "Identificar el tipo exacto que _piezas devuelve al final (lista, tupla, conjunto, etc.) y devolver un vacío de ese mismo tipo.",
+   "Añadir una breve explicación o comentario que justifique la elección del tipo vacío para evitar dudas futuras."
+  ],
+  "resumen_para_el_jefe": "El parche añade un retorno [] que quizá no sea del tipo correcto, arriesgando a romper a los llamadores; falta confirmar el tipo de retorno esperado."
+ },
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (19428 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (19486 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (19544 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

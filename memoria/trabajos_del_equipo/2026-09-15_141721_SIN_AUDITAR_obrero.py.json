@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "En auditar, revisor_fijo se define como auditor si auditor sino nada y el bloque SIN_AUDITAR se dispara para cualquier auditor pedido que no este, frenando el relevo normal; y en _propuesta_cumple no se rechaza la marca NO_ENCONTRADO en los campos del cambio.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    auditoria = None\n    avisos = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor\n    quien_aud = None\n    auditor_ok = auditor\n    if auditor == evitar:\n        # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa\n        auditor_ok = None\n        avisos.append(\"el auditor pedido (%s) era el mismo que genero; se busca otro\" % auditor)",
+  "texto_nuevo": "    auditoria = None\n    avisos = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor\n    quien_aud = None\n    auditor_ok = auditor\n    revisor_fijo = auditor if auditor == \"bigpickle\" else None\n    if auditor == evitar:\n        # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa\n        auditor_ok = None\n        avisos.append(\"el auditor pedido (%s) era el mismo que genero; se busca otro\" % auditor)",
+  "cambio": "Definir revisor_fijo SOLO cuando auditor es exactamente bigpickle, en lugar de para cualquier auditor; y en el bloque SIN_AUDITAR avisar y archivar sin llamar a otro cerebro solo si se pidio bigpickle, siguiendo el relevo normal para cualquier otro auditor no disponible.",
+  "codigo": "revisor_fijo = auditor if auditor == \"bigpickle\" else None",
+  "vigia": "Probar auditar con auditor='bigpickle' no disponible (debe avisar y quedar SIN_AUDITAR sin llamar a otro cerebro) y con auditor='otro' no disponible (debe avisar y seguir el relevo normal: claude si todas las gratis duermen, y el ultimo intento con el cerebro de pago apartando a quien escribio).",
+  "puede_danar": [
+   "cuerpo/obrero.py:auditar",
+   "cuerpo/obrero.py:_propuesta_cumple",
+   "el relevo normal de auditores",
+   "el flujo de aprobacion de propuestas"
+  ],
+  "preguntas": [
+   "El material solo muestra el inicio de auditar hasta la linea 'if auditor and quien_aud != auditor:'; falta el bloque completo donde se devuelve SIN_AUDITAR con el texto 'no se llama a otro cerebro' para poder sustituirlo con texto literal exacto.",
+   "El material solo muestra _propuesta_cumple hasta 'return True, \"\"'; falta confirmar si el bloque de NO_ENCONTRADO debe ir antes de ese return o dentro de cada rama (crear/reparar)."
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19087 a 11596 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) fallo (no es cuota): contesto vacio",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "El cuerpo de _trae_llave busca marcas como palabras sueltas ('API_KEY', 'sk-') en vez de detectar la FORMA de una llave real, y ademas el material no muestra la importacion de Path que el codigo usa en RAIZ.",
+  "archivo": "cuerpo/bigpickle.py",
+  "funcion": "_trae_llave",
+  "texto_viejo": "def _trae_llave(prompt: str) -> bool:\n    \"\"\"True si el encargo trae algo que parece una llave. No se manda nunca.\"\"\"\n    if not isinstance(prompt, str):\n        return False\n    for marca in MARCAS_DE_LLAVE:\n        if marca in prompt:\n            return True\n    return False",
+  "texto_nuevo": "def _trae_llave(prompt: str) -> bool:\n    \"\"\"True si el encargo trae algo que parece una llave. No se manda nunca.\"\"\"\n    if not isinstance(prompt, str):\n        return False\n    if re.search(r'\\b(?:sk|gsk|pk|rk)[-_][A-Za-z0-9_\\-]{20,}', prompt):\n        return True\n    if re.search(r'\\bAIza[0-9A-Za-z_\\-]{30,}', prompt):\n        return True\n    try:\n        from cuerpo import privacidad\n    except ImportError:\n        import sys\n        sys.path.append(str(Path(__file__).resolve().parent.parent))\n        from cuerpo import privacidad\n    if '<CLAVE>' in privacidad.limpiar(prompt)[0]:\n        return True\n    return False",
+  "cambio": "Sustituir el cuerpo de _trae_llave para que detecte la FORMA de una llave real con re.search (patron sk/gsk/pk/rk con separador y 20+ caracteres, o AIza con 30+ caracteres) y para que consulte privacidad.limpiar(prompt)[0] buscando '<CLAVE>', importando privacidad con 'from cuerpo import privacidad' y, si da ImportError, anadiendo al sys.path la carpeta padre de la carpeta de este archivo y reintentando.",
+  "codigo": "def _trae_llave(prompt: str) -> bool:\n    \"\"\"True si el encargo trae algo que parece una llave. No se manda nunca.\"\"\"\n    if not isinstance(prompt, str):\n        return False\n    if re.search(r'\\b(?:sk|gsk|pk|rk)[-_][A-Za-z0-9_\\-]{20,}', prompt):\n        return True\n    if re.search(r'\\bAIza[0-9A-Za-z_\\-]{30,}', prompt):\n        return True\n    try:\n        from cuerpo import privacidad\n    except ImportError:\n        import sys\n        sys.path.append(str(Path(__file__).resolve().parent.parent))\n        from cuerpo import privacidad\n    if '<CLAVE>' in privacidad.limpiar(prompt)[0]:\n        return True\n    return False",
+  "vigia": "Un test que llame a _trae_llave con un prompt que contenga 'sk-ant-api03-' seguido de 20+ caracteres, con 'gsk_' seguido de 20+ caracteres, con 'AIza' seguido de 30+ caracteres, y con un texto que privacidad.limpiar convierta en '<CLAVE>', y que devuelva True en los cuatro casos; y que con un prompt normal devuelva False.",
+  "puede_danar": [
+   "cuerpo/bigpickle.py::preguntar",
+   "cuerpo/privacidad.py"
+  ],
+  "preguntas": [
+   "El material no muestra la cabecera de cuerpo/bigpickle.py con los imports; el codigo actual usa Path en RAIZ = Path(__file__).resolve().parent.parent, pero no se ve si Path esta importado. ¿Esta ya importado Path en bigpickle.py o hay que anadirlo?"
+  ],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "La importación de `Path` desde `pathlib` no está presente en el material original ni en el código proporcionado para la función `_trae_llave`. El código nuevo intenta usar `Path(__file__).resolve().parent.parent` sin que `Path` esté importado."
+  ],
+  "fallos": [
+   "El código nuevo intenta importar `Path` de `pathlib` (implícito en `Path(__file__)`) pero no se encuentra ninguna importación de `Path` o `pathlib` en el material original ni en el código proporcionado. Esto es un intento de usar una funcionalidad que no existe.",
+   "El diagnóstico menciona que el material no muestra la importación de `Path` que el código usa en RAIZ. La reparación intenta solucionar esto añadiendo `sys.path.append(str(Path(__file__).resolve().parent.parent))` pero `Path` no está definido en ese punto, lo que genera un `NameError`."
+  ],
+  "riesgo_vecinos": [
+   "La importación fallida de `privacidad` podría afectar a `cuerpo/bigpickle.py::preguntar` si la función `_trae_llave` es llamada y falla debido a la excepción `ImportError` no manejada correctamente por la falta de `Path`."
+  ],
+  "que_falta": [
+   "La importación de `Path` desde `pathlib`."
+  ],
+  "resumen_para_el_jefe": "La reparación intenta usar `Path` sin importarlo, lo que causa un error de nombre. Además, la importación de `privacidad` falla si `Path` no está definido, rompiendo la lógica de la función."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19341 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso groq20b",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 4"
+ ]
+}

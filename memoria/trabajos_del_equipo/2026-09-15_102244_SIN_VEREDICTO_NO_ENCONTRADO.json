@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "claude",
+ "propuesta": {
+  "diagnostico": "El material no contiene el codigo de cuerpo/obrero.py::trabajar ni ::auditar, ni cuerpo/cuotas.py, ni las piezas indicadas, por lo que no se puede localizar el texto literal a sustituir.",
+  "archivo": "NO_ENCONTRADO",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "cerebro/piezas.py",
+   "mapa/inventario.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: Se debe respetar DeepSeek como escritor cuando se pide --escribe deepseek y Big Pickle como revisor cuando se pide --revisa bigpickle; si Big Pickle no esta disponible, que revisor alternativo verificable se debe usar y como se debe registrar el relevo?",
+   "PREGUNTA_REQUERIDA: Que significa exactamente 'no exigir Gemini dormido' y como debe comportarse el flujo si Gemini no esta disponible?",
+   "PREGUNTA_REQUERIDA: Que debe hacer el flujo cuando una respuesta viene cortada o con JSON roto: cuantos reintentos, con que espera, y como se conserva la propuesta entre reintentos?",
+   "PREGUNTA_REQUERIDA: Como se debe impedir que el escritor se revise a si mismo y que veredicto valido se exige para cerrar una ronda?"
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "_error": "el cerebro no devolvio JSON",
+  "_crudo": "Julio, te lo cuento en simple, sin palabras raras.\n\n**Mi revisión del trabajo que me pasaron: QUEDA EN DUDA (ni aprobado ni rechazado del todo).**\n\n- **¿Se inventó algo?** No. No usó nada que no exista. Eso está bien.\n- **Lo bueno:** hizo bien en NO ponerse a reparar a ciegas, porque en el paquete que le dieron **no venía el contenido de las piezas que había que arreglar**. Sin eso, no se puede tocar nada. Correcto.\n- **Lo malo:** en vez de **pedir ese contenido que le faltaba**, se puso a hacer preguntas de las reglas. Pidió lo que no hacía falta y no pidió lo único que lo tenía atascado.\n- **Otro fallo:** dos de sus preguntas **ya están contestadas en el propio encargo** (que si el revisor de siempre no está, se usa otro de confianza y se anota el cambio; y que no se exija al que está dormido). Preguntar lo que ya está dicho gasta una vuelta entera para nada.\n\n**Qué le falta hacer:** volver a pedir —bien pedido— el contenido de las piezas a reparar (la del obrero, con sus dos partes, y la de las cuotas), y quitar las preguntas que el encargo ya responde.\n\n**Para el que decide, en una frase:** no inventó nada y bien que no reparó sin material, pero pidió lo que no era; hay que devolvérselo para que pida lo que de verdad le falta.\n\n---\n\nAhora lo importante: **el cierre se volvió a colgar en el bucle de siempre.**\n\nMe exige guardar, \"legislar\" y contestar recados para poder terminar. Pero esa lista de \"cosas que dijiste\" trae frases que **tú nunca dijiste** — son pedazos de texto de la máquina y hasta un recado de otro programa. Es la misma falla que ya teníamos anotada.\n\n**No voy a guardar, ni anotar esa lista sucia, ni mandar recados solo por escaparme del bucle.** Eso es justo lo que te ha traído líos. Mi encargo era uno solo: revisar ese trabajo, y ya lo tienes arriba.\n\nPara soltar el candado, en tu ventana escribe:\n\n`$env:INGENIERO_OFF=1`\n\n¿Quieres que deje anotado que este bucle **volvió a saltar hoy con lista contaminada**, para que el equipo lo repare de raíz?\n"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a bigpickle y no esta disponible: reviso ",
+  "todas las gratis duermen: revisa claude (ley de Julio)",
+  "vueltas_dadas: 1"
+ ]
+}

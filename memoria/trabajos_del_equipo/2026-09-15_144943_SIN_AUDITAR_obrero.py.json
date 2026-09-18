@@ -1,0 +1,68 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "En auditar, revisor_fijo se define como el auditor pedido o nada y un bloque devuelve SIN_AUDITAR cuando quien revisa no es revisor_fijo; en _propuesta_cumple no se detecta la marca NO_ENCONTRADO como subtexto en los campos del cambio en ninguna de las dos ramas.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    auditoria = None\n    avisos = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor\n    quien_aud = None\n    auditor_ok = auditor\n    if auditor == evitar:\n        # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa\n        auditor_ok = None\n        avisos.append(\"el auditor pedido (%s) era el mismo que genero; se busca otro\" % auditor)",
+  "texto_nuevo": "    auditoria = None\n    avisos = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor\n    quien_aud = None\n    auditor_ok = auditor\n    # SOLO bigpickle es fijo: si se pidio bigpickle y no contesta, SIN_AUDITAR sin llamar a otro\n    # cerebro y archivado. Para cualquier OTRO auditor pedido que no este disponible, avisar y\n    # seguir el relevo normal: los demas cerebros gratis, si todas las gratis duermen claude, y\n    # el ultimo intento con el cerebro de pago apartando a quien escribio.\n    revisor_fijo = auditor if auditor == \"bigpickle\" else None\n    if auditor == evitar:\n        # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa\n        auditor_ok = None\n        avisos.append(\"el auditor pedido (%s) era el mismo que genero; se busca otro\" % auditor)",
+  "cambio": "Sustituir el bloque inicial de auditar donde se define auditor_ok y el descarte por evitar, para que revisor_fijo quede como auditor si auditor es literalmente 'bigpickle' y None en cualquier otro caso, dejando el resto del relevo normal intacto.",
+  "codigo": "    auditoria = None\n    avisos = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor\n    quien_aud = None\n    auditor_ok = auditor\n    # SOLO bigpickle es fijo: si se pidio bigpickle y no contesta, SIN_AUDITAR sin llamar a otro\n    # cerebro y archivado. Para cualquier OTRO auditor pedido que no este disponible, avisar y\n    # seguir el relevo normal: los demas cerebros gratis, si todas las gratis duermen claude, y\n    # el ultimo intento con el cerebro de pago apartando a quien escribio.\n    revisor_fijo = auditor if auditor == \"bigpickle\" else None\n    if auditor == evitar:\n        # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa\n        auditor_ok = None\n        avisos.append(\"el auditor pedido (%s) era el mismo que genero; se busca otro\" % auditor)",
+  "vigia": "Un test que llame a auditar con auditor='bigpickle' y sin respuesta del cerebro y compruebe que devuelve SIN_AUDITAR sin llamar a otro cerebro y que archiva; y otro con auditor='otro' no disponible que compruebe que avisa y sigue el relevo normal (gratis, luego claude, luego pago apartando a quien escribio).",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "arnes/copista.py",
+   "cerebro/protocolo.py"
+  ],
+  "preguntas": [
+   "En _propuesta_cumple, el material solo muestra la funcion hasta el return True, \"\"; no aparece el resto de la funcion ni las ramas de reparar/crear completas: ¿se puede facilitar la funcion _propuesta_cumple entera para copiar el texto literal exacto de las dos ramas?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "copista.py",
+   "protocolo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19086 a 11081 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 20195 a 11912 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 2"
+ ]
+}

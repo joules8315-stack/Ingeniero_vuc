@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El bloque de inyectar y vigilante no marca el canal tras inyectar con exito, y vigilante llama a leerCanal sin comprobar antes que exista sessionID.",
+  "archivo": ".opencode/plugins/canal_buzon.js",
+  "funcion": "inyectar y vigilante (dentro de CanalBuzonPlugin)",
+  "texto_viejo": "  const inyectar = async (ctx) => {\n    if (!sessionID) {\n      log(\"sin sesion conocida, no inyecto\");\n      return;\n    }\n    inyectadas += 1;\n    try {\n      await client.session.promptAsync({\n        path: { id: sessionID },\n        body: {\n          parts: [{ type: \"text\", text: ctx, synthetic: true }],\n        },\n      });\n      log(\"inyectado #\" + inyectadas + \" a sesion \" + sessionID);\n    } catch (e) {\n      log(\"fallo inyeccion: \" + String((e && e.message) || e).slice(0, 160));\n    }\n  };\n\n  const vigilante = () => {\n    try {\n      if (Date.now() - lastActivity < IDLE_MS) {\n        log(\"vigilante: actividad reciente, espero\");\n        return;\n      }\n      if (inyectadas >= MAX_INYECTADAS) {\n        log(\"vigilante: tope diario alcanzado (\" + inyectadas + \")\");\n        return;\n      }\n      const ctx = leerCanal();\n      if (!ctx) return;\n      log(\"vigilante: hay recados, inyecto\");\n      inyectar(ctx);\n    } catch (e) {\n      log(\"vigilante error: \" + String((e && e.message) || e).slice(0, 160));\n    }\n  };",
+  "texto_nuevo": "  const inyectar = async (r) => {\n    if (!sessionID) {\n      log(\"sin sesion conocida, no inyecto\");\n      return;\n    }\n    inyectadas += 1;\n    try {\n      await client.session.promptAsync({\n        path: { id: sessionID },\n        body: {\n          parts: [{ type: \"text\", text: r.ctx, synthetic: true }],\n        },\n      });\n      log(\"inyectado #\" + inyectadas + \" a sesion \" + sessionID);\n      marcarCanal(r.rutas);\n    } catch (e) {\n      log(\"fallo inyeccion: \" + String((e && e.message) || e).slice(0, 160));\n    }\n  };\n\n  const vigilante = () => {\n    try {\n      if (!sessionID) {\n        log(\"vigilante: sin sesion conocida, no leo\");\n        return;\n      }\n      if (Date.now() - lastActivity < IDLE_MS) {\n        log(\"vigilante: actividad reciente, espero\");\n        return;\n      }\n      if (inyectadas >= MAX_INYECTADAS) {\n        log(\"vigilante: tope diario alcanzado (\" + inyectadas + \")\");\n        return;\n      }\n      const r = leerCanal();\n      if (!r) return;\n      log(\"vigilante: hay recados, inyecto\");\n      inyectar(r);\n    } catch (e) {\n      log(\"vigilante error: \" + String((e && e.message) || e).slice(0, 160));\n    }\n  };",
+  "cambio": "inyectar pasa a recibir r ({ctx, rutas}), manda r.ctx con promptAsync y solo si no fallo llama marcarCanal(r.rutas). vigilante comprueba sessionID antes de leerCanal, y usa const r = leerCanal(); if (!r) return; inyectar(r).",
+  "codigo": "  const inyectar = async (r) => {\n    if (!sessionID) {\n      log(\"sin sesion conocida, no inyecto\");\n      return;\n    }\n    inyectadas += 1;\n    try {\n      await client.session.promptAsync({\n        path: { id: sessionID },\n        body: {\n          parts: [{ type: \"text\", text: r.ctx, synthetic: true }],\n        },\n      });\n      log(\"inyectado #\" + inyectadas + \" a sesion \" + sessionID);\n      marcarCanal(r.rutas);\n    } catch (e) {\n      log(\"fallo inyeccion: \" + String((e && e.message) || e).slice(0, 160));\n    }\n  };\n\n  const vigilante = () => {\n    try {\n      if (!sessionID) {\n        log(\"vigilante: sin sesion conocida, no leo\");\n        return;\n      }\n      if (Date.now() - lastActivity < IDLE_MS) {\n        log(\"vigilante: actividad reciente, espero\");\n        return;\n      }\n      if (inyectadas >= MAX_INYECTADAS) {\n        log(\"vigilante: tope diario alcanzado (\" + inyectadas + \")\");\n        return;\n      }\n      const r = leerCanal();\n      if (!r) return;\n      log(\"vigilante: hay recados, inyecto\");\n      inyectar(r);\n    } catch (e) {\n      log(\"vigilante error: \" + String((e && e.message) || e).slice(0, 160));\n    }\n  };",
+  "vigia": "Una prueba que simule promptAsync con exito y compruebe que marcarCanal fue llamado con r.rutas; y otra que simule promptAsync fallando y compruebe que marcarCanal NO fue llamado. Ademas, una prueba que con sessionID vacio verifique que leerCanal no se invoca.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/candado_equipo.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "candado_equipo.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "menor: marcarCanal(r.rutas) queda dentro del try; si marcarCanal lanzara su propia excepcion, se loguearia como 'fallo inyeccion' aunque la inyeccion fue exitosa y el recado se reintentaria (inyeccion duplicada). No bloquea: el contrato literal ('solo si promptAsync no fallo, marca') se cumple"
+  ],
+  "riesgo_vecinos": [
+   "ninguno: solo reescribe el bloque de inyectar/vigilante dentro de CanalBuzonPlugin; no toca arnes/asignador.py, arnes/candado_equipo.py ni las vigias listadas, y declara honradamente no haberlas leido (_fuera_del_paquete)"
+  ],
+  "que_falta": [
+   "nada para aprobar; si se quiere blindar el caso menor, sacar marcarCanal del try y separar el catch de inyeccion del de marcado"
+  ],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo pedido (marca el canal solo tras inyectar con exito y el vigilante frena si no hay sessionID antes de leerCanal), no inventa nada, no rompe vecinos y solo toca el bloque indicado; solo queda un detalle menor de donde cae marcarCanal dentro del try/catch."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19066 letras, aguanta 19042) -> se le salta",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "vueltas_dadas: 1"
+ ]
+}

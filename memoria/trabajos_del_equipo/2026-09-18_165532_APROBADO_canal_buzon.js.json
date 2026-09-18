@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El manejador chat.message usa messageID 'user' (o input.messageID) y sessionID viejo, y agrega la parte aunque no haya un messageID real que empiece con msg, lo que produce el SchemaError 'Expected a string starting with msg, got user'.",
+  "archivo": ".opencode/plugins/canal_buzon.js",
+  "funcion": "chat.message",
+  "texto_viejo": "    \"chat.message\": async (input, output) => {\n      sessionID = input && input.sessionID ? input.sessionID : sessionID;\n      lastActivity = Date.now();\n      const r = leerCanal();\n      if (!r) return;\n      output.parts.push({\n        id: \"prt_\" + Date.now() + \"_\" + Math.random().toString(36).slice(2, 8),\n        sessionID,\n        messageID: input && input.messageID ? input.messageID : \"user\",\n        type: \"text\",\n        text: r.ctx,\n        synthetic: true,\n      });\n      marcarCanal(r.rutas);\n    },",
+  "texto_nuevo": "    \"chat.message\": async (input, output) => {\n      sessionID = (output && output.message && output.message.sessionID) || sessionID;\n      lastActivity = Date.now();\n      const messageID = (output && output.message && output.message.id) || (input && input.messageID);\n      if (!messageID || String(messageID).indexOf(\"msg\") !== 0) {\n        log(\"chat.message: sin messageID real (msg...), no se agrega la parte ni se marca\");\n        return;\n      }\n      const r = leerCanal();\n      if (!r) return;\n      output.parts.push({\n        id: \"prt_\" + Date.now() + \"_\" + Math.random().toString(36).slice(2, 8),\n        sessionID,\n        messageID,\n        type: \"text\",\n        text: r.ctx,\n        synthetic: true,\n      });\n      marcarCanal(r.rutas);\n    },",
+  "cambio": "En el manejador chat.message: (1) tomar sessionID de output.message.sessionID con respaldo en el sessionID previo; (2) calcular messageID como output.message.id o input.messageID; (3) si no hay messageID o no empieza con 'msg', registrar log y salir sin agregar la parte ni marcar el canal; (4) usar ese messageID real en la parte. Todo lo demas igual.",
+  "codigo": "    \"chat.message\": async (input, output) => {\n      sessionID = (output && output.message && output.message.sessionID) || sessionID;\n      lastActivity = Date.now();\n      const messageID = (output && output.message && output.message.id) || (input && input.messageID);\n      if (!messageID || String(messageID).indexOf(\"msg\") !== 0) {\n        log(\"chat.message: sin messageID real (msg...), no se agrega la parte ni se marca\");\n        return;\n      }\n      const r = leerCanal();\n      if (!r) return;\n      output.parts.push({\n        id: \"prt_\" + Date.now() + \"_\" + Math.random().toString(36).slice(2, 8),\n        sessionID,\n        messageID,\n        type: \"text\",\n        text: r.ctx,\n        synthetic: true,\n      });\n      marcarCanal(r.rutas);\n    },",
+  "vigia": "Una prueba que dispare chat.message con output.message.id='msg_...' y compruebe que la parte lleva ese messageID y que se marca el canal; y otra que dispare sin messageID valido y compruebe que NO se agrega parte, NO se marca y se registra el log.",
+  "puede_danar": [
+   "canal_buzon (inyeccion del recado al chat)",
+   "marcarCanal (marca de recado consumido)",
+   "sesion del chat (sessionID)"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno de peso: el propio paquete declara 'Nadie depende de estas piezas. Reparacion aislada'. El unico cambio de comportamiento (no agregar parte ni marcar canal cuando no hay messageID 'msg...') es exactamente lo que el encargo pide, no un efecto colateral."
+  ],
+  "que_falta": [
+   "Correr la prueba real interna (Playwright) conforme CONTRATO_LEGISLACION_2026-08-24 antes de pedirle a Julio que lo vea; la propuesta solo describe la vigia, no entrega el test ejecutado."
+  ],
+  "resumen_para_el_jefe": "La reparacion sigue al pie de la letra lo que manda el paquete — messageID y sessionID reales, y sin id 'msg...' no agrega parte ni marca el canal, con log — no inventa nada (log, leerCanal y marcarCanal ya existen en el material), no toca vecinos y arregla el SchemaError real del registro."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

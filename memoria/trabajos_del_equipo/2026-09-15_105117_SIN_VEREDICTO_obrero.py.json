@@ -1,0 +1,67 @@
+{
+ "obrero": "deepseek",
+ "auditor": "claude",
+ "propuesta": {
+  "diagnostico": "El parche anterior eliminaba líneas fuera de bloques al recortar, rompiendo la lógica original y pudiendo dañar módulos vecinos; hay que preservar el contenido y manejar archivo=None y coincidencias de rutas/encabezados.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_filtrar_paquete",
+  "texto_viejo": "    if trozos and archivo:\n        solo = []\n        i = 0\n        t = bloques[trozos]\n        while i < len(t):\n            if t[i].startswith(\"### `\"):\n                j = i + 1\n                while j < len(t) and not t[j].startswith(\"### `\"):\n                    j += 1\n                if archivo in t[i]:\n                    solo += t[i:j]\n                i = j\n            else:\n                solo.append(t[i])\n                i += 1\n        if solo:\n            salida += solo\n    elif trozos:\n        # Sin archivo a que atarse, quedan los bloques de trozos, del mas relevante para abajo\n        # hasta que entre en el tope. El relleno de menor relevancia se suelta primero.\n        t = bloques[trozos]\n        bloques_trozo = []\n        i = 0\n        while i < len(t):\n            if t[i].startswith(\"### `\"):\n                j = i + 1\n                while j < len(t) and not t[j].startswith(\"### `\"):\n                    j += 1\n                m = re.search(r\"relevancia\\s+([\\d\\.]+)\", t[i])\n                bloques_trozo.append((float(m.group(1)) if m else 0.0, t[i:j]))\n                i = j\n            else:\n                i += 1\n        bloques_trozo.sort(key=lambda x: x[0], reverse=True)\n        resto = salida\n        for _relev, _lines in bloques_trozo:\n            if len(\"\\n\".join(resto)) >= tope:\n                break\n            resto = resto + _lines\n        salida = resto\n    # Si aun asi se pasa del tope, se va soltando el relleno del final hasta caber: la cabecera,\n    # la ley y \"a quien puede danar\" son LO NECESARIO, no se tocan.\n    while len(\"\\n\".join(salida)) > tope and len(salida) > len(bloques[\"__cabecera__\"]):\n        salida.pop()\n    return \"\\n\".join(salida)",
+  "texto_nuevo": "    if trozos:\n        t = bloques[trozos]\n        # Se separan los bloques de trozos (### `ruta`) del texto suelto que los precede.\n        # El texto suelto NUNCA se tira: es parte del material y puede contener la ley o el encargo.\n        bloques_trozo = []\n        sueltos = []\n        i = 0\n        while i < len(t):\n            if t[i].startswith(\"### `\"):\n                j = i + 1\n                while j < len(t) and not t[j].startswith(\"### `\"):\n                    j += 1\n                m = re.search(r\"relevancia\\s+([\\d\\.]+)\", t[i])\n                bloques_trozo.append((float(m.group(1)) if m else 0.0, t[i:j]))\n                i = j\n            else:\n                sueltos.append(t[i])\n                i += 1\n        # Si se pide un archivo concreto, se conservan TODOS los bloques cuyo encabezado\n        # mencione ese archivo (coincidencia por ruta o por nombre de archivo), y ademas\n        # los sueltos. Si no hay coincidencia, se conservan los sueltos y los bloques de\n        # mayor relevancia hasta el tope, sin borrar nunca los sueltos.\n        if archivo:\n            nombre = archivo.replace(\"\\\\\", \"/\").split(\"/\")[-1]\n            elegidos = [b for b in bloques_trozo if archivo in b[1][0] or nombre in b[1][0]]\n            if elegidos:\n                salida += sueltos\n                for _relev, _lines in elegidos:\n                    salida += _lines\n            else:\n                salida += sueltos\n                bloques_trozo.sort(key=lambda x: x[0], reverse=True)\n                for _relev, _lines in bloques_trozo:\n                    if len(\"\\n\".join(salida)) >= tope:\n                        break\n                    salida += _lines\n        else:\n            # Sin archivo a que atarse, se conservan los sueltos y se anaden bloques por\n            # relevancia hasta el tope. El relleno de menor relevancia se suelta primero.\n            salida += sueltos\n            bloques_trozo.sort(key=lambda x: x[0], reverse=True)\n            for _relev, _lines in bloques_trozo:\n                if len(\"\\n\".join(salida)) >= tope:\n                    break\n                salida += _lines\n    # Si aun asi se pasa del tope, se va soltando el relleno del final hasta caber: la cabecera,\n    # la ley y \"a quien puede danar\" son LO NECESARIO, no se tocan.\n    while len(\"\\n\".join(salida)) > tope and len(salida) > len(bloques[\"__cabecera__\"]):\n        salida.pop()\n    return \"\\n\".join(salida)",
+  "cambio": "Sustituir el bloque de selección de trozos dentro de _filtrar_paquete para: (1) no descartar nunca las líneas sueltas del bloque de trozos (se conservan siempre); (2) cuando archivo no es None, conservar todos los bloques cuyo encabezado mencione la ruta o el nombre de archivo, y si no hay coincidencia caer al criterio por relevancia sin perder los sueltos; (3) cuando archivo es None, conservar sueltos y añadir bloques por relevancia hasta el tope. Se mantiene el recorte final por tope sin tocar cabecera, ley ni 'a quien puede danar'.",
+  "codigo": "    if trozos:\n        t = bloques[trozos]\n        bloques_trozo = []\n        sueltos = []\n        i = 0\n        while i < len(t):\n            if t[i].startswith(\"### `\"):\n                j = i + 1\n                while j < len(t) and not t[j].startswith(\"### `\"):\n                    j += 1\n                m = re.search(r\"relevancia\\s+([\\d\\.]+)\", t[i])\n                bloques_trozo.append((float(m.group(1)) if m else 0.0, t[i:j]))\n                i = j\n            else:\n                sueltos.append(t[i])\n                i += 1\n        if archivo:\n            nombre = archivo.replace(\"\\\\\", \"/\").split(\"/\")[-1]\n            elegidos = [b for b in bloques_trozo if archivo in b[1][0] or nombre in b[1][0]]\n            salida += sueltos\n            if elegidos:\n                for _relev, _lines in elegidos:\n                    salida += _lines\n            else:\n                bloques_trozo.sort(key=lambda x: x[0], reverse=True)\n                for _relev, _lines in bloques_trozo:\n                    if len(\"\\n\".join(salida)) >= tope:\n                        break\n                    salida += _lines\n        else:\n            salida += sueltos\n            bloques_trozo.sort(key=lambda x: x[0], reverse=True)\n            for _relev, _lines in bloques_trozo:\n                if len(\"\\n\".join(salida)) >= tope:\n                    break\n                salida += _lines\n    while len(\"\\n\".join(salida)) > tope and len(salida) > len(bloques[\"__cabecera__\"]):\n        salida.pop()\n    return \"\\n\".join(salida)",
+  "vigia": "Una vigía que llame a _filtrar_paquete con un paquete que contenga los bloques 'auditar', 'trabajar', 'relevo' y 'cuotas' y archivo='cuerpo/obrero.py', y compruebe que los cuatro aparecen en la salida; que con archivo=None y tope pequeño no se pierdan las líneas sueltas del bloque de trozos; y que con un paquete de respuesta completa (sin bloques ###) la salida no se rompa.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "cuerpo/obrero.py",
+   "ingeniero.py",
+   "mapa/inventario.py",
+   "medir_el_pasillo.py",
+   "medir_las_nueve_puertas.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "vigias/test_vigia_el_asignador.py",
+   "vigias/test_vigia_el_objetivo_no_va_dos_veces.py",
+   "vigias/test_vigia_el_pasillo_recorta_el_hecho.py",
+   "vigias/test_vigia_no_se_juzga_lo_que_ya_esta_verde.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "¿El tope por defecto TOPE_GRATIS debe seguir siendo el mismo o hay que ajustarlo?",
+   "¿La coincidencia de archivo debe ser por ruta exacta, por sufijo o por nombre de archivo? El encargo dice 'coincidencias de rutas/encabezados' pero no fija el criterio exacto."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "test_vigia_el_asignador.py",
+   "test_vigia_el_objetivo_no_va_dos_veces.py",
+   "test_vigia_el_pasillo_recorta_el_hecho.py",
+   "test_vigia_no_se_juzga_lo_que_ya_esta_verde.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "_error": "el cerebro no devolvio JSON",
+  "_crudo": "Ya entregué mi trabajo (el veredicto: **DUDOSO, se devuelve para terminar**) y traté de mandar el recado por el canal, pero eso me pide un permiso que quedó sin darse. No puedo cerrar solo porque el sistema me exige tres cosas que no están en mi mano ahora:\n\n1. **Mandar recados por el canal** → me pide permiso y quedó a la espera. Necesito tu visto bueno.\n2. **\"Legislar\" unas frases** que en realidad **no son órdenes tuyas**: son pedazos de texto del propio sistema (avisos, notificaciones). Ponerme a legislar eso sería inventar trabajo, y va contra tu regla de no inventar. No lo hago.\n3. **Guardar cambios** (hay archivos sueltos de la memoria del sistema, no míos).\n\nEsto es **el enganche de cierre de siempre**, el que ya sabemos que se mete en círculo. Se corta desde tu terminal con:\n\n```\n$env:INGENIERO_OFF=1\n```\n\nDime una de dos:\n- **Dame el permiso** para mandar el recado por el canal y lo cierro por ahí, o\n- **Corta con la línea de arriba** si prefieres terminar aquí.\n\nMi parte —la auditoría— ya está hecha y es clara: el arreglo va por buen camino y no miente, pero todavía puede perder la pieza importante al recortar, así que **no se aplica hasta que lo terminen**.\n"
+ },
+ "avisos": [
+  "se pidio auditar a bigpickle y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) no le cabe (20081 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) fallo (no es cuota): contesto vacio",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a bigpickle y no esta disponible: reviso ",
+  "todas las gratis duermen: revisa claude (ley de Julio)",
+  "vueltas_dadas: 2"
+ ]
+}

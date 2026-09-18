@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El filtro _trae_llave busca marcas como palabras sueltas ('API_KEY', 'sk-') y frena en falso encargos que mencionan esas cadenas sin traer una llave real.",
+  "archivo": "cuerpo/bigpickle.py",
+  "funcion": "_trae_llave",
+  "texto_viejo": "def _trae_llave(prompt: str) -> bool:\n    \"\"\"True si el encargo trae algo que parece una llave. No se manda nunca.\"\"\"\n    if not isinstance(prompt, str):\n        return False\n    for marca in MARCAS_DE_LLAVE:\n        if marca in prompt:\n            return True\n    return False",
+  "texto_nuevo": "def _trae_llave(prompt: str) -> bool:\n    \"\"\"True si el encargo trae algo que parece una llave. No se manda nunca.\"\"\"\n    if not isinstance(prompt, str):\n        return False\n    if re.search(r'\\b(?:sk|gsk|pk|rk)[-_][A-Za-z0-9_\\-]{20,}', prompt):\n        return True\n    if re.search(r'\\bAIza[0-9A-Za-z_\\-]{30,}', prompt):\n        return True\n    try:\n        from cuerpo import privacidad\n    except ImportError:\n        import sys\n        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))\n        from cuerpo import privacidad\n    if '<CLAVE>' in privacidad.limpiar(prompt)[0]:\n        return True\n    return False",
+  "cambio": "Sustituir el cuerpo de _trae_llave: en vez de buscar marcas sueltas en MARCAS_DE_LLAVE, detectar la FORMA de una llave real con re.search de los dos patrones (sk|gsk|pk|rk con separador y 20+ caracteres, y AIza con 30+), y ademas comprobar si privacidad.limpiar(prompt)[0] contiene '<CLAVE>'. El import de privacidad se hace con 'from cuerpo import privacidad' y, si da ImportError, se agrega la carpeta padre del archivo a sys.path y se reintenta.",
+  "codigo": "def _trae_llave(prompt: str) -> bool:\n    \"\"\"True si el encargo trae algo que parece una llave. No se manda nunca.\"\"\"\n    if not isinstance(prompt, str):\n        return False\n    if re.search(r'\\b(?:sk|gsk|pk|rk)[-_][A-Za-z0-9_\\-]{20,}', prompt):\n        return True\n    if re.search(r'\\bAIza[0-9A-Za-z_\\-]{30,}', prompt):\n        return True\n    try:\n        from cuerpo import privacidad\n    except ImportError:\n        import sys\n        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))\n        from cuerpo import privacidad\n    if '<CLAVE>' in privacidad.limpiar(prompt)[0]:\n        return True\n    return False",
+  "vigia": "Un test que llame a _trae_llave con un encargo que mencione 'API_KEY' o 'sk-' sin ser llave (debe dar False) y con cadenas tipo 'sk-ant-api03-XXXXXXXX...' o 'AIza...' (debe dar True), y que compruebe que el import de privacidad funciona tanto en modo modulo como en modo script.",
+  "puede_danar": [
+   "cuerpo/bigpickle.py::preguntar",
+   "cuerpo/privacidad.py"
+  ],
+  "preguntas": [
+   "¿Se debe eliminar la constante MARCAS_DE_LLAVE o se deja por compatibilidad aunque ya no se use en _trae_llave?",
+   "¿El modulo cuerpo/bigpickle.py ya importa 're' y 'Path' arriba, o hay que anadirlos al inicio del modulo?"
+  ],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Posible falta de importaciones: si el módulo no importa previamente `re` y `Path`, el nuevo código provocará `NameError` al ejecutar `_trae_llave`, rompiendo la función `preguntar` que depende de él."
+  ],
+  "riesgo_vecinos": [
+   "`preguntar` podría fallar si `_trae_llave` lanza una excepción por importaciones faltantes."
+  ],
+  "que_falta": [
+   "Añadir `import re` y `from pathlib import Path` al inicio del módulo si no están ya presentes."
+  ],
+  "resumen_para_el_jefe": "La reparación cumple el diagnóstico pero podría romper `preguntar` por imports ausentes; añadir `re` y `Path` antes de usar."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

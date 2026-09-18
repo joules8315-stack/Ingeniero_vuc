@@ -1,0 +1,72 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "El material del paquete vigente PRIORIDAD 1 no incluye el codigo fuente de las funciones asignador.armar_encargo, asignador.recortar_prompt ni obrero._filtrar_paquete, por lo que no se puede copiar texto_viejo literal ni reparar sin inventar.",
+  "archivo": "NO_ENCONTRADO",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "cuerpo/obrero.py",
+   "cerebro/trozos.py",
+   "cerebro/protocolo.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "baja",
+  "NECESITO_LEER": [
+   {
+    "archivo": "arnes/asignador.py",
+    "motivo": "contiene las funciones armar_encargo y recortar_prompt que hay que reparar; sin su cuerpo completo no puedo copiar texto_viejo literal ni proponer texto_nuevo sin inventar",
+    "que_decide": "como se arma el encargo y como se recorta el prompt conservando objetivo, ley, archivo, funcion, dependencias y A QUIEN PUEDE DANAR",
+    "riesgo": "reparar a ciegas rompe el pasillo y hace que el obrero reciba paquete entero o pierda el bloque necesario"
+   },
+   {
+    "archivo": "cuerpo/obrero.py",
+    "motivo": "contiene la funcion _filtrar_paquete y sus llamadas, que hay que reparar; sin su cuerpo completo no puedo copiar texto_viejo literal",
+    "que_decide": "que trozos del paquete llegan al revisor y como se conservan los dos filtros",
+    "riesgo": "tocar a ciegas deja pasar el paquete entero o elimina el bloque necesario"
+   }
+  ],
+  "_fuera_del_paquete": [
+   "NO_ENCONTRADO",
+   "asignador.py",
+   "protocolo.py",
+   "test_vigia_memoria_completa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El modelo detecta correctamente que el material entregado está vacío (Sección 3) y solicita los archivos necesarios siguiendo el protocolo NECESITO_LEER en lugar de inventar código."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a bigpickle y no esta disponible: reviso gemini4",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "se pidio auditar a bigpickle y no esta disponible: reviso gemini2",
+  "vueltas_dadas: 2"
+ ]
+}

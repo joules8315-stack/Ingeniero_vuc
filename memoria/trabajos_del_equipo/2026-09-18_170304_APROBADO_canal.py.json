@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "texto_leer siempre llama a leer(para), que marca los mensajes como leidos, y no permite reutilizar mensajes ya leidos para armar el texto sin marcar nada.",
+  "archivo": "arnes/canal.py",
+  "funcion": "texto_leer",
+  "texto_viejo": "def texto_leer(para=None):\n    msgs = leer(para)",
+  "texto_nuevo": "def texto_leer(para=None, msgs=None):\n    if msgs is None:\n        msgs = leer(para)",
+  "cambio": "Cambiar la firma de texto_leer para aceptar msgs=None y hacer que solo llame a leer(para) cuando msgs is None. El resto de la funcion queda igual.",
+  "codigo": "def texto_leer(para=None, msgs=None):\n    if msgs is None:\n        msgs = leer(para)",
+  "vigia": "Una prueba que llame a texto_leer(msgs=[...]) con mensajes ya leidos y compruebe que el texto sale con encabezado CANAL INTERNO, remitente e instruccion LOOP, y que no se marca nada como leido.",
+  "puede_danar": [
+   "arnes/llamar.py",
+   "arnes/loop.py",
+   "vigias/test_vigia_comunicacion.py",
+   "vigias/test_vigia_contestar_cierra_el_recado.py",
+   "vigias/test_vigia_recados_no_se_pierden.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "llamar.py",
+   "loop.py",
+   "test_vigia_comunicacion.py",
+   "test_vigia_contestar_cierra_el_recado.py",
+   "test_vigia_recados_no_se_pierden.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Escribir y correr la vigia que llama a texto_leer(msgs=[...]) antes de pedirle a Julio la prueba con sus ojos."
+  ],
+  "resumen_para_el_jefe": "El cambio toca exactamente las dos lineas que pide el paquete (arnes/canal.py:142-143, texto literal presente en el material), la firma msgs=None es retrocompatible con los llamadores ya que el parametro nuevo va al final, y no usa nada que no exista: se aprueba."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

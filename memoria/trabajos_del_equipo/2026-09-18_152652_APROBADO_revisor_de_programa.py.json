@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En _leidos(arbol) se llama ast.walk(arbol) sin comprobar que arbol no sea None, y con archivos JavaScript llega None y revienta con AttributeError '_fields'.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "_leidos",
+  "texto_viejo": "def _leidos(arbol):\n    \"\"\"Los nombres que el texto LEE: los que tienen que existir de antes.\"\"\"\n    fuera = []\n    for n in ast.walk(arbol):",
+  "texto_nuevo": "def _leidos(arbol):\n    \"\"\"Los nombres que el texto LEE: los que tienen que existir de antes.\"\"\"\n    if arbol is None:\n        return []\n    fuera = []\n    for n in ast.walk(arbol):",
+  "cambio": "Agregar como primera sentencia del cuerpo de _leidos, despues del docstring, 'if arbol is None:' devolviendo lista vacia (mismo tipo que el return final 'return fuera').",
+  "codigo": "def _leidos(arbol):\n    \"\"\"Los nombres que el texto LEE: los que tienen que existir de antes.\"\"\"\n    if arbol is None:\n        return []\n    fuera = []\n    for n in ast.walk(arbol):\n        if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load):\n            fuera.append(n.id)\n    return fuera",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada y no afecta a otros módulos."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

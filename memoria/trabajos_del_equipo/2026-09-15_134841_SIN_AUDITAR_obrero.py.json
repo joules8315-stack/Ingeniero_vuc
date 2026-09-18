@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "El respeto al revisor fijo (bigpickle) no distingue cuando el auditor pedido es bigpickle y no esta disponible, y _propuesta_cumple no marca incompleta la propuesta cuando aparece NO_ENCONTRADO en cualquiera de los campos del cambio.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    auditoria = None\n    avisos = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor\n    quien_aud = None\n    auditor_ok = auditor\n    if auditor == evitar:\n        # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa\n        auditor_ok = None\n        avisos.append(\"el auditor pedido (%s) era el mismo que genero; se busca otro\" % auditor)",
+  "texto_nuevo": "    auditoria = None\n    avisos = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor\n    quien_aud = None\n    auditor_ok = auditor\n    if auditor == evitar:\n        # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa\n        auditor_ok = None\n        avisos.append(\"el auditor pedido (%s) era el mismo que genero; se busca otro\" % auditor)\n    if auditor == \"bigpickle\" and not _cerebro_disponible(\"bigpickle\"):\n        # Regla de Julio: si el revisor pedido es bigpickle y no esta disponible, el veredicto\n        # queda SIN_AUDITAR sin llamar a ningun otro cerebro, y el trabajo se archiva.\n        # Para cualquier otro auditor pedido se mantiene el relevo normal (avisar, seguir con\n        # los demas cerebros, incluido el ultimo intento con el cerebro de pago, apartando\n        # siempre a quien escribio).\n        return None, None, [\"el revisor pedido (bigpickle) no esta disponible: SIN_AUDITAR\"]",
+  "cambio": "En auditar, anadir tras el bloque de auditor==evitar una comprobacion: si auditor es bigpickle y no esta disponible, devolver SIN_AUDITAR sin llamar a ningun otro cerebro. Para los demas auditores se mantiene el relevo normal.",
+  "codigo": "    if auditor == \"bigpickle\" and not _cerebro_disponible(\"bigpickle\"):\n        return None, None, [\"el revisor pedido (bigpickle) no esta disponible: SIN_AUDITAR\"]",
+  "vigia": "vigias/test_vigia_nadie_revisa_su_propio_trabajo.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "Como se comprueba si bigpickle esta disponible: existe ya una funcion _cerebro_disponible o hay que usar disponible() u otra del modulo?",
+   "Que debe devolver exactamente auditar cuando bigpickle no esta disponible: (None, None, avisos) o algun valor distinto que el bucle de trabajar reconozca como SIN_AUDITAR?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "resumen_para_el_jefe": "el revisor pedido (groq) no estaba; no se llama a otro cerebro en su lugar"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19072 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso groq20b",
+  "el revisor pedido (groq) no estaba: queda SIN_AUDITAR y archivado para su revision",
+  "vueltas_dadas: 1"
+ ]
+}

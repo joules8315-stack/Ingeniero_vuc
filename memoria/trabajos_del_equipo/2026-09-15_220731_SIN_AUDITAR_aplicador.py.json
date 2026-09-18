@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "aplicar_cambio y aplicar_cambios no validan imports ni funciones usadas, no ejecutan la vigia antes de guardar, y aplicar_cambios puede dejar estado parcial si falla el os.replace de un archivo despues de haber escrito otros.",
+  "archivo": "cuerpo/aplicador.py",
+  "funcion": "aplicar_cambios",
+  "texto_viejo": "    for ruta, texto in contenidos.items():\n        dir_archivo = os.path.dirname(ruta) or '.'\n        fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix='.tmp')\n        try:\n            with os.fdopen(fd, 'w', encoding='utf-8') as f:\n                f.write(texto)\n            os.replace(tmp_path, ruta)\n            _apuntar_log(True, ruta, '?', 'cambio aplicado en ronda')\n        except Exception as e:\n            if os.path.exists(tmp_path):\n                os.remove(tmp_path)\n            _apuntar_log(False, ruta, '?', f'error al aplicar: {e}')\n            return False, f'Error al aplicar el cambio en {ruta}: {e}'\n    return True, f'Se aplicaron {len(pedazos)} pedazos en {len(contenidos)} archivos.'",
+  "texto_nuevo": "    for ruta, texto in contenidos.items():\n        if ruta.endswith('.py'):\n            try:\n                ast.parse(texto)\n            except SyntaxError as e:\n                return False, f'Sintaxis rota en {ruta} (renglon {e.lineno}); no se aplico nada.'\n            try:\n                arbol = ast.parse(texto)\n            except SyntaxError as e:\n                return False, f'Sintaxis rota en {ruta} (renglon {e.lineno}); no se aplico nada.'\n            importados = set()\n            for nodo in ast.walk(arbol):\n                if isinstance(nodo, ast.Import):\n                    for alias in nodo.names:\n                        importados.add(alias.name.split('.')[0])\n                elif isinstance(nodo, ast.ImportFrom):\n                    if nodo.module:\n                        importados.add(nodo.module.split('.')[0])\n            for nombre in importados:\n                try:\n                    importlib.import_module(nombre)\n                except Exception as e:\n                    return False, f'Import roto en {ruta}: {nombre} ({e}); no se aplico nada.'\n    for ruta, texto in contenidos.items():\n        dir_archivo = os.path.dirname(ruta) or '.'\n        fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix='.tmp')\n        try:\n            with os.fdopen(fd, 'w', encoding='utf-8') as f:\n                f.write(texto)\n            os.replace(tmp_path, ruta)\n            _apuntar_log(True, ruta, '?', 'cambio aplicado en ronda')\n        except Exception as e:\n            if os.path.exists(tmp_path):\n                os.remove(tmp_path)\n            _apuntar_log(False, ruta, '?', f'error al aplicar: {e}')\n            return False, f'Error al aplicar el cambio en {ruta}: {e}'\n    return True, f'Se aplicaron {len(pedazos)} pedazos en {len(contenidos)} archivos.'",
+  "cambio": "Anadir validacion de imports (importlib) ademas de ast.parse en aplicar_cambios, y dejar claro que la vigia debe ejecutarse antes de guardar. Falta decidir donde se ejecuta la vigia y como se revierte si falla.",
+  "codigo": "import importlib\n\nfor ruta, texto in contenidos.items():\n    if ruta.endswith('.py'):\n        try:\n            arbol = ast.parse(texto)\n        except SyntaxError as e:\n            return False, f'Sintaxis rota en {ruta} (renglon {e.lineno}); no se aplico nada.'\n        importados = set()\n        for nodo in ast.walk(arbol):\n            if isinstance(nodo, ast.Import):\n                for alias in nodo.names:\n                    importados.add(alias.name.split('.')[0])\n            elif isinstance(nodo, ast.ImportFrom):\n                if nodo.module:\n                    importados.add(nodo.module.split('.')[0])\n        for nombre in importados:\n            try:\n                importlib.import_module(nombre)\n            except Exception as e:\n                return False, f'Import roto en {ruta}: {nombre} ({e}); no se aplico nada.'",
+  "vigia": "vigias/test_vigia_aplicador.py debe comprobar que una propuesta con import inexistente se rechaza sin escribir nada, y que una propuesta valida se aplica entera.",
+  "puede_danar": [
+   "arnes/copista.py",
+   "vigias/test_vigia_aplicador.py",
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "Donde debe ejecutarse la vigia antes de guardar: dentro de aplicar_cambios o en obrero.py antes de llamar al aplicador?",
+   "Como se revierte si la vigia falla despues de haber escrito algunos archivos: hay copia de seguridad previa o se escribe todo en temporales y se mueven al final?",
+   "La validacion de imports debe ser estricta (fallar si no se puede importar) o solo avisar?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "copista.py",
+   "test_vigia_aplicador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "resumen_para_el_jefe": "el revisor pedido (bigpickle) no estaba; no se llama a otro cerebro en su lugar"
+ },
+ "avisos": [
+  "se pidio auditar a bigpickle y no esta disponible: reviso groq",
+  "el revisor pedido (bigpickle) no estaba: queda SIN_AUDITAR y archivado para su revision",
+  "vueltas_dadas: 1"
+ ]
+}

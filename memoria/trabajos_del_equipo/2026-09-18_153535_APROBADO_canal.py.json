@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta agregar en el bloque de linea de comandos de arnes/canal.py las ordenes 'leer --sin-marcar' y 'marcar', despues del 'if q == \"enviar\"' y antes del comentario '# uso del hook'.",
+  "archivo": "arnes/canal.py",
+  "funcion": "bloque de linea de comandos al final (despues del 'if q == \"enviar\"' y ANTES del comentario '# uso del hook')",
+  "texto_viejo": "if q == \"enviar\":",
+  "texto_nuevo": "if q == \"enviar\":",
+  "cambio": "Insertar, inmediatamente despues del bloque 'if q == \"enviar\"' y antes del comentario '# uso del hook', dos ordenes nuevas: (1) si q == 'leer' y '--sin-marcar' esta en sys.argv, llamar a leer(marcar=False), y si hay mensajes imprimir json.dumps con 'additionalContext' (el mismo texto que arma texto_leer con esos mensajes, o el campo texto de cada uno unido con salto de linea) y 'rutas' (lista de m['ruta']), con ensure_ascii=False; si no hay mensajes no imprimir nada; luego sys.exit(0). (2) si q == 'marcar', llamar a marcar_leidos(sys.argv[2:]) y sys.exit(0).",
+  "codigo": "if q == \"leer\" and \"--sin-marcar\" in sys.argv:\n    msgs = leer(marcar=False)\n    if msgs:\n        print(json.dumps({\n            \"additionalContext\": \"\\n\".join(m.get(\"texto\", \"\") for m in msgs),\n            \"rutas\": [m[\"ruta\"] for m in msgs],\n        }, ensure_ascii=False))\n    sys.exit(0)\n\nif q == \"marcar\":\n    marcar_leidos(sys.argv[2:])\n    sys.exit(0)",
+  "vigia": "vigias/test_vigia_comunicacion.py y vigias/test_vigia_recados_no_se_pierden.py: comprobar que 'python arnes/canal.py leer --sin-marcar' imprime el JSON con additionalContext y rutas sin marcar los mensajes como leidos, y que 'python arnes/canal.py marcar <ruta>' marca leido=True solo despues de entregar.",
+  "puede_danar": [
+   "arnes/llamar.py",
+   "arnes/loop.py",
+   "vigias/test_vigia_comunicacion.py",
+   "vigias/test_vigia_contestar_cierra_el_recado.py",
+   "vigias/test_vigia_recados_no_se_pierden.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "llamar.py",
+   "loop.py",
+   "test_vigia_comunicacion.py",
+   "test_vigia_contestar_cierra_el_recado.py",
+   "test_vigia_recados_no_se_pierden.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no usa elementos inexistentes y no afecta a los módulos vecinos."
+ },
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 4"
+ ]
+}

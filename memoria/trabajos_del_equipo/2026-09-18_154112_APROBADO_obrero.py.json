@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El bucle 'for _intento in range(2):' vuelve a preguntar a las gratis despues de que Big Pickle ya audito, pisando su veredicto en quien_aud y auditoria.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    for _intento in range(2):",
+  "texto_nuevo": "    for _intento in range(0 if auditor == 'bigpickle' else 2):",
+  "cambio": "Sustituir el range(2) del bucle de reintentos por range(0) cuando auditor == 'bigpickle' y range(2) en cualquier otro caso, para que el bucle no pise el veredicto ya obtenido de Big Pickle.",
+  "codigo": "    for _intento in range(0 if auditor == 'bigpickle' else 2):",
+  "vigia": "Una vigia que llame a auditar con auditor='bigpickle' y compruebe que quien_aud queda en 'bigpickle' y que auditoria es la que devolvio bigpickle.preguntar, sin que el bucle de reintentos la sustituya.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El ajuste condiciona el bucle a 0 cuando auditor es 'bigpickle', cumpliendo el diagnóstico sin afectar a los módulos vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19064 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

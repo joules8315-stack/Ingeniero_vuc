@@ -139,8 +139,9 @@ def marcar_leidos(rutas):
     return marcados
 
 
-def texto_leer(para=None):
-    msgs = leer(para)
+def texto_leer(para=None, msgs=None):
+    if msgs is None:
+        msgs = leer(para)
     if not msgs:
         return ""
     L = ["CANAL INTERNO — mensajes que te dejaron mientras no estabas:"]
@@ -158,6 +159,17 @@ if __name__ == "__main__":
     if q == "enviar" and len(sys.argv) >= 4:
         ruta = enviar(sys.argv[2], " ".join(sys.argv[3:]))
         print("CANAL: mensaje a '%s' guardado en %s" % (sys.argv[2], ruta))
+        sys.exit(0)
+    if q == "leer" and "--sin-marcar" in sys.argv:
+        mensajes = leer(marcar=False)
+        if mensajes:
+            print(json.dumps({
+                "additionalContext": texto_leer(msgs=mensajes),
+                "rutas": [m.get("ruta") for m in mensajes],
+            }, ensure_ascii=False))
+        sys.exit(0)
+    if q == "marcar":
+        marcar_leidos(sys.argv[2:])
         sys.exit(0)
     # uso del hook: si hay mensajes, salida en formato que Claude inyecta como contexto.
     txt = texto_leer()

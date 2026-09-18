@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "El motor de auditoria no respeta el revisor fijo pedido (bigpickle): cae a claude y al cerebro de pago aunque el encargo lo haya pedido, y la comprobacion de la propuesta no frena el NO_ENCONTRADO antes de juzgar.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    # Si se pidio un auditor y no fue el que reviso, se avisa.\n    if auditor and quien_aud != auditor:\n        avisos.append(\"se pidio auditar a %s y no esta disponible: reviso %s\" % (auditor, quien_aud))\n\n    # Ley de Julio 2026-09-14: si todas las gratis duermen, revisa Claude; nunca quien escribio.\n    if auditoria is None or auditoria.get('veredicto') == 'SIN_AUDITAR':\n        dormidos = {q for q in cuotas.ORDEN if not cuotas.desperto(q)}\n        if cuotas.puede_revisar_claude(evitar or '', dormidos):\n            try:\n                crudo = _claude_directo(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n                auditoria = _json_de(crudo)\n                quien_aud = 'claude'\n                avisos.append('todas las gratis duermen: revisa claude (ley de Julio)')\n            except Exception as e:\n                avisos.append('claude no pudo revisar: ' + str(e)[:120])\n    # Si no hay auditor, intentar con el cerebro de pago, PERO APARTANDO SIEMPRE AL QUE ESCRIBIO.\n    # NADIE REVISA SU PROPIO TRABAJO (Julio, 2026-09-13). Antes aqui no se apartaba a nadie y el que\n    # escribio acababa revisandose: medido, 40 de 102 rondas aprobadas en 7 dias, que por ley no se\n    # aplican y la ronda siguiente borraba. El intento con el de pago se mantiene (ley de Julio, lo\n    # vigila test_vigia_lo_pesado_a_deepseek.py); si no queda nadie distinto, queda SIN_AUDITAR y el\n    # trabajo ya esta archivado para revisarlo despues. Lo vigila test_vigia_nadie_revisa_su_propio_trabajo.py\n    if (not auditoria or auditoria.get(\"veredicto\") == \"SIN_AUDITAR\"):",
+  "texto_nuevo": "    # Si se pidio un auditor y no fue el que reviso, se avisa.\n    if auditor and quien_aud != auditor:\n        avisos.append(\"se pidio auditar a %s y no esta disponible: reviso %s\" % (auditor, quien_aud))\n\n    # LEY DE JULIO 2026-09-15: SI EL ENCARGO PIDIO UN REVISOR FIJO (bigpickle), ESE PEDIDO SE\n    # RESPETA SIEMPRE. NO se sustituye por claude, gemini, groq ni por el cerebro de pago. Si el\n    # revisor pedido no contesta, el veredicto queda SIN_AUDITAR con aviso, y NO se llama a ningun\n    # otro cerebro en su lugar. El trabajo queda archivado para que bigpickle lo revise despues.\n    revisor_fijo = auditor if auditor else None\n    if revisor_fijo and quien_aud != revisor_fijo:\n        auditoria = {\"veredicto\": \"SIN_AUDITAR\",\n                     \"resumen_para_el_jefe\":\n                         \"el revisor pedido (%s) no estaba; no se llama a otro cerebro en su lugar\" % revisor_fijo}\n        avisos.append(\"el revisor pedido (%s) no estaba: queda SIN_AUDITAR y archivado para su revision\" % revisor_fijo)\n        return auditoria, quien_aud, avisos\n\n    # Ley de Julio 2026-09-14: si todas las gratis duermen, revisa Claude; nunca quien escribio.\n    # SOLO si el encargo NO pidio un revisor fijo (ley de Julio 2026-09-15).\n    if auditoria is None or auditoria.get('veredicto') == 'SIN_AUDITAR':\n        dormidos = {q for q in cuotas.ORDEN if not cuotas.desperto(q)}\n        if cuotas.puede_revisar_claude(evitar or '', dormidos):\n            try:\n                crudo = _claude_directo(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n                auditoria = _json_de(crudo)\n                quien_aud = 'claude'\n                avisos.append('todas las gratis duermen: revisa claude (ley de Julio)')\n            except Exception as e:\n                avisos.append('claude no pudo revisar: ' + str(e)[:120])\n    # Si no hay auditor, intentar con el cerebro de pago, PERO APARTANDO SIEMPRE AL QUE ESCRIBIO.\n    # NADIE REVISA SU PROPIO TRABAJO (Julio, 2026-09-13). Antes aqui no se apartaba a nadie y el que\n    # escribio acababa revisandose: medido, 40 de 102 rondas aprobadas en 7 dias, que por ley no se\n    # aplican y la ronda siguiente borraba. El intento con el de pago se mantiene (ley de Julio, lo\n    # vigila test_vigia_lo_pesado_a_deepseek.py); si no queda nadie distinto, queda SIN_AUDITAR y el\n    # trabajo ya esta archivado para revisarlo despues. Lo vigila test_vigia_nadie_revisa_su_propio_trabajo.py\n    # SOLO si el encargo NO pidio un revisor fijo (ley de Julio 2026-09-15).\n    if (not auditoria or auditoria.get(\"veredicto\") == \"SIN_AUDITAR\"):",
+  "cambio": "En auditar: si el encargo pidio un revisor fijo (auditor), respetarlo SIEMPRE; si no contesta, devolver SIN_AUDITAR con aviso y NO caer a claude ni al cerebro de pago. El respaldo de claude y el intento con el de pago solo se disparan si NO se pidio revisor fijo.",
+  "codigo": "    revisor_fijo = auditor if auditor else None\n    if revisor_fijo and quien_aud != revisor_fijo:\n        auditoria = {\"veredicto\": \"SIN_AUDITAR\",\n                     \"resumen_para_el_jefe\":\n                         \"el revisor pedido (%s) no estaba; no se llama a otro cerebro en su lugar\" % revisor_fijo}\n        avisos.append(\"el revisor pedido (%s) no estaba: queda SIN_AUDITAR y archivado para su revision\" % revisor_fijo)\n        return auditoria, quien_aud, avisos",
+  "vigia": "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py: comprobar que con auditor='bigpickle' y bigpickle caido, auditar devuelve SIN_AUDITAR con aviso y NO llama a claude ni al cerebro de pago.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "El material no trae el cuerpo completo de _preguntar_con_relevo ni la comprobacion de la propuesta (solo se ve el inicio de auditar). Para aplicar las reglas 1 y 2 en esas dos funciones necesito verlas enteras.",
+   "El material no dice como se llama exactamente la funcion de comprobacion de la propuesta ni donde vive (¿esta en cuerpo/obrero.py o en otro archivo?)."
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio respeta el revisor fijo y evita fallos de auditoría."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19044 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a groq20b y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) no le cabe (20326 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (20326 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 2"
+ ]
+}

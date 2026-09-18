@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta el bloque final de arnes/canal.py que despacha los comandos 'leer' con --sin-marcar y 'marcar' desde sys.argv, justo antes de la linea ancla del hook.",
+  "archivo": "arnes/canal.py",
+  "funcion": "final del archivo (bloque de despacho de comandos, junto a la linea ancla del hook)",
+  "texto_viejo": "    # uso del hook: si hay mensajes, salida en formato que Claude inyecta como contexto.",
+  "texto_nuevo": "    if q == \"leer\" and \"--sin-marcar\" in sys.argv:\n        mensajes = leer(marcar=False)\n        if mensajes:\n            print(json.dumps({\n                \"additionalContext\": \"\\n\".join(str(m.get(\"texto\", \"\")) for m in mensajes),\n                \"rutas\": [m.get(\"ruta\") for m in mensajes],\n            }, ensure_ascii=False))\n        sys.exit(0)\n    if q == \"marcar\":\n        marcar_leidos(sys.argv[2:])\n        sys.exit(0)\n    # uso del hook: si hay mensajes, salida en formato que Claude inyecta como contexto.",
+  "cambio": "Insertar antes de la linea ancla del hook el despacho de los comandos 'leer' con --sin-marcar (llama a leer(marcar=False), imprime JSON con additionalContext y rutas, y sale con sys.exit(0)) y 'marcar' (llama a marcar_leidos(sys.argv[2:]) y sale con sys.exit(0)), dejando la linea ancla intacta despues.",
+  "codigo": "    if q == \"leer\" and \"--sin-marcar\" in sys.argv:\n        mensajes = leer(marcar=False)\n        if mensajes:\n            print(json.dumps({\n                \"additionalContext\": \"\\n\".join(str(m.get(\"texto\", \"\")) for m in mensajes),\n                \"rutas\": [m.get(\"ruta\") for m in mensajes],\n            }, ensure_ascii=False))\n        sys.exit(0)\n    if q == \"marcar\":\n        marcar_leidos(sys.argv[2:])\n        sys.exit(0)",
+  "vigia": "vigias/test_vigia_comunicacion.py (y los vigias de recados) comprobando que 'leer --sin-marcar' imprime el JSON con additionalContext y rutas sin marcar leidos, y que 'marcar' marca los recados indicados.",
+  "puede_danar": [
+   "arnes/llamar.py",
+   "arnes/loop.py",
+   "vigias/test_vigia_comunicacion.py",
+   "vigias/test_vigia_contestar_cierra_el_recado.py",
+   "vigias/test_vigia_recados_no_se_pierden.py"
+  ],
+  "preguntas": [
+   "PREGUNA_REQUERIDA: como se llama exactamente la variable que ya existe en el archivo para el comando (el material la usa como 'q'); confirmar su nombre real y de donde sale (sys.argv[1] u otra).",
+   "PREGUNTA_REQUERIDA: confirmar que 'sys' y 'json' ya estan importados en arnes/canal.py (el material no muestra los imports)."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "llamar.py",
+   "loop.py",
+   "test_vigia_comunicacion.py",
+   "test_vigia_contestar_cierra_el_recado.py",
+   "test_vigia_recados_no_se_pierden.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El codigo usa la variable 'q' sin que el material muestre donde se define; el propio paquete la usa asi ('cuando q es leer'), asi que no es invento, pero es una dependencia sin confirmar que el obrero ya marco como PREGUNTA_REQUERIDA (el nombre real podria ser otro o venir de sys.argv[1]).",
+   "Usa 'sys.argv' sin confirmar que 'sys' este importado en arnes/canal.py; los trozos del material solo prueban que 'json', 'os', 'glob' y 'time' se usan. Igual que el anterior, el propio obrero lo marco como PREGUNTA_REQUERIDA, no lo afirmo."
+  ],
+  "riesgo_vecinos": [
+   "llamar.py y loop.py importan arnes/canal.py: si el bloque de despacho queda a nivel de modulo (sin guard de __main__), al importar podria dispararse el despacho y salir con sys.exit(0), o lanzar NameError si 'q' no esta definido en ese punto.",
+   "test_vigia_comunicacion.py y los vigias de recados: la rama nueva solo se toma cuando '--sin-marcar' esta presente, pero si 'leer' sin la bandera ya marcaba leido en una linea posterior, hay que verificar que 'marcar' con sys.argv[2:] no choque con ningun manejo previo de ese comando.",
+   "La insercion mantiene la linea ancla intacta despues, asi que el flujo del hook (formato que Claude inyecta) no se altera cuando no entra q igual a 'leer'/'marcar'."
+  ],
+  "que_falta": [
+   "Responder las dos PREGUNTA_REQUERIDA del obrero antes de aplicar: (1) nombre real de la variable del comando y de donde sale — si no se llama 'q', ajustar todas las referencias; (2) confirmar que 'json' y 'sys' ya estan importados en arnes/canal.py — si falta 'sys', agregar el import.",
+   "Confirmar que el bloque queda dentro del guard 'if __name__ == \"__main__\":' (o en la zona que solo corre al ejecutar canal.py como script) para no dispararlo al importar desde llamar.py/loop.py."
+  ],
+  "resumen_para_el_jefe": "La propuesta hace exactamente lo que el paquete pide: despachar 'leer --sin-marcar' (JSON con additionalContext y rutas, sin marcar leido) y 'marcar' (marcar_leidos con sys.argv[2:]) antes de la linea ancla del hook, dejandola intacta, y no inventa nada; lo unico pendiente son dos confirmaciones que el propio obrero ya pidio: el nombre real de la variable del comando y que 'sys' este importado."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

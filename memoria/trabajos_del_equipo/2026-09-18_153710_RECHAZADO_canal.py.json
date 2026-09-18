@@ -1,0 +1,63 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "El parche anterior usaba `q`, `sys` y `json.dumps` sin comprobar que existan o esten importados, y llamaba a `leer` con un argumento que no acepta; hay que insertar las dos ordenes usando solo lo que ya existe en el material y sin inventar nombres.",
+  "archivo": "arnes/canal.py",
+  "funcion": "bloque final del archivo, justo antes del comentario '# uso del hook'",
+  "texto_viejo": "# uso del hook",
+  "texto_nuevo": "    if q == \"leer\" and \"--sin-marcar\" in sys.argv:\n        mensajes = leer(marcar=False)\n        if mensajes:\n            print(json.dumps({\n                \"additionalContext\": \"\\n\".join(m.get(\"texto\", \"\") for m in mensajes),\n                \"rutas\": [m.get(\"ruta\", \"\") for m in mensajes],\n            }, ensure_ascii=False))\n        sys.exit(0)\n    if q == \"marcar\":\n        marcar_leidos(sys.argv[2:])\n        sys.exit(0)\n# uso del hook",
+  "cambio": "Insertar, justo antes del comentario '# uso del hook' y con la misma sangria de 4 espacios, dos bloques: uno que cuando q es 'leer' y '--sin-marcar' esta en sys.argv llama a leer(marcar=False), imprime un JSON con additionalContext (textos unidos por salto de linea) y rutas, y sale con sys.exit(0); otro que cuando q es 'marcar' llama a marcar_leidos(sys.argv[2:]) y sale con sys.exit(0).",
+  "codigo": "    if q == \"leer\" and \"--sin-marcar\" in sys.argv:\n        mensajes = leer(marcar=False)\n        if mensajes:\n            print(json.dumps({\n                \"additionalContext\": \"\\n\".join(m.get(\"texto\", \"\") for m in mensajes),\n                \"rutas\": [m.get(\"ruta\", \"\") for m in mensajes],\n            }, ensure_ascii=False))\n        sys.exit(0)\n    if q == \"marcar\":\n        marcar_leidos(sys.argv[2:])\n        sys.exit(0)",
+  "vigia": "Un test que importe arnes/canal.py y compruebe que con q='leer' y '--sin-marcar' en sys.argv no se marca nada y se imprime el JSON con additionalContext y rutas, y que con q='marcar' se llama a marcar_leidos con sys.argv[2:] y se sale con codigo 0.",
+  "puede_danar": [
+   "arnes/llamar.py",
+   "arnes/loop.py",
+   "vigias/test_vigia_comunicacion.py",
+   "vigias/test_vigia_contestar_cierra_el_recado.py",
+   "vigias/test_vigia_recados_no_se_pierden.py"
+  ],
+  "preguntas": [
+   "De donde salen las variables `q`, `sys` y `json` en el bloque final de arnes/canal.py: ya estan definidas o importadas antes de '# uso del hook'? El material no muestra ese tramo."
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "llamar.py",
+   "loop.py",
+   "test_vigia_comunicacion.py",
+   "test_vigia_contestar_cierra_el_recado.py",
+   "test_vigia_recados_no_se_pierden.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "La variable `q` no está definida ni importada en el material proporcionado. El código propuesto la utiliza directamente sin que exista previamente.",
+   "La variable `sys` no está definida ni importada en el material proporcionado. El código propuesto la utiliza directamente sin que exista previamente.",
+   "La función `json.dumps` no está definida ni importada en el material proporcionado. El código propuesto la utiliza directamente sin que exista previamente."
+  ],
+  "fallos": [
+   "Se inventan variables y funciones (`q`, `sys`, `json.dumps`) que no existen en el material original. Esto viola la regla de no inventar.",
+   "La función `leer` se llama con el argumento `marcar=False`. El material original de `arnes/canal.py` muestra que la función `leer` acepta `para` y `marcar`, pero la descripción del diagnóstico indica que el parche anterior llamaba a `leer` con un argumento que no acepta. La propuesta actual asume que `marcar=False` es un argumento válido sin confirmación explícita en el material.",
+   "El código propuesto asume la existencia de `sys.argv` sin que `sys` esté importado o definido, lo cual es un invento."
+  ],
+  "riesgo_vecinos": [
+   "El diagnóstico menciona que el parche anterior usaba `q`, `sys` y `json.dumps` sin comprobar que existan o estén importados. La propuesta actual repite este error al usarlos sin importarlos, lo que podría afectar a cualquier módulo que dependa de `arnes/canal.py` y que espere un comportamiento correcto de estas dependencias (ej. `arnes/llamar.py`, `arnes/loop.py`).",
+   "El uso de `sys.exit(0)` podría interrumpir el flujo de ejecución de manera inesperada si el código que llama a esta función no está preparado para ello, afectando a `arnes/llamar.py` y `arnes/loop.py`."
+  ],
+  "que_falta": [
+   "Falta la importación de los módulos `sys` y `json`.",
+   "Falta la definición o inicialización de la variable `q`.",
+   "Falta la confirmación de que `leer(marcar=False)` es una llamada válida para la función `leer` según el material original, dado que el diagnóstico menciona que el parche anterior fallaba por llamar a `leer` con un argumento no aceptado."
+  ],
+  "resumen_para_el_jefe": "La propuesta inventa dependencias (`sys`, `json`, `q`) que no existen en el material y reutiliza un error previo al llamar a `leer` con un argumento potencialmente inválido, además de no importar las librerías necesarias."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) fallo (no es cuota): contesto vacio",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 4"
+ ]
+}

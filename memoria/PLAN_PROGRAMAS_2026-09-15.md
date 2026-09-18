@@ -49,6 +49,48 @@ Una sola fila (nadie lanza si hay ronda de menos de 10 min). Si una ronda cae, s
 - [falta] Buscar si algo ya existe y si Julio ya lo decidio antes de preguntar.
 - [falta] Plan y "donde ibamos" al dia solos.
 
+## LA LISTA COMPLETA DEL 14-SEP (tal como se le dio a Julio; la de arriba es su orden de trabajo)
+### A. Lo que hoy hacen las IA del equipo y lo hace un programa
+1. Copiar un cambio ya decidido (copista; hoy frena por palabras sueltas).
+2. Revisar si el codigo queda roto.
+3. Revisar si los nombres que usa existen.
+4. Revisar si la prueba usa simuladores cuando se pidio lo real. [HECHO]
+5. Revisar si el codigo repite lo que ya estaba en el archivo.
+6. Revisar que el cambio toque solo los archivos pedidos.
+7. Saber si una prueba nace roja o pasa a verde: correrla.
+8. Esqueleto de cada prueba (arranque, carpetas temporales, nombres reales de los campos).
+9. Esqueleto de cada ley (ley, tabla, matriz, a quien dana, vigia).
+10. Guardar la respuesta completa de la IA y volver a pedirla si llega cortada. [HECHO a medias: se guarda completa]
+### B. Lo que hace Claude y lo hace un programa
+11. Medir cuantas veces frena cada candado y si acerto.
+12. Contar aprobaciones, rechazos y motivos del equipo.
+13. Clasificar por que fallo una prueba (roto, nombre, vacio, tiempo).
+14. Elegir que pruebas correr segun lo que se toco.
+15. Guardar cuando todo esta aprobado y verde.
+16. Vigilar el canal y avisar cuando alguien responde.
+17. Apartar los textos del sistema que se toman por ordenes de Julio.
+18. Detectar cuando Julio repite algo (hoy cuenta mal por ese ruido).
+19. Decidir que equipo toca: mecanico -> programa; ley o pieza existente -> gratis; codigo nuevo -> 3 IA.
+20. Buscar si algo ya existe antes de crear.
+21. Buscar si Julio ya decidio algo antes de preguntar.
+22. Llevar el plan al dia (aprobado, en ejecucion, hecho).
+23. Decir "donde ibamos" al empezar.
+24. Recados del canal con formato fijo.
+### C. Lo que hace Big Pickle y lo hace un programa
+25. Las investigaciones con numeros (contar en los registros).
+26. Correr las pruebas y reportar el resultado.
+### D. Candados que deciden por palabras y deben comprobar de verdad
+27. Aviso de memoria (964 frenos, 92% inutiles).
+28. Detector de fotocopia.
+29. Revisor de "no hace lo que se pidio".
+30. Detector de lenguaje tecnico (saber a quien se habla).
+### E. LO UNICO QUE SI NECESITA IA
+- Entender lo que pide Julio con sus palabras.
+- Pensar como arreglar algo que no existe todavia.
+- Escribir codigo nuevo de verdad.
+- Juzgar si un arreglo tiene sentido.
+- Explicarle a Julio en simple.
+
 ## PRUEBA REAL DE TODO
 Construir el DMM (tarea pendiente: las 5 pantallas que se quedan colgadas) con esto funcionando, y medir contra el 14-sep:
 rondas, sin revisar, aprobadas que llegan guardadas, minutos por pieza. Copilot lo informa por el canal a Claude.

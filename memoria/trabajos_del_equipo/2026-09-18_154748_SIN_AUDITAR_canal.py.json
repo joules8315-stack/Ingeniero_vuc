@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "En arnes/canal.py falta, justo antes del comentario '# uso del hook', el bloque de linea de comandos que atiende 'leer --sin-marcar' y 'marcar', por lo que el complemento de OpenCode no puede entregar sin marcar ni marcar despues de entregar.",
+  "archivo": "arnes/canal.py",
+  "funcion": "bloque final del archivo, antes del comentario '# uso del hook'",
+  "texto_viejo": "# uso del hook",
+  "texto_nuevo": "    if q == \"leer\" and \"--sin-marcar\" in sys.argv:\n        mensajes = leer(marcar=False)\n        if mensajes:\n            print(json.dumps({\n                \"additionalContext\": \"\\n\".join(str(m.get(\"texto\", \"\")) for m in mensajes),\n                \"rutas\": [m.get(\"ruta\") for m in mensajes],\n            }, ensure_ascii=False))\n        sys.exit(0)\n    if q == \"marcar\":\n        marcar_leidos(sys.argv[2:])\n        sys.exit(0)\n\n# uso del hook",
+  "cambio": "Insertar, con la misma sangria de 4 espacios y dejando intacta la linea de comentario '# uso del hook', dos ordenes: (1) si q es 'leer' y en sys.argv viene '--sin-marcar', llamar leer(marcar=False), y si hay mensajes imprimir un JSON con additionalContext (los campos texto unidos por salto de linea) y rutas (la ruta de cada mensaje), y despues sys.exit(0); (2) si q es 'marcar', llamar marcar_leidos(sys.argv[2:]) y sys.exit(0).",
+  "codigo": "    if q == \"leer\" and \"--sin-marcar\" in sys.argv:\n        mensajes = leer(marcar=False)\n        if mensajes:\n            print(json.dumps({\n                \"additionalContext\": \"\\n\".join(str(m.get(\"texto\", \"\")) for m in mensajes),\n                \"rutas\": [m.get(\"ruta\") for m in mensajes],\n            }, ensure_ascii=False))\n        sys.exit(0)\n    if q == \"marcar\":\n        marcar_leidos(sys.argv[2:])\n        sys.exit(0)",
+  "vigia": "vigias/test_vigia_comunicacion.py y vigias/test_vigia_contestar_cierra_el_recado.py: comprobar que 'leer --sin-marcar' devuelve los mensajes sin marcarlos leidos y que 'marcar <rutas>' los marca despues de entregarlos.",
+  "puede_danar": [
+   "arnes/llamar.py",
+   "arnes/loop.py",
+   "vigias/test_vigia_comunicacion.py",
+   "vigias/test_vigia_contestar_cierra_el_recado.py",
+   "vigias/test_vigia_recados_no_se_pierden.py"
+  ],
+  "preguntas": [
+   "No se ve en el material el nombre exacto de la variable que guarda el comando (aqui se usa 'q'): confirmar que en arnes/canal.py la variable del comando se llama 'q' y que sys.argv[1] es el comando.",
+   "No se ve en el material si el archivo ya importa sys y json: confirmar que ambos estan importados en arnes/canal.py."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "llamar.py",
+   "loop.py",
+   "test_vigia_comunicacion.py",
+   "test_vigia_contestar_cierra_el_recado.py",
+   "test_vigia_recados_no_se_pierden.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "resumen_para_el_jefe": "el revisor pedido (bigpickle) no estaba; no se llama a otro cerebro en su lugar"
+ },
+ "avisos": [
+  "OpenCode termino con codigo 1",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "el revisor pedido (bigpickle) no estaba: queda SIN_AUDITAR y archivado para su revision",
+  "vueltas_dadas: 1"
+ ]
+}

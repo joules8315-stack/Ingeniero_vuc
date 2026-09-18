@@ -1,0 +1,134 @@
+// Plugin de buzon de recados para opencode.
+// Reparado: la marca de cada recado empieza con prt_ (opencode rechaza la vieja),
+// si no hay sesion abierta NO se marca (se lee con --sin-marcar),
+// y se marca como leido SOLO despues de entregar el recado a la sesion.
+//
+// Modulo CommonJS, igual que el original.
+
+const { spawnSync } = require('child_process');
+const path = require('path');
+
+// Raiz del proyecto: dos niveles arriba de .opencode/plugins/
+const RAIZ = path.resolve(__dirname, '..', '..');
+const ARNES = path.join(RAIZ, 'arnes');
+const PY = process.env.PYTHON || 'python';
+
+// Prefijo de la marca de cada recado. opencode exige que empiece con prt_.
+const PREFIJO_MARCA = 'prt_';
+
+/**
+ * Ejecuta arnes/canal.py con los argumentos dados y devuelve la salida.
+ * Se usa spawnSync para no depender de shell y capturar stdout/stderr.
+ */
+function ejecutarArnes(args) {
+  const res = spawnSync(PY, [path.join(ARNES, 'canal.py')].concat(args), {
+    cwd: RAIZ,
+    encoding: 'utf-8',
+  });
+  if (res.error) {
+    throw res.error;
+  }
+  return {
+    codigo: res.status,
+    salida: (res.stdout || '').trim(),
+    error: (res.stderr || '').trim(),
+  };
+}
+
+/**
+ * Lee los recados pendientes para un destino.
+ *
+ * Regla dura: si NO hay sesion abierta, se lee con --sin-marcar para que
+ * los recados NO se pierdan. Solo cuando hay sesion abierta se puede
+ * entregar y, despues de entregar, marcar como leidos.
+ *
+ * @param {string} destino  nombre del buzon (p.ej. 'opencode')
+ * @param {boolean} haySesion  true si hay una sesion abierta que va a recibir
+ * @returns {Array<{ruta: string, texto: string}>}
+ */
+function leerRecados(destino, haySesion) {
+  const args = ['leer', destino];
+  if (!haySesion) {
+    // Sin sesion abierta: leer sin marcar. Los recados quedan pendientes.
+    args.push('--sin-marcar');
+  }
+  const res = ejecutarArnes(args);
+  if (res.codigo !== 0) {
+    return [];
+  }
+  if (!res.salida) {
+    return [];
+  }
+  let crudos;
+  try {
+    crudos = JSON.parse(res.salida);
+  } catch (e) {
+    return [];
+  }
+  if (!Array.isArray(crudos)) {
+    return [];
+  }
+  return crudos.map(function (m) {
+    return {
+      ruta: m.ruta || m.path || '',
+      texto: m.texto || m.text || '',
+    };
+  });
+}
+
+/**
+ * Marca como leidos los recados indicados.
+ * SOLO se llama DESPUES de haber entregado el recado a la sesion.
+ *
+ * @param {Array<string>} rutas  rutas de los recados ya entregados
+ */
+function marcarLeidos(rutas) {
+  if (!Array.isArray(rutas) || rutas.length === 0) {
+    return;
+  }
+  // El argumento 'marcar' es el que usa arnes/canal.py para marcar leidos.
+  ejecutarArnes(['marcar'].concat(rutas));
+}
+
+/**
+ * Entrega los recados a la sesion abierta y, solo despues de entregarlos,
+ * los marca como leidos.
+ *
+ * @param {string} destino
+ * @param {function(string): void} entregar  callback que entrega el texto a la sesion
+ * @returns {number} cuantos recados se entregaron
+ */
+function entregarYMarcar(destino, entregar) {
+  const recados = leerRecados(destino, true);
+  if (recados.length === 0) {
+    return 0;
+  }
+  const rutas = [];
+  for (let i = 0; i < recados.length; i++) {
+    const r = recados[i];
+    // Entregar PRIMERO.
+    entregar(r.texto);
+    rutas.push(r.ruta);
+  }
+  // Marcar DESPUES de entregar.
+  marcarLeidos(rutas);
+  return recados.length;
+}
+
+/**
+ * Marca de un recado nuevo. Debe empezar con prt_ para que opencode la acepte.
+ *
+ * @param {string} id  identificador unico del recado
+ * @returns {string}
+ */
+function marca(id) {
+  return PREFIJO_MARCA + String(id);
+}
+
+module.exports = {
+  PREFIJO_MARCA: PREFIJO_MARCA,
+  marca: marca,
+  leerRecados: leerRecados,
+  marcarLeidos: marcarLeidos,
+  entregarYMarcar: entregarYMarcar,
+};

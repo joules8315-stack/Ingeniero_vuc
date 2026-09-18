@@ -1,0 +1,75 @@
+{
+ "obrero": "deepseek",
+ "auditor": "claude",
+ "propuesta": {
+  "diagnostico": "Falta el archivo .opencode/plugins/canal_buzon.js y las ordenes de terminal leer --sin-marcar y marcar no estan completas en canal.py, por lo que los recados se pierden o se marcan antes de entregarse.",
+  "archivo": ".opencode/plugins/canal_buzon.js",
+  "funcion": "archivo completo (nuevo)",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "Crear el archivo .opencode/plugins/canal_buzon.js tomando como base canal_buzon.js.desactivado_por_error_severo, con estas reglas: solo atender y marcar recados cuyo nombre empiece por prt_; con sesion ausente no tocar el canal; leer sin marcar; marcar cada recado solo despues de entregarlo; mantener las APIs existentes; no tocar vecinos no pedidos.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "vigias/test_vigia_recados_no_se_pierden.py comprueba que existe el programita, que contiene 'prt_', que NO contiene 'canal-\"' ni 'canal-Date', y que contiene '--sin-marcar'; ademas prueba que leer con marcar=False no marca y que marcar_leidos tras entregar deja la bandeja vacia.",
+  "puede_danar": [
+   "arnes/canal.py",
+   "vigias/test_vigia_recados_no_se_pierden.py"
+  ],
+  "preguntas": [
+   "No puedo crear el archivo .opencode/plugins/canal_buzon.js porque el material no incluye el contenido de canal_buzon.js.desactivado_por_error_severo que debo tomar como base. NECESITO_LEER: canal_buzon.js.desactivado_por_error_severo / es la base obligatoria del archivo nuevo / decide el contenido entero del programita / riesgo: sin el no puedo escribir el archivo sin inventar.",
+   "No puedo completar las ordenes de terminal leer --sin-marcar y marcar en canal.py porque el material no incluye el contenido actual de arnes/canal.py. NECESITO_LEER: arnes/canal.py / es donde viven leer y marcar_leidos / decide si leer acepta marcar=False y si marcar_leidos existe / riesgo: sin el no puedo cambiar el minimo sin inventar."
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "canal.py"
+  ]
+ },
+ "auditoria": {
+  "_error": "el cerebro no devolvio JSON",
+  "_crudo": "Esto es exactamente el enredo que ya conocemos: el candado de cierre entró en el bucle sin fin. Lo delata él mismo, porque en su lista de \"instrucciones de Julio sin legislar\" hay frases que **tú nunca dijiste** — son textos de máquina que se colaron:\n\n- *\"If this event is something the user would act on now, send a PushNotification\"*\n- *\"Routine or benign output doesn't need one\"*\n\nEso no salió de tu boca, es basura que el candado recogió por error. Es la misma falla que ya quedó anotada: el cierre se traba con una lista que mezcla cosas que no dijiste.\n\nMi trabajo aquí era **solo revisar** la propuesta de arreglo del buzón, y ya lo entregué: quedó en **DUDOSO**, hay que devolvérsela al obrero con las dos piezas que le faltaron. **No cambié ni un archivo**, así que de mi parte no hay nada de verdad que guardar; lo que aparece \"sin guardar\" venía de antes y no lo hice yo. No voy a guardar ni \"legislar\" cosas ajenas que no entiendo, porque pisaría el trabajo del equipo.\n\nNo voy a seguir dando vueltas contra un candado que está fallando. Para cerrar, en **tu** terminal:\n\n```\n$env:INGENIERO_OFF=1\n```\n\nY esto queda apuntado como lo que hay que reparar en equipo: el candado de cierre está metiendo en la lista frases que no dijiste, y por eso no deja terminar nunca.\n"
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini4 y no esta disponible: reviso ",
+  "claude no pudo revisar: Command '['C:\\\\Users\\\\USER\\\\AppData\\\\Roaming\\\\npm\\\\claude.CMD', '-p']' timed out after 300 seconds",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini4 y no esta disponible: reviso ",
+  "todas las gratis duermen: revisa claude (ley de Julio)",
+  "vueltas_dadas: 4"
+ ]
+}

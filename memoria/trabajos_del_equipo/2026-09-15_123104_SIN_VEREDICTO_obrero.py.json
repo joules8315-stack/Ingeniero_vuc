@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "claude",
+ "propuesta": {
+  "diagnostico": "El while final de _filtrar_paquete suelta lineas de a una con salida.pop(), cortando una funcion a la mitad en vez de soltar bloques enteros desde el final.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_filtrar_paquete",
+  "texto_viejo": "    # Si aun asi se pasa del tope, se va soltando el relleno del final hasta caber: la cabecera,\n    # la ley y \"a quien puede danar\" son LO NECESARIO, no se tocan.\n    while len(\"\\n\".join(salida)) > tope and len(salida) > len(bloques[\"__cabecera__\"]):\n        salida.pop()\n    return \"\\n\".join(salida)",
+  "texto_nuevo": "    # Si aun asi se pasa del tope, se van soltando BLOQUES ENTEROS desde el final: la cabecera,\n    # la ley y \"a quien puede danar\" son LO NECESARIO, no se tocan. Nunca se suelta una linea\n    # suelta, porque eso corta una funcion a la mitad (evidencia 2026-09-15_101525).\n    while len(\"\\n\".join(salida)) > tope and len(salida) > len(bloques[\"__cabecera__\"]):\n        ultima = salida[-1]\n        if ultima.startswith(\"###\"):\n            # La ultima linea abre un bloque: se busca hacia atras su cabecera (la ultima\n            # linea anterior que tambien empiece con el separador de bloque).\n            i = len(salida) - 2\n            while i >= 0 and not salida[i].startswith(\"###\"):\n                i -= 1\n            if i < 0:\n                # No hay cabecera de bloque: es relleno suelto, se suelta de a una.\n                salida.pop()\n            elif archivo and archivo in salida[i]:\n                # La cabecera del bloque nombra el archivo de la tarea: se conserva el bloque\n                # entero aunque pese mas que el tope.\n                break\n            else:\n                # No es el archivo de la tarea: se elimina el bloque entero.\n                del salida[i:]\n        else:\n            # Relleno suelto: se suelta de a una.\n            salida.pop()\n    return \"\\n\".join(salida)",
+  "cambio": "Sustituir el while final de _filtrar_paquete que hace salida.pop() linea a linea por uno que suelte bloques enteros desde el final: si la ultima linea empieza con '###' se busca hacia atras la cabecera del bloque; si esa cabecera nombra el archivo de la tarea se frena y se conserva el bloque entero; si no, se borra el bloque completo con del salida[i:]; si la ultima linea es relleno suelto, se hace salida.pop(). La cabecera, la ley y la seccion de dano no se tocan.",
+  "codigo": "    while len(\"\\n\".join(salida)) > tope and len(salida) > len(bloques[\"__cabecera__\"]):\n        ultima = salida[-1]\n        if ultima.startswith(\"###\"):\n            i = len(salida) - 2\n            while i >= 0 and not salida[i].startswith(\"###\"):\n                i -= 1\n            if i < 0:\n                salida.pop()\n            elif archivo and archivo in salida[i]:\n                break\n            else:\n                del salida[i:]\n        else:\n            salida.pop()",
+  "vigia": "Un test determinista que llame a _filtrar_paquete con un paquete que pese mas que el tope y cuyo ultimo bloque sea una funcion partida: comprobar que el bloque se suelta entero (no queda una funcion a medias) y que si la cabecera del bloque nombra el archivo de la tarea el bloque se conserva aunque pese mas que el tope.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "_error": "el cerebro no devolvio JSON",
+  "_crudo": "Julio, te lo dejo limpio, sin palabras de máquina.\n\n**Mi trabajo terminado:** revisé el arreglo que propuso el otro. Mi respuesta es **DUDOSO** — ni lo apruebo ni lo rechazo todavía.\n\n**Por qué:** había que arreglar la parte que recorta el paquete para que quepa. Antes soltaba renglones de a uno y por eso cortaba una función por la mitad. El arreglo propuesto, en cambio, suelta secciones enteras desde el final y protege la sección de la tarea. Eso está bien pensado y no se inventó nada.\n\n**El pero, que es serio:** para saber dónde empieza cada sección, el arreglo busca una marca de **tres símbolos** seguidos. Pero en el pedazo que me dejaron ver, las secciones se marcan con **dos símbolos**. Si la marca de verdad es de dos, el arreglo no la encuentra y **sigue cortando funciones por la mitad** — o sea, no arregla nada. El obrero no se equivocó: usó tres porque así se lo pidieron; el problema es que lo que le pidieron y el código podrían no coincidir.\n\n**Falta:** ver el resto de esa parte para confirmar si la marca es de dos o de tres. No hay que sellar hasta aclarar eso.\n\n---\n\nY ahora lo importante, sin vueltas: **estoy atrapado en el ciclo de cierre** — ese mismo del que me dejaste la nota. Los candados de guardar, de escribir por el canal y de legislar se piden uno al otro y no me dejan terminar. Vi tu recado en el canal (\"Este mensaje es para ti, 4ojos: quedaste en el ciclo\") — tenías razón, aquí estoy.\n\nNo voy a girar solo guardando, mandando recados y legislando por mi cuenta, porque eso es justo lo que mantiene vivo el ciclo y quema vueltas y dinero. Eso lo cortas tú desde tu terminal, pegando esto:\n\n```\n$env:INGENIERO_OFF=1\n```\n"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19069 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "todas las gratis duermen: revisa claude (ley de Julio)",
+  "vueltas_dadas: 1"
+ ]
+}

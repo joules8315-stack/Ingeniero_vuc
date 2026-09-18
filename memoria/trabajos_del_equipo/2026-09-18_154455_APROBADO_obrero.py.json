@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El bloque 'if auditor == \"bigpickle\":' usa material_auditor antes de que se le asigne _filtrar_paquete, provocando UnboundLocalError.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    if auditor == 'bigpickle':\n        # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de\n        # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.\n        from cuerpo import bigpickle\n        _texto_bp, _avisos_bp = bigpickle.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_bp or [])\n        if _texto_bp:\n            quien_aud = 'bigpickle'\n            auditoria = _json_de(_texto_bp)\n    # AL AUDITOR SOLO LE LLEGA LO SUYO (Julio, 2026-09-10). Antes le llegaba el bulto entero:\n    # medido 24.124 letras y aguanta ~19.000, y por eso la respuesta salia cortada a la mitad.\n    # Se filtra el paquete a lo que de verdad necesita para auditar esta propuesta.\n    archivo_tocado = None\n    if isinstance(propuesta, dict):\n        archivo_tocado = propuesta.get(\"archivo\") or propuesta.get(\"archivos\")\n        if isinstance(archivo_tocado, list) and archivo_tocado:\n            archivo_tocado = archivo_tocado[0]\n        if isinstance(archivo_tocado, str):\n            archivo_tocado = archivo_tocado.strip()\n    material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,\n                                        tope=TOPE_GRATIS - 3344 - 47 -\n                                             len(json.dumps(propuesta, ensure_ascii=False)))\n    for _intento in range(0 if auditor == 'bigpickle' else 2):",
+  "texto_nuevo": "    # AL AUDITOR SOLO LE LLEGA LO SUYO (Julio, 2026-09-10). Antes le llegaba el bulto entero:\n    # medido 24.124 letras y aguanta ~19.000, y por eso la respuesta salia cortada a la mitad.\n    # Se filtra el paquete a lo que de verdad necesita para auditar esta propuesta.\n    archivo_tocado = None\n    if isinstance(propuesta, dict):\n        archivo_tocado = propuesta.get(\"archivo\") or propuesta.get(\"archivos\")\n        if isinstance(archivo_tocado, list) and archivo_tocado:\n            archivo_tocado = archivo_tocado[0]\n        if isinstance(archivo_tocado, str):\n            archivo_tocado = archivo_tocado.strip()\n    material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,\n                                        tope=TOPE_GRATIS - 3344 - 47 -\n                                             len(json.dumps(propuesta, ensure_ascii=False)))\n    if auditor == 'bigpickle':\n        # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de\n        # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.\n        from cuerpo import bigpickle\n        _texto_bp, _avisos_bp = bigpickle.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_bp or [])\n        if _texto_bp:\n            quien_aud = 'bigpickle'\n            auditoria = _json_de(_texto_bp)\n    for _intento in range(0 if auditor == 'bigpickle' else 2):",
+  "cambio": "Mover el bloque entero 'if auditor == \"bigpickle\":' (sin cambiarle nada) para que quede DESPUES de la asignacion 'material_auditor = _filtrar_paquete(...)' y justo antes de la linea 'for _intento in range(0 if auditor == ...'.",
+  "codigo": "    # AL AUDITOR SOLO LE LLEGA LO SUYO (Julio, 2026-09-10). Antes le llegaba el bulto entero:\n    # medido 24.124 letras y aguanta ~19.000, y por eso la respuesta salia cortada a la mitad.\n    # Se filtra el paquete a lo que de verdad necesita para auditar esta propuesta.\n    archivo_tocado = None\n    if isinstance(propuesta, dict):\n        archivo_tocado = propuesta.get(\"archivo\") or propuesta.get(\"archivos\")\n        if isinstance(archivo_tocado, list) and archivo_tocado:\n            archivo_tocado = archivo_tocado[0]\n        if isinstance(archivo_tocado, str):\n            archivo_tocado = archivo_tocado.strip()\n    material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,\n                                        tope=TOPE_GRATIS - 3344 - 47 -\n                                             len(json.dumps(propuesta, ensure_ascii=False)))\n    if auditor == 'bigpickle':\n        # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de\n        # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.\n        from cuerpo import bigpickle\n        _texto_bp, _avisos_bp = bigpickle.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_bp or [])\n        if _texto_bp:\n            quien_aud = 'bigpickle'\n            auditoria = _json_de(_texto_bp)\n    for _intento in range(0 if auditor == 'bigpickle' else 2):",
+  "vigia": "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Repara el UnboundLocalError moviendo el bloque después de la asignación, sin introducir inventos ni romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19065 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

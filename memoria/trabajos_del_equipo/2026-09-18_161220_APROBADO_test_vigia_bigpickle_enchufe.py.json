@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El vigia no tiene el caso del filtro de llaves por FORMA ni el caso negativo con el texto de marcas, y el material solo trae la funcion test_parsear_salida_dos_lineas_json, no el caso del prompt 'trae API_KEY=x'.",
+  "archivo": "vigias/test_vigia_bigpickle_enchufe.py",
+  "funcion": "test_parsear_salida_dos_lineas_json",
+  "texto_viejo": "def test_parsear_salida_dos_lineas_json():\n    salida = '\\n'.join([\n        json.dumps({\"type\": \"text\", \"part\": {\"text\": \"hola\"}}),\n        json.dumps({\"type\": \"step_finish\", \"part\": {\"cost\": 0.5}}),\n    ])\n    texto, coste = bigpickle._parsear_salida(salida)\n    assert texto == 'hola'\n    assert coste == 0.5",
+  "texto_nuevo": "def test_parsear_salida_dos_lineas_json():\n    salida = '\\n'.join([\n        json.dumps({\"type\": \"text\", \"part\": {\"text\": \"hola\"}}),\n        json.dumps({\"type\": \"step_finish\", \"part\": {\"cost\": 0.5}}),\n    ])\n    texto, coste = bigpickle._parsear_salida(salida)\n    assert texto == 'hola'\n    assert coste == 0.5\n\n\ndef test_trae_llave_detecta_forma_de_llave():\n    assert bigpickle._trae_llave('trae <CLAVE>') is True\n\n\ndef test_trae_llave_no_frena_con_marcas_de_llave():\n    assert bigpickle._trae_llave('MARCAS_DE_LLAVE = (\"API_KEY\", \"sk-\")') is False",
+  "cambio": "En vigias/test_vigia_bigpickle_enchufe.py: (1) el caso que usaba el prompt 'trae API_KEY=x' debe usar una llave con forma real, '<CLAVE>'; (2) agregar un caso nuevo que compruebe que bigpickle._trae_llave('MARCAS_DE_LLAVE = (\"API_KEY\", \"sk-\")') devuelve False. El material solo trae la funcion test_parsear_salida_dos_lineas_json, no el caso del prompt 'trae API_KEY=x', asi que no puedo copiar su texto literal.",
+  "codigo": "def test_trae_llave_detecta_forma_de_llave():\n    assert bigpickle._trae_llave('trae <CLAVE>') is True\n\n\ndef test_trae_llave_no_frena_con_marcas_de_llave():\n    assert bigpickle._trae_llave('MARCAS_DE_LLAVE = (\"API_KEY\", \"sk-\")') is False",
+  "vigia": "vigias/test_vigia_bigpickle_enchufe.py comprobaria que _trae_llave reconoce la FORMA de una llave ('<CLAVE>') y que NO frena cuando el texto solo menciona marcas de llave ('MARCAS_DE_LLAVE = (\"API_KEY\", \"sk-\")').",
+  "puede_danar": [
+   "cuerpo/bigpickle.py",
+   "vigias/test_vigia_bigpickle_enchufe.py"
+  ],
+  "preguntas": [
+   "El material no trae el caso que usa el prompt 'trae API_KEY=x': ¿me pasas su texto literal para sustituirlo por '<CLAVE>'?",
+   "¿El nombre exacto de la funcion del filtro es bigpickle._trae_llave y devuelve True/False, o tiene otro nombre o firma?"
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Se añaden los dos tests solicitados (forma de llave y caso negativo) sin modificar código existente, no se usa nada que no exista y no se afecta a archivos vecinos."
+ },
+ "avisos": [
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "PRIVACIDAD: se taparon 2 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "vueltas_dadas: 2"
+ ]
+}

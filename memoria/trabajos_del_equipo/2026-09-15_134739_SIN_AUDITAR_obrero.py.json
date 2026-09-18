@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El respeto al revisor fijo (bigpickle) se aplica a cualquier auditor pedido, en vez de solo a bigpickle, y _propuesta_cumple no marca incompleta la propuesta cuando aparece NO_ENCONTRADO en cualquiera de los campos del cambio.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_propuesta_cumple",
+  "texto_viejo": "    if not isinstance(propuesta, dict):\n        return False, f\"no devolvio un JSON: {str(propuesta)[:80]}\"\n    if clase == \"crear\":\n        # Crear una pieza entera: si no trae el contenido nuevo, no existe lo que se crea.\n        if not str(propuesta.get(\"texto_nuevo\") or \"\").strip():\n            return False, \"la propuesta NO trae texto_nuevo (el pedido llego incompleto)\"\n    else:\n        # Reparar: tiene que decir que toca y con que se reemplaza.\n        if not str(propuesta.get(\"archivo\") or \"\").strip():\n            return False, \"la propuesta NO dice que archivo toca\"\n        if \"codigo\" not in propuesta and \"texto_viejo\" not in propuesta and \"texto_nuevo\" not in propuesta:\n            return False, \"la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)\"\n    return True, \"\"",
+  "texto_nuevo": "    if not isinstance(propuesta, dict):\n        return False, f\"no devolvio un JSON: {str(propuesta)[:80]}\"\n    # La marca NO_ENCONTRADO se detecta en CUALQUIERA de los campos del cambio (Julio, 2026-09-15):\n    # si alguno trae la marca, la propuesta queda incompleta y nunca puede recibir APROBADO.\n    for _campo in (\"codigo\", \"texto_viejo\", \"texto_nuevo\"):\n        if \"NO_ENCONTRADO\" in str(propuesta.get(_campo) or \"\"):\n            return False, \"la propuesta trae NO_ENCONTRADO en %s: queda incompleta\" % _campo\n    if clase == \"crear\":\n        # Crear una pieza entera: si no trae el contenido nuevo, no existe lo que se crea.\n        if not str(propuesta.get(\"texto_nuevo\") or \"\").strip():\n            return False, \"la propuesta NO trae texto_nuevo (el pedido llego incompleto)\"\n    else:\n        # Reparar: tiene que decir que toca y con que se reemplaza.\n        if not str(propuesta.get(\"archivo\") or \"\").strip():\n            return False, \"la propuesta NO dice que archivo toca\"\n        if \"codigo\" not in propuesta and \"texto_viejo\" not in propuesta and \"texto_nuevo\" not in propuesta:\n            return False, \"la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)\"\n    return True, \"\"",
+  "cambio": "Anadir al principio de _propuesta_cumple un bucle que recorra los campos codigo, texto_viejo y texto_nuevo y devuelva (False, motivo) si alguno contiene la marca NO_ENCONTRADO, antes de las comprobaciones por clase.",
+  "codigo": "    for _campo in (\"codigo\", \"texto_viejo\", \"texto_nuevo\"):\n        if \"NO_ENCONTRADO\" in str(propuesta.get(_campo) or \"\"):\n            return False, \"la propuesta trae NO_ENCONTRADO en %s: queda incompleta\" % _campo",
+  "vigia": "Una vigia que pase a _propuesta_cumple una propuesta con NO_ENCONTRADO en codigo, en texto_viejo o en texto_nuevo y compruebe que devuelve ok=False con motivo, y que una propuesta limpia sigue devolviendo ok=True.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "cerebro/trozos.py",
+   "vigias/test_vigia_respuestas.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_respuestas.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "trozos.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "resumen_para_el_jefe": "el revisor pedido (gemini2) no estaba; no se llama a otro cerebro en su lugar"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19072 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini2 y no esta disponible: reviso groq",
+  "el revisor pedido (gemini2) no estaba: queda SIN_AUDITAR y archivado para su revision",
+  "vueltas_dadas: 1"
+ ]
+}

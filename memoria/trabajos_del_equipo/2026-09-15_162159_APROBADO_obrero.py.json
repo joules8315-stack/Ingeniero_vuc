@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "La funcion _propuesta_cumple no rechaza las propuestas que traen la marca NO_ENCONTRADO en los campos que ya revisa (archivo, codigo, texto_viejo, texto_nuevo), ni en la rama de crear ni en la de reparar.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_propuesta_cumple",
+  "texto_viejo": "    if not isinstance(propuesta, dict):\n        return False, f\"no devolvio un JSON: {str(propuesta)[:80]}\"\n    if clase == \"crear\":\n        # Crear una pieza entera: si no trae el contenido nuevo, no existe lo que se crea.\n        if not str(propuesta.get(\"texto_nuevo\") or \"\").strip():\n            return False, \"la propuesta NO trae texto_nuevo (el pedido llego incompleto)\"\n    else:\n        # Reparar: tiene que decir que toca y con que se reemplaza.\n        if not str(propuesta.get(\"archivo\") or \"\").strip():\n            return False, \"la propuesta NO dice que archivo toca\"\n        if \"codigo\" not in propuesta and \"texto_viejo\" not in propuesta and \"texto_nuevo\" not in propuesta:\n            return False, \"la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)\"\n    return True, \"\"",
+  "texto_nuevo": "    if not isinstance(propuesta, dict):\n        return False, f\"no devolvio un JSON: {str(propuesta)[:80]}\"\n    if clase == \"crear\":\n        # Crear una pieza entera: si no trae el contenido nuevo, no existe lo que se crea.\n        if not str(propuesta.get(\"texto_nuevo\") or \"\").strip():\n            return False, \"la propuesta NO trae texto_nuevo (el pedido llego incompleto)\"\n        if _trae_no_encontrado(propuesta, (\"archivo\", \"codigo\", \"texto_viejo\", \"texto_nuevo\")):\n            return False, \"la propuesta NO cumple porque trae la marca NO_ENCONTRADO\"\n    else:\n        # Reparar: tiene que decir que toca y con que se reemplaza.\n        if not str(propuesta.get(\"archivo\") or \"\").strip():\n            return False, \"la propuesta NO dice que archivo toca\"\n        if \"codigo\" not in propuesta and \"texto_viejo\" not in propuesta and \"texto_nuevo\" not in propuesta:\n            return False, \"la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)\"\n        if _trae_no_encontrado(propuesta, (\"archivo\", \"codigo\", \"texto_viejo\", \"texto_nuevo\")):\n            return False, \"la propuesta NO cumple porque trae la marca NO_ENCONTRADO\"\n    return True, \"\"",
+  "cambio": "Anadir en las DOS ramas de _propuesta_cumple (crear y reparar), antes del return True, una comprobacion de que ninguno de los campos que esa funcion ya revisa (archivo, codigo, texto_viejo, texto_nuevo) trae la marca NO_ENCONTRADO como subtexto; si alguno la trae, devolver (False, motivo) diciendo que la propuesta NO cumple porque trae la marca NO_ENCONTRADO. Se usa un ayudante _trae_no_encontrado que recorre los campos indicados y busca la marca como subtexto.",
+  "codigo": "def _trae_no_encontrado(propuesta, campos):\n    \"\"\"UN PROGRAMA, no una IA: la marca NO_ENCONTRADO no puede colarse como si fuera contenido.\n\n    Julio, 2026-09-15: la marca se detecta como SUBTEXTO en cualquier campo, en las DOS ramas\n    (crear y reparar). Si cualquiera de los campos que _propuesta_cumple ya revisa trae la\n    marca, la propuesta NO cumple.\n    \"\"\"\n    for campo in campos:\n        if \"NO_ENCONTRADO\" in str(propuesta.get(campo) or \"\"):\n            return True\n    return False\n\n\ndef _propuesta_cumple(propuesta, clase):\n    \"\"\"UN PROGRAMA, no una IA: el pedido tiene que LLEVAR lo que se pidio.\n\n    Ley (CONTRATO_EL_EQUIPO_ESCRIBE): \"un PROGRAMA comprueba que el pedido este bien hecho\",\n    que lleve dentro lo que se pidio. Medido el 2026-09-10 (causa 2): el gratis devolvio un JSON\n    \"reparado\" por _json_de que tenia diagnostico y archivo pero VACIO de texto_nuevo; el auditor\n    lo vio DUDOSO y el trabajo murio SIN llamar al de pago. El de pago entra SIEMPRE que el\n    gratis falle; aqui el fallo era del programa, no del cerebro. Devuelve (ok, falta): con la\n    falta en terminos que el bucle convierte en motivo de nuevo intento.\n    \"\"\"\n    if not isinstance(propuesta, dict):\n        return False, f\"no devolvio un JSON: {str(propuesta)[:80]}\"\n    if clase == \"crear\":\n        # Crear una pieza entera: si no trae el contenido nuevo, no existe lo que se crea.\n        if not str(propuesta.get(\"texto_nuevo\") or \"\").strip():\n            return False, \"la propuesta NO trae texto_nuevo (el pedido llego incompleto)\"\n        if _trae_no_encontrado(propuesta, (\"archivo\", \"codigo\", \"texto_viejo\", \"texto_nuevo\")):\n            return False, \"la propuesta NO cumple porque trae la marca NO_ENCONTRADO\"\n    else:\n        # Reparar: tiene que decir que toca y con que se reemplaza.\n        if not str(propuesta.get(\"archivo\") or \"\").strip():\n            return False, \"la propuesta NO dice que archivo toca\"\n        if \"codigo\" not in propuesta and \"texto_viejo\" not in propuesta and \"texto_nuevo\" not in propuesta:\n            return False, \"la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)\"\n        if _trae_no_encontrado(propuesta, (\"archivo\", \"codigo\", \"texto_viejo\", \"texto_nuevo\")):\n            return False, \"la propuesta NO cumple porque trae la marca NO_ENCONTRADO\"\n    return True, \"\"",
+  "vigia": "Una prueba determinista que llame a _propuesta_cumple con una propuesta de clase 'crear' y otra de clase 'reparar' cuyo archivo, codigo, texto_viejo o texto_nuevo contenga la marca NO_ENCONTRADO como subtexto, y exija que devuelva (False, motivo) con el motivo que dice que trae la marca NO_ENCONTRADO; y que con los mismos campos sin la marca devuelva (True, '').",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio añade la comprobación solicitada sin romper nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19074 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}

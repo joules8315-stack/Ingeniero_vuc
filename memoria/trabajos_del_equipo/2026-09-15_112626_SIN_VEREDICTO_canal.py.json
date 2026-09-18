@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "claude",
+ "propuesta": {
+  "diagnostico": "El flujo de leer/marcar en arnes/canal.py ya existe y respeta 'leer no marca, marcar solo cierra despues de entregar', pero el material no trae la funcion que ejecuta las ordenes de terminal 'leer --sin-marcar' y 'marcar <ruta>' ni el aviso/llamado a opencode ni su vigilancia, asi que no se puede reparar a ciegas.",
+  "archivo": "arnes/canal.py",
+  "funcion": "leer",
+  "texto_viejo": "def leer(para=None, marcar=True):",
+  "texto_nuevo": "def leer(para=None, marcar=True):",
+  "cambio": "NO_ENCONTRADO: el material solo trae leer, marcar_leidos y cerrar_recados_de; no aparece la funcion que atiende las ordenes de terminal 'leer --sin-marcar' y 'marcar <ruta>', ni el aviso/llamado a opencode, ni la vigilancia que detecta mensajes aunque cierre la sesion. No se toca nada hasta tener esas piezas completas.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO: no aparece en el material la vigia del canal ni la de comunicacion con opencode.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/canal.py",
+   "arnes/candados_medicion.py",
+   "arnes/companero.py",
+   "vigias/test_vigia_canal_automatico.py",
+   "vigias/test_vigia_comunicacion.py",
+   "vigias/test_vigia_ruta_de_acceso.py"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: donde esta la funcion que atiende las ordenes de terminal 'leer --sin-marcar' y 'marcar <ruta>' y como se llama?",
+   "PREGUNTA_REQUERIDA: donde esta el aviso/llamado a opencode y como se llama?",
+   "PREGUNTA_REQUERIDA: donde esta la vigilancia que detecta los mensajes a opencode aunque cierre la sesion?"
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "_error": "el cerebro no devolvio JSON",
+  "_crudo": "Terminé mi revisión y ya di mi respuesta. El problema ahora no es el trabajo: es que el cierre se quedó trabado en el bucle de siempre, ese que solo tú puedes cortar con la orden de apagado que ya conoces. También intenté dejar el aviso al equipo por escrito, pero cada intento me pide tu permiso y no llega a salir, así que no puedo dejarlo yo desde aquí.\n\nLo importante, en simple:\n\nEl arreglo que propusieron para volver a hablar con tu ayudante **está bien**. No se inventaron nada y no tocan nada que estuviera al lado. Pero **todavía no es un arreglo de verdad**: es un aviso, con razón, de que el material que les pasaron **llegó cortado**. Le faltan tres cosas para poder trabajar:\n\n1. la parte que entiende las órdenes que se escriben a mano,\n2. el aviso que le avisa a tu ayudante, y\n3. el vigilante que se da cuenta de los mensajes aunque se cierre todo.\n\nSin esas tres cosas, seguir sería adivinar, y eso no se hace.\n\n**Lo que sigue:** hay que volver a juntar el material con esas tres piezas adentro y recién ahí reparar de verdad.\n\nY si el cierre te vuelve a trabar sin motivo, córtalo con la orden de apagado de siempre.\n"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a bigpickle y no esta disponible: reviso ",
+  "todas las gratis duermen: revisa claude (ley de Julio)",
+  "vueltas_dadas: 1"
+ ]
+}

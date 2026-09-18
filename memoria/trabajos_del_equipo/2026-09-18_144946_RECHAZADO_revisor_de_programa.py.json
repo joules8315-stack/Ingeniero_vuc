@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "El paso 2 SINTAXIS hace ast.parse (Python) a todo archivo, incluidos .js/.mjs/.cjs, y frena en falso un .js valido que node --check aprueba.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        # 3 — USA UN NOMBRE QUE NO EXISTE. El fallo real del 2026-09-08: re sin importar.",
+  "texto_nuevo": "        # 2-bis — SI ES JAVASCRIPT, SE COMPRUEBA CON NODE, NO CON ast.parse.\n        # Freno en falso cazado el 2026-09-18: un .js valido (node --check OK) freno el paso 2\n        # porque ast.parse es de Python. Los .py siguen exactamente igual.\n        _archivo_js = str(p.get(\"archivo\") or \"\")\n        if _archivo_js.endswith((\".js\", \".mjs\", \".cjs\")):\n            import subprocess\n            import tempfile\n            _ruta_tmp = None\n            try:\n                with tempfile.NamedTemporaryFile(\"w\", suffix=\".js\", delete=False, encoding=\"utf-8\") as _ftmp:\n                    _ftmp.write(nuevo)\n                    _ruta_tmp = _ftmp.name\n                _res = subprocess.run([\"node\", \"--check\", _ruta_tmp],\n                                      capture_output=True, text=True, timeout=20)\n                if _res.returncode != 0:\n                    fallos.append(\"EL CODIGO QUEDA ROTO (node): \" + (_res.stderr or \"\")[:200])\n            except FileNotFoundError:\n                pass\n            except Exception as _e:\n                fallos.append(\"No se pudo comprobar el JavaScript con node: %s\" % str(_e)[:120])\n            finally:\n                if _ruta_tmp:\n                    try:\n                        os.remove(_ruta_tmp)\n                    except Exception:\n                        pass\n            return fallos\n\n        # 3 — USA UN NOMBRE QUE NO EXISTE. El fallo real del 2026-09-08: re sin importar.",
+  "cambio": "Insertar, al inicio del paso 2 (antes de 'arbol = None'), un bloque que detecte si el archivo termina en .js/.mjs/.cjs; en ese caso escribir 'nuevo' en un temporal, correr ['node','--check',ruta] con subprocess (timeout 20), agregar 'EL CODIGO QUEDA ROTO (node): '+stderr[:200] a fallos si returncode!=0, no acusar si node no existe (FileNotFoundError), y en ambos casos hacer 'return fallos' para no seguir con ast.parse. Importar subprocess y tempfile dentro del bloque. Los .py quedan igual.",
+  "codigo": "        _archivo_js = str(p.get(\"archivo\") or \"\")\n        if _archivo_js.endswith((\".js\", \".mjs\", \".cjs\")):\n            import subprocess\n            import tempfile\n            _ruta_tmp = None\n            try:\n                with tempfile.NamedTemporaryFile(\"w\", suffix=\".js\", delete=False, encoding=\"utf-8\") as _ftmp:\n                    _ftmp.write(nuevo)\n                    _ruta_tmp = _ftmp.name\n                _res = subprocess.run([\"node\", \"--check\", _ruta_tmp],\n                                      capture_output=True, text=True, timeout=20)\n                if _res.returncode != 0:\n                    fallos.append(\"EL CODIGO QUEDA ROTO (node): \" + (_res.stderr or \"\")[:200])\n            except FileNotFoundError:\n                pass\n            except Exception as _e:\n                fallos.append(\"No se pudo comprobar el JavaScript con node: %s\" % str(_e)[:120])\n            finally:\n                if _ruta_tmp:\n                    try:\n                        os.remove(_ruta_tmp)\n                    except Exception:\n                        pass\n            return fallos",
+  "vigia": "Un test que pase al revisor una propuesta con archivo .js valido (node --check OK) y compruebe que NO se agrega nada a fallos por sintaxis Python; y otro con .js roto que compruebe que si aparece 'EL CODIGO QUEDA ROTO (node)'.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El código nuevo importa 'os' pero no lo usa en el bloque de JavaScript. Si bien el `finally` usa `os.remove`, este `os` no está importado en el bloque de código que se inserta. Se necesita importar `os` al principio del bloque de JavaScript.",
+   "El código nuevo importa `subprocess` y `tempfile` dentro del bloque `if _archivo_js.endswith(...)`. Según el material original, estas importaciones deben estar al inicio del paso 2, antes de la detección del archivo JavaScript. El material dice explícitamente: 'Importar subprocess y tempfile dentro del bloque.' Esto es ambiguo, pero la intención parece ser que estén disponibles para el bloque de JavaScript, no que se importen cada vez que se ejecuta el bloque."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Falta importar el módulo `os` al principio del bloque de código que maneja archivos JavaScript, ya que se utiliza en el bloque `finally` para eliminar el archivo temporal."
+  ],
+  "resumen_para_el_jefe": "La reparación propuesta para manejar archivos JavaScript falla en la correcta importación de módulos y en la ubicación de las importaciones, lo que podría causar errores de ejecución."
+ },
+ "avisos": [
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 4"
+ ]
+}

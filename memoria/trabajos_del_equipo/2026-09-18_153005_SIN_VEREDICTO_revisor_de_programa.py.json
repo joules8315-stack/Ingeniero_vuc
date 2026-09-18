@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "La funcion _piezas(arbol) revienta con AttributeError '_fields' cuando arbol es None (archivos JavaScript), porque llama a ast.walk(None) sin comprobar antes si arbol es None.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "_piezas",
+  "texto_viejo": "def _conocidos(arbol):\n    \"\"\"Todo nombre que en ese texto SI existe: lo importado, lo definido, lo asignado, los\n    argumentos, los de except y los de global. Mas los nombres propios de Python.\"\"\"\n    if arbol is None:\n        return set()",
+  "texto_nuevo": "def _conocidos(arbol):\n    \"\"\"Todo nombre que en ese texto SI existe: lo importado, lo definido, lo asignado, los\n    argumentos, los de except y los de global. Mas los nombres propios de Python.\"\"\"\n    if arbol is None:\n        return set()",
+  "cambio": "NO_ENCONTRADO: el material no trae el cuerpo de la funcion _piezas(arbol), solo trae _conocidos(arbol). No se puede copiar el texto literal de _piezas ni su return final para saber de que tipo es el vacio que debe devolver.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py deberia probar _piezas(None) y comprobar que devuelve vacio del mismo tipo que su return final, sin lanzar AttributeError.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cerebro/piezas.py",
+   "mapa/inventario.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [
+   "Cual es el texto literal completo de la funcion _piezas(arbol), incluido su return final, para saber de que tipo debe ser el vacio que devuelve cuando arbol es None?"
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {},
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (19506 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (19564 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (19622 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

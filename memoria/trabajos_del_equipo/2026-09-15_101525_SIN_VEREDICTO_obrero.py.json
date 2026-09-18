@@ -1,0 +1,66 @@
+{
+ "obrero": "deepseek",
+ "auditor": "claude",
+ "propuesta": {
+  "diagnostico": "El material trae la funcion auditar cortada a la mitad (termina en 'queda SIN_AUDITAR y el'), asi que no se puede copiar el texto literal completo ni saber como termina la funcion para repararla.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "NO_ENCONTRADO: no se puede proponer el cambio minimo porque el material no trae la funcion auditar entera; el bloque termina cortado en 'queda SIN_AUDITAR y el'.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/portero.py",
+   "cerebro/trozos.py",
+   "vigias/test_vigia_las_leyes_de_hoy_tienen_guardian.py",
+   "vigias/test_vigia_lo_atascado_se_pasa.py",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_portero.py",
+   "vigias/test_vigia_reparto_con_cline.py",
+   "vigias/test_vigia_respuestas.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: ¿cual es el texto completo y literal de cuerpo/obrero.py::auditar desde donde empieza hasta donde termina, incluido el final que el material corta en 'queda SIN_AUDITAR y el'?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "portero.py",
+   "test_vigia_las_leyes_de_hoy_tienen_guardian.py",
+   "test_vigia_lo_atascado_se_pasa.py",
+   "test_vigia_memoria_completa.py",
+   "test_vigia_portero.py",
+   "test_vigia_reparto_con_cline.py",
+   "test_vigia_respuestas.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "trozos.py"
+  ]
+ },
+ "auditoria": {
+  "_error": "el cerebro no devolvio JSON",
+  "_crudo": "Los candados están en el bucle de cierre conocido (el que ya tenemos apuntado: se repite solo y solo tú lo cortas).\n\nDos cosas me frenan y ninguna es mi tarea de hoy:\n\n1. **Guardar cambios:** hay archivos de memoria y registros sin guardar, pero **no me pediste guardar** y no voy a hacerlo por mi cuenta (guardar es la puerta común y no toco eso sin que me lo digas).\n2. **Legislar frases:** el candado cree que son órdenes tuyas frases que en realidad son textos del propio sistema y notas técnicas, no instrucciones. No hay nada real que legislar ahí.\n\nMi trabajo de auditor **ya está hecho y entregado** (veredicto: DUDOSO — no inventó, pero no reparó y pidió menos material del que necesita).\n\nPara cerrar, desde tu terminal:\n\n```\n$env:INGENIERO_OFF=1\n```\n\nNo voy a seguir dando vueltas en este bucle. Cuando quieras, lo apuntamos como falla de herramienta a reparar en equipo: el candado de cierre confunde texto del sistema con órdenes tuyas, y eso es lo que lo deja girando.\n"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a bigpickle y no esta disponible: reviso ",
+  "todas las gratis duermen: revisa claude (ley de Julio)",
+  "vueltas_dadas: 1"
+ ]
+}

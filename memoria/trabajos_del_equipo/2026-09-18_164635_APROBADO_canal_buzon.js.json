@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El manejador chat.message usa leerCanal() que devuelve ctx directo, el id de la parte empieza por 'canal-' (marca rechazada por OpenCode), y nunca llama a marcarCanal(r.rutas).",
+  "archivo": ".opencode/plugins/canal_buzon.js",
+  "funcion": "chat.message",
+  "texto_viejo": "    \"chat.message\": async (input, output) => {\n      sessionID = input && input.sessionID ? input.sessionID : sessionID;\n      lastActivity = Date.now();\n      const ctx = leerCanal();\n      if (!ctx) return;\n      output.parts.push({\n        id: \"canal-\" + Date.now(),\n        sessionID,\n        messageID: input && input.messageID ? input.messageID : \"user\",\n        type: \"text\",\n        text: ctx,\n        synthetic: true,\n      });\n    },",
+  "texto_nuevo": "    \"chat.message\": async (input, output) => {\n      sessionID = input && input.sessionID ? input.sessionID : sessionID;\n      lastActivity = Date.now();\n      const r = leerCanal();\n      if (!r) return;\n      output.parts.push({\n        id: \"prt_\" + Date.now() + \"_\" + Math.random().toString(36).slice(2, 8),\n        sessionID,\n        messageID: input && input.messageID ? input.messageID : \"user\",\n        type: \"text\",\n        text: r.ctx,\n        synthetic: true,\n      });\n      marcarCanal(r.rutas);\n    },",
+  "cambio": "Sustituir el manejador chat.message: usar const r = leerCanal(); if (!r) return; cambiar el id de la parte a prt_ + Date.now() + sufijo aleatorio corto; usar text: r.ctx; y llamar marcarCanal(r.rutas) despues de output.parts.push.",
+  "codigo": "    \"chat.message\": async (input, output) => {\n      sessionID = input && input.sessionID ? input.sessionID : sessionID;\n      lastActivity = Date.now();\n      const r = leerCanal();\n      if (!r) return;\n      output.parts.push({\n        id: \"prt_\" + Date.now() + \"_\" + Math.random().toString(36).slice(2, 8),\n        sessionID,\n        messageID: input && input.messageID ? input.messageID : \"user\",\n        type: \"text\",\n        text: r.ctx,\n        synthetic: true,\n      });\n      marcarCanal(r.rutas);\n    },",
+  "vigia": "Una prueba que cargue el plugin, simule un chat.message con canal marcado y compruebe que la parte inyectada tiene id que empieza por 'prt_' y que marcarCanal fue llamada con r.rutas.",
+  "puede_danar": [
+   "canal_buzon.js",
+   "canal",
+   "buzon"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio reescribe solo el manejador chat.message usando lo que ya existia (leerCanal y marcarCanal del propio material), pone el id con prt_ como pide OpenCode y llama a marcarCanal(r.rutas) despues del push, sin tocar nada mas."
+ },
+ "avisos": [
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "vueltas_dadas: 1"
+ ]
+}

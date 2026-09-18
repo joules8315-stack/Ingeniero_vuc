@@ -1,0 +1,23 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El plugin JS del buzon fue desactivado por error severo; hay que recrearlo con marca prt_, lectura con --sin-marcar cuando no hay sesion, y marcar solo tras entregar, evitando los literales prohibidos.",
+  "archivo": ".opencode/plugins/canal_buzon.js",
+  "texto_nuevo": "// Plugin de buzon de recados para opencode.\n// Reparado: la marca de cada recado empieza con prt_ (opencode rechaza la vieja),\n// si no hay sesion abierta NO se marca (se lee con --sin-marcar),\n// y se marca como leido SOLO despues de entregar el recado a la sesion.\n//\n// Modulo CommonJS, igual que el original.\n\nconst { spawnSync } = require('child_process');\nconst path = require('path');\n\n// Raiz del proyecto: dos niveles arriba de .opencode/plugins/\nconst RAIZ = path.resolve(__dirname, '..', '..');\nconst ARNES = path.join(RAIZ, 'arnes');\nconst PY = process.env.PYTHON || 'python';\n\n// Prefijo de la marca de cada recado. opencode exige que empiece con prt_.\nconst PREFIJO_MARCA = 'prt_';\n\n/**\n * Ejecuta arnes/canal.py con los argumentos dados y devuelve la salida.\n * Se usa spawnSync para no depender de shell y capturar stdout/stderr.\n */\nfunction ejecutarArnes(args) {\n  const res = spawnSync(PY, [path.join(ARNES, 'canal.py')].concat(args), {\n    cwd: RAIZ,\n    encoding: 'utf-8',\n  });\n  if (res.error) {\n    throw res.error;\n  }\n  return {\n    codigo: res.status,\n    salida: (res.stdout || '').trim(),\n    error: (res.stderr || '').trim(),\n  };\n}\n\n/**\n * Lee los recados pendientes para un destino.\n *\n * Regla dura: si NO hay sesion abierta, se lee con --sin-marcar para que\n * los recados NO se pierdan. Solo cuando hay sesion abierta se puede\n * entregar y, despues de entregar, marcar como leidos.\n *\n * @param {string} destino  nombre del buzon (p.ej. 'opencode')\n * @param {boolean} haySesion  true si hay una sesion abierta que va a recibir\n * @returns {Array<{ruta: string, texto: string}>}\n */\nfunction leerRecados(destino, haySesion) {\n  const args = ['leer', destino];\n  if (!haySesion) {\n    // Sin sesion abierta: leer sin marcar. Los recados quedan pendientes.\n    args.push('--sin-marcar');\n  }\n  const res = ejecutarArnes(args);\n  if (res.codigo !== 0) {\n    return [];\n  }\n  if (!res.salida) {\n    return [];\n  }\n  let crudos;\n  try {\n    crudos = JSON.parse(res.salida);\n  } catch (e) {\n    return [];\n  }\n  if (!Array.isArray(crudos)) {\n    return [];\n  }\n  return crudos.map(function (m) {\n    return {\n      ruta: m.ruta || m.path || '',\n      texto: m.texto || m.text || '',\n    };\n  });\n}\n\n/**\n * Marca como leidos los recados indicados.\n * SOLO se llama DESPUES de haber entregado el recado a la sesion.\n *\n * @param {Array<string>} rutas  rutas de los recados ya entregados\n */\nfunction marcarLeidos(rutas) {\n  if (!Array.isArray(rutas) || rutas.length === 0) {\n    return;\n  }\n  // El argumento 'marcar' es el que usa arnes/canal.py para marcar leidos.\n  ejecutarArnes(['marcar'].concat(rutas));\n}\n\n/**\n * Entrega los recados a la sesion abierta y, solo despues de entregarlos,\n * los marca como leidos.\n *\n * @param {string} destino\n * @param {function(string): void} entregar  callback que entrega el texto a la sesion\n * @returns {number} cuantos recados se entregaron\n */\nfunction entregarYMarcar(destino, entregar) {\n  const recados = leerRecados(destino, true);\n  if (recados.length === 0) {\n    return 0;\n  }\n  const rutas = [];\n  for (let i = 0; i < recados.length; i++) {\n    const r = recados[i];\n    // Entregar PRIMERO.\n    entregar(r.texto);\n    rutas.push(r.ruta);\n  }\n  // Marcar DESPUES de entregar.\n  marcarLeidos(rutas);\n  return recados.length;\n}\n\n/**\n * Marca de un recado nuevo. Debe empezar con prt_ para que opencode la acepte.\n *\n * @param {string} id  identificador unico del recado\n * @returns {string}\n */\nfunction marca(id) {\n  return PREFIJO_MARCA + String(id);\n}\n\nmodule.exports = {\n  PREFIJO_MARCA: PREFIJO_MARCA,\n  marca: marca,\n  leerRecados: leerRecados,\n  marcarLeidos: marcarLeidos,\n  entregarYMarcar: entregarYMarcar,\n};\n",
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, respeta las restricciones de literales prohibidos y no afecta a los módulos vecinos."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

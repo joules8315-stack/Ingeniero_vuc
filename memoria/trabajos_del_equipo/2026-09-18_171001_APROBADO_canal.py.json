@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En la rama 'leer' con '--sin-marcar', additionalContext se arma con un join del campo texto, perdiendo encabezado, remitente e instruccion LOOP; debe usar texto_leer(msgs=mensajes).",
+  "archivo": "arnes/canal.py",
+  "funcion": "bloque de linea de comandos al final, rama 'if q == \"leer\" and \"--sin-marcar\" in sys.argv'",
+  "texto_viejo": "additionalContext",
+  "texto_nuevo": "texto_leer(msgs=mensajes)",
+  "cambio": "Sustituir en la linea 167 el valor de additionalContext (hoy un join del campo texto) por texto_leer(msgs=mensajes).",
+  "codigo": "additionalContext: texto_leer(msgs=mensajes)",
+  "vigia": "vigias/test_vigia_recados_no_se_pierden.py y vigias/test_vigia_comunicacion.py comprueban que el recado entregado conserva encabezado, remitente e instruccion LOOP.",
+  "puede_danar": [
+   "arnes/llamar.py",
+   "arnes/loop.py",
+   "vigias/test_vigia_comunicacion.py",
+   "vigias/test_vigia_contestar_cierra_el_recado.py",
+   "vigias/test_vigia_recados_no_se_pierden.py"
+  ],
+  "preguntas": [
+   "El material no trae el bloque de linea de comandos al final de arnes/canal.py ni la linea 167 literal; ¿puedes darme ese bloque completo para copiar el texto exacto?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "llamar.py",
+   "loop.py",
+   "test_vigia_comunicacion.py",
+   "test_vigia_contestar_cierra_el_recado.py",
+   "test_vigia_recados_no_se_pierden.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El texto_viejo solo aporta la clave 'additionalContext', no la linea 167 completa; la ubicacion es valida porque el texto aparece en el material, pero la edicion debe confirmar que esa clave ocurre una sola vez en el archivo",
+   "La afirmacion de que las dos vigias citadas comprueban encabezado/remitente/LOOP no es verificable con el material (su contenido no viene); es plausible dado el diagnostico, pero el sello no debe apoyarse solo en ese supuesto"
+  ],
+  "riesgo_vecinos": [
+   "El cambio deja intocadas las funciones texto_leer y leer, asi que llamar.py, loop.py y los demas importadores de canal.py no deberian verse afectados",
+   "test_vigia_comunicacion.py y test_vigia_recados_no_se_pierden.py son los que el propio diagnostico da por fallando con el join; el cambio va a favor de ellos, pero hay que correrlos antes y despues para confirmar que no rompen"
+  ],
+  "que_falta": [
+   "Obtener el bloque real de la linea 167 (el obrero ya lo pidio en 'preguntas') para ejecutar la edicion con el trozo exacto y unico, respetando el fallo de memoria de no parchear por texto suelto",
+   "Correr el protocolo: arranca, vigias antes, aplicar el cambio, vigias despues, y luego la prueba real antes de pedirle a Julio sus ojos"
+  ],
+  "resumen_para_el_jefe": "El obrero hizo exactamente lo que manda el paquete: cambiar esa sola linea para que additionalContext use texto_leer(msgs=mensajes), funcion que el propio material acredita (linea 142) y que ya acepta msgs, sin inventar nada y declarando por escrito la unica duda (el texto literal de la linea), asi que no se pierde dinero y se puede pasar a la prueba con vigias."
+ },
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

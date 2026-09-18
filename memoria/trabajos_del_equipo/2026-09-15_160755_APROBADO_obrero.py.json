@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En la funcion auditar, la linea que fija revisor_fijo usa 'auditor if auditor else None', por lo que cualquier auditor pedido distinto de bigpickle queda como revisor fijo y frena el relevo normal.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    revisor_fijo = auditor if auditor else None",
+  "texto_nuevo": "    revisor_fijo = auditor if auditor == \"bigpickle\" else None",
+  "cambio": "Sustituir la asignacion de revisor_fijo para que solo se trate como revisor fijo cuando el auditor pedido sea exactamente bigpickle; para cualquier otro auditor no disponible se avisa y sigue el relevo normal.",
+  "codigo": "    revisor_fijo = auditor if auditor == \"bigpickle\" else None",
+  "vigia": "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio corrige la condición de revisor_fijo según lo solicitado sin introducir código inexistente ni afectar a los vecinos."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

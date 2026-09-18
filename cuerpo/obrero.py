@@ -262,6 +262,19 @@ def _maneras_de_leerlo(crudo):
         yield tronco + "]" * max(0, faltan) + "}" * max(0, tronco.count("{") - tronco.count("}"))
 
 
+def _trae_no_encontrado(propuesta, campos):
+    """UN PROGRAMA, no una IA: la marca NO_ENCONTRADO no puede colarse como si fuera contenido.
+
+    Julio, 2026-09-15: la marca se detecta como SUBTEXTO en cualquier campo, en las DOS ramas
+    (crear y reparar). Si cualquiera de los campos que _propuesta_cumple ya revisa trae la
+    marca, la propuesta NO cumple.
+    """
+    for campo in campos:
+        if "NO_ENCONTRADO" in str(propuesta.get(campo) or ""):
+            return True
+    return False
+
+
 def _propuesta_cumple(propuesta, clase):
     """UN PROGRAMA, no una IA: el pedido tiene que LLEVAR lo que se pidio.
 
@@ -278,12 +291,16 @@ def _propuesta_cumple(propuesta, clase):
         # Crear una pieza entera: si no trae el contenido nuevo, no existe lo que se crea.
         if not str(propuesta.get("texto_nuevo") or "").strip():
             return False, "la propuesta NO trae texto_nuevo (el pedido llego incompleto)"
+        if _trae_no_encontrado(propuesta, ("archivo", "codigo", "texto_viejo", "texto_nuevo")):
+            return False, "la propuesta NO cumple porque trae la marca NO_ENCONTRADO"
     else:
         # Reparar: tiene que decir que toca y con que se reemplaza.
         if not str(propuesta.get("archivo") or "").strip():
             return False, "la propuesta NO dice que archivo toca"
         if "codigo" not in propuesta and "texto_viejo" not in propuesta and "texto_nuevo" not in propuesta:
             return False, "la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)"
+        if _trae_no_encontrado(propuesta, ("archivo", "codigo", "texto_viejo", "texto_nuevo")):
+            return False, "la propuesta NO cumple porque trae la marca NO_ENCONTRADO"
     return True, ""
 
 
@@ -879,7 +896,17 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
     material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,
                                         tope=TOPE_GRATIS - 3344 - 47 -
                                              len(json.dumps(propuesta, ensure_ascii=False)))
-    for _intento in range(2):
+    if auditor == 'bigpickle':
+        # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de
+        # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.
+        from cuerpo import bigpickle
+        _texto_bp, _avisos_bp = bigpickle.preguntar(
+            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))
+        avisos.extend(_avisos_bp or [])
+        if _texto_bp:
+            quien_aud = 'bigpickle'
+            auditoria = _json_de(_texto_bp)
+    for _intento in range(0 if auditor == 'bigpickle' else 2):
         crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
             _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,
             evitar=evitar, primero=auditor_ok, clase="auditar", vuelta=_intento + 1)
@@ -902,7 +929,20 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
     if auditor and quien_aud != auditor:
         avisos.append("se pidio auditar a %s y no esta disponible: reviso %s" % (auditor, quien_aud))
 
+    # LEY DE JULIO 2026-09-15: SI EL ENCARGO PIDIO UN REVISOR FIJO (bigpickle), ESE PEDIDO SE
+    # RESPETA SIEMPRE. NO se sustituye por claude, gemini, groq ni por el cerebro de pago. Si el
+    # revisor pedido no contesta, el veredicto queda SIN_AUDITAR con aviso, y NO se llama a ningun
+    # otro cerebro en su lugar. El trabajo queda archivado para que bigpickle lo revise despues.
+    revisor_fijo = auditor if auditor == "bigpickle" else None
+    if revisor_fijo and quien_aud != revisor_fijo:
+        auditoria = {"veredicto": "SIN_AUDITAR",
+                     "resumen_para_el_jefe":
+                         "el revisor pedido (%s) no estaba; no se llama a otro cerebro en su lugar" % revisor_fijo}
+        avisos.append("el revisor pedido (%s) no estaba: queda SIN_AUDITAR y archivado para su revision" % revisor_fijo)
+        return auditoria, quien_aud, avisos
+
     # Ley de Julio 2026-09-14: si todas las gratis duermen, revisa Claude; nunca quien escribio.
+    # SOLO si el encargo NO pidio un revisor fijo (ley de Julio 2026-09-15).
     if auditoria is None or auditoria.get('veredicto') == 'SIN_AUDITAR':
         dormidos = {q for q in cuotas.ORDEN if not cuotas.desperto(q)}
         if cuotas.puede_revisar_claude(evitar or '', dormidos):
@@ -919,6 +959,7 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
     # aplican y la ronda siguiente borraba. El intento con el de pago se mantiene (ley de Julio, lo
     # vigila test_vigia_lo_pesado_a_deepseek.py); si no queda nadie distinto, queda SIN_AUDITAR y el
     # trabajo ya esta archivado para revisarlo despues. Lo vigila test_vigia_nadie_revisa_su_propio_trabajo.py
+    # SOLO si el encargo NO pidio un revisor fijo (ley de Julio 2026-09-15).
     if (not auditoria or auditoria.get("veredicto") == "SIN_AUDITAR"):
         crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
             _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,

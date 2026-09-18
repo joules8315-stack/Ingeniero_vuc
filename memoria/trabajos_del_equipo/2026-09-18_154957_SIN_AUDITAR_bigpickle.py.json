@@ -1,0 +1,28 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "En la rama de returncode distinto de cero, el aviso y la nota del log no incluyen los ultimos 300 caracteres de stderr sin saltos de linea.",
+  "archivo": "cuerpo/bigpickle.py",
+  "funcion": "preguntar",
+  "texto_viejo": "        if proc.returncode != 0:\n            err = (stderr or \"\").strip()\n            _, costo = _parsear_salida(stdout or \"\")\n            _anotar(segundos, costo, False, nota=f\"returncode={proc.returncode}\")\n            aviso = f\"OpenCode termino con codigo {proc.returncode}\"\n            if err:\n                aviso = f\"{aviso}: {err[:300]}\"\n            return \"\", [aviso]",
+  "texto_nuevo": "        if proc.returncode != 0:\n            err = (stderr or \"\").replace(\"\\n\", \" \").replace(\"\\r\", \" \").strip()\n            _, costo = _parsear_salida(stdout or \"\")\n            _anotar(segundos, costo, False, nota=f\"returncode={proc.returncode} stderr={err[:300]}\")\n            aviso = f\"OpenCode termino con codigo {proc.returncode}\"\n            if err:\n                aviso = f\"{aviso}: {err[:300]}\"\n            return \"\", [aviso]",
+  "cambio": "En la rama returncode != 0: (1) limpiar stderr quitando saltos de linea antes de recortar a 300; (2) anadir esos 300 caracteres a la nota del log ademas del returncode.",
+  "codigo": "        if proc.returncode != 0:\n            err = (stderr or \"\").replace(\"\\n\", \" \").replace(\"\\r\", \" \").strip()\n            _, costo = _parsear_salida(stdout or \"\")\n            _anotar(segundos, costo, False, nota=f\"returncode={proc.returncode} stderr={err[:300]}\")\n            aviso = f\"OpenCode termino con codigo {proc.returncode}\"\n            if err:\n                aviso = f\"{aviso}: {err[:300]}\"\n            return \"\", [aviso]",
+  "vigia": "Una prueba que fuerce returncode != 0 con stderr multilinea y compruebe que el aviso y la nota del log llevan los ultimos 300 caracteres de stderr sin saltos de linea.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "resumen_para_el_jefe": "el revisor pedido (bigpickle) no estaba; no se llama a otro cerebro en su lugar"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19058 letras, aguanta 19042) -> se le salta",
+  "NO se manda: trae una llave",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "el revisor pedido (bigpickle) no estaba: queda SIN_AUDITAR y archivado para su revision",
+  "vueltas_dadas: 1"
+ ]
+}

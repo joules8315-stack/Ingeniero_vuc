@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "En auditar, la condicion del revisor fijo se cumple para cualquier auditor pedido (no solo bigpickle), y en _propuesta_cumple falta rechazar la marca NO_ENCONTRADO como subtexto en cualquier campo, en las dos ramas.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    revisor_fijo = auditor if auditor else None",
+  "texto_nuevo": "    revisor_fijo = auditor if auditor == \"bigpickle\" else None",
+  "cambio": "En auditar, cambiar la asignacion de revisor_fijo para que solo se trate como revisor fijo cuando el auditor pedido sea exactamente \"bigpickle\"; para cualquier otro auditor no disponible se sigue el relevo normal. No tocar nada mas de auditar.",
+  "codigo": "    revisor_fijo = auditor if auditor == \"bigpickle\" else None",
+  "vigia": "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py: comprobar que con auditor distinto de bigpickle no disponible NO se devuelve SIN_AUDITAR por revisor fijo, sino que se sigue el relevo; y que con auditor == \"bigpickle\" no disponible si queda SIN_AUDITAR sin llamar a otro.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El cambio propuesto para _propuesta_cumple no incluye el código real que implementa la verificación de NO_ENCONTRADO; sin el fragmento concreto no se puede confirmar que la lógica se haya añadido correctamente."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Código de la modificación de _propuesta_cumple que verifique NO_ENCONTRADO en todos los campos."
+  ],
+  "resumen_para_el_jefe": "El ajuste de revisor_fijo es correcto, pero la propuesta carece del código concreto para la nueva regla de NO_ENCONTRADO, por lo que necesita revisión adicional."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}

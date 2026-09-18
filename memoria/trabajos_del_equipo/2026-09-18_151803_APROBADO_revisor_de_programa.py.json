@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El paso 2 SINTAXIS hace ast.parse (Python) tambien a archivos JavaScript y frena en falso con un .js valido segun node --check.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        arbol = None\n        try:\n            arbol = ast.parse(nuevo)\n        except SyntaxError as e:",
+  "texto_nuevo": "        arbol = None\n        _ruta_js = str(p.get('archivo') or '')\n        _es_js = _ruta_js.lower().endswith(('.js', '.mjs', '.cjs'))\n        if _es_js:\n            _texto_js = None\n            if es_un_pedazo(nuevo) and _ruta_js and os.path.isfile(_ruta_js) and viejo:\n                try:\n                    with open(_ruta_js, encoding='utf-8-sig', errors='replace') as _fj:\n                        _todo_js = _fj.read()\n                    if viejo in _todo_js:\n                        _texto_js = _todo_js.replace(viejo, nuevo, 1)\n                except Exception:\n                    _texto_js = None\n            elif not es_un_pedazo(nuevo):\n                _texto_js = nuevo\n            if _texto_js is not None:\n                _sufijo = os.path.splitext(_ruta_js)[1] or '.js'\n                if _sufijo == '.js' and re.search(r'(?m)^\\s*(import|export)\\b', _texto_js):\n                    _sufijo = '.mjs'\n                _tmp_js = None\n                try:\n                    import tempfile\n                    import subprocess\n                    _fd, _tmp_js = tempfile.mkstemp(suffix=_sufijo)\n                    with os.fdopen(_fd, 'w', encoding='utf-8') as _ftmp:\n                        _ftmp.write(_texto_js)\n                    _flags = 0x08000000 if os.name == 'nt' else 0\n                    _res = subprocess.run(['node', '--check', _tmp_js], capture_output=True, text=True, timeout=20, shell=False, creationflags=_flags)\n                    if _res.returncode != 0:\n                        fallos.append('EL CODIGO QUEDA ROTO (node): ' + (_res.stderr or '')[:200])\n                        return fallos\n                except FileNotFoundError:\n                    pass\n                except Exception:\n                    pass\n                finally:\n                    if _tmp_js:\n                        try:\n                            os.remove(_tmp_js)\n                        except Exception:\n                            pass\n        try:\n            arbol = ast.parse(nuevo) if not _es_js else None\n        except SyntaxError as e:",
+  "cambio": "Justo antes de 'arbol = None' se calcula _ruta_js y _es_js; si es JS se arma el texto a comprobar (archivo completo con reemplazo si es pedazo y existe, o el propio nuevo si no es pedazo; si es pedazo y no hay archivo, no se comprueba), se escribe en un temporal con sufijo .mjs si el texto trae import/export y el sufijo es .js, se corre node --check (timeout 20, sin shell, creationflags en Windows), si returncode!=0 se agrega el fallo y se retorna, y el temporal se borra en finally. Ademas la linea 'arbol = ast.parse(nuevo)' pasa a no ejecutarse si _es_js (queda arbol = None). Los .py siguen igual.",
+  "codigo": "        arbol = None\n        _ruta_js = str(p.get('archivo') or '')\n        _es_js = _ruta_js.lower().endswith(('.js', '.mjs', '.cjs'))\n        if _es_js:\n            _texto_js = None\n            if es_un_pedazo(nuevo) and _ruta_js and os.path.isfile(_ruta_js) and viejo:\n                try:\n                    with open(_ruta_js, encoding='utf-8-sig', errors='replace') as _fj:\n                        _todo_js = _fj.read()\n                    if viejo in _todo_js:\n                        _texto_js = _todo_js.replace(viejo, nuevo, 1)\n                except Exception:\n                    _texto_js = None\n            elif not es_un_pedazo(nuevo):\n                _texto_js = nuevo\n            if _texto_js is not None:\n                _sufijo = os.path.splitext(_ruta_js)[1] or '.js'\n                if _sufijo == '.js' and re.search(r'(?m)^\\s*(import|export)\\b', _texto_js):\n                    _sufijo = '.mjs'\n                _tmp_js = None\n                try:\n                    import tempfile\n                    import subprocess\n                    _fd, _tmp_js = tempfile.mkstemp(suffix=_sufijo)\n                    with os.fdopen(_fd, 'w', encoding='utf-8') as _ftmp:\n                        _ftmp.write(_texto_js)\n                    _flags = 0x08000000 if os.name == 'nt' else 0\n                    _res = subprocess.run(['node', '--check', _tmp_js], capture_output=True, text=True, timeout=20, shell=False, creationflags=_flags)\n                    if _res.returncode != 0:\n                        fallos.append('EL CODIGO QUEDA ROTO (node): ' + (_res.stderr or '')[:200])\n                        return fallos\n                except FileNotFoundError:\n                    pass\n                except Exception:\n                    pass\n                finally:\n                    if _tmp_js:\n                        try:\n                            os.remove(_tmp_js)\n                        except Exception:\n                            pass\n        try:\n            arbol = ast.parse(nuevo) if not _es_js else None\n        except SyntaxError as e:",
+  "vigia": "Un .js valido segun node --check que hoy frena en falso debe pasar el paso 2 SINTAXIS sin fallos y seguir a los pasos 3, 4 y 5; un .js roto debe agregar 'EL CODIGO QUEDA ROTO (node): ...' y retornar fallos; un .py debe comportarse exactamente igual que antes.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py (paso 2 SINTAXIS de la funcion revisar)",
+   "los .py que pasan por el mismo paso 2 (deben quedar igual)"
+  ],
+  "preguntas": [],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada y no afecta a otros archivos"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19059 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

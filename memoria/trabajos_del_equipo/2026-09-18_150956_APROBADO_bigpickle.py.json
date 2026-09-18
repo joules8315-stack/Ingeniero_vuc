@@ -1,0 +1,31 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/bigpickle.py la linea que parsea la salida usa la variable 'resultado' que ya no existe; ahora el proceso es 'proc' y la salida esta en la variable 'stdout' de communicate.",
+  "archivo": "cuerpo/bigpickle.py",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "texto, costo = _parsear_salida(resultado.stdout or \"\")",
+  "texto_nuevo": "texto, costo = _parsear_salida(stdout or \"\")",
+  "cambio": "Sustituir en la linea indicada la variable 'resultado.stdout' por la variable 'stdout' que devuelve communicate, para que no haya NameError en el camino de exito.",
+  "codigo": "texto, costo = _parsear_salida(stdout or \"\")",
+  "vigia": "Correr la suite del negocio y comprobar que el camino de exito de bigpickle ya no lanza NameError y que el parseo devuelve texto y costo.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cambio correcto y limitado que soluciona el NameError sin introducir nuevos problemas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19069 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

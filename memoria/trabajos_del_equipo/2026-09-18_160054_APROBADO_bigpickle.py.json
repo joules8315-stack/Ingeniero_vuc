@@ -1,0 +1,33 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La funcion _trae_llave busca marcas como palabras sueltas (MARCAS_DE_LLAVE) y frena en falso encargos legitimos sobre este mismo archivo; hay que reescribirla para detectar la FORMA de una llave con re.search.",
+  "archivo": "cuerpo/bigpickle.py",
+  "funcion": "_trae_llave",
+  "texto_viejo": "def _trae_llave(prompt: str) -> bool:\n    \"\"\"True si el encargo trae algo que parece una llave. No se manda nunca.\"\"\"\n    if not isinstance(prompt, str):\n        return False\n    for marca in MARCAS_DE_LLAVE:\n        if marca in prompt:\n            return True\n    return False",
+  "texto_nuevo": "def _trae_llave(prompt: str) -> bool:\n    \"\"\"True si el encargo trae algo que parece una llave. No se manda nunca.\n\n    Detecta la FORMA de una llave (no palabras sueltas) con re.search.\n    Ante la duda (excepcion), devuelve True: no se manda. Nunca lanza.\n    \"\"\"\n    if not isinstance(prompt, str):\n        return False\n    try:\n        patrones = (\n            r'\\b(?:sk|gsk|pk|rk)[-_][A-Za-z0-9_\\-]{20,}',\n            r'\\bAIza[0-9A-Za-z_\\-]{30,}',\n            r'(?i)(?:api[_-]?key|token|secret|password)\\s*[:=]\\s*[\\x22\\x27]?[A-Za-z0-9_\\-]{16,}',\n        )\n        for patron in patrones:\n            if re.search(patron, prompt):\n                return True\n        return False\n    except Exception:\n        return True",
+  "cambio": "Sustituir el cuerpo de _trae_llave (docstring incluido) para que, dentro de un try, use re.search con los tres patrones de forma de llave; si no es str devuelve False; en el except Exception devuelve True. Se elimina el bucle sobre MARCAS_DE_LLAVE.",
+  "codigo": "def _trae_llave(prompt: str) -> bool:\n    \"\"\"True si el encargo trae algo que parece una llave. No se manda nunca.\n\n    Detecta la FORMA de una llave (no palabras sueltas) con re.search.\n    Ante la duda (excepcion), devuelve True: no se manda. Nunca lanza.\n    \"\"\"\n    if not isinstance(prompt, str):\n        return False\n    try:\n        patrones = (\n            r'\\b(?:sk|gsk|pk|rk)[-_][A-Za-z0-9_\\-]{20,}',\n            r'\\bAIza[0-9A-Za-z_\\-]{30,}',\n            r'(?i)(?:api[_-]?key|token|secret|password)\\s*[:=]\\s*[\\x22\\x27]?[A-Za-z0-9_\\-]{16,}',\n        )\n        for patron in patrones:\n            if re.search(patron, prompt):\n                return True\n        return False\n    except Exception:\n        return True",
+  "vigia": "Un test que llame a _trae_llave con un encargo que mencione 'sk-' o 'API_KEY' como texto normal (debe devolver False) y con cadenas que tengan la forma real de llave (sk-..., AIza..., api_key=...) (debe devolver True); y que con un objeto no-str devuelva False.",
+  "puede_danar": [
+   "preguntar (usa _trae_llave como filtro antes de mandar el encargo)",
+   "MARCAS_DE_LLAVE (constante que queda sin uso tras el cambio)"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La nueva implementación cumple el diagnóstico, no usa elementos inexistentes y no afecta a los vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19058 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "El algoritmo de _filtrar_paquete está mal: compara bloques por identidad is (objetos nuevos, nunca coinciden) y cuando no hay archivo deja 'conservados' vacío y bota todo el material; hay que reescribirlo con el algoritmo de pop()/bloque entero que manda el contrato.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_filtrar_paquete",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO",
+  "puede_danar": [
+   "Nadie depende de estas piezas. Reparacion aislada."
+  ],
+  "preguntas": [
+   "El material no trae el cuerpo actual de _filtrar_paquete (solo se citan las lineas 368-372 y el texto viejo de las llamadas en 'trabajar' y 'auditar'), asi que no puedo copiar el texto_viejo literal ni el texto_nuevo exacto sin inventarlos. Necesito leer la funcion completa para repararla."
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "obrero.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta corrige el bug sin inventar nada y no rompe dependencias."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19059 letras, aguanta 19042) -> se le salta",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}

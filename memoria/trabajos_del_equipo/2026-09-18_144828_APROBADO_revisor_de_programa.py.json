@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "El paso 2 SINTAXIS hace ast.parse a todo archivo y frena .js validos; ademas el parche anterior usaba os sin importarlo.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        arbol = None\n        try:\n            arbol = ast.parse(nuevo)\n        except SyntaxError as e:\n            try:",
+  "texto_nuevo": "        arbol = None\n        ruta_prop = str(p.get(\"archivo\") or \"\")\n        ext = os.path.splitext(ruta_prop)[1].lower()\n        if ext in (\".js\", \".mjs\", \".cjs\"):\n            # Un .js NO se lee con ast.parse (es Python). Se comprueba con node --check sobre\n            # un archivo temporal. Si node no esta instalado, no se acusa de nada.\n            try:\n                import subprocess\n                import tempfile\n                with tempfile.NamedTemporaryFile(\"w\", suffix=ext, delete=False,\n                                                 encoding=\"utf-8\") as ftmp:\n                    ftmp.write(nuevo)\n                    ruta_tmp = ftmp.name\n                try:\n                    res = subprocess.run([\"node\", \"--check\", ruta_tmp],\n                                         capture_output=True, text=True, timeout=20)\n                    if res.returncode != 0:\n                        fallos.append(\"EL CODIGO QUEDA ROTO (node --check): \" +\n                                      (res.stderr or res.stdout or \"\").strip())\n                finally:\n                    try:\n                        os.remove(ruta_tmp)\n                    except Exception:\n                        pass\n            except FileNotFoundError:\n                pass\n            except Exception:\n                pass\n        elif ext == \".py\" or not ext:\n            try:\n                arbol = ast.parse(nuevo)\n            except SyntaxError as e:\n                try:",
+  "cambio": "En el paso 2 SINTAXIS de revisar(): antes de llamar a ast.parse, mirar la extension de p.get('archivo'). Si es .js/.mjs/.cjs, comprobar con 'node --check' sobre un archivo temporal (subprocess, timeout 20s) y solo anadir 'EL CODIGO QUEDA ROTO ...' con el mensaje de node si falla; si node no esta instalado, no acusar. Los .py siguen exactamente igual con ast.parse. os ya esta importado en el archivo, no hace falta anadirlo.",
+  "codigo": "        arbol = None\n        ruta_prop = str(p.get(\"archivo\") or \"\")\n        ext = os.path.splitext(ruta_prop)[1].lower()\n        if ext in (\".js\", \".mjs\", \".cjs\"):\n            try:\n                import subprocess\n                import tempfile\n                with tempfile.NamedTemporaryFile(\"w\", suffix=ext, delete=False,\n                                                 encoding=\"utf-8\") as ftmp:\n                    ftmp.write(nuevo)\n                    ruta_tmp = ftmp.name\n                try:\n                    res = subprocess.run([\"node\", \"--check\", ruta_tmp],\n                                         capture_output=True, text=True, timeout=20)\n                    if res.returncode != 0:\n                        fallos.append(\"EL CODIGO QUEDA ROTO (node --check): \" +\n                                      (res.stderr or res.stdout or \"\").strip())\n                finally:\n                    try:\n                        os.remove(ruta_tmp)\n                    except Exception:\n                        pass\n            except FileNotFoundError:\n                pass\n            except Exception:\n                pass\n        elif ext == \".py\" or not ext:\n            try:\n                arbol = ast.parse(nuevo)\n            except SyntaxError as e:\n                try:",
+  "vigia": "Una prueba que pase al revisor una propuesta con archivo 'x.js' y texto_nuevo valido (node --check OK) y compruebe que NO aparece 'EL CODIGO QUEDA ROTO'; y otra con un .js roto que compruebe que SI aparece. Ademas, un .py roto sigue frenando igual que antes.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py::revisar",
+   "vigias del revisor",
+   "propuestas con archivos .js/.mjs/.cjs"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El parche corrige el fallo de .js sin romper nada y cumple el contrato."
+ },
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (19720 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (19806 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 3"
+ ]
+}

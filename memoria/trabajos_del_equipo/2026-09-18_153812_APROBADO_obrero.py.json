@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En auditar, cuando auditor=='bigpickle' nadie llama a bigpickle.preguntar y el bucle de reintentos sigue llamando a otros cerebros, dejando la propuesta SIN_AUDITAR.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    auditoria = None\n    avisos = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor\n    quien_aud = None\n    auditor_ok = auditor\n    if auditor == evitar:\n        # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa\n        auditor_ok = None\n        avisos.append(\"el auditor pedido (%s) era el mismo que genero; se busca otro\" % auditor)",
+  "texto_nuevo": "    auditoria = None\n    avisos = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor\n    quien_aud = None\n    auditor_ok = auditor\n    if auditor == evitar:\n        # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa\n        auditor_ok = None\n        avisos.append(\"el auditor pedido (%s) era el mismo que genero; se busca otro\" % auditor)\n    if auditor == 'bigpickle':\n        # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de\n        # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.\n        from cuerpo import bigpickle\n        _texto_bp, _avisos_bp = bigpickle.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_bp or [])\n        if _texto_bp:\n            quien_aud = 'bigpickle'\n            auditoria = _json_de(_texto_bp)",
+  "cambio": "Justo antes de la linea 'for _intento in range(2):' de auditar, anadir el bloque que llama a bigpickle.preguntar con _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), suma sus avisos a avisos, y si devolvio texto pone quien_aud='bigpickle' y auditoria=_json_de(texto). Ademas, cambiar la linea 'for _intento in range(2):' para que de 0 vueltas cuando auditor=='bigpickle'.",
+  "codigo": "    if auditor == 'bigpickle':\n        from cuerpo import bigpickle\n        _texto_bp, _avisos_bp = bigpickle.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_bp or [])\n        if _texto_bp:\n            quien_aud = 'bigpickle'\n            auditoria = _json_de(_texto_bp)\n    for _intento in range(0 if auditor == 'bigpickle' else 2):",
+  "vigia": "Una vigia que llame a auditar con auditor='bigpickle' y compruebe que bigpickle.preguntar fue llamado una vez, que quien_aud=='bigpickle' cuando devuelve texto, y que no se llama a ningun otro cerebro (el bucle da 0 vueltas).",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta implementa la llamada a bigpickle y anula el bucle cuando corresponde, corrigiendo el diagnóstico sin inventar nada ni romper contratos."
+ },
+ "avisos": [
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 2"
+ ]
+}

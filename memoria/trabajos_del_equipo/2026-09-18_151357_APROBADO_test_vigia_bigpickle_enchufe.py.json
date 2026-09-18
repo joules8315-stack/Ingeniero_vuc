@@ -1,0 +1,22 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta el codigo de cuerpo/bigpickle.py para conocer la firma exacta de _parsear_salida y preguntar, pero la tarea describe el comportamiento esperado con suficiente detalle para escribir la vigia.",
+  "archivo": "vigias/test_vigia_bigpickle_enchufe.py",
+  "texto_nuevo": "import json\nimport subprocess\n\nimport pytest\n\nfrom cuerpo import bigpickle\n\n\nclass ProcesoFalso:\n    \"\"\"Proceso falso para inyectar en subprocess.Popen sin tocar la red.\"\"\"\n\n    def __init__(self, *args, **kwargs):\n        self.pid = 1\n        self.args = args\n        self.kwargs = kwargs\n        self.returncode = None\n\n    def communicate(self, *args, **kwargs):\n        raise subprocess.TimeoutExpired('x', 1)\n\n    def kill(self):\n        self.returncode = -9\n\n    def wait(self, *args, **kwargs):\n        return self.returncode\n\n    def poll(self):\n        return self.returncode\n\n\ndef test_parsear_salida_dos_lineas_json():\n    salida = '\\n'.join([\n        json.dumps({\"type\": \"text\", \"part\": {\"text\": \"hola\"}}),\n        json.dumps({\"type\": \"step_finish\", \"part\": {\"cost\": 0.5}}),\n    ])\n    texto, coste = bigpickle._parsear_salida(salida)\n    assert texto == 'hola'\n    assert coste == 0.5\n\n\ndef test_preguntar_con_api_key_en_prompt_no_llama(monkeypatch, tmp_path):\n    monkeypatch.setattr(bigpickle, 'RUTA_LOG', tmp_path / 'log')\n    texto, avisos = bigpickle.preguntar('trae API_KEY=x')\n    assert texto == ''\n    assert avisos\n\n\ndef test_preguntar_sin_binario_devuelve_vacio(monkeypatch, tmp_path):\n    monkeypatch.setattr(bigpickle, 'RUTA_LOG', tmp_path / 'log')\n    monkeypatch.setattr(bigpickle.shutil, 'which', lambda *a, **k: None)\n    texto, avisos = bigpickle.preguntar('hola')\n    assert texto == ''\n\n\ndef test_preguntar_timeout_no_lanza(monkeypatch, tmp_path):\n    monkeypatch.setattr(bigpickle, 'RUTA_LOG', tmp_path / 'log')\n    monkeypatch.setattr(bigpickle.subprocess, 'Popen', ProcesoFalso)\n    monkeypatch.setattr(bigpickle.subprocess, 'run', lambda *a, **k: None)\n    texto, avisos = bigpickle.preguntar('hola', timeout=1)\n    assert texto == ''\n",
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada, respeta contratos y no afecta a otros componentes."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Tras la reparacion JS, un .js valido deja arbol=None y _conocidos/_leidos/_piezas revientan con ast.walk(None), y ademas se corren pasos de Python sobre JS.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "_conocidos",
+  "texto_viejo": "def _conocidos(arbol):\n    \"\"\"Todo nombre que en ese texto SI existe: lo importado, lo definido, lo asignado, los\n    argumentos, los de except y los de global. Mas los nombres propios de Python.\"\"\"\n    vistos = set(PROPIOS_DE_PYTHON)",
+  "texto_nuevo": "def _conocidos(arbol):\n    \"\"\"Todo nombre que en ese texto SI existe: lo importado, lo definido, lo asignado, los\n    argumentos, los de except y los de global. Mas los nombres propios de Python.\"\"\"\n    if arbol is None:\n        return set()\n    vistos = set(PROPIOS_DE_PYTHON)",
+  "cambio": "En _conocidos, primera linea del cuerpo, si arbol is None devolver set() (vacio del mismo tipo que devuelve normalmente).",
+  "codigo": "def _conocidos(arbol):\n    \"\"\"Todo nombre que en ese texto SI existe: lo importado, lo definido, lo asignado, los\n    argumentos, los de except y los de global. Mas los nombres propios de Python.\"\"\"\n    if arbol is None:\n        return set()\n    vistos = set(PROPIOS_DE_PYTHON)",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py: revisar un .js valido no debe devolver 'El revisor no pudo terminar la revision' ni AttributeError '_fields'.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La reparacion propuesta en `_conocidos` no aborda completamente el diagnóstico. El diagnóstico indica que `_conocidos`, `_leidos` y `_piezas` deben devolver un valor vacío si `arbol` es `None`. La propuesta solo modifica `_conocidos`."
+  ],
+  "riesgo_vecinos": [
+   "La función `_conocidos` es llamada por `revisar` en `arnes/revisor_de_programa.py`. Si `_leidos` y `_piezas` no se modifican de manera similar, podrían seguir fallando con `ast.walk(None)`."
+  ],
+  "que_falta": [
+   "La reparación debe aplicarse también a las funciones `_leidos` y `_piezas` para que devuelvan un valor vacío (set() o lista vacía) cuando `arbol` es `None`, tal como se especifica en el diagnóstico."
+  ],
+  "resumen_para_el_jefe": "La reparación propuesta para `_conocidos` es incompleta, ya que el diagnóstico requiere la misma corrección en `_leidos` y `_piezas`."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19065 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) no le cabe (20053 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq20b",
+  "GPT-OSS 20B (Groq) no le cabe (20181 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 4"
+ ]
+}

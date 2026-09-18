@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Falta una prueba que verifique que auditar hace una sola pasada por las gratis antes de llegar a Claude, en vez de dos pasadas seguidas que las duermen.",
+  "archivo": "vigias/test_vigia_claude_audita_si_gratis_duermen.py",
+  "funcion": "test_claude_no_audita_lo_que_escribio_claude",
+  "texto_viejo": "def test_claude_no_audita_lo_que_escribio_claude(monkeypatch):\n    monkeypatch.setattr(obrero, '_preguntar_con_relevo', lambda *a, **k: ('', '', []))\n    monkeypatch.setattr(cuotas, 'desperto', lambda q: False)\n    llamadas = []\n    monkeypatch.setattr(\n        obrero,\n        '_claude_directo',\n        lambda prompt: llamadas.append(1) or json.dumps({'veredicto': 'APROBADO', 'fallos': []}),\n        raising=False,\n    )\n    auditoria, quien, avisos = obrero.auditar('', {'archivo': 'x.py'}, evitar='claude')\n    assert llamadas == []\n    assert quien != 'claude'",
+  "texto_nuevo": "def test_claude_no_audita_lo_que_escribio_claude(monkeypatch):\n    monkeypatch.setattr(obrero, '_preguntar_con_relevo', lambda *a, **k: ('', '', []))\n    monkeypatch.setattr(cuotas, 'desperto', lambda q: False)\n    llamadas = []\n    monkeypatch.setattr(\n        obrero,\n        '_claude_directo',\n        lambda prompt: llamadas.append(1) or json.dumps({'veredicto': 'APROBADO', 'fallos': []}),\n        raising=False,\n    )\n    auditoria, quien, avisos = obrero.auditar('', {'archivo': 'x.py'}, evitar='claude')\n    assert llamadas == []\n    assert quien != 'claude'\n\n\ndef test_una_sola_pasada_por_las_gratis_y_despues_claude(monkeypatch):\n    pasadas = []\n    monkeypatch.setattr(obrero, '_preguntar_con_relevo', lambda *a, **k: pasadas.append(k.get('pesado', False)) or ('', '', []))\n    monkeypatch.setattr(cuotas, 'desperto', lambda q: False)\n    monkeypatch.setattr(obrero, '_claude_directo', lambda prompt: json.dumps({'veredicto': 'APROBADO', 'fallos': []}), raising=False)\n    auditoria, quien, avisos = obrero.auditar('', {'archivo': 'x.py'}, evitar='deepseek')\n    assert quien == 'claude'\n    assert pasadas == [False]",
+  "cambio": "Anadir al final del archivo, despues de la ultima prueba y separada por dos lineas en blanco, la prueba nueva test_una_sola_pasada_por_las_gratis_y_despues_claude, sin tocar la prueba existente.",
+  "codigo": "def test_una_sola_pasada_por_las_gratis_y_despues_claude(monkeypatch):\n    pasadas = []\n    monkeypatch.setattr(obrero, '_preguntar_con_relevo', lambda *a, **k: pasadas.append(k.get('pesado', False)) or ('', '', []))\n    monkeypatch.setattr(cuotas, 'desperto', lambda q: False)\n    monkeypatch.setattr(obrero, '_claude_directo', lambda prompt: json.dumps({'veredicto': 'APROBADO', 'fallos': []}), raising=False)\n    auditoria, quien, avisos = obrero.auditar('', {'archivo': 'x.py'}, evitar='deepseek')\n    assert quien == 'claude'\n    assert pasadas == [False]",
+  "vigia": "La propia prueba nueva: hoy debe nacer ROJA porque auditar pasa 2 veces por las gratis (pasadas == [False, False]) antes de llegar a Claude; cuando se cure, pasadas == [False] y quien == 'claude'.",
+  "puede_danar": [
+   "cuerpo/obrero.py::auditar",
+   "vigias/test_vigia_claude_audita_si_gratis_duermen.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Añade la prueba solicitada sin tocar código existente, cumpliendo el diagnóstico."
+ },
+ "avisos": [
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini4 y no esta disponible: reviso ",
+  "claude no pudo revisar: Command '['C:\\\\Users\\\\USER\\\\AppData\\\\Roaming\\\\npm\\\\claude.CMD', '-p']' timed out after 300 seconds",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}

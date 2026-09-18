@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "En _trae_llave los patrones exigen 16+ caracteres tras api_key/token/secret/password, así que una llave corta como GROQ_API_KEY=gsk_loquesea123 (13 letras) se escapa y no se detecta.",
+  "archivo": "cuerpo/bigpickle.py",
+  "funcion": "_trae_llave",
+  "texto_viejo": "        for patron in patrones:\n            if re.search(patron, prompt):\n                return True\n        return False\n    except Exception:\n        return True",
+  "texto_nuevo": "        for patron in patrones:\n            if re.search(patron, prompt):\n                return True\n        from cuerpo import privacidad\n        if '<CLAVE>' in privacidad.limpiar(prompt)[0]:\n            return True\n        return False\n    except Exception:\n        return True",
+  "cambio": "Dentro del try ya existente de _trae_llave, justo antes del return False final, añadir el import de cuerpo.privacidad y devolver True si '<CLAVE>' está en privacidad.limpiar(prompt)[0]. Si el import falla, el except Exception ya existente devuelve True.",
+  "codigo": "        from cuerpo import privacidad\n        if '<CLAVE>' in privacidad.limpiar(prompt)[0]:\n            return True",
+  "vigia": "Un test determinista que llame a _trae_llave con 'GROQ_API_KEY=gsk_loquesea123' y compruebe que devuelve True, y con un prompt sin llave que devuelva False.",
+  "puede_danar": [
+   "cuerpo/bigpickle.py",
+   "cuerpo/privacidad.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El parche añade la comprobación de claves cortas usando privacidad.limpiar y no introduce errores ni dependencias nuevas."
+ },
+ "avisos": [
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 2"
+ ]
+}

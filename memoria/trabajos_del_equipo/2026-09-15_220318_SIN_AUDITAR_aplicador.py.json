@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "aplicar_cambios valida sintaxis pero no valida imports ni funciones usadas, y no corre la vigia antes de guardar; aplicar_cambio (singular) no valida imports/funciones ni corre vigia, y ademas el material de aplicar_cambio viene incompleto (solo un trozo).",
+  "archivo": "cuerpo/aplicador.py",
+  "funcion": "aplicar_cambios",
+  "texto_viejo": "    for ruta, texto in contenidos.items():\n        if ruta.endswith('.py'):\n            try:\n                ast.parse(texto)\n            except SyntaxError as e:\n                return False, f'Sintaxis rota en {ruta} (renglon {e.lineno}); no se aplico nada.'",
+  "texto_nuevo": "    for ruta, texto in contenidos.items():\n        if ruta.endswith('.py'):\n            try:\n                ast.parse(texto)\n            except SyntaxError as e:\n                return False, f'Sintaxis rota en {ruta} (renglon {e.lineno}); no se aplico nada.'\n            try:\n                _validar_imports_y_funciones(texto, ruta)\n            except Exception as e:\n                return False, f'El cambio usa algo que no existe en {ruta}: {e}; no se aplico nada.'\n    try:\n        _correr_vigia_antes_de_guardar(contenidos)\n    except Exception as e:\n        return False, f'La vigia no paso antes de guardar: {e}; no se aplico nada.'",
+  "cambio": "En aplicar_cambios, tras validar sintaxis de cada .py, validar imports y funciones usadas, y correr la vigia antes de escribir en disco. Las funciones _validar_imports_y_funciones y _correr_vigia_antes_de_guardar NO_ENCONTRADO en el material: hay que crearlas o indicar su fuente.",
+  "codigo": "            try:\n                _validar_imports_y_funciones(texto, ruta)\n            except Exception as e:\n                return False, f'El cambio usa algo que no existe en {ruta}: {e}; no se aplico nada.'\n    try:\n        _correr_vigia_antes_de_guardar(contenidos)\n    except Exception as e:\n        return False, f'La vigia no paso antes de guardar: {e}; no se aplico nada.'",
+  "vigia": "vigias/test_vigia_aplicador.py debe comprobar que una propuesta con import o funcion inexistente no se aplica, y que si la vigia falla no se escribe nada en disco.",
+  "puede_danar": [
+   "arnes/copista.py",
+   "vigias/test_vigia_aplicador.py",
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "¿Como se llama y donde vive la funcion que valida imports y funciones usadas? NO_ENCONTRADO en el material.",
+   "¿Como se llama y donde vive la funcion que corre la vigia antes de guardar? NO_ENCONTRADO en el material.",
+   "¿Que vigia concreta hay que correr antes de guardar y con que comando?",
+   "El material de aplicar_cambio (singular) viene como trozo incompleto: ¿se pide tambien reparar aplicar_cambio o solo aplicar_cambios?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "copista.py",
+   "test_vigia_aplicador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "resumen_para_el_jefe": "el revisor pedido (bigpickle) no estaba; no se llama a otro cerebro en su lugar"
+ },
+ "avisos": [
+  "se pidio auditar a bigpickle y no esta disponible: reviso groq",
+  "el revisor pedido (bigpickle) no estaba: queda SIN_AUDITAR y archivado para su revision",
+  "vueltas_dadas: 1"
+ ]
+}

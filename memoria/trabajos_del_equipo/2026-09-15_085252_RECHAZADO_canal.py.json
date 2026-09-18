@@ -1,0 +1,76 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq20b",
+ "propuesta": {
+  "diagnostico": "Faltan en arnes/canal.py las ordenes de terminal 'leer --sin-marcar' y 'marcar rutas', que deben apoyarse en leer(marcar=False) y marcar_leidos(rutas) ya existentes.",
+  "archivo": "arnes/canal.py",
+  "funcion": "leer",
+  "texto_viejo": "def leer(para=None, marcar=True):",
+  "texto_nuevo": "def leer(para=None, marcar=True):",
+  "cambio": "NO_ENCONTRADO: el material no trae el parser de comandos de terminal de arnes/canal.py (donde se despachan las ordenes 'leer' y 'marcar'), ni el bloque completo de la funcion que las atiende. Sin ese texto literal no puedo sustituir nada sin inventar.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO: no hay vigia en el material que pruebe el parser de ordenes de terminal de canal.py",
+  "puede_danar": [
+   "arnes/llamar.py",
+   "arnes/loop.py",
+   "vigias/test_vigia_comunicacion.py",
+   "vigias/test_vigia_contestar_cierra_el_recado.py",
+   "vigias/test_vigia_recados_no_se_pierden.py"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: donde esta el parser de ordenes de terminal de arnes/canal.py y como se llama la funcion que despacha 'leer' y 'marcar'?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "llamar.py",
+   "loop.py",
+   "test_vigia_comunicacion.py",
+   "test_vigia_contestar_cierra_el_recado.py",
+   "test_vigia_recados_no_se_pierden.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "No se encontró parser de comandos de terminal en arnes/canal.py; sin él no se pueden implementar las órdenes 'leer --sin-marcar' y 'marcar rutas' usando leer(marcar=False) y marcar_leidos(rutas)."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Implementar el parser de comandos de terminal en arnes/canal.py que despache las órdenes 'leer' y 'marcar' según el diagnóstico."
+  ]
+ },
+ "avisos": [
+  "se pidio auditar a bigpickle y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a bigpickle y no esta disponible: reviso gemini4",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a bigpickle y no esta disponible: reviso ",
+  "claude no pudo revisar: Command '['C:\\\\Users\\\\USER\\\\AppData\\\\Roaming\\\\npm\\\\claude.CMD', '-p']' timed out after 300 seconds",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a bigpickle y no esta disponible: reviso groq20b",
+  "vueltas_dadas: 4"
+ ]
+}

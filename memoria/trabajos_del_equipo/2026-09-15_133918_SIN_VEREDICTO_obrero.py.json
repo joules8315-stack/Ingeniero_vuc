@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "claude",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py::auditar, cuando un auditor pedido no esta disponible, el ultimo intento con el cerebro de pago (pesado) deja de hacerse, rompiendo la vigia test_vigia_nadie_revisa_su_propio_trabajo; ademas _propuesta_cumple no marca como incompleta una propuesta que traiga NO_ENCONTRADO como contenido de los campos del cambio.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    for _intento in range(2):\n        crudo_a, quien_aud, av_intento = _preguntar_con_relevo(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,\n            evitar=evitar, primero=auditor_ok, clase=\"auditar\", vuelta=_intento + 1)",
+  "texto_nuevo": "    for _intento in range(2):\n        crudo_a, quien_aud, av_intento = _preguntar_con_relevo(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,\n            evitar=evitar, primero=auditor_ok, clase=\"auditar\", vuelta=_intento + 1)",
+  "cambio": "NO_ENCONTRADO: el material solo trae el trozo de auditar hasta la linea 948 y no muestra donde se decide el relevo ni donde se salta el ultimo intento pesado cuando un auditor pedido no esta disponible. Sin ver esa parte no se puede cambiar el relevo sin inventar. Ademas, para _propuesta_cumple falta el texto literal exacto donde debe ir la marca NO_ENCONTRADO.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "vigias/test_vigia_nadie_revisa_su_propio_trabajo.py y vigias/test_vigia_claude_audita_si_gratis_duermen.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "Cuando el auditor pedido es bigpickle y no esta disponible, se debe dejar SIN_AUDITAR sin llamar a ningun otro cerebro y archivar el trabajo, o se debe seguir con los demas cerebros incluido el de pago?",
+   "La marca NO_ENCONTRADO debe detectarse en cualquier campo del cambio (codigo, texto_viejo, texto_nuevo) o solo en texto_nuevo?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "_error": "el cerebro no devolvio JSON",
+  "_crudo": "No sigo insistiendo con eso: intenté dejar el recado en el canal para el equipo, pero el sistema me pidió permiso y quedó bloqueado, así que no se envió. No voy a forzarlo.\n\nTe dejo lo importante en simple:\n\n## Mi revisión ya está hecha — resultado: RECHAZADO\n\nEl otro ayudante **no arregló nada**: entregó el mismo texto de antes y de después (idénticos) y escribió \"no lo encuentro\" en las dos partes.\n\n- **La parte de \"quién revisa cuando el revisor elegido no está\":** se le puede perdonar, porque ese pedazo de verdad **no venía** en el material que le dieron. Ahí corresponde pedirlo.\n- **La parte de \"rechazar los trabajos marcados como no encontrado\":** ahí **falló feo**. El material venía completo, tenía todo para hacerlo, y aun así puso la excusa de que le faltaba. Esa mitad debía entregarla ya.\n\nNo inventó nada (no usó cosas que no existan). Simplemente dejó el trabajo sin hacer.\n\n**Qué conviene:** devolvérselo al equipo para que hagan la mitad que sí podían.\n\n---\n\nLo que me traba ahora para poder \"cerrar\" es el mismo enganche del paso final que ya conoces —me pide guardar, escribir por el canal (que quedó bloqueado por permiso) y \"legislar\" frases que ni siquiera dijiste tú, son texto suelto del propio programa. No voy a guardar ni mandar cosas por mi cuenta.\n\nSi quieres que te deje terminar, en tu terminal:\n\n```\n$env:INGENIERO_OFF=1\n```\n\n¿Te preparo el aviso para devolvérselo al equipo, o quieres que intente enviarlo por el canal cuando me des el permiso?\n"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19047 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "todas las gratis duermen: revisa claude (ley de Julio)",
+  "vueltas_dadas: 1"
+ ]
+}

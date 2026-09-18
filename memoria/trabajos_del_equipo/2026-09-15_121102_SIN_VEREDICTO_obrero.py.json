@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "claude",
+ "propuesta": {
+  "diagnostico": "El filtro _filtrar_paquete recorta el paquete tirando lineas sueltas con salida.pop(), lo que parte funciones a la mitad, y ademas trabajar y auditar usan topes fijos (TOPE_GRATIS-2690 y TOPE_GRATIS-3344-47) en vez de la capacidad real del cerebro que recibe.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_filtrar_paquete",
+  "texto_viejo": "    # Si aun asi se pasa del tope, se va soltando el relleno del final hasta caber: la cabecera,\n    # la ley y \"a quien puede danar\" son LO NECESARIO, no se tocan.\n    while len(\"\\n\".join(salida)) > tope and len(salida) > len(bloques[\"__cabecera__\"]):\n        salida.pop()\n    return \"\\n\".join(salida)",
+  "texto_nuevo": "    # Si aun asi se pasa del tope, se sueltan BLOQUES ENTEROS entre separadores '### ' en orden\n    # inverso (del ultimo al primero), nunca lineas sueltas: partir un bloque parte una funcion\n    # a la mitad (evidencia 101525). La cabecera, la ley y \"a quien puede danar\" son LO\n    # NECESARIO, no se tocan. Si el bloque del archivo nombrado no cabe, se conserva aunque se\n    # pase del tope.\n    def _bloques_desde(lineas):\n        bs = []\n        i = 0\n        while i < len(lineas):\n            if lineas[i].startswith(\"### \"):\n                j = i + 1\n                while j < len(lineas) and not lineas[j].startswith(\"### \"):\n                    j += 1\n                bs.append(lineas[i:j])\n                i = j\n            else:\n                i += 1\n        return bs\n    necesarios = list(bloques[\"__cabecera__\"])\n    for k in (ley, dana):\n        if k and k != \"__cabecera__\":\n            necesarios += bloques[k]\n    if len(\"\\n\".join(salida)) > tope:\n        # Se separa lo necesario de lo prescindible conservando el orden original.\n        prescindibles = [ln for ln in salida if ln not in necesarios]\n        conservados = []\n        for b in _bloques_desde(prescindibles):\n            if archivo and any(archivo in ln for ln in b):\n                conservados.append(b)\n        for b in reversed(_bloques_desde(prescindibles)):\n            if len(\"\\n\".join(necesarios + [ln for bb in conservados for ln in bb])) <= tope:\n                break\n            if b in conservados:\n                continue\n            conservados = [bb for bb in conservados if bb is not b]\n        salida = necesarios + [ln for bb in conservados for ln in bb]\n    return \"\\n\".join(salida)",
+  "cambio": "CAMBIOS 1, 2 y 3. (1) En _filtrar_paquete, sustituir el while salida.pop() por un bucle que quite bloques ENTEROS entre separadores '### ' en orden inverso, sin partir bloques, conservando el bloque del archivo nombrado aunque se pase del tope. (2) En trabajar, cambiar tope=TOPE_GRATIS - 2690 por tope=cuotas._capacidad(quien_gen) cuando quien_gen exista. (3) En auditar, cambiar el tope fijo TOPE_GRATIS - 3344 - 47 por cuotas._capacidad cuando exista el auditor. Se conserva la proteccion contra codigo innecesario. No se crean archivos nuevos. No se toca DMM ni FotoInforme.",
+  "codigo": "    # Si aun asi se pasa del tope, se sueltan BLOQUES ENTEROS entre separadores '### ' en orden\n    # inverso (del ultimo al primero), nunca lineas sueltas: partir un bloque parte una funcion\n    # a la mitad (evidencia 101525). La cabecera, la ley y \"a quien puede danar\" son LO\n    # NECESARIO, no se tocan. Si el bloque del archivo nombrado no cabe, se conserva aunque se\n    # pase del tope.\n    def _bloques_desde(lineas):\n        bs = []\n        i = 0\n        while i < len(lineas):\n            if lineas[i].startswith(\"### \"):\n                j = i + 1\n                while j < len(lineas) and not lineas[j].startswith(\"### \"):\n                    j += 1\n                bs.append(lineas[i:j])\n                i = j\n            else:\n                i += 1\n        return bs\n    necesarios = list(bloques[\"__cabecera__\"])\n    for k in (ley, dana):\n        if k and k != \"__cabecera__\":\n            necesarios += bloques[k]\n    if len(\"\\n\".join(salida)) > tope:\n        prescindibles = [ln for ln in salida if ln not in necesarios]\n        conservados = []\n        for b in _bloques_desde(prescindibles):\n            if archivo and any(archivo in ln for ln in b):\n                conservados.append(b)\n        for b in reversed(_bloques_desde(prescindibles)):\n            if len(\"\\n\".join(necesarios + [ln for bb in conservados for ln in bb])) <= tope:\n                break\n            if b in conservados:\n                continue\n            conservados = [bb for bb in conservados if bb is not b]\n        salida = necesarios + [ln for bb in conservados for ln in bb]\n    return \"\\n\".join(salida)",
+  "vigia": "Una prueba que arme un paquete con varios bloques '### ' y un tope pequeno, llame a _filtrar_paquete y compruebe que ningun bloque quedo partido (cada bloque conservado aparece entero) y que el bloque del archivo nombrado sigue presente aunque se pase del tope.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "En trabajar, si quien_gen no existe (no se pudo tomar prestado cerebro), que tope debe usarse: TOPE_GRATIS o el valor anterior TOPE_GRATIS-2690?",
+   "En auditar, si no existe el auditor, que tope debe usarse: TOPE_GRATIS o el valor anterior TOPE_GRATIS-3344-47?",
+   "El nombre exacto de la funcion que en el material aparece como 'auditar' no viene en los trozos entregados: se confirma que la seccion a tocar es la de auditar y que el texto viejo alli es 'TOPE_GRATIS - 3344 - 47'?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "_error": "el cerebro no devolvio JSON",
+  "_crudo": "Mi revisión ya está lista y el resultado es: **NO APROBADO**.\n\nEn simple, por qué lo rechazo:\n\n- El arreglo, cuando el material se pasa de largo, en vez de ir soltando pedazos uno por uno del final hasta que quepa, **bota todo de golpe** menos lo del archivo que se está reparando. Recorta de más.\n- La parte que supuestamente iba soltando pedazos **no hace nada**: está escrita de forma que nunca llega a quitar lo que debería.\n- Al separar lo que sobra, borra por error líneas en blanco y marcas que se repiten, y deja el texto **mutilado**.\n- Solo hizo **1 de los 3** cambios pedidos. Los otros dos (usar la capacidad real de cada ayudante en vez de un número fijo) quedaron sin hacer, apenas como preguntas.\n- Además usa un dato (\"a quién puede dañar\") que **no viene en el material**; hay que confirmar que existe o se cae al arrancar.\n\nEn una frase para ti: **rechazado, porque el recorte nuevo no funciona (bota de más y deja texto roto) y encima solo entregó uno de los tres arreglos**.\n\n---\n\nLo demás que salta al cerrar (guardar, escribir por el canal, legislar mensajes) no es parte de esta revisión y no lo voy a hacer solo. Es el mismo enganche de cierre que ya sabemos que se queda dando vueltas; solo lo cortas tú desde tu terminal con:\n\n```\n$env:INGENIERO_OFF=1\n```\n"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19053 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (19927 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "todas las gratis duermen: revisa claude (ley de Julio)",
+  "vueltas_dadas: 2"
+ ]
+}

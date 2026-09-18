@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta el bloque de despacho de linea de comandos al final de arnes/canal.py, justo antes del comentario '# uso del hook', para atender 'leer --sin-marcar' y 'marcar'.",
+  "archivo": "arnes/canal.py",
+  "funcion": "bloque final de linea de comandos (antes del comentario '# uso del hook')",
+  "texto_viejo": "# uso del hook",
+  "texto_nuevo": "    if q == \"leer\" and \"--sin-marcar\" in sys.argv:\n        msgs = leer(marcar=False)\n        if msgs:\n            print(json.dumps({\n                \"additionalContext\": \"\\n\".join(str(m.get(\"texto\", \"\")) for m in msgs),\n                \"rutas\": [m.get(\"ruta\") for m in msgs],\n            }, ensure_ascii=False))\n        sys.exit(0)\n    if q == \"marcar\":\n        marcar_leidos(sys.argv[2:])\n        sys.exit(0)\n\n# uso del hook",
+  "cambio": "Insertar, con la misma sangria de 4 espacios y justo antes del comentario '# uso del hook' (que queda intacto), dos ordenes: (1) si q es 'leer' y en sys.argv viene '--sin-marcar', llamar leer(marcar=False), y si hay mensajes imprimir un JSON con additionalContext (los campos texto unidos por salto de linea) y rutas (la ruta de cada mensaje), despues sys.exit(0); (2) si q es 'marcar', llamar marcar_leidos(sys.argv[2:]) y sys.exit(0).",
+  "codigo": "    if q == \"leer\" and \"--sin-marcar\" in sys.argv:\n        msgs = leer(marcar=False)\n        if msgs:\n            print(json.dumps({\n                \"additionalContext\": \"\\n\".join(str(m.get(\"texto\", \"\")) for m in msgs),\n                \"rutas\": [m.get(\"ruta\") for m in msgs],\n            }, ensure_ascii=False))\n        sys.exit(0)\n    if q == \"marcar\":\n        marcar_leidos(sys.argv[2:])\n        sys.exit(0)",
+  "vigia": "vigias/test_vigia_comunicacion.py y vigias/test_vigia_contestar_cierra_el_recado.py: comprobar que 'leer --sin-marcar' devuelve los mensajes sin marcarlos leidos y que 'marcar <rutas>' los marca despues de entregarlos.",
+  "puede_danar": [
+   "arnes/llamar.py",
+   "arnes/loop.py",
+   "vigias/test_vigia_comunicacion.py",
+   "vigias/test_vigia_contestar_cierra_el_recado.py",
+   "vigias/test_vigia_recados_no_se_pierden.py"
+  ],
+  "preguntas": [
+   "El material no muestra el inicio del bloque de linea de comandos de arnes/canal.py: ¿como se llama la variable que guarda el subcomando (aqui supuesta 'q') y como se obtiene sys.argv? Sin eso no puedo garantizar que 'q' y 'sys.argv' existan tal cual.",
+   "El material no muestra si 'json', 'sys' y 'os' ya estan importados en arnes/canal.py: ¿estan importados arriba?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "llamar.py",
+   "loop.py",
+   "test_vigia_comunicacion.py",
+   "test_vigia_contestar_cierra_el_recado.py",
+   "test_vigia_recados_no_se_pierden.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La atribucion de vigia es falsa: ni test_vigia_comunicacion.py ni test_vigia_contestar_cierra_el_recado.py comprueban 'leer --sin-marcar' ni 'marcar <rutas>'; ninguna vigia existente ejercita la linea de comandos (solo prueban las funciones leer(marcar=False) y marcar_leidos directamente).",
+   "texto_viejo '# uso del hook' no es la linea real completa ('    # uso del hook: si hay mensajes, ...'): un editor que case por linea exacta no la encuentra. Hay que insertar con reemplazo de substring o dar la linea entera con su sangria.",
+   "Al dejar el comentario en '# uso del hook' sin la sangria de 4 espacios que tiene hoy, el corte literal lo deja en columna 0 (sigue siendo Python valido porque los comentarios se ignoran para la indentacion, pero 'dejandola intacta' luce mejor con su sangria)"
+  ],
+  "riesgo_vecinos": [
+   "No rompe a llamar.py ni a loop.py: solo anade dos ramas CLI despues de la rama 'enviar', y la ruta 'leer' por defecto (el hook actual con hookSpecificOutput) queda intacta. Verificado: sys y json ya estan importados (canal.py:23) y la variable del subcomando se llama 'q' (canal.py:157), tal como asumio.",
+   "Pendiente PREEXISTENTE fuera del alcance de esta pieza: test_vigia_recados_no_se_pierden.py exige '--sin-marcar' y '\"marcar\"' dentro de .opencode/plugins/canal_buzon.js, y el plugin actual NO los tiene; esa vigia esta ROJA hoy y este cambio solo no la pone verde."
+  ],
+  "que_falta": [
+   "Una vigia fin-a-fin que llame de verdad 'python arnes/canal.py leer --sin-marcar' y 'python arnes/canal.py marcar <ruta>' (o corregir la atribucion y apoyarse en test_vigia_recados_no_se_pierden.py).",
+   "Declarar cuales de los 5 posibles danados (llamar, loop, las 3 vigias) se revisaron: lo pide el propio paquete antes de sellar y la propuesta no lo declara.",
+   "Actualizar canal_buzon.js para que lea con 'leer --sin-marcar' y marque despues de entregar (es lo que deja verde la vigia duena del encargo)"
+  ],
+  "resumen_para_el_jefe": "El codigo es correcto y lo verifique en el archivo real (q, sys y json existen tal cual, y las dos funciones que llama existen): no inventa nada, no rompe vecinos y hace exactamente lo que pedia el encargo; solo queda pendiente, como trabajo aparte, una vigia que ejercite la linea de comandos y actualizar el plugin canal_buzon.js que ya estaba esperando estas ordenes."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

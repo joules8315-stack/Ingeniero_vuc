@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "claude",
+ "propuesta": {
+  "diagnostico": "El pasillo corta funciones al filtrar el paquete porque usa un tope fijo (TOPE_GRATIS-2690) y recorta lineas del final, en vez de calcular el tope con la capacidad real del cerebro que responde y soltar bloques enteros de relleno.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_filtrar_paquete",
+  "texto_viejo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=TOPE_GRATIS - 2690)",
+  "texto_nuevo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=cuotas._capacidad(quien_gen) if quien_gen else TOPE_GRATIS)",
+  "cambio": "Sustituir el tope fijo TOPE_GRATIS-2690 por la capacidad real del cerebro que va a responder (cuotas._capacidad), de modo que el material no se recorte por un minimo gratis. Ademas, dentro de _filtrar_paquete, cuando haya que recortar, soltar bloques ENTEROS de relleno (bocas, listados, vigias, secciones irrelevantes) y jamas fragmentar una funcion: si el bloque necesario no cabe, se manda entero igual. Si la tarea nombra varios archivos, incluir los trozos completos de todos los nombrados.",
+  "codigo": "material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=cuotas._capacidad(quien_gen) if quien_gen else TOPE_GRATIS)",
+  "vigia": "vigias/test_vigia_el_material_no_llega_cortado.py: llama a _filtrar_paquete con un paquete real que contenga cuerpo/obrero.py y comprueba que NINGUNA funcion del bloque entregado quede cortada (el bloque termina en una linea valida dentro de la funcion, no en medio). Contrato de aceptacion: con una tarea que nombre cuerpo/obrero.py, al escritor le llegan trabajar/auditar/_filtrar_paquete ENTERAS.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "cerebro/protocolo.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_dudas.py",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "PREGUNTA_REQUERIDA: el material no trae el cuerpo completo de _filtrar_paquete (solo se ve la llamada en trabajar), asi que no puedo copiar literalmente el texto interno que recorta lineas del final. Necesito el cuerpo entero de _filtrar_paquete para aplicar la cura de soltar bloques enteros y no fragmentar funciones.",
+   "PREGUNTA_REQUERIDA: el material no trae la definicion de cuotas._capacidad ni su firma exacta (si recibe nombre de cerebro, clase, etc.). Necesito verla para llamarla correctamente desde trabajar."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "protocolo.py",
+   "test_vigia_dudas.py",
+   "test_vigia_memoria_completa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "_error": "el cerebro no devolvio JSON",
+  "_crudo": "Julio, no puedo seguir: **los candados de cierre entraron otra vez en el bucle infinito** que ya conocemos. Cada vez que intento cerrar me piden guardar, escribir por el canal y legislar en círculo, y cuando lo intento me frenan de nuevo o me piden permiso. Es la falla de la propia herramienta, no del trabajo.\n\n**Lo importante ya está hecho y no se pierde — es esto:**\n\nRevisé el arreglo que propuso el otro modelo para que el material deje de llegar cortado, y lo **RECHACÉ**. Solo hizo 1 de las 5 cosas que pedía el encargo (calcular el tamaño según cuánto aguanta el cerebro que contesta), y **ni siquiera tocó lo que de verdad corta el trabajo por la mitad**. Faltan las otras cuatro: no partir nunca un trabajo, sacar relleno entero en vez de un pedazo, meter todos los archivos completos cuando se nombran varios, y crear la prueba que nace en rojo. Él mismo avisó que le faltaban dos piezas para poder hacerlo.\n\n**Para cortar el bucle y terminar, en tu terminal:**\n\n```\n$env:INGENIERO_OFF=1\n```\n\nCuando quieras, dame luz verde y le paso al equipo el encargo completo (con las dos piezas que le faltaron) para que rehaga el arreglo bien, las 5 partes. ¿Lo hago?\n"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19079 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) no le cabe (20711 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 20B (Groq) no le cabe (20711 letras, aguanta 20169) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) fallo (no es cuota): contesto vacio",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a gemini4 y no esta disponible: reviso ",
+  "todas las gratis duermen: revisa claude (ley de Julio)",
+  "vueltas_dadas: 2"
+ ]
+}

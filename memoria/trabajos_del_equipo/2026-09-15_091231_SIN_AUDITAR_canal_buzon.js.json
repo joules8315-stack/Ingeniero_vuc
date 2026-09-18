@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "Falta el archivo .opencode/plugins/canal_buzon.js: hay que crearlo desde el .desactivado_por_error_severo arreglando el error severo, cumpliendo las 4 pruebas de vigias/test_vigia_recados_no_se_pierden.py.",
+  "archivo": ".opencode/plugins/canal_buzon.js",
+  "funcion": "archivo completo (plugin de OpenCode)",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "CREAR el archivo .opencode/plugins/canal_buzon.js partiendo de .opencode/plugins/canal_buzon.js.desactivado_por_error_severo. El plugin debe: (1) leer recados con `python arnes/canal.py leer --sin-marcar` sin marcar nada al leer; (2) llevar marca local con prefijo prt_ y no volver a tocar los ya marcados; (3) marcar como leidos en el canal SOLO despues de inyectarlos en la sesion; (4) no tocar el canal si sessionID esta vacio; (5) el id inyectado no puede contener la cadena canal- seguida de comilla ni canal- seguida de Date.",
+  "codigo": "// .opencode/plugins/canal_buzon.js\n// Plugin de recados de Big Pickle.\n// Lee recados del canal SIN marcarlos, los inyecta en la sesion,\n// y SOLO despues de entregarlos los marca como leidos.\n// Si no hay sesion conocida (sessionID vacio), NO toca el canal.\n\nimport { spawnSync } from \"node:child_process\";\nimport { existsSync, mkdirSync, readFileSync, writeFileSync } from \"node:fs\";\nimport { dirname, join } from \"node:path\";\n\nconst RAIZ = process.cwd();\nconst CANAL = join(RAIZ, \"arnes\", \"canal.py\");\nconst DIR_MARCAS = join(RAIZ, \".opencode\", \"marcas_buzon\");\nconst PREFIJO_MARCA = \"prt_\";\n\nfunction rutaMarca(id) {\n  return join(DIR_MARCAS, PREFIJO_MARCA + id + \".txt\");\n}\n\nfunction yaMarcado(id) {\n  return existsSync(rutaMarca(id));\n}\n\nfunction dejarMarca(id) {\n  if (!existsSync(DIR_MARCAS)) mkdirSync(DIR_MARCAS, { recursive: true });\n  writeFileSync(rutaMarca(id), new Date().toISOString(), \"utf-8\");\n}\n\nfunction leerSinMarcar() {\n  const r = spawnSync(\"python\", [CANAL, \"leer\", \"--sin-marcar\"], {\n    cwd: RAIZ,\n    encoding: \"utf-8\",\n  });\n  if (r.status !== 0) return [];\n  const salida = (r.stdout || \"\").trim();\n  if (!salida) return [];\n  try {\n    const datos = JSON.parse(salida);\n    return Array.isArray(datos) ? datos : [];\n  } catch {\n    return [];\n  }\n}\n\nfunction marcarLeidosEnCanal(rutas) {\n  if (!rutas.length) return;\n  spawnSync(\"python\", [CANAL, \"marcar\", ...rutas], {\n    cwd: RAIZ,\n    encoding: \"utf-8\",\n  });\n}\n\nfunction idInyectado(msg) {\n  // Id seguro: sin comilla y sin la palabra Date pegada a canal-.\n  const base = String(msg.id || msg.ruta || \"recado\");\n  const limpio = base.replace(/[^A-Za-z0-9_.-]/g, \"_\");\n  return \"recado_\" + limpio;\n}\n\nexport const CanalBuzon = async ({ client, directory }) => {\n  return {\n    \"chat.message\": async (input, output) => {\n      const sessionID = input && input.sessionID ? String(input.sessionID) : \"\";\n      // Sin sesion conocida NO se toca el canal.\n      if (!sessionID) return;\n\n      const recados = leerSinMarcar();\n      const pendientes = recados.filter((m) => !yaMarcado(m.id || m.ruta));\n      if (!pendientes.length) return;\n\n      const entregados = [];\n      for (const msg of pendientes) {\n        const id = idInyectado(msg);\n        const texto = String(msg.texto || msg.mensaje || \"\");\n        output.parts.push({\n          type: \"text\",\n          text: \"[\" + id + \"] \" + texto,\n        });\n        dejarMarca(msg.id || msg.ruta);\n        entregados.push(msg.ruta);\n      }\n\n      // SOLO despues de entregarlos se marcan como leidos en el canal.\n      marcarLeidosEnCanal(entregados);\n    },\n  };\n};\n",
+  "vigia": "vigias/test_vigia_recados_no_se_pierden.py (las 4 pruebas: test_leer_sin_marcar_no_marca, test_marcar_despues_de_entregar, test_el_programita_usa_marca_prt_y_no_lee_sin_sesion)",
+  "puede_danar": [
+   "arnes/canal.py",
+   "arnes/candado_buzon.py",
+   "arnes/companero.py",
+   "vigias/test_vigia_buzon_de_cline.py",
+   "vigias/test_vigia_buzon_no_bloquea_por_lo_propio.py"
+  ],
+  "preguntas": [
+   "El material no trae el contenido de .opencode/plugins/canal_buzon.js.desactivado_por_error_severo: ¿cual era exactamente el error severo que lo desactivo, para no reintroducirlo?",
+   "El material no dice el formato exacto de salida de `python arnes/canal.py leer --sin-marcar` (nombres de campos: id, ruta, texto): ¿cuales son?",
+   "El material no dice el nombre exacto del subcomando para marcar leidos en arnes/canal.py (¿`marcar`? ¿`marcar-leidos`?): ¿cual es?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "companero.py",
+   "test_vigia_buzon_de_cline.py",
+   "test_vigia_buzon_no_bloquea_por_lo_propio.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 20B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "Gemini 3.5 se agoto -> pasa el turno",
+  "Gemini flash-latest se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 2"
+ ]
+}

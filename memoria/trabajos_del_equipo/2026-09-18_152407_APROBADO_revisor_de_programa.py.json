@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "En _conocidos(arbol), cuando el archivo es JavaScript el arbol llega None y ast.walk(None) revienta con AttributeError '_fields', produciendo el fallo falso 'El revisor no pudo terminar'.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "_conocidos",
+  "texto_viejo": "    vistos = set(PROPIOS_DE_PYTHON)\n    for n in ast.walk(arbol):",
+  "texto_nuevo": "    if arbol is None:\n        return set()\n    vistos = set(PROPIOS_DE_PYTHON)\n    for n in ast.walk(arbol):",
+  "cambio": "Agregar como primera sentencia del cuerpo de _conocidos (despues del docstring) un guardia que, si arbol es None, devuelva vacio del mismo tipo que devuelve al final (un set vacio), antes de llamar a ast.walk(arbol).",
+  "codigo": "    if arbol is None:\n        return set()",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "resumen_para_el_jefe": "La reparacion es correcta y soluciona el problema de `arbol is None` en archivos JavaScript sin introducir nuevos fallos."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}
