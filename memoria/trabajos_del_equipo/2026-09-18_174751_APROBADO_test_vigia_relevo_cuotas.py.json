@@ -1,0 +1,32 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El vigia test_el_orden_es_el_de_julio sigue exigiendo 'gemini' y 'local' en cuotas.ORDEN, pero el acuerdo A-31 (2026-09-18) los saco y ahora ORDEN es ['groq','gemini4','gemini2','deepseek'].",
+  "archivo": "vigias/test_vigia_relevo_cuotas.py",
+  "funcion": "test_el_orden_es_el_de_julio",
+  "texto_viejo": "def test_el_orden_es_el_de_julio():\n    \"\"\"Se comprueba lo que la ley QUIERE, no un puesto fijo en la fila.\n\n    El 2026-08-21 se anadio un cuarto cerebro gratis (gpt-oss-20b: Groq reparte cupo POR MODELO,\n    asi que cada modelo mas es cupo gratis de mas). Eso NO contradice la ley de Julio —usar hasta\n    el final lo gratis y no tocar lo caro—, pero si movia de sitio a Gemini. Julio, ese mismo dia:\n    \"tu debes ser el ultimo recurso, cuando se agoten los modelos gratis, o sea nunca, porque\n    existen cientos\". Atar la ley a un puesto fijo impedia anadir cerebros, que es justo lo que\n    la ley pide. Lo que NO se afloja: primero Groq y el de casa el ultimo de los gratis.\n\n    El 2026-08-21 Julio ordeno meter a DeepSeek, que SE PAGA (\"es una orden implementa el puto\n    deepseek\"). Eso no afloja la ley: la precisa. Lo de pago puede estar en la fila, pero DETRAS\n    de todo lo gratis y sin entrar nunca en la pregunta a la vez. Por eso \"el ultimo\" deja de\n    medirse sobre la fila entera y se mide sobre LOS GRATIS, que es lo que la ley protegia.\n    \"\"\"\n    gratis = [q for q in cuotas.ORDEN if q not in cuotas.DE_PAGO]\n    pago = [q for q in cuotas.ORDEN if q in cuotas.DE_PAGO]\n    assert cuotas.ORDEN[0] == \"groq\", \"el primero SIEMPRE es Qwen (Groq)\"\n    assert \"gemini\" in cuotas.ORDEN, \"Gemini tiene que seguir en la fila\"\n    assert gratis[-1] == \"local\", \"el de tu PC es el ultimo GRATIS: se usa cuando no queda nube\"\n    assert gratis.index(\"gemini\") < gratis.index(\"local\"), \"Gemini va antes que el de casa\"\n    assert len(gratis) >= 3, \"se perdieron cerebros gratis de la fila\"\n    # lo de pago, SIEMPRE detras de todo lo gratis\n    sitio = {q: i for i, q in enumerate(cuotas.ORDEN)}\n    for p in pago:\n        for g in gratis:\n            assert sitio[p] > sitio[g], \\\n                \"%s se paga y va por delante de %s, que es gratis\" % (p, g)",
+  "texto_nuevo": "def test_el_orden_es_el_de_julio():\n    \"\"\"Se comprueba lo que la ley QUIERE, no un puesto fijo en la fila.\n\n    El 2026-08-21 se anadio un cuarto cerebro gratis (gpt-oss-20b: Groq reparte cupo POR MODELO,\n    asi que cada modelo mas es cupo gratis de mas). Eso NO contradice la ley de Julio —usar hasta\n    el final lo gratis y no tocar lo caro—, pero si movia de sitio a Gemini. Julio, ese mismo dia:\n    \"tu debes ser el ultimo recurso, cuando se agoten los modelos gratis, o sea nunca, porque\n    existen cientos\". Atar la ley a un puesto fijo impedia anadir cerebros, que es justo lo que\n    la ley pide. Lo que NO se afloja: primero Groq y el de casa el ultimo de los gratis.\n\n    El 2026-08-21 Julio ordeno meter a DeepSeek, que SE PAGA (\"es una orden implementa el puto\n    deepseek\"). Eso no afloja la ley: la precisa. Lo de pago puede estar en la fila, pero DETRAS\n    de todo lo gratis y sin entrar nunca en la pregunta a la vez. Por eso \"el ultimo\" deja de\n    medirse sobre la fila entera y se mide sobre LOS GRATIS, que es lo que la ley protegia.\n\n    A-31 (2026-09-18): la ley Qwen->Gemini->local queda reemplazada por A-9/A-31.\n    \"\"\"\n    gratis = [q for q in cuotas.ORDEN if q not in cuotas.DE_PAGO]\n    pago = [q for q in cuotas.ORDEN if q in cuotas.DE_PAGO]\n    assert cuotas.ORDEN[0] == \"groq\", \"el primero SIEMPRE es Qwen (Groq)\"\n    assert gratis == [\"groq\", \"gemini4\", \"gemini2\"], \\\n        \"los gratis son groq, gemini4 y gemini2 (A-9/A-31)\"\n    # lo de pago, SIEMPRE detras de todo lo gratis\n    sitio = {q: i for i, q in enumerate(cuotas.ORDEN)}\n    for p in pago:\n        for g in gratis:\n            assert sitio[p] > sitio[g], \\\n                \"%s se paga y va por delante de %s, que es gratis\" % (p, g)\n    for fuera in (\"groq20b\", \"gemini\", \"gemini3\", \"local\"):\n        assert fuera not in cuotas.ORDEN, \\\n            \"%s salio de la fila por A-31 (2026-09-18)\" % fuera",
+  "cambio": "En test_el_orden_es_el_de_julio: (1) anadir al docstring la linea 'A-31 (2026-09-18): la ley Qwen->Gemini->local queda reemplazada por A-9/A-31.'; (2) sustituir las asserts que exigen 'gemini' y 'local' por: gratis == ['groq','gemini4','gemini2']; (3) mantener la comprobacion de que todo lo de pago va despues de todo lo gratis; (4) anadir que ninguno de groq20b, gemini, gemini3, local esta en ORDEN.",
+  "codigo": "    assert cuotas.ORDEN[0] == \"groq\", \"el primero SIEMPRE es Qwen (Groq)\"\n    assert gratis == [\"groq\", \"gemini4\", \"gemini2\"], \\\n        \"los gratis son groq, gemini4 y gemini2 (A-9/A-31)\"\n    # lo de pago, SIEMPRE detras de todo lo gratis\n    sitio = {q: i for i, q in enumerate(cuotas.ORDEN)}\n    for p in pago:\n        for g in gratis:\n            assert sitio[p] > sitio[g], \\\n                \"%s se paga y va por delante de %s, que es gratis\" % (p, g)\n    for fuera in (\"groq20b\", \"gemini\", \"gemini3\", \"local\"):\n        assert fuera not in cuotas.ORDEN, \\\n            \"%s salio de la fila por A-31 (2026-09-18)\" % fuera",
+  "vigia": "vigias/test_vigia_relevo_cuotas.py::test_el_orden_es_el_de_julio",
+  "puede_danar": [
+   "cuotas.ORDEN",
+   "relevo de cuotas"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion cumple el paquete al pie de la letra: cambia las asserts de 'gemini'/'local' por gratis == ['groq','gemini4','gemini2'] (A-9/A-31), mantiene ORDEN[0]=='groq', conserva la comprobacion de que lo de pago va detras de todo lo gratis, agrega el control de que groq20b/gemini/gemini3/local ya no estan en la fila y pone la linea pedida en el docstring; no inventa nada y nadie depende de esa pieza, asi que puede aprobarse."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

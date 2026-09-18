@@ -35,20 +35,23 @@ def test_el_orden_es_el_de_julio():
     deepseek"). Eso no afloja la ley: la precisa. Lo de pago puede estar en la fila, pero DETRAS
     de todo lo gratis y sin entrar nunca en la pregunta a la vez. Por eso "el ultimo" deja de
     medirse sobre la fila entera y se mide sobre LOS GRATIS, que es lo que la ley protegia.
+
+    A-31 (2026-09-18): la ley Qwen->Gemini->local queda reemplazada por A-9/A-31.
     """
     gratis = [q for q in cuotas.ORDEN if q not in cuotas.DE_PAGO]
     pago = [q for q in cuotas.ORDEN if q in cuotas.DE_PAGO]
     assert cuotas.ORDEN[0] == "groq", "el primero SIEMPRE es Qwen (Groq)"
-    assert "gemini" in cuotas.ORDEN, "Gemini tiene que seguir en la fila"
-    assert gratis[-1] == "local", "el de tu PC es el ultimo GRATIS: se usa cuando no queda nube"
-    assert gratis.index("gemini") < gratis.index("local"), "Gemini va antes que el de casa"
-    assert len(gratis) >= 3, "se perdieron cerebros gratis de la fila"
+    assert gratis == ["groq", "gemini4", "gemini2"], \
+        "los gratis son groq, gemini4 y gemini2 (A-9/A-31)"
     # lo de pago, SIEMPRE detras de todo lo gratis
     sitio = {q: i for i, q in enumerate(cuotas.ORDEN)}
     for p in pago:
         for g in gratis:
             assert sitio[p] > sitio[g], \
                 "%s se paga y va por delante de %s, que es gratis" % (p, g)
+    for fuera in ("groq20b", "gemini", "gemini3", "local"):
+        assert fuera not in cuotas.ORDEN, \
+            "%s salio de la fila por A-31 (2026-09-18)" % fuera
 
 
 def _el_siguiente_gratis(dormidos):
@@ -77,10 +80,11 @@ def test_cuando_repone_SE_VUELVE_A_EL():
 
 
 def test_si_se_agota_toda_la_nube_queda_el_local():
+    """A-31 (2026-09-18): la local salio de la fila; con toda la nube GRATIS agotada queda DeepSeek. Se conserva el nombre para no perder la pieza."""
     for q in cuotas.ORDEN:
-        if q != "local":
+        if q not in cuotas.DE_PAGO:
             cuotas.dormir(q, "429 quota")
-    assert cuotas.turno() == "local", "con toda la nube agotada debe quedar LM Studio"
+    assert cuotas.turno() == "deepseek", "con todas las gratis agotadas queda DeepSeek (A-31)"
 
 
 # Las puertas SIN COSTE. "router" (OpenRouter) entra el 2026-08-27 y SOLO con los modelos

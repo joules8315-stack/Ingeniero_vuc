@@ -34,6 +34,9 @@
 | A-29 | Claude hace **dos trabajos**, siempre llamado por el programa, en solo-lectura y sin escribir código: **A) arquitecto**, una vez por proyecto (escucha, pregunta, escribe la ficha); **B) perito**, solo cuando algo falla (forense con el expediente). | vigente (respuesta a Q1) |
 | A-28 | Los **101 cambios sin guardar** del ingeniero los **revisa el equipo** antes de guardarlos. | vigente (respuesta a Q4) |
 | A-30 | **Julio aprobó el PLAN v4 tal como está** ("apruebo el plan v4", 2026-09-18). **Cualquier modificación al plan v4 se le consulta a Julio antes, sin excusas.** Ninguna IA ni programa lo cambia por su cuenta. | vigente |
+| A-31 | **Gana A-9 sobre el orden viejo de IA** (Julio, 2026-09-18). Salen Groq 20b, Gemini 1, Gemini 3 y la local. Fila nueva: Groq 120b → Gemini 4 → Gemini 2 → DeepSeek. Los candados del orden viejo se ACTUALIZAN (no se quitan). La ley "Qwen → Gemini → local" queda **reemplazada por A-9/A-31**. | vigente |
+| A-32 | **Claude NO revisa** cuando las gratis duermen: revisa Big Pickle (A-5, A-29). La ley "Claude audita si las gratis duermen" (2026-09-14) queda **reemplazada por A-29/A-32**. Su vigía nueva se descarta (archivada, no borrada). | vigente |
+| A-33 | Los planes jubilados de DMM van a **C:\Ingeniero_VUC\PLAN_PITSeciclado\dmm** (DMM no crea carpetas nuevas). Antes: el equipo repara el candado que lee uno de ellos y revisa los cambios sin guardar de DMM. | vigente |
 
 ## Órdenes anteriores de Julio que siguen vivas (del registro del candado de legislar, depuradas)
 - Nadie trabaja sin el equipo, ni el equipo 1 ni el equipo 2. **Incluso para reparar al equipo se usa el equipo.** Nunca se pide permiso para trabajar sin el equipo.

@@ -47,8 +47,9 @@ RUTA = os.path.join(AQUI, "memoria", "CUOTAS.json")
 # router, router2 y router3. Si algun dia se renueva la llave, se devuelven asi: volver a poner
 # los tres nombres en la lista de orden, y sus entradas en las dos tablas, con los mismos valores
 # que tenian.
-ORDEN = ["groq", "groq20b", "gemini", "gemini2", "gemini3", "gemini4",
-         "local", "deepseek"]
+# A-31 (Julio 2026-09-18, gana A-9; forense en PLAN_PITS/02_FORENSE.md): salen por datos groq20b,
+# gemini (Gemini 1, 92% de fallos), gemini3 (94%) y local (97%). Sus APODOS se conservan.
+ORDEN = ["groq", "gemini4", "gemini2", "deepseek"]
 APODO = {"groq": "GPT-OSS 120B (Groq)", "groq20b": "GPT-OSS 20B (Groq)",
          "gemini": "Gemini 3.5", "gemini2": "Gemini 3 preview",
          "gemini3": "Gemini flash-latest", "gemini4": "Gemini 2.5 flash-lite",

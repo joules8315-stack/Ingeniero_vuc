@@ -1,0 +1,31 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion test_si_se_agota_toda_la_nube_queda_el_local quedo obsoleta por A-31: ya no existe 'local' en cuotas.ORDEN y debe reemplazarse por la prueba de que con todas las gratis agotadas queda DeepSeek.",
+  "archivo": "vigias/test_vigia_relevo_cuotas.py",
+  "funcion": "test_si_se_agota_toda_la_nube_queda_el_local",
+  "texto_viejo": "def test_si_se_agota_toda_la_nube_queda_el_local():\n    for q in cuotas.ORDEN:\n        if q != \"local\":\n            cuotas.dormir(q, \"429 quota\")\n    assert cuotas.turno() == \"local\", \"con toda la nube agotada debe quedar LM Studio\"",
+  "texto_nuevo": "def test_si_se_agotan_todas_las_gratis_queda_deepseek():\n    for q in cuotas.ORDEN:\n        if q not in cuotas.DE_PAGO:\n            cuotas.dormir(q, \"429 quota\")\n    assert cuotas.turno() == \"deepseek\", \"con todas las gratis agotadas queda DeepSeek (A-31)\"",
+  "cambio": "Sustituir la funcion test_si_se_agota_toda_la_nube_queda_el_local por test_si_se_agotan_todas_las_gratis_queda_deepseek: dormir con cuotas.dormir(q, '429 quota') a todo q de cuotas.ORDEN que no este en cuotas.DE_PAGO y comprobar que cuotas.turno() == 'deepseek' con mensaje 'con todas las gratis agotadas queda DeepSeek (A-31)'.",
+  "codigo": "def test_si_se_agotan_todas_las_gratis_queda_deepseek():\n    for q in cuotas.ORDEN:\n        if q not in cuotas.DE_PAGO:\n            cuotas.dormir(q, \"429 quota\")\n    assert cuotas.turno() == \"deepseek\", \"con todas las gratis agotadas queda DeepSeek (A-31)\"",
+  "vigia": "vigias/test_vigia_relevo_cuotas.py, funcion test_si_se_agotan_todas_las_gratis_queda_deepseek: duerme todas las gratis y comprueba que el turno es deepseek.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Correr las vigias (pytest) de verdad para demostrar el verde real antes de pedirle a Julio que pruebe (ley 7); el material no trae cerebro/cuotas, asi que la premisa turno() == 'deepseek' se confirma solo ejecutando la vigia, no leyendo el paquete."
+  ],
+  "resumen_para_el_jefe": "La propuesta reemplaza exactamente la vigia que la ley A-31 deja obsoleta por el test nuevo que el paquete pide palabra por palabra, usando solo cuotas.ORDEN, DE_PAGO, dormir y turno, que ya estan en el material; no inventa nada, quita la funcion cuyo borrado viene autorizado por escrito y no puede danar a nadie (el paquete dice que la reparacion es aislada)."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

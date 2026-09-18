@@ -1,0 +1,31 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El cuerpo de test_si_se_agota_toda_la_nube_queda_el_local aun asume que la local queda al agotar la nube, pero A-31 saco a la local de la fila y el que queda es DeepSeek.",
+  "archivo": "vigias/test_vigia_relevo_cuotas.py",
+  "funcion": "test_si_se_agota_toda_la_nube_queda_el_local",
+  "texto_viejo": "def test_si_se_agota_toda_la_nube_queda_el_local():\n    for q in cuotas.ORDEN:\n        if q != \"local\":\n            cuotas.dormir(q, \"429 quota\")\n    assert cuotas.turno() == \"local\", \"con toda la nube agotada debe quedar LM Studio\"",
+  "texto_nuevo": "def test_si_se_agota_toda_la_nube_queda_el_local():\n    \"\"\"A-31 (2026-09-18): la local salio de la fila; con toda la nube GRATIS agotada queda DeepSeek. Se conserva el nombre para no perder la pieza.\"\"\"\n    for q in cuotas.ORDEN:\n        if q not in cuotas.DE_PAGO:\n            cuotas.dormir(q, \"429 quota\")\n    assert cuotas.turno() == \"deepseek\", \"con todas las gratis agotadas queda DeepSeek (A-31)\"",
+  "cambio": "Conservar el nombre de la funcion y sustituir SOLO su cuerpo: anadir el docstring de A-31, dormir con cuotas.dormir(q, '429 quota') a todo q de cuotas.ORDEN que no este en cuotas.DE_PAGO, y cambiar el assert a cuotas.turno() == 'deepseek' con el mensaje 'con todas las gratis agotadas queda DeepSeek (A-31)'.",
+  "codigo": "def test_si_se_agota_toda_la_nube_queda_el_local():\n    \"\"\"A-31 (2026-09-18): la local salio de la fila; con toda la nube GRATIS agotada queda DeepSeek. Se conserva el nombre para no perder la pieza.\"\"\"\n    for q in cuotas.ORDEN:\n        if q not in cuotas.DE_PAGO:\n            cuotas.dormir(q, \"429 quota\")\n    assert cuotas.turno() == \"deepseek\", \"con todas las gratis agotadas queda DeepSeek (A-31)\"",
+  "vigia": "vigias/test_vigia_relevo_cuotas.py::test_si_se_agota_toda_la_nube_queda_el_local",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "correr la vigia con pytest (python -m pytest -q vigias/test_vigia_relevo_cuotas.py) y verla verde antes de mostrarle a Julio"
+  ],
+  "resumen_para_el_jefe": "Copia exacta de lo que ordena el paquete para A-31: conserva el nombre de la funcion, sustituye solo el cuerpo con el docstring pedido, duerme con cuotas.dormir a todo q de ORDEN que no este en DE_PAGO y afirma que queda DeepSeek; no usa nada que no este en el material, no toca vecinos y es un cambio minimo."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

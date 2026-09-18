@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El test C sigue usando groq20b (que ya no existe) y no actualiza la constante CINTURON, por lo que la prueba no refleja la fila real ['groq','gemini4','gemini2','deepseek'] ni comprueba que con 19500 letras el primer pedido sea 'gemini4'.",
+  "archivo": "vigias/test_vigia_se_reparte_por_capacidad.py",
+  "funcion": "test_C_al_que_no_aguanta_no_se_le_pide",
+  "texto_viejo": "def test_C_al_que_no_aguanta_no_se_le_pide(monkeypatch):\n    \"\"\"19.500 letras: solo groq20b (20.169) aguanta. Ni groq (19.042) ni local (12.887).\"\"\"\n    _capacidades(monkeypatch, {\"groq\": 19042, \"groq20b\": 20169, \"gemini\": 19000,\n                               \"gemini2\": 19000, \"gemini3\": 19000, \"gemini4\": 19000,\n                               \"local\": 12887, \"deepseek\": 230668})\n    monkeypatch.setattr(obrero, \"quienes_hay\", lambda: list(CINTURON))\n    pedidos = _espia(monkeypatch)\n    obrero._preguntar_con_relevo(\"x\" * 19500, 0.2)\n    assert pedidos and pedidos[0] == \"groq20b\", (\n        \"no se le pidio al unico gratis que aguanta ese tamano: %r\" % (pedidos,))",
+  "texto_nuevo": "def test_C_al_que_no_aguanta_no_se_le_pide(monkeypatch):\n    \"\"\"19.500 letras: por el acuerdo A-31 (2026-09-18) la fila es\n    ['groq','gemini4','gemini2','deepseek'] y groq20b ya no existe.\n    groq (19.042) no aguanta 19.500 letras, asi que el primer pedido debe ser 'gemini4'.\n    \"\"\"\n    _capacidades(monkeypatch, {\"groq\": 19042, \"gemini4\": 190000,\n                               \"gemini2\": 190000, \"deepseek\": 230668})\n    monkeypatch.setattr(obrero, \"quienes_hay\", lambda: [\"groq\", \"gemini4\", \"gemini2\", \"deepseek\"])\n    pedidos = _espia(monkeypatch)\n    obrero._preguntar_con_relevo(\"x\" * 19500, 0.2)\n    assert pedidos and pedidos[0] == \"gemini4\", (\n        \"al que no aguanta no se le pide: groq no aguanta 19.500 letras y el primer pedido \"\n        \"debe ser 'gemini4': %r\" % (pedidos,))",
+  "cambio": "En la funcion test_C_al_que_no_aguanta_no_se_le_pide: actualizar el docstring para reflejar el acuerdo A-31 (fila ['groq','gemini4','gemini2','deepseek'], groq20b ya no existe), sustituir el diccionario de capacidades por {'groq': 19042, 'gemini4': 190000, 'gemini2': 190000, 'deepseek': 230668}, hacer que quienes_hay devuelva explicitamente ['groq','gemini4','gemini2','deepseek'] en lugar de list(CINTURON), y cambiar la asercion para exigir que el primer pedido sea 'gemini4' (groq no aguanta 19500 letras).",
+  "codigo": "def test_C_al_que_no_aguanta_no_se_le_pide(monkeypatch):\n    \"\"\"19.500 letras: por el acuerdo A-31 (2026-09-18) la fila es\n    ['groq','gemini4','gemini2','deepseek'] y groq20b ya no existe.\n    groq (19.042) no aguanta 19.500 letras, asi que el primer pedido debe ser 'gemini4'.\n    \"\"\"\n    _capacidades(monkeypatch, {\"groq\": 19042, \"gemini4\": 190000,\n                               \"gemini2\": 190000, \"deepseek\": 230668})\n    monkeypatch.setattr(obrero, \"quienes_hay\", lambda: [\"groq\", \"gemini4\", \"gemini2\", \"deepseek\"])\n    pedidos = _espia(monkeypatch)\n    obrero._preguntar_con_relevo(\"x\" * 19500, 0.2)\n    assert pedidos and pedidos[0] == \"gemini4\", (\n        \"al que no aguanta no se le pide: groq no aguanta 19.500 letras y el primer pedido \"\n        \"debe ser 'gemini4': %r\" % (pedidos,))",
+  "vigia": "vigias/test_vigia_se_reparte_por_capacidad.py::test_C_al_que_no_aguanta_no_se_le_pide",
+  "puede_danar": [
+   "obrero._preguntar_con_relevo",
+   "CINTURON"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No rompe a test_AB ni a test_D: el cambio toca solo test_C y no altera quien_hay/CINTURON compartidos en otras funciones (esas siguen usando list(CINTURON) sin que se les toque)."
+  ],
+  "que_falta": [
+   "Correr la vigia para confirmar en verde antes del sello (paso interno obligatorio por la ley 2026-08-24)."
+  ],
+  "resumen_para_el_jefe": "El obrero actualizo test_C exactamente a lo que pedia el acuerdo A-31 (fila ['groq','gemini4','gemini2','deepseek'], capacidades dadas, primer pedido 'gemini4') sin inventar nada ni tocar a los vecinos."
+ },
+ "avisos": [
+  "vueltas_dadas: 2"
+ ]
+}

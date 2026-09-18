@@ -1,0 +1,29 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El vigia test_si_se_agota_toda_la_nube_queda_el_local aun espera que quede 'local' cuando se agotan las cuotas, pero por A-31 (2026-09-18) 'local' salio de cuotas.ORDEN y ahora debe quedar 'deepseek' cuando se agoten todas las gratis.",
+  "archivo": "vigias/test_vigia_relevo_cuotas.py",
+  "funcion": "test_si_se_agota_toda_la_nube_queda_el_local",
+  "texto_viejo": "def test_si_se_agota_toda_la_nube_queda_el_local():\n    for q in cuotas.ORDEN:\n        if q != \"local\":\n            cuotas.dormir(q, \"429 quota\")\n    assert cuotas.turno() == \"local\", \"con toda la nube agotada debe quedar LM Studio\"",
+  "texto_nuevo": "def test_si_se_agotan_todas_las_gratis_queda_deepseek():\n    for q in cuotas.ORDEN:\n        if q not in cuotas.DE_PAGO:\n            cuotas.dormir(q, \"429 quota\")\n    assert cuotas.turno() == \"deepseek\", \"con todas las gratis agotadas queda DeepSeek (A-31)\"",
+  "cambio": "Renombrar la funcion a test_si_se_agotan_todas_las_gratis_queda_deepseek; dormir con cuotas.dormir(q, '429 quota') a todo q de cuotas.ORDEN que no este en cuotas.DE_PAGO; y comprobar que cuotas.turno() == 'deepseek' con el mensaje 'con todas las gratis agotadas queda DeepSeek (A-31)'.",
+  "codigo": "def test_si_se_agotan_todas_las_gratis_queda_deepseek():\n    for q in cuotas.ORDEN:\n        if q not in cuotas.DE_PAGO:\n            cuotas.dormir(q, \"429 quota\")\n    assert cuotas.turno() == \"deepseek\", \"con todas las gratis agotadas queda DeepSeek (A-31)\"",
+  "vigia": "vigias/test_vigia_relevo_cuotas.py::test_si_se_agotan_todas_las_gratis_queda_deepseek",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple exactamente lo que pide el paquete A-31: renombra la funcion, duerme solo lo gratis (q no en cuotas.DE_PAGO, constante que SI aparece en el material en las lineas 24-54) y comprueba turno() == 'deepseek' con el mensaje pedido, sin inventar nada, sin tocar vecinos y sin cambiar mas de lo necesario."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

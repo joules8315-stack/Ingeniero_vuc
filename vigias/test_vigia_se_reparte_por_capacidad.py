@@ -114,15 +114,19 @@ def test_AB_lo_que_le_cabe_a_un_gratis_no_lo_contesta_el_de_pago(monkeypatch):
 
 
 def test_C_al_que_no_aguanta_no_se_le_pide(monkeypatch):
-    """19.500 letras: solo groq20b (20.169) aguanta. Ni groq (19.042) ni local (12.887)."""
-    _capacidades(monkeypatch, {"groq": 19042, "groq20b": 20169, "gemini": 19000,
-                               "gemini2": 19000, "gemini3": 19000, "gemini4": 19000,
-                               "local": 12887, "deepseek": 230668})
-    monkeypatch.setattr(obrero, "quienes_hay", lambda: list(CINTURON))
+    """19.500 letras: por el acuerdo A-31 (2026-09-18) la fila es
+    ['groq','gemini4','gemini2','deepseek'] y groq20b ya no existe.
+    groq (19.042) no aguanta 19.500 letras, asi que el primer pedido debe ser 'gemini4'.
+    """
+    _capacidades(monkeypatch, {"groq": 19042, "gemini4": 190000,
+                               "gemini2": 190000, "deepseek": 230668})
+    monkeypatch.setattr(obrero, "quienes_hay", lambda: ["groq", "gemini4", "gemini2", "deepseek"])
     pedidos = _espia(monkeypatch)
     obrero._preguntar_con_relevo("x" * 19500, 0.2)
-    assert pedidos and pedidos[0] == "groq20b", (
-        "no se le pidio al unico gratis que aguanta ese tamano: %r" % (pedidos,))
+    # gemini4 y gemini2 salen por la MISMA puerta, que el espia apunta como "gemini".
+    assert pedidos and pedidos[0] == "gemini", (
+        "al que no aguanta no se le pide: groq no aguanta 19.500 letras y el primer pedido "
+        "debe ser 'gemini4': %r" % (pedidos,))
 
 
 def test_D_lo_que_no_le_cabe_a_ningun_gratis_cae_en_el_de_pago(monkeypatch):
