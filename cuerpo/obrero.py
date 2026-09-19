@@ -943,18 +943,20 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
         avisos.append("el revisor pedido (%s) no estaba: queda SIN_AUDITAR y archivado para su revision" % revisor_fijo)
         return auditoria, quien_aud, avisos
 
-    # Ley de Julio 2026-09-14: si todas las gratis duermen, revisa Claude; nunca quien escribio.
+    # A-32 (Julio 2026-09-18, reemplaza la ley del 2026-09-14): si todas las gratis duermen, revisa Big Pickle, nunca Claude ni quien escribio.
     # SOLO si el encargo NO pidio un revisor fijo (ley de Julio 2026-09-15).
     if auditoria is None or auditoria.get('veredicto') == 'SIN_AUDITAR':
         dormidos = {q for q in cuotas.ORDEN if not cuotas.desperto(q)}
-        if cuotas.puede_revisar_claude(evitar or '', dormidos):
+        if cuotas.puede_revisar_bigpickle(evitar or '', dormidos):
             try:
-                crudo = _claude_directo(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))
-                auditoria = _json_de(crudo)
-                quien_aud = 'claude'
-                avisos.append('todas las gratis duermen: revisa claude (ley de Julio)')
+                from cuerpo import bigpickle as _bp_a32
+                _texto_bp2, _avisos_bp2 = _bp_a32.preguntar(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))
+                auditoria = _json_de(_texto_bp2)
+                quien_aud = 'bigpickle'
+                avisos.extend(_avisos_bp2)
+                avisos.append('todas las gratis duermen: revisa bigpickle (A-32)')
             except Exception as e:
-                avisos.append('claude no pudo revisar: ' + str(e)[:120])
+                avisos.append('bigpickle no pudo revisar: ' + str(e)[:120])
     # Si no hay auditor, intentar con el cerebro de pago, PERO APARTANDO SIEMPRE AL QUE ESCRIBIO.
     # NADIE REVISA SU PROPIO TRABAJO (Julio, 2026-09-13). Antes aqui no se apartaba a nadie y el que
     # escribio acababa revisandose: medido, 40 de 102 rondas aprobadas en 7 dias, que por ley no se
