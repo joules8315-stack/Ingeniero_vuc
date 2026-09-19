@@ -79,6 +79,52 @@ def anotar_huella_fallida(orden, motivo):
         f.write(json.dumps(linea, ensure_ascii=False) + '\n')
 
 
+def listas_para_correr():
+    """Devuelve, en el mismo orden de la lista, las ordenes que se pueden correr ya."""
+    lista = leer_lista()
+    resultado = []
+    piezas_en_resultado = set()
+    piezas_corriendo = set()
+    for orden in lista:
+        if isinstance(orden, dict) and orden.get('estado') == 'corriendo':
+            pieza = orden.get('pieza')
+            if pieza:
+                piezas_corriendo.add(pieza)
+    for orden in lista:
+        if not isinstance(orden, dict):
+            continue
+        if orden.get('estado') != 'pendiente':
+            continue
+        if validar_etiqueta(orden):
+            continue
+        if ya_fallo(orden):
+            continue
+        depende = orden.get('depende')
+        if not isinstance(depende, list):
+            continue
+        ok_depende = True
+        for dep_id in depende:
+            encontrada = None
+            for otra in lista:
+                if isinstance(otra, dict) and otra.get('id') == dep_id:
+                    encontrada = otra
+                    break
+            if encontrada is None or encontrada.get('estado') != 'hecha':
+                ok_depende = False
+                break
+        if not ok_depende:
+            continue
+        pieza = orden.get('pieza')
+        if pieza in piezas_corriendo:
+            continue
+        if pieza in piezas_en_resultado:
+            continue
+        resultado.append(orden)
+        if pieza:
+            piezas_en_resultado.add(pieza)
+    return resultado
+
+
 def ya_fallo(orden):
     """True si la huella_de(orden) aparece en el archivo; nunca lanza."""
     carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
