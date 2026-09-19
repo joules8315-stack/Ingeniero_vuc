@@ -314,6 +314,10 @@ def _vigias(raiz):
                 if archivo.startswith(prefijo):
                     archivo = archivo[len(prefijo):].strip()
                     break
+            # Una vigia que ni carga no trae '::': pytest escribe
+            # 'ERROR vigias/test_x.py - NameError: ...'. Cortar tambien por ' - '
+            # y quedarse con la parte de antes, antes de normalizar las barras.
+            archivo = archivo.split(" - ")[0].strip()
             archivo = archivo.replace("\\", "/")
             if archivo and archivo not in archivos_rojos:
                 archivos_rojos.append(archivo)
