@@ -58,3 +58,10 @@ En este orden; cada una con vigía y sabotaje; DeepSeek escribe; revisa Big Pick
 | E-8 | Juez de la prueba (programa): vigía roja con lo viejo, verde con lo nuevo, vecinas verdes, sabotaje automático | cuerpo/capataz.py (reusa vecinas, guardar_en_la_historia, volver_atras) | vigía + sabotaje |
 | E-9 | Medidor: rondas por guardado y segundos de revisión por día; meta ≥ 0,9 guardados por ronda | programa conectado al cierre | vigía |
 | E-10 | Claude no responde dos veces: regla en la memoria y, si es medible, candado de cierre | memoria, arnes | — |
+| E-11 | El candado de memoria no hace repetir acciones: lecciones con disparador del PELIGRO (no de palabras comunes) y cuenta por lección | arnes/candado_memoria.py, memoria/FALLOS.json | test_vigia_los_avisos_no_hacen_repetir |
+
+### Estado E-1..E-11 (2026-09-19, 15:00)
+- HECHO con vigía y sabotaje por programa: E-1 (tope del revisor), E-2 (si Big Pickle cae revisa otro; reemplaza la ley del 15-09), E-3a (el programa revisa ANTES que la IA; si frena no se paga), E-6 (fotocopia solo con marcas), nº10 y nº12 (humo con cadenas), E-8a (`arnes/sabotaje.py`: el sabotaje lo hace un programa; listas en memoria/sabotajes/), E-11 (5 lecciones con disparador del peligro + cuenta por lección), guardia: "nueva" = no está en HEAD, revisor ve el trozo tocado (del paquete o del DISCO, ventana de 40 líneas si la función es larga) y sabe lo que ya comprobó el programa.
+- A MEDIAS: E-3b `no_carga` existe (4 falsos de 318 archivos, por eso solo frena si antes cargaba); su conexión en `revisar` (regla 4b) quedó sin revisor: vigía test_vigia_revisar_frena_si_deja_de_cargar guardada ROJA a propósito.
+- FALTA: E-4 (freno nº2), E-5 (borrar), E-7 (texto repetido), E-8b (juez de la prueba completo), E-9 (medidor); el relevo aún intenta Gemini 3 y LM Studio (A-31 los sacó); más lecciones con disparador de palabra común (LM Studio, memoria).
+- PARADO a las 15:00: Big Pickle caído desde las 10:48 y las gratis agotadas por hoy (Groq, Gemini flash-lite, Gemini 3). Sin revisor no se guarda nada (así debe ser).
