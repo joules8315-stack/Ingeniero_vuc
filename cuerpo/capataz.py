@@ -260,6 +260,59 @@ def tipo_de_fallo(salida):
     return "otro"
 
 
+def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):
+    """Corre las ordenes sola hasta que se para por una de las tres causas:
+    tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos
+    del mismo tipo en la misma pieza."""
+    fallos_por_pieza_tipo = {}
+    while True:
+        if se_paso_del_tope():
+            return 'PARADO: TOPE DE GASTO (%.2f USD este mes)' % gastado_del_mes()
+        tanda = listas_para_correr()[:en_paralelo]
+        if not tanda:
+            pendientes = []
+            for orden in leer_lista():
+                if isinstance(orden, dict) and orden.get('estado') in ('pendiente', 'corriendo'):
+                    pendientes.append(str(orden.get('id', '')))
+            if not pendientes:
+                return 'PARADO: TODO HECHO'
+            return 'PARADO: NADA SE PUEDE CORRER (pendientes: ' + ','.join(pendientes) + ')'
+        for orden in tanda:
+            marcar_estado(
+                orden.get('id'),
+                'corriendo',
+                orden.get('paso_fallido') or '',
+                orden.get('fallos_seguidos') or 0,
+            )
+
+        def correr_una(orden):
+            try:
+                return lanzar_al_equipo(proyecto, orden, tope_segundos)
+            except Exception as e:
+                return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=len(tanda)) as ejecutor:
+            resultados = list(ejecutor.map(correr_una, tanda))
+
+        for orden, resultado in zip(tanda, resultados):
+            orden_id = str(orden.get('id', ''))
+            if resultado.get('guardado'):
+                marcar_estado(orden.get('id'), 'hecha', '', 0)
+                aviso('HECHA ' + orden_id)
+            else:
+                salida = resultado.get('salida', '')
+                tipo = tipo_de_fallo(salida)
+                anotar_huella_fallida(orden, tipo)
+                fallos_seguidos = (orden.get('fallos_seguidos') or 0) + 1
+                marcar_estado(orden.get('id'), 'fallida', tipo, fallos_seguidos)
+                aviso('FALLIDA ' + orden_id + ' (' + tipo + ')')
+                pieza = orden.get('pieza')
+                clave = (pieza, tipo)
+                fallos_por_pieza_tipo[clave] = fallos_por_pieza_tipo.get(clave, 0) + 1
+                if fallos_por_pieza_tipo[clave] >= 3:
+                    return 'PARADO: 3 FALLOS DEL MISMO TIPO (' + tipo + ') EN ' + str(pieza)
+
+
 def ya_fallo(orden):
     """True si la huella_de(orden) aparece en el archivo; nunca lanza."""
     carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
