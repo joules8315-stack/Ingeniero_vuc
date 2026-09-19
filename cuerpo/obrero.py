@@ -305,6 +305,7 @@ def _propuesta_cumple(propuesta, clase):
 
 
 TOPE_GRATIS = 19000   # MEDIDO 2026-09-09: el mas pequeno de los cerebros gratis aguanta ~19.000.
+TOPE_REVISOR = 12000   # A-38 (Julio 2026-09-19): el revisor recibe solo el cambio y lo que toca, nunca el archivo entero.
                       # A partir de aqui el cerebro se apaga: corta la respuesta a la mitad.
 
 
