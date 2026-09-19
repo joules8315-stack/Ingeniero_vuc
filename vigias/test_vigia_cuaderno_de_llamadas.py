@@ -98,3 +98,14 @@ def test_el_cuaderno_no_rompe_si_falla_el_disco():
         assert cuaderno.apuntar("x", tamano=1, resultado=cuaderno.OK) is None
     finally:
         os.environ.pop("INGENIERO_CUADERNO_TEST", None)
+
+
+def test_el_reloj_anota_los_segundos(tmp_path, monkeypatch):
+    """El reloj del cuaderno guarda los segundos redondeados, y solo si se midieron."""
+    monkeypatch.setenv("INGENIERO_CUADERNO_TEST", str(tmp_path / "c.jsonl"))
+    from cuerpo import cuaderno
+    cuaderno.apuntar("deepseek", resultado=cuaderno.OK, segundos=2.345)
+    cuaderno.apuntar("groq")
+    lineas = [json.loads(l) for l in (tmp_path / "c.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+    assert lineas[0]["segundos"] == 2.3
+    assert "segundos" not in lineas[1]
