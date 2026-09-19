@@ -347,15 +347,16 @@ def guardar_en_la_historia(raiz, archivos, mensaje):
         if not rutas:
             return False, "no hay archivos aprobados que guardar"
         comun = dict(cwd=raiz, capture_output=True, text=True, stdin=subprocess.DEVNULL)
-        r = subprocess.run(["git", "add", "--"] + rutas, timeout=60, **comun)
-        if r.returncode != 0:
-            return False, "no se pudo preparar el guardado: " + ((r.stderr or "") + (r.stdout or ""))[-300:]
-        r = subprocess.run(["git", "commit", "-q", "-m", str(mensaje), "--"] + rutas, timeout=1800, **comun)
-        if r.returncode != 0:
-            motivo = ((r.stderr or "") + (r.stdout or ""))[-600:]
-            hechos = volver_atras(raiz, rutas, motivo)
-            return False, "EL GUARDIA NO DEJO GUARDAR: " + motivo + "\nSE VOLVIO ATRAS: " + "; ".join(hechos)
-        return True, "guardado en la historia: " + ", ".join(rutas)
+        with fila_de_commits(raiz):
+            r = subprocess.run(["git", "add", "--"] + rutas, timeout=60, **comun)
+            if r.returncode != 0:
+                return False, "no se pudo preparar el guardado: " + ((r.stderr or "") + (r.stdout or ""))[-300:]
+            r = subprocess.run(["git", "commit", "-q", "-m", str(mensaje), "--"] + rutas, timeout=1800, **comun)
+            if r.returncode != 0:
+                motivo = ((r.stderr or "") + (r.stdout or ""))[-600:]
+                hechos = volver_atras(raiz, rutas, motivo)
+                return False, "EL GUARDIA NO DEJO GUARDAR: " + motivo + "\nSE VOLVIO ATRAS: " + "; ".join(hechos)
+            return True, "guardado en la historia: " + ", ".join(rutas)
     except Exception as e:
         return False, "no se pudo guardar: %s" % str(e)[:200]
 
