@@ -36,7 +36,7 @@ def _ruta():
     return os.environ.get("INGENIERO_CUADERNO_TEST") or RUTA
 
 
-def apuntar(quien, tamano=0, vuelta=0, clase="", resultado=ERROR, crudo=""):
+def apuntar(quien, tamano=0, vuelta=0, clase="", resultado=ERROR, crudo="", segundos=None):
     """Escribe una linea en el cuaderno. Nunca rompe el trabajo: si el disco falla, calla."""
     try:
         fila = {
@@ -48,6 +48,8 @@ def apuntar(quien, tamano=0, vuelta=0, clase="", resultado=ERROR, crudo=""):
             "resultado": str(resultado or ERROR),
             "crudo": str(crudo or "")[:300],
         }
+        if segundos is not None:
+            fila["segundos"] = round(float(segundos), 1)
         ruta = _ruta()
         os.makedirs(os.path.dirname(ruta), exist_ok=True)
         lineas = []
