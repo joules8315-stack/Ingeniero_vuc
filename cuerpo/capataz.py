@@ -244,6 +244,21 @@ def se_paso_del_tope(hoy=None):
     return gastado_del_mes(hoy) >= TOPE_MES_USD
 
 
+def tipo_de_fallo(salida):
+    """Devuelve de que tipo fue el fallo, mirando el texto de salida."""
+    if not isinstance(salida, str):
+        return "otro"
+    if salida.startswith("TOPE DE TIEMPO"):
+        return "tiempo"
+    if "EL GUARDIA NO DEJO GUARDAR" in salida or "NO SE GUARDO" in salida:
+        return "guardia"
+    if "EL EQUIPO NO APROBO" in salida:
+        return "no_aprobo"
+    if "no se pudo aplicar" in salida:
+        return "no_aplico"
+    return "otro"
+
+
 def ya_fallo(orden):
     """True si la huella_de(orden) aparece en el archivo; nunca lanza."""
     carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
