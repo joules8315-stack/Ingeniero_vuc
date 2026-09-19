@@ -307,7 +307,7 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
                     continue
                 _texto_funcion = _hallazgo["texto"]
                 _lineas_funcion = _hallazgo["hasta"] - _hallazgo["desde"] + 1
-                if _lineas_funcion > TOPE_FUNCION_ENTERA:
+                if _lineas_funcion > TOPE_FUNCION_NOMBRADA:
                     continue
                 _ya_en_pedazos = any(
                     t["pieza"] == _ficha_codigo["id"] and t["desde"] <= _hallazgo["desde"]
