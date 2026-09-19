@@ -483,6 +483,62 @@ def agregar_orden(orden):
     return (True, 'agregada ' + str(orden_id))
 
 
+def forense(orden, resultado, raiz=None):
+    """Analiza un fallo con el perito, comprueba sus citas, lo juzga y deja tarea nueva. Nunca lanza."""
+    if raiz is None:
+        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    ruta, expediente = armar_expediente(orden, resultado)
+    analisis, estado = pedir_al_perito(expediente, raiz)
+    if analisis is None:
+        informe = {'ok': False, 'paso': 'perito', 'motivo': estado}
+    else:
+        citas = analisis.get('citas')
+        if not isinstance(citas, list) or not citas:
+            informe = {'ok': False, 'paso': 'citas', 'motivo': 'el perito no trajo citas'}
+        else:
+            malas = citas_que_no_existen(citas, raiz)
+            if malas:
+                informe = {'ok': False, 'paso': 'citas', 'motivo': 'citas que no existen: ' + json.dumps(malas, ensure_ascii=False)[:500]}
+            else:
+                prueban, por_que = juzgar_citas(analisis)
+                if not prueban:
+                    informe = {'ok': False, 'paso': 'juez', 'motivo': por_que}
+                else:
+                    try:
+                        from cuerpo import fallos
+                        import re
+                        fallos.apuntar(
+                            que_paso=str(analisis.get('que_paso') or 'fallo en el pit')[:200],
+                            causa_raiz=str(analisis.get('causa_raiz', ''))[:300],
+                            cura='tarea nueva del forense',
+                            no_volver_a=str(analisis.get('no_volver_a', ''))[:200],
+                            proyecto=os.path.basename(str(raiz)),
+                            piezas=[str(orden.get('pieza', ''))],
+                            quien_lo_caza='pit (forense)',
+                            disparador=re.escape(str(orden.get('pieza', ''))) or 'pit',
+                        )
+                    except Exception:
+                        pass
+                    tarea = dict(analisis.get('tarea_nueva') or {})
+                    tarea['id'] = str(orden.get('id', '')) + '-F' + datetime.datetime.now().strftime('%H%M%S')
+                    tarea['origen'] = 'forense:' + str(orden.get('id', ''))
+                    if 'depende' not in tarea:
+                        tarea['depende'] = []
+                    ok, motivo = agregar_orden(tarea)
+                    informe = {'ok': ok, 'paso': 'tarea', 'motivo': motivo, 'tarea': tarea['id']}
+    informe['expediente'] = ruta
+    if ruta is not None:
+        try:
+            junto = dict(expediente)
+            junto['analisis'] = analisis
+            junto['informe'] = informe
+            with open(ruta, 'w', encoding='utf-8') as f:
+                json.dump(junto, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass
+    return informe
+
+
 def ya_fallo(orden):
     """True si la huella_de(orden) aparece en el archivo; nunca lanza."""
     carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
