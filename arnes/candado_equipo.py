@@ -318,6 +318,56 @@ def guardar_en_la_historia(raiz, archivos, mensaje):
         return False, "no se pudo guardar: %s" % str(e)[:200]
 
 
+def volver_atras(raiz, rutas, motivo):
+    """Si el guardia no deja guardar lo que el equipo aplico, se VUELVE ATRAS solo
+    (plan v4 §5: 'Si falla: se vuelve atras y se anota en el libro de fallos').
+
+    Para cada ruta: si ya estaba guardada en HEAD, se restaura a lo guardado; si es nueva,
+    se saca del indice y se MUEVE a memoria/trabajos_sin_revisar/<nombre>.FRENADO_POR_EL_GUARDIA.
+    NUNCA borra. Anota en el libro de fallos. Devuelve la lista de anotaciones. Nunca lanza.
+    """
+    import subprocess
+    import os
+    anotaciones = []
+    try:
+        comun = dict(cwd=raiz, capture_output=True, text=True, stdin=subprocess.DEVNULL)
+        for ruta in (rutas or []):
+            try:
+                r = subprocess.run(["git", "cat-file", "-e", "HEAD:" + str(ruta)], timeout=60, **comun)
+                if r.returncode == 0:
+                    subprocess.run(["git", "restore", "--staged", "--worktree", "--source=HEAD", "--", str(ruta)], timeout=60, **comun)
+                    anotaciones.append("devuelta a lo guardado: " + str(ruta))
+                else:
+                    subprocess.run(["git", "rm", "--cached", "-q", "--ignore-unmatch", "--", str(ruta)], timeout=60, **comun)
+                    destino_dir = os.path.join(str(raiz), "memoria", "trabajos_sin_revisar")
+                    os.makedirs(destino_dir, exist_ok=True)
+                    destino = os.path.join(destino_dir, os.path.basename(str(ruta)) + ".FRENADO_POR_EL_GUARDIA")
+                    os.replace(str(ruta), destino)
+                    anotaciones.append("apartada (nueva): " + str(ruta))
+            except Exception as e:
+                anotaciones.append("no se pudo volver atras: %s: %s" % (str(ruta), str(e)[:200]))
+    except Exception as e:
+        anotaciones.append("no se pudo volver atras: %s" % str(e)[:200])
+    try:
+        import sys
+        raiz_ingeniero = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if raiz_ingeniero not in sys.path:
+            sys.path.insert(0, raiz_ingeniero)
+        from cuerpo import fallos
+        fallos.apuntar(
+            que_paso='el guardia no dejo guardar lo que el equipo aplico',
+            causa_raiz=str(motivo)[:300],
+            cura='se volvio atras solo (candado_equipo.volver_atras)',
+            no_volver_a='lo que no pasa las vigias no se queda en el disco',
+            proyecto=os.path.basename(str(raiz)),
+            piezas=list(rutas),
+            quien_lo_caza='guardia_de_guardado',
+        )
+    except Exception as e:
+        anotaciones.append("no se pudo anotar en el libro de fallos: %s" % str(e)[:200])
+    return anotaciones
+
+
 def veredicto_para_aplicar(res, guardado):
     """EL VEREDICTO QUE MANDA (Julio, 2026-09-13).
 
