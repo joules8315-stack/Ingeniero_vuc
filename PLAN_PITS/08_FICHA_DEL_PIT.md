@@ -43,3 +43,18 @@ Lista de tareas: `memoria/ORDENES.json` (del proyecto que corre el pit).
 
 
 **Claude sin manos (plan §2)**: la lista de permisos de solo lectura la activa Julio con su llave; se le prepara el comando al llegar al paso 4.
+
+## ANTES de seguir el paso 3: tareas de la orden A-38 (Julio, 2026-09-19)
+En este orden; cada una con vigía y sabotaje; DeepSeek escribe; revisa Big Pickle o, si está caído, otra IA con solo lo necesario.
+| Nº | Qué | Pieza | Cómo se hace cumplir |
+|---|---|---|---|
+| E-1 | El revisor recibe solo lo necesario: tope único y chico del material del revisor (sin la excepción de 40.000 letras para Big Pickle) | cuerpo/obrero.py | vigía: el material del revisor nunca pasa el tope |
+| E-2 | Si el revisor pedido está caído, revisa el siguiente de la fila que no sea quien escribió | cuerpo/obrero.py, cuerpo/cuotas.py | vigía con revisor caído |
+| E-3 | Antes de revisar, un programa comprueba que el archivo cambiado CARGA (se importa en una copia) | cuerpo/obrero.py o arnes/revisor_de_programa.py | vigía: import olvidado frena antes de gastar revisión |
+| E-4 | Freno nº2 corregido: solo exige las palabras que el encargo manda cambiar | arnes/revisor_de_programa.py | vigía con los encargos reales que frenó en falso |
+| E-5 | Freno nº8: un cambio que solo borra es válido | arnes/revisor_de_programa.py | vigía |
+| E-6 | Freno nº9: fotocopia solo con marcas TEXTO_VIEJO:/TEXTO_NUEVO: al inicio de línea | arnes/candado_terminal.py | vigía |
+| E-7 | Texto viejo repetido: se busca dentro de la función que el obrero dice tocar | cuerpo/aplicador.py | vigía |
+| E-8 | Juez de la prueba (programa): vigía roja con lo viejo, verde con lo nuevo, vecinas verdes, sabotaje automático | cuerpo/capataz.py (reusa vecinas, guardar_en_la_historia, volver_atras) | vigía + sabotaje |
+| E-9 | Medidor: rondas por guardado y segundos de revisión por día; meta ≥ 0,9 guardados por ronda | programa conectado al cierre | vigía |
+| E-10 | Claude no responde dos veces: regla en la memoria y, si es medible, candado de cierre | memoria, arnes | — |
