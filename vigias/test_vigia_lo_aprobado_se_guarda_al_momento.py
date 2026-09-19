@@ -144,8 +144,9 @@ def test_solo_se_guarda_lo_aprobado(tmp_path):
     )
 
 
-def test_si_el_guardia_frena_no_se_pierde_nada(tmp_path):
+def test_si_el_guardia_frena_no_se_pierde_nada(tmp_path, monkeypatch):
     """Si el guardia de guardado frena, el trabajo no se pierde: sigue en el disco o queda apartado."""
+    monkeypatch.setenv('INGENIERO_FALLOS_TEST', str(tmp_path / 'fallos_prueba.json'))
     _repo(tmp_path)
     hook = tmp_path / ".git" / "hooks" / "pre-commit"
     hook.write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
