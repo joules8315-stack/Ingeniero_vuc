@@ -391,6 +391,48 @@ def _filtrar_paquete(paquete, archivo=None, tope=None):
     return "\n".join(salida)
 
 
+def _material_del_revisor(paquete, propuesta, tope):
+    """Devuelve el material para el revisor con el trozo tocado entero delante."""
+    try:
+        archivo = propuesta.get("archivo") if isinstance(propuesta, dict) else None
+        base = _filtrar_paquete(paquete, archivo=archivo, tope=tope)
+        if not isinstance(propuesta, dict):
+            return base
+        viejo = str(propuesta.get("texto" + "_viejo") or "").strip()
+        if not viejo:
+            return base
+        if not isinstance(paquete, str):
+            from cerebro import router as _r
+            paquete = _r.a_texto(paquete)
+        lineas = paquete.splitlines()
+        bloques = []
+        i = 0
+        while i < len(lineas):
+            if lineas[i].startswith("### " + chr(96)):
+                j = i + 1
+                while j < len(lineas) and not lineas[j].startswith("### " + chr(96)) and not lineas[j].startswith("## "):
+                    j += 1
+                bloques.append(lineas[i:j])
+                i = j
+            else:
+                i += 1
+        tocados = [b for b in bloques if viejo in "\n".join(b)]
+        if not tocados:
+            return base
+        arriba = ["## EL CAMBIO SE HACE AQUI (trozo entero)"]
+        for b in tocados:
+            arriba += b
+        resultado = "\n".join(arriba) + "\n" + base
+        if len(resultado) > tope:
+            resultado = resultado[:tope]
+        return resultado
+    except Exception:
+        try:
+            return base
+        except Exception:
+            return ""
+
+
 TOPE_LOCAL = 26000    # MEDIDO 2026-08-21: 3/3 hasta 26.000; 28.000/30.000/35.000/40.000 = 0/3 (RECHAZA)
 # TOPE_PESADO ya NO decide el reparto (2026-09-09, punto 1 de la causa raiz): la decision la toma
 # la capacidad MEDIDA (cuotas.rankear). El numero se deja porque `medir_las_nueve_puertas.py` lo

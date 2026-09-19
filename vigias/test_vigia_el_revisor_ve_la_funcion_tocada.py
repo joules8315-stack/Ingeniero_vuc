@@ -29,10 +29,10 @@ def _paquete_de_prueba():
     for _ in range(150):
         lineas.append('vecino ' * 10)
     lineas.append('## 3. LOS TROZOS EXACTOS')
-    lineas.append('###  relevancia 0.9')
+    lineas.append('### ' + chr(96) + 'x.py' + chr(96) + ' relevancia 0.9')
     for _ in range(60):
         lineas.append('relleno = 0')
-    lineas.append('###  relevancia 0.1')
+    lineas.append('### ' + chr(96) + 'x.py' + chr(96) + ' relevancia 0.1')
     lineas.append('def tocada():')
     lineas.append('    return 12345')
     return '\n'.join(lineas)
