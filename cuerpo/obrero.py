@@ -1037,7 +1037,7 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
         if _vistos:
             _archivo_tarea = _vistos
         material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,
-                                       tope=TOPE_GRATIS - 2690)
+                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)
         crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,
                                                       pesado=pesado_ahora, primero=generador,
                                                       clase=clase, vuelta=_vuelta + 1)
