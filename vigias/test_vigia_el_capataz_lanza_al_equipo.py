@@ -116,7 +116,7 @@ def test_si_stdout_trae_guardado_al_momento_devuelve_guardado_true(monkeypatch):
 def test_si_no_trae_guardado_al_momento_guardado_es_false(monkeypatch):
     """Si la salida no trae GUARDADO AL MOMENTO, guardado es False."""
     falsa = _falsa_run(
-        returncode=1,
+        returncode=0,
         stdout="EL EQUIPO NO APROBO\n",
         stderr="",
     )
@@ -125,7 +125,7 @@ def test_si_no_trae_guardado_al_momento_guardado_es_false(monkeypatch):
     resultado = capataz.lanzar_al_equipo("dmm", dict(ORDEN_BASE))
 
     assert resultado["guardado"] is False
-    assert resultado["codigo"] == 1
+    assert resultado["codigo"] == 0
     assert "EL EQUIPO NO APROBO" in resultado["salida"]
 
 
