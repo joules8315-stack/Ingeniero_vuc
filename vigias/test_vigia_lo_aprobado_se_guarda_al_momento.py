@@ -145,7 +145,7 @@ def test_solo_se_guarda_lo_aprobado(tmp_path):
 
 
 def test_si_el_guardia_frena_no_se_pierde_nada(tmp_path):
-    """Si el guardia de guardado frena, el trabajo sigue en el disco."""
+    """Si el guardia de guardado frena, el trabajo no se pierde: sigue en el disco o queda apartado."""
     _repo(tmp_path)
     hook = tmp_path / ".git" / "hooks" / "pre-commit"
     hook.write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
@@ -160,9 +160,20 @@ def test_si_el_guardia_frena_no_se_pierde_nada(tmp_path):
     )
 
     assert ok is False, "el guardia freno y la funcion dijo que si guardo"
-    contenido = (tmp_path / "pieza.py").read_text(encoding="utf-8")
+    en_el_disco = tmp_path / "pieza.py"
+    apartado = (
+        tmp_path
+        / "memoria"
+        / "trabajos_sin_revisar"
+        / "pieza.py.FRENADO_POR_EL_GUARDIA"
+    )
+    contenido = ""
+    if en_el_disco.exists():
+        contenido = en_el_disco.read_text(encoding="utf-8")
+    elif apartado.exists():
+        contenido = apartado.read_text(encoding="utf-8")
     assert "y = 2" in contenido, (
-        "el guardia freno y el trabajo desaparecio del disco"
+        "el guardia freno y el trabajo desaparecio: ni en el disco ni apartado"
     )
 
 
