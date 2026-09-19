@@ -65,6 +65,18 @@ def _anotar(segundos: float, costo: float, ok: bool, nota: str = "") -> None:
     except Exception:
         # El log no puede tumbar la llamada.
         pass
+    try:
+        from cuerpo import cuaderno
+        cuaderno.apuntar(
+            "bigpickle",
+            clase="auditar",
+            resultado=(cuaderno.OK if ok else cuaderno.ERROR),
+            crudo=nota,
+            segundos=segundos,
+        )
+    except Exception:
+        # El cuaderno no puede tumbar la llamada.
+        pass
 
 
 # ---------------------------------------------------------------------------
