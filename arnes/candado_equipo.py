@@ -312,7 +312,9 @@ def guardar_en_la_historia(raiz, archivos, mensaje):
             return False, "no se pudo preparar el guardado: " + ((r.stderr or "") + (r.stdout or ""))[-300:]
         r = subprocess.run(["git", "commit", "-q", "-m", str(mensaje), "--"] + rutas, timeout=1800, **comun)
         if r.returncode != 0:
-            return False, "EL GUARDIA NO DEJO GUARDAR: " + ((r.stderr or "") + (r.stdout or ""))[-600:]
+            motivo = ((r.stderr or "") + (r.stdout or ""))[-600:]
+            hechos = volver_atras(raiz, rutas, motivo)
+            return False, "EL GUARDIA NO DEJO GUARDAR: " + motivo + "\nSE VOLVIO ATRAS: " + "; ".join(hechos)
         return True, "guardado en la historia: " + ", ".join(rutas)
     except Exception as e:
         return False, "no se pudo guardar: %s" % str(e)[:200]
