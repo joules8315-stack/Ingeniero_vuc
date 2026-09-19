@@ -158,6 +158,92 @@ def listas_para_correr():
     return resultado
 
 
+# Tope de gasto del pit (plan v4 P3-8, acuerdo A-27): DeepSeek + Big Pickle no pasan
+# de 5 USD al mes. Lo usara el loop del pit (P3-9). Es CUENTA, sin IA.
+TOPE_MES_USD = 5.0
+
+# Precios de hora PICO (los mas caros, para que el tope se equivoque del lado seguro),
+# copiados de api-docs.deepseek.com/quick_start/pricing el 2026-09-19.
+PRECIOS_POR_MILLON = {
+    'flash': {'acierto': 0.006, 'fallo': 0.30, 'salida': 1.20},
+    'pro': {'acierto': 0.044, 'fallo': 1.32, 'salida': 3.96},
+}
+
+
+def costo_deepseek(modelo, uso):
+    """USD que costo una llamada a DeepSeek, segun el dict usage de la respuesta."""
+    if not isinstance(uso, dict):
+        uso = {}
+    acierto = uso.get('prompt_cache_hit_tokens')
+    fallo = uso.get('prompt_cache_miss_tokens')
+    salida = uso.get('completion_tokens')
+    if acierto is None and fallo is None:
+        fallo = uso.get('prompt_tokens')
+    if acierto is None:
+        acierto = 0
+    if fallo is None:
+        fallo = 0
+    if salida is None:
+        salida = 0
+    if 'flash' in str(modelo).lower():
+        precios = PRECIOS_POR_MILLON['flash']
+    else:
+        precios = PRECIOS_POR_MILLON['pro']
+    return (acierto * precios['acierto'] + fallo * precios['fallo'] + salida * precios['salida']) / 1000000
+
+
+def gastado_del_mes(hoy=None):
+    """USD gastados en el mes de 'hoy' (o del dia de hoy). Nunca lanza."""
+    if hoy is None:
+        hoy = datetime.date.today()
+    mes = hoy.strftime('%Y-%m')
+    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    carpeta_memoria = os.path.join(carpeta_proyecto, 'memoria')
+    total = 0.0
+    ruta_test = os.environ.get('INGENIERO_GASTO_USD_TEST')
+    if ruta_test:
+        ruta_gasto = ruta_test
+    else:
+        ruta_gasto = os.path.join(carpeta_memoria, 'GASTO_USD.jsonl')
+    try:
+        with open(ruta_gasto, encoding='utf-8') as f:
+            for linea in f:
+                try:
+                    dato = json.loads(linea)
+                except json.JSONDecodeError:
+                    continue
+                if not isinstance(dato, dict):
+                    continue
+                cuando = dato.get('cuando')
+                if not isinstance(cuando, str) or not cuando.startswith(mes):
+                    continue
+                total += costo_deepseek(dato.get('modelo'), dato.get('uso'))
+    except (FileNotFoundError, OSError):
+        pass
+    ruta_log = os.path.join(carpeta_memoria, 'BIGPICKLE.log')
+    try:
+        with open(ruta_log, encoding='utf-8') as f:
+            for linea in f:
+                if not linea.startswith(mes):
+                    continue
+                partes = linea.split('\t')
+                for parte in partes:
+                    if parte.startswith('costo='):
+                        try:
+                            total += float(parte[len('costo='):])
+                        except ValueError:
+                            pass
+                        break
+    except (FileNotFoundError, OSError):
+        pass
+    return total
+
+
+def se_paso_del_tope(hoy=None):
+    """True si ya se gasto el tope del mes."""
+    return gastado_del_mes(hoy) >= TOPE_MES_USD
+
+
 def ya_fallo(orden):
     """True si la huella_de(orden) aparece en el archivo; nunca lanza."""
     carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
