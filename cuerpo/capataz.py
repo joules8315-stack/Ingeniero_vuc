@@ -313,6 +313,46 @@ def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):
                     return 'PARADO: 3 FALLOS DEL MISMO TIPO (' + tipo + ') EN ' + str(pieza)
 
 
+def armar_expediente(orden, resultado):
+    """Junta en un dict lo que el perito necesita para analizar el fallo sin usar su memoria."""
+    orden = orden if isinstance(orden, dict) else {}
+    resultado = resultado if isinstance(resultado, dict) else {}
+    salida = resultado.get('salida', '')
+    if not isinstance(salida, str):
+        salida = ''
+    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    carpeta_memoria = os.path.join(carpeta_proyecto, 'memoria')
+    pieza = orden.get('pieza', '')
+    if not isinstance(pieza, str):
+        pieza = ''
+    prefijo = os.path.basename(pieza)
+    apartados = []
+    carpeta_trabajos = os.path.join(carpeta_memoria, 'trabajos_sin_revisar')
+    if os.path.isdir(carpeta_trabajos):
+        for nombre in os.listdir(carpeta_trabajos):
+            if nombre.endswith('.FRENADO_POR_EL_GUARDIA') and nombre.startswith(prefijo):
+                apartados.append(nombre)
+    dict_expediente = {
+        'orden': orden,
+        'huella': huella_de(orden),
+        'tipo': tipo_de_fallo(salida),
+        'codigo': resultado.get('codigo'),
+        'salida': salida[-4000:],
+        'apartados': apartados,
+        'fecha': datetime.datetime.now().isoformat(timespec='seconds'),
+    }
+    carpeta_expedientes = os.path.join(carpeta_memoria, 'EXPEDIENTES')
+    try:
+        os.makedirs(carpeta_expedientes, exist_ok=True)
+        marca = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        ruta = os.path.join(carpeta_expedientes, str(orden.get('id', '')) + '_' + marca + '.json')
+        with open(ruta, 'w', encoding='utf-8') as f:
+            json.dump(dict_expediente, f, indent=2, ensure_ascii=False)
+        return (ruta, dict_expediente)
+    except OSError:
+        return (None, dict_expediente)
+
+
 def ya_fallo(orden):
     """True si la huella_de(orden) aparece en el archivo; nunca lanza."""
     carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
