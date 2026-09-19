@@ -386,7 +386,7 @@ def citas_que_no_existen(citas, raiz):
         try:
             with open(ruta, 'r', encoding='utf-8') as f:
                 contenido = f.read()
-        except OSError:
+        except (OSError, ValueError):
             malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'el archivo no existe'})
             continue
         if texto.replace('\r', '') not in contenido.replace('\r', ''):
