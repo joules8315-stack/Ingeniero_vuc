@@ -132,3 +132,27 @@ def test_si_la_pieza_no_se_puede_leer_no_revienta(tmp_path):
     salida = router.completar_funciones([t], [fantasma])
     assert salida and salida[0]["texto"] == "algo", (
         "al no poder leer una pieza se perdio el trozo que ya se tenia")
+
+
+def test_el_obrero_recibe_todos_los_archivos_que_nombra_la_tarea():
+    """Si la tarea nombra varios archivos, el obrero tiene que recibir los trozos de TODOS."""
+    from cuerpo import obrero
+    paquete = "\n".join([
+        "# PAQUETE",
+        "## 1. LA LEY QUE MANDA",
+        "ley",
+        "## 3. LOS TROZOS",
+        "### `cuerpo/a.py` relevancia 1.0",
+        "TEXTO_DE_A",
+        "### `cuerpo/b.py` relevancia 0.5",
+        "TEXTO_DE_B",
+        "### `cuerpo/c.py` relevancia 0.2",
+        "TEXTO_DE_C",
+    ])
+    s = obrero._filtrar_paquete(paquete, archivo=["cuerpo/a.py", "cuerpo/b.py"], tope=100000)
+    assert "TEXTO_DE_A" in s, "falta el trozo del primer archivo que la tarea nombra"
+    assert "TEXTO_DE_B" in s, "falta el trozo del segundo archivo que la tarea nombra"
+    assert "TEXTO_DE_C" not in s, "se colo un archivo que la tarea no nombro"
+    s1 = obrero._filtrar_paquete(paquete, archivo="cuerpo/b.py", tope=100000)
+    assert "TEXTO_DE_B" in s1, "falta el trozo del archivo que la tarea nombra"
+    assert "TEXTO_DE_A" not in s1, "se colo un archivo que la tarea no nombro"
