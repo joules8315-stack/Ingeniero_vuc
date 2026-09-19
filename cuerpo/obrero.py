@@ -591,6 +591,16 @@ def _deepseek_directo(prompt, temperatura, modelo):
     req.add_header("Authorization", "Bearer " + k)
     with _u.urlopen(req, timeout=300) as r:
         d = _j.load(r)
+    try:
+        import datetime
+        _ruta = _o.environ.get('INGENIERO_GASTO_USD_TEST') or _o.path.join(
+            _o.path.dirname(_o.path.dirname(_o.path.abspath(__file__))), 'memoria', 'GASTO_USD.jsonl')
+        with open(_ruta, 'a', encoding='utf-8') as _f:
+            _f.write(_j.dumps({'cuando': datetime.datetime.now().isoformat(timespec='seconds'),
+                               'modelo': d.get('model', ''),
+                               'uso': d.get('usage') or {}}) + '\n')
+    except Exception:
+        pass
     return d["choices"][0]["message"]["content"]
 
 
