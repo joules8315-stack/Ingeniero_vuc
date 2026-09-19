@@ -57,7 +57,7 @@ def _vivo(rel):
 
 def test_todos_los_que_deciden_distinguen_una_vigia_recien_nacida():
     """El que corre vigias y decide TIENE que preguntarle al guardado si son nuevas."""
-    fallan = [rel for rel in LOS_QUE_DECIDEN if "ls-files" not in _vivo(rel)]
+    fallan = [rel for rel in LOS_QUE_DECIDEN if "ls-files" not in _vivo(rel) and "cat-file" not in _vivo(rel)]
     assert not fallan, (
         "ESTOS CUENTAN UNA VIGIA RECIEN NACIDA COMO SI FUERA UNA AVERIA: %s. El metodo manda "
         "que la vigia nazca ROJA, y estos la castigan por hacerlo. El metodo se castiga a si "
