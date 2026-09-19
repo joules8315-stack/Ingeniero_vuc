@@ -1,0 +1,11 @@
+[
+  {"archivo": "arnes/candado_memoria.py",
+   "viejo": "if all(_ya_avisado(h) for h in huellas):",
+   "nuevo": "if _ya_avisado(\"|\".join(sorted(huellas))):"},
+  {"archivo": "arnes/revisor_de_programa.py",
+   "viejo": "t = re.sub(r\"(?m)^\\s*[rRbBuUfF]*'''(?:.|\\n)*?'''\", \" \", t)",
+   "nuevo": "t = re.sub(r\"'''(?:.|\\n)*?'''\", \" \", t)"},
+  {"archivo": "memoria/FALLOS.json",
+   "viejo": "veredicto ilegible|sin reintento|ronda perdida",
+   "nuevo": "auditor|veredicto ilegible|sin reintento|ronda perdida"}
+]
