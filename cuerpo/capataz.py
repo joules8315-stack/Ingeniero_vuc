@@ -27,6 +27,30 @@ def leer_lista():
     return []
 
 
+CAMPOS_ETIQUETA = ('id', 'origen', 'repara', 'pieza', 'depende', 'modo', 'razon', 'encargo')
+
+
+def validar_etiqueta(orden):
+    """Devuelve la lista de problemas de la etiqueta de una orden (vacia = completa)."""
+    if not isinstance(orden, dict):
+        return ['no es una orden']
+    problemas = []
+    for campo in CAMPOS_ETIQUETA:
+        if campo not in orden:
+            problemas.append('falta ' + campo)
+            continue
+        if campo == 'depende':
+            if not isinstance(orden[campo], list):
+                problemas.append('depende no es una lista')
+            continue
+        valor = orden[campo]
+        if not isinstance(valor, str) or valor.strip() == '':
+            problemas.append('falta ' + campo)
+    if 'modo' in orden and orden['modo'] not in ('PROGRAMA', 'IA'):
+        problemas.append('modo debe ser PROGRAMA o IA')
+    return problemas
+
+
 def siguiente_pendiente():
     for orden in leer_lista():
         if orden.get("estado") == "pendiente":
