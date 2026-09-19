@@ -27,6 +27,9 @@ TOPE_LINEAS = 800   # un paquete mas largo que esto ya no es un paquete: es rele
 # lineas. Traer la funcion entera cura los pedazos huerfanos, pero pasado este tope sale mas caro
 # que el problema que resuelve, asi que se manda el trozo con su cabecera delante.
 TOPE_FUNCION_ENTERA = 120
+# Una funcion que el encargo NOMBRA por su nombre se entrega entera hasta 300 lineas.
+# Las que solo caen por parecido de palabras siguen con el tope de 120, para no releer el repo.
+TOPE_FUNCION_NOMBRADA = 300
 
 
 def _claves_de(g, nombres_flujo):
