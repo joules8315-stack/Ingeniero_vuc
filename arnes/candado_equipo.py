@@ -409,7 +409,7 @@ def volver_atras(raiz, rutas, motivo):
             proyecto=os.path.basename(str(raiz)),
             piezas=list(rutas),
             quien_lo_caza='guardia_de_guardado',
-            disparador=r'''ingeniero\.py\s+equipo''',
+            disparador=r'''git\s+commit[^\n]*--no-verify|INGENIERO_OFF\s*=\s*1''',
         )
     except Exception as e:
         anotaciones.append("no se pudo anotar en el libro de fallos: %s" % str(e)[:200])
