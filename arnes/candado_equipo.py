@@ -293,6 +293,44 @@ def guardar_trabajo_pagado(res):
     return None
 
 
+@contextlib.contextmanager
+def fila_de_commits(raiz, espera=2400):
+    """Espera el turno para guardar en git: dos tareas del pit no guardan a la vez."""
+    import contextlib
+    import hashlib
+    import os
+    import tempfile
+    import time
+    clave = hashlib.sha1(os.path.abspath(str(raiz)).lower().encode("utf-8")).hexdigest()[:12]
+    ruta = os.path.join(tempfile.gettempdir(), "ingeniero_fila_" + clave + ".lock")
+    limite = time.time() + espera
+    while True:
+        try:
+            fd = os.open(ruta, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            try:
+                os.write(fd, str(os.getpid()).encode("utf-8"))
+            finally:
+                os.close(fd)
+            break
+        except FileExistsError:
+            try:
+                if time.time() - os.path.getmtime(ruta) > 7200:
+                    os.remove(ruta)
+                    continue
+            except OSError:
+                pass
+            if time.time() >= limite:
+                raise TimeoutError("la fila de guardado no avanzo en %d s" % espera)
+            time.sleep(0.5)
+    try:
+        yield
+    finally:
+        try:
+            os.remove(ruta)
+        except OSError:
+            pass
+
+
 def guardar_en_la_historia(raiz, archivos, mensaje):
     """LO APROBADO SE GUARDA AL MOMENTO (Julio, 2026-09-14): "que se guarde de una vez el trabajo realizado
     y aprobado, que es algo que no se viene haciendo y eso si explica la perdida de trabajo".
