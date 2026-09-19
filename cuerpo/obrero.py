@@ -1132,6 +1132,16 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
         if generador and quien_gen != generador:
             avisos_totales.append("se pidio generar a %s y no esta disponible: contesto %s" % (generador, quien_gen))
 
+        # A-38: el programa revisa primero, gratis; si frena no se paga la revision y el obrero recibe los motivos.
+        try:
+            import revisor_de_programa as _rp_antes
+            _fallos_prog = _rp_antes.revisar(propuesta, tarea) or []
+        except Exception:
+            _fallos_prog = []
+        if _fallos_prog and _vuelta < 3:
+            motivos_rechazo.extend(str(x) for x in _fallos_prog)
+            avisos_totales.append('el revisor de programa freno antes de pagar la revision: ' + '; '.join(str(x) for x in _fallos_prog)[:200])
+            continue
         # La revision se delega entera a auditar(): asi arnes/copista.py puede pedir SOLO una
         # revision (un cambio gratis ya aplicado) y no hay el mismo codigo en dos sitios.
         # Dentro de auditar() siguen vivos la cura de los dos reintentos del 2026-08-31 y el
