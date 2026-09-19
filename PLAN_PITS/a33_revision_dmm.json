@@ -1,0 +1,41 @@
+{
+ "opencode.json": {
+  "revisor": "bigpickle",
+  "veredicto": "RECHAZADO",
+  "fallos": [
+   "Agrega allow a justamente las vías de escritura de archivos (python -c, python3 -c, open(, >, >>, mv, cp) que la ley prohíbe expresamente: \"OpenCode NO debe tener vías para escribir archivos saltándose los candados (A-14: ningún candado se quita)\". El reparador amplía permisos de escritura en vez de cerrarlos.",
+   "Con \"*\": \"allow\" ya como primera regla, todo está permitido de base; estas reglas nuevas son redundantes (o directamente muertas), así que el cambio no arregla ningún bloqueo real: documenta en el config exactamente las rutas de escritura que el producto no debe tener.",
+   "No declara diagnóstico ni fallo concreto a corregir; el cambio es solo una extensión de permisos contraria a la ley del contrato."
+  ],
+  "resumen": "La propuesta da permiso explícito a las herramientas de escritura de archivos que la ley prohíbe, no arregla ningún candado y contradice A-14: rechazar."
+ },
+ ".salud_almacen.json": {
+  "revisor": "bigpickle",
+  "veredicto": "DUDOSO",
+  "fallos": [
+   "El cambio llega sin diagnostico ni encargo declarado: solo puede auditarse la forma, no que 'actualizar la fecha' arregla el fallo que se pedia reparar.",
+   "El motivo 'getaddrinfo failed' se mantiene intacto: si la reparacion era declarar que el problema sigue vivo, es coherente; si era mostrar recuperacion o un caso nuevo, no. Sin contexto no se distingue."
+  ],
+  "resumen": "La reparacion toca solo la linea de .salud_almacen.json sin inventar nada, sin romper vecinos ni saltarse la ley, pero llega sin diagnostico: renovar la fecha manteniendo 'getaddrinfo failed' no demuestra por si sola que arregla el fallo, confirme el director que es el registro real de una vigia y cual era la averia a reparar."
+ },
+ ".github/copilot-instructions.md": {
+  "revisor": "bigpickle",
+  "veredicto": "APROBADO",
+  "fallos": [
+   "El archivo destino ya existe en disco con exactamente ese contenido (actualizado el 2026-09-15), asi que la escritura es idempotente: no cambia nada que no este ya, lo cual no es un fallo del contenido sino una observacion.",
+   "Las rutas a C:\\Ingeniero_VUC no se pudieron verificar todas dentro del candado (estan fuera del area de auditoria), pero todas vienen verbatim del material y no son afirmaciones del obrero."
+  ],
+  "resumen": "Las instrucciones de Copilot estan textualmente como las pedia el material, le prohiben escribir por cualquier via (solo el equipo con escribe/revisa distintos) y ya estan en disco identicas en la carpeta correcta: aprobado sin riesgo."
+ },
+ "vigias/test_vigia_dmm_se_construye_a_si_mismo.py": {
+  "revisor": "bigpickle",
+  "veredicto": "RECHAZADO",
+  "fallos": [
+   "Bug grave en paso(): si comprobar() devuelve False en vez de lanzar, detalle=False se convierte en 'OK' y estado='FUNCIONO'. Los pasos 3 (voz), 4 (entorno), 8 (precios), 9 (contestadora), 10 (chat), 15 (seguimiento), 16 (clientes), 17 (agenda) y 99 (competencia) devuelven booleanos: 9 de 18 pasos NO PUEDEN FALLAR nunca. Falta el texto exigido y la vigia aprueba igual: la mitad de las comprobaciones no vigilan nada.",
+   "El comentario sobre almacen.guardar dice 'se redirige a un subdirectorio temporal del test', pero el codigo no redirige nada a ningun subdirectorio: comportamiento prometido que el codigo no implementa.",
+   "El paso 8 promete en el docstring el precio VACIO/NO_ENCONTRADO del producto DMM, pero ninguna asercion lo comprueba: solo verifica que exista el texto 'Lista de precios vigente'. Lo que se anuncia no se verifica.",
+   "entr_perfil rellena TODOS los campos de DATOS_DMM (incluidos redes_sociales, info_adicional y link_sitio) contra /empresa sin que el material confirme que esa ficha tenga esos campos; si falta uno, fill() lanza y el paso cae. Ademas _CAMPOS_TEXTAREA se define y no se usa nunca."
+  ],
+  "resumen": "La vigia esta cieg  a por diseno: 9 de 18 pasos devuelven booleano y paso() los registra como FUNCIONO aunque la pantalla no muestre el texto exigido, y hay comentarios que prometen redireccion y NO_ENCONTRADO que el codigo no hace; hay que corregir paso() antes de aceptarla."
+ }
+}

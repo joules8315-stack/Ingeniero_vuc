@@ -1,0 +1,341 @@
+# -*- coding: utf-8 -*-
+"""VIGIA PLAYWRIGHT — PRUEBA REINA TAREA F: DMM SE CONSTRUYE A SÍ MISMO (S1->S2->S3->S4).
+
+El DMM se da de alta como negocio en SU PROPIA web (dogfood) y recorre por un NAVEGADOR REAL
+(Playwright, servidor REAL de web/servidor.py, código real del servidor — sin espías) los
+entregables del curso S1-S4 en el orden del curso:
+  S1 ficha del negocio + voz/paletas + entorno digital
+  S2 parrilla de la semana (estrategia + calendario) + cola de publicación
+  S3 web de ventas (15 secciones) + atención al cliente
+  S4 anuncios (campaña) + aprobación del dueño + medir/aprender + resultados
+Con capturas por paso (paso_NN_pantalla.png) y una comprobación mínima por paso.
+
+El conftest de vigias ya deja TODO hermético (almacen a tmp, DMM_SIN_ENV=1, sin llaves de IA):
+el cerebro que ve este test es el respaldo determinista que usa de verdad el servidor cuando no
+hay llave — esta prueba NO apaga nada ni deja de usar el codigo real.
+
+Datos del DMM como negocio: solos de los documentos del repo (CONTRATO_PRODUCTO_Y_PLAN.md,
+CONTRATO_OBJETIVO_MARKETING_MANAGER.md, web/landing.py, cuerpo/plan.py). Lo que no esta escrito
+(precio en dinero del producto) queda VACIO con NO_ENCONTRADO, nunca se inventa.
+"""
+import os
+import sys
+import time
+import socket
+import threading
+import urllib.parse
+import urllib.request
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+import pytest  # noqa: E402
+
+pytest.importorskip("playwright")
+
+EMAIL = "dmm@digitalmarketingmanager.com"
+
+# Datos del DMM como negocio (grounded: solo de los documentos del repo, ver docstring).
+DATOS_DMM = {
+    "nombre_negocio": "Digital Marketing Manager",
+    "tipo_negocio": "software de marketing (aplicacion que genera todo el marketing de un negocio)",
+    "producto_servicio": ("lee los datos de tu negocio y genera en segundos todo su marketing: branding, "
+                          "web de ventas, contenido, anuncios y medicion. La IA crea todo y el dueno "
+                          "aprueba en 1 clic desde su movil."),
+    "años_en_mercado": "1",
+    "audiencia_objetivo": ("pequenos comerciantes y pymes que quieren vender mas sin volverse expertos "
+                           "en marketing; no tecnicos, buscan ventas y tiempo libre"),
+    "necesidad_usuario": ("el marketing les quita tiempo, cuesta plata y no ven ventas claras; publican "
+                          "por publicar sin saber si funciona; una agencia es cara y hacerlo solo agota"),
+    "diferenciador_unico": ("la IA crea TODO el material y el dueno aprueba en 1 clic desde su movil; "
+                            "perfil, web, contenido, anuncios y resultados en un solo lugar"),
+    "beneficios": "mas ventas con menos horas, decisiones con datos reales, todo el marketing en un solo lugar",
+    "valores_marca": "honestidad radical (antiventa), cero cliches, el dueno manda, datos reales (nunca inventar)",
+    "persona_marca": "un director de marketing companero, claro y directo: habla simple, sin humo y te dice lo que conviene",
+    "competencia": "agencias de marketing caras y hacerlo solo a mano",
+    "ventajas_competitivas": "una sola herramienta lo hace todo, se aprueba desde el movil y mide resultados",
+    "objetivo_futuro": "ser el director de marketing de cada comercio local",
+    "posicionamiento_marca": "la fuerza de una agencia sin su precio ni su tiempo",
+    "origen_negocio": "nacio para que un negocio bueno sin marketing no quedara invisible (DMM aplica su propio metodo a su propia pagina)",
+    "mision": "hacer que cualquier negocio bueno tenga un marketing que no lo deje invisible",
+    "vision": "que cada comercio cobre su huella digital",
+    "ejemplo_copy1": "Campanas que si venden, pensadas y no a ciegas.",
+    "ejemplo_copy2": "Vende mas sin volverte experto en marketing.",
+    "link_sitio": "http://127.0.0.1:8200/inicio",
+    "redes_sociales": "todavia no tengo (es justo lo que DMM va a crear)",
+    "info_adicional": "DMM se construye a si mismo con esta prueba real.",
+}
+
+_CAMPOS_INPUT = {"nombre_negocio", "años_en_mercado", "mision", "vision", "valores_marca",
+                 "posicionamiento_marca", "competencia", "ventajas_competitivas",
+                 "objetivo_futuro", "persona_marca", "ejemplo_copy1", "ejemplo_copy2",
+                 "link_sitio"}
+_CAMPOS_TEXTAREA = set(DATOS_DMM) - _CAMPOS_INPUT
+
+
+def _puerto_libre():
+    s = socket.socket()
+    s.bind(("127.0.0.1", 0))
+    p = s.getsockname()[1]
+    s.close()
+    return p
+
+
+@pytest.fixture(scope="module")
+def _servidor():
+    from web import servidor as srv
+    puerto = _puerto_libre()
+    t = threading.Thread(target=srv.iniciar, args=(puerto,), daemon=True)
+    t.start()
+    base = "http://127.0.0.1:%d" % puerto
+    for _ in range(100):
+        try:
+            urllib.request.urlopen(base + "/inicio", timeout=1).read()
+            break
+        except Exception:
+            time.sleep(0.2)
+    yield base
+
+
+def _ts(v):
+    return (v or "").encode("ascii", "replace").decode("ascii")
+
+
+def _reportar_recorrido(recorrido):
+    print("\n=== RECORRIDO REAL (S1->S4, navegador de verdad) ===")
+    for r in recorrido:
+        print(_ts("%s | %-12s | %s | %s | %s" % (
+            ("FUNCIONO" if r["estado"] == "FUNCIONO" else "FALLO  "),
+            r["pantalla"], r["que_se_hizo"], r["detalle"], r["captura"])))
+
+
+def test_dmm_se_construye_a_si_mismo(_servidor, tmp_path):
+    # Forzar login EN MODO DEV (hermetico): sin credenciales de Google nunca se sale a Google.
+    for k in ("GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_REDIRECT_URI"):
+        os.environ.pop(k, None)
+
+    # Los precios del producto DMM no estan escritos en dinero en ningun documento: se dejan vacio.
+    # (NO_ENCONTRADO). Para no tocar la carpeta real del dev en %TEMP%, se redirige a un subdirectorio
+    # temporal del test (el servidor vive en el mismo proceso, comparte el cambio).
+    import datetime as _dt
+    try:
+        from cuerpo import almacen
+        almacen.guardar("novedades_redes", "todas",
+                        {"dia": _dt.date.today().isoformat(), "novedades": []})
+    except Exception:
+        pass
+
+    recorrido = []
+    capturas = tmp_path / "capturas"
+    capturas.mkdir()
+    print("\nCapturas(dmm_se_construye) en: " + str(capturas))
+
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(headless=True)
+        page = browser.new_page(viewport={"width": 1280, "height": 820})
+        page.set_default_timeout(20000)
+
+        def paso(paso_n, pantalla, que_hice, comprobar, captura):
+            """Ejecuta accion+comprobacion, saca la captura y registra FUNCIONO/FALLO."""
+            try:
+                detalle = comprobar()
+                detalle = "SI" if detalle is True else (detalle or "OK")
+                estado = "FUNCIONO"
+            except Exception as e:
+                detalle = "NO: " + repr(e)[:200]
+                estado = "FALLO"
+            try:
+                page.screenshot(path=str(capturas / captura), full_page=False)
+            except Exception:
+                pass
+            recorrido.append({"paso": paso_n, "pantalla": pantalla, "que_se_hizo": que_hice,
+                              "detalle": detalle, "estado": estado, "captura": captura})
+            return estado
+
+        def ver_de(ruta, texto):
+            page.goto(_servidor + ruta, wait_until="domcontentloaded")
+            page.wait_for_timeout(120)
+            cuerpo = page.inner_text("body")
+            return texto in cuerpo
+
+        # ---- S1 Persona/marca: ENTRADA + PERFIL (ficha del negocio, Prompt 2) ----
+        def entr_login():
+            page.goto(_servidor + "/login?email=" + urllib.parse.quote(EMAIL),
+                      wait_until="domcontentloaded")
+            page.wait_for_timeout(120)
+            cuerpo = page.inner_text("body")
+            assert "Empresa" in cuerpo and "Campañas" in cuerpo, "no llego al menu real"
+            return True
+        paso(1, "/login", "Entrar en modo dev como el DMM (dmm@digitalmarketingmanager)",
+             entr_login, "paso_01_login.png")
+
+        def entr_perfil():
+            page.goto(_servidor + "/empresa", wait_until="domcontentloaded")
+            page.wait_for_timeout(120)
+            for k, v in DATOS_DMM.items():
+                if k in _CAMPOS_INPUT:
+                    page.fill('input[name="%s"]' % k, v)
+                else:
+                    page.fill('textarea[name="%s"]' % k, v)
+            page.click('form:has(input[name="nombre_negocio"]) button[type="submit"]')
+            page.wait_for_load_state("domcontentloaded")
+            assert "Digital Marketing Manager" in page.inner_text("body"), "no se guardo el perfil"
+            page.goto(_servidor + "/empresa", wait_until="domcontentloaded")
+            page.wait_for_timeout(120)
+            assert "Tu perfil está guardado" in page.inner_text("body"), "el perfil no quedo guardado"
+            return True
+        paso(2, "/empresa", "Crear el perfil del negocio DMM (ficha S1)",
+             entr_perfil, "paso_02_empresa.png")
+
+        def entr_voz():
+            return ver_de("/voz-branding", "Voz de marca") and ver_de("/voz-branding", "Colores de tu web")
+        paso(3, "/voz-branding", "Generar la voz de marca y las paletas de color (S1 prompt integral)",
+             entr_voz, "paso_03_voz.png")
+
+        def entr_entorno():
+            return ver_de("/entorno", "Entorno Digital") and ver_de("/entorno", "Tu competencia (búsqueda real)")
+        paso(4, "/entorno", "Revisar el entorno digital: redes idoneas + analisis de competencia (S1)",
+             entr_entorno, "paso_04_entorno.png")
+
+        # ---- S2 Contenido: PARRILA DE LA SEMANA (estrategia + calendario) + aprobar en 1 clic ----
+        def entr_parrilla():
+            page.goto(_servidor + "/parrilla", wait_until="domcontentloaded")
+            page.wait_for_timeout(200)
+            assert "Tu semana, lista" in page.inner_text("body"), "no cargo la parrilla"
+            page.locator('form[action="/parrilla"]').first.locator('button[type="submit"]').click()
+            page.wait_for_load_state("domcontentloaded")
+            page.wait_for_timeout(120)
+            assert "Aprobaste la pieza del Lunes" in page.inner_text("body"), "no se aprobo la pieza"
+            return True
+        paso(5, "/parrilla", "Aprobar en 1 clic la pieza del Lunes de la parrilla (S2)",
+             entr_parrilla, "paso_05_parrilla.png")
+
+        def entr_programacion():
+            page.goto(_servidor + "/programacion", wait_until="domcontentloaded")
+            page.wait_for_timeout(120)
+            cuerpo = page.inner_text("body")
+            assert "Programación y publicación" in cuerpo, "no cargo la cola"
+            assert "Pregúntanos sin compromiso" in cuerpo, "la pieza aprobada no quedo en la cola"
+            return True
+        paso(6, "/programacion", "Confirmar que la pieza aprobada quedo agendada (calendario S2)",
+             entr_programacion, "paso_06_programacion.png")
+
+        # ---- S3 Web de ventas + atencion al cliente ----
+        def entr_web():
+            page.goto(_servidor + "/web-c", wait_until="domcontentloaded")
+            page.wait_for_timeout(150)
+            cuerpo = page.inner_text("body")
+            assert "Digital Marketing Manager" in cuerpo, "no aparece el nombre del negocio"
+            assert "Solicita tu cotización" in cuerpo, "no aparece el CTA"
+            assert page.locator("section[id]").count() == 15, "no estan las 15 secciones de la web"
+            return True
+        paso(7, "/web-c", "Revisar la web de ventas de DMM (15 secciones vendedoras, S3)",
+             entr_web, "paso_07_web.png")
+
+        def entr_precios():
+            return ver_de("/precios", "Lista de precios vigente")
+        paso(8, "/precios", "Ver la lista de precios (vacio: precio del producto DMM NO_ENCONTRADO en docs)",
+             entr_precios, "paso_08_precios.png")
+
+        def entr_contestadora():
+            msg = urllib.parse.quote("¿cuánto vale? quiero que me llamen por un plan")
+            return ver_de("/contestadora?msg=" + msg, "Contestadora (chat)") and \
+                ver_de("/contestadora?msg=" + msg, "Contestadora:")
+        paso(9, "/contestadora", "Escribirle a la contestadora como cliente (atencion automatizada S3)",
+             entr_contestadora, "paso_09_contestadora.png")
+
+        def entr_chat():
+            return ver_de("/chat", "Asesor IA")
+        paso(10, "/chat", "Abrir la ventana del Asesor IA", entr_chat, "paso_10_chat.png")
+
+        # ---- S4 Anuncios: disenar + medir + aprobar (el dueno manda) ----
+        def entr_campana():
+            page.goto(_servidor + "/campanas", wait_until="domcontentloaded")
+            page.wait_for_timeout(120)
+            page.fill('input[name="que_vender"]', "el Digital Marketing Manager (app de marketing para pymes)")
+            page.click('form[action="/campanas/crear"] button[type="submit"]')
+            page.wait_for_load_state("domcontentloaded")
+            page.wait_for_timeout(150)
+            cuerpo = page.inner_text("body")
+            assert "Propuesta de campaña" in cuerpo, "no se diseno la campana"
+            assert "Red idónea" in cuerpo and "Hipótesis" in cuerpo, "falta el diseno con intencion"
+            return True
+        paso(11, "/campanas/crear", "Disenar una campana para vender el DMM (anuncios S4)",
+             entr_campana, "paso_11_campana.png")
+
+        def entr_campana_propuesta():
+            cuerpo = page.inner_text("body")
+            assert "Propuesta de campaña" in cuerpo, "no hay propuesta"
+            page.fill('input[name="ventas"]', "12")
+            page.fill('input[name="meta"]', "10")
+            page.click('form[action="/campanas/medir"] button[type="submit"]')
+            page.wait_for_load_state("domcontentloaded")
+            assert "Aprendí" in page.inner_text("body"), "no cerro el bucle medir/aprender"
+            return True
+        paso(12, "/campanas/medir", "Medir la campana (12 ventas de 10 meta) y aprender (S4 bucle)",
+             entr_campana_propuesta, "paso_12_aprendizaje.png")
+
+        def entr_aprobar():
+            page.goto(_servidor + "/campanas", wait_until="domcontentloaded")
+            page.wait_for_timeout(120)
+            page.fill('input[name="que_vender"]', "la suscripcion al plan DMM para pymes")
+            page.click('form[action="/campanas/crear"] button[type="submit"]')
+            page.wait_for_load_state("domcontentloaded")
+            page.wait_for_timeout(150)
+            assert "Propuesta de campaña" in page.inner_text("body")
+            page.click('form[action="/campanas/aprobar"] button[type="submit"]')
+            page.wait_for_load_state("domcontentloaded")
+            assert "Campaña aprobada" in page.inner_text("body"), "el dueno no pudo aprobar"
+            return True
+        paso(13, "/campanas/aprobar", "Aprobar la campana (el dueno manda, S4)",
+             entr_aprobar, "paso_13_campana_aprobada.png")
+
+        def entr_resultados():
+            page.goto(_servidor + "/resultados", wait_until="domcontentloaded")
+            page.wait_for_timeout(150)
+            cuerpo = page.inner_text("body")
+            assert "Resultados" in cuerpo and "Recomendaciones IA" in cuerpo, "no cargo resultados"
+            return True
+        paso(14, "/resultados", "Ver resultados y recomendaciones IA (medicion S4)",
+             entr_resultados, "paso_14_resultados.png")
+
+        def entr_seguimiento():
+            return ver_de("/seguimiento", "Seguimiento de publicaciones")
+        paso(15, "/seguimiento", "Ver el seguimiento con ajuste por publicacion (S4)",
+             entr_seguimiento, "paso_15_seguimiento.png")
+
+        def entr_clientes():
+            return ver_de("/clientes", "Tus clientes")
+        paso(16, "/clientes", "Ver la libreta de clientes (el comprador empieza en S1)",
+             entr_clientes, "paso_16_clientes.png")
+
+        def entr_agenda():
+            return ver_de("/agenda", "Tu agenda")
+        paso(17, "/agenda", "Ver la agenda", entr_agenda, "paso_17_agenda.png")
+
+        # BONUS (no critico): dispara la busqueda REAL de competencia. Sin internet no se inventa:
+        # brazos devuelve el aviso honesto y la pantalla sigue viva. No tumba la vigia.
+        def entr_competencia_real():
+            page.goto(_servidor + "/entorno", wait_until="domcontentloaded")
+            page.wait_for_timeout(120)
+            page.click('form[action="/entorno/competencia"] button[type="submit"]')
+            page.wait_for_load_state("domcontentloaded")
+            page.wait_for_timeout(400)
+            return "Entorno Digital" in page.inner_text("body")
+        paso(99, "/entorno/competencia", "Analizar la competencia con busqueda REAL en internet (S1)",
+             entr_competencia_real, "paso_18_competencia.png")
+
+        browser.close()
+
+    # Restaurar el estado por defecto del vecindario (que el siguiente test vea la semilla SolarDemo).
+    try:
+        from cuerpo import perfil as _pf
+        _pf.fijar_actual(_pf.cargar_perfil("SolarDemo"))
+    except Exception:
+        pass
+
+    _reportar_recorrido(recorrido)
+    fallidos = [r for r in recorrido if r["estado"] == "FALLO"]
+    assert not fallidos, ("PASOS CON FALLO: " +
+                          ", ".join("%s (%s)" % (r["pantalla"], r["detalle"]) for r in fallidos))
