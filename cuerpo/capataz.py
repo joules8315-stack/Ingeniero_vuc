@@ -38,6 +38,19 @@ def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):
     carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     ruta = os.path.join(carpeta_proyecto, "memoria", "ORDENES.json")
     lista = leer_lista()
+    encontrada = False
+    for orden in lista:
+        if orden.get("id") == orden_id:
+            orden["estado"] = estado
+            orden["paso_fallido"] = paso_fallido
+            orden["fallos_seguidos"] = fallos_seguidos
+            encontrada = True
+            break
+    if not encontrada:
+        return False
+    with open(ruta, "w", encoding="utf-8") as f:
+        json.dump(lista, f, indent=2, ensure_ascii=False)
+    return True
 
 
 def comprobar_pasos(orden):
