@@ -453,6 +453,36 @@ def juzgar_citas(analisis):
     return (dato.get('prueban') is True, str(dato.get('por_que', '')))
 
 
+def agregar_orden(orden):
+    """Agrega una orden nueva a la lista si pasa las validaciones."""
+    if not isinstance(orden, dict):
+        return (False, 'no es una orden')
+    problemas = validar_etiqueta(orden)
+    if problemas:
+        return (False, 'etiqueta incompleta: ' + ', '.join(problemas))
+    lista = leer_lista()
+    orden_id = orden.get('id')
+    for otra in lista:
+        if isinstance(otra, dict) and otra.get('id') == orden_id:
+            return (False, 'ya existe el id ' + str(orden_id))
+    if ya_fallo(orden):
+        return (False, 'esa misma tarea ya fallo')
+    huella = huella_de(orden)
+    for otra in lista:
+        if isinstance(otra, dict) and huella_de(otra) == huella:
+            return (False, 'ya esta en la lista')
+    nueva = dict(orden)
+    nueva['estado'] = 'pendiente'
+    nueva['paso_fallido'] = ''
+    nueva['fallos_seguidos'] = 0
+    lista.append(nueva)
+    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    ruta = os.path.join(carpeta_proyecto, 'memoria', 'ORDENES.json')
+    with open(ruta, 'w', encoding='utf-8') as f:
+        json.dump(lista, f, indent=2, ensure_ascii=False)
+    return (True, 'agregada ' + str(orden_id))
+
+
 def ya_fallo(orden):
     """True si la huella_de(orden) aparece en el archivo; nunca lanza."""
     carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
