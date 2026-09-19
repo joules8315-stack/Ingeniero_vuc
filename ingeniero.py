@@ -439,7 +439,7 @@ def main():
                     if _okg:
                         print("GUARDADO AL MOMENTO: %s" % _msgg)
                     else:
-                        print("NO SE GUARDO (el trabajo sigue en el disco y archivado). POR QUE: %s" % _msgg)
+                        print("NO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: %s" % _msgg)
                 else:
                     print("EL EQUIPO APROBO, pero no se pudo aplicar: %s" % _msg)
         if v_final == "APROBADO":
