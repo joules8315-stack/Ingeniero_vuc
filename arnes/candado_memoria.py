@@ -177,18 +177,19 @@ def main():
     # el fallo ANTES de cometerlo. Si se insiste con la MISMA accion, se deja pasar: la leccion
     # ya se leyo, y seguir es entonces una decision tomada a sabiendas, no un descuido.
     # No se afloja nada: sigue siendo IMPOSIBLE actuar sin haber visto el aviso primero.
-    huella = hashlib.sha1(
-        ("|".join(sorted(str(f.get("id", "")) for f in revividos))
-         ).encode("utf-8", "replace")).hexdigest()
+    huellas = [hashlib.sha1(
+        ("fallo-" + str(f.get("id", ""))).encode("utf-8", "replace")).hexdigest()
+        for f in revividos]
 
-    if _ya_avisado(huella):
+    if all(_ya_avisado(h) for h in huellas):
         partes.append("")
         partes.append("  (De esto ya te avise hace un momento y vuelves a intentarlo: PASA.")
         partes.append("   Insistir despues de leer el aviso es una decision, no un descuido.)")
         sys.stderr.write("\n".join(partes) + "\n")
         return 0
 
-    _apuntar_aviso(huella)
+    for h in huellas:
+        _apuntar_aviso(h)
     partes.append("")
     partes.append("  Si aun asi hay que hacerlo, repite la MISMA accion y pasara.")
     sys.stderr.write("\n".join(partes) + "\n")
