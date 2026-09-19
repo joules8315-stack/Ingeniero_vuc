@@ -40,6 +40,7 @@
 | A-34 | El Ingeniero lleva **el mismo guardián de DMM**: ningún cambio de código se guarda sin revisión del equipo (incluido lo que aplique el copista con texto dictado). Mecanismo, no voluntad (A-14). | vigente |
 | A-35 | Reparar `sellar.sh` de DMM: solo dice "SELLADO" si el guardado ocurrió de verdad. | vigente |
 | A-36 | Se **permite la carpeta `.github`** en DMM (instrucciones de Copilot aprobadas por Big Pickle); no se archiva. | vigente |
+| A-37 | **Primero se repara el tiempo de las pruebas** (Julio, 2026-09-18), antes del paso 2: al guardar se prueba solo la pieza tocada y sus vecinas (plan v4 §5); la batería completa corre al cierre. Ningún candado se quita: se hace selectivo. | vigente |
 eciclado\dmm** (DMM no crea carpetas nuevas). Antes: el equipo repara el candado que lee uno de ellos y revisa los cambios sin guardar de DMM. | vigente |
 
 ## Órdenes anteriores de Julio que siguen vivas (del registro del candado de legislar, depuradas)

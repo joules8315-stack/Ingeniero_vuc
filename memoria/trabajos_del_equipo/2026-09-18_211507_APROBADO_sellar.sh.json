@@ -1,0 +1,32 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En sellar.sh falta la carpeta .github en la lista PERMITIDAS, por lo que GitHub Copilot no puede leer sus instrucciones.",
+  "archivo": "sellar.sh",
+  "funcion": "PERMITIDAS",
+  "texto_viejo": "PERMITIDAS=$'fuentes_curso\\narnes\\ncuerpo\\nvigias\\nweb\\n.claude\\n.clinerules\\nhooks'",
+  "texto_nuevo": "PERMITIDAS=$'fuentes_curso\\narnes\\ncuerpo\\nvigias\\nweb\\n.claude\\n.clinerules\\nhooks\\n.github'",
+  "cambio": "Agregar \\n.github al final de la lista PERMITIDAS, con el mismo formato.",
+  "codigo": "PERMITIDAS=$'fuentes_curso\\narnes\\ncuerpo\\nvigias\\nweb\\n.claude\\n.clinerules\\nhooks\\n.github'",
+  "vigia": "Un test que lea sellar.sh y compruebe que la variable PERMITIDAS contiene la entrada .github.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "sellar.sh"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio agrega exactamente \\n.github al final de PERMITIDAS tal como pide el acuerdo A-36, toca solo esa linea, el texto viejo casa con el paquete y el paquete mismo declara que nadie depende de esa pieza."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

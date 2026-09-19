@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El script sellar.sh imprime SELLADO aunque el guardia de git rechace el commit, porque no verifica si quedaron cambios preparados tras el commit fallido.",
+  "archivo": "sellar.sh",
+  "funcion": "sellar.sh (bloque antes del comentario '# El semaforo de plan aprobado es transitorio')",
+  "texto_viejo": "# El semaforo de plan aprobado es transitorio",
+  "texto_nuevo": "# A-35: si el guardia de git rechazo el commit, quedaron cambios preparados; no sellar.\nif ! git diff --cached --quiet; then\n  echo 'NO SE SELLO: el guardia de guardado rechazo el commit (ver su mensaje arriba). Nada quedo guardado.'\n  exit 1\nfi\n# El semaforo de plan aprobado es transitorio",
+  "cambio": "Insertar justo ANTES de la linea de comentario '# El semaforo de plan aprobado es transitorio' un bloque bash que comprueba con 'git diff --cached --quiet' si quedaron cambios preparados (commit no ocurrio); si es asi, imprime el mensaje de NO SE SELLO y hace exit 1, con un comentario que cita A-35.",
+  "codigo": "# A-35: si el guardia de git rechazo el commit, quedaron cambios preparados; no sellar.\nif ! git diff --cached --quiet; then\n  echo 'NO SE SELLO: el guardia de guardado rechazo el commit (ver su mensaje arriba). Nada quedo guardado.'\n  exit 1\nfi",
+  "vigia": "Ejecutar sellar.sh con un commit que el guardia de git rechace y comprobar que NO imprime SELLADO, que imprime 'NO SE SELLO: el guardia de guardado rechazo el commit (ver su mensaje arriba). Nada quedo guardado.' y que sale con codigo 1 sin borrar el semaforo.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "sellar.sh"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno: el paquete declara reparacion aislada y nadie depende de sellar.sh; el bloque solo anade un exit temprano antes de imprimir SELLADO y no toca el git commit.",
+   "Ninguno: el exit 1 ocurre antes de borrar el semaforo, asi que el semaforo del plan aprobado se conserva (eso es justo lo pedido)."
+  ],
+  "que_falta": [
+   "Sellar con los ojos de Julio (Ley 7 del 2026-08-24): ejecutar sellar.sh con un commit rechazado por el guardia y comprobar que NO imprime SELLADO, que imprime 'NO SE SELLO:...' y que sale con codigo 1 sin borrar el semaforo.",
+   "Como sellar.sh no vino en el paquete (el propio obrero lo marco en _fuera_del_paquete), esa prueba real tambien confirma que la linea '# El semaforo de plan aprobado es transitorio' existe tal cual en el archivo; es la unica verificacion pendiente, no un bloqueo."
+  ],
+  "resumen_para_el_jefe": "La reparacion cumple el encargo al pie de la letra: bloque con 'git diff --cached --quiet' insertado justo antes del comentario '# El semaforo de plan aprobado es transitorio', con el mensaje exacto, exit 1 y cita A-35; no inventa nada, no toca el git commit y no dan a vecinos, solo falta que Julio la pruebe con sus ojos."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

@@ -123,6 +123,8 @@ def _piezas(arbol):
     IA, si un cambio se lleva por delante algo que ya estaba. Se miran tambien las de dentro
     (los metodos de una clase), porque el 2026-09-11 lo que desaparecio fue justo eso.
     """
+    if arbol is None:
+        return []
     fuera = []
     for n in ast.walk(arbol):
         if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
@@ -207,7 +209,8 @@ def revisar(propuesta, tarea=""):
                         except Exception:
                             pass
         try:
-            arbol = ast.parse(nuevo) if not _es_js else None
+            _es_py = (not _ruta_js) or str(_ruta_js).lower().endswith('.py')
+            arbol = ast.parse(nuevo) if _es_py else None
         except SyntaxError as e:
             try:
                 arbol = ast.parse(textwrap.dedent(nuevo))

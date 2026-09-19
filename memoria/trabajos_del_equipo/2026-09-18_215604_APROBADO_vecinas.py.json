@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La llamada subprocess.run a 'git status --porcelain' en arnes/vecinas.py no cierra la entrada estandar, lo que puede colgar el guardado esperando stdin.",
+  "archivo": "arnes/vecinas.py",
+  "funcion": "elegir",
+  "texto_viejo": "subprocess.run",
+  "texto_nuevo": "subprocess.run",
+  "cambio": "Agregar stdin=subprocess.DEVNULL y timeout=60 a la llamada subprocess.run que ejecuta 'git status --porcelain'.",
+  "codigo": "subprocess.run(\n    [\"git\", \"status\", \"--porcelain\"],\n    cwd=raiz,\n    capture_output=True,\n    text=True,\n    stdin=subprocess.DEVNULL,\n    timeout=60,\n)",
+  "vigia": "vigias/test_vigia_el_guardia_no_se_cuelga.py (test_las_vigias_se_lanzan_con_la_entrada_cerrada)",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "vigias/test_vigia_vecinas.py"
+  ],
+  "preguntas": [],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "guardia_de_guardado.py",
+   "test_vigia_vecinas.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El trozo del paquete corta en la linea 80 y no muestra la llamada real; el codigo propuesto reconstruye la llamada completa (capture_output=True, text=True). No es invento (subprocess.run y raiz estan en el material, y el encargo pide tocar esa llamada), pero al editar hay que verificar que la llamada real coincida y que no tenga ya timeout especificado (el encargo dice 'timeout=60 si no tiene')."
+  ],
+  "riesgo_vecinos": [
+   "guardia_de_guardado.py y test_vigia_vecinas.py dependen de que elegir() devuelva la misma lista; stdin=DEVNULL y timeout no alteran la salida, riesgo bajo.",
+   "Si el git tardara mas de 60s, timeout=60 lanza TimeoutExpired; el docstring promete 'nunca lanza' (devuelve None ante error), hay que confirmar que ese except ya lo cubre."
+  ],
+  "que_falta": [
+   "Confirmar en el archivo real que la llamada no tiene ya un timeout (para no duplicarlo) y que la excepcion TimeoutExpired quede dentro del manejador 'nunca lanza'."
+  ],
+  "resumen_para_el_jefe": "La reparacion agrega exactamente lo que el encargo pide (stdin=subprocess.DEVNULL y timeout=60) a la llamada git de vecinas.py, sin inventar nada, sin tocar vecinos ni excederse; se aprueba con una sola comprobacion al editar: que la llamada real matchee la reconstruida."
+ },
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 3"
+ ]
+}

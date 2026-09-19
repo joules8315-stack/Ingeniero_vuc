@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La llamada a subprocess.run en _archivos_cambiados no cierra la entrada estandar (falta stdin=subprocess.DEVNULL) ni tiene timeout, y el candado vigias/test_vigia_el_guardia_no_se_cuelga.py lo exige.",
+  "archivo": "arnes/vecinas.py",
+  "funcion": "_archivos_cambiados",
+  "texto_viejo": "    resultado = subprocess.run(\n        [\"git\", \"status\", \"--porcelain\"],\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n        check=False,\n    )",
+  "texto_nuevo": "    resultado = subprocess.run(\n        [\"git\", \"status\", \"--porcelain\"],\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n        check=False,\n        stdin=subprocess.DEVNULL,\n        timeout=60,\n    )",
+  "cambio": "Agregar dos argumentos nuevos a la llamada subprocess.run dentro de _archivos_cambiados: stdin=subprocess.DEVNULL y timeout=60. El resto de la llamada y de la funcion queda igual.",
+  "codigo": "    resultado = subprocess.run(\n        [\"git\", \"status\", \"--porcelain\"],\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n        check=False,\n        stdin=subprocess.DEVNULL,\n        timeout=60,\n    )",
+  "vigia": "vigias/test_vigia_el_guardia_no_se_cuelga.py comprueba que todo subprocess.run lanzado por el guardia lleva stdin=subprocess.DEVNULL (y timeout).",
+  "puede_danar": [
+   "arnes/vecinas.py::elegir",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "arnes/vecinas.py::elegir: _archivos_cambiados solo gana stdin cerrado y timeout; si git se cuelga, TimeoutExpired se captura en el try/except de elegir (devuelve None -> bateria completa). No rompe nada.",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py: la propuesta hace EXACTAMENTE lo que la vigia exige (stdin=subprocess.DEVNULL + timeout). La deja verde, no la rompe."
+  ],
+  "que_falta": [
+   "Correr vigias/test_vigia_el_guardia_no_se_cuelga.py y la bateria completa para sellar"
+  ],
+  "resumen_para_el_jefe": "Agrega solo los dos argumentos que el paquete pide expresamente (stdin=subprocess.DEVNULL y timeout=60) en la llamada exacta del material, no toca nada mas, no inventa archivos ni funciones y no dania vecinos: APROBADO."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

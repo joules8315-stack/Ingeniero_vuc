@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion _vigias corre siempre toda la carpeta 'vigias/' en vez de elegir solo las vigias de la pieza tocada y sus vecinas, tardando 3-11 min por guardado.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "    try:\n        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\", \"vigias/\"],\n                           cwd=raiz, capture_output=True, text=True, timeout=900,\n                           stdin=subprocess.DEVNULL)",
+  "texto_nuevo": "    try:\n        try:\n            import sys as _sys\n            _aqui = os.path.dirname(os.path.abspath(__file__))\n            if _aqui not in _sys.path:\n                _sys.path.insert(0, _aqui)\n            import vecinas\n            seleccion = vecinas.elegir(raiz)\n        except Exception:\n            seleccion = None\n        if seleccion == []:\n            return True, \"solo cambiaron documentos: no hay vigias que correr\"\n        objetivo = seleccion if isinstance(seleccion, list) and seleccion else [\"vigias/\"]\n        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\"] + objetivo,\n                           cwd=raiz, capture_output=True, text=True, timeout=900,\n                           stdin=subprocess.DEVNULL)",
+  "cambio": "Antes de la llamada a pytest dentro del try, importar vecinas (anadiendo el directorio del archivo a sys.path si falta, dentro de un try; si falla, seleccion = None) y calcular seleccion = vecinas.elegir(raiz). Si seleccion == [] devolver (True, 'solo cambiaron documentos: no hay vigias que correr'). Si no, objetivo = seleccion si es lista no vacia, si no ['vigias/']; y la llamada a pytest queda [sys.executable, '-m', 'pytest', '-q'] + objetivo con los mismos cwd, capture_output, text, timeout y stdin. El resto de la funcion igual.",
+  "codigo": "        try:\n            import sys as _sys\n            _aqui = os.path.dirname(os.path.abspath(__file__))\n            if _aqui not in _sys.path:\n                _sys.path.insert(0, _aqui)\n            import vecinas\n            seleccion = vecinas.elegir(raiz)\n        except Exception:\n            seleccion = None\n        if seleccion == []:\n            return True, \"solo cambiaron documentos: no hay vigias que correr\"\n        objetivo = seleccion if isinstance(seleccion, list) and seleccion else [\"vigias/\"]\n        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\"] + objetivo,\n                           cwd=raiz, capture_output=True, text=True, timeout=900,\n                           stdin=subprocess.DEVNULL)",
+  "vigia": "vigias/test_vigia_el_guardia_no_se_cuelga.py y vigias/test_vigia_el_guardia_se_acuerda_y_frena.py: comprobar que con seleccion == [] el guardado pasa con aviso sin correr pytest, y que con seleccion None o lista no vacia se corre pytest con el objetivo correcto.",
+  "puede_danar": [
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py y vigias/test_vigia_el_guardia_se_acuerda_y_frena.py: hoy probablemente esperan que _vigias llame a subprocess.run con 'vigias/'; con el nuevo flujo, si elegir(raiz) devuelve [] se retorna ANTES de subprocess.run y si devuelve lista el comando ya no es 'vigias/'. Sus supuestos actuales cambian (el propio obrero las lista como fuera del paquete), asi que pueden quedar rojas si no se actualizan antes de sellar."
+  ],
+  "que_falta": [
+   "Entregar el codigo actualizado de las dos vigias (solo se describe en el campo 'vigia', no viene) y correrlas de verdad (Ley 7: prueba real interna) antes de avisar a Julio",
+   "Declarar en el sellado cual de las dos vigias se reviso, como exige el paquete"
+  ],
+  "resumen_para_el_jefe": "La reparacion es fiel al encargo: usa la pieza existente vecinas.elegir, no inventa nada, hace exactamente lo que pide el paquete y no cambia los margenes de seguridad; solo queda actualizar y probar las dos vigias que la tocan antes de sellar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19067 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -273,7 +273,19 @@ def _vigias(raiz):
     # datos colgo un guardado 5 horas y media; al pararlo se dejo guardar SIN PROBAR. Ahora la entrada va
     # cerrada, y si las vigias no terminan a tiempo NO se guarda: no probar no es lo mismo que pasar.
     try:
-        r = subprocess.run([sys.executable, "-m", "pytest", "-q", "vigias/"],
+        try:
+            import sys as _sys
+            _aqui = os.path.dirname(os.path.abspath(__file__))
+            if _aqui not in _sys.path:
+                _sys.path.insert(0, _aqui)
+            import vecinas
+            seleccion = vecinas.elegir(raiz)
+        except Exception:
+            seleccion = None
+        if seleccion == []:
+            return True, "solo cambiaron documentos: no hay vigias que correr"
+        objetivo = seleccion if isinstance(seleccion, list) and seleccion else ["vigias/"]
+        r = subprocess.run([sys.executable, "-m", "pytest", "-q"] + objetivo,
                            cwd=raiz, capture_output=True, text=True, timeout=900,
                            stdin=subprocess.DEVNULL)
     except subprocess.TimeoutExpired:

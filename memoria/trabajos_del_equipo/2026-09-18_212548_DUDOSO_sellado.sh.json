@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El script sella.sh imprime SELLADO y borra el candado .mvp2_plan_aprobado aunque el guardia de git rechace el commit, porque el git commit no esta envuelto en un if que detecte el fallo.",
+  "archivo": "sellado.sh",
+  "funcion": "tramo de sellado (git commit + rm -f .mvp2_plan_aprobado + echo SELLADO)",
+  "texto_viejo": "exit 0\nfi\ngit commit -q -m \"$msg\n\nCo-Authored-By: Claude Opus 4.8 <<CORREO>>\"\n# El semaforo de plan aprobado es transitorio: se borra al sellar (cierra el candado de edicion).\nrm -f .mvp2_plan_aprobado\necho \"SELLADO en $RAMA_OK: $(git log --oneline -1)\"",
+  "texto_nuevo": "exit 0\nfi\nif ! git commit -q -m \"$msg\n\nCo-Authored-By: Claude Opus 4.8 <<CORREO>>\"; then\n  echo \"NO SE SELLO: el guardia de guardado rechazo el commit (ver su mensaje arriba). Nada quedo guardado.\"\n  exit 1\nfi\n# El semaforo de plan aprobado es transitorio: se borra al sellar (cierra el candado de edicion).\nrm -f .mvp2_plan_aprobado\necho \"SELLADO en $RAMA_OK: $(git log --oneline -1)\"",
+  "cambio": "Envolver el git commit (con su mensaje de dos lineas exactamente igual, incluido el Co-Authored-By) en 'if ! git commit ...; then' que imprime el aviso de NO SE SELLO y hace exit 1 sin borrar .mvp2_plan_aprobado; luego 'fi'; y despues, igual que hoy, el comentario, el rm -f y el echo SELLADO.",
+  "codigo": "if ! git commit -q -m \"$msg\n\nCo-Authored-By: Claude Opus 4.8 <<CORREO>>\"; then\n  echo \"NO SE SELLO: el guardia de guardado rechazo el commit (ver su mensaje arriba). Nada quedo guardado.\"\n  exit 1\nfi",
+  "vigia": "Ejecutar sellado.sh con un guardia de git que rechace el commit y comprobar que NO imprime SELLADO, que imprime el aviso NO SE SELLO, que sale con codigo 1 y que .mvp2_plan_aprobado sigue existiendo.",
+  "puede_danar": [
+   "sellado.sh",
+   "vigias/test_vigia_auth_supabase.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "sellado.sh",
+   "test_vigia_auth_supabase.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": true,
+  "que_invento": [
+   "sellado.sh: el material del paquete nombra el script 'sellar.sh' y 'sellado.sh' no aparece en ninguna parte; la propuesta ancla el tramo, el puede_danar y la vigia a ese nombre."
+  ],
+  "fallos": [
+   "Nombre de archivo no avalado por el material: el paquete dice 'sellar.sh' y la propuesta usa 'sellado.sh' en archivo, puede_danar, _fuera_del_paquete y en su vigia. Si se edita o se ejecuta sobre 'sellado.sh', el bug sigue vivo en 'sellar.sh' (el script seguiria imprimiendo SELLADO aunque el guardia rechace) y queda un archivo que nadie pidio.",
+   "El Co-Authored-By no respeta 'EXACTAMENTE igual': el material muestra 'Claude Opus 4.8 <noreply@anthropic.com>' y la propuesta escribe '... <<CORREO>>'. Si '<<CORREO>>' no se sustituye por el email literal del archivo, cambia el mensaje del commit, cosa que el encargo prohibe.",
+   "La vigia propuesta ejecuta 'sellado.sh' (nombre que no esta en el material) en vez del nombre real del script, asi que, tal como esta escrita, no demuestra nada sobre el archivo que mandan reparar."
+  ],
+  "riesgo_vecinos": [
+   "vigias/test_vigia_auth_supabase.py (del A QUIEN PUEDE DANAR) no se toca: riesgo bajo.",
+   "Riesgo principal: falso verde si la vigia corre sobre 'sellado.sh' y deja 'sellar.sh' con el fallo medido intacto."
+  ],
+  "que_falta": [
+   "Confirmar el nombre exacto del archivo (material: 'sellar.sh') y que la edicion y la vigia apunten al archivo real.",
+   "Poner el email literal del Co-Authored-By que hoy tiene el archivo (material: <noreply@anthropic.com>), sin placeholder.",
+   "Repetir la vigia real sobre 'sellar.sh' con un guardia que rechace el commit, comprobando: NO imprime SELLADO, imprime el aviso de NO SE SELLO, sale con codigo 1 y .mvp2_plan_aprobado sigue existiendo (Ley 7)."
+  ],
+  "resumen_para_el_jefe": "La reparacion bash en si es correcta y fiel al encargo (envuelve el git commit, exit 1 sin borrar el candado), pero reporta el archivo como 'sellado.sh' cuando el material dice 'sellar.sh' y sustituye el email del Co-Authored-By por un placeholder: hay que confirmar nombre real y email antes de sellar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19064 letras, aguanta 19042) -> se le salta",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "vueltas_dadas: 1"
+ ]
+}

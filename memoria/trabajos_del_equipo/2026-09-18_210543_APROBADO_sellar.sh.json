@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La lista PERMITIDAS de sellar.sh no incluye la carpeta .github, que Julio aprobó (A-36, 2026-09-18), y falta su comentario en las subcarpetas declaradas.",
+  "archivo": "sellar.sh",
+  "funcion": "PERMITIDAS (variable de rutas permitidas en sellar.sh)",
+  "texto_viejo": "PERMITIDAS=$'fuentes_curso\\narnes\\ncuerpo\\nvigias\\nweb\\n.claude\\n.clinerules\\nhooks'",
+  "texto_nuevo": "PERMITIDAS=$'fuentes_curso\\narnes\\ncuerpo\\nvigias\\nweb\\n.claude\\n.clinerules\\nhooks\\n.github'",
+  "cambio": "Agregar .github al final de la lista PERMITIDAS con el mismo formato (\\n.github antes de la comilla de cierre) y añadir en los comentarios de subcarpetas declaradas la línea: '.github = instrucciones de GitHub Copilot (declarado 2026-09-18, A-36).'",
+  "codigo": "PERMITIDAS=$'fuentes_curso\\narnes\\ncuerpo\\nvigias\\nweb\\n.claude\\n.clinerules\\nhooks\\n.github'",
+  "vigia": "Un vigía que ejecute sellar.sh y compruebe que .github queda permitida (no rechazada) y que el comentario de subcarpetas declaradas incluye la línea de .github.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "sellar.sh"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El material dice 'Nadie depende de estas piezas. Reparacion aislada.' y la propuesta marca puede_danar vacío. El único apunte: sellar.sh está marcado _fuera_del_paquete, así que al aplicar el cambio hay que verificar contra el archivo real y pedir el NECESITO_LEER si algo no cuadrara; no es un vecino que se rompa."
+  ],
+  "que_falta": [
+   "Materializar el vigía como archivo real en vigias/ (ejecutar sellar.sh y comprobar que .github queda permitida y que el comentario existe) — está descrito pero no entregado.",
+   "El campo 'codigo' solo muestra la línea PERMITIDAS; la segunda parte (el comentario en subcarpetas declaradas) está descrita en 'cambio' pero no en el bloque de código — es de forma, no de fondo."
+  ],
+  "resumen_para_el_jefe": "La reparación hace exactamente lo que pidió el paquete A-36 (sumar '.github' a PERMITIDAS con el mismo formato y su comentario literal), sin inventar nada ni tocar vecinos; aprobar el cambio y solo falta materializar el vigía y aplicarlo sobre el sellar.sh real."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El revisor lee con ast.parse (analizador de Python) cualquier archivo que no sea JS, incluidos los .sh, y por eso frena en falso un cambio aprobado en bash.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "            arbol = ast.parse(nuevo) if not _es_js else None",
+  "texto_nuevo": "            _es_py = (not _ruta_js) or str(_ruta_js).lower().endswith('.py')\n            arbol = ast.parse(nuevo) if _es_py else None",
+  "cambio": "Sustituir la linea 210 para que ast.parse solo corra si el archivo es Python: si _ruta_js no esta vacia y no termina en .py (sin importar mayusculas), arbol = None igual que con JS; si _ruta_js esta vacia, se comporta como hoy.",
+  "codigo": "            _es_py = (not _ruta_js) or str(_ruta_js).lower().endswith('.py')\n            arbol = ast.parse(nuevo) if _es_py else None",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py: pasar una propuesta sobre un .sh aprobada y comprobar que revisar() no devuelve 'EL CODIGO QUEDA ROTO'; y pasar una propuesta sobre un .py con sintaxis rota y comprobar que si la caza.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "agregar el test propuesto a vigias/test_vigia_revisor_de_programa.py (archivo marcado como _fuera_del_paquete, pedirlo con NECESITO_LEER)",
+   "correr las vigias antes/despues (python -m pytest -q vigias/) y que Julio vea el .sh aprobado pasar sin freno"
+  ],
+  "resumen_para_el_jefe": "La propuesta traduce el encargo tal cual: el texto viejo esta en el material y el criterio pedido (solo .py, sin importar mayusculas; vacio = como hoy) queda fiel en el codigo, sin tocar vecinos ni usar nada que no exista, asi que se puede aprobar."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

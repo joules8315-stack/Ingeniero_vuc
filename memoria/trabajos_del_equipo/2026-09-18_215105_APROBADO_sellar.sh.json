@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El candado de no-regresion de sellar.sh corre TODA la bateria de vigias (~10 min) en vez de solo las vigias de la pieza tocada y sus vecinas, y luego el guardia de git la vuelve a correr.",
+  "archivo": "sellar.sh",
+  "funcion": "candado de no-regresion (tramo que corre las vigias)",
+  "texto_viejo": "echo \"Candado de no-regresion: corriendo todas las vigias...\"\nif ! python -m pytest -q vigias/ >/tmp/sellar_pytest.log 2>&1; then\n  echo \"BLOQUEADO: hay vigias ROJAS -> no se sella (para no romper otra cosa). Ultimas lineas:\"\n  tail -4 /tmp/sellar_pytest.log\n  exit 1\nfi\necho \"Todas las vigias VERDES -> se puede sellar.\"",
+  "texto_nuevo": "echo \"Candado de no-regresion: corriendo las vigias de la pieza tocada y sus vecinas...\"\nSEL=$(python \"C:/Ingeniero_VUC/arnes/vecinas.py\" .)\nif [ -z \"$SEL\" ]; then\n  echo 'Solo cambiaron documentos: no hay vigias que correr.'\nelif [ \"$SEL\" = \"TODAS\" ]; then\n  if ! python -m pytest -q vigias/ >/tmp/sellar_pytest.log 2>&1; then\n    echo \"BLOQUEADO: hay vigias ROJAS -> no se sella (para no romper otra cosa). Ultimas lineas:\"\n    tail -4 /tmp/sellar_pytest.log\n    exit 1\n  fi\nelse\n  if ! echo \"$SEL\" | xargs python -m pytest -q >/tmp/sellar_pytest.log 2>&1; then\n    echo \"BLOQUEADO: hay vigias ROJAS -> no se sella (para no romper otra cosa). Ultimas lineas:\"\n    tail -4 /tmp/sellar_pytest.log\n    exit 1\n  fi\nfi\necho \"Todas las vigias VERDES -> se puede sellar.\"",
+  "cambio": "Sustituir el tramo que corre siempre 'python -m pytest -q vigias/' por: calcular SEL con vecinas.py; si SEL vacio -> mensaje 'Solo cambiaron documentos: no hay vigias que correr.' y seguir; si SEL == TODAS -> correr 'python -m pytest -q vigias/' como hoy; si no -> correr 'python -m pytest -q' con las rutas de SEL (una por renglon, via xargs). En cualquier fallo de pytest, conservar el mismo BLOQUEADO con tail -4 del log y exit 1. Al final, el mismo echo de VERDES.",
+  "codigo": "echo \"Candado de no-regresion: corriendo las vigias de la pieza tocada y sus vecinas...\"\nSEL=$(python \"C:/Ingeniero_VUC/arnes/vecinas.py\" .)\nif [ -z \"$SEL\" ]; then\n  echo 'Solo cambiaron documentos: no hay vigias que correr.'\nelif [ \"$SEL\" = \"TODAS\" ]; then\n  if ! python -m pytest -q vigias/ >/tmp/sellar_pytest.log 2>&1; then\n    echo \"BLOQUEADO: hay vigias ROJAS -> no se sella (para no romper otra cosa). Ultimas lineas:\"\n    tail -4 /tmp/sellar_pytest.log\n    exit 1\n  fi\nelse\n  if ! echo \"$SEL\" | xargs python -m pytest -q >/tmp/sellar_pytest.log 2>&1; then\n    echo \"BLOQUEADO: hay vigias ROJAS -> no se sella (para no romper otra cosa). Ultimas lineas:\"\n    tail -4 /tmp/sellar_pytest.log\n    exit 1\n  fi\nfi\necho \"Todas las vigias VERDES -> se puede sellar.\"",
+  "vigia": "Correr sellar.sh tocando una pieza con vigias propias y comprobar que solo corre esas vigias y sus vecinas (no toda la bateria); tocar solo documentos y comprobar que imprime 'Solo cambiaron documentos: no hay vigias que correr.' y sigue; forzar SEL=TODAS y comprobar que corre 'python -m pytest -q vigias/'; provocar una vigia roja y comprobar que imprime el BLOQUEADO con tail -4 y sale con exit 1.",
+  "puede_danar": [
+   "cuerpo/config.py",
+   "vigias/test_vigia_ingeniero_autonomo.py",
+   "vigias/test_vigia_ingeniero_consola.py"
+  ],
+  "preguntas": [
+   "PREGNTA_REQUERIDA: cuando SEL trae varias rutas, ¿deben pasarse a pytest como rutas separadas (xargs) o como un solo argumento con comas?",
+   "PREGUNTA_REQUERIDA: si vecinas.py falla o no existe, ¿sellar.sh debe bloquear o caer al comportamiento actual (correr toda la bateria)?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "config.py",
+   "sellar.sh",
+   "test_vigia_ingeniero_autonomo.py",
+   "test_vigia_ingeniero_consola.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La pregunta P1 sobra: el material ya la responde ('rutas una por renglon; usar xargs o un arreglo'), y el obrero uso xargs, que es justo lo que el material autoriza; hacer esa pregunta quema una vuelta sin necesidad.",
+   "Referencia a vecinas.py verificada: el material la nombra explicitamente con la misma invocacion (SEL=$(python \"C:/Ingeniero_VUC/arnes/vecinas.py\" .)), asi que NO es invento.",
+   "El texto_viejo coincide linea a linea con el tramo actual del material; el cambio toca solo ese tramo y conserva BLOQUEADO con tail -4 + exit 1 y el echo final de VERDES tal como exige el paquete."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno inmediato: la reparacion solo reescribe el tramo de sellar.sh; no edita config.py ni las dos vigias de la seccion 5, y correr MENOS pruebas no las dana. Riesgo a anotar (no rechazan): si vecinas.py falla o no existe, SEL queda vacio y el candado se salta en silencio 'como si fueran documentos'; el propio obrero lo pregunto (P2) y el material manda ese comportamiento, asi que la decision es de Julio, no un defecto de implementacion."
+  ],
+  "que_falta": [
+   "Nada bloqueante. Si se quiere blindar, que sellar.sh distinga 'SEL vacio' de 'vecinas.py fallo' (ej. comprobando exit code del python), pero eso excede lo que el paquete pidio."
+  ],
+  "resumen_para_el_jefe": "Hace exactamente lo que el paquete ordena (vecinas.py + SEL vacio/TODAS/rutas + mismo BLOQUEADO y mismo VERDES), no inventa nada y no daña vecinos; solo queda que Julio decida la P2 (que pasa si vecinas.py falla) y se aprueba."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

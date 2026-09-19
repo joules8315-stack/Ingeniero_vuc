@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El tramo de sellar.sh que hace git commit no comprueba el error del commit y sigue hasta imprimir SELLADO aunque el guardia de git lo haya rechazado.",
+  "archivo": "sellar.sh",
+  "funcion": "paso 3 Sellar",
+  "texto_viejo": "git commit -q -m \"$msg",
+  "texto_nuevo": "if ! git commit -q -m \"$msg",
+  "cambio": "Envolver la linea git commit en un if ! ... ; then para que, si el commit falla, se imprima 'NO SE SELLO: el guardia de guardado rechazo el commit (ver su mensaje arriba). Nada quedo guardado.' y se salga con exit 1 sin borrar .mvp2_plan_aprobado; y que el echo \"SELLADO en $RAMA_OK: ...\" solo se ejecute si el commit salio bien. Mantener el mensaje y el Co-Authored-By del commit tal cual.",
+  "codigo": "if ! git commit -q -m \"$msg\" -m \"Co-Authored-By: ...\"; then\n  echo \"NO SE SELLO: el guardia de guardado rechazo el commit (ver su mensaje arriba). Nada quedo guardado.\"\n  exit 1\nfi\necho \"SELLADO en $RAMA_OK: ...\"",
+  "vigia": "Un test que simule un git commit que devuelve error (por ejemplo con un hook pre-commit que falle) y compruebe que sellar.sh imprime 'NO SE SELLO: ...' y sale con exit 1, que NO imprime 'SELLADO en ...' y que .mvp2_plan_aprobado sigue existiendo.",
+  "puede_danar": [
+   "vigias/test_vigia_auth_supabase.py",
+   "vigias/test_vigia_medidor.py"
+  ],
+  "preguntas": [
+   "El material no trae el contenido literal de sellar.sh (ni el mensaje exacto del commit ni el texto exacto de la linea echo \"SELLADO en $RAMA_OK: ...\"). ¿Puedes darme el archivo sellar.sh completo, en especial el paso 3 Sellar, para copiar el texto literal exacto?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "sellar.sh",
+   "test_vigia_auth_supabase.py",
+   "test_vigia_medidor.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El codigo entregado no es aplicable tal cual: usa \"...\" literales (\"Co-Authored-By: ...\", \"SELLADO en $RAMA_OK: ...\") que, si se copian literal, corrompen el commit y el anuncio.",
+   "Inventa una estructura que el material no confirma: separa el mensaje en dos -m (\"$msg\" + \"Co-Authored-By: ...\") cuando el material describe UNA linea `git commit -q -m \"$msg ...\"` y exige mantener mensaje y Co-Authored-By \"tal cual\".",
+   "El par texto_viejo/texto_nuevo (`git commit -q -m \"$msg` -> `if ! git commit -q -m \"$msg`) es incompleto por si solo: falta la mitad de la linea y el `; then`, o sea el cambio queda esbozado, no escrito.",
+   "En vez de cerrar con lo que el paquete SI da (mensaje exacto de NO SE SELLO, exit 1, no borrar .mvp2_plan_aprobado, SELLADO solo si ok), pidio el archivo fuera del paquete en formato pregunta; ademas no uso el NECESITO_LEER con archivo/motivo/decide/riesgo que exige el contrato."
+  ],
+  "riesgo_vecinos": [
+   "La declaracion de puede_danar coincide con la seccion 5 del material (test_vigia_auth_supabase.py, test_vigia_medidor.py), pero ninguna vigia de ahi cubre sellar.sh: si el cambio se aplica mal (mensaje con \"...\" literal o estructura -m inventada), el sellado podria pasar sin que ninguna vigia lo detecte.",
+   "La nueva vigia propuesta (hook pre-commit) no tiene ruta ni archivo de destino, asi que no se sabe donde va a vivir ni que vigia existente la protege."
+  ],
+  "que_falta": [
+   "El texto literal y completo de la linea `git commit ...` del paso 3 de sellar.sh (donde termina el Co-Authored-By) y de `echo \"SELLADO en $RAMA_OK: ...\"`.",
+   "Confirmar si Co-Authored-By va como segundo -m o dentro del mismo mensaje (el material describe uno solo: `git commit -q -m \"$msg ...\"`).",
+   "Declarar el archivo donde ira la nueva vigia (rutas reales de vigias/*.py), porque el paquete no trae ninguna vigia de sellar.sh."
+  ],
+  "resumen_para_el_jefe": "La idea es correcta y no inventa nada, pero es un boceto: trae puntos suspensivos y una estructura de commit que el material no confirma, asi que no se puede aplicar ni comprobar hasta que el obrero ponga el texto literal de sellar.sh (pedido con NECESITO_LEER)."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19070 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (19778 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

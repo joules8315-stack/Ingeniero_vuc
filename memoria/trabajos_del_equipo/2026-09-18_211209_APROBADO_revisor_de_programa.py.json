@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _piezas(arbol) falta la guarda para arbol=None, asi que ast.walk(None) revienta con archivos que no son Python.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "_piezas",
+  "texto_viejo": "    \"\"\"Los nombres de funcion y de clase que hay en ese texto, en el orden en que salen.\n\n    Es la cuenta que faltaba. Comparando esta lista antes y despues se ve, sin gastar ni una\n    IA, si un cambio se lleva por delante algo que ya estaba. Se miran tambien las de dentro\n    (los metodos de una clase), porque el 2026-09-11 lo que desaparecio fue justo eso.\n    \"\"\"\n    fuera = []",
+  "texto_nuevo": "    \"\"\"Los nombres de funcion y de clase que hay en ese texto, en el orden en que salen.\n\n    Es la cuenta que faltaba. Comparando esta lista antes y despues se ve, sin gastar ni una\n    IA, si un cambio se lleva por delante algo que ya estaba. Se miran tambien las de dentro\n    (los metodos de una clase), porque el 2026-09-11 lo que desaparecio fue justo eso.\n    \"\"\"\n    if arbol is None:\n        return []\n    fuera = []",
+  "cambio": "Anadir como primera sentencia del cuerpo de _piezas, despues del docstring, la guarda 'if arbol is None: return []', igual que ya tienen _conocidos y _leidos.",
+  "codigo": "    if arbol is None:\n        return []",
+  "vigia": "Ejecutar el revisor sobre un archivo que no es Python (arbol=None) y comprobar que _piezas devuelve [] sin reventar; y que la revision de un cambio normal sigue detectando piezas perdidas.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "mapa/inventario.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno detectado: _piezas ya devuelve una lista y la guarda devuelve [] (mismo tipo), asi que ningun llamador cambia de contrato. mapa/inventario.py no se ve afectado por el material. Esquina teorica no bloqueante: si el texto viejo parsea y el nuevo no, _piezas(arbol=None) devolveria [] y el revisor podria acusar 'DESAPARECE LO QUE YA ESTABA' en vez de reventar como hoy; es el comportamiento que el encargo pide y con el fallo viejo la revision igual se perdia, asi que no es una regresion clara."
+  ],
+  "que_falta": [
+   "Nada del material. La ubicacion se confirma por texto: el docstring y 'fuera = []' aparecen literales en el trozo arnes/revisor_de_programa.py:119-131. El 'return []' cuadra con el retorno de lista que el propio paquete verifica ('fuera = [] ... return fuera', o sea una LISTA). La vigia propuesta cubre el caso medido (archivo no-Python) y el contrato no pide nada mas."
+  ],
+  "resumen_para_el_jefe": "El obrero hizo exactamente el unico cambio que el paquete ordena —la guarda 'if arbol is None: return []' como primera sentencia de _piezas, igual que ya tienen _conocidos y _leidos— sin inventar archivos ni funciones, sin tocar vecinos y conservando el tipo de retorno; se aprueba."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19068 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
