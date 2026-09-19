@@ -45,6 +45,8 @@ def preparar(tmp_path, monkeypatch, ordenes):
     with open(memoria / 'ORDENES.json', 'w', encoding='utf-8') as f:
         json.dump(ordenes, f, indent=2)
     monkeypatch.setenv('INGENIERO_GASTO_USD_TEST', str(memoria / 'GASTO_USD.jsonl'))
+    monkeypatch.setattr(capataz, 'forense', lambda *a, **k: {'ok': True, 'paso': 'prueba', 'motivo': 'forense falso'}, raising=False)
+    monkeypatch.setenv('INGENIERO_FALLOS_TEST', str(memoria / 'FALLOS.json'))
     return memoria
 
 
