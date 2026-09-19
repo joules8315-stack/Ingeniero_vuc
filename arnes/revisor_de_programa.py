@@ -61,6 +61,31 @@ PROPIOS_DE_PYTHON |= {"__file__", "__cached__", "__builtins__", "__annotations__
                       "__spec__", "__path__", "__debug__"}
 
 
+def _quitar_comentario(linea):
+    """Corta la linea en el primer numeral que este FUERA de comillas.
+
+    Recorre caracter por caracter llevando si esta dentro de comillas simples o dobles,
+    respetando la barra invertida que escapa la siguiente letra. Un numeral dentro de una
+    cadena NO es un comentario y no se toca (freno en falso nº12, orden de Julio A-38 punto 3).
+    """
+    dentro = None
+    i = 0
+    while i < len(linea):
+        c = linea[i]
+        if c == "\\" and dentro is not None:
+            i += 2
+            continue
+        if dentro is None:
+            if c == "#":
+                return linea[:i]
+            if c == "'" or c == '"':
+                dentro = c
+        elif c == dentro:
+            dentro = None
+        i += 1
+    return linea
+
+
 def sin_ruido(texto):
     """Quita comentarios, textos entre triples comillas y lineas en blanco.
 
@@ -72,7 +97,7 @@ def sin_ruido(texto):
     t = re.sub(r"(?m)^\s*[rRbBuUfF]*'''(?:.|\n)*?'''", " ", t)
     fuera = []
     for linea in t.splitlines():
-        linea = re.sub(r"#.*$", "", linea).strip()
+        linea = _quitar_comentario(linea).strip()
         if linea:
             fuera.append(linea)
     return "\n".join(fuera)
