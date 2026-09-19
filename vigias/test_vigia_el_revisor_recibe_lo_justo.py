@@ -36,7 +36,7 @@ def test_la_llamada_que_arma_material_auditor_usa_el_tope():
     todo el modulo no puede quedar el atajo viejo '40000 if auditor'.
     """
     fuente = inspect.getsource(obrero)
-    marca = "material_auditor = _filtrar_paquete("
+    marca = "material_auditor = _material_del_revisor("
     inicio = fuente.find(marca)
     assert inicio != -1, "no aparece la llamada que arma material_auditor"
     fin = fuente.find(")))", inicio)

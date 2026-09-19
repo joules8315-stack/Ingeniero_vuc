@@ -948,9 +948,9 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
             archivo_tocado = archivo_tocado[0]
         if isinstance(archivo_tocado, str):
             archivo_tocado = archivo_tocado.strip()
-    material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,
-                                        tope=TOPE_REVISOR - 3344 - 47 -
-                                             len(json.dumps(propuesta, ensure_ascii=False)))
+    material_auditor = _material_del_revisor(paquete, propuesta,
+                                            TOPE_REVISOR - 3344 - 47 -
+                                            len(json.dumps(propuesta, ensure_ascii=False)))
     if auditor == 'bigpickle':
         # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de
         # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.
