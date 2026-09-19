@@ -184,3 +184,36 @@ def test_sin_archivos_no_guarda_nada(tmp_path):
     ok, msg = candado_equipo.guardar_en_la_historia(str(tmp_path), [], "nada")
 
     assert ok is False, "sin archivos aprobados no se puede decir que se guardo"
+
+
+def test_si_el_guardia_frena_se_vuelve_atras_y_se_aparta(tmp_path, monkeypatch):
+    """Si el guardia frena, se vuelve atras solo y lo rechazado queda apartado."""
+    monkeypatch.setenv(
+        "INGENIERO_FALLOS_TEST", str(tmp_path / "fallos_prueba.json")
+    )
+    _repo(tmp_path)
+    (tmp_path / "base.txt").write_text("cambio rechazado\n", encoding="utf-8")
+
+    hook = tmp_path / ".git" / "hooks" / "pre-commit"
+    hook.write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
+    try:
+        os.chmod(str(hook), 0o755)
+    except OSError:
+        pass
+
+    ok, msg = candado_equipo.guardar_en_la_historia(
+        str(tmp_path), ["base.txt"], "equipo aprobado"
+    )
+
+    assert ok is False, "con el guardia frenando no se puede decir que se guardo"
+    assert (tmp_path / "base.txt").read_text(encoding="utf-8") == "base\n", (
+        "no se volvio atras: el archivo rechazado quedo escrito"
+    )
+    apartado = (
+        tmp_path / "memoria" / "trabajos_sin_revisar" / "base.txt.FRENADO_POR_EL_GUARDIA"
+    )
+    assert apartado.exists(), "lo rechazado no se aparto: se perdio el trabajo"
+    assert "cambio rechazado" in apartado.read_text(encoding="utf-8"), (
+        "lo apartado no guarda el cambio rechazado"
+    )
+    assert "SE VOLVIO ATRAS" in msg, "el mensaje no avisa de que se volvio atras"
