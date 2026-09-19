@@ -431,6 +431,28 @@ def pedir_al_perito(expediente, raiz, tope_segundos=600):
     return (datos, 'ok')
 
 
+def juzgar_citas(analisis):
+    """Juzga si las citas de un analisis prueban de verdad la causa de raiz que se afirma."""
+    from cuerpo import bigpickle
+    if not isinstance(analisis, dict):
+        return (False, 'no hay analisis')
+    pedido = ('Eres el revisor del forense. Estas citas son LITERALES del proyecto (un programa ya comprobo que existen). Juzga SOLO si prueban la causa de raiz que se afirma. Responde SOLO un objeto JSON {"prueban": true o false, "por_que": "una frase"}. CAUSA: ' + str(analisis.get('causa_raiz', '')) + ' CITAS: ' + json.dumps(analisis.get('citas', []), ensure_ascii=False))
+    texto, avisos = bigpickle.preguntar(pedido)
+    if not texto:
+        return (False, 'Big Pickle no contesto: ' + '; '.join(avisos)[:200])
+    inicio = texto.find('{')
+    fin = texto.rfind('}')
+    if inicio == -1 or fin == -1 or fin < inicio:
+        return (False, 'Big Pickle no devolvio JSON')
+    try:
+        dato = json.loads(texto[inicio:fin + 1])
+    except (ValueError, TypeError):
+        return (False, 'Big Pickle no devolvio JSON')
+    if not isinstance(dato, dict):
+        return (False, 'Big Pickle no devolvio JSON')
+    return (dato.get('prueban') is True, str(dato.get('por_que', '')))
+
+
 def ya_fallo(orden):
     """True si la huella_de(orden) aparece en el archivo; nunca lanza."""
     carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
