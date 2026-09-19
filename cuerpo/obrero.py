@@ -942,16 +942,22 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
     if auditor and quien_aud != auditor:
         avisos.append("se pidio auditar a %s y no esta disponible: reviso %s" % (auditor, quien_aud))
 
-    # LEY DE JULIO 2026-09-15: SI EL ENCARGO PIDIO UN REVISOR FIJO (bigpickle), ESE PEDIDO SE
-    # RESPETA SIEMPRE. NO se sustituye por claude, gemini, groq ni por el cerebro de pago. Si el
-    # revisor pedido no contesta, el veredicto queda SIN_AUDITAR con aviso, y NO se llama a ningun
-    # otro cerebro en su lugar. El trabajo queda archivado para que bigpickle lo revise despues.
-    revisor_fijo = auditor if auditor == "bigpickle" else None
+    # A-38 punto 4 (Julio 2026-09-19): si bigpickle esta caido, revisa otra IA con solo lo necesario, nunca claude ni quien escribio.
+    revisor_fijo = auditor if auditor == 'bigpickle' else None
     if revisor_fijo and quien_aud != revisor_fijo:
-        auditoria = {"veredicto": "SIN_AUDITAR",
-                     "resumen_para_el_jefe":
-                         "el revisor pedido (%s) no estaba; no se llama a otro cerebro en su lugar" % revisor_fijo}
-        avisos.append("el revisor pedido (%s) no estaba: queda SIN_AUDITAR y archivado para su revision" % revisor_fijo)
+        crudo_r, quien_r, av_r = _preguntar_con_relevo(
+            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,
+            evitar=evitar, clase='auditar', vuelta=1)
+        avisos += av_r
+        aud_r = _json_de(crudo_r) if crudo_r else None
+        if isinstance(aud_r, dict) and '_error' not in aud_r and quien_r != 'claude':
+            auditoria = aud_r
+            quien_aud = quien_r
+            avisos.append('bigpickle no estaba: revisa %s con solo lo necesario (A-38)' % quien_r)
+        else:
+            auditoria = {'veredicto': 'SIN_AUDITAR',
+                         'resumen_para_el_jefe': 'bigpickle no estaba y ninguna otra IA pudo revisar'}
+            avisos.append('bigpickle no estaba y el relevo no contesto: SIN_AUDITAR (A-38)')
         return auditoria, quien_aud, avisos
 
     # A-32 (Julio 2026-09-18, reemplaza la ley del 2026-09-14): si todas las gratis duermen, revisa Big Pickle, nunca Claude ni quien escribio.
