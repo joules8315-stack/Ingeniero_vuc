@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La ultima linea de _cubierto_por_equipo da por cubierto cualquier contenido si el equipo aprobo algo con ese nombre en 24 h, en vez de comprobar la huella sha256 del contenido real.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_cubierto_por_equipo",
+  "texto_viejo": "    if not aprobados:\n        return False\n    cubiertos = set(aprobados)\n    return all(os.path.basename(a).lower() in cubiertos for a in codigo)",
+  "texto_nuevo": "    if not aprobados:\n        return False\n    cubiertos = set(aprobados)\n    try:\n        import hashlib\n        pares = set()\n        huellas = os.path.join(os.path.dirname(ruta), \".huellas_aprobadas.jsonl\")\n        with open(huellas, encoding=\"utf-8\") as f:\n            for linea in f:\n                linea = linea.strip()\n                if not linea:\n                    continue\n                try:\n                    d = json.loads(linea)\n                except Exception:\n                    continue\n                try:\n                    cuando = float(d.get(\"cuando\", 0) or 0)\n                except Exception:\n                    continue\n                if ahora - cuando > 24 * 3600:\n                    continue\n                pares.add((str(d.get(\"archivo\", \"\")).lower(), str(d.get(\"sha\", \"\"))))\n        for a in codigo:\n            r = subprocess.run([\"git\", \"show\", \":\" + a], capture_output=True)\n            if r.returncode != 0:\n                return False\n            contenido = r.stdout.replace(b\"\\r\", b\"\")\n            hexa = hashlib.sha256(contenido).hexdigest()\n            if (os.path.basename(a).lower(), hexa) not in pares:\n                return False\n        return True\n    except Exception:\n        return False",
+  "cambio": "Sustituir la ultima linea de _cubierto_por_equipo (la que comprueba solo el nombre contra 'cubiertos') por una comprobacion por huella: leer .huellas_aprobadas.jsonl de la misma carpeta que el cuaderno, juntar los pares (archivo, sha) con ahora - cuando <= 24*3600, y para cada archivo de codigo calcular el sha256 de git show ':'+a sin bytes \\r; cubierto solo si el par (basename en minusculas, hex) esta en los pares; si git show falla, no cubierto; True solo si todos estan cubiertos; si algo revienta, False.",
+  "codigo": "    if not aprobados:\n        return False\n    cubiertos = set(aprobados)\n    try:\n        import hashlib\n        pares = set()\n        huellas = os.path.join(os.path.dirname(ruta), \".huellas_aprobadas.jsonl\")\n        with open(huellas, encoding=\"utf-8\") as f:\n            for linea in f:\n                linea = linea.strip()\n                if not linea:\n                    continue\n                try:\n                    d = json.loads(linea)\n                except Exception:\n                    continue\n                try:\n                    cuando = float(d.get(\"cuando\", 0) or 0)\n                except Exception:\n                    continue\n                if ahora - cuando > 24 * 3600:\n                    continue\n                pares.add((str(d.get(\"archivo\", \"\")).lower(), str(d.get(\"sha\", \"\"))))\n        for a in codigo:\n            r = subprocess.run([\"git\", \"show\", \":\" + a], capture_output=True)\n            if r.returncode != 0:\n                return False\n            contenido = r.stdout.replace(b\"\\r\", b\"\")\n            hexa = hashlib.sha256(contenido).hexdigest()\n            if (os.path.basename(a).lower(), hexa) not in pares:\n                return False\n        return True\n    except Exception:\n        return False",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py y vigias/test_vigia_el_guardia_no_se_cuelga.py: comprobar que un archivo con el mismo nombre pero contenido distinto al aprobado NO queda cubierto, y que un archivo cuyo sha256 coincide con un par (archivo, sha) reciente SI queda cubierto; y que si git show falla o el jsonl no se puede leer, devuelve False sin reventar.",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El guardia ahora exige .huellas_aprobadas.jsonl en os.path.dirname(ruta): si el archivo no existe o esta vacio, _cubierto_por_equipo devuelve False y frena guardados legitimamente aprobados por el equipo. Es exactamente lo que el paquete manda ('si algo revienta, False'), asi que no es motivo de rechazo, pero es un cambio de comportamiento real para el flujo de guardado: cualquier codigo aprobado antes de que anotar_huella escribiera su huella quedara frenado. Conviene avisar a la direccion."
+  ],
+  "que_falta": [
+   "Correr las dos vigias declaradas (test_vigia_el_guardia_no_se_cuelga.py y test_vigia_el_guardia_se_acuerda_y_frena.py) tras aplicar el cambio; quedan fuera del paquete y no hay evidencia de que el obrero las haya ejecutado ni adaptado."
+  ],
+  "resumen_para_el_jefe": "La propuesta cumple literalmente el encargo: usa solo datos verificados del paquete (ahora, .huellas_aprobadas.jsonl, formato {'cuando','archivo','sha'}, git show, quitar \\r, sha256, 24 h, returncode y excepciones -> False), no inventa nada, no toca vecinos de mas y cierra el hueco del nombre; aprobar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20595 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

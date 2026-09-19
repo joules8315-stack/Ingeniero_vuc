@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La ultima linea de _cubierto_por_equipo da por revisado cualquier contenido de un archivo si el equipo aprobo algo con ese nombre en 24 h, en vez de comprobar la huella exacta de lo preparado.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_cubierto_por_equipo",
+  "texto_viejo": "    cubiertos = set(aprobados)\n    return all(os.path.basename(a).lower() in cubiertos for a in codigo)",
+  "texto_nuevo": "    cubiertos = set(aprobados)\n    # El nombre no basta: lo guardado debe ser EXACTAMENTE lo aprobado. Se comprueba por HUELLA.\n    import hashlib\n    huellas = os.path.join(os.path.dirname(ruta), \".huellas_aprobadas.jsonl\")\n    pares = set()\n    try:\n        with open(huellas, encoding=\"utf-8\") as f:\n            for linea in f:\n                linea = linea.strip()\n                if not linea:\n                    continue\n                try:\n                    d = json.loads(linea)\n                except Exception:\n                    continue                          # renglon roto: se salta, no se cae\n                try:\n                    cuando = float(d.get(\"cuando\", 0) or 0)\n                except Exception:\n                    continue\n                if ahora - cuando > 24 * 3600:\n                    continue                          # un permiso de ayer no vale para hoy\n                pares.add((os.path.basename(str(d.get(\"archivo\", \"\"))).lower(),\n                           str(d.get(\"sha\", \"\"))))\n    except Exception:\n        pass                                          # si no se lee, no hay cubiertos\n    for a in codigo:\n        try:\n            r = subprocess.run([\"git\", \"show\", \":\" + a], capture_output=True)\n            if r.returncode != 0:\n                return False                          # si git show falla, ese archivo NO esta cubierto\n            datos = r.stdout.replace(b\"\\r\", b\"\")\n            sha = hashlib.sha256(datos).hexdigest()\n        except Exception:\n            return False                              # si algo revienta, False\n        if (os.path.basename(a).lower(), sha) not in pares:\n            return False\n    return True",
+  "cambio": "Sustituir la ultima linea de _cubierto_por_equipo (el return que solo mira el nombre) por la comprobacion por huella: leer .huellas_aprobadas.jsonl de la misma carpeta, quedarse con los pares (archivo, sha) de las ultimas 24 h, calcular el sha256 de la version preparada de cada archivo con git show :a (quitando \\r) y devolver True solo si todos los pares estan.",
+  "codigo": "    cubiertos = set(aprobados)\n    # El nombre no basta: lo guardado debe ser EXACTAMENTE lo aprobado. Se comprueba por HUELLA.\n    import hashlib\n    huellas = os.path.join(os.path.dirname(ruta), \".huellas_aprobadas.jsonl\")\n    pares = set()\n    try:\n        with open(huellas, encoding=\"utf-8\") as f:\n            for linea in f:\n                linea = linea.strip()\n                if not linea:\n                    continue\n                try:\n                    d = json.loads(linea)\n                except Exception:\n                    continue                          # renglon roto: se salta, no se cae\n                try:\n                    cuando = float(d.get(\"cuando\", 0) or 0)\n                except Exception:\n                    continue\n                if ahora - cuando > 24 * 3600:\n                    continue                          # un permiso de ayer no vale para hoy\n                pares.add((os.path.basename(str(d.get(\"archivo\", \"\"))).lower(),\n                           str(d.get(\"sha\", \"\"))))\n    except Exception:\n        pass                                          # si no se lee, no hay cubiertos\n    for a in codigo:\n        try:\n            r = subprocess.run([\"git\", \"show\", \":\" + a], capture_output=True)\n            if r.returncode != 0:\n                return False                          # si git show falla, ese archivo NO esta cubierto\n            datos = r.stdout.replace(b\"\\r\", b\"\")\n            sha = hashlib.sha256(datos).hexdigest()\n        except Exception:\n            return False                              # si algo revienta, False\n        if (os.path.basename(a).lower(), sha) not in pares:\n            return False\n    return True",
+  "vigia": "vigias/test_vigia_el_guardia_no_se_cuelga.py y vigias/test_vigia_el_guardia_se_acuerda_y_frena.py (revisados en el material); comprobarian que un archivo con nombre aprobado pero contenido distinto ya no se da por cubierto.",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Usa la variable `ahora` sin definirla en el bloque, y el material no la nombra en ninguna parte. El trozo del paquete se corta en la linea 176 (docstring trunco), asi que no se puede confirmar que `ahora` exista mas arriba en la funcion. Si NO existe, el NameError cae dentro del try grande, se traga con 'except Exception: pass', deja `pares` vacio y `_cubierto_por_equipo` devuelve False para TODO: bloqueo total y silencioso de todos los guardados, incluso los legitimos. Debia confirmarlo o definirlo (p.ej. time.time()), no asumirlo.",
+   "El esquema del jsonl se da por sabido: el material solo dice que las filas llevan el par (archivo, sha) 'de las ultimas 24 h' y no da el nombre del campo de tiempo. `d.get(\"cuando\", 0)` es una suposicion: si el archivo usa otro nombre (o ISO en string), float()/get fallan o dan 0, la fila cae fuera de las 24 h y `pares` queda vacio -> bloqueo total silencioso. Ley 1 (nunca asumir): esto exigia PREGUNTA_REQUERIDA, no un campo inventado. Ademas, si el que escribe las huellas calculo el sha con CRLF o con otro normalizado, el `replace(b\"\\r\", b\"\")` solo en el lado que compara descuadra los pares.",
+   "La declaracion 'vigia' se contradice sola: dice que los dos test estan 'revisados en el material' y al mismo tiempo los marca en '_fuera_del_paquete'. Su contenido NO viene en el material, asi que no puede afirmar que 'comprobarian' el nuevo comportamiento ni que no los rompe. El propio material exige 'declara cual de estos revisaste' antes de sellar."
+  ],
+  "riesgo_vecinos": [
+   "Si .huellas_aprobadas.jsonl no existe o su esquema no coincide, el 'except Exception: pass' deja `pares` vacio y el guardia bloquea TODOS los guardados (no solo los a mano). Comportamiento nuevo de alcance total que no esta medido por ninguna vigia del material.",
+   "Las dos vigias que protegen arnes/guardia_de_guardado.py (no_se_cuelga y se_acuerda_y_frena) no estan en el material: no hay forma de garantizar que sigan verdes. Se necesita NECESITO_LEER de ambas antes de sellar.",
+   "Cambiar el criterio de nombre-aprobado a huella-exacta puede dejar en rojo justo los cambios a mano que 'entraron por el hueco': eso es lo pedido, pero hay que confirmar que el flujo del equipo escribe el jsonl con los mismos nombres de campo y el mismo calculo de sha que esta funcion compara."
+  ],
+  "que_falta": [
+   "Confirmar que `ahora`, `import os` (si), `import json` y `import subprocess` ya existen en el cuerpo real de la funcion (el trozo llega cortado en la linea 176).",
+   "El esquema exacto de .huellas_aprobadas.jsonl: nombre del campo de tiempo y como se calcula/guarda el sha. Es una PREGUNTA_REQUERIDA, no algo para suponer.",
+   "Contenido de vigias/test_vigia_el_guardia_no_se_cuelga.py y vigias/test_vigia_el_guardia_se_acuerda_y_frena.py para verificar que la reparacion no los rompe (NECESITO_LEER)."
+  ],
+  "resumen_para_el_jefe": "La reparacion sigue al pie de la letra la comprobacion por huella que pidio Julio, pero apoya en dos suposiciones sin verificar (la variable `ahora` y el campo `cuando` del jsonl) que, si fallan, bloquean en silencio todos los guardados, y no alcanzaron a ver las dos vigias que protegen el archivo; hay que confirmar esas tres cosas antes de dar luz verde."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19075 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -474,3 +474,24 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+def anotar_huella(raiz, archivo):
+    """Se llama SOLO tras aplicar un cambio APROBADO por el equipo.
+
+    El guardia la usa para saber que lo guardado es EXACTAMENTE lo aprobado.
+    """
+    try:
+        import hashlib
+        with open(os.path.join(raiz, archivo), "rb") as f:
+            datos = f.read().replace(b"\r", b"")
+        hex = hashlib.sha256(datos).hexdigest()
+        linea = json.dumps({"cuando": time.time(),
+                            "archivo": os.path.basename(archivo).lower(),
+                            "sha": hex}) + "\n"
+        destino = os.path.join(os.path.dirname(_ruta_veredicto()), ".huellas_aprobadas.jsonl")
+        with open(destino, "a", encoding="utf-8") as f:
+            f.write(linea)
+        return hex
+    except Exception:
+        return None

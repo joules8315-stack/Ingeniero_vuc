@@ -427,6 +427,8 @@ def main():
                 _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)
                 if _ok:
                     print("APLICADO en disco (lo escribio el equipo): %s" % prop.get("archivo"))
+                    # la huella del contenido EXACTO que aprobo el equipo; el guardia de guardado solo deja guardar ese contenido.
+                    _ce.anotar_huella(_raiz or AQUI, prop.get("archivo"))
                     # LO APROBADO SE GUARDA AL MOMENTO (Julio, 2026-09-14): "que se guarde de una vez el trabajo
                     # realizado y aprobado [...] eso si explica la perdida de trabajo". Si el guardia frena, se dice
                     # por que y el trabajo sigue en el disco y archivado.

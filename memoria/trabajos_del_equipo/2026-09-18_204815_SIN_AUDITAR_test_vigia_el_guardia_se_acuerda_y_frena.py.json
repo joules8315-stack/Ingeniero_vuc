@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "La vigia test_dos_aprobaciones_seguidas_cubren_las_dos aprueba por nombre de archivo sin huella de contenido, asi que no detecta que el guardia ahora exige la huella (A-34) ni que un cambio a mano despues de la aprobacion debe quedar fuera.",
+  "archivo": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+  "funcion": "test_dos_aprobaciones_seguidas_cubren_las_dos",
+  "texto_viejo": "def test_dos_aprobaciones_seguidas_cubren_las_dos(monkeypatch, tmp_path):\n    \"\"\"El guardia olvida la primera aprobacion y frenaria trabajo bueno.\"\"\"\n    monkeypatch.setenv(\"INGENIERO_VEREDICTO_TEST\", str(tmp_path / \"veredicto.json\"))\n    monkeypatch.setenv(\"INGENIERO_BALANCE_EQUIPO\", str(tmp_path / \"trabajos.log\"))\n    monkeypatch.delenv(\"JULIO_LO_AUTORIZA\", raising=False)\n    monkeypatch.setattr(candado_equipo, \"_fallos_mecanicos\", lambda tarea, archivos=None: [])\n\n    # Simular la importacion de guardia_de_guardado\n    AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    sys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n    import guardia_de_guardado\n\n    candado_equipo.guardar_veredicto(\"pantalla de clientes\", [\"web/bloque_crm_de_prueba.py\"], \"groq\", \"deepseek\", \"APROBADO\")\n    candado_equipo.guardar_veredicto(\"pantalla de agenda\", [\"web/bloque_agenda_de_prueba.py\"], \"groq\", \"deepseek\", \"APROBADO\")\n\n    assert guardia_de_guardado._cubierto_por_equipo([\"web/bloque_crm_de_prueba.py\", \"web/bloque_agenda_de_prueba.py\"]) is True",
+  "texto_nuevo": "def test_dos_aprobaciones_seguidas_cubren_las_dos(monkeypatch, tmp_path):\n    \"\"\"El guardia olvida la primera aprobacion y frenaria trabajo bueno.\"\"\"\n    import subprocess\n    monkeypatch.setenv(\"INGENIERO_VEREDICTO_TEST\", str(tmp_path / \"veredicto.json\"))\n    monkeypatch.setenv(\"INGENIERO_BALANCE_EQUIPO\", str(tmp_path / \"trabajos.log\"))\n    monkeypatch.delenv(\"JULIO_LO_AUTORIZA\", raising=False)\n    monkeypatch.setattr(candado_equipo, \"_fallos_mecanicos\", lambda tarea, archivos=None: [])\n\n    # Simular la importacion de guardia_de_guardado\n    AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    sys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n    import guardia_de_guardado\n\n    repo = tmp_path / \"repo\"\n    repo.mkdir()\n    subprocess.run([\"git\", \"init\", \"-q\"], cwd=repo)\n    subprocess.run([\"git\", \"config\", \"user.email\", \"t@t\"], cwd=repo)\n    subprocess.run([\"git\", \"config\", \"user.name\", \"t\"], cwd=repo)\n    os.makedirs(repo / \"web\", exist_ok=True)\n    (repo / \"web\" / \"bloque_crm_de_prueba.py\").write_text(\"crm uno\\n\", encoding=\"utf-8\")\n    (repo / \"web\" / \"bloque_agenda_de_prueba.py\").write_text(\"agenda dos\\n\", encoding=\"utf-8\")\n    subprocess.run([\"git\", \"add\", \"-A\"], cwd=repo)\n    monkeypatch.chdir(repo)\n\n    candado_equipo.guardar_veredicto(\"pantalla de clientes\", [\"web/bloque_crm_de_prueba.py\"], \"groq\", \"deepseek\", \"APROBADO\")\n    candado_equipo.anotar_huella(str(repo), \"web/bloque_crm_de_prueba.py\")\n    candado_equipo.guardar_veredicto(\"pantalla de agenda\", [\"web/bloque_agenda_de_prueba.py\"], \"groq\", \"deepseek\", \"APROBADO\")\n    candado_equipo.anotar_huella(str(repo), \"web/bloque_agenda_de_prueba.py\")\n\n    assert guardia_de_guardado._cubierto_por_equipo([\"web/bloque_crm_de_prueba.py\", \"web/bloque_agenda_de_prueba.py\"]) is True\n\n    (repo / \"web\" / \"bloque_crm_de_prueba.py\").write_text(\"crm cambiado a mano\\n\", encoding=\"utf-8\")\n    subprocess.run([\"git\", \"add\", \"-A\"], cwd=repo)\n    assert guardia_de_guardado._cubierto_por_equipo([\"web/bloque_crm_de_prueba.py\", \"web/bloque_agenda_de_prueba.py\"]) is False, 'lo cambiado a mano despues de la aprobacion NO entra (A-34)'",
+  "cambio": "Actualizar la vigia al acuerdo A-34: crear un repo git temporal, escribir los dos archivos de prueba con contenido distinto, hacer git add -A, monkeypatch.chdir(repo), y tras cada guardar_veredicto APROBADO llamar a candado_equipo.anotar_huella(str(repo), <ruta>). Se conserva el nombre de la funcion y las lineas monkeypatch existentes, y se mantiene el assert de que las dos aprobaciones cubren los dos archivos (True). Al final se anade el SABOTAJE: reescribir a mano web/bloque_crm_de_prueba.py, git add -A, y assert de que _cubierto_por_equipo devuelve False con el mensaje 'lo cambiado a mano despues de la aprobacion NO entra (A-34)'.",
+  "codigo": "def test_dos_aprobaciones_seguidas_cubren_las_dos(monkeypatch, tmp_path):\n    \"\"\"El guardia olvida la primera aprobacion y frenaria trabajo bueno.\"\"\"\n    import subprocess\n    monkeypatch.setenv(\"INGENIERO_VEREDICTO_TEST\", str(tmp_path / \"veredicto.json\"))\n    monkeypatch.setenv(\"INGENIERO_BALANCE_EQUIPO\", str(tmp_path / \"trabajos.log\"))\n    monkeypatch.delenv(\"JULIO_LO_AUTORIZA\", raising=False)\n    monkeypatch.setattr(candado_equipo, \"_fallos_mecanicos\", lambda tarea, archivos=None: [])\n\n    # Simular la importacion de guardia_de_guardado\n    AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    sys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n    import guardia_de_guardado\n\n    repo = tmp_path / \"repo\"\n    repo.mkdir()\n    subprocess.run([\"git\", \"init\", \"-q\"], cwd=repo)\n    subprocess.run([\"git\", \"config\", \"user.email\", \"t@t\"], cwd=repo)\n    subprocess.run([\"git\", \"config\", \"user.name\", \"t\"], cwd=repo)\n    os.makedirs(repo / \"web\", exist_ok=True)\n    (repo / \"web\" / \"bloque_crm_de_prueba.py\").write_text(\"crm uno\\n\", encoding=\"utf-8\")\n    (repo / \"web\" / \"bloque_agenda_de_prueba.py\").write_text(\"agenda dos\\n\", encoding=\"utf-8\")\n    subprocess.run([\"git\", \"add\", \"-A\"], cwd=repo)\n    monkeypatch.chdir(repo)\n\n    candado_equipo.guardar_veredicto(\"pantalla de clientes\", [\"web/bloque_crm_de_prueba.py\"], \"groq\", \"deepseek\", \"APROBADO\")\n    candado_equipo.anotar_huella(str(repo), \"web/bloque_crm_de_prueba.py\")\n    candado_equipo.guardar_veredicto(\"pantalla de agenda\", [\"web/bloque_agenda_de_prueba.py\"], \"groq\", \"deepseek\", \"APROBADO\")\n    candado_equipo.anotar_huella(str(repo), \"web/bloque_agenda_de_prueba.py\")\n\n    assert guardia_de_guardado._cubierto_por_equipo([\"web/bloque_crm_de_prueba.py\", \"web/bloque_agenda_de_prueba.py\"]) is True\n\n    (repo / \"web\" / \"bloque_crm_de_prueba.py\").write_text(\"crm cambiado a mano\\n\", encoding=\"utf-8\")\n    subprocess.run([\"git\", \"add\", \"-A\"], cwd=repo)\n    assert guardia_de_guardado._cubierto_por_equipo([\"web/bloque_crm_de_prueba.py\", \"web/bloque_agenda_de_prueba.py\"]) is False, 'lo cambiado a mano despues de la aprobacion NO entra (A-34)'",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py::test_dos_aprobaciones_seguidas_cubren_las_dos",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/guardia_de_guardado.py"
+  ],
+  "preguntas": [
+   "El material no trae el texto de candado_equipo.anotar_huella: se asume que existe con esa firma (raiz, ruta) porque el encargo la manda llamar; si no existe o su firma es otra, hay que decirlo antes de tocar la vigia."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "bloque_agenda_de_prueba.py",
+   "candado_equipo.py",
+   "guardia_de_guardado.py",
+   "veredicto.js"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "resumen_para_el_jefe": "el revisor pedido (bigpickle) no estaba; no se llama a otro cerebro en su lugar"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19055 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "el revisor pedido (bigpickle) no estaba: queda SIN_AUDITAR y archivado para su revision",
+  "vueltas_dadas: 1"
+ ]
+}

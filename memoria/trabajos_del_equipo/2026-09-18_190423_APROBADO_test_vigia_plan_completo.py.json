@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La vigía lee el plan jubilado PLAN_SIGUIENTE_IA.md en la raíz de DMM, pero por el acuerdo A-33 ese archivo se movió a C:\\Ingeniero_VUC\\PLAN_PITS\\reciclado\\dmm\\PLAN_SIGUIENTE_IA.md.",
+  "archivo": "vigias/test_vigia_plan_completo.py",
+  "funcion": "_plan",
+  "texto_viejo": "def _plan():\n    return open(os.path.join(_RAIZ, \"PLAN_SIGUIENTE_IA.md\"), encoding=\"utf-8\").read()",
+  "texto_nuevo": "def _plan():\n    # A-33 (2026-09-18): el plan jubilado se movió fuera de DMM a PLAN_PITS/reciclado/dmm.\n    return open(r\"C:\\Ingeniero_VUC\\PLAN_PITS\\reciclado\\dmm\\PLAN_SIGUIENTE_IA.md\", encoding=\"utf-8\").read()",
+  "cambio": "Sustituir la lectura del plan en _plan() para que abra la ruta absoluta nueva del archivo movido por A-33, con un comentario de una línea que cite A-33. El candado y el resto de la vigía se conservan.",
+  "codigo": "def _plan():\n    # A-33 (2026-09-18): el plan jubilado se movió fuera de DMM a PLAN_PITS/reciclado/dmm.\n    return open(r\"C:\\Ingeniero_VUC\\PLAN_PITS\\reciclado\\dmm\\PLAN_SIGUIENTE_IA.md\", encoding=\"utf-8\").read()",
+  "vigia": "vigias/test_vigia_plan_completo.py (las cuatro pruebas: test_cada_tarea_es_un_mandato_prescriptivo, test_manda_operar_como_claude_y_sin_opciones, test_exige_el_equipo_economico, test_prohibe_push_sin_autorizacion) deben seguir en verde leyendo el archivo desde su nueva ruta.",
+  "puede_danar": [
+   "vigias/test_vigia_plan_completo.py",
+   "PLAN_SIGUIENTE_IA.md (jubilado, movido a PLAN_PITS/reciclado/dmm)"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Verificacion final: correr la vigia (y confirmar con los ojos que el archivo existe en C:\\Ingeniero_VUC\\PLAN_PITS\\reciclado\\dmm\\PLAN_SIGUIENTE_IA.md) antes de sellar."
+  ],
+  "resumen_para_el_jefe": "El obrero hizo exactamente lo que pedia el paquete A-33: solo cambio de donde lee _plan(), abriendo la ruta absoluta nueva en cadena r'...' con comentario que cita A-33, sin inventar nada, sin tocar vecinos y sin cambiar mas de lo necesario."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

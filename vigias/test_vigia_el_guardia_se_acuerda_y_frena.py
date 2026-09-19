@@ -36,6 +36,20 @@ import guardia_de_guardado
 # 1. test_dos_aprobaciones_seguidas_cubren_las_dos   (ROJA)
 def test_dos_aprobaciones_seguidas_cubren_las_dos(monkeypatch, tmp_path):
     """El guardia olvida la primera aprobacion y frenaria trabajo bueno."""
+    import subprocess
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q"], cwd=repo)
+    subprocess.run(["git", "config", "user.email", "t@t"], cwd=repo)
+    subprocess.run(["git", "config", "user.name", "t"], cwd=repo)
+    os.makedirs(repo / "web", exist_ok=True)
+    with open(repo / "web" / "bloque_crm_de_prueba.py", "w") as f:
+        f.write("# crm de prueba\n")
+    with open(repo / "web" / "bloque_agenda_de_prueba.py", "w") as f:
+        f.write("# agenda de prueba\n")
+    subprocess.run(["git", "add", "-A"], cwd=repo)
+    monkeypatch.chdir(repo)
+
     monkeypatch.setenv("INGENIERO_VEREDICTO_TEST", str(tmp_path / "veredicto.json"))
     monkeypatch.setenv("INGENIERO_BALANCE_EQUIPO", str(tmp_path / "trabajos.log"))
     monkeypatch.delenv("JULIO_LO_AUTORIZA", raising=False)
@@ -47,9 +61,17 @@ def test_dos_aprobaciones_seguidas_cubren_las_dos(monkeypatch, tmp_path):
     import guardia_de_guardado
 
     candado_equipo.guardar_veredicto("pantalla de clientes", ["web/bloque_crm_de_prueba.py"], "groq", "deepseek", "APROBADO")
+    candado_equipo.anotar_huella(str(repo), "web/bloque_crm_de_prueba.py")
     candado_equipo.guardar_veredicto("pantalla de agenda", ["web/bloque_agenda_de_prueba.py"], "groq", "deepseek", "APROBADO")
+    candado_equipo.anotar_huella(str(repo), "web/bloque_agenda_de_prueba.py")
 
     assert guardia_de_guardado._cubierto_por_equipo(["web/bloque_crm_de_prueba.py", "web/bloque_agenda_de_prueba.py"]) is True
+
+    # SABOTAJE: lo cambiado a mano despues de la aprobacion NO entra (A-34)
+    with open(repo / "web" / "bloque_crm_de_prueba.py", "w") as f:
+        f.write("# crm de prueba CAMBIADO A MANO\n")
+    subprocess.run(["git", "add", "-A"], cwd=repo)
+    assert guardia_de_guardado._cubierto_por_equipo(["web/bloque_crm_de_prueba.py", "web/bloque_agenda_de_prueba.py"]) is False, 'lo cambiado a mano despues de la aprobacion NO entra (A-34)'
 
 
 # 2. test_guardar_el_veredicto_lo_apunta_en_el_cuaderno   (ROJA)
@@ -156,6 +178,17 @@ def test_quien_se_reviso_a_si_mismo_no_abre(monkeypatch, tmp_path):
 # 6. test_renglones_rotos_no_tumban_al_guardia
 def test_renglones_rotos_no_tumban_al_guardia(monkeypatch, tmp_path):
     """Renglones rotos o vacios en el cuaderno no deben lanzar errores."""
+    import subprocess
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q"], cwd=repo)
+    subprocess.run(["git", "config", "user.email", "t@t"], cwd=repo)
+    subprocess.run(["git", "config", "user.name", "t"], cwd=repo)
+    with open(repo / "bueno_de_prueba.py", "w") as f:
+        f.write("# bueno de prueba\n")
+    subprocess.run(["git", "add", "-A"], cwd=repo)
+    monkeypatch.chdir(repo)
+
     veredicto_file = tmp_path / ".veredictos_recientes.jsonl"
     monkeypatch.setenv("INGENIERO_VEREDICTO_TEST", str(tmp_path / "veredicto.json"))
     monkeypatch.setenv("INGENIERO_BALANCE_EQUIPO", str(tmp_path / "trabajos.log"))
@@ -171,6 +204,14 @@ def test_renglones_rotos_no_tumban_al_guardia(monkeypatch, tmp_path):
             "veredicto": "APROBADO",
             "reviso_a_si_mismo": False
         }) + '\n')
+
+    huellas_file = tmp_path / ".huellas_aprobadas.jsonl"
+    with open(huellas_file, 'w') as f:
+        f.write("esto no es json\n")
+        f.write("\n")
+
+    candado_equipo.guardar_veredicto("tarea", ["bueno_de_prueba.py"], "obrero", "auditor", "APROBADO")
+    candado_equipo.anotar_huella(str(repo), "bueno_de_prueba.py")
 
     # Simular la importacion de guardia_de_guardado
     AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -223,6 +264,18 @@ def test_el_guardado_a_solas_se_FRENA(monkeypatch, tmp_path):
 # 9. test_lo_aprobado_por_el_equipo_si_se_guarda
 def test_lo_aprobado_por_el_equipo_si_se_guarda(monkeypatch, tmp_path):
     """Si el equipo aprobo, el guardado debe permitirse."""
+    import subprocess
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q"], cwd=repo)
+    subprocess.run(["git", "config", "user.email", "t@t"], cwd=repo)
+    subprocess.run(["git", "config", "user.name", "t"], cwd=repo)
+    os.makedirs(repo / "web", exist_ok=True)
+    with open(repo / "web" / "a_solas_de_prueba.py", "w") as f:
+        f.write("# a solas de prueba\n")
+    subprocess.run(["git", "add", "-A"], cwd=repo)
+    monkeypatch.chdir(repo)
+
     monkeypatch.setenv("INGENIERO_VEREDICTO_TEST", str(tmp_path / "veredicto.json"))
     monkeypatch.setenv("INGENIERO_BALANCE_EQUIPO", str(tmp_path / "trabajos.log"))
     monkeypatch.delenv("JULIO_LO_AUTORIZA", raising=False)
@@ -235,6 +288,7 @@ def test_lo_aprobado_por_el_equipo_si_se_guarda(monkeypatch, tmp_path):
 
     # Simular el guardado de un veredicto aprobado
     candado_equipo.guardar_veredicto("tarea", ["web/a_solas_de_prueba.py"], "groq", "deepseek", "APROBADO")
+    candado_equipo.anotar_huella(str(repo), "web/a_solas_de_prueba.py")
 
     # Monkeypatch para simular el comportamiento de las funciones internas de guardia_de_guardado
     monkeypatch.setattr(guardia_de_guardado, "_lo_que_se_va_a_guardar", lambda raiz: ["web/a_solas_de_prueba.py"])

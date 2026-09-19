@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba test_lo_aprobado_por_el_equipo_si_se_guarda no crea un repo git ni anota la huella del archivo aprobado, por lo que el guardia no reconoce la aprobacion y main() devuelve 1 en vez de 0.",
+  "archivo": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+  "funcion": "test_lo_aprobado_por_el_equipo_si_se_guarda",
+  "texto_viejo": "def test_lo_aprobado_por_el_equipo_si_se_guarda(monkeypatch, tmp_path):\n    \"\"\"Si el equipo aprobo, el guardado debe permitirse.\"\"\"\n    monkeypatch.setenv(\"INGENIERO_VEREDICTO_TEST\", str(tmp_path / \"veredicto.json\"))\n    monkeypatch.setenv(\"INGENIERO_BALANCE_EQUIPO\", str(tmp_path / \"trabajos.log\"))\n    monkeypatch.delenv(\"JULIO_LO_AUTORIZA\", raising=False)\n    monkeypatch.setattr(candado_equipo, \"_fallos_mecanicos\", lambda tarea, archivos=None: [])\n\n    # Simular la importacion de guardia_de_guardado\n    AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    sys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n    import guardia_de_guardado\n\n    # Simular el guardado de un veredicto aprobado\n    candado_equipo.guardar_veredicto(\"tarea\", [\"web/a_solas_de_prueba.py\"], \"groq\", \"deepseek\", \"APROBADO\")\n\n    # Monkeypatch para simular el comportamiento de las funciones internas de guardia_de_guardado\n    monkeypatch.setattr(guardia_de_guardado, \"_lo_que_se_va_a_guardar\", lambda raiz: [\"web/a_solas_de_prueba.py\"])\n    monkeypatch.setattr(guardia_de_guardado, \"_hay_llaves\", lambda raiz, archivos: [])\n    monkeypatch.setattr(guardia_de_guardado, \"_vigias\", lambda raiz: (True, \"todo verde de mentira\"))\n    monkeypatch.setattr(guardia_de_guardado, \"_apuntar\", lambda raiz, texto: None)\n    monkeypatch.setattr(guardia_de_guardado, \"_apuntar_balance\", lambda raiz, tipo, archivos: None)\n\n    # main() tiene que devolver 0 (permite guardar)\n    assert guardia_de_guardado.main() == 0",
+  "texto_nuevo": "def test_lo_aprobado_por_el_equipo_si_se_guarda(monkeypatch, tmp_path):\n    \"\"\"Si el equipo aprobo, el guardado debe permitirse.\"\"\"\n    import subprocess\n    repo = tmp_path / \"repo\"\n    repo.mkdir()\n    subprocess.run([\"git\", \"init\", \"-q\"], cwd=repo)\n    subprocess.run([\"git\", \"config\", \"user.email\", \"t@t\"], cwd=repo)\n    subprocess.run([\"git\", \"config\", \"user.name\", \"t\"], cwd=repo)\n    os.makedirs(repo / \"web\", exist_ok=True)\n    with open(repo / \"web\" / \"a_solas_de_prueba.py\", \"w\") as f:\n        f.write(\"# a solas de prueba\\n\")\n    subprocess.run([\"git\", \"add\", \"-A\"], cwd=repo)\n    monkeypatch.chdir(repo)\n\n    monkeypatch.setenv(\"INGENIERO_VEREDICTO_TEST\", str(tmp_path / \"veredicto.json\"))\n    monkeypatch.setenv(\"INGENIERO_BALANCE_EQUIPO\", str(tmp_path / \"trabajos.log\"))\n    monkeypatch.delenv(\"JULIO_LO_AUTORIZA\", raising=False)\n    monkeypatch.setattr(candado_equipo, \"_fallos_mecanicos\", lambda tarea, archivos=None: [])\n\n    # Simular la importacion de guardia_de_guardado\n    AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    sys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n    import guardia_de_guardado\n\n    # Simular el guardado de un veredicto aprobado\n    candado_equipo.guardar_veredicto(\"tarea\", [\"web/a_solas_de_prueba.py\"], \"groq\", \"deepseek\", \"APROBADO\")\n    candado_equipo.anotar_huella(str(repo), \"web/a_solas_de_prueba.py\")\n\n    # Monkeypatch para simular el comportamiento de las funciones internas de guardia_de_guardado\n    monkeypatch.setattr(guardia_de_guardado, \"_lo_que_se_va_a_guardar\", lambda raiz: [\"web/a_solas_de_prueba.py\"])\n    monkeypatch.setattr(guardia_de_guardado, \"_hay_llaves\", lambda raiz, archivos: [])\n    monkeypatch.setattr(guardia_de_guardado, \"_vigias\", lambda raiz: (True, \"todo verde de mentira\"))\n    monkeypatch.setattr(guardia_de_guardado, \"_apuntar\", lambda raiz, texto: None)\n    monkeypatch.setattr(guardia_de_guardado, \"_apuntar_balance\", lambda raiz, tipo, archivos: None)\n\n    # main() tiene que devolver 0 (permite guardar)\n    assert guardia_de_guardado.main() == 0",
+  "cambio": "Anadir al inicio de la funcion la receta comun A-34: importar subprocess, crear repo git temporal, configurar user.email y user.name, crear web/a_solas_de_prueba.py con contenido, git add -A y monkeypatch.chdir(repo). Y tras guardar_veredicto APROBADO, llamar a candado_equipo.anotar_huella(str(repo), \"web/a_solas_de_prueba.py\"). Se conservan el nombre de la funcion, los monkeypatch existentes y el assert main() == 0.",
+  "codigo": "    import subprocess\n    repo = tmp_path / \"repo\"\n    repo.mkdir()\n    subprocess.run([\"git\", \"init\", \"-q\"], cwd=repo)\n    subprocess.run([\"git\", \"config\", \"user.email\", \"t@t\"], cwd=repo)\n    subprocess.run([\"git\", \"config\", \"user.name\", \"t\"], cwd=repo)\n    os.makedirs(repo / \"web\", exist_ok=True)\n    with open(repo / \"web\" / \"a_solas_de_prueba.py\", \"w\") as f:\n        f.write(\"# a solas de prueba\\n\")\n    subprocess.run([\"git\", \"add\", \"-A\"], cwd=repo)\n    monkeypatch.chdir(repo)\n\n    ...\n\n    candado_equipo.guardar_veredicto(\"tarea\", [\"web/a_solas_de_prueba.py\"], \"groq\", \"deepseek\", \"APROBADO\")\n    candado_equipo.anotar_huella(str(repo), \"web/a_solas_de_prueba.py\")",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py::test_lo_aprobado_por_el_equipo_si_se_guarda debe pasar en verde (main() == 0) y seguir midiendo la huella: si se quita la llamada a anotar_huella, debe volver a rojo.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/guardia_de_guardado.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "guardia_de_guardado.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Correr la vigia en el entorno real para confirmar que pasa y que sin anotar_huella vuelve a rojo (Ley 7: prueba interna antes de avisar a Julio)"
+  ],
+  "resumen_para_el_jefe": "La reparacion aplica al pie de la letra la receta A-34 del paquete: crea el repo git, escribe web/a_solas_de_prueba.py, y tras guardar_veredicto APROBADO anota la huella con candado_equipo.anotar_huella, que el propio material verifica que existe; no toca a ningun vecino y solo falta que el equipo la corra de verdad."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19059 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

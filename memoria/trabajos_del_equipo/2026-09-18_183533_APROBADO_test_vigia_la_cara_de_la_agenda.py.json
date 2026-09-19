@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La vigia usa una fecha fija ya pasada (2026-09-14) y por eso falla con 'no se reserva en el pasado'.",
+  "archivo": "vigias/test_vigia_la_cara_de_la_agenda.py",
+  "funcion": "cabecera del modulo (constantes EMPRESA/FECHA)",
+  "texto_viejo": "# 2026-09-14 es lunes de verdad (dia 0).\nFECHA = \"2026-09-14\"",
+  "texto_nuevo": "import datetime as _dt\n\n# FECHA es el proximo lunes posterior a hoy: el horario depende del dia de la\n# semana y no se reserva en el pasado.\n_hoy = _dt.date.today()\nFECHA = (_hoy + _dt.timedelta(days=(7 - _hoy.weekday()) or 7)).isoformat()",
+  "cambio": "Sustituir el comentario y la linea de FECHA fija por el import de datetime, el comentario explicativo y el calculo de FECHA como proximo lunes posterior a hoy en formato isoformat().",
+  "codigo": "import datetime as _dt\n\n# FECHA es el proximo lunes posterior a hoy: el horario depende del dia de la\n# semana y no se reserva en el pasado.\n_hoy = _dt.date.today()\nFECHA = (_hoy + _dt.timedelta(days=(7 - _hoy.weekday()) or 7)).isoformat()",
+  "vigia": "vigias/test_vigia_la_cara_de_la_agenda.py ejecutada en cualquier dia de la semana: debe seguir verde y no fallar con 'no se reserva en el pasado'.",
+  "puede_danar": [
+   "cuerpo/citas.py",
+   "vigias/test_vigia_citas.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_citas.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El cambio solo toca la constante FECHA de vigias/test_vigia_la_cara_de_la_agenda.py; cuerpo/citas.py y vigias/test_vigia_citas.py no se modifican ni se ven afectadas porque la vigia aislada usa EMPRESA unica (empresa_de_prueba_agenda), asi que el almacen no choca con la otra prueba."
+  ],
+  "que_falta": [
+   "Correr la vigia real despues del cambio (python -m pytest -q vigias/test_vigia_la_cara_de_la_agenda.py) y la pareja vigias/test_vigia_citas.py para confirmar verde",
+   "Que Julio la vea pasar con sus ojos para sellar"
+  ],
+  "resumen_para_el_jefe": "El cambio reemplaza la fecha fija pasada 2026-09-14 por el proximo lunes posterior a hoy (calculado con datetime, tal cual pide el paquete), nunca queda en el pasado, no se inventa nada y no toca a los vecinos: se puede aprobar."
+ },
+ "avisos": [
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La vigia usa una FECHA fija (2026-09-14) que ya paso, por lo que la prueba sale roja con 'no se reserva en el pasado'; hay que calcular el proximo lunes estrictamente posterior a hoy.",
+  "archivo": "vigias/test_vigia_la_cara_de_la_agenda.py",
+  "funcion": "cabecera del modulo (constantes FECHA y comentario de la linea 16)",
+  "texto_viejo": "FECHA = \"2026-09-14\"",
+  "texto_nuevo": "FECHA = (datetime.date.today() + datetime.timedelta(days=(7 - datetime.date.today().weekday()) % 7 or 7)).isoformat()",
+  "cambio": "Sustituir la constante FECHA fija por el proximo lunes estrictamente posterior a hoy, en texto AAAA-MM-DD, calculado con datetime.date.today(); importar datetime en el archivo si no esta importado; actualizar el comentario de la linea 16.",
+  "codigo": "import datetime\n\n# La prueba necesita un LUNES: el horario depende del dia de la semana.\n# FECHA es el proximo lunes estrictamente posterior a hoy (AAAA-MM-DD).\nFECHA = (\n    datetime.date.today()\n    + datetime.timedelta(days=(7 - datetime.date.today().weekday()) % 7 or 7)\n).isoformat()",
+  "vigia": "vigias/test_vigia_la_cara_de_la_agenda.py debe pasar en verde cualquier dia de la semana, sin depender de una fecha fija.",
+  "puede_danar": [
+   "vigias/test_vigia_medidor.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_medidor.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "test_vigia_medidor.py no fue leido (la propuesta lo declara _fuera_del_paquete), pero el cambio toca solo la constante FECHA local del propio archivo de prueba; no pasa por cuerpo/medidor.py ni por citas, asi que el riesgo es nulo."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Reemplaza la fecha fija vencida por el proximo lunes calculado con datetime (formula correcta para cualquier dia de la semana, siempre futuro y en formato AAAA-MM-DD), importa datetime como pide el material y actualiza el comentario: no inventa nada, arregla la bomba de calendario y no toca vecinos."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

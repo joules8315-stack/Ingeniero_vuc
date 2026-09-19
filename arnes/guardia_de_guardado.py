@@ -173,7 +173,37 @@ def _cubierto_por_equipo(archivos):
     if not aprobados:
         return False
     cubiertos = set(aprobados)
-    return all(os.path.basename(a).lower() in cubiertos for a in codigo)
+    try:
+        import hashlib
+        pares = set()
+        huellas = os.path.join(os.path.dirname(ruta), ".huellas_aprobadas.jsonl")
+        with open(huellas, encoding="utf-8") as f:
+            for linea in f:
+                linea = linea.strip()
+                if not linea:
+                    continue
+                try:
+                    d = json.loads(linea)
+                except Exception:
+                    continue
+                try:
+                    cuando = float(d.get("cuando", 0) or 0)
+                except Exception:
+                    continue
+                if ahora - cuando > 24 * 3600:
+                    continue
+                pares.add((str(d.get("archivo", "")).lower(), str(d.get("sha", ""))))
+        for a in codigo:
+            r = subprocess.run(["git", "show", ":" + a], capture_output=True)
+            if r.returncode != 0:
+                return False
+            contenido = r.stdout.replace(b"\r", b"")
+            hexa = hashlib.sha256(contenido).hexdigest()
+            if (os.path.basename(a).lower(), hexa) not in pares:
+                return False
+        return True
+    except Exception:
+        return False
 
 
 def se_puede_guardar_sin_equipo(cubierto, llave_de_julio):

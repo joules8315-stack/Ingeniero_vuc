@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la llamada a _ce.anotar_huella justo despues del print('APLICADO en disco...') y antes de guardar_en_la_historia, para dejar la huella del contenido exacto aprobado por el equipo.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "                if _ok:\n                    print(\"APLICADO en disco (lo escribio el equipo): %s\" % prop.get(\"archivo\"))\n                    # LO APROBADO SE GUARDA AL MOMENTO (Julio, 2026-09-14): \"que se guarde de una vez el trabajo",
+  "texto_nuevo": "                if _ok:\n                    print(\"APLICADO en disco (lo escribio el equipo): %s\" % prop.get(\"archivo\"))\n                    # la huella del contenido EXACTO que aprobo el equipo; el guardia de guardado solo deja guardar ese contenido.\n                    _ce.anotar_huella(_raiz or AQUI, prop.get(\"archivo\"))\n                    # LO APROBADO SE GUARDA AL MOMENTO (Julio, 2026-09-14): \"que se guarde de una vez el trabajo",
+  "cambio": "Insertar una llamada a _ce.anotar_huella(_raiz or AQUI, prop.get(\"archivo\")) con un comentario de una linea, con la misma sangria, justo despues del print('APLICADO en disco...') y antes de _ce.guardar_en_la_historia.",
+  "codigo": "                    # la huella del contenido EXACTO que aprobo el equipo; el guardia de guardado solo deja guardar ese contenido.\n                    _ce.anotar_huella(_raiz or AQUI, prop.get(\"archivo\"))",
+  "vigia": "vigias/test_vigia_siempre_con_equipo.py (comprueba que no se escribe codigo sin veredicto del equipo) y vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py (vigila desde ingeniero.py); ademas, que el guardia de guardado solo deje guardar el contenido con huella anotada.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/asignador.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "via_canonica.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion inserta la llamada a _ce.anotar_huella(_raiz or AQUI, prop.get('archivo')) con su comentario exactamente entre el print('APLICADO en disco...') y guardar_en_la_historia, tal cual pide A-34, usando solo simbolos (_ce, _raiz, AQUI, anotar_huella) que ya existen en el material; un solo archivo, un solo cambio, nada inventado ni de mas."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

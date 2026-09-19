@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion anotar_huella(raiz, archivo) al final de arnes/candado_equipo.py, que registre la huella sha256 del contenido aprobado en .huellas_aprobadas.jsonl.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "anotar_huella (nueva, al final del archivo, despues del bloque if __name__ == \"__main__\")",
+  "texto_viejo": "if __name__ == \"__main__\":\n    sys.exit(main())",
+  "texto_nuevo": "if __name__ == \"__main__\":\n    sys.exit(main())\n\n\ndef anotar_huella(raiz, archivo):\n    \"\"\"La llama ingeniero.py SOLO despues de aplicar un cambio APROBADO por el equipo.\n\n    El guardia de guardado la usa para saber que el contenido guardado es EXACTAMENTE\n    el aprobado. Devuelve el hex del sha256, o None si algo falla.\n    \"\"\"\n    try:\n        import hashlib\n        with open(os.path.join(raiz, archivo), \"rb\") as f:\n            datos = f.read().replace(b\"\\r\", b\"\")\n        hex_ = hashlib.sha256(datos).hexdigest()\n        linea = json.dumps({\n            \"cuando\": time.time(),\n            \"archivo\": os.path.basename(archivo).lower(),\n            \"sha\": hex_,\n        }) + \"\\n\"\n        destino = os.path.join(os.path.dirname(_ruta_veredicto()), \".huellas_aprobadas.jsonl\")\n        with open(destino, \"a\", encoding=\"utf-8\") as f:\n            f.write(linea)\n        return hex_\n    except Exception:\n        return None",
+  "cambio": "Agregar al final del archivo, despues del bloque if __name__ == \"__main__\", la funcion nueva anotar_huella(raiz, archivo) con el comportamiento descrito.",
+  "codigo": "def anotar_huella(raiz, archivo):\n    \"\"\"La llama ingeniero.py SOLO despues de aplicar un cambio APROBADO por el equipo.\n\n    El guardia de guardado la usa para saber que el contenido guardado es EXACTAMENTE\n    el aprobado. Devuelve el hex del sha256, o None si algo falla.\n    \"\"\"\n    try:\n        import hashlib\n        with open(os.path.join(raiz, archivo), \"rb\") as f:\n            datos = f.read().replace(b\"\\r\", b\"\")\n        hex_ = hashlib.sha256(datos).hexdigest()\n        linea = json.dumps({\n            \"cuando\": time.time(),\n            \"archivo\": os.path.basename(archivo).lower(),\n            \"sha\": hex_,\n        }) + \"\\n\"\n        destino = os.path.join(os.path.dirname(_ruta_veredicto()), \".huellas_aprobadas.jsonl\")\n        with open(destino, \"a\", encoding=\"utf-8\") as f:\n            f.write(linea)\n        return hex_\n    except Exception:\n        return None",
+  "vigia": "Un test que llame anotar_huella con un archivo de prueba, compruebe que devuelve el sha256 hex del contenido sin \\r, y que se agrego una linea JSON con cuando/archivo/sha al .huellas_aprobadas.jsonl en el directorio de _ruta_veredicto(); y que con un archivo inexistente devuelve None sin lanzar.",
+  "puede_danar": [
+   "ingeniero.py",
+   "arnes/candado_equipo.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/conftest.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "conftest.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El obrero agrego exactamente la funcion anotar_huella que el encargo pedia, al final del archivo, usando solo lo que ya existe (_ruta_veredicto, imports json/os/time, hashlib dentro de la funcion) y el archivo .huellas_aprobadas.jsonl que el encargo manda crear; la unica diferencia es llamar a la variable 'hex_' en vez de 'hex', que es forma, no fondo, y el texto a tocar si aparece en el material, asi que no hay nada que rechazar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20102 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
