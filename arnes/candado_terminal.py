@@ -58,9 +58,9 @@ def es_una_fotocopia(texto):
     NUNCA lanza: si no se puede mirar, se dice que NO es fotocopia y no se estorba a nadie.
     """
     try:
-        t = (texto or "").upper()
-        viejo = ("TEXTO VIEJO" in t) or ("TEXTO_VIEJO" in t)
-        nuevo = ("TEXTO NUEVO" in t) or ("TEXTO_NUEVO" in t)
+        t = texto or ""
+        viejo = bool(re.search(r'^\s*TEXTO[ _]VIEJO', t, re.M))
+        nuevo = bool(re.search(r'^\s*TEXTO[ _]NUEVO', t, re.M))
         return bool(viejo and nuevo)
     except Exception:
         return False
