@@ -1028,9 +1028,14 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
         # y el gratis cortaba la respuesta a la mitad. El filtro le deja la ley, los trozos del
         # archivo que la tarea nombra (si lo nombra) y quien puede danar.
         _archivo_tarea = None
-        _m = re.search(r"[\w./\\]*(?:\.py|\.md)\b", str(tarea))
-        if _m:
-            _archivo_tarea = _m.group(0).strip()
+        _encontrados = re.findall(r"[\w./\\]*(?:\.py|\.md)\b", str(tarea))
+        _vistos = []
+        for _n in _encontrados:
+            _n = _n.strip()
+            if _n and _n not in _vistos:
+                _vistos.append(_n)
+        if _vistos:
+            _archivo_tarea = _vistos
         material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,
                                        tope=TOPE_GRATIS - 2690)
         crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,
