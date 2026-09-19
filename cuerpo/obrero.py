@@ -784,6 +784,7 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
     # respuesta vacia NO vale, y un modelo que no existe da error a la vista, no se disimula.
     for quien in turnos:
         try:
+            _t0 = time.time()
             # UNA SOLA PUERTA para hablar con los cerebros: `_pedirle_a`.
             # Antes esto era una copia de aquella logica, y las copias se desincronizan: la ley de
             # privacidad de Julio se engancho arriba y por AQUI seguian saliendo los datos sin
@@ -791,11 +792,11 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
             txt = _con_tope(lambda: _pedirle_a(quien), max(tope, cuotas.cuanto_esperarle(quien)))
             if not (txt or "").strip():
                 cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,
-                                 resultado=cuaderno.VACIO, crudo="")
+                                 resultado=cuaderno.VACIO, crudo="", segundos=time.time() - _t0)
                 raise ValueError("contesto vacio")
             cuotas.apuntar_uso(quien, ok=True, tamano=len(prompt_nube))
             cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,
-                             resultado=cuaderno.OK, crudo=(txt or "")[:120])
+                             resultado=cuaderno.OK, crudo=(txt or "")[:120], segundos=time.time() - _t0)
             return txt, quien, avisos
         except TimeoutError as e:
             cuotas.apuntar_uso(quien, ok=False)
@@ -810,7 +811,7 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
                 avisos.append(f"{cuotas.APODO[quien]} se agoto -> pasa el turno")
             elif cuotas.es_no_cupo(msg):
                 cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,
-                                 resultado=cuaderno.NO_CUPO, crudo=msg[:120])
+                                 resultado=cuaderno.NO_CUPO, crudo=msg[:120], segundos=time.time() - _t0)
                 # NO LE CABE (CONTRATO_EQUIPO_QUE_AGUANTA, 2026-08-24). Mandarle a dormir no
                 # sirve de nada: no se va a hacer mas grande. Se le BAJA EL TECHO para no
                 # volver a pedirle algo de este tamano.
@@ -822,7 +823,7 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
                               f"-> se le baja el techo y no se le vuelve a pedir de este tamano")
             else:
                 cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,
-                                 resultado=cuaderno.ERROR, crudo=msg[:120])
+                                 resultado=cuaderno.ERROR, crudo=msg[:120], segundos=time.time() - _t0)
                 avisos.append(f"{cuotas.APODO[quien]} fallo (no es cuota): {msg[:90]}")
     return _ultimo_recurso(avisos)          # ningun gratis pudo: ahora si, el de pago
 
