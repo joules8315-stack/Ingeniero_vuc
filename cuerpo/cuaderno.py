@@ -50,6 +50,9 @@ def apuntar(quien, tamano=0, vuelta=0, clase="", resultado=ERROR, crudo="", segu
         }
         if segundos is not None:
             fila["segundos"] = round(float(segundos), 1)
+        etiqueta = (os.environ.get("INGENIERO_ETIQUETA") or "").strip()
+        if etiqueta:
+            fila["etiqueta"] = etiqueta[:80]
         ruta = _ruta()
         os.makedirs(os.path.dirname(ruta), exist_ok=True)
         lineas = []
