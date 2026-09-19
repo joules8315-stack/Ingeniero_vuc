@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import subprocess
+import sys
 
 
 def lanzar_al_equipo(encargo):
