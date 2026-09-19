@@ -54,3 +54,11 @@
 
 ## Revisión de Big Pickle (2026-09-18)
 RECHAZADO con 3 errores y 3 faltantes, todos con cita del código; corregidos arriba (copista, P2-3, P2-4; semántico, reparto, flujos). Las fallas P2-1..P2-5 se sostienen en el código.
+
+## Estado al cerrar el paso 2 (2026-09-19)
+- **P2-1 HECHO**: si el guardia frena, `candado_equipo.volver_atras` devuelve el archivo a lo guardado, aparta una copia en `memoria/trabajos_sin_revisar/<nombre>.FRENADO_POR_EL_GUARDIA` (nada se pierde, ley 2026-09-14) y lo anota en el libro de fallos. Vigía + sabotaje. Ya se usó de verdad 4 veces esta noche.
+- **P2-3 HECHO (causa real distinta a la anotada)**: al obrero solo le llegaba el PRIMER archivo que nombraba la tarea; ahora le llegan todos. Vigía + sabotaje.
+- **P2-4 HECHO**: función nombrada entera hasta 300 líneas (router) y el material ya no se recorta al tope de las gratis cuando escribe DeepSeek o revisa Big Pickle (techo 40.000 letras). Medido: función de 221 líneas → llega entera. Prueba en vivo: el encargo de A-32 se hizo sin pegar código.
+- **A-32 en código HECHO**: si todas las gratis duermen revisa Big Pickle, nunca Claude (`cuotas.puede_revisar_bigpickle`, `obrero.auditar`, 2 vigías actualizadas, sabotaje).
+- **P2-5 → paso 3**: correr la prueba del vigilante necesita la carpeta del proyecto, que `cruzado.resolver` hoy no recibe; se construye al armar el pit.
+- **P2-2 → paso 3**: nace con el forense.
