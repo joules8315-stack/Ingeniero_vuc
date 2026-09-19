@@ -348,3 +348,34 @@ def test_la_llave_de_julio_con_motivo_abre(monkeypatch, tmp_path):
 
     # main() devuelve 0 (permite guardar)
     assert guardia_de_guardado.main() == 0
+
+
+def test_las_vigias_no_heredan_el_indice_del_commit(monkeypatch, tmp_path):
+    """Las vigias no deben heredar GIT_INDEX_FILE del commit al lanzar pytest."""
+    import types
+    AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.insert(0, os.path.join(AQUI, "arnes"))
+    import guardia_de_guardado
+
+    (tmp_path / "vigias").mkdir()
+    monkeypatch.setenv("GIT_INDEX_FILE", str(tmp_path / "indice_del_commit"))
+
+    capturadas = []
+
+    def falso(*a, **k):
+        capturadas.append(k.get("env"))
+        return types.SimpleNamespace(returncode=0, stdout="1 passed", stderr="")
+
+    import vecinas
+    monkeypatch.setattr(vecinas, "elegir", lambda raiz: None)
+    monkeypatch.setattr(guardia_de_guardado.subprocess, "run", falso)
+
+    try:
+        guardia_de_guardado._vigias(str(tmp_path))
+    except Exception:
+        pass
+
+    assert any(env is not None for env in capturadas)
+    for env in capturadas:
+        if env is not None:
+            assert "GIT_INDEX_FILE" not in env
