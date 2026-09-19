@@ -51,6 +51,51 @@ def validar_etiqueta(orden):
     return problemas
 
 
+def huella_de(orden):
+    """Devuelve los primeros 16 caracteres hex del sha256 de encargo + '\n' + pieza."""
+    encargo = orden.get('encargo', '') if isinstance(orden, dict) else ''
+    pieza = orden.get('pieza', '') if isinstance(orden, dict) else ''
+    if not isinstance(encargo, str):
+        encargo = ''
+    if not isinstance(pieza, str):
+        pieza = ''
+    texto = encargo + '\n' + pieza
+    return hashlib.sha256(texto.encode('utf-8')).hexdigest()[:16]
+
+
+def anotar_huella_fallida(orden, motivo):
+    """Agrega una linea json con la huella, el id, el motivo y la fecha ISO de hoy."""
+    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    ruta = os.path.join(carpeta_proyecto, 'memoria', 'HUELLAS_QUE_FALLARON.jsonl')
+    linea = {
+        'huella': huella_de(orden),
+        'id': orden.get('id', '') if isinstance(orden, dict) else '',
+        'motivo': motivo,
+        'fecha': datetime.date.today().isoformat(),
+    }
+    with open(ruta, 'a', encoding='utf-8') as f:
+        f.write(json.dumps(linea, ensure_ascii=False) + '\n')
+
+
+def ya_fallo(orden):
+    """True si la huella_de(orden) aparece en el archivo; nunca lanza."""
+    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    ruta = os.path.join(carpeta_proyecto, 'memoria', 'HUELLAS_QUE_FALLARON.jsonl')
+    huella = huella_de(orden)
+    try:
+        with open(ruta, encoding='utf-8') as f:
+            for linea in f:
+                try:
+                    dato = json.loads(linea)
+                except json.JSONDecodeError:
+                    continue
+                if isinstance(dato, dict) and dato.get('huella') == huella:
+                    return True
+    except (FileNotFoundError, OSError):
+        return False
+    return False
+
+
 def siguiente_pendiente():
     for orden in leer_lista():
         if orden.get("estado") == "pendiente" and not validar_etiqueta(orden):
