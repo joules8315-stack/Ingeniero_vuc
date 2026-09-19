@@ -353,6 +353,47 @@ def armar_expediente(orden, resultado):
         return (None, dict_expediente)
 
 
+def citas_que_no_existen(citas, raiz):
+    """Devuelve las citas que no sirven: no son dict, estan vacias, se salen del proyecto, el archivo no existe o el texto no aparece literal."""
+    if not isinstance(citas, list):
+        return [{'archivo': '', 'texto': '', 'por_que': 'no hay lista de citas'}]
+    malas = []
+    try:
+        raiz_real = os.path.realpath(raiz)
+    except (OSError, ValueError):
+        raiz_real = ''
+    for cita in citas:
+        if not isinstance(cita, dict):
+            malas.append({'archivo': '', 'texto': '', 'por_que': 'no es una cita'})
+            continue
+        archivo = cita.get('archivo', '')
+        texto = cita.get('texto', '')
+        if not isinstance(archivo, str):
+            archivo = ''
+        if not isinstance(texto, str):
+            texto = ''
+        if texto.strip() == '':
+            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'cita vacia'})
+            continue
+        try:
+            ruta = os.path.realpath(os.path.join(raiz_real, archivo))
+            dentro = os.path.commonpath([raiz_real, ruta]) == raiz_real
+        except (OSError, ValueError):
+            dentro = False
+        if not dentro:
+            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'fuera del proyecto'})
+            continue
+        try:
+            with open(ruta, 'r', encoding='utf-8') as f:
+                contenido = f.read()
+        except OSError:
+            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'el archivo no existe'})
+            continue
+        if texto.replace('\r', '') not in contenido.replace('\r', ''):
+            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'no aparece literal'})
+    return malas
+
+
 def ya_fallo(orden):
     """True si la huella_de(orden) aparece en el archivo; nunca lanza."""
     carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
