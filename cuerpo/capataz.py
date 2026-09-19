@@ -306,6 +306,11 @@ def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):
                 fallos_seguidos = (orden.get('fallos_seguidos') or 0) + 1
                 marcar_estado(orden.get('id'), 'fallida', tipo, fallos_seguidos)
                 aviso('FALLIDA ' + orden_id + ' (' + tipo + ')')
+                try:
+                    informe = forense(orden, resultado)
+                    aviso('FORENSE ' + orden_id + ': ' + str(informe.get('paso')) + ' - ' + str(informe.get('motivo')))
+                except Exception as e:
+                    aviso('FORENSE ' + orden_id + ' no pudo: ' + str(e)[:200])
                 pieza = orden.get('pieza')
                 clave = (pieza, tipo)
                 fallos_por_pieza_tipo[clave] = fallos_por_pieza_tipo.get(clave, 0) + 1
