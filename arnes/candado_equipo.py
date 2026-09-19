@@ -335,8 +335,12 @@ def volver_atras(raiz, rutas, motivo):
             try:
                 r = subprocess.run(["git", "cat-file", "-e", "HEAD:" + str(ruta)], timeout=60, **comun)
                 if r.returncode == 0:
+                    import shutil
+                    destino_dir = os.path.join(str(raiz), 'memoria', 'trabajos_sin_revisar')
+                    os.makedirs(destino_dir, exist_ok=True)
+                    shutil.copy2(os.path.join(str(raiz), str(ruta)), os.path.join(destino_dir, os.path.basename(str(ruta)) + '.FRENADO_POR_EL_GUARDIA'))
                     subprocess.run(["git", "restore", "--staged", "--worktree", "--source=HEAD", "--", str(ruta)], timeout=60, **comun)
-                    anotaciones.append("devuelta a lo guardado: " + str(ruta))
+                    anotaciones.append("devuelta a lo guardado (copia apartada): " + str(ruta))
                 else:
                     subprocess.run(["git", "rm", "--cached", "-q", "--ignore-unmatch", "--", str(ruta)], timeout=60, **comun)
                     destino_dir = os.path.join(str(raiz), "memoria", "trabajos_sin_revisar")
