@@ -69,7 +69,7 @@ def test_ninguno_se_queda_a_medias_dejando_pasar_lo_que_si_se_rompio():
     """Distinguir no puede convertirse en dejar pasar TODO: si ya estaba verde y se rompio, se frena."""
     for rel in LOS_QUE_DECIDEN:
         vivo = _vivo(rel)
-        if "ls-files" not in vivo:
+        if "ls-files" not in vivo and "cat-file" not in vivo:
             continue
         assert "ya_estaban" in vivo or "guardados" in vivo, (
             "%s distingue las nuevas pero NO frena cuando una vigia que YA ESTABA VERDE se "
