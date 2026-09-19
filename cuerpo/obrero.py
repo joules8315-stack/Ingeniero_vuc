@@ -343,6 +343,7 @@ def _filtrar_paquete(paquete, archivo=None, tope=None):
         if k and k != "__cabecera__":
             salida += bloques[k]
     if trozos and archivo:
+        _lista = [archivo] if isinstance(archivo, str) else [a for a in archivo if a]
         solo = []
         i = 0
         t = bloques[trozos]
@@ -351,7 +352,7 @@ def _filtrar_paquete(paquete, archivo=None, tope=None):
                 j = i + 1
                 while j < len(t) and not t[j].startswith("### `"):
                     j += 1
-                if archivo in t[i]:
+                if any(a in t[i] for a in _lista):
                     solo += t[i:j]
                 i = j
             else:
