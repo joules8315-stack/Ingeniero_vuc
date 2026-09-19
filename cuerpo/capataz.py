@@ -53,7 +53,7 @@ def validar_etiqueta(orden):
 
 def siguiente_pendiente():
     for orden in leer_lista():
-        if orden.get("estado") == "pendiente":
+        if orden.get("estado") == "pendiente" and not validar_etiqueta(orden):
             return orden
     return None
 
