@@ -23,6 +23,7 @@ def lanzar_al_equipo(proyecto, orden, tope_segundos=900):
         comando.append("--crear")
     entorno = dict(os.environ)
     entorno["PYTHONIOENCODING"] = "utf-8"
+    entorno["INGENIERO_ETIQUETA"] = str(orden.get("id", ""))
     try:
         resultado = subprocess.run(
             comando,
