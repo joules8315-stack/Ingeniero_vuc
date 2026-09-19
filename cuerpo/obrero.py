@@ -418,6 +418,33 @@ def _material_del_revisor(paquete, propuesta, tope):
                 i += 1
         tocados = [b for b in bloques if viejo in "\n".join(b)]
         if not tocados:
+            import ast
+            ruta = str(propuesta.get("archivo") or "")
+            if os.path.isfile(ruta):
+                try:
+                    with open(ruta, "r", encoding="utf-8", errors="replace") as _f:
+                        contenido = _f.read()
+                except Exception:
+                    contenido = ""
+                if contenido and viejo in contenido:
+                    linea = contenido[:contenido.index(viejo)].count(chr(10)) + 1
+                    trozo = None
+                    try:
+                        arbol = ast.parse(contenido)
+                        for nodo in arbol.body:
+                            if isinstance(nodo, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                                if nodo.lineno <= linea <= (nodo.end_lineno or nodo.lineno):
+                                    trozo = "\n".join(contenido.splitlines()[nodo.lineno - 1:nodo.end_lineno])
+                                    break
+                    except Exception:
+                        trozo = None
+                    if trozo is None or len(trozo) > tope // 2:
+                        lineas_disco = contenido.splitlines()
+                        ini = max(0, linea - 1 - 40)
+                        fin = min(len(lineas_disco), linea - 1 + 40)
+                        trozo = "\n".join(lineas_disco[ini:fin])
+                    tocados = [["### " + ruta, trozo]]
+        if not tocados:
             return base
         arriba = ["## EL CAMBIO SE HACE AQUI (trozo entero)"]
         for b in tocados:
@@ -951,6 +978,9 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
     material_auditor = _material_del_revisor(paquete, propuesta,
                                             TOPE_REVISOR - 3344 - 47 -
                                             len(json.dumps(propuesta, ensure_ascii=False)))
+    # A-38: a la IA solo le queda el juicio.
+    if isinstance(propuesta, dict) and propuesta.get('_comprobado_por_programa'):
+        material_auditor = ('COMPROBADO POR PROGRAMA (gratis, antes de ti): los nombres que usa el cambio existen en el archivo o estan importados y el archivo sigue cargando. NO rechaces por no aparecer en el material: juzga solo si el cambio hace lo pedido y si rompe algo.\n') + material_auditor
     if auditor == 'bigpickle':
         # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de
         # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.
@@ -1133,15 +1163,19 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
             avisos_totales.append("se pidio generar a %s y no esta disponible: contesto %s" % (generador, quien_gen))
 
         # A-38: el programa revisa primero, gratis; si frena no se paga la revision y el obrero recibe los motivos.
+        _prog_corrio = False
         try:
             import revisor_de_programa as _rp_antes
             _fallos_prog = _rp_antes.revisar(propuesta, tarea) or []
+            _prog_corrio = True
         except Exception:
             _fallos_prog = []
         if _fallos_prog and _vuelta < 3:
             motivos_rechazo.extend(str(x) for x in _fallos_prog)
             avisos_totales.append('el revisor de programa freno antes de pagar la revision: ' + '; '.join(str(x) for x in _fallos_prog)[:200])
             continue
+        if _prog_corrio and not _fallos_prog and isinstance(propuesta, dict):
+            propuesta['_comprobado_por_programa'] = True
         # La revision se delega entera a auditar(): asi arnes/copista.py puede pedir SOLO una
         # revision (un cambio gratis ya aplicado) y no hay el mismo codigo en dos sitios.
         # Dentro de auditar() siguen vivos la cura de los dos reintentos del 2026-08-31 y el
