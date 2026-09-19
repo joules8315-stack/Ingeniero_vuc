@@ -391,6 +391,13 @@ def puede_revisar_claude(escritor, dormidos):
     gratis = [q for q in ORDEN if not q.startswith('deepseek')]
     return all(q in dormidos for q in gratis)
 
+def puede_revisar_bigpickle(escritor, dormidos):
+    # A-32 (Julio 2026-09-18): si todas las IA gratis duermen, revisa Big Pickle, nunca Claude; y nunca lo que escribio Big Pickle.
+    if escritor == 'bigpickle':
+        return False
+    gratis = [q for q in ORDEN if not q.startswith('deepseek')]
+    return all(q in dormidos for q in gratis)
+
 
 def estado_texto():
     d = _leer()
