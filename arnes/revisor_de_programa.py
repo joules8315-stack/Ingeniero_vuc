@@ -96,6 +96,8 @@ def no_carga(contenido):
     import ast
     import builtins
     try:
+        if contenido[:1] == chr(0xFEFF):
+            contenido = contenido[1:]
         try:
             arbol = ast.parse(contenido)
         except SyntaxError as e:
@@ -114,6 +116,19 @@ def no_carga(contenido):
                 partes.extend(nodo.keywords)
             else:
                 partes = [nodo]
+                for n in ast.walk(nodo):
+                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store):
+                        definidos.add(n.id)
+                    elif isinstance(n, ast.ExceptHandler) and n.name:
+                        definidos.add(n.name)
+                    elif isinstance(n, ast.Import):
+                        for a in n.names:
+                            definidos.add((a.asname or a.name).split('.')[0])
+                    elif isinstance(n, ast.ImportFrom):
+                        for a in n.names:
+                            definidos.add(a.asname or a.name.split('.')[0])
+                    elif isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                        definidos.add(n.name)
             for parte in partes:
                 for n in ast.walk(parte):
                     if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load):
