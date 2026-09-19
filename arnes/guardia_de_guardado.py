@@ -329,7 +329,7 @@ def _vigias(raiz):
     guardados = []
     for archivo in archivos_rojos:
         try:
-            rr = subprocess.run(["git", "ls-files", "--error-unmatch", "--", archivo],
+            rr = subprocess.run(["git", "cat-file", "-e", "HEAD:" + archivo],
                                 cwd=raiz, capture_output=True, text=True, timeout=30)
             if rr.returncode != 0:
                 nuevos.append(archivo)

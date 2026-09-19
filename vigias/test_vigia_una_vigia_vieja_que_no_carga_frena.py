@@ -13,17 +13,18 @@ def _falso_run(comandos_vistos, stdout_pytest):
     """Devuelve una funcion que imita a subprocess.run.
 
     Si el comando trae 'pytest', devuelve returncode 1 y el stdout que se le pase.
-    Si el comando trae 'ls-files', apunta el ultimo elemento del comando y devuelve
-    returncode 0 solo si ese elemento es exactamente 'vigias/test_viejo.py'.
+    Si el comando trae 'cat-file', apunta el ultimo elemento del comando sin el
+    prefijo 'HEAD:' y devuelve returncode 0 solo si ese elemento es exactamente
+    'HEAD:vigias/test_viejo.py'.
     """
     def _run(cmd, *args, **kwargs):
         cmd = list(cmd)
         if 'pytest' in cmd:
             return types.SimpleNamespace(returncode=1, stdout=stdout_pytest, stderr='')
-        if 'ls-files' in cmd:
-            comandos_vistos.append(cmd[-1])
-            if cmd[-1] == 'vigias/test_viejo.py':
-                return types.SimpleNamespace(returncode=0, stdout='vigias/test_viejo.py\n', stderr='')
+        if 'cat-file' in cmd:
+            comandos_vistos.append(cmd[-1].replace('HEAD:', '', 1))
+            if cmd[-1] == 'HEAD:vigias/test_viejo.py':
+                return types.SimpleNamespace(returncode=0, stdout='', stderr='')
             return types.SimpleNamespace(returncode=1, stdout='', stderr='')
         return types.SimpleNamespace(returncode=0, stdout='', stderr='')
     return _run
