@@ -36,6 +36,7 @@ Asi Julio ve al final de la semana cuantas veces hubo que pararse y por que, en 
 INVIOLABLE no es que no haya salida: es que TODO deje rastro. La salida a mano sigue siendo suya
 (INGENIERO_OFF) y hay una vigia que comprueba que nunca se la quiten.
 """
+import contextlib
 import json
 import os
 import sys
