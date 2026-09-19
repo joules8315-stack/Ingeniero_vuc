@@ -6,15 +6,46 @@ import subprocess
 import sys
 
 
-def lanzar_al_equipo(encargo):
-    raiz = r"C:\Ingeniero_VUC"
-    resultado = subprocess.run(
-        ["python", "ingeniero.py", "equipo", "ingeniero", encargo],
-        cwd=raiz,
-        capture_output=True,
-        text=True,
-    )
-    return (resultado.returncode, resultado.stdout)
+def lanzar_al_equipo(proyecto, orden, tope_segundos=900):
+    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    comando = [
+        sys.executable,
+        "ingeniero.py",
+        "equipo",
+        proyecto,
+        orden["encargo"],
+        "--escribe",
+        "deepseek",
+        "--revisa",
+        "bigpickle",
+    ]
+    if orden.get("crear"):
+        comando.append("--crear")
+    entorno = dict(os.environ)
+    entorno["PYTHONIOENCODING"] = "utf-8"
+    try:
+        resultado = subprocess.run(
+            comando,
+            cwd=raiz,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=tope_segundos,
+            env=entorno,
+        )
+    except subprocess.TimeoutExpired:
+        return {
+            "guardado": False,
+            "codigo": None,
+            "salida": "TOPE DE TIEMPO: " + str(tope_segundos) + " s",
+        }
+    salida = resultado.stdout + resultado.stderr
+    return {
+        "guardado": "GUARDADO AL MOMENTO" in salida,
+        "codigo": resultado.returncode,
+        "salida": salida,
+    }
 
 
 def leer_lista():
