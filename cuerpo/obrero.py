@@ -896,7 +896,7 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
         if isinstance(archivo_tocado, str):
             archivo_tocado = archivo_tocado.strip()
     material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,
-                                        tope=TOPE_GRATIS - 3344 - 47 -
+                                        tope=(40000 if auditor == "bigpickle" else TOPE_GRATIS) - 3344 - 47 -
                                              len(json.dumps(propuesta, ensure_ascii=False)))
     if auditor == 'bigpickle':
         # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de
