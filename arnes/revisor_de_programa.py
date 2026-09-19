@@ -68,8 +68,8 @@ def sin_ruido(texto):
     criterio, se reusa. Sirve para comparar dos textos por lo que de verdad hacen.
     """
     t = str(texto or "")
-    t = re.sub(r'"""(?:.|\n)*?"""', " ", t)
-    t = re.sub(r"'''(?:.|\n)*?'''", " ", t)
+    t = re.sub(r'(?m)^\s*[rRbBuUfF]*"""(?:.|\n)*?"""', " ", t)
+    t = re.sub(r"(?m)^\s*[rRbBuUfF]*'''(?:.|\n)*?'''", " ", t)
     fuera = []
     for linea in t.splitlines():
         linea = re.sub(r"#.*$", "", linea).strip()
