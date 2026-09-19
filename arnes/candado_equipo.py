@@ -342,7 +342,7 @@ def volver_atras(raiz, rutas, motivo):
                     destino_dir = os.path.join(str(raiz), "memoria", "trabajos_sin_revisar")
                     os.makedirs(destino_dir, exist_ok=True)
                     destino = os.path.join(destino_dir, os.path.basename(str(ruta)) + ".FRENADO_POR_EL_GUARDIA")
-                    os.replace(str(ruta), destino)
+                    os.replace(os.path.join(str(raiz), str(ruta)), destino)
                     anotaciones.append("apartada (nueva): " + str(ruta))
             except Exception as e:
                 anotaciones.append("no se pudo volver atras: %s: %s" % (str(ruta), str(e)[:200]))
