@@ -86,6 +86,58 @@ def _quitar_comentario(linea):
     return linea
 
 
+def no_carga(contenido):
+    """Devuelve la lista de textos con lo que impide cargar el modulo. Vacia = carga.
+
+    Es CUENTA con ast, sin ejecutar nada. Mira, en orden, cada nodo del cuerpo del modulo:
+    primero los nombres que se LEEN al cargar y despues los que DEFINE. Un nombre leido que
+    no este definido ni importado arriba impide cargar el modulo.
+    """
+    import ast
+    import builtins
+    try:
+        try:
+            arbol = ast.parse(contenido)
+        except SyntaxError as e:
+            return ['EL ARCHIVO NO CARGA: error de sintaxis en la linea %s' % e.lineno]
+        definidos = set(dir(builtins)) | {'__file__', '__name__', '__doc__'}
+        fallos = []
+        ya_dicho = set()
+        for nodo in arbol.body:
+            if isinstance(nodo, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                partes = list(nodo.decorator_list)
+                partes.extend(nodo.args.defaults)
+                partes.extend(d for d in nodo.args.kw_defaults if d is not None)
+            elif isinstance(nodo, ast.ClassDef):
+                partes = list(nodo.decorator_list)
+                partes.extend(nodo.bases)
+                partes.extend(nodo.keywords)
+            else:
+                partes = [nodo]
+            for parte in partes:
+                for n in ast.walk(parte):
+                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load):
+                        if n.id not in definidos and n.id not in ya_dicho:
+                            ya_dicho.add(n.id)
+                            fallos.append('EL ARCHIVO NO CARGA: ' + n.id +
+                                          ' se usa al cargar el modulo y no esta definido ni importado arriba')
+            if isinstance(nodo, ast.Import):
+                for a in nodo.names:
+                    definidos.add((a.asname or a.name).split('.')[0])
+            elif isinstance(nodo, ast.ImportFrom):
+                for a in nodo.names:
+                    definidos.add(a.asname or a.name.split('.')[0])
+            elif isinstance(nodo, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                definidos.add(nodo.name)
+            else:
+                for n in ast.walk(nodo):
+                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store):
+                        definidos.add(n.id)
+        return fallos
+    except Exception:
+        return []
+
+
 def sin_ruido(texto):
     """Quita comentarios, textos entre triples comillas y lineas en blanco.
 
