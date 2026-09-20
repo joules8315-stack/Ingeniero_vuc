@@ -297,8 +297,15 @@ def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):
         for orden, resultado in zip(tanda, resultados):
             orden_id = str(orden.get('id', ''))
             if resultado.get('guardado'):
+                sabotaje = sabotear_la_orden(orden)
+                if isinstance(sabotaje, dict) and sabotaje.get('ok') is False:
+                    aviso('SABOTAJE ' + orden_id + ' ' + str(sabotaje.get('razon')))
+                    marcar_estado(orden.get('id'), 'fallida', 'sabotaje', (orden.get('fallos_seguidos') or 0) + 1)
+                    continue
                 marcar_estado(orden.get('id'), 'hecha', '', 0)
                 aviso('HECHA ' + orden_id)
+                if isinstance(sabotaje, dict) and sabotaje.get('ok'):
+                    aviso('SABOTAJE ' + orden_id + ' ' + str(sabotaje.get('razon')))
             else:
                 salida = resultado.get('salida', '')
                 tipo = tipo_de_fallo(salida)
