@@ -34,6 +34,40 @@ def test_el_pit_sabe_recoger_lo_frenado():
     )
 
 
+def test_sin_pieza_no_se_toca_nada(tmp_path):
+    """Sin saber que pieza toca la orden, no se devuelve nada a su sitio."""
+    casa = tmp_path
+    sin_revisar = casa / 'memoria' / 'trabajos_sin_revisar'
+    sin_revisar.mkdir(parents=True)
+    (sin_revisar / 'pieza.py.FRENADO_POR_EL_GUARDIA').write_text('nuevo', encoding='utf-8')
+
+    del_equipo = casa / 'memoria' / 'trabajos_del_equipo'
+    del_equipo.mkdir(parents=True)
+    (del_equipo / 'APROBADO').write_text(
+        '{"pieza": "cuerpo/pieza.py"}', encoding='utf-8'
+    )
+
+    cuerpo = casa / 'cuerpo'
+    cuerpo.mkdir(parents=True)
+    (cuerpo / 'pieza.py').write_text('viejo', encoding='utf-8')
+
+    resultado = capataz.recoger_lo_frenado({}, str(casa))
+
+    assert isinstance(resultado, dict), (
+        'Sin saber que pieza toca la orden no se puede devolver nada a su sitio: '
+        'recoger_lo_frenado tiene que devolver un diccionario.'
+    )
+    assert resultado.get('ok') is False, (
+        'Sin saber que pieza toca la orden no se puede devolver nada a su sitio: '
+        'la clave ok tiene que valer falso.'
+    )
+    assert (cuerpo / 'pieza.py').read_text(encoding='utf-8') == 'viejo', (
+        'Sin saber que pieza toca la orden no se puede devolver nada a su sitio: '
+        'tocar algo a ciegas seria peor que no hacer nada, y cuerpo/pieza.py '
+        'tiene que seguir diciendo viejo.'
+    )
+
+
 def test_el_pit_devuelve_la_copia_buena_a_su_sitio(tmp_path):
     """Con una casa de mentira, recoger_lo_frenado tiene que reponer la copia buena."""
     casa = tmp_path
