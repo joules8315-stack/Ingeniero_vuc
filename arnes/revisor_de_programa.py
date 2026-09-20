@@ -343,6 +343,28 @@ def revisar(propuesta, tarea=""):
             fallos.append("No se pudo leer el codigo nuevo: %s" % str(e)[:120])
             return fallos
 
+        # Lo que esta dentro de un texto entre comillas no es codigo de este archivo: juzgarlo
+        # como codigo frena trabajo bueno.
+        try:
+            _ruta_txt = str(p.get("archivo") or "")
+            if (_ruta_txt.lower().endswith(".py") and os.path.isfile(_ruta_txt)
+                    and viejo.strip()):
+                with open(_ruta_txt, encoding="utf-8-sig", errors="replace") as _ftx:
+                    _todo_tx = _ftx.read()
+                _pos_tx = _todo_tx.find(viejo)
+                if _pos_tx >= 0:
+                    _renglon_tx = _todo_tx.count("\n", 0, _pos_tx) + 1
+                    _arbol_tx = ast.parse(_todo_tx)
+                    for _nodo_tx in ast.walk(_arbol_tx):
+                        if (isinstance(_nodo_tx, ast.Constant)
+                                and isinstance(_nodo_tx.value, str)
+                                and getattr(_nodo_tx, "lineno", None) is not None
+                                and getattr(_nodo_tx, "end_lineno", None) is not None):
+                            if _nodo_tx.lineno <= _renglon_tx <= _nodo_tx.end_lineno:
+                                return fallos
+        except Exception:
+            pass
+
         # 3 — USA UN NOMBRE QUE NO EXISTE. El fallo real del 2026-09-08: re sin importar.
         #
         # SOLO SI ES UN ARCHIVO ENTERO. Segunda frenada en falso cazada el mismo dia: se
