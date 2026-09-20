@@ -351,6 +351,26 @@ def revisar(propuesta, tarea=""):
         # que recibe la funcion de mas arriba y lo que se importa al principio del archivo.
         # Mirando un pedazo suelto no se puede ver nada de eso, asi que acusar es mentir.
         # Cuando no se puede comprobar, se calla. Frenar lo bueno ensena a ignorar los frenos.
+        # 2b — NO CARGA: si el archivo tal como quedaria no arranca, se dice aqui.
+        # Es CUENTA con no_carga, sin ejecutar nada. Solo se avisa si ANTES cargaba y DESPUES
+        # no: si antes ya no cargaba, no lo rompio este cambio y no se dice nada.
+        try:
+            _ruta_nc = str(p.get("archivo") or "")
+            if (_ruta_nc.lower().endswith(".py") and os.path.isfile(_ruta_nc)
+                    and viejo.strip()):
+                with open(_ruta_nc, encoding="utf-8-sig", errors="replace") as _fnc:
+                    _antes_nc = _fnc.read()
+                if viejo in _antes_nc:
+                    _despues_nc = _antes_nc.replace(viejo, nuevo, 1)
+                    _fallos_antes = no_carga(_antes_nc)
+                    _fallos_despues = no_carga(_despues_nc)
+                    if not _fallos_antes and _fallos_despues:
+                        fallos.append(
+                            "NO CARGA: el archivo se queda sin arrancar. Primera razon: %s"
+                            % _fallos_despues[0])
+        except Exception:
+            pass
+
         if es_un_pedazo(nuevo):
             return fallos
         conocidos = set(_conocidos(arbol))
