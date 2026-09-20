@@ -386,8 +386,28 @@ def _filtrar_paquete(paquete, archivo=None, tope=None):
         salida = resto
     # Si aun asi se pasa del tope, se va soltando el relleno del final hasta caber: la cabecera,
     # la ley y "a quien puede danar" son LO NECESARIO, no se tocan.
-    while len("\n".join(salida)) > tope and len(salida) > len(bloques["__cabecera__"]):
-        salida.pop()
+    aviso = ("AVISO: este material se recorto para que entrara. Puede faltar algun archivo entero. "
+             "NO adivines lo que no ves: si te falta algo, contesta NECESITO_LEER seguido del "
+             "archivo que hace falta.")
+    tope_trabajo = tope - len(aviso) - 1
+    recortado = False
+    while len("\n".join(salida)) > tope_trabajo and len(salida) > len(bloques["__cabecera__"]):
+        cabecera = len(bloques["__cabecera__"])
+        ultimo = None
+        for i in range(len(salida) - 1, cabecera - 1, -1):
+            if salida[i].startswith("### `"):
+                ultimo = i
+                break
+        if ultimo is not None:
+            del salida[ultimo:]
+            recortado = True
+        else:
+            if len(salida) <= cabecera:
+                break
+            salida.pop()
+            recortado = True
+    if recortado:
+        salida.append(aviso)
     return "\n".join(salida)
 
 
