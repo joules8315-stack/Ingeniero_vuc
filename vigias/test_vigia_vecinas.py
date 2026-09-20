@@ -34,6 +34,16 @@ if ARNES not in sys.path:
 import vecinas  # noqa: E402  (import tras ajustar sys.path)
 
 
+# Quien corre la bateria completa deja puesta INGENIERO_BATERIA_COMPLETA, y con
+# ella puesta la eleccion de vecinas devuelve nada: tres pruebas de este archivo
+# salian rojas en falso. Se borra del entorno para todas las pruebas; la prueba
+# que si quiere esa variable la pone ella misma despues.
+@pytest.fixture(autouse=True)
+def _sin_bateria_completa(monkeypatch):
+    monkeypatch.delenv("INGENIERO_BATERIA_COMPLETA", raising=False)
+    yield
+
+
 # ---------------------------------------------------------------------------
 # Utilidades: repo git real en tmp_path
 # ---------------------------------------------------------------------------
