@@ -102,6 +102,12 @@ def test_lo_mas_reciente_manda(tmp_path, monkeypatch):
 
 def test_solo_guarda_lo_PROBADO(tmp_path, monkeypatch):
     """Sin archivo o sin sitio no hay pareja: no se guarda una suposicion."""
+    _aparte(tmp_path, monkeypatch)
+    for archivo, funcion in (("", "enterApp"), ("app_web.html", ""), ("", "")):
+        diccionario.aprender("algo que paso", archivo, funcion, 1, "foto_informe")
+    assert not diccionario.todo(), (
+        "guardo una pareja sin sitio probado: el diccionario solo vale si cada pareja "
+        "salio de una causa demostrada, y si acepta suposiciones envenena al repartidor")
 
 
 def test_no_hace_falta_mirar_fuera_de_esta_carpeta(tmp_path, monkeypatch):
