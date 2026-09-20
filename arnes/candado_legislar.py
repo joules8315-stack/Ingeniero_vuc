@@ -87,6 +87,18 @@ EXCLUIR_DE_ORDEN = (
     "exit code",
     "task-notification",
     "system-reminder",
+    "eres el",
+    "responde solo un objeto json",
+    "analiza este fallo solo con el expediente",
+    "obrero deepseek",
+    "auditor groq",
+    "veredicto",
+    "aprobado y aplicado",
+    "escribe=deepseek",
+    "revisa=bigpickle",
+    "guardia: no se guarda",
+    "guardia: verde",
+    "trabajo archivado",
 )
 
 def parece_una_orden(texto):
@@ -105,6 +117,9 @@ def parece_una_orden(texto):
     if texto.startswith("<"):
         return False
     if any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN):
+        return False
+    # b) Renglon suelto de un informe con formato, no una orden
+    if texto.startswith('"') and '":' in texto:
         return False
     # b) Pregunta
     if texto.rstrip().endswith("?"):
