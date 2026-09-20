@@ -22,7 +22,7 @@ def _preparar_casa(tmp_path, pieza_relativa, contenido_pieza, otros_py):
     Devuelve la ruta absoluta de la pieza creada.
     """
     raiz = tmp_path / "casa"
-    raiz.mkdir()
+    raiz.mkdir(parents=True, exist_ok=True)
     ruta_pieza = raiz / pieza_relativa
     ruta_pieza.parent.mkdir(parents=True, exist_ok=True)
     ruta_pieza.write_text(contenido_pieza, encoding="utf-8")
