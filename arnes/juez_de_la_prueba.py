@@ -164,6 +164,77 @@ def juzgar(raiz, ruta_prueba, ruta_archivo, texto_viejo, texto_nuevo):
     return resultado
 
 
+# PARA QUE SIRVE:
+# El juez encuentra solo la prueba que cubre lo que se cambio, para no tener que
+# decirsela a mano. Recibe la raiz, la ruta relativa del archivo que se cambia (con
+# barras normales), el texto viejo y el texto nuevo; busca las vigias que nombran ese
+# archivo y devuelve un diccionario con ok, prueba y razon.
+def juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo):
+    """Busca sola la prueba que cubre el archivo y la juzga.
+
+    Devuelve un diccionario con ok, prueba y razon. Nunca lanza error: si algo
+    revienta, ok en None y la razon lo explica.
+    """
+    try:
+        from pathlib import Path
+
+        from arnes import vecinas
+
+        raiz = str(raiz)
+        ruta_relativa = str(ruta_relativa)
+
+        vigias = vecinas._vigias_existentes(raiz)
+        candidatas = vecinas._vecinas_por_stem([ruta_relativa], raiz, vigias)
+
+        if not candidatas:
+            return {
+                'ok': None,
+                'prueba': None,
+                'razon': (
+                    'ninguna prueba nombra ese archivo, asi que no hay nada que '
+                    'correr para comprobarlo'
+                ),
+            }
+
+        for vigia in candidatas:
+            ruta_vigia = str(Path(raiz) / vigia)
+            ruta_archivo = str(Path(raiz) / ruta_relativa)
+            resultado = juzgar(
+                raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo
+            )
+
+            if not resultado.get('antes_roja'):
+                continue
+
+            if resultado.get('despues_verde') and resultado.get('vuelve_roja'):
+                return {
+                    'ok': True,
+                    'prueba': vigia,
+                    'razon': resultado.get('razon', ''),
+                }
+
+            return {
+                'ok': False,
+                'prueba': vigia,
+                'razon': resultado.get('razon', ''),
+            }
+
+        return {
+            'ok': None,
+            'prueba': None,
+            'razon': (
+                'ninguna de las pruebas que nombran ese archivo estaba roja, '
+                'asi que no habia nada que demostrar'
+            ),
+        }
+    except Exception as error:
+        return {
+            'ok': None,
+            'prueba': None,
+            'razon': 'al buscar la prueba que cubre el archivo, revento: %s' % error,
+        }
+
+
 def main():
     """Uso: python arnes/juez_de_la_prueba.py <raiz> <prueba> <archivo> <viejo> <nuevo>."""
     if len(sys.argv) != 6:
