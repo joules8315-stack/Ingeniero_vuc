@@ -556,6 +556,9 @@ def main():
         print("NO SE PUDO APLICAR: %s" % _msg2)
         return 1
 
+    if cmd == "pit" and len(sys.argv) >= 3:
+        from cuerpo import capataz as _cap
+        return _cap.bucle(sys.argv[2])
     if cmd == "resolver" and len(sys.argv) >= 4:
         return resolver(sys.argv[2], " ".join(sys.argv[3:]))
     if cmd == "buscar-skill" and len(sys.argv) >= 3:
