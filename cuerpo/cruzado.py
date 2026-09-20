@@ -204,7 +204,30 @@ def resolver(paquete, problema, proyecto="", rondas=RONDAS_MAX, al_vuelo=None):
         _decir(f"Ronda {ronda}: el juez compara la reparacion contra la vigia...")
         juez = None
         txt_juez, quien_juez, av_juez = "", "", []
-        for intento_juez in range(2):   # el juez puede devolver JSON roto: se le pide de nuevo
+        try:
+            from arnes import juez_de_la_prueba as jp
+            archivo_prop = propuesta.get("archivo")
+            texto_viejo_prop = propuesta.get("texto_viejo")
+            texto_nuevo_prop = propuesta.get("texto_nuevo")
+            raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            ruta_rel = str(archivo_prop).replace("\\", "/")
+            if ruta_rel.startswith(raiz.replace("\\", "/")):
+                ruta_rel = ruta_rel[len(raiz.replace("\\", "/")):].lstrip("/")
+            if archivo_prop and texto_viejo_prop:
+                res = jp.juzgar_con_vecinas(raiz, ruta_rel, texto_viejo_prop, texto_nuevo_prop, dejar_el_cambio=False)
+                if isinstance(res, dict) and res.get("ok") is True:
+                    juez = {"veredicto": "APROBADO", "invento_algo": False, "fallos": [],
+                            "que_le_falta": "",
+                            "resumen_para_el_jefe": "La prueba se corrio de verdad y quedo verde."}
+                    quien_juez = "juez de la prueba (programa)"
+                elif isinstance(res, dict) and res.get("ok") is False:
+                    juez = {"veredicto": "RECHAZADO", "invento_algo": False, "fallos": [2],
+                            "que_le_falta": res.get("razon", ""),
+                            "resumen_para_el_jefe": "La prueba se corrio de verdad y NO paso."}
+                    quien_juez = "juez de la prueba (programa)"
+        except Exception:
+            pass
+        for intento_juez in range(0 if juez is not None else 2):   # el juez puede devolver JSON roto: se le pide de nuevo
             txt_juez, quien_juez, av_juez = obrero._preguntar_con_relevo(
                 _prompt_juez(paquete, json.dumps(propuesta, ensure_ascii=False),
                              json.dumps(vigia, ensure_ascii=False)), 0.1, evitar=quien_rep)
