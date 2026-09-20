@@ -752,6 +752,9 @@ def comprobar_pasos(orden):
     vigia = orden.get("vigia")
     if not vigia:
         return "vigia_verde"
+    ruta_vigia = os.path.join(carpeta_proyecto, vigia)
+    if not os.path.isfile(ruta_vigia):
+        return "vigia_verde"
     resultado_vigia = subprocess.run(
         ["python", "-m", "pytest", vigia],
         cwd=carpeta_proyecto,
