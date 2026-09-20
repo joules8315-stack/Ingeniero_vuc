@@ -1001,6 +1001,8 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
     # A-38: a la IA solo le queda el juicio.
     if isinstance(propuesta, dict) and propuesta.get('_comprobado_por_programa'):
         material_auditor = ('COMPROBADO POR PROGRAMA (gratis, antes de ti): los nombres que usa el cambio existen en el archivo o estan importados y el archivo sigue cargando. NO rechaces por no aparecer en el material: juzga solo si el cambio hace lo pedido y si rompe algo.\n') + material_auditor
+    if isinstance(propuesta, dict) and propuesta.get('_juez_de_la_prueba'):
+        material_auditor = ('YA SE CORRIO LA PRUEBA (gratis, antes de ti): un programa corrio la prueba de verdad. Estaba roja antes del cambio, quedo verde con el cambio y volvio a roja al deshacerlo. Por lo tanto el cambio SI hace lo que la prueba pide y eso no se discute. Solo queda juzgar si esa prueba expresa lo que se pidio y si el cambio rompe algo.\n' + str(propuesta.get('_juez_de_la_prueba', ''))) + material_auditor
     if auditor == 'bigpickle':
         # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de
         # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.
@@ -1198,28 +1200,30 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
             propuesta['_comprobado_por_programa'] = True
         # Correr la prueba es CUENTA, no juicio: lo decide un programa, gratis.
         # Por eso no se paga una IA para saber si la prueba pasa o no.
-        try:
-            import os as _os_juez
-            from arnes import juez_de_la_prueba as _juez_prueba
-            _ruta_prop = propuesta.get('archivo') if isinstance(propuesta, dict) else None
-            _viejo_prop = propuesta.get('texto_viejo') if isinstance(propuesta, dict) else None
-            _nuevo_prop = propuesta.get('texto_nuevo') if isinstance(propuesta, dict) else None
-            if isinstance(propuesta, dict) and _ruta_prop and _viejo_prop:
-                _raiz_proy = _os_juez.path.abspath(_os_juez.path.join(_os_juez.path.dirname(_os_juez.path.abspath(__file__)), '..'))
-                _ruta_rel = str(_ruta_prop).replace('\\', '/')
-                _raiz_norm = _raiz_proy.replace('\\', '/')
-                if _ruta_rel.startswith(_raiz_norm):
-                    _ruta_rel = _ruta_rel[len(_raiz_norm):].lstrip('/')
-                _res_juez = _juez_prueba.juzgar_con_vecinas(_raiz_proy, _ruta_rel, _viejo_prop, _nuevo_prop, dejar_el_cambio=False)
-                if isinstance(_res_juez, dict) and _res_juez.get('ok') is False and _vuelta < 3:
-                    _razon_juez = str(_res_juez.get('razon', ''))
-                    motivos_rechazo.append(_razon_juez)
-                    avisos_totales.append('el juez de la prueba lo freno antes de pagar la revision: ' + _razon_juez[:200])
-                    continue
-                if isinstance(_res_juez, dict) and _res_juez.get('ok') is True:
-                    propuesta['_juez_de_la_prueba'] = _res_juez.get('razon', '')
-        except Exception:
-            pass
+        # Dentro de una prueba no se relanza pytest, porque se cuelga.
+        import os as _os_juez
+        if not _os_juez.environ.get('PYTEST_CURRENT_TEST'):
+            try:
+                from arnes import juez_de_la_prueba as _juez_prueba
+                _ruta_prop = propuesta.get('archivo') if isinstance(propuesta, dict) else None
+                _viejo_prop = propuesta.get('texto_viejo') if isinstance(propuesta, dict) else None
+                _nuevo_prop = propuesta.get('texto_nuevo') if isinstance(propuesta, dict) else None
+                if isinstance(propuesta, dict) and _ruta_prop and _viejo_prop:
+                    _raiz_proy = _os_juez.path.abspath(_os_juez.path.join(_os_juez.path.dirname(_os_juez.path.abspath(__file__)), '..'))
+                    _ruta_rel = str(_ruta_prop).replace('\\', '/')
+                    _raiz_norm = _raiz_proy.replace('\\', '/')
+                    if _ruta_rel.startswith(_raiz_norm):
+                        _ruta_rel = _ruta_rel[len(_raiz_norm):].lstrip('/')
+                    _res_juez = _juez_prueba.juzgar_con_vecinas(_raiz_proy, _ruta_rel, _viejo_prop, _nuevo_prop, dejar_el_cambio=False)
+                    if isinstance(_res_juez, dict) and _res_juez.get('ok') is False and _vuelta < 3:
+                        _razon_juez = str(_res_juez.get('razon', ''))
+                        motivos_rechazo.append(_razon_juez)
+                        avisos_totales.append('el juez de la prueba lo freno antes de pagar la revision: ' + _razon_juez[:200])
+                        continue
+                    if isinstance(_res_juez, dict) and _res_juez.get('ok') is True:
+                        propuesta['_juez_de_la_prueba'] = _res_juez.get('razon', '')
+            except Exception:
+                pass
         # La revision se delega entera a auditar(): asi arnes/copista.py puede pedir SOLO una
         # revision (un cambio gratis ya aplicado) y no hay el mismo codigo en dos sitios.
         # Dentro de auditar() siguen vivos la cura de los dos reintentos del 2026-08-31 y el
