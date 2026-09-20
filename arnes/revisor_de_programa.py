@@ -240,6 +240,22 @@ def revisar(propuesta, tarea=""):
 
         # Un cambio que SOLO BORRA es legitimo: quitar codigo que sobra y no poner nada en su
         # lugar es trabajo de verdad. Solo no hay nada que hacer cuando tampoco se dice que quitar.
+        # Esta cuenta va PRIMERO porque es la mas barata de todas: si el texto viejo que dice
+        # cambiar no aparece tal cual en el archivo, lo que se propone no existe y seguramente
+        # se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo
+        # completo antes de proponer. Si algo falla aqui, no se dice nada y se sigue.
+        try:
+            _ruta_v = str(p.get("archivo") or "")
+            if viejo.strip() and _ruta_v and os.path.isfile(_ruta_v):
+                with open(_ruta_v, encoding="utf-8", errors="replace") as _fv:
+                    _contenido_v = _fv.read()
+                if viejo not in _contenido_v:
+                    return ["EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe "
+                            "tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se "
+                            "mando. Hay que pedir el archivo completo antes de proponer."]
+        except Exception:
+            pass
+
         if not nuevo.strip() and not viejo.strip():
             return ["La propuesta no trae texto nuevo: no hay nada que aplicar."]
         if not nuevo.strip():
