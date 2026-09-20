@@ -202,5 +202,22 @@
     "estado": "pendiente",
     "paso_fallido": "",
     "fallos_seguidos": 0
+  },
+  {
+    "id": "14",
+    "titulo": "El candado de legislar recoge lo que escribe la propia maquina",
+    "origen": "cierre del 2026-09-20: 23 avisos falsos de golpe tras la primera vuelta del pit",
+    "repara": "arnes/candado_legislar.py tomo como ordenes de Julio el pedido al perito y el expediente que escribio el pit, y bloqueo el cierre con 23 lineas que Julio nunca dijo",
+    "pieza": "arnes/candado_legislar.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "ahora que el pit corre solo escribe mucho texto; si todo eso cuenta como orden de Julio, el candado se vuelve ruido y se acaba apagando, que es lo peor que le puede pasar a un candado",
+    "encargo": "En arnes/candado_legislar.py, no tomar como instruccion de Julio el texto que escribe la propia maquina. Se descarta lo que venga de un pedido a un cerebro o de un expediente: por ejemplo lo que empiece por 'Eres el', lo que pida contestar en JSON, lo que sea una linea de un JSON (empieza por comillas y lleva dos puntos), y lo que traiga dentro las palabras OBRERO, AUDITOR, VEREDICTO o GUARDIA. Se deja pasar todo lo demas. Un solo archivo y ninguno mas.",
+    "vigia": "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0
   }
 ]
