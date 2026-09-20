@@ -179,7 +179,8 @@ def juzgar(raiz, ruta_prueba, ruta_archivo, texto_viejo, texto_nuevo, dejar_el_c
 # decirsela a mano. Recibe la raiz, la ruta relativa del archivo que se cambia (con
 # barras normales), el texto viejo y el texto nuevo; busca las vigias que nombran ese
 # archivo y devuelve un diccionario con ok, prueba y razon.
-def juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo):
+def juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo, dejar_el_cambio=True):
+    # dejar_el_cambio: si es falso, el archivo se queda como estaba (para cuando el juez se usa antes de aprobar el trabajo).
     """Busca sola la prueba que cubre el archivo y la juzga.
 
     Devuelve un diccionario con ok, prueba y razon. Nunca lanza error: si algo
