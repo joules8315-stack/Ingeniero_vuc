@@ -193,6 +193,46 @@ def aplicar_cambio(propuesta, raiz=None):
         _apuntar_log(False, archivo, funcion, "texto_viejo no encontrado")
         return False, "El texto_viejo no aparece en el archivo."
     if veces > 1:
+        try:
+            if funcion and funcion != "?" and archivo.endswith(".py"):
+                import ast as _ast
+                arbol = _ast.parse(contenido)
+                nodo_encontrado = None
+                for nodo in _ast.walk(arbol):
+                    if isinstance(nodo, (_ast.FunctionDef, _ast.AsyncFunctionDef)) and nodo.name == funcion:
+                        nodo_encontrado = nodo
+                        break
+                if nodo_encontrado is not None:
+                    lineas = contenido.splitlines(keepends=True)
+                    ini = nodo_encontrado.lineno - 1
+                    fin = nodo_encontrado.end_lineno
+                    trozo = "".join(lineas[ini:fin])
+                    if trozo.count(texto_viejo) == 1:
+                        trozo_nuevo = trozo.replace(texto_viejo, texto_nuevo, 1)
+                        nuevo_contenido = "".join(lineas[:ini]) + trozo_nuevo + "".join(lineas[fin:])
+                        dir_archivo = os.path.dirname(archivo) or "."
+                        fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix=".tmp")
+                        try:
+                            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                                f.write(nuevo_contenido)
+                            if archivo.endswith(".py"):
+                                try:
+                                    with open(tmp_path, "r", encoding="utf-8-sig") as f:
+                                        _ast.parse(f.read())
+                                except SyntaxError as e:
+                                    os.remove(tmp_path)
+                                    _apuntar_log(False, archivo, funcion, f"sintaxis rota: {e}")
+                                    return False, f"El cambio deja el codigo roto (renglon {e.lineno}): {e.msg}"
+                            os.replace(tmp_path, archivo)
+                            _apuntar_log(True, archivo, funcion, "cambio aplicado en funcion")
+                            return True, "Cambio aplicado."
+                        except Exception as e:
+                            if os.path.exists(tmp_path):
+                                os.remove(tmp_path)
+                            _apuntar_log(False, archivo, funcion, f"error al aplicar: {e}")
+                            return False, f"Error al aplicar el cambio: {e}"
+        except Exception:
+            pass
         _apuntar_log(False, archivo, funcion, f"texto_viejo aparece {veces} veces")
         return False, f"El texto_viejo aparece {veces} veces; no se sabe cual es."
 
