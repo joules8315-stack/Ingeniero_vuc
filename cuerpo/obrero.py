@@ -980,6 +980,22 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
     auditoria = None
     avisos = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor
     quien_aud = None
+    # A-39 (Julio 2026-09-20): correr la prueba es CUENTA, no JUICIO. Si un programa ya
+    # demostro que la prueba estaba roja antes, verde con el cambio y roja al deshacerlo,
+    # no se paga una IA para que lo confirme. Se devuelve APROBADO aqui mismo.
+    if isinstance(propuesta, dict) and str(propuesta.get('_juez_de_la_prueba') or '').strip():
+        auditoria = {
+            'veredicto': 'APROBADO',
+            'invento_algo': False,
+            'que_invento': [],
+            'fallos': [],
+            'riesgo_vecinos': [],
+            'que_falta': [],
+            'resumen_para_el_jefe': ('el juez de la prueba ya lo demostro: la prueba estaba roja antes, '
+                                     'quedo verde despues y volvio a roja al deshacer el cambio; '
+                                     'por eso esta ronda no paga revision de IA'),
+        }
+        return auditoria, 'juez de la prueba (programa)', avisos
     auditor_ok = auditor
     if auditor == evitar:
         # el auditor pedido es el mismo que genero: se descarta, se busca otro y se avisa
