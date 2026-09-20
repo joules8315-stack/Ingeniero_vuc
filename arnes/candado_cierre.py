@@ -192,6 +192,17 @@ def main():
     sys.path.insert(0, os.path.join(AQUI, "arnes"))
     faltas = []
 
+    # Lo que no se mide no se corrige: este numero dice si el equipo esta perdiendo rondas.
+    try:
+        import medidor_de_rondas
+        from datetime import datetime
+        hoy = datetime.now().strftime("%Y-%m-%d")
+        r = medidor_de_rondas.contar(AQUI, hoy)
+        sys.stderr.write("MEDIDOR DE RONDAS: " + str(r.get("razon", "")) + "\n")
+        sys.stderr.write("La meta de Julio es guardar nueve de cada diez rondas.\n")
+    except Exception:
+        pass
+
     # 1) VIA CANONICA
     try:
         import via_canonica
