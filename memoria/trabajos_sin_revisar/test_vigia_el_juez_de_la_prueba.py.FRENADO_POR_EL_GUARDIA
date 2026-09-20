@@ -18,6 +18,10 @@ PIEZA_MALA = '''def suma(a, b):
     return a * b
 '''
 
+PIEZA_BUENA_ORDEN_CAMBIADO = '''def suma(a, b):
+    return b + a
+'''
+
 VIGIA = '''import sys
 from pathlib import Path
 
@@ -74,9 +78,32 @@ def test_juzgar_arregla_de_verdad(tmp_path):
     )
 
     texto_final = ruta_pieza.read_text(encoding="utf-8")
-    assert texto_final == PIEZA_BUENA, (
-        "el archivo no quedo con el texto nuevo: si esto falla, el juez dice que arreglo "
-        "pero no dejo el arreglo escrito en el disco"
+
+
+def test_juzgar_puede_dejar_el_archivo_como_estaba(tmp_path):
+    """Antes de aprobar el trabajo, el juez no puede dejar el cambio metido en el archivo."""
+    raiz = _armar_raiz(tmp_path)
+    ruta_prueba = raiz / "vigias" / "test_vigia_suma.py"
+    ruta_pieza = raiz / "pieza.py"
+
+    resultado = juzgar(
+        str(raiz),
+        str(ruta_prueba),
+        str(ruta_pieza),
+        PIEZA_ROTA,
+        PIEZA_BUENA,
+        dejar_el_cambio=False,
+    )
+
+    assert resultado["ok"] is True, (
+        "el juez no dio por bueno el arreglo aunque solo estaba comprobando: si esto "
+        "falla, el juez no hace su trabajo cuando se le pide no tocar el archivo"
+    )
+
+    texto_final = ruta_pieza.read_text(encoding="utf-8")
+    assert texto_final == PIEZA_ROTA, (
+        "el juez dejo el cambio metido en pieza.py sin que el trabajo este aprobado: "
+        "asi se cuela codigo que nadie aprobo"
     )
 
 
