@@ -67,11 +67,14 @@ def _correr_prueba(raiz, ruta_prueba):
     return False, 'la prueba no paso (codigo %s)' % proceso.returncode
 
 
-def juzgar(raiz, ruta_prueba, ruta_archivo, texto_viejo, texto_nuevo):
+def juzgar(raiz, ruta_prueba, ruta_archivo, texto_viejo, texto_nuevo, dejar_el_cambio=True):
     """Decide por programa si el cambio hace lo pedido.
 
     Devuelve un diccionario con antes_roja, despues_verde, vuelve_roja, ok y razon.
     Nunca lanza error: si algo revienta, todo en falso y la razon lo explica.
+
+    Si dejar_el_cambio es falso, al terminar el archivo se queda con su contenido
+    original, tal como estaba antes de todo.
     """
     resultado = {
         'antes_roja': False,
@@ -140,14 +143,21 @@ def juzgar(raiz, ruta_prueba, ruta_archivo, texto_viejo, texto_nuevo):
         pasa_vuelta = True
     resultado['vuelve_roja'] = not pasa_vuelta
 
-    # Dejar el cambio nuevo puesto, como pide la tarea.
+    # Dejar el archivo como pide la tarea: el cambio nuevo si dejar_el_cambio es
+    # verdadero, y el contenido original si es falso.
+    if dejar_el_cambio:
+        contenido_a_dejar = contenido_nuevo
+        que_se_queria_dejar = 'el cambio nuevo puesto'
+    else:
+        contenido_a_dejar = contenido_original
+        que_se_queria_dejar = 'el archivo como estaba'
     try:
         with open(ruta_archivo, 'w', encoding='utf-8') as f:
-            f.write(contenido_nuevo)
+            f.write(contenido_a_dejar)
     except Exception as error:
         resultado['razon'] = (
-            'antes de tocar nada: %s. Despues del juicio no se pudo dejar el cambio '
-            'nuevo puesto: %s' % (detalle_antes, error)
+            'antes de tocar nada: %s. Despues del juicio no se pudo dejar %s: %s'
+            % (detalle_antes, que_se_queria_dejar, error)
         )
         return resultado
 
