@@ -67,6 +67,34 @@ def _correr_prueba(raiz, ruta_prueba):
     return False, 'la prueba no paso (codigo %s)' % proceso.returncode
 
 
+def _alguna_esta_roja(raiz, rutas_pruebas):
+    """Corre pytest UNA sola vez sobre todas las rutas juntas.
+
+    Devuelve True si alguna no paso, y False si pasaron todas o si no se pudo correr.
+    """
+    orden = [
+        sys.executable,
+        '-m',
+        'pytest',
+        '-q',
+    ]
+    orden.extend(str(ruta) for ruta in rutas_pruebas)
+    try:
+        proceso = subprocess.run(
+            orden,
+            cwd=str(raiz),
+            env=_entorno_limpio(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            timeout=TOPE_SEGUNDOS,
+        )
+    except subprocess.TimeoutExpired:
+        return False
+    except Exception:
+        return False
+    return proceso.returncode != 0
+
+
 def juzgar(raiz, ruta_prueba, ruta_archivo, texto_viejo, texto_nuevo, dejar_el_cambio=True):
     """Decide por programa si el cambio hace lo pedido.
 
