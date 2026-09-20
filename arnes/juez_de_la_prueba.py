@@ -194,50 +194,64 @@ def juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo, dejar_el_c
         raiz = str(raiz)
         ruta_relativa = str(ruta_relativa)
 
-        vigias = vecinas._vigias_existentes(raiz)
-        candidatas = vecinas._vecinas_por_stem([ruta_relativa], raiz, vigias)
+        ruta_archivo = str(Path(raiz) / ruta_relativa)
+        try:
+            with open(ruta_archivo, 'r', encoding='utf-8') as f:
+                contenido_original = f.read()
+        except Exception:
+            contenido_original = None
 
-        if not candidatas:
-            return {
-                'ok': None,
-                'prueba': None,
-                'razon': (
-                    'ninguna prueba nombra ese archivo, asi que no hay nada que '
-                    'correr para comprobarlo'
-                ),
-            }
+        try:
+            vigias = vecinas._vigias_existentes(raiz)
+            candidatas = vecinas._vecinas_por_stem([ruta_relativa], raiz, vigias)
 
-        for vigia in candidatas:
-            ruta_vigia = str(Path(raiz) / vigia)
-            ruta_archivo = str(Path(raiz) / ruta_relativa)
-            resultado = juzgar(
-                raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo
-            )
-
-            if not resultado.get('antes_roja'):
-                continue
-
-            if resultado.get('despues_verde') and resultado.get('vuelve_roja'):
+            if not candidatas:
                 return {
-                    'ok': True,
+                    'ok': None,
+                    'prueba': None,
+                    'razon': (
+                        'ninguna prueba nombra ese archivo, asi que no hay nada que '
+                        'correr para comprobarlo'
+                    ),
+                }
+
+            for vigia in candidatas:
+                ruta_vigia = str(Path(raiz) / vigia)
+                resultado = juzgar(
+                    raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo
+                )
+
+                if not resultado.get('antes_roja'):
+                    continue
+
+                if resultado.get('despues_verde') and resultado.get('vuelve_roja'):
+                    return {
+                        'ok': True,
+                        'prueba': vigia,
+                        'razon': resultado.get('razon', ''),
+                    }
+
+                return {
+                    'ok': False,
                     'prueba': vigia,
                     'razon': resultado.get('razon', ''),
                 }
 
             return {
-                'ok': False,
-                'prueba': vigia,
-                'razon': resultado.get('razon', ''),
+                'ok': None,
+                'prueba': None,
+                'razon': (
+                    'ninguna de las pruebas que nombran ese archivo estaba roja, '
+                    'asi que no habia nada que demostrar'
+                ),
             }
-
-        return {
-            'ok': None,
-            'prueba': None,
-            'razon': (
-                'ninguna de las pruebas que nombran ese archivo estaba roja, '
-                'asi que no habia nada que demostrar'
-            ),
-        }
+        finally:
+            if not dejar_el_cambio and contenido_original is not None:
+                try:
+                    with open(ruta_archivo, 'w', encoding='utf-8') as f:
+                        f.write(contenido_original)
+                except Exception:
+                    pass
     except Exception as error:
         return {
             'ok': None,
