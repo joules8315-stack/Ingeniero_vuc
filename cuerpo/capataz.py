@@ -302,6 +302,11 @@ def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):
                     aviso('SABOTAJE ' + orden_id + ' ' + str(sabotaje.get('razon')))
                     marcar_estado(orden.get('id'), 'fallida', 'sabotaje', (orden.get('fallos_seguidos') or 0) + 1)
                     continue
+                terminada = la_tarea_esta_terminada(orden)
+                if isinstance(terminada, dict) and terminada.get('ok') is False and terminada.get('paso') == 'vigia_verde':
+                    aviso('SIN_TERMINAR ' + orden_id + ' ' + str(terminada.get('razon')))
+                    marcar_estado(orden.get('id'), 'fallida', terminada.get('paso'), (orden.get('fallos_seguidos') or 0) + 1)
+                    continue
                 marcar_estado(orden.get('id'), 'hecha', '', 0)
                 aviso('HECHA ' + orden_id)
                 if isinstance(sabotaje, dict) and sabotaje.get('ok'):
