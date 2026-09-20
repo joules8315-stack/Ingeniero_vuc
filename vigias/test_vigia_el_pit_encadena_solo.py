@@ -201,11 +201,11 @@ def test_el_pit_no_llama_a_ninguna_ia_de_verdad(monkeypatch):
     el equipo de mentira es el unico que puede aparecer en el registro.
     """
     ordenes = [_orden_de_mentira('solo-una', 'pieza-sola')]
-    registro = _montar_mundo(monkeypatch, ordenes)
 
     # Se guarda el original para comprobar que NO se uso.
     original_lanzar = capataz.lanzar_al_equipo
     original_sabotear = capataz.sabotear_la_orden
+    registro = _montar_mundo(monkeypatch, ordenes)
 
     resultado = capataz.bucle(
         'proyecto-de-mentira',
