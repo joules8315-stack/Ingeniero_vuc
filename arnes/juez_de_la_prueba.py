@@ -243,7 +243,21 @@ def juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo, dejar_el_c
                     ),
                 }
 
-            for vigia in candidatas:
+            # No se prueban una por una todas las vecinas: cada una cuesta tres corridas
+            # y un archivo con muchas vecinas tardaba tres minutos. Se mira de un vistazo
+            # cuales estan rojas y solo esas se prueban.
+            rutas_candidatas = [str(Path(raiz) / vigia) for vigia in candidatas]
+            if not _alguna_esta_roja(raiz, rutas_candidatas):
+                return {
+                    'ok': None,
+                    'prueba': None,
+                    'razon': (
+                        'ninguna de las pruebas que nombran ese archivo estaba roja, '
+                        'asi que no habia nada que demostrar'
+                    ),
+                }
+
+            for vigia in candidatas[:3]:
                 ruta_vigia = str(Path(raiz) / vigia)
                 resultado = juzgar(
                     raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo,
