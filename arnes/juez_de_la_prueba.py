@@ -218,7 +218,8 @@ def juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo, dejar_el_c
             for vigia in candidatas:
                 ruta_vigia = str(Path(raiz) / vigia)
                 resultado = juzgar(
-                    raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo
+                    raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo,
+                    dejar_el_cambio=False,
                 )
 
                 if not resultado.get('antes_roja'):
