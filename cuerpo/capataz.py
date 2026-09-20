@@ -324,6 +324,39 @@ def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):
                     return 'PARADO: 3 FALLOS DEL MISMO TIPO (' + tipo + ') EN ' + str(pieza)
 
 
+def correr_orden_del_sistema(palabras):
+    """Corre una orden del sistema y devuelve el numero con el que termino.
+
+    Existe aparte para que una prueba pueda ponerla en su sitio sin correr
+    nada de verdad.
+    """
+    import subprocess
+    carpeta = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    resultado = subprocess.run(palabras, cwd=carpeta, capture_output=True, text=True)
+    return resultado.returncode
+
+
+def sabotear_la_orden(orden):
+    """Corre el sabotaje de una orden y comprueba por programa que la vigia de verdad protege.
+
+    Despues de cada cambio hay que comprobar por programa que la vigia de
+    verdad protege. Eso lo hacia alguien a mano (orden A-39 punto 2 de Julio,
+    del 2026-09-20).
+    """
+    try:
+        vigia = orden.get('vigia') if isinstance(orden, dict) else None
+        sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None
+        if not vigia or not sabotaje:
+            return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}
+        palabras = [sys.executable, 'arnes/sabotaje.py', vigia, sabotaje]
+        codigo = correr_orden_del_sistema(palabras)
+        if codigo == 0:
+            return {'ok': True, 'razon': 'el sabotaje se corrio y la vigia freno'}
+        return {'ok': False, 'razon': 'el sabotaje se corrio y la vigia NO freno, o sea que esa vigia no protege de verdad'}
+    except Exception as e:
+        return {'ok': False, 'razon': str(e)}
+
+
 def recoger_lo_frenado(orden, raiz):
     """Devuelve a su sitio la copia buena que el guardia dejo apartada en memoria/trabajos_sin_revisar con el final .FRENADO_POR_EL_GUARDIA."""
     try:
