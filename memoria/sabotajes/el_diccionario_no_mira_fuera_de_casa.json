@@ -1,0 +1,8 @@
+[
+  {"archivo": "vigias/test_vigia_diccionario_de_julio.py",
+   "viejo": "    monkeypatch.setattr(diccionario, \"AQUI\", str(tmp_path), raising=False)",
+   "nuevo": "    monkeypatch.setattr(diccionario, \"AQUI\", str(tmp_path / \"no_existe\"), raising=False)"},
+  {"archivo": "vigias/test_vigia_diccionario_de_julio.py",
+   "viejo": "    sitio = tmp_path / \"app_web.html\"\n    sitio.write_text(\"\", encoding=\"utf-8\")",
+   "nuevo": "    sitio = tmp_path / \"otro_nombre.html\"\n    sitio.write_text(\"\", encoding=\"utf-8\")"}
+]
