@@ -111,6 +111,29 @@ Orden de Julio en cinco puntos (texto completo en `PLAN_PITS/01_ACUERDOS.md`, fi
   - **Trampa cazada al enchufarlo**: la primera versión preguntaba "si `ok` no vale", y eso también se cumple con `ok` valiendo `None`. Resultado: tres vigías del loop del pit en rojo, porque sus órdenes no traen lista de sabotaje y se marcaban fallidas sin motivo. Corregido a `is False`. **Lección: `None` no es `False`; una orden sin sabotaje no es una orden mala.**
   - El guardia frenó ese guardado y **la pieza de A-39.4 recogió la copia ella sola**, por segunda vez en la misma sesión, esta vez sobre `cuerpo/capataz.py`.
 
-#### Lo que falta de A-39
+### PASO 3: el pit corrió SOLO por primera vez (2026-09-20, 10:20)
+Lanzado con `capataz.bucle('ingeniero', en_paralelo=1)` sobre su propia lista. Lo que dijo, entero:
+
+```
+HECHA 7
+HECHA 8
+HECHA 9
+FALLIDA 10 (guardia)
+RECOGIDO 10 cuerpo/capataz.py
+FORENSE 10: perito - el perito no contesto en 600 s
+PARADO: TODO HECHO
+```
+
+**Lo que hizo de verdad** (comprobado en la historia, no en la marca): tres guardados reales — `ingeniero.py` con el subcomando `pit` (P3-11), `cuerpo/capataz.py` con la comprobación de que la pieza nace conectada (P3-12), y la prueba de aceptación `vigias/test_vigia_el_pit_encadena_solo.py` (P3-13). En la cuarta el guardia frenó, **el pit recogió la copia él solo** y el cambio entró en el guardado siguiente (el bloque muerto de `comprobar_pasos` ya no está).
+
+#### Tres agujeros que esa vuelta destapó, y que no se habrían visto pensando
+1. **El pit daba una tarea por terminada solo porque se había guardado**, sin mirar ni una vez si su prueba estaba verde. `comprobar_pasos` existía desde el principio, pero **`bucle` no la llamaba nunca**: solo la usaba el forense. Reparado con `la_tarea_esta_terminada(orden)`, enchufada en `bucle`, que frena cuando el paso que falla es `vigia_verde` — el único que el guardia no puede comprobar por su cuenta. Vigía `test_vigia_el_pit_mira_la_prueba_antes_de_dar_por_hecho.py`, sabotaje `memoria/sabotajes/el_pit_mira_la_prueba.json` (2 de 2 frenan).
+2. **Entró en la historia una prueba que no podía estar verde jamás**: guardaba las funciones de verdad DESPUÉS de sustituirlas por las de mentira, así que se comparaba consigo misma. No fue culpa del guardia: el guardia deja pasar a propósito una vigía nueva en rojo, porque así nace el método. Lo que faltaba era quien comprobara después. Corregida.
+3. **Las órdenes 7 y 8 se dieron por hechas sin que sus vigías existieran**: el encargo pedía solo el código. Además `comprobar_pasos` trata una vigía que no existe como si estuviera bien. Quedan como órdenes 11 y 12 de la lista.
+
+#### Lo que falta de A-39 y del paso 3
 - **A-39.2, la otra mitad**: que el pit compruebe solo que la vigía nace ROJA antes de mandar el cambio. Hoy eso lo mira Claude, y es cuenta.
 - **A-39.5**: aplicar lo mismo al MVP y a DMM cuando les toque.
+- **Órdenes 11 y 12**: las vigías que le faltan a P3-11 y P3-12.
+- **Orden 13, VIGÍA INESTABLE**: `test_vigia_diccionario_de_julio.py::test_lo_mas_reciente_manda` salió ROJA en una batería completa y VERDE en la siguiente, sin cambiar nada; sola siempre pasa. Una vigía inestable no vale para nada y es ley de la casa. Queda apuntada, no tapada.
+- **El perito no contesta**: el forense del pit llama a Claude y se pasa de 600 s. Mientras Claude no esté escuchando, el expediente se arma pero nadie lo lee.
