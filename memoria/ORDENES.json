@@ -164,7 +164,7 @@
     "prueba_real": "",
     "comando": "",
     "crear": true,
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0
   },
@@ -182,7 +182,7 @@
     "prueba_real": "",
     "comando": "",
     "crear": true,
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0
   },
@@ -199,9 +199,10 @@
     "vigia": "vigias/test_vigia_diccionario_de_julio.py",
     "prueba_real": "correr la bateria entera tres veces seguidas y que salga verde las tres",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
-    "fallos_seguidos": 0
+    "fallos_seguidos": 1,
+    "nota": "reparada el 2026-09-20: la causa medida era que la prueba miraba un archivo de OTRO proyecto, fuera de esta carpeta; ahora se aisla en su casa de mentira y hay una prueba nueva que lo demuestra escondiendo el mapa de proyectos."
   },
   {
     "id": "14",
@@ -216,8 +217,27 @@
     "vigia": "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
-    "fallos_seguidos": 0
+    "fallos_seguidos": 1,
+    "nota": "reparado el 2026-09-20: el vigilante ya no toma por ordenes de Julio lo que escribe la propia maquina. Comprobado con los textos de verdad que se colaron: no se cuela ninguno y no se pierde ninguna orden de Julio."
+  },
+  {
+    "id": "15",
+    "titulo": "Un cambio no puede dejar una prueba sin cuerpo",
+    "origen": "fallo real del 2026-09-20 mientras se reparaba la prueba inestable",
+    "repara": "un cambio del equipo se comio el cuerpo entero de una prueba ya guardada y la dejo con su docstring y nada mas; una prueba sin cuerpo PASA SIEMPRE, asi que el candado sigue en su sitio pero deja de vigilar y nadie lo nota",
+    "pieza": "arnes/revisor_de_programa.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "es el peor tipo de fallo: deja una vigilancia que parece que esta y no esta",
+    "encargo": "ya hecho",
+    "vigia": "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "hecha",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "reparado el mismo dia con vigia y sabotaje (2 de 2 frenan). Costo cinco rondas: el bloque llamaba a una funcion tapada por otra del mismo nombre escrita dentro; la salida fue escribirlo entero ahi mismo, sin depender de nadie."
   }
 ]
