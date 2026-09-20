@@ -1196,6 +1196,29 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
             continue
         if _prog_corrio and not _fallos_prog and isinstance(propuesta, dict):
             propuesta['_comprobado_por_programa'] = True
+        # Correr la prueba es CUENTA, no juicio: lo decide un programa gratis. Por eso no se paga
+        # una IA para saberlo. El juez solo mira, no deja el cambio puesto (dejar_el_cambio=False).
+        try:
+            from arnes import juez_de_la_prueba as _juez
+            _ruta_prop = propuesta.get('archivo') if isinstance(propuesta, dict) else None
+            _viejo_prop = propuesta.get('texto_viejo') if isinstance(propuesta, dict) else None
+            _nuevo_prop = propuesta.get('texto_nuevo') if isinstance(propuesta, dict) else None
+            if isinstance(propuesta, dict) and _ruta_prop and _viejo_prop:
+                _raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                _ruta_rel = str(_ruta_prop).replace('\\', '/')
+                _raiz_norm = _raiz.replace('\\', '/')
+                if _ruta_rel.startswith(_raiz_norm):
+                    _ruta_rel = _ruta_rel[len(_raiz_norm):].lstrip('/')
+                _veredicto_juez = _juez.juzgar_con_vecinas(_raiz, _ruta_rel, _viejo_prop, _nuevo_prop, dejar_el_cambio=False)
+                if isinstance(_veredicto_juez, dict) and _veredicto_juez.get('ok') is False and _vuelta < 3:
+                    _razon_juez = str(_veredicto_juez.get('razon', ''))
+                    motivos_rechazo.append(_razon_juez)
+                    avisos_totales.append('el juez de la prueba lo freno antes de pagar la revision: ' + _razon_juez[:200])
+                    continue
+                if isinstance(_veredicto_juez, dict) and _veredicto_juez.get('ok') is True:
+                    propuesta['_juez_de_la_prueba'] = _veredicto_juez.get('razon', '')
+        except Exception:
+            pass
         # La revision se delega entera a auditar(): asi arnes/copista.py puede pedir SOLO una
         # revision (un cambio gratis ya aplicado) y no hay el mismo codigo en dos sitios.
         # Dentro de auditar() siguen vivos la cura de los dos reintentos del 2026-08-31 y el
