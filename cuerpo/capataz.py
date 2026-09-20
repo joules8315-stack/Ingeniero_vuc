@@ -318,6 +318,21 @@ def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):
                     return 'PARADO: 3 FALLOS DEL MISMO TIPO (' + tipo + ') EN ' + str(pieza)
 
 
+def recoger_lo_frenado(orden, raiz):
+    """Devuelve a su sitio la copia buena que el guardia dejo apartada en memoria/trabajos_sin_revisar con el final .FRENADO_POR_EL_GUARDIA."""
+    try:
+        if not raiz:
+            raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        pieza = orden.get('pieza') if isinstance(orden, dict) else ''
+        if not pieza:
+            return {'ok': False, 'razon': 'la orden no dice que pieza toca'}
+        nombre = os.path.basename(pieza) + '.FRENADO_POR_EL_GUARDIA'
+        from arnes import recoger_los_pedazos
+        return recoger_los_pedazos.recoger(raiz, nombre)
+    except Exception as e:
+        return {'ok': False, 'razon': str(e)}
+
+
 def armar_expediente(orden, resultado):
     """Junta en un dict lo que el perito necesita para analizar el fallo sin usar su memoria."""
     orden = orden if isinstance(orden, dict) else {}
