@@ -238,8 +238,14 @@ def revisar(propuesta, tarea=""):
         nuevo = str(p.get("texto_nuevo") or p.get("codigo") or "")
         tarea = str(tarea or "")
 
-        if not nuevo.strip():
+        # Un cambio que SOLO BORRA es legitimo: quitar codigo que sobra y no poner nada en su
+        # lugar es trabajo de verdad. Solo no hay nada que hacer cuando tampoco se dice que quitar.
+        if not nuevo.strip() and not viejo.strip():
             return ["La propuesta no trae texto nuevo: no hay nada que aplicar."]
+        if not nuevo.strip():
+            # Solo se borra: las demas cuentas suponen que hay codigo nuevo que leer, asi que
+            # se devuelve la lista de fallos tal como va, sin mirar mas cuentas.
+            return fallos
 
         # 0 — SIMULADORES: una prueba con simuladores no prueba la pieza de verdad.
         if re.search(r'MagicMock|unittest\.mock|\bMock\w*', nuevo):
