@@ -43,8 +43,8 @@ def test_sin_pieza_no_se_toca_nada(tmp_path):
 
     del_equipo = casa / 'memoria' / 'trabajos_del_equipo'
     del_equipo.mkdir(parents=True)
-    (del_equipo / 'APROBADO').write_text(
-        '{"pieza": "cuerpo/pieza.py"}', encoding='utf-8'
+    (del_equipo / '2026-09-20_000000_APROBADO_pieza.py.json').write_text(
+        '{"propuesta": {"archivo": "cuerpo/pieza.py"}}', encoding='utf-8'
     )
 
     cuerpo = casa / 'cuerpo'
