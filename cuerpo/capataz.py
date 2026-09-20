@@ -307,6 +307,12 @@ def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):
                 marcar_estado(orden.get('id'), 'fallida', tipo, fallos_seguidos)
                 aviso('FALLIDA ' + orden_id + ' (' + tipo + ')')
                 try:
+                    recogido = recoger_lo_frenado(orden, None)
+                    if isinstance(recogido, dict) and recogido.get('ok'):
+                        aviso('RECOGIDO ' + orden_id + ' ' + str(recogido.get('destino')))
+                except Exception as e:
+                    aviso('NO SE PUDO RECOGER ' + orden_id + ' ' + str(e)[:200])
+                try:
                     informe = forense(orden, resultado)
                     aviso('FORENSE ' + orden_id + ': ' + str(informe.get('paso')) + ' - ' + str(informe.get('motivo')))
                 except Exception as e:
