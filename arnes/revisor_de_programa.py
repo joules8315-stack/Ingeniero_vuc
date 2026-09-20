@@ -225,6 +225,8 @@ def _piezas(arbol):
     return fuera
 
 
+
+
 def revisar(propuesta, tarea=""):
     """Las cuatro cuentas. Devuelve una LISTA de frases; vacia si no encuentra nada.
 
@@ -258,6 +260,52 @@ def revisar(propuesta, tarea=""):
 
         if not nuevo.strip() and not viejo.strip():
             return ["La propuesta no trae texto nuevo: no hay nada que aplicar."]
+        # 2c — SE QUEDA SIN CUERPO: una prueba que se queda con su docstring y nada mas
+        # PASA SIEMPRE. El candado sigue en su sitio pero ya no vigila nada y nadie se entera.
+        # Medido el 2026-09-20: un cambio del equipo se comio el cuerpo entero de una prueba
+        # ya guardada. Es CUENTA: se comparan los cuerpos de las funciones test_ antes y
+        # despues. Si algo falla aqui, no se agrega nada y se sigue como siempre.
+        try:
+            _ruta_c = str(p.get("archivo") or "")
+            if (_ruta_c.lower().endswith(".py") and os.path.isfile(_ruta_c)
+                    and viejo.strip()):
+                with open(_ruta_c, encoding="utf-8-sig", errors="replace") as _fc:
+                    _antes_c = _fc.read()
+                if viejo in _antes_c:
+                    _despues_c = _antes_c.replace(viejo, nuevo, 1)
+                    _arbol_antes_c = ast.parse(_antes_c)
+                    _arbol_despues_c = ast.parse(_despues_c)
+                    # Se busca la funcion suelta del archivo a proposito: mas abajo se escribe
+                    # una con el mismo nombre dentro de esta funcion y eso taparia a la de fuera.
+                    # Se escribe entero aqui a proposito, sin llamar a ninguna funcion de
+                    # fuera, porque mas abajo hay otra con el mismo nombre dentro de esta
+                    # misma funcion y eso la taparia.
+                    def _vacia_aqui(nodo):
+                        cuerpo = list(nodo.body)
+                        if (cuerpo and isinstance(cuerpo[0], ast.Expr)
+                                and isinstance(cuerpo[0].value, ast.Constant)
+                                and isinstance(cuerpo[0].value.value, str)):
+                            cuerpo = cuerpo[1:]
+                        if not cuerpo:
+                            return True
+                        if len(cuerpo) == 1 and isinstance(cuerpo[0], ast.Pass):
+                            return True
+                        return False
+                    _sin_antes = {n.name for n in ast.walk(_arbol_antes_c)
+                                  if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+                                  and n.name.startswith("test_") and _vacia_aqui(n)}
+                    _sin_despues = {n.name for n in ast.walk(_arbol_despues_c)
+                                    if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+                                    and n.name.startswith("test_") and _vacia_aqui(n)}
+                    for _nombre in sorted(_sin_despues - _sin_antes):
+                        fallos.append(
+                            "SE QUEDA SIN CUERPO: la prueba '%s' tenia cuerpo antes y ahora "
+                            "no tiene nada o solo pass. Una prueba sin cuerpo PASA SIEMPRE: "
+                            "el candado sigue en su sitio pero deja de vigilar y nadie lo nota."
+                            % _nombre)
+        except Exception:
+            pass
+
         if not nuevo.strip():
             # Solo se borra: las demas cuentas suponen que hay codigo nuevo que leer, asi que
             # se devuelve la lista de fallos tal como va, sin mirar mas cuentas.
@@ -406,6 +454,54 @@ def revisar(propuesta, tarea=""):
                         fallos.append(
                             "NO CARGA: el archivo se queda sin arrancar. Primera razon: %s"
                             % _fallos_despues[0])
+        except Exception:
+            pass
+
+        # 2c — SE QUEDA SIN CUERPO: una prueba que se queda con su docstring y nada mas
+        # PASA SIEMPRE. El candado sigue en su sitio pero ya no vigila nada y nadie se entera.
+        # Medido el 2026-09-20: un cambio del equipo se comio el cuerpo entero de una prueba
+        # ya guardada. Es CUENTA: se comparan los cuerpos de las funciones test_ antes y
+        # despues. Si algo falla aqui, no se agrega nada y se sigue como siempre.
+        try:
+            _ruta_c = str(p.get("archivo") or "")
+            if (_ruta_c.lower().endswith(".py") and os.path.isfile(_ruta_c)
+                    and viejo.strip()):
+                with open(_ruta_c, encoding="utf-8-sig", errors="replace") as _fc:
+                    _antes_c = _fc.read()
+                if viejo in _antes_c:
+                    _despues_c = _antes_c.replace(viejo, nuevo, 1)
+                    _arbol_antes_c = ast.parse(_antes_c)
+                    _arbol_despues_c = ast.parse(_despues_c)
+
+                    def _cuerpo_vacio(_nodo):
+                        _cuerpo = list(_nodo.body)
+                        if (_cuerpo and isinstance(_cuerpo[0], ast.Expr)
+                                and isinstance(_cuerpo[0].value, ast.Constant)
+                                and isinstance(_cuerpo[0].value.value, str)):
+                            _cuerpo = _cuerpo[1:]
+                        if not _cuerpo:
+                            return True
+                        if len(_cuerpo) == 1 and isinstance(_cuerpo[0], ast.Pass):
+                            return True
+                        return False
+
+                    def _pruebas_sin_cuerpo(_arbol):
+                        _sin = set()
+                        for _n in ast.walk(_arbol):
+                            if (isinstance(_n, (ast.FunctionDef, ast.AsyncFunctionDef))
+                                    and _n.name.startswith("test_")
+                                    and _cuerpo_vacio(_n)):
+                                _sin.add(_n.name)
+                        return _sin
+
+                    _sin_antes = _pruebas_sin_cuerpo(_arbol_antes_c)
+                    _sin_despues = _pruebas_sin_cuerpo(_arbol_despues_c)
+                    for _nombre in sorted(_sin_despues - _sin_antes):
+                        fallos.append(
+                            "SE QUEDA SIN CUERPO: la prueba '%s' tenia cuerpo antes y ahora "
+                            "no tiene nada o solo pass. Una prueba sin cuerpo PASA SIEMPRE: "
+                            "el candado sigue en su sitio pero deja de vigilar y nadie lo nota."
+                            % _nombre)
         except Exception:
             pass
 
