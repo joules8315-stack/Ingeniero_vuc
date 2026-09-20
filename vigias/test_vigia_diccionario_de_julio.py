@@ -36,6 +36,9 @@ def _aparte(tmp_path, monkeypatch):
     """El diccionario de mentira vive aparte: NUNCA se toca el de verdad."""
     falso = str(tmp_path / "diccionario_de_mentira.json")
     monkeypatch.setattr(diccionario, "RUTA", falso, raising=False)
+    sitio = tmp_path / "app_web.html"
+    sitio.write_text("", encoding="utf-8")
+    monkeypatch.setattr(diccionario, "AQUI", str(tmp_path), raising=False)
     return falso
 
 
