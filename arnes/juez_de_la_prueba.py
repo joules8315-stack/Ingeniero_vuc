@@ -274,11 +274,17 @@ def juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo, dejar_el_c
                         'razon': resultado.get('razon', ''),
                     }
 
-                return {
-                    'ok': False,
-                    'prueba': vigia,
-                    'razon': resultado.get('razon', ''),
-                }
+                # Con varias pruebas no se puede saber cual es la del cambio, asi que
+                # no se frena: para eso ya esta el guardia, que no deja guardar con
+                # pruebas rojas.
+                if len(candidatas) == 1:
+                    return {
+                        'ok': False,
+                        'prueba': vigia,
+                        'razon': resultado.get('razon', ''),
+                    }
+
+                continue
 
             return {
                 'ok': None,
