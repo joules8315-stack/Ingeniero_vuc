@@ -17,6 +17,7 @@ Uso (en PowerShell):
 import hashlib
 import json
 import os
+import re
 import sys
 import time
 
@@ -120,6 +121,13 @@ def parece_una_orden(texto):
         return False
     # b) Renglon suelto de un informe con formato, no una orden
     if texto.startswith('"') and '":' in texto:
+        return False
+    limpio = texto.strip()
+    # un pedazo que empieza por una extension de archivo es basura de haber partido por el punto
+    if re.match(r"^(py|json|md|sh)(?![a-zA-Z0-9])", limpio.lower()):
+        return False
+    # un renglon con una palabra, varios espacios y dos puntos es un renglon de informe
+    if re.search(r"(toca|resumen|fallo|diagnostico|aviso|confianza)\s+:", limpio):
         return False
     # b) Pregunta
     if texto.rstrip().endswith("?"):
