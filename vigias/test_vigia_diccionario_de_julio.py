@@ -102,12 +102,36 @@ def test_lo_mas_reciente_manda(tmp_path, monkeypatch):
 
 def test_solo_guarda_lo_PROBADO(tmp_path, monkeypatch):
     """Sin archivo o sin sitio no hay pareja: no se guarda una suposicion."""
+
+
+def test_no_hace_falta_mirar_fuera_de_esta_carpeta(tmp_path, monkeypatch):
+    """Sin el mapa de proyectos la prueba sigue encontrando el sitio: no depende de fuera."""
+    import builtins
+
     _aparte(tmp_path, monkeypatch)
-    for archivo, funcion in (("", "enterApp"), ("app_web.html", ""), ("", "")):
-        diccionario.aprender("algo que paso", archivo, funcion, 1, "foto_informe")
-    assert not diccionario.todo(), (
-        "guardo una pareja sin sitio probado. El diccionario solo vale si cada pareja salio de "
-        "una causa DEMOSTRADA; si acepta suposiciones, envenena al repartidor")
+
+    de_siempre = builtins.__import__
+
+    def falso_import(nombre, *args, **kwargs):
+        if nombre.startswith("cerebro"):
+            raise ImportError("el mapa de proyectos esta escondido a proposito")
+        return de_siempre(nombre, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", falso_import)
+
+    primero = diccionario.aprender("los informes no cargan", "app_web.html", "viejo", 100,
+                                   "foto_informe")
+    segundo = diccionario.aprender("los informes no cargan", "app_web.html", "enterApp", 2092,
+                                   "foto_informe")
+
+    assert primero and segundo, (
+        "sin el mapa de proyectos la prueba deja de encontrar el sitio, o sea que sigue "
+        "dependiendo de un archivo de otro proyecto y por eso es inestable")
+
+    sitios = diccionario.buscar("los informes no cargan")
+    assert sitios[0].get("funcion") == "enterApp", (
+        "el primer sitio que sale no es enterApp: la prueba no esta mirando donde debe")
+
 
 
 def test_no_guarda_un_sitio_cuyo_archivo_NO_existe_en_el_disco(tmp_path, monkeypatch):
