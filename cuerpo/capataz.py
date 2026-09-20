@@ -685,6 +685,33 @@ def comprobar_pasos(orden):
     if not os.path.exists(pieza):
         return "aplicada"
 
+    # Paso 2b pieza_suelta: si la pieza es un .py que existe, algun otro .py
+    # del proyecto debe nombrarla por su nombre de modulo; si nadie la nombra,
+    # la pieza quedo suelta y se devuelve "aplicada".
+    if pieza.endswith(".py") and os.path.exists(pieza):
+        modulo = os.path.splitext(os.path.basename(pieza))[0]
+        ruta_pieza_abs = os.path.abspath(pieza)
+        nombrada = False
+        for raiz, _dirs, archivos in os.walk(carpeta_proyecto):
+            for nombre_archivo in archivos:
+                if not nombre_archivo.endswith(".py"):
+                    continue
+                ruta_otro = os.path.join(raiz, nombre_archivo)
+                if os.path.abspath(ruta_otro) == ruta_pieza_abs:
+                    continue
+                try:
+                    with open(ruta_otro, encoding="utf-8") as f:
+                        contenido = f.read()
+                except OSError:
+                    continue
+                if modulo in contenido:
+                    nombrada = True
+                    break
+            if nombrada:
+                break
+        if not nombrada:
+            return "aplicada"
+
     # Paso 3 vigia_verde: pytest sobre la vigia
     vigia = orden.get("vigia")
     if not vigia:
