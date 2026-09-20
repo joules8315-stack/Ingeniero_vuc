@@ -331,6 +331,37 @@ def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):
                     return 'PARADO: 3 FALLOS DEL MISMO TIPO (' + tipo + ') EN ' + str(pieza)
 
 
+def la_tarea_esta_terminada(orden):
+    """Mira si la tarea esta de verdad terminada, no solo guardada.
+
+    El 2026-09-20 el pit dio por terminadas tres tareas solo porque se
+    guardaron, sin mirar ni una vez si la prueba de cada tarea estaba verde,
+    y una de ellas dejo en la historia una prueba que no podia estar verde
+    nunca. Esta funcion es la que mira.
+
+    Recibe la orden y devuelve un diccionario con las claves ok, paso y razon.
+    """
+    try:
+        paso = comprobar_pasos(orden)
+        if paso == "":
+            return {
+                "ok": True,
+                "paso": "",
+                "razon": "Todos los pasos estan comprobados.",
+            }
+        return {
+            "ok": False,
+            "paso": paso,
+            "razon": "La tarea no esta terminada porque fallo el paso " + str(paso) + ", por mucho que se haya guardado.",
+        }
+    except Exception as e:
+        return {
+            "ok": False,
+            "paso": "error",
+            "razon": "Fallo al comprobar la tarea: " + str(e),
+        }
+
+
 def correr_orden_del_sistema(palabras):
     """Corre una orden del sistema y devuelve el numero con el que termino.
 
@@ -749,16 +780,3 @@ def comprobar_pasos(orden):
 
     # Paso 5 guardado: si el comando no esta vacio ya se corrio en el paso 4
     return ""
-    encontrada = False
-    for orden in lista:
-        if orden.get("id") == orden_id:
-            orden["estado"] = estado
-            orden["paso_fallido"] = paso_fallido
-            orden["fallos_seguidos"] = fallos_seguidos
-            encontrada = True
-            break
-    if not encontrada:
-        return False
-    with open(ruta, "w", encoding="utf-8") as f:
-        json.dump(lista, f, indent=2)
-    return True
