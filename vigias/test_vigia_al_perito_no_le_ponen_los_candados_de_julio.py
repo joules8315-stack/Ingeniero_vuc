@@ -61,8 +61,8 @@ def capataz(monkeypatch):
         })
         return _ResultadoFalso(stdout=salida, returncode=0)
 
-    monkeypatch.setattr(capataz.shutil, 'which', which_falso)
-    monkeypatch.setattr(capataz.subprocess, 'run', run_falso)
+    monkeypatch.setattr(shutil, 'which', which_falso)
+    monkeypatch.setattr(subprocess, 'run', run_falso)
     return capataz, llamadas
 
 
