@@ -18,6 +18,26 @@ def _apuntar_log(ok, archivo, funcion, detalle):
 
 
 # Ley: CONTRATO_VARIOS_CAMBIOS_EN_UNA_RONDA.md (Julio 2026-09-14): varios pedazos en una sola ronda, se aplican TODOS o NINGUNO.
+def aplicar_propuesta(propuesta, raiz=None):
+    """Decide sola entre aplicar_cambios y aplicar_cambio. Devuelve (ok, mensaje).
+
+    Si la propuesta es un diccionario y trae la clave 'cambios' con una lista no vacia,
+    arma una copia donde cada trozo que no traiga su propia clave 'archivo' recibe el
+    archivo de la propuesta, y llama a aplicar_cambios con esa copia. Si no trae
+    'cambios', llama a aplicar_cambio con la propuesta tal cual. Devuelve lo que
+    devuelva la que llamo.
+    """
+    if isinstance(propuesta, dict) and propuesta.get('cambios'):
+        copia = dict(propuesta)
+        archivo = propuesta.get('archivo')
+        copia['cambios'] = [
+            ({**pedazo, 'archivo': archivo} if isinstance(pedazo, dict) and not pedazo.get('archivo') else pedazo)
+            for pedazo in propuesta['cambios']
+        ]
+        return aplicar_cambios(copia, raiz=raiz)
+    return aplicar_cambio(propuesta, raiz=raiz)
+
+
 def aplicar_cambios(propuesta, raiz=None):
     pedazos = propuesta.get('cambios') if isinstance(propuesta, dict) else []
     if not pedazos:
