@@ -14,7 +14,7 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
@@ -34,7 +34,7 @@
     "vigia": "vigias/test_vigia_recoger_pasa_por_el_guardia.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "corriendo",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "la copia vieja de hoy quedo en memoria/rescate/capataz.py.RECOGIDO_VIEJO_2026-09-21_1330; ademas piso el trabajo nuevo, que es la orden 37."
@@ -57,6 +57,89 @@
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "la prueba nace roja con el loop de hoy (para en el tope) y se pone verde con la orden 68."
+  },
+  {
+    "id": "92",
+    "titulo": "La vigia del vigilante de la tarea que se demora",
+    "origen": "directriz de Julio A-44 (2026-09-21): si una tarea pasa su tiempo limite, se revisa si sigue trabajando o se dano; si avanza se espera, si no se detiene y se busca la causa",
+    "repara": "hoy lanzar_al_equipo corta toda tarea a los 900 s aunque este avanzando, y espera los 900 s enteros aunque este colgada desde el principio",
+    "pieza": "vigias/test_vigia_el_vigilante_de_la_tarea.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_vigilante_de_la_tarea.py. Vigila la funcion esperar del archivo nuevo cuerpo/vigilante.py, con la firma esperar(proceso, limite, sin_avance, tope_duro, avance, dormir, reloj). Arriba: from cuerpo import vigilante. Usa un reloj falso (una lista con el tiempo actual que avanza cuando se llama a dormir con los segundos que se le pasen) y un proceso falso con poll() que devuelve None hasta el momento que le digas y despues 0, y kill() que apunta que se le llamo. avance es una funcion que devuelve un numero. Pruebas, cada una con assert, con limite 100, sin_avance 30 y tope_duro 1000: (1) si el proceso termina a los 50, devuelve 'termino' y no se llamo a kill; (2) si el proceso termina a los 300 y avance devuelve un numero que sube cada vez que se le llama, devuelve 'termino' y no se llamo a kill, porque pasado el limite seguia avanzando; (3) si el proceso nunca termina y avance devuelve siempre el mismo numero, devuelve 'colgada', se llamo a kill y el reloj no paso de 100 mas 30 mas 10; (4) si el proceso nunca termina pero avance sube siempre, devuelve 'tope_duro', se llamo a kill y el reloj llego al menos a 1000. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_vigilante_de_la_tarea.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
+    "id": "93",
+    "titulo": "El vigilante de la tarea que se demora",
+    "origen": "directriz de Julio A-44 (2026-09-21)",
+    "repara": "cortar una tarea que avanza pierde trabajo pagado, y esperar entera una que esta colgada pierde tiempo (medido: Big Pickle colgado 115 veces, 300 s cada una, unas 9,5 horas)",
+    "pieza": "cuerpo/vigilante.py",
+    "depende": [
+      "92"
+    ],
+    "modo": "IA",
+    "razon": "ver si un numero sube y comparar tiempos es contar: programa, sin IA",
+    "encargo": "Crear el archivo nuevo cuerpo/vigilante.py con una sola funcion esperar(proceso, limite, sin_avance, tope_duro, avance, dormir=time.sleep, reloj=time.monotonic). Texto de ayuda arriba del archivo: directriz de Julio A-44 del 2026-09-21, si una tarea pasa su tiempo limite se revisa si sigue trabajando o se dano; si avanza se espera; si no, se detiene para buscar la causa. La funcion: apunta inicio = reloj() y ultimo = avance(), y momento_ultimo_avance = inicio. En un bucle: si proceso.poll() no es None devuelve 'termino'. Si reloj() - inicio pasa de tope_duro, llama proceso.kill() y devuelve 'tope_duro'. Lee ahora = avance(); si ahora es distinto de ultimo, guarda ultimo = ahora y momento_ultimo_avance = reloj(). Si reloj() - inicio pasa de limite y reloj() - momento_ultimo_avance pasa de sin_avance, llama proceso.kill() y devuelve 'colgada'. Llama dormir(5). Si avance lanza una excepcion, se toma como que no hubo avance. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_vigilante_de_la_tarea.py",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
+    "id": "94",
+    "titulo": "La vigia de que el pit usa el vigilante al lanzar cada tarea",
+    "origen": "directriz de Julio A-44 (2026-09-21)",
+    "repara": "sin conectar, el vigilante existe y nadie lo usa",
+    "pieza": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+    "depende": [
+      "93"
+    ],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py. Vigila la funcion lanzar_al_equipo de cuerpo/capataz.py. Arriba: import subprocess, from cuerpo import capataz, from cuerpo import vigilante. Con monkeypatch cambia subprocess.Popen por una clase falsa cuyo communicate devuelve ('salida', '') y cuyo returncode es 0, y cambia vigilante.esperar por una funcion falsa que apunta sus argumentos y devuelve lo que le digas. Pruebas, cada una con assert: (1) si esperar devuelve 'termino', lanzar_al_equipo('ingeniero', {'id': '1', 'encargo': 'x'}) devuelve un dict cuya salida contiene salida, y esperar se llamo una vez con limite igual a capataz.LIMITE_TAREA_SEGUNDOS; (2) si esperar devuelve 'colgada', la salida empieza por 'COLGADA:'; (3) capataz.tipo_de_fallo('COLGADA: sin avance') devuelve 'colgada'. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
+    "id": "95",
+    "titulo": "El pit vigila la tarea que se demora",
+    "origen": "directriz de Julio A-44 (2026-09-21)",
+    "repara": "lanzar_al_equipo corta a ciegas a los 900 s",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "94"
+    ],
+    "modo": "IA",
+    "razon": "los limites salen de los datos medidos del cuaderno de llamadas, no de una suposicion",
+    "encargo": "En cuerpo/capataz.py hay que hacer tres cambios, entregalos en la lista cambios. (1) Arriba de def lanzar_al_equipo agrega las constantes con su comentario: LIMITE_TAREA_SEGUNDOS = 420 y SIN_AVANCE_SEGUNDOS = 150 y TOPE_DURO_SEGUNDOS = 1800 (medido el 2026-09-21 en el cuaderno de llamadas: DeepSeek tarda 4 a 11 s, Big Pickle cuando contesta 91 s de mediana y 223 s en el 90 por ciento, y el guardia menos de un minuto). (2) En lanzar_al_equipo cambia el subprocess.run por subprocess.Popen con los mismos cwd, env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding utf-8 y errors replace; el avance es una funcion que devuelve la suma de os.path.getmtime de memoria/CUADERNO_DE_LLAMADAS.jsonl y memoria/APLICACIONES.log que existan (from cuerpo import vigilante dentro de la funcion); llama estado = vigilante.esperar(proceso, LIMITE_TAREA_SEGUNDOS, SIN_AVANCE_SEGUNDOS, TOPE_DURO_SEGUNDOS, avance); despues salida_normal, salida_errores = proceso.communicate(); si estado no es 'termino' devuelve {'guardado': False, 'codigo': None, 'salida': 'COLGADA: ' + estado + ' (sin avance pasado el limite; se busca la causa raiz)\\n' + salida_normal + salida_errores}; si es 'termino' devuelve lo mismo que hoy con proceso.returncode. El parametro tope_segundos se queda en la firma sin usarse, para no romper a quien lo pasa. (3) En tipo_de_fallo, como primera comprobacion, si la salida empieza por 'COLGADA:' devuelve 'colgada'. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "una tarea 'colgada' va al forense como cualquier fallo (causa raiz) y, por A-43, su arreglo pasa al frente."
   },
   {
     "id": "81",
