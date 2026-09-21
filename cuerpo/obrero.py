@@ -1019,7 +1019,7 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
         material_auditor = ('COMPROBADO POR PROGRAMA (gratis, antes de ti): los nombres que usa el cambio existen en el archivo o estan importados y el archivo sigue cargando. NO rechaces por no aparecer en el material: juzga solo si el cambio hace lo pedido y si rompe algo.\n') + material_auditor
     if isinstance(propuesta, dict) and propuesta.get('_juez_de_la_prueba'):
         material_auditor = ('YA SE CORRIO LA PRUEBA (gratis, antes de ti): un programa corrio la prueba de verdad. Estaba roja antes del cambio, quedo verde con el cambio y volvio a roja al deshacerlo. Por lo tanto el cambio SI hace lo que la prueba pide y eso no se discute. Solo queda juzgar si esa prueba expresa lo que se pidio y si el cambio rompe algo.\n' + str(propuesta.get('_juez_de_la_prueba', ''))) + material_auditor
-    if auditor == 'bigpickle':
+    if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False):
         # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de
         # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.
         from cuerpo import bigpickle
@@ -1029,6 +1029,9 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
         if _texto_bp:
             quien_aud = 'bigpickle'
             auditoria = _json_de(_texto_bp)
+        else:
+            auditar._bp_caido = True
+            avisos.append('bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)')
     for _intento in range(0 if auditor == 'bigpickle' else 2):
         crudo_a, quien_aud, av_intento = _preguntar_con_relevo(
             _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,
