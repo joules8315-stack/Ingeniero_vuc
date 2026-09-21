@@ -75,6 +75,11 @@ def test_ni_con_revisor_fijo_se_aprueba_a_si_mismo(monkeypatch):
         "pidiera ese revisor fijo; salio veredicto=%r con quien=%r"
         % (veredicto, quien)
     )
+    assert quien != "deepseek", (
+        "si se deja el nombre del que escribio como revisor, el registro del "
+        "trabajo seguira diciendo que lo reviso otro; salio quien=%r"
+        % (quien,)
+    )
 
 
 def test_un_revisor_distinto_si_aprueba(monkeypatch):
