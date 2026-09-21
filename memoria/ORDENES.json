@@ -1,5 +1,64 @@
 [
   {
+    "id": "90",
+    "titulo": "La vigia de que recoger no deja una copia que pone rojas a sus vecinas",
+    "origen": "medido el 2026-09-21 13:02 (ley A-43): la copia recogida de la orden 68 pasaba su propia vigia pero ponia roja la vigia vieja del loop; quedo en el disco sin guardar y el guardia freno por ella a 84, 65 y 85",
+    "repara": "recoger_lo_frenado solo corre la vigia de la propia orden, no las vecinas que el guardia si corre",
+    "pieza": "vigias/test_vigia_recoger_pasa_por_el_guardia.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_recoger_pasa_por_el_guardia.py. Vigila la funcion recoger_lo_frenado de cuerpo/capataz.py. Arriba del archivo: import subprocess, from cuerpo import capataz, from arnes import recoger_los_pedazos, from arnes import guardia_de_guardado. Usa raiz=str(tmp_path) y la orden {'id': '1', 'pieza': 'pieza.py', 'vigia': 'vigias/test_x.py'}. Con monkeypatch: recoger_los_pedazos.recoger devuelve {'ok': True, 'destino': 'pieza.py', 'razon': 'x'}; subprocess.run es una funcion falsa que guarda cada orden (su primer argumento) en una lista y devuelve un objeto con returncode 0, stdout vacio y stderr vacio. Pruebas, cada una con assert: (1) con guardia_de_guardado._vigias cambiada por una funcion que devuelve (False, 'rojas'), recoger_lo_frenado devuelve un dict con ok False; (2) en ese mismo caso alguna orden guardada contiene git y pieza.py; (3) con guardia_de_guardado._vigias devolviendo (True, 'verde'), el resultado tiene ok True. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_recoger_pasa_por_el_guardia.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
+    "id": "91",
+    "titulo": "Recoger no deja una copia que pone rojas a sus vecinas",
+    "origen": "medido el 2026-09-21 13:02 (ley A-43)",
+    "repara": "una copia recogida que pasa su vigia pero rompe a sus vecinas queda en el disco y frena todas las tareas siguientes",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "90"
+    ],
+    "modo": "IA",
+    "razon": "el guardia ya sabe que vecinas correr y cuales esperan su arreglo: se usa el mismo, no se inventa otro",
+    "encargo": "En cuerpo/capataz.py, en la funcion recoger_lo_frenado, justo antes de la ultima linea return resultado (la que va despues de if prueba.returncode != 0: y su bloque), agrega: from arnes import guardia_de_guardado; paso, _mensaje = guardia_de_guardado._vigias(raiz); si paso no es verdadero, corre la misma orden de git que ya usa la funcion (['git', 'checkout', 'HEAD', '--', pieza] con cwd=raiz, capture_output=True, text=True, timeout=60) y devuelve {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida pone rojas a sus vecinas: no se deja en el disco'}. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_recoger_pasa_por_el_guardia.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "la copia vieja de hoy quedo en memoria/rescate/capataz.py.RECOGIDO_VIEJO_2026-09-21_1330; ademas piso el trabajo nuevo, que es la orden 37."
+  },
+  {
+    "id": "89",
+    "titulo": "La vigia vieja del loop sigue la orden nueva de Julio: sin tope en dolares",
+    "origen": "orden de Julio 2026-09-21 (A-42) y medido 13:02: la vigia vieja exige parar a los 5 USD y por eso el guardia frena siempre la orden 68",
+    "repara": "una vigia vieja que contradice una ley nueva frena para siempre el arreglo que la cumple",
+    "pieza": "vigias/test_vigia_el_loop_del_pit.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "A-42 reemplaza a A-27: la vigia tiene que medir la ley vigente, no la reemplazada",
+    "encargo": "En vigias/test_vigia_el_loop_del_pit.py, en la funcion test_tope_de_gasto_para_antes_de_llamar, cambia el texto de ayuda por: Orden de Julio A-42 (2026-09-21): no hay tope en dolares; aunque el gasto del mes sea grande, el loop no para por eso y llama al equipo. Y cambia las dos lineas assert texto.startswith('PARADO: TOPE DE GASTO') y assert llamadas == [] por assert not texto.startswith('PARADO: TOPE DE GASTO') y assert llamadas == ['o1']. No cambies nada mas ni toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_loop_del_pit.py",
+    "entrega_la_prueba": "si",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "la prueba nace roja con el loop de hoy (para en el tope) y se pone verde con la orden 68."
+  },
+  {
     "id": "81",
     "titulo": "La vigia de que recoger no deja en el disco una copia que deja su prueba roja",
     "origen": "medido el 2026-09-21 11:19 (ley A-43): el pit recogio la copia frenada de la orden 37 y la dejo en el disco sin guardar; llamaba a _es_copia_vieja, que no existe, y puso rojas las pruebas de todas las tareas siguientes (el guardia freno a 65 y 68 por culpa ajena)",
@@ -14,7 +73,7 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
@@ -34,7 +93,7 @@
     "vigia": "vigias/test_vigia_recoger_no_deja_una_copia_roja.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "la copia rota de hoy quedo en memoria/rescate/recoger_los_pedazos.py.ROTO_RECOGIDO_2026-09-21 y la pieza volvio a lo guardado a mano."
@@ -54,7 +113,7 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
@@ -175,9 +234,9 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
-    "paso_fallido": "",
-    "fallos_seguidos": 0,
+    "estado": "fallida",
+    "paso_fallido": "no_aprobo",
+    "fallos_seguidos": 1,
     "nota": ""
   },
   {
@@ -307,7 +366,8 @@
     "repara": "hoy bucle se para al llegar a 5 USD del mes; Julio ordeno usar cada IA de pago hasta que se agote",
     "pieza": "cuerpo/capataz.py",
     "depende": [
-      "67"
+      "67",
+      "89"
     ],
     "modo": "IA",
     "razon": "saber si a DeepSeek se le acabo el saldo es leer un dato que ya guarda cuotas: es programa, no juicio",
@@ -1021,9 +1081,9 @@
     "vigia": "vigias/test_vigia_una_prueba_que_revienta_no_nace_roja.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
-    "paso_fallido": "",
-    "fallos_seguidos": 0,
+    "estado": "fallida",
+    "paso_fallido": "no_aprobo",
+    "fallos_seguidos": 1,
     "nota": "la vigia existe pero sus pruebas se caen en el paso aplicada, antes de llegar al paso que vigilan: la orden de mentira no pasa los pasos 1 y 2. Hay que montarla igual que la vigia de la orden 26, que si funciona."
   },
   {
@@ -1062,7 +1122,7 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "corriendo",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "el primer intento se perdio la noche del 2026-09-20: el perito se quedo sin cupo de la sesion y el equipo fallo varias vueltas seguidas. Se reintenta tal cual."
