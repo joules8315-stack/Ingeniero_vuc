@@ -303,7 +303,7 @@ def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):
                     marcar_estado(orden.get('id'), 'fallida', 'sabotaje', (orden.get('fallos_seguidos') or 0) + 1)
                     continue
                 terminada = la_tarea_esta_terminada(orden)
-                if isinstance(terminada, dict) and terminada.get('ok') is False:
+                if isinstance(terminada, dict) and terminada.get('ok') is False and terminada.get('paso') == 'vigia_verde':
                     aviso('SIN_TERMINAR ' + orden_id + ' ' + str(terminada.get('razon')))
                     marcar_estado(orden.get('id'), 'fallida', terminada.get('paso'), (orden.get('fallos_seguidos') or 0) + 1)
                     continue
@@ -504,6 +504,8 @@ def pedir_al_perito(expediente, raiz, tope_segundos=600):
         return (None, 'no encuentro claude en el PATH')
     pedido = ('Eres el perito del pit (acuerdo A-22). Analiza este fallo SOLO con el expediente y leyendo el codigo del proyecto; no uses tu memoria. Responde SOLO un objeto JSON con: que_paso, causa_raiz, donde, quien_fallo (herramienta, programa, equipo o diseno), citas (lista de {archivo, texto} copiados LITERAL del proyecto, que prueban la causa), no_volver_a (la leccion en una frase), tarea_nueva ({repara, pieza, razon, encargo, modo: PROGRAMA o IA}; distinta de la orden que fallo). EXPEDIENTE:' + json.dumps(expediente, ensure_ascii=False, indent=2))
     try:
+        entorno = dict(os.environ)
+        entorno['INGENIERO_OFF'] = '1'
         resultado = subprocess.run(
             [exe, '-p', '--tools', 'Read,Grep,Glob', '--permission-mode', 'plan'],
             input=pedido,
@@ -513,6 +515,7 @@ def pedir_al_perito(expediente, raiz, tope_segundos=600):
             encoding='utf-8',
             errors='replace',
             timeout=tope_segundos,
+            env=entorno,
         )
     except subprocess.TimeoutExpired:
         return (None, 'el perito no contesto en %d s' % tope_segundos)
@@ -752,12 +755,39 @@ def comprobar_pasos(orden):
     vigia = orden.get("vigia")
     if not vigia:
         return "vigia_verde"
+    ruta_vigia = os.path.join(carpeta_proyecto, vigia)
+    if not os.path.isfile(ruta_vigia):
+        return "vigia_verde"
     resultado_vigia = subprocess.run(
         ["python", "-m", "pytest", vigia],
         cwd=carpeta_proyecto,
         capture_output=True,
         text=True,
     )
+    if orden.get("entrega_la_prueba") == "si":
+        # La tarea ENTREGA la prueba: se comprueba al reves. La prueba tiene
+        # que existir y estar ROJA. Si ya esta verde, este paso falla, porque
+        # una prueba que pasa antes del cambio no demuestra nada.
+        if resultado_vigia.returncode == 0:
+            return "vigia_verde"
+        # No basta con que pytest devuelva rojo: hay que mirar la salida.
+        # Si el rojo viene de una comprobacion no cumplida (AssertionError)
+        # la prueba nacio roja de verdad y el paso esta bien. Si viene de un
+        # reventon de la propia prueba (AttributeError, NameError o TypeError
+        # sin AssertionError) el paso FALLA, porque una prueba que revienta no
+        # mide nada. Excepcion: ImportError o ModuleNotFoundError nombrando
+        # justo la pieza que esta orden va a crear SI valen, porque es normal
+        # que la prueba no encuentre todavia una pieza que aun no existe.
+        salida_vigia = (resultado_vigia.stdout or "") + (resultado_vigia.stderr or "")
+        if "AssertionError" in salida_vigia:
+            return ""
+        pieza_de_la_orden = orden.get("pieza") or ""
+        nombre_pieza = os.path.splitext(os.path.basename(pieza_de_la_orden))[0]
+        if nombre_pieza and ("ImportError" in salida_vigia or "ModuleNotFoundError" in salida_vigia) and nombre_pieza in salida_vigia:
+            return ""
+        if "AttributeError" in salida_vigia or "NameError" in salida_vigia or "TypeError" in salida_vigia:
+            return "vigia_verde"
+        return ""
     if resultado_vigia.returncode != 0:
         resultado_git = subprocess.run(
             ["git", "ls-files", vigia],

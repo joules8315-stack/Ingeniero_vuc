@@ -1,0 +1,11 @@
+[
+  {"archivo": "cuerpo/capataz.py",
+   "viejo": "    if orden.get(\"entrega_la_prueba\") == \"si\":",
+   "nuevo": "    if False:"},
+  {"archivo": "cuerpo/capataz.py",
+   "viejo": "        if resultado_vigia.returncode == 0:\n            return \"vigia_verde\"\n        return \"\"",
+   "nuevo": "        return \"\""},
+  {"archivo": "cuerpo/capataz.py",
+   "viejo": "    if orden.get(\"entrega_la_prueba\") == \"si\":\n        # La tarea ENTREGA la prueba: se comprueba al reves. La prueba tiene\n        # que existir y estar ROJA. Si ya esta verde, este paso falla, porque\n        # una prueba que pasa antes del cambio no demuestra nada.\n        if resultado_vigia.returncode == 0:\n            return \"vigia_verde\"\n        return \"\"",
+   "nuevo": "    if orden.get(\"entrega_la_prueba\") == \"no\":\n        return \"\""}
+]

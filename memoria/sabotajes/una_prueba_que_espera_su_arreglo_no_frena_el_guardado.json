@@ -1,0 +1,11 @@
+[
+  {"archivo": "arnes/guardia_de_guardado.py",
+   "viejo": "    guardados_que_frenan = [a for a in guardados if a not in esperando]",
+   "nuevo": "    guardados_que_frenan = list(guardados)"},
+  {"archivo": "arnes/guardia_de_guardado.py",
+   "viejo": "                if str(orden.get(\"estado\", \"\")).strip().lower() == \"hecha\":\n                    continue",
+   "nuevo": "                if str(orden.get(\"estado\", \"\")).strip().lower() != \"hecha\":\n                    continue"},
+  {"archivo": "arnes/guardia_de_guardado.py",
+   "viejo": "                vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                if vigia:\n                    esperando.add(vigia)",
+   "nuevo": "                pass"}
+]

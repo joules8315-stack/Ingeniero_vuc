@@ -770,6 +770,23 @@ def comprobar_pasos(orden):
         # una prueba que pasa antes del cambio no demuestra nada.
         if resultado_vigia.returncode == 0:
             return "vigia_verde"
+        # No basta con que pytest devuelva rojo: hay que mirar la salida.
+        # Si el rojo viene de una comprobacion no cumplida (AssertionError)
+        # la prueba nacio roja de verdad y el paso esta bien. Si viene de un
+        # reventon de la propia prueba (AttributeError, NameError o TypeError
+        # sin AssertionError) el paso FALLA, porque una prueba que revienta no
+        # mide nada. Excepcion: ImportError o ModuleNotFoundError nombrando
+        # justo la pieza que esta orden va a crear SI valen, porque es normal
+        # que la prueba no encuentre todavia una pieza que aun no existe.
+        salida_vigia = (resultado_vigia.stdout or "") + (resultado_vigia.stderr or "")
+        if "AssertionError" in salida_vigia:
+            return ""
+        pieza_de_la_orden = orden.get("pieza") or ""
+        nombre_pieza = os.path.splitext(os.path.basename(pieza_de_la_orden))[0]
+        if nombre_pieza and ("ImportError" in salida_vigia or "ModuleNotFoundError" in salida_vigia) and nombre_pieza in salida_vigia:
+            return ""
+        if "AttributeError" in salida_vigia or "NameError" in salida_vigia or "TypeError" in salida_vigia:
+            return "vigia_verde"
         return ""
     if resultado_vigia.returncode != 0:
         resultado_git = subprocess.run(

@@ -1,0 +1,11 @@
+[
+  {"archivo": "cuerpo/obrero.py",
+   "viejo": "        auditoria = {\"veredicto\": \"SIN_AUDITAR\",\n                     \"resumen_para_el_jefe\": \"quien escribio no puede aprobar su propio trabajo\"}",
+   "nuevo": "        auditoria = dict(auditoria or {})"},
+  {"archivo": "cuerpo/obrero.py",
+   "viejo": "        quien_aud = None\n\n    return auditoria, quien_aud, avisos",
+   "nuevo": "        pass\n\n    return auditoria, quien_aud, avisos"},
+  {"archivo": "cuerpo/obrero.py",
+   "viejo": "    if evitar and quien_aud == evitar:\n        avisos.append(\"el mismo cerebro escribio y reviso: hay que comprobarlo con los ojos antes de darlo por bueno\")",
+   "nuevo": "    if False:\n        avisos.append(\"el mismo cerebro escribio y reviso: hay que comprobarlo con los ojos antes de darlo por bueno\")"}
+]
