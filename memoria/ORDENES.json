@@ -40,26 +40,6 @@
     "nota": ""
   },
   {
-    "id": "118",
-    "titulo": "Recoger nunca devuelve al disco algo con forma de llave",
-    "origen": "medido el 2026-09-21 18:10 (A-43): el guardia freno la vigia de la orden 48 por traer una llave de mentira escrita entera, y la recogida la volvio a dejar en el disco",
-    "repara": "recoger_lo_frenado pasa por las pruebas del guardia pero no por su freno de llaves",
-    "pieza": "cuerpo/capataz.py",
-    "depende": [
-      "117"
-    ],
-    "modo": "IA",
-    "razon": "una llave en el disco sin guardar puede acabar mandada a una IA o guardada: el mismo freno del guardia vale aqui",
-    "encargo": "En cuerpo/capataz.py, en la funcion recoger_lo_frenado, justo despues de las dos lineas if not isinstance(resultado, dict) or not resultado.get('ok'): y return resultado, agrega: from arnes import guardia_de_guardado; si guardia_de_guardado._hay_llaves(raiz, [pieza]) devuelve algo no vacio, mueve el archivo con os.replace a os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.LLAVE') y devuelve {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida trae algo con forma de llave: no se deja en el disco'}. Va ANTES de mirar entrega_la_prueba, para que valga tambien para las pruebas. No toques ningun otro archivo.",
-    "vigia": "vigias/test_vigia_recoger_no_devuelve_llaves.py",
-    "prueba_real": "",
-    "comando": "",
-    "estado": "corriendo",
-    "paso_fallido": "",
-    "fallos_seguidos": 0,
-    "nota": ""
-  },
-  {
     "id": "61",
     "titulo": "La vigia de que el candado de cierre no para por una prueba que espera su arreglo",
     "origen": "medido una y otra vez el 2026-09-20 y 21: el candado de cierre para el trabajo diciendo 15 rojas, y 14 de ellas son pruebas nacidas rojas a proposito que esperan su arreglo",
@@ -74,9 +54,9 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "fallida",
-    "paso_fallido": "tiempo",
-    "fallos_seguidos": 1,
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
     "nota": ""
   },
   {
@@ -180,6 +160,26 @@
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "cadena de revision por A-45: Big Pickle -> Grok 4.7 -> relevo de hoy; Codex queda sobre todo para reemplazar a Claude (arquitecto y perito)."
+  },
+  {
+    "id": "118",
+    "titulo": "Recoger nunca devuelve al disco algo con forma de llave",
+    "origen": "medido el 2026-09-21 18:10 (A-43): el guardia freno la vigia de la orden 48 por traer una llave de mentira escrita entera, y la recogida la volvio a dejar en el disco",
+    "repara": "recoger_lo_frenado pasa por las pruebas del guardia pero no por su freno de llaves",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "117"
+    ],
+    "modo": "IA",
+    "razon": "una llave en el disco sin guardar puede acabar mandada a una IA o guardada: el mismo freno del guardia vale aqui",
+    "encargo": "En cuerpo/capataz.py, en la funcion recoger_lo_frenado, justo despues de las dos lineas if not isinstance(resultado, dict) or not resultado.get('ok'): y return resultado, agrega: from arnes import guardia_de_guardado; si guardia_de_guardado._hay_llaves(raiz, [pieza]) devuelve algo no vacio, mueve el archivo con os.replace a os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.LLAVE') y devuelve {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida trae algo con forma de llave: no se deja en el disco'}. Va ANTES de mirar entrega_la_prueba, para que valga tambien para las pruebas. Dato para quien revisa: guardia_de_guardado._hay_llaves(raiz, archivos) EXISTE, definida en arnes/guardia_de_guardado.py (comprobado a mano el 2026-09-21, linea 103); no es un invento. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_recoger_no_devuelve_llaves.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
   },
   {
     "id": "115",
