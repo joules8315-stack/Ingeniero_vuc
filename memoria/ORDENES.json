@@ -1,5 +1,44 @@
 [
   {
+    "id": "114",
+    "titulo": "Cada prueba del relevo de Big Pickle empieza sin la marca de caido",
+    "origen": "medido el 2026-09-21 17:40 (A-43): el cambio de la orden 101 (aprobado por el juez de la prueba) pone la marca _bp_caido en obrero.auditar; las pruebas corren en un mismo proceso y una deja la marca puesta para la siguiente: test_vigia_si_bigpickle_cae_revisa_otro.py linea 101 se pone roja (reviso groq en vez de bigpickle)",
+    "repara": "una marca que vive mientras dura la tarea se hereda entre pruebas y rompe una vigia correcta",
+    "pieza": "vigias/test_vigia_si_bigpickle_cae_revisa_otro.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "cada prueba tiene que empezar limpia; se arregla en la prueba, no se quita la marca, que es la reparacion",
+    "encargo": "En vigias/test_vigia_si_bigpickle_cae_revisa_otro.py, justo despues de la linea from cuerpo import bigpickle as _bp  # noqa: E402, agrega (con dos lineas en blanco antes) un fixture que se aplica solo a todas las pruebas del archivo: import pytest arriba de ese bloque si no esta, y luego @pytest.fixture(autouse=True) con la funcion def _big_pickle_sin_marca(monkeypatch): monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False). Con un comentario: cada prueba empieza sin la marca de Big Pickle caido (orden 101, 2026-09-21). Es UN solo cambio. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_si_bigpickle_cae_revisa_otro.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "hoy la vigia esta verde y debe seguir verde; con el cambio de 101 tambien."
+  },
+  {
+    "id": "101",
+    "titulo": "Big Pickle caido no se espera en cada vuelta de la misma tarea",
+    "origen": "medido el 2026-09-21 14:12 (ley A-43)",
+    "repara": "cada vuelta de una tarea paga 300 s de espera a Big Pickle aunque ya fallo; con 3 vueltas la tarea muere por tope",
+    "pieza": "cuerpo/obrero.py",
+    "depende": [
+      "100",
+      "114"
+    ],
+    "modo": "IA",
+    "razon": "recordar que ya fallo en esta tarea es un dato, no un juicio: programa. Julio (A-45): siempre se llama primero a Big Pickle, por eso la marca vale solo mientras dura la tarea",
+    "encargo": "En cuerpo/obrero.py, en la funcion auditar, en el bloque que empieza con la linea if auditor == 'bigpickle': y que llama a bigpickle.preguntar, cambia esa linea por if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False): y, dentro del bloque, despues de la linea if _texto_bp: y sus dos lineas, agrega un else: que hace auditar._bp_caido = True y avisos.append('bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)'). La marca vive solo mientras dura el proceso de la tarea, asi que en la tarea siguiente Big Pickle se vuelve a llamar primero. Entrega el bloque entero como un solo cambio. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
     "id": "100",
     "titulo": "La vigia de que Big Pickle caido no se espera en cada vuelta de la misma tarea",
     "origen": "medido el 2026-09-21 14:12 (ley A-43): la orden 92 murio por tope de tiempo; en cada una de sus 3 vueltas se espero a Big Pickle 300 s y fallo, y el relevo contestaba en 5 s. 3 x 300 = 900 s, el tope",
@@ -14,27 +53,7 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "corriendo",
-    "paso_fallido": "",
-    "fallos_seguidos": 0,
-    "nota": ""
-  },
-  {
-    "id": "101",
-    "titulo": "Big Pickle caido no se espera en cada vuelta de la misma tarea",
-    "origen": "medido el 2026-09-21 14:12 (ley A-43)",
-    "repara": "cada vuelta de una tarea paga 300 s de espera a Big Pickle aunque ya fallo; con 3 vueltas la tarea muere por tope",
-    "pieza": "cuerpo/obrero.py",
-    "depende": [
-      "100"
-    ],
-    "modo": "IA",
-    "razon": "recordar que ya fallo en esta tarea es un dato, no un juicio: programa. Julio (A-45): siempre se llama primero a Big Pickle, por eso la marca vale solo mientras dura la tarea",
-    "encargo": "En cuerpo/obrero.py, en la funcion auditar, en el bloque que empieza con la linea if auditor == 'bigpickle': y que llama a bigpickle.preguntar, cambia esa linea por if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False): y, dentro del bloque, despues de la linea if _texto_bp: y sus dos lineas, agrega un else: que hace auditar._bp_caido = True y avisos.append('bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)'). La marca vive solo mientras dura el proceso de la tarea, asi que en la tarea siguiente Big Pickle se vuelve a llamar primero. Entrega el bloque entero como un solo cambio. No toques ningun otro archivo.",
-    "vigia": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
-    "prueba_real": "",
-    "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
@@ -1824,7 +1843,7 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "corriendo",
+    "estado": "pendiente",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "el primer intento se perdio la noche del 2026-09-20: el perito se quedo sin cupo de la sesion y el equipo fallo varias vueltas seguidas. Se reintenta tal cual."
