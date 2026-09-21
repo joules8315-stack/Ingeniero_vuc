@@ -12,6 +12,8 @@ shutil.which dentro de cuerpo/capataz.py para espiar como se llama.
 import importlib
 import json
 import os
+import shutil
+import subprocess
 import sys
 
 import pytest
