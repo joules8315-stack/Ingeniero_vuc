@@ -1,11 +1,53 @@
 [
   {
+    "id": "100",
+    "titulo": "La vigia de que Big Pickle caido no se espera en cada vuelta de la misma tarea",
+    "origen": "medido el 2026-09-21 14:12 (ley A-43): la orden 92 murio por tope de tiempo; en cada una de sus 3 vueltas se espero a Big Pickle 300 s y fallo, y el relevo contestaba en 5 s. 3 x 300 = 900 s, el tope",
+    "repara": "auditar vuelve a llamar a Big Pickle en cada vuelta aunque ya fallo en esa misma tarea",
+    "pieza": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py. Vigila la funcion auditar de cuerpo/obrero.py con auditor='bigpickle'. Arriba: from cuerpo import obrero, from cuerpo import bigpickle. Mira en vigias/ como llaman a obrero.auditar las vigias que tienen bigpickle en el nombre y copia esa forma de llamarla. Con monkeypatch: pon el atributo _bp_caido de obrero.auditar en False (monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False)); bigpickle.preguntar cuenta sus llamadas y devuelve ('', ['Big Pickle no contesto en 300s (timeout)']); obrero._preguntar_con_relevo devuelve ('{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}', 'groq', []). Pruebas, cada una con assert: (1) llamando dos veces seguidas a obrero.auditar, bigpickle.preguntar se llamo UNA sola vez; (2) si bigpickle.preguntar devuelve ('{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}', []), dos llamadas seguidas llaman a bigpickle.preguntar DOS veces, porque no fallo. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
+    "id": "101",
+    "titulo": "Big Pickle caido no se espera en cada vuelta de la misma tarea",
+    "origen": "medido el 2026-09-21 14:12 (ley A-43)",
+    "repara": "cada vuelta de una tarea paga 300 s de espera a Big Pickle aunque ya fallo; con 3 vueltas la tarea muere por tope",
+    "pieza": "cuerpo/obrero.py",
+    "depende": [
+      "100"
+    ],
+    "modo": "IA",
+    "razon": "recordar que ya fallo en esta tarea es un dato, no un juicio: programa. Julio (A-45): siempre se llama primero a Big Pickle, por eso la marca vale solo mientras dura la tarea",
+    "encargo": "En cuerpo/obrero.py, en la funcion auditar, en el bloque que empieza con la linea if auditor == 'bigpickle': y que llama a bigpickle.preguntar, cambia esa linea por if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False): y, dentro del bloque, despues de la linea if _texto_bp: y sus dos lineas, agrega un else: que hace auditar._bp_caido = True y avisos.append('bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)'). La marca vive solo mientras dura el proceso de la tarea, asi que en la tarea siguiente Big Pickle se vuelve a llamar primero. Entrega el bloque entero como un solo cambio. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
     "id": "92",
     "titulo": "La vigia del vigilante de la tarea que se demora",
     "origen": "directriz de Julio A-44 (2026-09-21): si una tarea pasa su tiempo limite, se revisa si sigue trabajando o se dano; si avanza se espera, si no se detiene y se busca la causa",
     "repara": "hoy lanzar_al_equipo corta toda tarea a los 900 s aunque este avanzando, y espera los 900 s enteros aunque este colgada desde el principio",
     "pieza": "vigias/test_vigia_el_vigilante_de_la_tarea.py",
-    "depende": [],
+    "depende": [
+      "101"
+    ],
     "modo": "IA",
     "razon": "la vigia nace antes que el cambio, y nace roja",
     "encargo": "Crear la vigia nueva vigias/test_vigia_el_vigilante_de_la_tarea.py. Vigila la funcion esperar del archivo nuevo cuerpo/vigilante.py, con la firma esperar(proceso, limite, sin_avance, tope_duro, avance, dormir, reloj). Arriba: from cuerpo import vigilante. Usa un reloj falso (una lista con el tiempo actual que avanza cuando se llama a dormir con los segundos que se le pasen) y un proceso falso con poll() que devuelve None hasta el momento que le digas y despues 0, y kill() que apunta que se le llamo. avance es una funcion que devuelve un numero. Pruebas, cada una con assert, con limite 100, sin_avance 30 y tope_duro 1000: (1) si el proceso termina a los 50, devuelve 'termino' y no se llamo a kill; (2) si el proceso termina a los 300 y avance devuelve un numero que sube cada vez que se le llama, devuelve 'termino' y no se llamo a kill, porque pasado el limite seguia avanzando; (3) si el proceso nunca termina y avance devuelve siempre el mismo numero, devuelve 'colgada', se llamo a kill y el reloj no paso de 100 mas 30 mas 10; (4) si el proceso nunca termina pero avance sube siempre, devuelve 'tope_duro', se llamo a kill y el reloj llego al menos a 1000. No toques ningun otro archivo.",
@@ -14,7 +56,7 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "corriendo",
+    "estado": "pendiente",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
@@ -97,7 +139,7 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "corriendo",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
