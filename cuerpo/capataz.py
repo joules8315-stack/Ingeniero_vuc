@@ -439,6 +439,17 @@ def recoger_lo_frenado(orden, raiz):
                 timeout=60,
             )
             return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida deja su prueba roja: no se deja en el disco'}
+        from arnes import guardia_de_guardado
+        paso, _mensaje = guardia_de_guardado._vigias(raiz)
+        if paso is not True:
+            subprocess.run(
+                ['git', 'checkout', 'HEAD', '--', pieza],
+                cwd=raiz,
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida pone rojas a sus vecinas: no se deja en el disco'}
         return resultado
     except Exception as e:
         return {'ok': False, 'razon': str(e)}
