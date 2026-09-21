@@ -58,6 +58,88 @@
     "nota": "cuando quede verde, la orden 97 queda terminada (su pieza cuerpo/grok.py ya esta guardada)."
   },
   {
+    "id": "104",
+    "titulo": "La vigia de que el sabotaje se arma solo deshaciendo el cambio aprobado",
+    "origen": "medido el 2026-09-21 (A-43): 22 ordenes apuntan a un archivo de sabotaje que nunca se escribio (se escribian a mano), y el pit informa 'la vigia NO freno' cuando en realidad no habia sabotaje (orden 43)",
+    "repara": "sin archivo de sabotaje no se comprueba que la vigia protege, y el aviso dice lo contrario de lo que paso",
+    "pieza": "vigias/test_vigia_el_sabotaje_se_arma_solo.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_sabotaje_se_arma_solo.py. Vigila la funcion nueva armar_sabotaje(orden, raiz=None) de cuerpo/capataz.py. Arriba: import json, from cuerpo import capataz. Trabaja en tmp_path como raiz: crea tmp_path/memoria/trabajos_del_equipo/2026-09-21_100000_APROBADO_pieza.py.json con {\"propuesta\": {\"archivo\": \"pieza.py\", \"texto_viejo\": \"return 1\", \"texto_nuevo\": \"return 2\"}}. La orden es {'id': '9', 'pieza': 'pieza.py', 'sabotaje': 'memoria/sabotajes/nueve.json'}. Pruebas, cada una con assert: (1) capataz.armar_sabotaje(orden, raiz=str(tmp_path)) devuelve True y tmp_path/memoria/sabotajes/nueve.json existe y es una lista con un objeto con archivo pieza.py, viejo return 2 y nuevo return 1 (deshace el cambio aprobado); (2) si la propuesta trae una lista cambios con dos trozos (texto_viejo a y texto_nuevo b, texto_viejo c y texto_nuevo d), el sabotaje tiene dos objetos, con viejo b y nuevo a, y viejo d y nuevo c; (3) si la propuesta no trae texto_viejo (una pieza creada entera), devuelve False y no crea el archivo; (4) si no hay ningun trabajo APROBADO de la pieza, devuelve False. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_sabotaje_se_arma_solo.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
+    "id": "105",
+    "titulo": "El sabotaje se arma solo deshaciendo el cambio aprobado",
+    "origen": "medido el 2026-09-21 (A-43)",
+    "repara": "los sabotajes se escribian a mano y 22 no se escribieron nunca",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "104"
+    ],
+    "modo": "IA",
+    "razon": "deshacer un cambio que ya esta guardado es copiar texto: programa, sin IA",
+    "encargo": "En cuerpo/capataz.py, justo antes de la funcion sabotear_la_orden, agrega la funcion nueva armar_sabotaje(orden, raiz=None). Si raiz es None usa la carpeta del proyecto (la de arriba de cuerpo). Busca en raiz/memoria/trabajos_del_equipo los archivos cuyo nombre contiene APROBADO y el nombre de la pieza de la orden (os.path.basename), y toma el de fecha de cambio mas nueva; si no hay, devuelve False. Lee su propuesta (clave propuesta). Si trae una lista cambios, por cada trozo con texto_viejo y texto_nuevo agrega {'archivo': pieza, 'viejo': texto_nuevo, 'nuevo': texto_viejo}; si no, y trae texto_viejo no vacio, agrega un solo objeto igual con los de arriba. Si no quedo ningun objeto, devuelve False. Si no, crea la carpeta del archivo de orden['sabotaje'] (relativo a raiz), escribe la lista con json.dump (indent 1, ensure_ascii False) y devuelve True. Nunca lanza: ante cualquier error devuelve False. Texto de ayuda: A-43, el sabotaje es deshacer el cambio aprobado y la vigia tiene que ponerse roja. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_sabotaje_se_arma_solo.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
+    "id": "106",
+    "titulo": "La vigia de que el pit arma el sabotaje que falta y no miente al informar",
+    "origen": "medido el 2026-09-21 (A-43): orden 43, 'la vigia NO freno' sin haber sabotaje",
+    "repara": "el pit corre un sabotaje que no existe y dice que la vigia no protege",
+    "pieza": "vigias/test_vigia_el_pit_arma_el_sabotaje_que_falta.py",
+    "depende": [
+      "105"
+    ],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_pit_arma_el_sabotaje_que_falta.py. Vigila la funcion sabotear_la_orden de cuerpo/capataz.py. Arriba: import os, from cuerpo import capataz. Usa una orden {'id': '9', 'pieza': 'pieza.py', 'vigia': 'vigias/test_x.py', 'sabotaje': str(tmp_path / 'no_existe.json')}. Con monkeypatch: capataz.correr_orden_del_sistema apunta sus llamadas y devuelve 0; capataz.armar_sabotaje devuelve lo que le digas. Pruebas, cada una con assert: (1) si armar_sabotaje devuelve False, sabotear_la_orden devuelve un dict con ok None, su razon contiene la palabra armar, y no se llamo a correr_orden_del_sistema; (2) si armar_sabotaje devuelve True, se llamo a correr_orden_del_sistema una vez y el resultado tiene ok True. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_pit_arma_el_sabotaje_que_falta.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
+    "id": "107",
+    "titulo": "El pit arma el sabotaje que falta y no miente al informar",
+    "origen": "medido el 2026-09-21 (A-43)",
+    "repara": "un sabotaje inexistente se informaba como vigia que no protege",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "106"
+    ],
+    "modo": "IA",
+    "razon": "si el archivo no existe no se puede decir que la vigia fallo: el informe no miente",
+    "encargo": "En cuerpo/capataz.py, en la funcion sabotear_la_orden, justo despues de las dos lineas if not vigia or not sabotaje: y su return, agrega: si not os.path.exists(sabotaje) (probando tambien la ruta relativa a la carpeta del proyecto), llama armar_sabotaje(orden); si devuelve False, return {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}. Si devuelve True, sigue como hoy y corre el sabotaje. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_pit_arma_el_sabotaje_que_falta.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "cuando entre, se corre sabotear_la_orden sobre la orden 43 y las demas con sabotaje que falta, por programa."
+  },
+  {
     "id": "65",
     "titulo": "La vigia de que lo que el programa le pide a una IA no entra como orden de Julio",
     "origen": "medido el 2026-09-21: el gancho de Codex recogio como ordenes de Julio los pedidos que le hizo el programa, incluida la hoja entera de la revision",
