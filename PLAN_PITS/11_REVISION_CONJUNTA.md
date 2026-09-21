@@ -49,7 +49,7 @@ Ninguna de fondo: lo que cada uno vio solo **se suma**, no se contradice.
 - **Los 5 USD al mes**: A-27 los pone solo a Big Pickle; la ficha P3-8 los suma con DeepSeek.
 
 ## 6. Preguntas para Julio
-1. ~~Los 5 dólares~~ RESPONDIDA: "son ambas pagas" → tope a las dos juntas (A-27).
+1. RESPONDIDA: sin tope en dólares; cada IA de pago hasta que se agote, lo pesado siempre DeepSeek (A-42).
 2. RESPONDIDA: sí, corregido el plan v4 §4 (entra la otra).
 
 ## 7. Orden de trabajo que sale de aquí

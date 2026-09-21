@@ -8,7 +8,8 @@
 - **El loop se detiene solo en tres casos:**
   1. DMM terminado, según el plan vigente de DMM;
   2. un frente parado por 3 fallos del mismo tipo;
-  3. se llega al tope de gasto.
+  3. se agota el saldo de DeepSeek (ya no queda quien haga lo pesado). Sin tope en dólares:
+     cada IA de pago se usa hasta que se agote (A-42, orden de Julio 2026-09-21).
   Lo que quede pendiente va en el informe.
 
 ## 2. Garantía de trabajar con el equipo (mecanismo, no voluntad)
@@ -74,7 +75,7 @@
 
 ## 6. Orden del loop
 0. **Portero:** el equipo revisa los 101 cambios sin guardar y guarda los buenos (A-28). Subir esta carpeta con commit. Pasar a "reciclado" los planes jubilados de DMM.
-1. **Conectar Big Pickle** por OpenCode, sin ventana, con respuesta en formato de datos y servidor abierto para que no demore. Medir su límite real. Tope de 5 USD al mes (A-27). El filtro nunca le manda llaves ni datos de clientes (sus datos pueden usarse para entrenar). Limpiar el reparto de IA según el forense y agregar el reloj.
+1. **Conectar Big Pickle** por OpenCode, sin ventana, con respuesta en formato de datos y servidor abierto para que no demore. Medir su límite real. Se usa hasta que se agote; entonces revisa Codex (A-42, A-40). El filtro nunca le manda llaves ni datos de clientes (sus datos pueden usarse para entrenar). Limpiar el reparto de IA según el forense y agregar el reloj.
 2. **Reemplazo por programa:** inventario "cuenta o juicio" de cada paso; lo que es cuenta pasa a programa y se prueba.
 3. **Armar el pit** con las piezas que ya existen: obrero, cruzado, aplicador (varios cambios por tarea), cuotas (elegir antes), subagentes (en paralelo), trozos, router y grafo (pedazos), via_canonica (portero), autorizacion (llave). Esta primera vez Claude escribe **solo los encargos**; el código lo escriben DeepSeek y Big Pickle.
 4. **Reglas del pit** con vigías de sabotaje. Reparar los candados que frenan en falso. Revisor de contradicciones de leyes.
