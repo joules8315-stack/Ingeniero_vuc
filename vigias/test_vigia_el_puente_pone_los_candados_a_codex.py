@@ -72,11 +72,13 @@ def _escribir_candado(carpeta, nombre, texto):
 def _correr_puente(candado, evento, argumentos=None, entrada=None):
     """Corre la pieza de verdad con subprocess y devuelve (codigo, salida, error).
 
-    Si la pieza no existe todavia, se salta la prueba: la bateria no puede
-    quedarse ciega mientras la pieza no exista.
+    Si la pieza no existe todavia, la prueba sale ROJA: una prueba saltada no
+    mide nada, y el metodo exige que la prueba nazca roja mientras la pieza no
+    exista. Lo que dejaria ciega a la bateria es un error al RECOGER las
+    pruebas, no una prueba que falla.
     """
     if not os.path.isfile(PUENTE):
-        raise unittest.SkipTest(
+        raise AssertionError(
             "la pieza arnes/puente_codex.py todavia no existe: " + PUENTE
         )
     if entrada is None:
