@@ -1,5 +1,25 @@
 [
   {
+    "id": "116",
+    "titulo": "El turno de guardado se libera si su dueno ya murio",
+    "origen": "medido el 2026-09-21 17:50 (A-43): la orden 111 murio por tope de tiempo a mitad de su guardado (16:44) y dejo tomado el turno de guardado; fila_de_commits solo lo libera a las 2 horas y todo guardado del pit quedo esperando (101 y 114 se colgaron)",
+    "repara": "un turno de guardado de un proceso muerto para todos los guardados durante 2 horas",
+    "pieza": "arnes/candado_equipo.py",
+    "depende": [
+      "115"
+    ],
+    "modo": "IA",
+    "razon": "saber si un proceso vive es un dato del sistema: programa",
+    "encargo": "En arnes/candado_equipo.py, en la funcion fila_de_commits, dentro del bloque except FileExistsError:, la linea viejo = time.time() - os.path.getmtime(ruta) > 7200 se cambia por estas lineas, con la misma sangria: primero un bloque try: que hace import psutil, lee el numero del dueno con int(open(ruta, encoding='utf-8').read().strip()) y pone muerto = not psutil.pid_exists(ese numero); except Exception: pone muerto = False (ante la duda no se libera). Despues: viejo = time.time() - os.path.getmtime(ruta) > 7200 or muerto. Es UN solo cambio en ese sitio y no se crea ninguna funcion nueva. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "hoy se libero a mano: el dueno 16004 llevaba muerto desde las 16:44; copia en memoria/rescate/fila_de_commits_trabada_16004.lock."
+  },
+  {
     "id": "115",
     "titulo": "La vigia de que el turno de guardado se libera si su dueno ya murio",
     "origen": "medido el 2026-09-21 17:50 (A-43): la orden 111 murio por tope de tiempo a mitad de su guardado (16:44) y dejo tomado el turno de guardado; fila_de_commits solo lo libera a las 2 horas y todo guardado del pit quedo esperando (101 y 114 se colgaron)",
@@ -14,30 +34,10 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
-  },
-  {
-    "id": "116",
-    "titulo": "El turno de guardado se libera si su dueno ya murio",
-    "origen": "medido el 2026-09-21 17:50 (A-43): la orden 111 murio por tope de tiempo a mitad de su guardado (16:44) y dejo tomado el turno de guardado; fila_de_commits solo lo libera a las 2 horas y todo guardado del pit quedo esperando (101 y 114 se colgaron)",
-    "repara": "un turno de guardado de un proceso muerto para todos los guardados durante 2 horas",
-    "pieza": "arnes/candado_equipo.py",
-    "depende": [
-      "115"
-    ],
-    "modo": "IA",
-    "razon": "saber si un proceso vive es un dato del sistema: programa",
-    "encargo": "En arnes/candado_equipo.py, en la funcion fila_de_commits, la linea viejo = time.time() - os.path.getmtime(ruta) > 7200 se cambia por: viejo = time.time() - os.path.getmtime(ruta) > 7200 or not _dueno_vivo(ruta). Y justo antes de def fila_de_commits agrega la funcion _dueno_vivo(ruta): lee el numero del archivo; si no se puede leer o no es un numero devuelve True (ante la duda no se libera); si no, import psutil y devuelve psutil.pid_exists(numero); si psutil falla devuelve True. Entrega los dos sitios en la lista cambios; si todavia no se puede, entrega solo el primero y pon _dueno_vivo como funcion anidada dentro de fila_de_commits antes del while. No toques ningun otro archivo.",
-    "vigia": "vigias/test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py",
-    "prueba_real": "",
-    "comando": "",
-    "estado": "pendiente",
-    "paso_fallido": "",
-    "fallos_seguidos": 0,
-    "nota": "hoy se libero a mano: el dueno 16004 llevaba muerto desde las 16:44; copia en memoria/rescate/fila_de_commits_trabada_16004.lock."
   },
   {
     "id": "114",
@@ -107,7 +107,7 @@
     "depende": [],
     "modo": "IA",
     "razon": "la vigia nace antes que el cambio, y nace roja",
-    "encargo": "Crear la vigia nueva vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py. Vigila una pieza NUEVA, cuerpo/codex.py, hermana de cuerpo/bigpickle.py, con una funcion preguntar(prompt, timeout=600, raiz=None) que devuelve una pareja (texto, avisos) y nunca lanza. Con monkeypatch sobre subprocess.run y shutil.which (apartados en sus propios modulos, no a traves de cuerpo.codex) y sin llamar nunca a Codex de verdad, seis pruebas: (1) la orden que arma lleva exec, --sandbox read-only, un -c con approval_policy puesto a never, --dangerously-bypass-hook-trust, --skip-git-repo-check, -C con la carpeta y -o con un archivo donde Codex deja su respuesta final; (2) el entorno que le pasa lleva INGENIERO_OFF puesto a 1; (3) si el texto a mandar trae una llave (algo que cuerpo/privacidad.py limpia como CLAVE) NO se llama a Codex y se devuelve texto vacio con un aviso; (4) si trae datos personales tampoco se llama y se avisa; (5) si Codex se pasa del tope se devuelve texto vacio y un aviso con los segundos; (6) si Codex contesta, se devuelve lo que dejo en el archivo de la respuesta final. Importa la pieza dentro de cada prueba. No toques ningun otro archivo.",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py. Vigila una pieza NUEVA, cuerpo/codex.py, hermana de cuerpo/bigpickle.py, con una funcion preguntar(prompt, timeout=600, raiz=None) que devuelve una pareja (texto, avisos) y nunca lanza. Con monkeypatch sobre subprocess.run y shutil.which (apartados en sus propios modulos, no a traves de cuerpo.codex) y sin llamar nunca a Codex de verdad, seis pruebas: (1) la orden que arma lleva exec, --sandbox read-only, un -c con approval_policy puesto a never, --dangerously-bypass-hook-trust, --skip-git-repo-check, -C con la carpeta y -o con un archivo donde Codex deja su respuesta final; (2) el entorno que le pasa lleva INGENIERO_OFF puesto a 1 y INGENIERO_LLAMADA_DEL_PROGRAMA puesto a 1; (3) si el texto a mandar trae una llave de mentira (armala POR PARTES dentro de la prueba, por ejemplo la letra s mas la letra k mas un guion mas 24 letras a, juntadas con +, para que el archivo de la prueba NUNCA traiga una llave escrita entera: el guardia no deja guardar archivos con forma de llave) NO se llama a Codex y se devuelve texto vacio con un aviso; (4) si trae datos personales tampoco se llama y se avisa; (5) si Codex se pasa del tope se devuelve texto vacio y un aviso con los segundos; (6) si Codex contesta, se devuelve lo que dejo en el archivo de la respuesta final. Importa la pieza dentro de cada prueba. No toques ningun otro archivo.",
     "vigia": "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
     "entrega_la_prueba": "si",
     "crear": true,
