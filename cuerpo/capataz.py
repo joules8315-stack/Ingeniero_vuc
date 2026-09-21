@@ -761,6 +761,13 @@ def comprobar_pasos(orden):
         capture_output=True,
         text=True,
     )
+    if orden.get("entrega_la_prueba") == "si":
+        # La tarea ENTREGA la prueba: se comprueba al reves. La prueba tiene
+        # que existir y estar ROJA. Si ya esta verde, este paso falla, porque
+        # una prueba que pasa antes del cambio no demuestra nada.
+        if resultado_vigia.returncode == 0:
+            return "vigia_verde"
+        return ""
     if resultado_vigia.returncode != 0:
         resultado_git = subprocess.run(
             ["git", "ls-files", vigia],
