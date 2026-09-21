@@ -289,8 +289,8 @@ def _vigias(raiz):
                            if k not in ("GIT_INDEX_FILE", "GIT_DIR", "GIT_WORK_TREE",
                                         "GIT_PREFIX", "GIT_OBJECT_DIRECTORY")}
         r = subprocess.run([sys.executable, "-m", "pytest", "-q"] + objetivo,
-                           cwd=raiz, capture_output=True, text=True, timeout=900,
-                           stdin=subprocess.DEVNULL, env=_entorno_limpio)
+                           cwd=raiz, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=900,
+                           stdin=subprocess.DEVNULL, env=_entorno_limpio)  # lee en utf-8, en cp1252 revienta con los acentos (2026-09-21)
     except subprocess.TimeoutExpired:
         return False, ("las vigias NO terminaron en 15 minutos: no se guarda sin probar. "
                        "Algo se quedo esperando; hay que ver cual se cuelga")
