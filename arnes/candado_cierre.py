@@ -129,7 +129,7 @@ def _vigias_verdes(raiz):
     _poner_cerrojo()
     try:
         r = subprocess.run([sys.executable, "-m", "pytest", "-q", "vigias/"],
-                           cwd=raiz, capture_output=True, text=True, timeout=300)
+                           cwd=raiz, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300)
         salida = (r.stdout or "") + (r.stderr or "")
         ultima = [l for l in salida.splitlines() if l.strip()][-1:]
         if r.returncode == 0:
