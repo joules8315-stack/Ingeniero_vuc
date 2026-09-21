@@ -1,0 +1,74 @@
+"""Vigia: una prueba que NO EXISTE no puede valer como prueba verde.
+
+Comprobado en vivo el 2026-09-20: si una orden dice tener una prueba (clave
+'vigia') y ese archivo NO EXISTE en el disco, la funcion comprobar_pasos de
+cuerpo/capataz.py devuelve el texto vacio, o sea que da por buenos todos los
+pasos. Asi, la manera mas facil de que un trabajo pase sin ninguna vigilancia
+es sencillamente no escribir la prueba, y eso abre la puerta que todos los
+demas candados cierran.
+
+Ojo con la distincion, que es el corazon de esta vigia:
+
+  - Una prueba RECIEN ESCRITA y EN ROJO SI tiene que poder entrar, porque asi
+    nace el metodo: primero se escribe la prueba que falla, luego se repara.
+  - Una prueba AUSENTE no es lo mismo que una prueba verde. Que el archivo no
+    exista no puede contar como que la prueba paso.
+
+Esta vigia NACE ROJA: hoy comprobar_pasos devuelve '' cuando la vigia no
+existe, y la primera prueba exige que devuelva 'vigia_verde' para forzar el
+cambio necesario en comprobar_pasos.
+"""
+
+import os
+import sys
+
+raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, raiz)
+sys.path.insert(0, os.path.join(raiz, 'arnes'))
+
+from cuerpo import capataz
+
+
+RUTA_ESTE_ARCHIVO = os.path.abspath(__file__)
+RUTA_RELATIVA_ESTE_ARCHIVO = os.path.relpath(RUTA_ESTE_ARCHIVO, raiz).replace(os.sep, '/')
+
+
+def test_una_prueba_que_no_existe_no_se_da_por_buena():
+    """Si la orden dice tener una vigia y ese archivo NO existe, comprobar_pasos
+    no puede devolver 'vigia_verde' (que significa que todo esta bien).
+
+    Hoy devuelve '' (texto vacio), que tambien se interpreta como todo verde:
+    por eso esta prueba nace ROJA y obliga a cambiar comprobar_pasos.
+    """
+    orden = {
+        'pieza': 'cuerpo/capataz.py',
+        'vigia': 'vigias/test_vigia_que_no_existe_en_ninguna_parte.py',
+        'comando': '',
+    }
+    resultado = capataz.comprobar_pasos(orden)
+    assert resultado == 'vigia_verde', (
+        'Una prueba que NO EXISTE se esta dando por buena: comprobar_pasos '
+        'devolvio ' + repr(resultado) + ' en vez de vigia_verde. Asi basta con '
+        'no escribir la prueba para que un trabajo pase sin ninguna vigilancia, '
+        'y eso abre la puerta que todos los demas candados cierran.'
+    )
+
+
+def test_una_prueba_que_existe_y_pasa_no_se_cuenta_como_fallo():
+    """Si la vigia apunta a un archivo que SI existe y esta verde (este mismo
+    archivo), comprobar_pasos NO puede devolver 'vigia_verde' como si fuera
+    un fallo: una prueba que existe y pasa no puede contarse como fallo,
+    porque entonces no entraria ningun trabajo bueno.
+    """
+    orden = {
+        'pieza': 'cuerpo/capataz.py',
+        'vigia': RUTA_RELATIVA_ESTE_ARCHIVO,
+        'comando': '',
+    }
+    resultado = capataz.comprobar_pasos(orden)
+    assert resultado != 'vigia_verde', (
+        'Una prueba que EXISTE y PASA se esta contando como fallo: '
+        'comprobar_pasos devolvio ' + repr(resultado) + ' (vigia_verde) para '
+        'una vigia que si existe y esta verde. Si una prueba que pasa se '
+        'cuenta como fallo, entonces no entraria ningun trabajo bueno.'
+    )

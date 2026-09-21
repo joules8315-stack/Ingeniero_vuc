@@ -225,6 +225,8 @@ def _piezas(arbol):
     return fuera
 
 
+
+
 def revisar(propuesta, tarea=""):
     """Las cuatro cuentas. Devuelve una LISTA de frases; vacia si no encuentra nada.
 
@@ -240,8 +242,53 @@ def revisar(propuesta, tarea=""):
 
         # Un cambio que SOLO BORRA es legitimo: quitar codigo que sobra y no poner nada en su
         # lugar es trabajo de verdad. Solo no hay nada que hacer cuando tampoco se dice que quitar.
+        # Esta cuenta va PRIMERO porque es la mas barata de todas: si el texto viejo que dice
+        # cambiar no aparece tal cual en el archivo, lo que se propone no existe y seguramente
+        # se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo
+        # completo antes de proponer. Si algo falla aqui, no se dice nada y se sigue.
+        try:
+            _ruta_v = str(p.get("archivo") or "")
+            if viejo.strip() and _ruta_v and os.path.isfile(_ruta_v):
+                with open(_ruta_v, encoding="utf-8", errors="replace") as _fv:
+                    _contenido_v = _fv.read()
+                if viejo not in _contenido_v:
+                    return ["EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe "
+                            "tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se "
+                            "mando. Hay que pedir el archivo completo antes de proponer."]
+        except Exception:
+            pass
+
         if not nuevo.strip() and not viejo.strip():
             return ["La propuesta no trae texto nuevo: no hay nada que aplicar."]
+        # 2c — SE QUEDA SIN CUERPO: una prueba que se queda con su docstring y nada mas
+        # PASA SIEMPRE. El candado sigue en su sitio pero ya no vigila nada y nadie se entera.
+        # Medido el 2026-09-20: un cambio del equipo se comio el cuerpo entero de una prueba
+        # ya guardada. Es CUENTA: se comparan los cuerpos de las funciones test_ antes y
+        # despues. Si algo falla aqui, no se agrega nada y se sigue como siempre.
+        try:
+            _ruta_c = str(p.get("archivo") or "")
+            if (_ruta_c.lower().endswith(".py") and os.path.isfile(_ruta_c)
+                    and viejo.strip()):
+                with open(_ruta_c, encoding="utf-8-sig", errors="replace") as _fc:
+                    _antes_c = _fc.read()
+                if viejo in _antes_c:
+                    _despues_c = _antes_c.replace(viejo, nuevo, 1)
+                    _arbol_antes_c = ast.parse(_antes_c)
+                    _arbol_despues_c = ast.parse(_despues_c)
+                    # Se busca la funcion suelta del archivo a proposito: mas abajo se escribe
+                    # una con el mismo nombre dentro de esta funcion y eso taparia a la de fuera.
+                    _mirar = globals()["_pruebas_sin_cuerpo"]
+                    _sin_antes = _mirar(_arbol_antes_c)
+                    _sin_despues = _mirar(_arbol_despues_c)
+                    for _nombre in sorted(_sin_despues - _sin_antes):
+                        fallos.append(
+                            "SE QUEDA SIN CUERPO: la prueba '%s' tenia cuerpo antes y ahora "
+                            "no tiene nada o solo pass. Una prueba sin cuerpo PASA SIEMPRE: "
+                            "el candado sigue en su sitio pero deja de vigilar y nadie lo nota."
+                            % _nombre)
+        except Exception:
+            pass
+
         if not nuevo.strip():
             # Solo se borra: las demas cuentas suponen que hay codigo nuevo que leer, asi que
             # se devuelve la lista de fallos tal como va, sin mirar mas cuentas.
@@ -343,6 +390,28 @@ def revisar(propuesta, tarea=""):
             fallos.append("No se pudo leer el codigo nuevo: %s" % str(e)[:120])
             return fallos
 
+        # Lo que esta dentro de un texto entre comillas no es codigo de este archivo: juzgarlo
+        # como codigo frena trabajo bueno.
+        try:
+            _ruta_txt = str(p.get("archivo") or "")
+            if (_ruta_txt.lower().endswith(".py") and os.path.isfile(_ruta_txt)
+                    and viejo.strip()):
+                with open(_ruta_txt, encoding="utf-8-sig", errors="replace") as _ftx:
+                    _todo_tx = _ftx.read()
+                _pos_tx = _todo_tx.find(viejo)
+                if _pos_tx >= 0:
+                    _renglon_tx = _todo_tx.count("\n", 0, _pos_tx) + 1
+                    _arbol_tx = ast.parse(_todo_tx)
+                    for _nodo_tx in ast.walk(_arbol_tx):
+                        if (isinstance(_nodo_tx, ast.Constant)
+                                and isinstance(_nodo_tx.value, str)
+                                and getattr(_nodo_tx, "lineno", None) is not None
+                                and getattr(_nodo_tx, "end_lineno", None) is not None):
+                            if _nodo_tx.lineno <= _renglon_tx <= _nodo_tx.end_lineno:
+                                return fallos
+        except Exception:
+            pass
+
         # 3 — USA UN NOMBRE QUE NO EXISTE. El fallo real del 2026-09-08: re sin importar.
         #
         # SOLO SI ES UN ARCHIVO ENTERO. Segunda frenada en falso cazada el mismo dia: se
@@ -351,6 +420,74 @@ def revisar(propuesta, tarea=""):
         # que recibe la funcion de mas arriba y lo que se importa al principio del archivo.
         # Mirando un pedazo suelto no se puede ver nada de eso, asi que acusar es mentir.
         # Cuando no se puede comprobar, se calla. Frenar lo bueno ensena a ignorar los frenos.
+        # 2b — NO CARGA: si el archivo tal como quedaria no arranca, se dice aqui.
+        # Es CUENTA con no_carga, sin ejecutar nada. Solo se avisa si ANTES cargaba y DESPUES
+        # no: si antes ya no cargaba, no lo rompio este cambio y no se dice nada.
+        try:
+            _ruta_nc = str(p.get("archivo") or "")
+            if (_ruta_nc.lower().endswith(".py") and os.path.isfile(_ruta_nc)
+                    and viejo.strip()):
+                with open(_ruta_nc, encoding="utf-8-sig", errors="replace") as _fnc:
+                    _antes_nc = _fnc.read()
+                if viejo in _antes_nc:
+                    _despues_nc = _antes_nc.replace(viejo, nuevo, 1)
+                    _fallos_antes = no_carga(_antes_nc)
+                    _fallos_despues = no_carga(_despues_nc)
+                    if not _fallos_antes and _fallos_despues:
+                        fallos.append(
+                            "NO CARGA: el archivo se queda sin arrancar. Primera razon: %s"
+                            % _fallos_despues[0])
+        except Exception:
+            pass
+
+        # 2c — SE QUEDA SIN CUERPO: una prueba que se queda con su docstring y nada mas
+        # PASA SIEMPRE. El candado sigue en su sitio pero ya no vigila nada y nadie se entera.
+        # Medido el 2026-09-20: un cambio del equipo se comio el cuerpo entero de una prueba
+        # ya guardada. Es CUENTA: se comparan los cuerpos de las funciones test_ antes y
+        # despues. Si algo falla aqui, no se agrega nada y se sigue como siempre.
+        try:
+            _ruta_c = str(p.get("archivo") or "")
+            if (_ruta_c.lower().endswith(".py") and os.path.isfile(_ruta_c)
+                    and viejo.strip()):
+                with open(_ruta_c, encoding="utf-8-sig", errors="replace") as _fc:
+                    _antes_c = _fc.read()
+                if viejo in _antes_c:
+                    _despues_c = _antes_c.replace(viejo, nuevo, 1)
+                    _arbol_antes_c = ast.parse(_antes_c)
+                    _arbol_despues_c = ast.parse(_despues_c)
+
+                    def _cuerpo_vacio(_nodo):
+                        _cuerpo = list(_nodo.body)
+                        if (_cuerpo and isinstance(_cuerpo[0], ast.Expr)
+                                and isinstance(_cuerpo[0].value, ast.Constant)
+                                and isinstance(_cuerpo[0].value.value, str)):
+                            _cuerpo = _cuerpo[1:]
+                        if not _cuerpo:
+                            return True
+                        if len(_cuerpo) == 1 and isinstance(_cuerpo[0], ast.Pass):
+                            return True
+                        return False
+
+                    def _pruebas_sin_cuerpo(_arbol):
+                        _sin = set()
+                        for _n in ast.walk(_arbol):
+                            if (isinstance(_n, (ast.FunctionDef, ast.AsyncFunctionDef))
+                                    and _n.name.startswith("test_")
+                                    and _cuerpo_vacio(_n)):
+                                _sin.add(_n.name)
+                        return _sin
+
+                    _sin_antes = _pruebas_sin_cuerpo(_arbol_antes_c)
+                    _sin_despues = _pruebas_sin_cuerpo(_arbol_despues_c)
+                    for _nombre in sorted(_sin_despues - _sin_antes):
+                        fallos.append(
+                            "SE QUEDA SIN CUERPO: la prueba '%s' tenia cuerpo antes y ahora "
+                            "no tiene nada o solo pass. Una prueba sin cuerpo PASA SIEMPRE: "
+                            "el candado sigue en su sitio pero deja de vigilar y nadie lo nota."
+                            % _nombre)
+        except Exception:
+            pass
+
         if es_un_pedazo(nuevo):
             return fallos
         conocidos = set(_conocidos(arbol))
@@ -406,10 +543,7 @@ def revisar(propuesta, tarea=""):
         for palabra in set(re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\b", limpia)):
             if _creando_archivo_nuevo:
                 break
-            # Una palabra que ya vive en el archivo es CONTEXTO: el encargo la nombra para decir
-            # DONDE hay que tocar, no para pedir que se traiga. Lo que se exige es lo que el
-            # encargo pide traer y no esta en ningun lado.
-            if contenido_archivo is not None and palabra in contenido_archivo:
+            if contenido_archivo is not None and palabra not in contenido_archivo:
                 continue
             if palabra not in viejo and palabra not in nuevo:
                 fallos.append("NO HACE LO QUE SE PIDIO: el encargo habla de '%s' y esa palabra "
