@@ -502,38 +502,63 @@ def pedir_al_perito(expediente, raiz, tope_segundos=600):
     exe = shutil.which('claude')
     if not exe:
         return (None, 'no encuentro claude en el PATH')
-    pedido = ('Eres el perito del pit (acuerdo A-22). Analiza este fallo SOLO con el expediente y leyendo el codigo del proyecto; no uses tu memoria. Responde SOLO un objeto JSON con: que_paso, causa_raiz, donde, quien_fallo (herramienta, programa, equipo o diseno), citas (lista de {archivo, texto} copiados LITERAL del proyecto, que prueban la causa), no_volver_a (la leccion en una frase), tarea_nueva ({repara, pieza, razon, encargo, modo: PROGRAMA o IA}; distinta de la orden que fallo). EXPEDIENTE:' + json.dumps(expediente, ensure_ascii=False, indent=2))
-    try:
-        entorno = dict(os.environ)
-        entorno['INGENIERO_OFF'] = '1'
-        resultado = subprocess.run(
-            [exe, '-p', '--tools', 'Read,Grep,Glob', '--permission-mode', 'plan'],
-            input=pedido,
-            cwd=raiz,
-            capture_output=True,
-            text=True,
-            encoding='utf-8',
-            errors='replace',
-            timeout=tope_segundos,
-            env=entorno,
-        )
-    except subprocess.TimeoutExpired:
-        return (None, 'el perito no contesto en %d s' % tope_segundos)
-    except Exception:
-        return (None, 'el perito no contesto')
-    salida = resultado.stdout or ''
-    inicio = salida.find('{')
-    fin = salida.rfind('}')
-    if inicio == -1 or fin == -1 or fin < inicio:
-        return (None, 'el perito no devolvio JSON: ' + salida[:200])
-    trozo = salida[inicio:fin + 1]
-    try:
-        datos = json.loads(trozo)
-    except (ValueError, TypeError):
-        return (None, 'el perito no devolvio JSON: ' + salida[:200])
-    if not isinstance(datos, dict):
-        return (None, 'el perito no devolvio JSON: ' + salida[:200])
-    return (datos, 'ok')
+    pedido = ('Eres el perito del pit (acuerdo A-22). Analiza este fallo SOLO con el expediente y leyendo el codigo del proyecto; no uses tu memoria. Responde SOLO un objeto JSON con: que_paso, causa_raiz, donde, quien_fallo (herramienta, programa, equipo o diseno), citas (lista de {archivo, texto} copiados LITERAL del proyecto, que prueban la causa), no_volver_a (la leccion en una frase), tarea_nueva ({repara, pieza, razon, encargo, modo: PROGRAMA o IA}; distinta de la orden que fallo). OBLIGATORIO: tu respuesta completa es SOLO el objeto JSON, sin una sola palabra antes ni despues. EXPEDIENTE:' + json.dumps(expediente, ensure_ascii=False, indent=2))
+    esquema = json.dumps({
+        'type': 'object',
+        'properties': {
+            'que_paso': {'type': 'string'},
+            'causa_raiz': {'type': 'string'},
+            'donde': {'type': 'string'},
+            'quien_fallo': {'type': 'string'},
+            'no_volver_a': {'type': 'string'},
+            'citas': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'archivo': {'type': 'string'},
+                        'texto': {'type': 'string'},
+                    },
+                },
+            },
+            'tarea_nueva': {'type': 'object'},
+        },
+        'required': ['que_paso', 'causa_raiz'],
+    }, ensure_ascii=False)
+    orden = [exe, '-p', '--tools', 'Read,Grep,Glob', '--permission-mode', 'plan', '--json-schema', esquema]
+    entrada = pedido
+    for intento in range(3):
+        try:
+            entorno = dict(os.environ)
+            entorno['INGENIERO_OFF'] = '1'
+            resultado = subprocess.run(
+                orden,
+                input=entrada,
+                cwd=raiz,
+                capture_output=True,
+                text=True,
+                encoding='utf-8',
+                errors='replace',
+                timeout=tope_segundos,
+                env=entorno,
+            )
+        except subprocess.TimeoutExpired:
+            return (None, 'el perito no contesto en %d s' % tope_segundos)
+        except Exception:
+            return (None, 'el perito no contesto')
+        salida = resultado.stdout or ''
+        inicio = salida.find('{')
+        fin = salida.rfind('}')
+        if inicio != -1 and fin != -1 and fin >= inicio:
+            trozo = salida[inicio:fin + 1]
+            try:
+                datos = json.loads(trozo)
+            except (ValueError, TypeError):
+                datos = None
+            if isinstance(datos, dict):
+                return (datos, 'ok')
+        entrada = 'RECORDATORIO: no respondiste en JSON. Responde SOLO el objeto JSON pedido, nada mas. ' + pedido
+    return (None, 'el perito no devolvio JSON: ' + salida[:200])
 
 
 def juzgar_citas(analisis):
