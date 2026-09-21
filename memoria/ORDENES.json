@@ -10,11 +10,11 @@
     ],
     "modo": "IA",
     "razon": "saber si un proceso vive es un dato del sistema: programa",
-    "encargo": "En arnes/candado_equipo.py, en la funcion fila_de_commits, dentro del bloque except FileExistsError:, la linea viejo = time.time() - os.path.getmtime(ruta) > 7200 se cambia por estas lineas, con la misma sangria: primero un bloque try: que hace import psutil, lee el numero del dueno con int(open(ruta, encoding='utf-8').read().strip()) y pone muerto = not psutil.pid_exists(ese numero); except Exception: pone muerto = False (ante la duda no se libera). Despues: viejo = time.time() - os.path.getmtime(ruta) > 7200 or muerto. Es UN solo cambio en ese sitio y no se crea ninguna funcion nueva. No toques ningun otro archivo.",
+    "encargo": "En arnes/candado_equipo.py, en la funcion fila_de_commits, dentro del bloque except FileExistsError:, la linea viejo = time.time() - os.path.getmtime(ruta) > 7200 se cambia por estas lineas, con la misma sangria: primero un bloque try: que hace import psutil, lee el numero del dueno con int(open(ruta, encoding='utf-8').read().strip()) y pone muerto = not psutil.pid_exists(ese numero); except Exception: pone muerto = False (ante la duda no se libera). Despues: viejo = time.time() - os.path.getmtime(ruta) > 7200 or muerto. Datos para quien escribe y para quien revisa: psutil YA esta instalado en esta computadora (se instalo el 2026-09-21, version 7.2.2) y es la herramienta elegida por el Ingeniero para saber si un proceso vive; NO es un invento. NO uses os.kill(pid, 0): en Windows eso NO pregunta, MATA el proceso. Es UN solo cambio en ese sitio y no se crea ninguna funcion nueva. No toques ningun otro archivo.",
     "vigia": "vigias/test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "corriendo",
+    "estado": "pendiente",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "hoy se libero a mano: el dueno 16004 llevaba muerto desde las 16:44; copia en memoria/rescate/fila_de_commits_trabada_16004.lock."
