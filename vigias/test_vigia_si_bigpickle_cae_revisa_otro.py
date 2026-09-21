@@ -16,6 +16,14 @@ if RAIZ not in sys.path:
 from cuerpo import obrero, cuotas  # noqa: E402
 from cuerpo import bigpickle as _bp  # noqa: E402
 
+import pytest  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def _big_pickle_sin_marca(monkeypatch):
+    # cada prueba empieza sin la marca de Big Pickle caido (orden 101, 2026-09-21)
+    monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False)
+
 
 def test_si_bigpickle_cae_revisa_otro_y_avisa_a38(monkeypatch):
     """A-38: Big Pickle cae, el relevo revisa y el aviso menciona A-38."""
