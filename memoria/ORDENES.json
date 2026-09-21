@@ -81,6 +81,66 @@
     "nota": "la pieza cuerpo/codex.py (orden 49) tiene que poner esa marca en el entorno de cada llamada a Codex."
   },
   {
+    "id": "103",
+    "titulo": "La vigia del enchufe de Grok mete la llave falsa en el encargo, no en el entorno",
+    "origen": "medido el 2026-09-21 (A-43): la orden 97 quedo SIN_TERMINAR porque su vigia pone la llave de mentira en una variable del entorno y pregunta hola; el enchufe esta bien, la prueba no mide lo que dice",
+    "repara": "una vigia que no mide lo que dice deja sin terminar una pieza correcta",
+    "pieza": "vigias/test_vigia_el_enchufe_de_grok.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "el filtro de llaves mira el encargo, que es lo que viaja a la IA",
+    "encargo": "En vigias/test_vigia_el_enchufe_de_grok.py, en la funcion test_con_llave_de_mentira_no_se_llama_a_popen, las dos lineas seguidas monkeypatch.setenv('OPENCODE_API_KEY', llave) y texto, avisos = grok.preguntar('hola') se cambian por una sola linea: texto, avisos = grok.preguntar('mi clave ' + llave). Es UN solo cambio. No cambies nada mas ni toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_enchufe_de_grok.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "cuando quede verde, la orden 97 queda terminada (su pieza cuerpo/grok.py ya esta guardada)."
+  },
+  {
+    "id": "98",
+    "titulo": "La vigia de que si Big Pickle falla revisa Grok 4.7",
+    "origen": "orden de Julio A-45 (2026-09-21)",
+    "repara": "cuando Big Pickle no contesta, la revision cae en una IA gratis o queda SIN_AUDITAR",
+    "pieza": "vigias/test_vigia_si_big_pickle_falla_revisa_grok.py",
+    "depende": [
+      "103"
+    ],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_si_big_pickle_falla_revisa_grok.py. Vigila la funcion auditar de cuerpo/obrero.py cuando se le pide auditor='bigpickle'. Arriba: from cuerpo import obrero, from cuerpo import bigpickle, from cuerpo import grok. Llama a obrero.auditar exactamente asi: auditoria, quien, avisos = obrero.auditar('', {'archivo': 'x.py'}, auditor='bigpickle', evitar='deepseek'). Con monkeypatch pon tambien obrero._claude_directo en una funcion que lanza AssertionError, para que nunca se llame a Claude. Con monkeypatch: bigpickle.preguntar devuelve ('', ['timeout']); grok.preguntar devuelve ('{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}', []) y apunta que se le llamo; y obrero._preguntar_con_relevo apunta que se le llamo y devuelve ('', None, []). Pruebas, cada una con assert: (1) quien reviso es 'grok47' y el veredicto es APROBADO; (2) no se llamo a obrero._preguntar_con_relevo; (3) si grok.preguntar tambien devuelve ('', ['timeout']), entonces si se llama a obrero._preguntar_con_relevo, como hoy. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_si_big_pickle_falla_revisa_grok.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
+    "id": "99",
+    "titulo": "Si Big Pickle falla, revisa Grok 4.7",
+    "origen": "orden de Julio A-45 (2026-09-21)",
+    "repara": "sin esto el 44 % de las revisiones cae en una IA gratis o en nadie",
+    "pieza": "cuerpo/obrero.py",
+    "depende": [
+      "98"
+    ],
+    "modo": "IA",
+    "razon": "Julio: siempre se llama primero a Big Pickle y, si no, a Grok 4.7",
+    "encargo": "En cuerpo/obrero.py, en la funcion auditar, justo despues de la linea if revisor_fijo and quien_aud != revisor_fijo: y antes de la llamada a _preguntar_con_relevo que va debajo, agrega: from cuerpo import grok; _texto_g, _avisos_g = grok.preguntar(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False))); avisos.extend(_avisos_g or []); si _texto_g no esta vacio, aud_g = _json_de(_texto_g); si aud_g es un dict sin la clave _error y evitar no es 'grok47', entonces avisos.append('bigpickle no contesto: revisa Grok 4.7 (A-45)') y return aud_g, 'grok47', avisos. Si no, sigue como hoy. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_si_big_pickle_falla_revisa_grok.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "cadena de revision por A-45: Big Pickle -> Grok 4.7 -> relevo de hoy; Codex queda sobre todo para reemplazar a Claude (arquitecto y perito)."
+  },
+  {
     "id": "115",
     "titulo": "La vigia de que el turno de guardado se libera si su dueno ya murio",
     "origen": "medido el 2026-09-21 17:50 (A-43): la orden 111 murio por tope de tiempo a mitad de su guardado (16:44) y dejo tomado el turno de guardado; fila_de_commits solo lo libera a las 2 horas y todo guardado del pit quedo esperando (101 y 114 se colgaron)",
@@ -349,24 +409,6 @@
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
-  },
-  {
-    "id": "103",
-    "titulo": "La vigia del enchufe de Grok mete la llave falsa en el encargo, no en el entorno",
-    "origen": "medido el 2026-09-21 (A-43): la orden 97 quedo SIN_TERMINAR porque su vigia pone la llave de mentira en una variable del entorno y pregunta hola; el enchufe esta bien, la prueba no mide lo que dice",
-    "repara": "una vigia que no mide lo que dice deja sin terminar una pieza correcta",
-    "pieza": "vigias/test_vigia_el_enchufe_de_grok.py",
-    "depende": [],
-    "modo": "IA",
-    "razon": "el filtro de llaves mira el encargo, que es lo que viaja a la IA",
-    "encargo": "En vigias/test_vigia_el_enchufe_de_grok.py, en la funcion test_con_llave_de_mentira_no_se_llama_a_popen, las dos lineas seguidas monkeypatch.setenv('OPENCODE_API_KEY', llave) y texto, avisos = grok.preguntar('hola') se cambian por una sola linea: texto, avisos = grok.preguntar('mi clave ' + llave). Es UN solo cambio. No cambies nada mas ni toques ningun otro archivo.",
-    "vigia": "vigias/test_vigia_el_enchufe_de_grok.py",
-    "prueba_real": "",
-    "comando": "",
-    "estado": "pendiente",
-    "paso_fallido": "",
-    "fallos_seguidos": 0,
-    "nota": "cuando quede verde, la orden 97 queda terminada (su pieza cuerpo/grok.py ya esta guardada)."
   },
   {
     "id": "104",
@@ -798,48 +840,6 @@
     "paso_fallido": "vigia_verde",
     "fallos_seguidos": 1,
     "nota": ""
-  },
-  {
-    "id": "98",
-    "titulo": "La vigia de que si Big Pickle falla revisa Grok 4.7",
-    "origen": "orden de Julio A-45 (2026-09-21)",
-    "repara": "cuando Big Pickle no contesta, la revision cae en una IA gratis o queda SIN_AUDITAR",
-    "pieza": "vigias/test_vigia_si_big_pickle_falla_revisa_grok.py",
-    "depende": [
-      "103"
-    ],
-    "modo": "IA",
-    "razon": "la vigia nace antes que el cambio, y nace roja",
-    "encargo": "Crear la vigia nueva vigias/test_vigia_si_big_pickle_falla_revisa_grok.py. Vigila la funcion auditar de cuerpo/obrero.py cuando se le pide auditor='bigpickle'. Arriba: from cuerpo import obrero, from cuerpo import bigpickle, from cuerpo import grok. Llama a obrero.auditar exactamente asi: auditoria, quien, avisos = obrero.auditar('', {'archivo': 'x.py'}, auditor='bigpickle', evitar='deepseek'). Con monkeypatch pon tambien obrero._claude_directo en una funcion que lanza AssertionError, para que nunca se llame a Claude. Con monkeypatch: bigpickle.preguntar devuelve ('', ['timeout']); grok.preguntar devuelve ('{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}', []) y apunta que se le llamo; y obrero._preguntar_con_relevo apunta que se le llamo y devuelve ('', None, []). Pruebas, cada una con assert: (1) quien reviso es 'grok47' y el veredicto es APROBADO; (2) no se llamo a obrero._preguntar_con_relevo; (3) si grok.preguntar tambien devuelve ('', ['timeout']), entonces si se llama a obrero._preguntar_con_relevo, como hoy. No toques ningun otro archivo.",
-    "vigia": "vigias/test_vigia_si_big_pickle_falla_revisa_grok.py",
-    "entrega_la_prueba": "si",
-    "crear": true,
-    "prueba_real": "",
-    "comando": "",
-    "estado": "pendiente",
-    "paso_fallido": "",
-    "fallos_seguidos": 0,
-    "nota": ""
-  },
-  {
-    "id": "99",
-    "titulo": "Si Big Pickle falla, revisa Grok 4.7",
-    "origen": "orden de Julio A-45 (2026-09-21)",
-    "repara": "sin esto el 44 % de las revisiones cae en una IA gratis o en nadie",
-    "pieza": "cuerpo/obrero.py",
-    "depende": [
-      "98"
-    ],
-    "modo": "IA",
-    "razon": "Julio: siempre se llama primero a Big Pickle y, si no, a Grok 4.7",
-    "encargo": "En cuerpo/obrero.py, en la funcion auditar, justo despues de la linea if revisor_fijo and quien_aud != revisor_fijo: y antes de la llamada a _preguntar_con_relevo que va debajo, agrega: from cuerpo import grok; _texto_g, _avisos_g = grok.preguntar(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False))); avisos.extend(_avisos_g or []); si _texto_g no esta vacio, aud_g = _json_de(_texto_g); si aud_g es un dict sin la clave _error y evitar no es 'grok47', entonces avisos.append('bigpickle no contesto: revisa Grok 4.7 (A-45)') y return aud_g, 'grok47', avisos. Si no, sigue como hoy. No toques ningun otro archivo.",
-    "vigia": "vigias/test_vigia_si_big_pickle_falla_revisa_grok.py",
-    "prueba_real": "",
-    "comando": "",
-    "estado": "pendiente",
-    "paso_fallido": "",
-    "fallos_seguidos": 0,
-    "nota": "cadena de revision por A-45: Big Pickle -> Grok 4.7 -> relevo de hoy; Codex queda sobre todo para reemplazar a Claude (arquitecto y perito)."
   },
   {
     "id": "90",
