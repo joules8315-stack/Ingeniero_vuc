@@ -338,12 +338,32 @@ def _vigias(raiz):
         except Exception:
             # Si git falla, tratar como guardado (frenar) para no dejar pasar algo roto.
             guardados.append(archivo)
+    # Una roja ya guardada que la maquina declaro como vigia de una orden suya
+    # todavia sin terminar (estado != 'hecha') nacio roja a proposito y espera su
+    # arreglo: se trata igual que una roja nueva y deja pasar con aviso.
+    # Cualquier otra roja ya guardada sigue frenando. Si las ordenes no se pueden
+    # leer, se frena como hoy.
+    esperando = set()
     if guardados:
-        # Al menos uno ya estaba guardado: es romper algo que estaba verde. Frenar.
+        try:
+            ruta_ordenes = os.path.join(raiz, "memoria", "ORDENES.json")
+            with open(ruta_ordenes, encoding="utf-8") as f:
+                ordenes = json.load(f)
+            for orden in ordenes:
+                if str(orden.get("estado", "")).strip().lower() == "hecha":
+                    continue
+                vigia = str(orden.get("vigia", "")).replace("\\", "/").strip()
+                if vigia:
+                    esperando.add(vigia)
+        except Exception:
+            esperando = set()
+    guardados_que_frenan = [a for a in guardados if a not in esperando]
+    if guardados_que_frenan:
+        # Al menos uno ya estaba guardado y no espera arreglo: es romper algo que estaba verde. Frenar.
         return False, ultima[0].strip()
-    # Todos los rojos son nuevos: dejar pasar con aviso.
-    detalle = "; ".join(nuevos)
-    return True, "vigias recien escritas sin su pieza aun (se deja pasar): " + detalle
+    # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.
+    detalle = "; ".join(nuevos + [a for a in guardados if a in esperando])
+    return True, "vigias recien escritas sin su pieza aun o esperando su arreglo (se deja pasar): " + detalle
 
 
 def main():
