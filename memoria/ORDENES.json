@@ -922,7 +922,7 @@
     ],
     "modo": "IA",
     "razon": "la cadena de 24 horas de Julio necesita que un programa pueda llamar a Codex en solo lectura",
-    "encargo": "Crear la pieza nueva cuerpo/codex.py, hermana de cuerpo/bigpickle.py y con su mismo estilo. Una funcion preguntar(prompt, timeout=600, raiz=None) que devuelve (texto, avisos) y nunca lanza. Antes de nada pasa el texto por cuerpo/privacidad.py: si limpiar encuentra una llave (aparece CLAVE) o hay_datos_personales dice que si, NO llama a Codex y devuelve texto vacio con un aviso que lo explique, porque Codex trabaja con la cuenta personal de Julio y ahi no pueden salir llaves ni datos de clientes. Busca codex con shutil.which; si no esta, texto vacio y aviso. La carpeta es raiz o, si no viene, la carpeta del Ingeniero. Llama con subprocess.run a: codex exec --sandbox read-only, -c con approval_policy=\"never\", --dangerously-bypass-hook-trust, --skip-git-repo-check, -C la carpeta, -o un archivo temporal para la respuesta final, y - para leer el pedido de la entrada; pasandole el pedido por la entrada, con el tope de tiempo, en utf-8, y con un entorno que sea una copia del actual con INGENIERO_OFF puesto a 1. Si se pasa del tope: texto vacio y aviso con los segundos. Si contesta: devuelve el texto del archivo de respuesta final. Borra el archivo temporal al terminar. Lo vigila vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py. No toques ningun otro archivo.",
+    "encargo": "Crear la pieza nueva cuerpo/codex.py, hermana de cuerpo/bigpickle.py y con su mismo estilo. Una funcion preguntar(prompt, timeout=600, raiz=None) que devuelve (texto, avisos) y nunca lanza. Antes de nada pasa el texto por cuerpo/privacidad.py: si limpiar encuentra una llave (aparece CLAVE) o hay_datos_personales dice que si, NO llama a Codex y devuelve texto vacio con un aviso que lo explique, porque Codex trabaja con la cuenta personal de Julio y ahi no pueden salir llaves ni datos de clientes. Busca codex con shutil.which; si no esta, texto vacio y aviso. La carpeta es raiz o, si no viene, la carpeta del Ingeniero. Llama con subprocess.run a: codex exec --sandbox read-only, -c con approval_policy=\"never\", --dangerously-bypass-hook-trust, --skip-git-repo-check, -C la carpeta, -o un archivo temporal para la respuesta final, y - para leer el pedido de la entrada; pasandole el pedido por la entrada, con el tope de tiempo, en utf-8, y con un entorno que sea una copia del actual con INGENIERO_OFF puesto a 1 y la marca INGENIERO_LLAMADA_DEL_PROGRAMA puesta a 1, para que el gancho de legislar de Codex no tome el pedido por una orden de Julio. Si se pasa del tope: texto vacio y aviso con los segundos. Si contesta: devuelve el texto del archivo de respuesta final. Borra el archivo temporal al terminar. Lo vigila vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py. No toques ningun otro archivo.",
     "vigia": "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
     "sabotaje": "memoria/sabotajes/la_pieza_que_le_pregunta_a_codex.json",
     "crear": true,
@@ -1241,5 +1241,46 @@
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
+  },
+  {
+    "id": "65",
+    "titulo": "La vigia de que lo que el programa le pide a una IA no entra como orden de Julio",
+    "origen": "medido el 2026-09-21: el gancho de Codex recogio como ordenes de Julio los pedidos que le hizo el programa, incluida la hoja entera de la revision",
+    "repara": "cuando el programa le manda un pedido a Codex, el gancho de legislar de Codex lo toma por un mensaje de Julio; el interruptor INGENIERO_OFF no lo para porque ese candado no lo mira. Cada llamada del programa a Codex llenaria la lista de ordenes de Julio de ruido",
+    "pieza": "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py. Vigila arnes/candado_legislar.py cuando se corre con el argumento desde-julio. Prueba, corriendolo con subprocess y con un JSON de entrada de mentira que trae un prompt con frases que parecen ordenes, que si en su entorno esta la marca INGENIERO_LLAMADA_DEL_PROGRAMA puesta a 1 NO apunta nada en la lista de ordenes de Julio; y que sin esa marca sigue apuntando como hoy. Aisla la lista de ordenes en una carpeta temporal para no ensuciar la de verdad (mira como lo hacen las otras vigias de ese candado). No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
+    "id": "66",
+    "titulo": "Lo que el programa le pide a una IA no entra como orden de Julio",
+    "origen": "medido el 2026-09-21",
+    "repara": "sin esto, cada llamada del programa a Codex ensucia la lista de ordenes de Julio y el dia que haya una orden de verdad se entierra",
+    "pieza": "arnes/candado_legislar.py",
+    "depende": [
+      "65"
+    ],
+    "modo": "IA",
+    "razon": "recoger de mas se limpia, pero cada limpieza a mano cuesta y termina enterrando una orden de verdad",
+    "encargo": "En arnes/candado_legislar.py, en el camino desde-julio, si en el entorno esta la marca INGENIERO_LLAMADA_DEL_PROGRAMA puesta a 1, no se apunta nada y se sale sin frenar, porque ese mensaje lo escribio el programa y no Julio. Sin esa marca, todo sigue exactamente igual. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
+    "sabotaje": "memoria/sabotajes/lo_que_pide_el_programa_no_es_de_julio.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "la pieza cuerpo/codex.py (orden 49) tiene que poner esa marca en el entorno de cada llamada a Codex."
   }
 ]
