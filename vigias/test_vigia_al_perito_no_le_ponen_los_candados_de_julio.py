@@ -116,7 +116,7 @@ def test_el_perito_se_busca_con_shutil_which(capataz):
 def test_sin_perito_no_se_llama_a_subprocess(capataz, monkeypatch):
     """Si no hay claude en el PATH, no se ejecuta nada."""
     modulo, llamadas = capataz
-    monkeypatch.setattr(modulo.shutil, 'which', lambda nombre: None)
+    monkeypatch.setattr(shutil, 'which', lambda nombre: None)
 
     datos, mensaje = modulo.pedir_al_perito({'fallo': 'prueba'}, RAIZ)
     assert datos is None
