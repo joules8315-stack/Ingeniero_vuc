@@ -178,7 +178,7 @@ def main(argv=None):
     codigo, salida_normal, salida_errores = resultado
 
     if codigo == 0:
-        _escribir_texto(salida_normal)
+        _escribir_salida_arreglada(salida_normal, evento)
         return 0
 
     if codigo == 2:
