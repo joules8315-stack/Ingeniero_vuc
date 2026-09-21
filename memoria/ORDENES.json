@@ -20,6 +20,46 @@
     "nota": "hoy se libero a mano: el dueno 16004 llevaba muerto desde las 16:44; copia en memoria/rescate/fila_de_commits_trabada_16004.lock."
   },
   {
+    "id": "117",
+    "titulo": "La vigia de que recoger nunca devuelve al disco algo con forma de llave",
+    "origen": "medido el 2026-09-21 18:10 (A-43): el guardia freno la vigia de la orden 48 por traer una llave de mentira escrita entera, y la recogida la volvio a dejar en el disco",
+    "repara": "recoger_lo_frenado pasa por las pruebas del guardia pero no por su freno de llaves",
+    "pieza": "vigias/test_vigia_recoger_no_devuelve_llaves.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_recoger_no_devuelve_llaves.py. Vigila la funcion recoger_lo_frenado de cuerpo/capataz.py. Arriba: import subprocess, from cuerpo import capataz, from arnes import recoger_los_pedazos, from arnes import guardia_de_guardado. raiz es tmp_path con tmp_path/pieza.py creada. La orden es {'id': '1', 'pieza': 'pieza.py', 'vigia': 'vigias/test_x.py', 'entrega_la_prueba': 'si'}. Con monkeypatch: recoger_los_pedazos.recoger devuelve {'ok': True, 'destino': 'pieza.py', 'razon': 'x'}; subprocess.run es una funcion falsa que NUNCA corre nada, guarda sus ordenes y devuelve returncode 0; guardia_de_guardado._hay_llaves devuelve lo que le digas. Pruebas, cada una con assert: (1) si _hay_llaves devuelve ['pieza.py'], recoger_lo_frenado devuelve un dict con ok False y su razon contiene la palabra llave; (2) si devuelve [], el resultado tiene ok True. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_recoger_no_devuelve_llaves.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
+    "id": "118",
+    "titulo": "Recoger nunca devuelve al disco algo con forma de llave",
+    "origen": "medido el 2026-09-21 18:10 (A-43): el guardia freno la vigia de la orden 48 por traer una llave de mentira escrita entera, y la recogida la volvio a dejar en el disco",
+    "repara": "recoger_lo_frenado pasa por las pruebas del guardia pero no por su freno de llaves",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "117"
+    ],
+    "modo": "IA",
+    "razon": "una llave en el disco sin guardar puede acabar mandada a una IA o guardada: el mismo freno del guardia vale aqui",
+    "encargo": "En cuerpo/capataz.py, en la funcion recoger_lo_frenado, justo despues de las dos lineas if not isinstance(resultado, dict) or not resultado.get('ok'): y return resultado, agrega: from arnes import guardia_de_guardado; si guardia_de_guardado._hay_llaves(raiz, [pieza]) devuelve algo no vacio, mueve el archivo con os.replace a os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.LLAVE') y devuelve {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida trae algo con forma de llave: no se deja en el disco'}. Va ANTES de mirar entrega_la_prueba, para que valga tambien para las pruebas. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_recoger_no_devuelve_llaves.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
     "id": "115",
     "titulo": "La vigia de que el turno de guardado se libera si su dueno ya murio",
     "origen": "medido el 2026-09-21 17:50 (A-43): la orden 111 murio por tope de tiempo a mitad de su guardado (16:44) y dejo tomado el turno de guardado; fila_de_commits solo lo libera a las 2 horas y todo guardado del pit quedo esperando (101 y 114 se colgaron)",
