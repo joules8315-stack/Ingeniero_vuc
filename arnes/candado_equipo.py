@@ -237,7 +237,9 @@ def _apuntar_frenada(fp, por_que):
     try:
         _dec = os.path.join(AQUI, "memoria", "DECISIONES_CANDADO.log")
         _texto = str(por_que or "")
-        _que = "DEJO PASAR" if _texto.upper().startswith("DEJO PASAR") else "FRENO"
+        _que = "DEJO PASAR" if (_texto.upper().startswith("DEJO PASAR") or
+                               _texto.strip().lower().startswith("documento libre") or
+                               _texto.strip().lower().startswith("veredicto del equipo cubre el archivo")) else "FRENO"
         _motivo = _texto.split(":", 1)[1].strip() if ":" in _texto else _texto
         os.makedirs(os.path.dirname(_dec), exist_ok=True)
         with open(_dec, "a", encoding="utf-8") as f:
@@ -381,7 +383,13 @@ def volver_atras(raiz, rutas, motivo):
                     import shutil
                     destino_dir = os.path.join(str(raiz), 'memoria', 'trabajos_sin_revisar')
                     os.makedirs(destino_dir, exist_ok=True)
-                    shutil.copy2(os.path.join(str(raiz), str(ruta)), os.path.join(destino_dir, os.path.basename(str(ruta)) + '.FRENADO_POR_EL_GUARDIA'))
+                    destino = os.path.join(destino_dir, os.path.basename(str(ruta)) + '.FRENADO_POR_EL_GUARDIA')
+                    if os.path.exists(destino):
+                        n = 2
+                        while os.path.exists(destino + '.' + str(n)):
+                            n += 1
+                        destino = destino + '.' + str(n)
+                    shutil.copy2(os.path.join(str(raiz), str(ruta)), destino)
                     subprocess.run(["git", "restore", "--staged", "--worktree", "--source=HEAD", "--", str(ruta)], timeout=60, **comun)
                     anotaciones.append("devuelta a lo guardado (copia apartada): " + str(ruta))
                 else:
@@ -389,6 +397,11 @@ def volver_atras(raiz, rutas, motivo):
                     destino_dir = os.path.join(str(raiz), "memoria", "trabajos_sin_revisar")
                     os.makedirs(destino_dir, exist_ok=True)
                     destino = os.path.join(destino_dir, os.path.basename(str(ruta)) + ".FRENADO_POR_EL_GUARDIA")
+                    if os.path.exists(destino):
+                        n = 2
+                        while os.path.exists(destino + "." + str(n)):
+                            n += 1
+                        destino = destino + "." + str(n)
                     os.replace(os.path.join(str(raiz), str(ruta)), destino)
                     anotaciones.append("apartada (nueva): " + str(ruta))
             except Exception as e:
@@ -499,7 +512,7 @@ def main():
         sys.stderr.write(MENSAJE.format(fp="(peticion vacia)"))
         return 2
     if os.path.splitext(fp)[1].lower() not in CODIGO:
-        _apuntar_frenada(fp, "documento libre")
+        _apuntar_frenada(fp, "DEJO PASAR: documento libre")
         return 0                                    # documentos: libres
     rel = fp.replace("\\", "/").lower()
     if "/arnes/" in rel:
