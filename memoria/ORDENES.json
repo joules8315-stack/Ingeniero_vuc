@@ -14,7 +14,7 @@
     "vigia": "vigias/test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "corriendo",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "hoy se libero a mano: el dueno 16004 llevaba muerto desde las 16:44; copia en memoria/rescate/fila_de_commits_trabada_16004.lock."
@@ -58,6 +58,27 @@
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
+  },
+  {
+    "id": "66",
+    "titulo": "Lo que el programa le pide a una IA no entra como orden de Julio",
+    "origen": "medido el 2026-09-21",
+    "repara": "sin esto, cada llamada del programa a Codex ensucia la lista de ordenes de Julio y el dia que haya una orden de verdad se entierra",
+    "pieza": "arnes/candado_legislar.py",
+    "depende": [
+      "65"
+    ],
+    "modo": "IA",
+    "razon": "recoger de mas se limpia, pero cada limpieza a mano cuesta y termina enterrando una orden de verdad",
+    "encargo": "En arnes/candado_legislar.py, en la funcion main, al principio del camino if args and args[0] == \"desde-julio\":, antes de leer la entrada, si en el entorno INGENIERO_OFF vale 1 o INGENIERO_LLAMADA_DEL_PROGRAMA vale 1, se lee y descarta la entrada y se sale con return 0 sin apuntar nada, porque ese mensaje lo escribio el programa (por ejemplo el pedido al perito, que ya se llama con INGENIERO_OFF=1) y no Julio. Sin esas marcas todo sigue exactamente igual. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
+    "sabotaje": "memoria/sabotajes/lo_que_pide_el_programa_no_es_de_julio.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "la pieza cuerpo/codex.py (orden 49) tiene que poner esa marca en el entorno de cada llamada a Codex."
   },
   {
     "id": "115",
@@ -328,27 +349,6 @@
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
-  },
-  {
-    "id": "66",
-    "titulo": "Lo que el programa le pide a una IA no entra como orden de Julio",
-    "origen": "medido el 2026-09-21",
-    "repara": "sin esto, cada llamada del programa a Codex ensucia la lista de ordenes de Julio y el dia que haya una orden de verdad se entierra",
-    "pieza": "arnes/candado_legislar.py",
-    "depende": [
-      "65"
-    ],
-    "modo": "IA",
-    "razon": "recoger de mas se limpia, pero cada limpieza a mano cuesta y termina enterrando una orden de verdad",
-    "encargo": "En arnes/candado_legislar.py, en la funcion main, al principio del camino if args and args[0] == \"desde-julio\":, antes de leer la entrada, si en el entorno INGENIERO_OFF vale 1 o INGENIERO_LLAMADA_DEL_PROGRAMA vale 1, se lee y descarta la entrada y se sale con return 0 sin apuntar nada, porque ese mensaje lo escribio el programa (por ejemplo el pedido al perito, que ya se llama con INGENIERO_OFF=1) y no Julio. Sin esas marcas todo sigue exactamente igual. No toques ningun otro archivo.",
-    "vigia": "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
-    "sabotaje": "memoria/sabotajes/lo_que_pide_el_programa_no_es_de_julio.json",
-    "prueba_real": "",
-    "comando": "",
-    "estado": "pendiente",
-    "paso_fallido": "",
-    "fallos_seguidos": 0,
-    "nota": "la pieza cuerpo/codex.py (orden 49) tiene que poner esa marca en el entorno de cada llamada a Codex."
   },
   {
     "id": "103",
