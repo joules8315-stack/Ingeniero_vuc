@@ -504,6 +504,8 @@ def pedir_al_perito(expediente, raiz, tope_segundos=600):
         return (None, 'no encuentro claude en el PATH')
     pedido = ('Eres el perito del pit (acuerdo A-22). Analiza este fallo SOLO con el expediente y leyendo el codigo del proyecto; no uses tu memoria. Responde SOLO un objeto JSON con: que_paso, causa_raiz, donde, quien_fallo (herramienta, programa, equipo o diseno), citas (lista de {archivo, texto} copiados LITERAL del proyecto, que prueban la causa), no_volver_a (la leccion en una frase), tarea_nueva ({repara, pieza, razon, encargo, modo: PROGRAMA o IA}; distinta de la orden que fallo). EXPEDIENTE:' + json.dumps(expediente, ensure_ascii=False, indent=2))
     try:
+        entorno = dict(os.environ)
+        entorno['INGENIERO_OFF'] = '1'
         resultado = subprocess.run(
             [exe, '-p', '--tools', 'Read,Grep,Glob', '--permission-mode', 'plan'],
             input=pedido,
@@ -513,6 +515,7 @@ def pedir_al_perito(expediente, raiz, tope_segundos=600):
             encoding='utf-8',
             errors='replace',
             timeout=tope_segundos,
+            env=entorno,
         )
     except subprocess.TimeoutExpired:
         return (None, 'el perito no contesto en %d s' % tope_segundos)
