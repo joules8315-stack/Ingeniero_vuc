@@ -1,5 +1,45 @@
 [
   {
+    "id": "115",
+    "titulo": "La vigia de que el turno de guardado se libera si su dueno ya murio",
+    "origen": "medido el 2026-09-21 17:50 (A-43): la orden 111 murio por tope de tiempo a mitad de su guardado (16:44) y dejo tomado el turno de guardado; fila_de_commits solo lo libera a las 2 horas y todo guardado del pit quedo esperando (101 y 114 se colgaron)",
+    "repara": "un turno de guardado de un proceso muerto para todos los guardados durante 2 horas",
+    "pieza": "vigias/test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py. Vigila la funcion fila_de_commits(raiz, espera=2400) de arnes/candado_equipo.py, que es un administrador de contexto (se usa con with). Arriba: import os, import tempfile, import hashlib, import time, la carpeta arnes en sys.path si hace falta, e import candado_equipo. Calcula la ruta del turno igual que la funcion: os.path.join(tempfile.gettempdir(), 'ingeniero_fila_' + hashlib.sha1(os.path.abspath(str(raiz)).lower().encode('utf-8')).hexdigest()[:12] + '.lock'), con raiz = str(tmp_path). Pruebas, cada una con assert: (1) si el turno existe recien escrito con el numero 999999 (un proceso que no existe), with candado_equipo.fila_de_commits(raiz, espera=3): entra en menos de 3 segundos; (2) si el turno existe con el numero del propio proceso de la prueba (os.getpid(), que esta vivo), with candado_equipo.fila_de_commits(raiz, espera=2) lanza TimeoutError; (3) al salir del with el archivo del turno ya no existe. Borra el archivo del turno al final de cada prueba. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
+    "id": "116",
+    "titulo": "El turno de guardado se libera si su dueno ya murio",
+    "origen": "medido el 2026-09-21 17:50 (A-43): la orden 111 murio por tope de tiempo a mitad de su guardado (16:44) y dejo tomado el turno de guardado; fila_de_commits solo lo libera a las 2 horas y todo guardado del pit quedo esperando (101 y 114 se colgaron)",
+    "repara": "un turno de guardado de un proceso muerto para todos los guardados durante 2 horas",
+    "pieza": "arnes/candado_equipo.py",
+    "depende": [
+      "115"
+    ],
+    "modo": "IA",
+    "razon": "saber si un proceso vive es un dato del sistema: programa",
+    "encargo": "En arnes/candado_equipo.py, en la funcion fila_de_commits, la linea viejo = time.time() - os.path.getmtime(ruta) > 7200 se cambia por: viejo = time.time() - os.path.getmtime(ruta) > 7200 or not _dueno_vivo(ruta). Y justo antes de def fila_de_commits agrega la funcion _dueno_vivo(ruta): lee el numero del archivo; si no se puede leer o no es un numero devuelve True (ante la duda no se libera); si no, import psutil y devuelve psutil.pid_exists(numero); si psutil falla devuelve True. Entrega los dos sitios en la lista cambios; si todavia no se puede, entrega solo el primero y pon _dueno_vivo como funcion anidada dentro de fila_de_commits antes del while. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "hoy se libero a mano: el dueno 16004 llevaba muerto desde las 16:44; copia en memoria/rescate/fila_de_commits_trabada_16004.lock."
+  },
+  {
     "id": "114",
     "titulo": "Cada prueba del relevo de Big Pickle empieza sin la marca de caido",
     "origen": "medido el 2026-09-21 17:40 (A-43): el cambio de la orden 101 (aprobado por el juez de la prueba) pone la marca _bp_caido en obrero.auditar; las pruebas corren en un mismo proceso y una deja la marca puesta para la siguiente: test_vigia_si_bigpickle_cae_revisa_otro.py linea 101 se pone roja (reviso groq en vez de bigpickle)",
@@ -12,7 +52,7 @@
     "vigia": "vigias/test_vigia_si_bigpickle_cae_revisa_otro.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "hoy la vigia esta verde y debe seguir verde; con el cambio de 101 tambien."
@@ -33,7 +73,7 @@
     "vigia": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
