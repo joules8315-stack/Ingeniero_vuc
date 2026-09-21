@@ -49,9 +49,8 @@ Ninguna de fondo: lo que cada uno vio solo **se suma**, no se contradice.
 - **Los 5 USD al mes**: A-27 los pone solo a Big Pickle; la ficha P3-8 los suma con DeepSeek.
 
 ## 6. Preguntas para Julio
-1. Los 5 dólares al mes, ¿son **solo para Big Pickle** o para **Big Pickle y DeepSeek juntos**?
-2. ¿Se corrige el plan para que diga que **si una IA falla entra la otra** (lo que ya decidiste), en
-   lugar de «la tarea espera»?
+1. ~~Los 5 dólares~~ RESPONDIDA: "son ambas pagas" → tope a las dos juntas (A-27).
+2. RESPONDIDA: sí, corregido el plan v4 §4 (entra la otra).
 
 ## 7. Orden de trabajo que sale de aquí
 1. Medir y cerrar la **protección de datos de Big Pickle** (seguridad primero).

@@ -31,7 +31,8 @@
                       PROGRAMA o IA (con razón)
 [D] DESPACHADOR ..... programa: varias tareas a la vez; archivos distintos → en paralelo;
                       el mismo archivo → en fila; la IA se elige ANTES según datos reales;
-                      si no está disponible, la tarea espera (sin relevo en cadena)
+                      si no está disponible, ENTRA LA OTRA (relevo en cadena: Claude→Codex,
+                      Big Pickle→Codex; A-40, corregido con el sí de Julio 2026-09-21)
 [E] PIT ............. pedazo listo → DeepSeek escribe (solo el cambio)
                       → Big Pickle revisa (JSON) → revisión de forma → monta
                       → prueba pieza y vecinas → vigía "nace conectado"
