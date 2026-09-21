@@ -1,0 +1,11 @@
+[
+  {"archivo": "arnes/candado_terminal.py",
+   "viejo": "    if re.search(r'(?:^|[\\s/\\\\])\\.env(?![\\w.])', cmd_txt):\n        sys.stderr.write(AVISO_CLAVES)",
+   "nuevo": "    if False:\n        sys.stderr.write(AVISO_CLAVES)"},
+  {"archivo": "arnes/candado_terminal.py",
+   "viejo": "    if re.search(r'(?:^|[\\s/\\\\])\\.env(?![\\w.])', cmd_txt):\n        sys.stderr.write(AVISO_CLAVES)\n        _cazado_terminal()\n        return 2",
+   "nuevo": "    if re.search(r'(?:^|[\\s/\\\\])\\.env(?![\\w.])', cmd_txt):\n        sys.stderr.write(AVISO_CLAVES)\n        _cazado_terminal()\n        return 0"},
+  {"archivo": "arnes/candado_terminal.py",
+   "viejo": "(?:^|[\\s/\\\\])\\.env(?![\\w.])",
+   "nuevo": "(?:^|[\\s/\\\\])\\.envNUNCA(?![\\w.])"}
+]

@@ -57,6 +57,7 @@
 | Tareas pequeñas / revisión de reserva | Groq 120b (encargos pequeños, con pausas de 3-4 min), Gemini 4 | Solo lo que cabe, medido antes de enviar |
 | Eliminadas | Groq 20b, Gemini 1 y 3, LM Studio local, OpenRouter | Por datos |
 | Arquitecto (una vez) y perito (cuando algo falla) | Claude solo-lectura | Llamado por el programa (A-29) |
+| Reemplazo de Claude + revisor si Big Pickle falla | **Codex** solo-lectura, en JSON | **Añadido por Julio el 2026-09-21 (A-40)**. Mismas leyes duras que Claude. Cuenta personal: nunca llaves ni datos de clientes |
 
 **Ahorro:**
 - Instrucciones fijas siempre al principio, para abaratar lo que se repite.
