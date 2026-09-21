@@ -410,7 +410,36 @@ def recoger_lo_frenado(orden, raiz):
             return {'ok': False, 'razon': 'la orden no dice que pieza toca'}
         nombre = os.path.basename(pieza) + '.FRENADO_POR_EL_GUARDIA'
         from arnes import recoger_los_pedazos
-        return recoger_los_pedazos.recoger(raiz, nombre)
+        import subprocess
+        import sys
+        resultado = recoger_los_pedazos.recoger(raiz, nombre)
+        if not isinstance(resultado, dict) or not resultado.get('ok'):
+            return resultado
+        if orden.get('entrega_la_prueba') == 'si':
+            return resultado
+        vigia = orden.get('vigia')
+        if not vigia:
+            return resultado
+        entorno = dict(os.environ)
+        entorno['INGENIERO_OFF'] = '1'
+        prueba = subprocess.run(
+            [sys.executable, '-m', 'pytest', '-q', vigia],
+            cwd=raiz,
+            capture_output=True,
+            text=True,
+            timeout=300,
+            env=entorno,
+        )
+        if prueba.returncode != 0:
+            subprocess.run(
+                ['git', 'checkout', 'HEAD', '--', pieza],
+                cwd=raiz,
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida deja su prueba roja: no se deja en el disco'}
+        return resultado
     except Exception as e:
         return {'ok': False, 'razon': str(e)}
 
