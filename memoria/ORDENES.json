@@ -14,7 +14,7 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
@@ -34,7 +34,7 @@
     "vigia": "vigias/test_vigia_el_guardia_lee_en_utf8.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "corriendo",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
@@ -404,6 +404,48 @@
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
+  },
+  {
+    "id": "112",
+    "titulo": "La vigia de que recoger aparta un archivo nuevo rojo en vez de dejarlo suelto",
+    "origen": "medido el 2026-09-21 16:03 (A-43): la vigia recogida de la orden 55 era un archivo nuevo; git checkout HEAD no la quita porque no esta en lo guardado, y quedo suelta en el disco",
+    "repara": "una pieza nueva rechazada queda suelta sin guardar y contamina las pruebas siguientes",
+    "pieza": "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py. Vigila la funcion recoger_lo_frenado de cuerpo/capataz.py. Arriba: import subprocess, from cuerpo import capataz, from arnes import recoger_los_pedazos, from arnes import guardia_de_guardado. raiz es tmp_path; crea tmp_path/pieza.py con el texto NUEVO y tmp_path/memoria/trabajos_sin_revisar. La orden es {'id': '1', 'pieza': 'pieza.py', 'vigia': 'vigias/test_x.py'}. Con monkeypatch: recoger_los_pedazos.recoger devuelve {'ok': True, 'destino': 'pieza.py', 'razon': 'x'}; subprocess.run es una funcion falsa que NUNCA corre nada y devuelve returncode 1 para las ordenes que contienen pytest, returncode 1 para git cat-file (la pieza no esta guardada) y 0 para las demas; guardia_de_guardado._vigias devuelve (True, 'x'). Pruebas, cada una con assert: (1) tras recoger_lo_frenado(orden, str(tmp_path)), tmp_path/pieza.py ya no existe; (2) en tmp_path/memoria/trabajos_sin_revisar hay un archivo cuyo nombre empieza por pieza.py y termina en .ROJO, con el texto NUEVO dentro (no se borra nada). No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  {
+    "id": "113",
+    "titulo": "Recoger aparta un archivo nuevo rojo en vez de dejarlo suelto",
+    "origen": "medido el 2026-09-21 16:03 (A-43): la vigia recogida de la orden 55 era un archivo nuevo; git checkout HEAD no la quita porque no esta en lo guardado, y quedo suelta en el disco",
+    "repara": "una pieza nueva rechazada queda suelta sin guardar y contamina las pruebas siguientes",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "112",
+      "57",
+      "60"
+    ],
+    "modo": "IA",
+    "razon": "nunca se borra nada: se aparta con su marca, igual que hace el guardia",
+    "encargo": "En cuerpo/capataz.py, en la funcion recoger_lo_frenado, hay dos sitios que devuelven la pieza a lo guardado con subprocess.run(['git', 'checkout', 'HEAD', '--', pieza], ...). En los dos, justo antes de esa llamada, agrega: pregunta con subprocess.run(['git', 'cat-file', '-e', 'HEAD:' + pieza], cwd=raiz, capture_output=True, text=True, timeout=30) si la pieza esta guardada; si su returncode no es 0 (es nueva), mueve el archivo con os.replace a os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.ROJO') en vez de llamar a git checkout. Entrega los dos sitios en la lista cambios. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "toca dos sitios: depende de que el equipo ya aplique varios trozos por ronda (57 y 60)."
   },
   {
     "id": "92",
