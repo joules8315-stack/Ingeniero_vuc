@@ -1102,6 +1102,12 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
     # Si al final el mismo cerebro escribio y reviso, se avisa.
     if evitar and quien_aud == evitar:
         avisos.append("el mismo cerebro escribio y reviso: hay que comprobarlo con los ojos antes de darlo por bueno")
+        # NADIE REVISA SU PROPIO TRABAJO (Julio, 2026-09-20): el aviso no basta, el trabajo
+        # entraba igual y eso es lo que la ley prohibe. Ademas del aviso, el veredicto NO vale:
+        # pasa a SIN_AUDITAR con resumen para el jefe y el revisor se devuelve vacio.
+        auditoria = {"veredicto": "SIN_AUDITAR",
+                     "resumen_para_el_jefe": "quien escribio no puede aprobar su propio trabajo"}
+        quien_aud = None
 
     return auditoria, quien_aud, avisos
 
