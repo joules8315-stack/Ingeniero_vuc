@@ -301,6 +301,13 @@ def main():
         _cazado_terminal()
         return 2
 
+    # SEGURIDAD de claves: el archivo .env NO se abre por la terminal, ni solo ni al final
+    # de una ruta con barra normal o invertida. No frena .envrc ni .env.ejemplo.
+    if re.search(r'(?:^|[\s/\\])\.env(?![\w.])', cmd_txt):
+        sys.stderr.write(AVISO_CLAVES)
+        _cazado_terminal()
+        return 2
+
     # LA FOTOCOPIA NO SE PAGA (Julio, 2026-09-08, repitiendolo por enesima vez).
     # Si se va a lanzar al equipo un encargo que YA trae el texto de antes y el de despues
     # exactos, eso no es trabajo de cerebro: es copiar. Se frena y se manda al copista, que lo
