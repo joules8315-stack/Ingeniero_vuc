@@ -1,0 +1,100 @@
+# REGLAS OBLIGATORIAS DE CODEX EN ESTA COMPUTADORA (acuerdo A-40 y orden de Julio 2026-09-21:
+# "cerrar la puerta trasera de Codex, donde se puede saltar el equipo, si uso la propia ventana
+# de Codex en VS Code").
+# Este archivo manda sobre ~/.codex/config.toml, sobre los botones de la ventana de VS Code y
+# sobre las banderas de la terminal: nada de eso puede aflojarlo. Codex solo lee; escribe el
+# programa del Ingeniero despues de la revision del equipo.
+
+# Solo lectura, siempre. Bloquea "full access", "workspace-write" y --yolo.
+allowed_sandbox_modes = ["read-only"]
+# Nunca pide permiso para saltarse la solo-lectura: no hay boton "aprobar" que abra la puerta.
+allowed_approval_policies = ["never"]
+
+# Los MISMOS candados de Claude, como ganchos gestionados: corren en la ventana de Codex sin
+# pedir confianza a mano, y los ganchos sueltos (usuario, proyecto, plugins) no cuentan.
+allow_managed_hooks_only = true
+
+[features]
+hooks = true
+
+[hooks]
+managed_dir = "C:/Ingeniero_VUC/arnes"
+windows_managed_dir = 'C:\Ingeniero_VUC\arnes'
+
+[[hooks.SessionStart]]
+[[hooks.SessionStart.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/modo_ingeniero.py sesion"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/modo_ingeniero.py sesion"
+
+[[hooks.UserPromptSubmit]]
+[[hooks.UserPromptSubmit.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/canal.py leer"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/canal.py leer"
+[[hooks.UserPromptSubmit.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/modo_ingeniero.py prompt"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/modo_ingeniero.py prompt"
+[[hooks.UserPromptSubmit.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_protocolo.py prompt"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_protocolo.py prompt"
+[[hooks.UserPromptSubmit.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_legislar.py desde-julio"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_legislar.py desde-julio"
+
+[[hooks.PreToolUse]]
+matcher = "Bash"
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_terminal.py"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_terminal.py"
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_memoria.py"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_memoria.py"
+
+[[hooks.PreToolUse]]
+matcher = "Edit|Write|apply_patch|ApplyPatch"
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/edit_gate_universal.py"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/edit_gate_universal.py"
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_protocolo.py construir"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_protocolo.py construir"
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_diagnostico.py"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_diagnostico.py"
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_memoria.py"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_memoria.py"
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/guard_pasado.py"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/guard_pasado.py"
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_equipo.py"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_equipo.py"
+
+[[hooks.Stop]]
+[[hooks.Stop.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_cierre.py"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_cierre.py"
+[[hooks.Stop.hooks]]
+type = "command"
+command = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_protocolo.py salida"
+command_windows = "python C:/Ingeniero_VUC/arnes/puente_codex.py C:/Ingeniero_VUC/arnes/candado_protocolo.py salida"
+
+# Ninguna orden de git que cambie o guarde el trabajo: eso es del programa, tras la revision.
+[rules]
+prefix_rules = [
+  { pattern = [{ token = "git" }, { any_of = ["add", "commit", "push", "reset", "restore", "checkout", "switch", "rm", "mv", "stash", "rebase", "merge", "cherry-pick", "clean"] }], decision = "forbidden", justification = "Codex solo lee: guardar y cambiar el trabajo lo hace el programa del Ingeniero tras la revision del equipo (A-40)." }
+]
