@@ -314,7 +314,14 @@ def fila_de_commits(raiz, espera=2400):
             break
         except FileExistsError:
             try:
-                viejo = time.time() - os.path.getmtime(ruta) > 7200
+                import psutil
+                with open(ruta, encoding='utf-8') as f:
+                    dueno = int(f.read().strip())
+                muerto = not psutil.pid_exists(dueno)
+            except Exception:
+                muerto = False
+            try:
+                viejo = time.time() - os.path.getmtime(ruta) > 7200 or muerto
             except OSError:
                 viejo = False
             if viejo:
