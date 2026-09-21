@@ -19,7 +19,7 @@ El equipo trabaja así (plan v4, `PLAN_PITS/04_PLAN_v4.md`):
 | Papel | Quién | Si falla, entra |
 |---|---|---|
 | Escribe el código | DeepSeek | — |
-| Revisa lo que escribe DeepSeek | Big Pickle | **Codex** (tú) |
+| Revisa lo que escribe DeepSeek | Big Pickle | **Grok 4.7** (OpenCode Go, A-45); si también falla, **Codex** (tú) |
 | Arquitecto, una vez por proyecto | Claude | **Codex** (tú) |
 | Perito, cuando algo falla | Claude | **Codex** (tú) |
 | Todo lo que es contar, comprobar o comparar | un programa | nadie: es un programa |
