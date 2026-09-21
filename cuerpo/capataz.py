@@ -260,7 +260,7 @@ def tipo_de_fallo(salida):
     return "otro"
 
 
-def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):
+def bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):
     """Corre las ordenes sola hasta que se para por una de las tres causas:
     tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos
     del mismo tipo en la misma pieza."""
