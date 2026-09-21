@@ -11,6 +11,8 @@
   3. se agota el saldo de DeepSeek (ya no queda quien haga lo pesado). Sin tope en dólares:
      cada IA de pago se usa hasta que se agote (A-42, orden de Julio 2026-09-21).
   Lo que quede pendiente va en el informe.
+- **Un fallo de la herramienta no va a la cola** (A-43, ley de Julio 2026-09-21): su arreglo pasa
+  al frente, y luego se reintenta la tarea que falló; llegar a su resultado es la prueba del arreglo.
 
 ## 2. Garantía de trabajar con el equipo (mecanismo, no voluntad)
 - **Claude sin manos.** La lista de permisos de la plataforma solo le deja leer. La activa Julio con su llave. Cuando el programa lo llama, Claude trabaja en solo-lectura y contesta en JSON.
