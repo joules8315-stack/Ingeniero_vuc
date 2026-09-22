@@ -174,6 +174,8 @@ def _vigias_verdes(raiz):
                 ruta_ordenes = os.path.join(raiz, "memoria", "ORDENES.json")
                 with open(ruta_ordenes, encoding="utf-8") as f:
                     ordenes = _json.load(f)
+                if isinstance(ordenes, dict):
+                    ordenes = ordenes.get('ordenes', [])
                 for orden in ordenes:
                     if str(orden.get("estado", "")).strip().lower() == "hecha":
                         continue
