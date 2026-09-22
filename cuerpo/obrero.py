@@ -1058,6 +1058,15 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
     # A-38 punto 4 (Julio 2026-09-19): si bigpickle esta caido, revisa otra IA con solo lo necesario, nunca claude ni quien escribio.
     revisor_fijo = auditor if auditor == 'bigpickle' else None
     if revisor_fijo and quien_aud != revisor_fijo:
+        from cuerpo import grok
+        _texto_g, _avisos_g = grok.preguntar(
+            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))
+        avisos.extend(_avisos_g or [])
+        if _texto_g:
+            aud_g = _json_de(_texto_g)
+            if isinstance(aud_g, dict) and '_error' not in aud_g and evitar != 'grok47':
+                avisos.append('bigpickle no contesto: revisa Grok 4.7 (A-45)')
+                return aud_g, 'grok47', avisos
         crudo_r, quien_r, av_r = _preguntar_con_relevo(
             _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,
             evitar=evitar, clase='auditar', vuelta=1)
