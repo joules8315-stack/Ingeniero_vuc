@@ -353,14 +353,22 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
                                            "direccion": "%s:%s-%s" % (fid, d, h),
                                            "texto": texto, "puntaje": 99.0, "_nombrado": fid})
             else:
-                texto = "\n".join(_lineas_de(ficha["abs"], 1, min(80, renglones)))
+                # Se intenta meter el archivo ENTERO. Si al meterlo entero la suma de
+                # renglones pasaria de TOPE_LINEAS, se deja el recorte de 80 como estaba
+                # para no romper el tope (A-48, 2026-09-22).
+                _lineas_ya = sum((t.get("hasta", 0) - t.get("desde", 0) + 1) for t in pedazos)
+                if _lineas_ya + renglones <= TOPE_LINEAS:
+                    hasta = renglones
+                else:
+                    hasta = min(80, renglones)
+                texto = "\n".join(_lineas_de(ficha["abs"], 1, hasta))
                 if not texto.strip():
                     continue
                 ya = any(t["pieza"] == fid for t in pedazos)
                 if not ya:
                     pedazos.insert(0, {"pieza": fid, "abs": ficha["abs"], "rol": ficha["rol"],
-                                       "desde": 1, "hasta": min(80, renglones),
-                                       "direccion": "%s:1-%s" % (fid, min(80, renglones)),
+                                       "desde": 1, "hasta": hasta,
+                                       "direccion": "%s:1-%s" % (fid, hasta),
                                        "texto": texto, "puntaje": 99.0, "_nombrado": fid})
     except Exception:
         pass
