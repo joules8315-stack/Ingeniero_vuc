@@ -250,6 +250,11 @@ def orden_nueva(raiz, texto):
     nueva.setdefault('prueba_real', '')
     nueva.setdefault('comando', '')
 
+    from cuerpo import capataz
+    problemas = capataz.validar_etiqueta(nueva)
+    if problemas:
+        return (False, 'faltan campos: ' + ', '.join(problemas))
+
     ordenes.insert(0, nueva)
 
     try:
