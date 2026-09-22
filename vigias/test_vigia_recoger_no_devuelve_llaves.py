@@ -37,7 +37,7 @@ def _preparar(monkeypatch, raiz, llaves):
 
     monkeypatch.setattr(subprocess, 'run', run_falso)
 
-    def hay_llaves_falso(carpeta):
+    def hay_llaves_falso(raiz, archivos):
         return llaves
 
     monkeypatch.setattr(guardia_de_guardado, '_hay_llaves', hay_llaves_falso)
