@@ -424,7 +424,7 @@ def main():
                 print("TRABAJO GUARDADO pero NO aplicado: quien escribio y quien reviso son el MISMO.")
                 print("Hace falta OTRO cerebro que lo revise antes de tocar el disco.")
             else:
-                _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)
+                _ok, _msg = aplicador.aplicar_propuesta(prop, raiz=_raiz)
                 if _ok:
                     print("APLICADO en disco (lo escribio el equipo): %s" % prop.get("archivo"))
                     # la huella del contenido EXACTO que aprobo el equipo; el guardia de guardado solo deja guardar ese contenido.
