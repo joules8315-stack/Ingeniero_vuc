@@ -162,6 +162,7 @@ Responde SOLO un JSON valido, sin texto alrededor:
   "funcion": "el NOMBRE de la funcion o seccion donde esta el cambio (nunca un numero)",
   "texto_viejo": "el texto literal que hay AHORA y que se sustituye, copiado tal cual del material",
   "texto_nuevo": "el texto literal que debe quedar, copiado tal cual del material",
+  "cambios": "OPCIONAL, SOLO si hay que cambiar VARIOS sitios del MISMO archivo: una lista de objetos con texto_viejo y texto_nuevo, uno por sitio; si la usas, deja vacios texto_viejo y texto_nuevo de arriba",
   "cambio": "que hay que cambiar, concreto",
   "codigo": "el codigo nuevo, solo el pedazo",
   "vigia": "que prueba lo comprobaria",
