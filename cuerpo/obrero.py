@@ -1071,6 +1071,16 @@ def auditar(paquete, propuesta, auditor=None, evitar=None):
             if isinstance(aud_g, dict) and '_error' not in aud_g and evitar != 'grok47':
                 avisos.append('bigpickle no contesto: revisa Grok 4.7 (A-45)')
                 return aud_g, 'grok47', avisos
+        if evitar != 'codex':
+            from cuerpo import codex as _codex_a45
+            _texto_c, _avisos_c = _codex_a45.preguntar(
+                _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))
+            avisos.extend(_avisos_c or [])
+            if _texto_c:
+                aud_c = _json_de(_texto_c)
+                if isinstance(aud_c, dict) and '_error' not in aud_c:
+                    avisos.append('Big Pickle fallo y reviso Codex')
+                    return aud_c, 'codex', avisos
         crudo_r, quien_r, av_r = _preguntar_con_relevo(
             _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,
             evitar=evitar, clase='auditar', vuelta=1)
