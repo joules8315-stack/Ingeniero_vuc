@@ -137,6 +137,8 @@ def aplicar_cambio(propuesta, raiz=None):
     # Se devuelve a su sitio (Julio, 2026-09-05: la reparacion no puede romper al vecino).
     if not os.path.exists(archivo):
         try:
+            # la carpeta de un archivo nuevo se crea si falta (medido 2026-09-22, orden 176)
+            os.makedirs(os.path.dirname(archivo) or ".", exist_ok=True)
             with open(archivo, "w", encoding="utf-8") as f:
                 f.write(contenido)
             _apuntar_log(True, archivo, funcion, "archivo creado")
