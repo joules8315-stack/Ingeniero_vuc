@@ -18,7 +18,7 @@ def test_el_encargo_de_crear_codigo_pide_llaves_por_partes():
         "el encargo de crear codigo no habla de la forma de llave: "
         "el obrero volvera a escribir las llaves de golpe"
     )
-    assert "partes" in texto, (
+    assert "partes" in texto.lower(), (
         "el encargo de crear codigo no pide armar las llaves por partes: "
         "el JSON se cortara a medio camino"
     )
