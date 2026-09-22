@@ -164,6 +164,32 @@ def desperto(quien):
     return False
 
 
+def bigpickle_fallo():
+    """Orden de Julio A-46 del 2026-09-21: cuenta los fallos seguidos de bigpickle.
+    Al segundo fallo seguido, lo duerme 30 min y pide revisar Grok 4.7."""
+    d = _leer()
+    seguidos = d.setdefault("seguidos", {})
+    seguidos["bigpickle"] = seguidos.get("bigpickle", 0) + 1
+    if seguidos["bigpickle"] >= 2:
+        d["dormidos"]["bigpickle"] = {
+            "hasta": time.time() + 1800,
+            "tipo": "dos_fallos",
+            "desde": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "motivo": "fallo dos veces seguidas: descansa 30 min y revisa Grok 4.7 (A-46)"}
+        seguidos["bigpickle"] = 0
+        d["historial"] = (d.get("historial", []) + [
+            {"cuando": d["dormidos"]["bigpickle"]["desde"], "quien": "bigpickle",
+             "que": "agotado (dos_fallos)"}])[-80:]
+    _guardar(d)
+
+
+def bigpickle_acierto():
+    """Orden de Julio A-46 del 2026-09-21: un acierto de bigpickle borra la cuenta de fallos seguidos."""
+    d = _leer()
+    d.setdefault("seguidos", {})["bigpickle"] = 0
+    _guardar(d)
+
+
 def apuntar_uso(quien, ok=True, segundos=None, tamano=None):
     d = _leer()
     g = d.setdefault("gasto", {}).setdefault(quien, {"llamadas": 0, "fallos": 0})
