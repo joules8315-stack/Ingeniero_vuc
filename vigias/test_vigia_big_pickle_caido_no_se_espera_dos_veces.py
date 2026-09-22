@@ -33,6 +33,7 @@ def _preparar(monkeypatch, respuestas):
         return respuestas[-1]
 
     monkeypatch.setattr(bigpickle, 'preguntar', _preguntar_falso)
+    monkeypatch.setattr(grok, 'preguntar', lambda *a, **k: ('', ['grok falso en la vigia']))
     monkeypatch.setattr(obrero, '_claude_directo', _claude_prohibido)
     monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False)
 
