@@ -445,3 +445,53 @@ def hecha(raiz, id):
     salida = (resultado.stdout or '') + (resultado.stderr or '')
     ultimas = salida.splitlines()[-15:]
     return (False, '\n'.join(ultimas))
+
+
+def depende(raiz, id, lista_ids):
+    """Pone depende = lista_ids (lista de textos; vacia vale) en esa orden.
+
+    Guarda con escritura atomica como las demas y devuelve (True, motivo)
+    o (False, motivo) si no existe la orden.
+    """
+    try:
+        ordenes = _leer_ordenes(raiz)
+    except Exception as e:
+        return (False, 'no se pudieron leer las ordenes: %s' % e)
+
+    orden = _buscar_orden(ordenes, id)
+    if orden is None:
+        return (False, 'no existe la orden %s' % id)
+
+    orden['depende'] = lista_ids
+
+    try:
+        _guardar_ordenes(raiz, ordenes)
+    except Exception as e:
+        return (False, 'no se pudo guardar: %s' % e)
+
+    return (True, 'orden %s: depende = %s' % (id, lista_ids))
+
+
+def archivar(raiz, id, motivo):
+    """Pone estado archivada y nota = motivo en esa orden.
+
+    Devuelve (True, motivo) o (False, motivo) si no existe la orden.
+    """
+    try:
+        ordenes = _leer_ordenes(raiz)
+    except Exception as e:
+        return (False, 'no se pudieron leer las ordenes: %s' % e)
+
+    orden = _buscar_orden(ordenes, id)
+    if orden is None:
+        return (False, 'no existe la orden %s' % id)
+
+    orden['estado'] = 'archivada'
+    orden['nota'] = motivo
+
+    try:
+        _guardar_ordenes(raiz, ordenes)
+    except Exception as e:
+        return (False, 'no se pudo guardar: %s' % e)
+
+    return (True, 'orden %s archivada' % id)
