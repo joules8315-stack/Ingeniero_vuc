@@ -358,7 +358,8 @@ def _vigias(raiz):
                     continue
                 vigia = str(orden.get("vigia", "")).replace("\\", "/").strip()
                 pieza = str(orden.get('pieza', '')).replace(chr(92), '/').strip()
-                if vigia and not (actual and str(orden.get('id', '')) == actual and vigia == pieza):
+                # una orden que declara queda_roja arregla una prueba que tiene que seguir roja hasta que llegue su codigo; romper sin decirlo sigue frenando (medido 2026-09-22)
+                if vigia and not (actual and str(orden.get('id', '')) == actual and vigia == pieza and not orden.get('queda_roja')):
                     esperando.add(vigia)
         except Exception:
             esperando = set()
