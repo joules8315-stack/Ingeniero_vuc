@@ -45,6 +45,8 @@ def test_con_sabotaje_que_sale_bien_la_orden_se_aprueba(monkeypatch):
         correr_orden_del_sistema_falso,
         raising=False,
     )
+    # el sabotaje de mentira no existe en disco; se da por armado (el armado lo vigila la orden 106)
+    monkeypatch.setattr(capataz, 'armar_sabotaje', lambda orden: True, raising=False)
 
     orden = {
         'vigia': 'vigias/loquesea.py',
@@ -98,6 +100,8 @@ def test_con_sabotaje_que_sale_mal_la_orden_no_se_aprueba(monkeypatch):
         correr_orden_del_sistema_falso,
         raising=False,
     )
+    # el sabotaje de mentira no existe en disco; se da por armado (el armado lo vigila la orden 106)
+    monkeypatch.setattr(capataz, 'armar_sabotaje', lambda orden: True, raising=False)
 
     orden = {
         'vigia': 'vigias/loquesea.py',
