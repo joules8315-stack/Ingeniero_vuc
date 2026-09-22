@@ -298,7 +298,7 @@ def _propuesta_cumple(propuesta, clase):
         # Reparar: tiene que decir que toca y con que se reemplaza.
         if not str(propuesta.get("archivo") or "").strip():
             return False, "la propuesta NO dice que archivo toca"
-        if "codigo" not in propuesta and "texto_viejo" not in propuesta and "texto_nuevo" not in propuesta:
+        if "codigo" not in propuesta and "texto_viejo" not in propuesta and "texto_nuevo" not in propuesta and not isinstance(propuesta.get("cambios"), list):
             return False, "la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)"
         if _trae_no_encontrado(propuesta, ("archivo", "codigo", "texto_viejo", "texto_nuevo")):
             return False, "la propuesta NO cumple porque trae la marca NO_ENCONTRADO"
