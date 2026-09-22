@@ -90,8 +90,7 @@ def test_el_cwd_no_es_la_carpeta_del_proyecto(monkeypatch):
 def test_con_llave_de_mentira_no_se_llama_a_popen(monkeypatch):
     _preparar(monkeypatch)
     llave = 's' + 'k' + '-' + ('a' * 24)
-    monkeypatch.setenv('OPENCODE_API_KEY', llave)
-    texto, avisos = grok.preguntar('hola')
+    texto, avisos = grok.preguntar('mi clave ' + llave)
     assert texto == ''
     assert _PopenFalso.veces_llamado == 0
 
