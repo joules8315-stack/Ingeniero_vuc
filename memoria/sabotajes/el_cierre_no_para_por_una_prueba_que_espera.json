@@ -1,0 +1,7 @@
+[
+ {
+  "archivo": "arnes/candado_cierre.py",
+  "viejo": "        esperando = set()\n        if ya_estaban:\n            try:\n                import json as _json\n                ruta_ordenes = os.path.join(raiz, \"memoria\", \"ORDENES.json\")\n                with open(ruta_ordenes, encoding=\"utf-8\") as f:\n                    ordenes = _json.load(f)\n                for orden in ordenes:\n                    if str(orden.get(\"estado\", \"\")).strip().lower() == \"hecha\":\n                        continue\n                    vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                    if vigia:\n                        esperando.add(vigia)\n            except Exception:\n                esperando = set()\n        frenan = [a for a in ya_estaban if a not in esperando]\n        if frenan:\n            return False, (ultima[0] if ultima else \"sin salida\")\n        return True, (\"vigias recien escritas y todavia sin su pieza, que es el metodo y no \"",
+  "nuevo": "        if ya_estaban:\n            return False, (ultima[0] if ultima else \"sin salida\")\n        return True, (\"vigias recien escritas y todavia sin su pieza, que es el metodo y no \""
+ }
+]

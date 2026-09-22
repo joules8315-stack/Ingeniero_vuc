@@ -54,7 +54,7 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
@@ -75,9 +75,9 @@
     "sabotaje": "memoria/sabotajes/el_cierre_no_para_por_una_prueba_que_espera.json",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
-    "paso_fallido": "",
-    "fallos_seguidos": 0,
+    "estado": "fallida",
+    "paso_fallido": "sabotaje",
+    "fallos_seguidos": 1,
     "nota": ""
   },
   {
@@ -96,7 +96,7 @@
     "sabotaje": "memoria/sabotajes/lo_que_pide_el_programa_no_es_de_julio.json",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "la pieza cuerpo/codex.py (orden 49) tiene que poner esa marca en el entorno de cada llamada a Codex."
@@ -114,10 +114,28 @@
     "vigia": "vigias/test_vigia_el_enchufe_de_grok.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "cuando quede verde, la orden 97 queda terminada (su pieza cuerpo/grok.py ya esta guardada)."
+  },
+  {
+    "id": "119",
+    "titulo": "El candado de cierre acepta la lista de ordenes con o sin envoltorio",
+    "origen": "medido el 2026-09-21 19:06 (A-43): la orden 62 se guardo bien pero su vigia queda roja con la pieza sana: la vigia escribe ORDENES.json como {\"ordenes\": [...]} y la pieza solo sabe leer la lista suelta, que es la forma real",
+    "repara": "la vigia de la orden 62 no puede ponerse verde y el sabotaje informa que falla",
+    "pieza": "arnes/candado_cierre.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "leer las dos formas es robusto y lo arregla en un solo cambio; la lista real no cambia",
+    "encargo": "En arnes/candado_cierre.py, en la funcion _vigias_verdes, justo despues de la linea ordenes = _json.load(f) agrega, con la misma sangria, esta linea: if isinstance(ordenes, dict): ordenes = ordenes.get('ordenes', []). Es UN solo cambio. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "con esto la orden 62 queda terminada."
   },
   {
     "id": "98",
@@ -136,7 +154,7 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "corriendo",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
@@ -836,9 +854,9 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "fallida",
-    "paso_fallido": "vigia_verde",
-    "fallos_seguidos": 1,
+    "estado": "hecha",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
     "nota": ""
   },
   {

@@ -1,0 +1,7 @@
+[
+ {
+  "archivo": "arnes/candado_legislar.py",
+  "viejo": "    if args and args[0] == \"desde-julio\":\n        # LA PUERTA POR DONDE ENTRA LO QUE JULIO ESCRIBE. Aqui se apunta SOLO, sin que nadie\n        # tenga que acordarse. Si algo falla, se calla y deja pasar: este modo NO puede\n        # estorbarle a Julio al escribir; el que frena es el candado de cierre, no este.\n        # Si el mensaje lo escribio el programa (no Julio), se lee y se descarta: no se apunta.\n        if os.environ.get(\"INGENIERO_OFF\") == \"1\" or os.environ.get(\"INGENIERO_LLAMADA_DEL_PROGRAMA\") == \"1\":\n            try:\n                sys.stdin.read()\n            except Exception:\n                pass\n            return 0\n        try:\n            crudo = sys.stdin.read()",
+  "nuevo": "    if args and args[0] == \"desde-julio\":\n        # LA PUERTA POR DONDE ENTRA LO QUE JULIO ESCRIBE. Aqui se apunta SOLO, sin que nadie\n        # tenga que acordarse. Si algo falla, se calla y deja pasar: este modo NO puede\n        # estorbarle a Julio al escribir; el que frena es el candado de cierre, no este.\n        try:\n            crudo = sys.stdin.read()"
+ }
+]
