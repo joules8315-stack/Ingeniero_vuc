@@ -74,6 +74,19 @@ def test_orden_pendiente_hace_que_el_cierre_no_pare(monkeypatch, tmp_path):
     assert verde is True, detalle
 
 
+def test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare(monkeypatch, tmp_path):
+    """Si hay una orden pendiente sobre la propia prueba, el primer valor es False:
+    el cierre para por una prueba que se edita a si misma."""
+    ordenes = {
+        "ordenes": [
+            {"estado": "pendiente", "vigia": "vigias/test_a.py", "pieza": "vigias/test_a.py"},
+        ]
+    }
+    raiz = _preparar(monkeypatch, tmp_path, ordenes)
+    verde, detalle = candado_cierre._vigias_verdes(raiz)
+    assert verde is False, detalle
+
+
 def test_orden_hecha_hace_que_el_cierre_pare(monkeypatch, tmp_path):
     """Si esa orden ya esta hecha, el primer valor es False: la prueba ya no espera."""
     ordenes = {
