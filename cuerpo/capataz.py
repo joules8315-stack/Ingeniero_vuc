@@ -379,6 +379,77 @@ def correr_orden_del_sistema(palabras):
     return resultado.returncode
 
 
+def armar_sabotaje(orden, raiz=None):
+    """Arma la lista de sabotaje de una orden a partir del trabajo aprobado mas nuevo de su pieza.
+
+    El sabotaje es deshacer el cambio aprobado (A-43): se busca en
+    raiz/memoria/trabajos_del_equipo el archivo cuyo nombre contiene APROBADO y
+    el nombre de la pieza, se toma el de fecha de cambio mas nueva, y se lee su
+    propuesta. Si trae una lista 'cambios', por cada trozo con texto_viejo y
+    texto_nuevo se agrega {'archivo': pieza, 'viejo': texto_nuevo, 'nuevo':
+    texto_viejo}; si no, y trae texto_viejo no vacio, se agrega un solo objeto
+    igual. Si no quedo ningun objeto, devuelve False. Si si, crea la carpeta del
+    archivo de orden['sabotaje'] (relativo a raiz), escribe la lista con
+    json.dump (indent 1, ensure_ascii False) y devuelve True. Nunca lanza: ante
+    cualquier error devuelve False.
+    """
+    try:
+        if raiz is None:
+            raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        pieza = ''
+        if isinstance(orden, dict):
+            pieza = os.path.basename(str(orden.get('pieza', '')))
+        if not pieza:
+            return False
+        carpeta = os.path.join(raiz, 'memoria', 'trabajos_del_equipo')
+        candidatos = []
+        for nombre_archivo in os.listdir(carpeta):
+            if 'APROBADO' in nombre_archivo and pieza in nombre_archivo:
+                ruta = os.path.join(carpeta, nombre_archivo)
+                try:
+                    candidatos.append((os.path.getmtime(ruta), ruta))
+                except OSError:
+                    continue
+        if not candidatos:
+            return False
+        candidatos.sort()
+        ruta_trabajo = candidatos[-1][1]
+        with open(ruta_trabajo, 'r', encoding='utf-8') as f:
+            trabajo = json.load(f)
+        propuesta = trabajo.get('propuesta') if isinstance(trabajo, dict) else None
+        if not isinstance(propuesta, dict):
+            return False
+        lista = []
+        cambios = propuesta.get('cambios')
+        if isinstance(cambios, list):
+            for trozo in cambios:
+                if not isinstance(trozo, dict):
+                    continue
+                viejo = trozo.get('texto_viejo')
+                nuevo = trozo.get('texto_nuevo')
+                if viejo and nuevo:
+                    lista.append({'archivo': pieza, 'viejo': nuevo, 'nuevo': viejo})
+        else:
+            viejo = propuesta.get('texto_viejo')
+            nuevo = propuesta.get('texto_nuevo')
+            if viejo and nuevo:
+                lista.append({'archivo': pieza, 'viejo': nuevo, 'nuevo': viejo})
+        if not lista:
+            return False
+        destino = orden.get('sabotaje') if isinstance(orden, dict) else None
+        if not destino:
+            return False
+        ruta_destino = os.path.join(raiz, destino)
+        carpeta_destino = os.path.dirname(ruta_destino)
+        if carpeta_destino:
+            os.makedirs(carpeta_destino, exist_ok=True)
+        with open(ruta_destino, 'w', encoding='utf-8') as f:
+            json.dump(lista, f, indent=1, ensure_ascii=False)
+        return True
+    except Exception:
+        return False
+
+
 def sabotear_la_orden(orden):
     """Corre el sabotaje de una orden y comprueba por programa que la vigia de verdad protege.
 
