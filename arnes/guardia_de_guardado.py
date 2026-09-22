@@ -344,6 +344,10 @@ def _vigias(raiz):
     # Cualquier otra roja ya guardada sigue frenando. Si las ordenes no se pueden
     # leer, se frena como hoy.
     esperando = set()
+    # la tarea que se guarda ahora (INGENIERO_ETIQUETA) y edita su propia prueba no la deja esperando:
+    # si la rompe, se frena (medido 2026-09-21, orden 136); las pruebas que otra orden corregira
+    # despues siguen esperando.
+    actual = os.environ.get('INGENIERO_ETIQUETA', '').strip()
     if guardados:
         try:
             ruta_ordenes = os.path.join(raiz, "memoria", "ORDENES.json")
@@ -353,7 +357,8 @@ def _vigias(raiz):
                 if str(orden.get("estado", "")).strip().lower() == "hecha":
                     continue
                 vigia = str(orden.get("vigia", "")).replace("\\", "/").strip()
-                if vigia:
+                pieza = str(orden.get('pieza', '')).replace(chr(92), '/').strip()
+                if vigia and not (actual and str(orden.get('id', '')) == actual and vigia == pieza):
                     esperando.add(vigia)
         except Exception:
             esperando = set()
