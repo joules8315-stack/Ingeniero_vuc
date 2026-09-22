@@ -64,6 +64,10 @@ def _revisar_privacidad(texto: str) -> tuple[str, list[str]]:
 
     Devuelve (texto_limpio, avisos). Si hay avisos, NO se debe llamar a Codex.
     """
+    from cuerpo import bigpickle as _bp
+    if _bp._trae_llave(texto):
+        return texto, ['NO se manda a Codex: el texto trae algo con forma de llave (mismo filtro que Big Pickle).']
+
     try:
         from cuerpo import privacidad  # type: ignore
     except Exception:
