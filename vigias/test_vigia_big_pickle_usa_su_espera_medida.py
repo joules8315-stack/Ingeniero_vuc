@@ -59,7 +59,8 @@ def test_preguntar_usa_la_espera_medida(monkeypatch):
 
     assert tiempos == [777.0]
     assert len(letras) == 1
-    assert len(letras[0]) == 10
+    # espera_de_bigpickle recibe el numero de letras, no el texto (medido 2026-09-22)
+    assert letras[0] == 10
 
 
 def test_preguntar_respeta_el_timeout_que_le_dan(monkeypatch):
