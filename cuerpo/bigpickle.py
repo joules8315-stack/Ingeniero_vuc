@@ -37,7 +37,8 @@ from pathlib import Path
 
 MODELO = "opencode/big-pickle"
 COMANDO = ["opencode", "run", "-m", MODELO, "--format", "json"]
-TIMEOUT_POR_DEFECTO = 300
+# Solo si no se puede medir; su record medido es 328 s (A-47, 2026-09-21).
+TIMEOUT_POR_DEFECTO = 600
 
 # Marcas que delatan una llave en el encargo. Si aparece cualquiera, no se manda.
 MARCAS_DE_LLAVE = ("API_KEY", "sk-")
@@ -51,7 +52,7 @@ RUTA_LOG = RAIZ / "memoria" / "BIGPICKLE.log"
 # Anotacion en el log
 # ---------------------------------------------------------------------------
 
-def _anotar(segundos: float, costo: float, ok: bool, nota: str = "") -> None:
+def _anotar(segundos: float, costo: float, ok: bool, nota: str = "", tamano: int = 0) -> None:
     """Anota una llamada en memoria/BIGPICKLE.log. Nunca lanza excepcion."""
     try:
         RUTA_LOG.parent.mkdir(parents=True, exist_ok=True)
@@ -73,6 +74,7 @@ def _anotar(segundos: float, costo: float, ok: bool, nota: str = "") -> None:
             resultado=(cuaderno.OK if ok else cuaderno.ERROR),
             crudo=nota,
             segundos=segundos,
+            tamano=tamano,
         )
     except Exception:
         # El cuaderno no puede tumbar la llamada.
@@ -149,7 +151,7 @@ def _parsear_salida(salida: str) -> tuple[str, float]:
 # Funcion publica
 # ---------------------------------------------------------------------------
 
-def preguntar(prompt: str, timeout: int = TIMEOUT_POR_DEFECTO) -> tuple[str, list[str]]:
+def preguntar(prompt: str, timeout: int = None) -> tuple[str, list[str]]:
     """Manda el encargo a Big Pickle por OpenCode y devuelve (texto, avisos).
 
     - El encargo va por stdin, nunca como argumento ni con -f.
@@ -157,13 +159,21 @@ def preguntar(prompt: str, timeout: int = TIMEOUT_POR_DEFECTO) -> tuple[str, lis
     - Si el prompt trae una llave, no se manda.
     - Si hay timeout, error o texto vacio: ('', [aviso]) y NUNCA excepcion.
     """
+    # 0) Si no me dan timeout, lo mido con cuotas; si no se puede, el de por defecto.
+    if timeout is None:
+        try:
+            from cuerpo import cuotas
+            timeout = cuotas.espera_de_bigpickle(len(prompt))
+        except Exception:
+            timeout = TIMEOUT_POR_DEFECTO
+
     # 1) Filtro de llaves: no se manda nada que parezca una llave.
     if _trae_llave(prompt):
-        _anotar(0.0, 0.0, False, nota="llave_detectada")
+        _anotar(0.0, 0.0, False, nota="llave_detectada", tamano=len(prompt))
         return "", ["NO se manda: trae una llave"]
 
     if not isinstance(prompt, str) or not prompt.strip():
-        _anotar(0.0, 0.0, False, nota="prompt_vacio")
+        _anotar(0.0, 0.0, False, nota="prompt_vacio", tamano=len(prompt))
         return "", ["NO se manda: el encargo esta vacio"]
 
     # 2) Carpeta temporal vacia para que OpenCode no vea el repo.
@@ -174,7 +184,7 @@ def preguntar(prompt: str, timeout: int = TIMEOUT_POR_DEFECTO) -> tuple[str, lis
         ejecutable = shutil.which("opencode")
         if not ejecutable:
             segundos = time.monotonic() - inicio
-            _anotar(segundos, 0.0, False, nota="opencode_no_encontrado")
+            _anotar(segundos, 0.0, False, nota="opencode_no_encontrado", tamano=len(prompt))
             return "", ["opencode no instalado"]
 
         comando = [ejecutable] + COMANDO[1:]
@@ -193,11 +203,11 @@ def preguntar(prompt: str, timeout: int = TIMEOUT_POR_DEFECTO) -> tuple[str, lis
             )
         except FileNotFoundError:
             segundos = time.monotonic() - inicio
-            _anotar(segundos, 0.0, False, nota="opencode_no_encontrado")
+            _anotar(segundos, 0.0, False, nota="opencode_no_encontrado", tamano=len(prompt))
             return "", ["opencode no instalado"]
         except OSError as exc:
             segundos = time.monotonic() - inicio
-            _anotar(segundos, 0.0, False, nota=f"oserror:{exc}")
+            _anotar(segundos, 0.0, False, nota=f"oserror:{exc}", tamano=len(prompt))
             return "", [f"Error al lanzar OpenCode: {exc}"]
 
         try:
@@ -221,7 +231,7 @@ def preguntar(prompt: str, timeout: int = TIMEOUT_POR_DEFECTO) -> tuple[str, lis
             except Exception:
                 pass
             segundos = time.monotonic() - inicio
-            _anotar(segundos, 0.0, False, nota="timeout")
+            _anotar(segundos, 0.0, False, nota="timeout", tamano=len(prompt))
             return "", [f"Big Pickle no contesto en {timeout}s (timeout)"]
 
         segundos = time.monotonic() - inicio
@@ -230,7 +240,7 @@ def preguntar(prompt: str, timeout: int = TIMEOUT_POR_DEFECTO) -> tuple[str, lis
         if proc.returncode != 0:
             err = (stderr or "").strip()
             _, costo = _parsear_salida(stdout or "")
-            _anotar(segundos, costo, False, nota=f"returncode={proc.returncode}")
+            _anotar(segundos, costo, False, nota=f"returncode={proc.returncode}", tamano=len(prompt))
             aviso = f"OpenCode termino con codigo {proc.returncode}"
             if err:
                 aviso = f"{aviso}: {err[:300]}"
@@ -240,15 +250,15 @@ def preguntar(prompt: str, timeout: int = TIMEOUT_POR_DEFECTO) -> tuple[str, lis
         texto, costo = _parsear_salida(stdout or "")
 
         if not texto.strip():
-            _anotar(segundos, costo, False, nota="texto_vacio")
+            _anotar(segundos, costo, False, nota="texto_vacio", tamano=len(prompt))
             return "", ["Big Pickle no devolvio texto"]
 
-        _anotar(segundos, costo, True, nota="ok")
+        _anotar(segundos, costo, True, nota="ok", tamano=len(prompt))
         return texto, []
 
     except Exception as exc:  # red de seguridad: nunca se lanza hacia fuera
         segundos = time.monotonic() - inicio
-        _anotar(segundos, 0.0, False, nota=f"excepcion:{exc}")
+        _anotar(segundos, 0.0, False, nota=f"excepcion:{exc}", tamano=len(prompt))
         return "", [f"Error inesperado en el enchufe: {exc}"]
     finally:
         if carpeta is not None:
