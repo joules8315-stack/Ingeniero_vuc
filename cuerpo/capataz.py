@@ -500,8 +500,15 @@ def sabotear_la_orden(orden):
     try:
         vigia = orden.get('vigia') if isinstance(orden, dict) else None
         sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None
+        if vigia and not sabotaje and orden.get('pieza') != vigia:
+            sabotaje = 'memoria/sabotajes/orden_' + str(orden.get('id', '')) + '.json'
+            orden = dict(orden, sabotaje=sabotaje)
         if not vigia or not sabotaje:
             return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}
+        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if not os.path.isfile(os.path.join(raiz, sabotaje)):
+            if not armar_sabotaje(orden):
+                return {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}
         palabras = [sys.executable, 'arnes/sabotaje.py', vigia, sabotaje]
         codigo = correr_orden_del_sistema(palabras)
         if codigo == 0:
