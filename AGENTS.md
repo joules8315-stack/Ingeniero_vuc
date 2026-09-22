@@ -134,7 +134,8 @@ para entrenar. Por eso, igual que con Big Pickle y con Gemini gratis:
 - La lista de tareas del pit está en `memoria/ORDENES.json`. Los fallos aprendidos, en
   `memoria/FALLOS.json`. La ficha del pit, en `PLAN_PITS/08_FICHA_DEL_PIT.md`.
 
-## 6. Qué contestas (siempre JSON, sin texto alrededor)
+## 6. Qué contestas cuando te llama el programa (JSON, sin texto alrededor)
+Cuando te habla Julio en tu ventana, le contestas en palabras simples, sin JSON, sin jerga y sin nombres de archivos (ley 5).
 
 **Como perito** (algo falló; te llega un expediente):
 ```json
