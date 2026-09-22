@@ -180,7 +180,9 @@ def _vigias_verdes(raiz):
                     if str(orden.get("estado", "")).strip().lower() == "hecha":
                         continue
                     vigia = str(orden.get("vigia", "")).replace("\\", "/").strip()
-                    if vigia:
+                    # si la pieza de la orden es la propia prueba, la orden la edita y no espera arreglo (medido 2026-09-21, orden 136)
+                    pieza = str(orden.get('pieza', '')).replace(chr(92), '/').strip()
+                    if vigia and vigia != pieza:
                         esperando.add(vigia)
             except Exception:
                 esperando = set()
