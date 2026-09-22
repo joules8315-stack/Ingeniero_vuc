@@ -170,6 +170,33 @@ def test_roja_guardada_que_espera_su_arreglo_deja_pasar(tmp_path, monkeypatch):
         "tarea pendiente; mensaje: %r" % mensaje)
 
 
+def test_roja_guardada_que_la_propia_tarea_edita_frena(tmp_path, monkeypatch):
+    modulo = _cargar_guardia()
+    ordenes = [
+        {
+            "id": "tarea-1",
+            "estado": "en_curso",
+            "vigia": "vigias/test_roja.py",
+            "pieza": "vigias/test_roja.py",
+        }
+    ]
+    raiz = _preparar_raiz(tmp_path, ordenes)
+
+    salida = (
+        "F                                                                        [100%]\n"
+        "FAILED vigias/test_roja.py::test_roja - AssertionError: assert False\n"
+        "1 failed in 0.01s\n"
+    )
+    _parchear(monkeypatch, modulo,
+              salida_pytest=salida, returncode_pytest=1,
+              guardados_en_head={"vigias/test_roja.py"})
+
+    paso, mensaje = modulo._vigias(raiz)
+    assert paso is False, (
+        "una roja guardada que la propia tarea edita debe FRENAR; "
+        "mensaje: %r" % mensaje)
+
+
 # ---------------------------------------------------------------------------
 # CASO 3: todo verde -> deja pasar
 # ---------------------------------------------------------------------------
