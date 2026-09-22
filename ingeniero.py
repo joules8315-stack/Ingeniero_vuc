@@ -559,6 +559,28 @@ def main():
     if cmd == "pit" and len(sys.argv) >= 3:
         from cuerpo import capataz as _cap
         return _cap.bucle(sys.argv[2])
+    # A-48 (2026-09-22): con esto Codex o Claude dirigen el loop sin escribir archivos a mano.
+    if cmd == "director" and len(sys.argv) >= 3:
+        from cuerpo import director as _dir
+        _raiz_dir = os.path.dirname(os.path.abspath(__file__))
+        _acc = sys.argv[2]
+        if _acc == 'estado':
+            print(_dir.estado(_raiz_dir))
+            return 0
+        if _acc == 'nueva' and len(sys.argv) >= 4:
+            ok, motivo = _dir.orden_nueva(_raiz_dir, sys.argv[3])
+            print(motivo)
+            return 0 if ok else 1
+        if _acc == 'reintentar' and len(sys.argv) >= 4:
+            ok, motivo = _dir.reintentar(_raiz_dir, sys.argv[3])
+            print(motivo)
+            return 0 if ok else 1
+        if _acc == 'hecha' and len(sys.argv) >= 4:
+            ok, motivo = _dir.hecha(_raiz_dir, sys.argv[3])
+            print(motivo)
+            return 0 if ok else 1
+        print("uso: python ingeniero.py director estado | nueva '<orden en JSON>' | reintentar <id> | hecha <id>")
+        return 1
     if cmd == "resolver" and len(sys.argv) >= 4:
         return resolver(sys.argv[2], " ".join(sys.argv[3:]))
     if cmd == "buscar-skill" and len(sys.argv) >= 3:
