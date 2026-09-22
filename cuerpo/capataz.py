@@ -459,6 +459,7 @@ def armar_sabotaje(orden, raiz=None):
         propuesta = trabajo.get('propuesta') if isinstance(trabajo, dict) else None
         if not isinstance(propuesta, dict):
             return False
+        # el nombre de la pieza sirve para buscar su trabajo aprobado; el sabotaje necesita la ruta entera (medido 2026-09-22, orden 70)
         lista = []
         cambios = propuesta.get('cambios')
         if isinstance(cambios, list):
@@ -468,12 +469,12 @@ def armar_sabotaje(orden, raiz=None):
                 viejo = trozo.get('texto_viejo')
                 nuevo = trozo.get('texto_nuevo')
                 if viejo and nuevo:
-                    lista.append({'archivo': pieza, 'viejo': nuevo, 'nuevo': viejo})
+                    lista.append({'archivo': str(orden.get('pieza', '')).replace(chr(92), '/'), 'viejo': nuevo, 'nuevo': viejo})
         else:
             viejo = propuesta.get('texto_viejo')
             nuevo = propuesta.get('texto_nuevo')
             if viejo and nuevo:
-                lista.append({'archivo': pieza, 'viejo': nuevo, 'nuevo': viejo})
+                lista.append({'archivo': str(orden.get('pieza', '')).replace(chr(92), '/'), 'viejo': nuevo, 'nuevo': viejo})
         if not lista:
             return False
         destino = orden.get('sabotaje') if isinstance(orden, dict) else None
