@@ -95,6 +95,7 @@ REGLAS DURAS (si las rompes, tu trabajo se descarta):
    No los cambies ni los mejores.
 6. Trabaja SOLO con el material de abajo. Si te falta algo, pidelo asi y nada mas:
    NECESITO_LEER: archivo / motivo / que decide / riesgo.
+7. NUNCA escribas nada con forma de llave (sk- seguido de letras o numeros, AIza, gsk_), ni en el codigo ni en comentarios ni en textos de ayuda: el guardia no deja guardar un archivo con forma de llave. Si una prueba necesita una llave de mentira, se arma POR PARTES dentro de la prueba, juntando trozos con +.
 
 TAREA: {tarea}
 
