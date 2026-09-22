@@ -351,6 +351,66 @@ def se_paso_de_su_marca(quien, segundos):
     return float(segundos) > cuanto_esperarle(quien)
 
 
+def espera_de_bigpickle(letras):
+    """CUANTO ESPERARLE A BIG PICKLE, segun lo que tarda de verdad con tareas de ese tamano.
+
+    Orden de Julio A-47 del 2026-09-21: la espera sale de lo que Big Pickle tarda de verdad con
+    tareas de ese tamano, nunca menor, para no descartarlo por darle un tiempo que no le
+    corresponde ni esperar de mas en una tarea chica. Completa la ley del 2026-08-21 de
+    cuanto_esperarle.
+
+    Lee las filas del cuaderno de llamadas (cuerpo/cuaderno.py::_ruta()). Solo cuentan las
+    filas con quien == 'bigpickle', resultado == cuaderno.OK y segundos mayor que 0.
+    Parecidas = las filas con tamano entre letras/2 y letras*2 (y tamano mayor que 0).
+    Si hay 5 o mas parecidas: devuelve max(MINIMO_ESPERA, el mayor segundos de las parecidas
+    por MARGEN). Si no: devuelve max(MINIMO_ESPERA, el mayor segundos de todas por MARGEN).
+    Sin filas: devuelve 600.0."""
+    from cuerpo import cuaderno
+    filas = []
+    try:
+        with open(cuaderno._ruta(), encoding="utf-8") as f:
+            for linea in f:
+                linea = linea.strip()
+                if not linea:
+                    continue
+                try:
+                    fila = json.loads(linea)
+                except Exception:
+                    continue
+                if not isinstance(fila, dict):
+                    continue
+                if fila.get("quien") != "bigpickle":
+                    continue
+                if fila.get("resultado") != cuaderno.OK:
+                    continue
+                try:
+                    seg = float(fila.get("segundos") or 0)
+                except Exception:
+                    continue
+                if seg <= 0:
+                    continue
+                try:
+                    tam = int(fila.get("tamano") or 0)
+                except Exception:
+                    tam = 0
+                filas.append({"segundos": seg, "tamano": tam})
+    except Exception:
+        filas = []
+    if not filas:
+        return 600.0
+    try:
+        letras = float(letras)
+    except Exception:
+        letras = 0.0
+    parecidas = [f for f in filas
+                 if f["tamano"] > 0 and letras / 2.0 <= f["tamano"] <= letras * 2.0]
+    if len(parecidas) >= 5:
+        mayor = max(f["segundos"] for f in parecidas)
+    else:
+        mayor = max(f["segundos"] for f in filas)
+    return max(float(MINIMO_ESPERA), mayor * MARGEN)
+
+
 def turno(disponibles=None):
     """A QUIEN LE TOCA AHORA. Respeta el orden de Julio y devuelve al primero que ya desperto.
     `disponibles` = los que tienen llave/servicio; los demas ni se consideran."""
