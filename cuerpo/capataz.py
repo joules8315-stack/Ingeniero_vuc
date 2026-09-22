@@ -554,24 +554,44 @@ def recoger_lo_frenado(orden, raiz):
             env=entorno,
         )
         if prueba.returncode != 0:
-            subprocess.run(
-                ['git', 'checkout', 'HEAD', '--', pieza],
+            guardada = subprocess.run(
+                ['git', 'cat-file', '-e', 'HEAD:' + pieza],
                 cwd=raiz,
                 capture_output=True,
                 text=True,
-                timeout=60,
+                timeout=30,
             )
+            if guardada.returncode != 0:
+                os.replace(pieza, os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.ROJO'))
+            else:
+                subprocess.run(
+                    ['git', 'checkout', 'HEAD', '--', pieza],
+                    cwd=raiz,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                )
             return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida deja su prueba roja: no se deja en el disco'}
         from arnes import guardia_de_guardado
         paso, _mensaje = guardia_de_guardado._vigias(raiz)
         if paso is not True:
-            subprocess.run(
-                ['git', 'checkout', 'HEAD', '--', pieza],
+            guardada = subprocess.run(
+                ['git', 'cat-file', '-e', 'HEAD:' + pieza],
                 cwd=raiz,
                 capture_output=True,
                 text=True,
-                timeout=60,
+                timeout=30,
             )
+            if guardada.returncode != 0:
+                os.replace(pieza, os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.ROJO'))
+            else:
+                subprocess.run(
+                    ['git', 'checkout', 'HEAD', '--', pieza],
+                    cwd=raiz,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                )
             return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida pone rojas a sus vecinas: no se deja en el disco'}
         return resultado
     except Exception as e:
