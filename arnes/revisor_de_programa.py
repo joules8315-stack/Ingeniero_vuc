@@ -456,6 +456,77 @@ def revisar(propuesta, tarea=""):
         # que estaba roto. Medido el 2026-09-20. Si el nombre SI existe, no se dice nada. Si el
         # modulo no se puede leer, no se dice nada: cuando no se puede comprobar, se calla.
         try:
+            _ruta_mp = str(p.get("archivo") or "")
+            if _ruta_mp.lower().endswith(".py") and os.path.isfile(_ruta_mp) and viejo.strip():
+                with open(_ruta_mp, encoding="utf-8-sig", errors="replace") as _fmp:
+                    _antes_mp = _fmp.read()
+                if viejo in _antes_mp:
+                    _despues_mp = _antes_mp.replace(viejo, nuevo, 1)
+                    try:
+                        _arbol_mp = ast.parse(_despues_mp)
+                    except Exception:
+                        _arbol_mp = None
+                    if _arbol_mp is not None:
+                        _dir_mp = os.path.dirname(_ruta_mp)
+                        for _nodo_mp in ast.walk(_arbol_mp):
+                            if not isinstance(_nodo_mp, ast.Call):
+                                continue
+                            _fn_mp = _nodo_mp.func
+                            if not isinstance(_fn_mp, ast.Attribute):
+                                continue
+                            if _fn_mp.attr != "setattr":
+                                continue
+                            _base_mp = _fn_mp.value
+                            if not isinstance(_base_mp, ast.Attribute):
+                                continue
+                            if _base_mp.attr != "monkeypatch":
+                                continue
+                            if len(_nodo_mp.args) < 2:
+                                continue
+                            _mod_arg = _nodo_mp.args[0]
+                            _nom_arg = _nodo_mp.args[1]
+                            if not isinstance(_mod_arg, ast.Constant) or not isinstance(_mod_arg.value, str):
+                                continue
+                            if not isinstance(_nom_arg, ast.Constant) or not isinstance(_nom_arg.value, str):
+                                continue
+                            _mod_nombre = _mod_arg.value
+                            _nom_pedido = _nom_arg.value
+                            if not _mod_nombre or not _nom_pedido:
+                                continue
+                            _ruta_mod_mp = os.path.join(_dir_mp, *_mod_nombre.split(".")) + ".py"
+                            if not os.path.isfile(_ruta_mod_mp):
+                                continue
+                            try:
+                                with open(_ruta_mod_mp, encoding="utf-8-sig", errors="replace") as _fmm:
+                                    _arbol_mod_mp = ast.parse(_fmm.read())
+                            except Exception:
+                                continue
+                            _nombres_mod_mp = set()
+                            for _n_mp in ast.walk(_arbol_mod_mp):
+                                if isinstance(_n_mp, ast.ImportFrom):
+                                    for _al_mp in _n_mp.names:
+                                        _nombres_mod_mp.add(_al_mp.asname or _al_mp.name)
+                                elif isinstance(_n_mp, ast.Import):
+                                    for _al_mp in _n_mp.names:
+                                        _nombres_mod_mp.add(_al_mp.asname or _al_mp.name.split(".")[0])
+                                elif isinstance(_n_mp, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                                    _nombres_mod_mp.add(_n_mp.name)
+                                elif isinstance(_n_mp, ast.Assign):
+                                    for _t_mp in _n_mp.targets:
+                                        if isinstance(_t_mp, ast.Name):
+                                            _nombres_mod_mp.add(_t_mp.id)
+                            if _nom_pedido not in _nombres_mod_mp:
+                                fallos.append(
+                                    "MONKEYPATCH A UN NOMBRE QUE EL MODULO NO IMPORTA: la prueba "
+                                    "hace monkeypatch.setattr('%s', '%s', ...) pero '%s' no se "
+                                    "importa arriba de %s. Ese apartado revienta con "
+                                    "AttributeError y la prueba no mediria nada. Hay que apartar "
+                                    "la funcion en su propio modulo."
+                                    % (_mod_nombre, _nom_pedido, _nom_pedido, _ruta_mod_mp))
+        except Exception:
+            pass
+
+        try:
             _ruta_imp = str(p.get("archivo") or "")
             if _ruta_imp.lower().endswith(".py") and os.path.isfile(_ruta_imp) and viejo.strip():
                 with open(_ruta_imp, encoding="utf-8-sig", errors="replace") as _fimp:
