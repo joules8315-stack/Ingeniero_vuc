@@ -260,6 +260,61 @@ def orden_nueva(raiz, texto):
     return (True, 'orden %s creada y puesta la primera' % nueva['id'])
 
 
+def orden_corta(raiz, id, pieza, vigia, que_hacer):
+    """Crea una orden corta a partir de que_hacer.
+
+    El encargo es que_hacer. Detras, por cada palabra de que_hacer que sea
+    el nombre de una funcion o clase definida en raiz/pieza (si existe), el
+    texto 'def NOMBRE(...): (linea N)' con la linea exacta copiada del
+    archivo y su numero. Detras, 'No toques ningun otro archivo.'.
+
+    Si la pieza no existe, crear es True.
+
+    Luego da de alta la orden con orden_nueva(raiz, json.dumps({...})) con
+    titulo = que_hacer cortado a 90 letras, y devuelve lo mismo que
+    orden_nueva.
+    """
+    crear = not os.path.isfile(os.path.join(raiz, pieza))
+
+    lineas = [que_hacer]
+
+    if not crear:
+        try:
+            with open(os.path.join(raiz, pieza), 'r', encoding='utf-8', errors='replace') as f:
+                contenido = f.read()
+        except Exception:
+            contenido = ''
+
+        if contenido:
+            palabras = que_hacer.split()
+            for numero, linea in enumerate(contenido.splitlines(), 1):
+                limpia = linea.strip()
+                if limpia.startswith('def ') or limpia.startswith('class '):
+                    resto = limpia[4:] if limpia.startswith('def ') else limpia[6:]
+                    nombre = ''
+                    for c in resto:
+                        if c.isalnum() or c == '_':
+                            nombre += c
+                        else:
+                            break
+                    if nombre and nombre in palabras:
+                        lineas.append('def %s(...): (linea %d) %s' % (nombre, numero, linea))
+
+    lineas.append('No toques ningun otro archivo.')
+    encargo = '\n'.join(lineas)
+
+    datos = {
+        'id': id,
+        'titulo': que_hacer[:90],
+        'pieza': pieza,
+        'encargo': encargo,
+        'vigia': vigia,
+        'crear': crear,
+    }
+
+    return orden_nueva(raiz, json.dumps(datos))
+
+
 # ----------------------------------------------------------------------
 # 3) reintentar
 # ----------------------------------------------------------------------
