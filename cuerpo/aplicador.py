@@ -198,9 +198,12 @@ def aplicar_cambio(propuesta, raiz=None):
         _apuntar_log(False, archivo, funcion, f"no se pudo leer: {e}")
         return False, f"No se pudo leer el archivo: {e}"
 
-    # 2026-09-22: crear=true con contenido y sin texto_viejo sobre un archivo que YA existe:
-    # si es identico no se toca el disco; si difiere se sobreescribe entero (validando .py).
-    if propuesta.get("crear") and not texto_viejo:
+    # 2026-09-22: contenido entero (codigo o texto_nuevo) y sin texto_viejo sobre un archivo
+    # que YA existe: si es identico no se toca el disco; si difiere se sobreescribe entero
+    # (validando .py). La marca 'crear' ya no es obligatoria: el obrero puede mandar el
+    # documento entero sin texto_viejo y se re-escribe igual. Lo vigila
+    # vigias/test_vigia_aplicador.py.
+    if not texto_viejo and (codigo or texto_nuevo):
         contenido_propuesto = codigo if codigo else texto_nuevo
         if not contenido_propuesto:
             _apuntar_log(False, archivo, funcion, "crear sin contenido")
