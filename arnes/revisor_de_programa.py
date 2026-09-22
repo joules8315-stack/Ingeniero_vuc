@@ -652,6 +652,8 @@ def revisar(propuesta, tarea=""):
             if arbol_viejo is not None:
                 quedan = _piezas(arbol)
                 perdidas = [n for n in _piezas(arbol_viejo) if n not in quedan]
+                # decirlo por escrito es que el propio encargo nombre la pieza que se va
+                perdidas = [n for n in perdidas if n not in (tarea or '')]
                 if perdidas:
                     fallos.append(
                         "DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante %d "
