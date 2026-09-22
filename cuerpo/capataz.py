@@ -788,7 +788,11 @@ def agregar_orden(orden):
     nueva['estado'] = 'pendiente'
     nueva['paso_fallido'] = ''
     nueva['fallos_seguidos'] = 0
-    lista.append(nueva)
+    # ley A-43, el arreglo de la herramienta va al frente
+    if str(nueva.get('origen', '')).startswith('forense:'):
+        lista.insert(0, nueva)
+    else:
+        lista.append(nueva)
     carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     ruta = os.path.join(carpeta_proyecto, 'memoria', 'ORDENES.json')
     with open(ruta, 'w', encoding='utf-8') as f:
