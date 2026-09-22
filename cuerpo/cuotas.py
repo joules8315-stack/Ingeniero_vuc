@@ -166,17 +166,26 @@ def desperto(quien):
 
 def bigpickle_fallo():
     """Orden de Julio A-46 del 2026-09-21: cuenta los fallos seguidos de bigpickle.
-    Al segundo fallo seguido, lo duerme 30 min y pide revisar Grok 4.7."""
+    Al segundo fallo seguido, lo duerme 30 min la primera vez y 1 hora desde la segunda,
+    y pide revisar Grok 4.7."""
     d = _leer()
     seguidos = d.setdefault("seguidos", {})
     seguidos["bigpickle"] = seguidos.get("bigpickle", 0) + 1
     if seguidos["bigpickle"] >= 2:
+        descansos = d.setdefault("descansos", {}).get("bigpickle", 0)
+        if descansos == 0:
+            segundos = 1800
+            motivo = "fallo dos veces seguidas: descansa 30 min mientras revisa Grok 4.7 (A-46)"
+        else:
+            segundos = 3600
+            motivo = "fallo dos veces seguidas: descansa 1 hora mientras revisa Grok 4.7 (A-46)"
         d["dormidos"]["bigpickle"] = {
-            "hasta": time.time() + 1800,
+            "hasta": time.time() + segundos,
             "tipo": "dos_fallos",
             "desde": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "motivo": "fallo dos veces seguidas: descansa 30 min y revisa Grok 4.7 (A-46)"}
+            "motivo": motivo}
         seguidos["bigpickle"] = 0
+        d.setdefault("descansos", {})["bigpickle"] = descansos + 1
         d["historial"] = (d.get("historial", []) + [
             {"cuando": d["dormidos"]["bigpickle"]["desde"], "quien": "bigpickle",
              "que": "agotado (dos_fallos)"}])[-80:]
@@ -184,9 +193,11 @@ def bigpickle_fallo():
 
 
 def bigpickle_acierto():
-    """Orden de Julio A-46 del 2026-09-21: un acierto de bigpickle borra la cuenta de fallos seguidos."""
+    """Orden de Julio A-46 del 2026-09-21: un acierto de bigpickle borra la cuenta de fallos seguidos
+    y la cuenta de descansos de bigpickle."""
     d = _leer()
     d.setdefault("seguidos", {})["bigpickle"] = 0
+    d.setdefault("descansos", {})["bigpickle"] = 0
     _guardar(d)
 
 
