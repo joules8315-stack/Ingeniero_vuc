@@ -253,6 +253,12 @@ def revisar(propuesta, tarea=""):
                 sub["texto_viejo"] = c.get("texto_viejo", "")
                 sub["texto_nuevo"] = c.get("texto_nuevo", "")
                 todos.extend(revisar(sub, tarea))
+            # la palabra del encargo basta con que este en alguno de los trozos (medido 2026-09-22, orden 95)
+            juntos = ""
+            for p in (p.get("cambios") or []):
+                if isinstance(p, dict):
+                    juntos += str(p.get("texto_viejo") or "") + str(p.get("texto_nuevo") or "")
+            todos = [f for f in todos if not (f.startswith('NO HACE LO QUE SE PIDIO') and f.split(chr(39))[1] in juntos)]
             return todos
 
         # Un cambio que SOLO BORRA es legitimo: quitar codigo que sobra y no poner nada en su
