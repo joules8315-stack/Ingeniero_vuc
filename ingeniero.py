@@ -549,7 +549,7 @@ def main():
         print("  proyecto : %s" % _proy)
         print("  carpeta  : %s" % _raiz2)
         print("  archivo  : %s" % _prop.get("archivo"))
-        _ok2, _msg2 = _ap.aplicar_cambio(_prop, raiz=_raiz2)
+        _ok2, _msg2 = _ap.aplicar_propuesta(_prop, raiz=_raiz2)
         if _ok2:
             print("APLICADO en disco: %s" % _prop.get("archivo"))
             return 0
