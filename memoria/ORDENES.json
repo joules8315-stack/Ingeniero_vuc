@@ -75,9 +75,9 @@
     "sabotaje": "memoria/sabotajes/el_cierre_no_para_por_una_prueba_que_espera.json",
     "prueba_real": "",
     "comando": "",
-    "estado": "fallida",
-    "paso_fallido": "sabotaje",
-    "fallos_seguidos": 1,
+    "estado": "hecha",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
     "nota": ""
   },
   {
@@ -132,7 +132,7 @@
     "vigia": "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "con esto la orden 62 queda terminada."
@@ -154,10 +154,28 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "corriendo",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
+  },
+  {
+    "id": "120",
+    "titulo": "Las pruebas viejas del relevo de Big Pickle imitan a Grok caido",
+    "origen": "medido el 2026-09-21 19:26 (A-43): con el cambio de la orden 99 (Grok de reserva), test_vigia_si_bigpickle_cae_revisa_otro.py llamo a Grok de verdad (contesto grok47) y se puso roja en las lineas 51 y 75; una prueba nunca llama a una IA real",
+    "repara": "las pruebas del relevo llaman a una IA de pago de verdad y se rompen con la orden 99",
+    "pieza": "vigias/test_vigia_si_bigpickle_cae_revisa_otro.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "las pruebas no dependen de algo no determinista ni cuestan dinero; lo que miden (el relevo cuando cae Big Pickle) sigue igual si Grok tambien cae",
+    "encargo": "En vigias/test_vigia_si_bigpickle_cae_revisa_otro.py, en la funcion _big_pickle_sin_marca(monkeypatch), justo despues de la linea monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False), agrega con la misma sangria dos lineas: from cuerpo import grok as _grok y monkeypatch.setattr(_grok, 'preguntar', lambda *a, **k: ('', ['Grok no contesto (prueba)'])), con un comentario: Grok tambien cae en estas pruebas, que miden el relevo de hoy; nunca se llama a una IA de verdad (orden 99, 2026-09-21). Es UN solo cambio. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_si_bigpickle_cae_revisa_otro.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "hoy la vigia esta verde y debe seguir verde; con el cambio de 99 tambien."
   },
   {
     "id": "99",
@@ -166,7 +184,8 @@
     "repara": "sin esto el 44 % de las revisiones cae en una IA gratis o en nadie",
     "pieza": "cuerpo/obrero.py",
     "depende": [
-      "98"
+      "98",
+      "120"
     ],
     "modo": "IA",
     "razon": "Julio: siempre se llama primero a Big Pickle y, si no, a Grok 4.7",
