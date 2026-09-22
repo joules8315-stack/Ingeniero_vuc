@@ -145,6 +145,37 @@ def _frenar(evento, motivo):
         })
 
 
+def _escribir_salida_arreglada(salida_normal, evento):
+    """Ajusta la salida del candado al formato que Codex entiende. Nunca lanza.
+
+    Codex descarta el contexto que no va dentro de hookSpecificOutput con su
+    evento; sin esto no le llega la informacion del repartidor (medido 2026-09-22).
+    """
+    try:
+        if not salida_normal:
+            return
+        try:
+            datos = json.loads(salida_normal)
+        except Exception:
+            _escribir_texto(salida_normal)
+            return
+        if not isinstance(datos, dict) or not evento:
+            _escribir_texto(salida_normal)
+            return
+        if isinstance(datos.get("hookSpecificOutput"), dict):
+            if not datos["hookSpecificOutput"].get("hookEventName"):
+                datos["hookSpecificOutput"]["hookEventName"] = evento
+        elif "additionalContext" in datos:
+            contexto = datos.pop("additionalContext")
+            datos["hookSpecificOutput"] = {
+                "hookEventName": evento,
+                "additionalContext": contexto,
+            }
+        _escribir_json(datos)
+    except Exception:
+        _escribir_texto(salida_normal)
+
+
 def main(argv=None):
     """Punto de entrada. Sale siempre con 0 y nunca lanza."""
     if argv is None:
