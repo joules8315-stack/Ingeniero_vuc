@@ -153,6 +153,9 @@ REGLAS DURAS (si las rompes, tu trabajo se descarta):
 5. Trabaja SOLO con la memoria del PAQUETE de abajo (la informacion indexada). Si te falta material
    para responder, pidelo asi y nada mas: NECESITO_LEER: archivo / motivo / que decide / riesgo.
    No rechaces el trabajo ni te inventes excusas: el material es el suficiente para lo que se te pide.
+6. REGLA DURA: cuando el encargo pida tocar VARIOS sitios separados, o pida expresamente la lista
+   'cambios', entrega cada cambio como un elemento de "cambios" (con su texto_viejo y su texto_nuevo),
+   en lugar de un unico texto_viejo/texto_nuevo. Deja vacios texto_viejo y texto_nuevo de arriba.
 
 TAREA: {tarea if tarea not in paquete else "(el objetivo esta arriba, dentro del material, bajo el renglon que empieza por OBJETIVO)"}
 
