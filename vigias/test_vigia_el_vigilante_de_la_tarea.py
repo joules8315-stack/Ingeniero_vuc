@@ -6,7 +6,11 @@ def _reloj_falso(inicio=0.0):
 
     Se avanza cuando se llama a dormir con los segundos que se le pasen.
     """
-    return [float(inicio)]
+    class _Reloj(list):
+        def __call__(self):
+            return self[0]
+
+    return _Reloj([float(inicio)])
 
 
 def _dormir_falso(reloj):
