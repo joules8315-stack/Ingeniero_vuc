@@ -415,6 +415,10 @@ def recoger_lo_frenado(orden, raiz):
         resultado = recoger_los_pedazos.recoger(raiz, nombre)
         if not isinstance(resultado, dict) or not resultado.get('ok'):
             return resultado
+        from arnes import guardia_de_guardado
+        if guardia_de_guardado._hay_llaves(raiz, [pieza]):
+            os.replace(pieza, os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.LLAVE'))
+            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida trae algo con forma de llave: no se deja en el disco'}
         if orden.get('entrega_la_prueba') == 'si':
             return resultado
         vigia = orden.get('vigia')
