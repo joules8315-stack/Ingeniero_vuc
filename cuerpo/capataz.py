@@ -7,6 +7,17 @@ import subprocess
 import sys
 
 
+# Limites de tiempo medidos el 2026-09-21 en el cuaderno de llamadas:
+# DeepSeek tarda 4 a 11 s, Big Pickle hasta 328 s y con A-47 se le espera hasta 600 s,
+# el guardia corre la bateria en 262 s, y una tarea puede dar 4 vueltas de revision:
+# 4 por (11 + 600) + 262 = 2706 s. El tope de fuera tiene que ser mayor que la suma de los de dentro.
+# SIN_AVANCE tiene que ser MAYOR que la llamada callada mas larga (la espera de Big Pickle de hasta 600 s),
+# o se cortaria a una IA que esta contestando.
+LIMITE_TAREA_SEGUNDOS = 420
+SIN_AVANCE_SEGUNDOS = 660
+TOPE_DURO_SEGUNDOS = 3000
+
+
 def lanzar_al_equipo(proyecto, orden, tope_segundos=900):
     raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     comando = [
@@ -25,28 +36,55 @@ def lanzar_al_equipo(proyecto, orden, tope_segundos=900):
     entorno = dict(os.environ)
     entorno["PYTHONIOENCODING"] = "utf-8"
     entorno["INGENIERO_ETIQUETA"] = str(orden.get("id", ""))
-    try:
-        resultado = subprocess.run(
-            comando,
-            cwd=raiz,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=tope_segundos,
-            env=entorno,
-        )
-    except subprocess.TimeoutExpired:
+    archivo = open(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'), 'w', encoding='utf-8', errors='replace')
+    proceso = subprocess.Popen(
+        comando,
+        cwd=raiz,
+        stdout=archivo,
+        stderr=subprocess.STDOUT,
+        env=entorno,
+    )
+
+    def avance():
+        import psutil
+        total = 0.0
+        try:
+            pp = psutil.Process(proceso.pid)
+            for p in [pp] + pp.children(recursive=True):
+                try:
+                    t = p.cpu_times()
+                    total += t.user + t.system
+                except psutil.Error:
+                    pass
+        except Exception:
+            total = 0.0
+        total = round(total, 1)
+        try:
+            total += os.path.getsize(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'))
+        except Exception:
+            pass
+        for nombre in ('CUADERNO_DE_LLAMADAS.jsonl', 'APLICACIONES.log'):
+            try:
+                total += os.path.getmtime(os.path.join(raiz, 'memoria', nombre))
+            except Exception:
+                pass
+        return total
+
+    from cuerpo import vigilante
+    estado = vigilante.esperar(proceso=proceso, limite=LIMITE_TAREA_SEGUNDOS, sin_avance=SIN_AVANCE_SEGUNDOS, tope_duro=TOPE_DURO_SEGUNDOS, avance=avance)
+    archivo.close()
+    with open(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'), encoding='utf-8', errors='replace') as f:
+        salida = f.read()
+    if estado != 'termino':
         return {
-            "guardado": False,
-            "codigo": None,
-            "salida": "TOPE DE TIEMPO: " + str(tope_segundos) + " s",
+            'guardado': False,
+            'codigo': None,
+            'salida': 'COLGADA: ' + estado + ' (sin avance pasado el limite; se busca la causa raiz)\n' + salida,
         }
-    salida = resultado.stdout + resultado.stderr
     return {
-        "guardado": "GUARDADO AL MOMENTO" in salida,
-        "codigo": resultado.returncode,
-        "salida": salida,
+        'guardado': 'GUARDADO AL MOMENTO' in salida,
+        'codigo': proceso.returncode,
+        'salida': salida,
     }
 
 
@@ -247,6 +285,8 @@ def se_paso_del_tope(hoy=None):
 
 def tipo_de_fallo(salida):
     """Devuelve de que tipo fue el fallo, mirando el texto de salida."""
+    if isinstance(salida, str) and salida.startswith('COLGADA:'):
+        return 'colgada'
     if not isinstance(salida, str):
         return "otro"
     if salida.startswith("TOPE DE TIEMPO"):
