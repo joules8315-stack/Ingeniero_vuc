@@ -22,9 +22,42 @@ El equipo trabaja así (plan v4, `PLAN_PITS/04_PLAN_v4.md`):
 | Revisa lo que escribe DeepSeek | Big Pickle | **Grok 4.7** (OpenCode Go, A-45); si también falla, **Codex** (tú) |
 | Arquitecto, una vez por proyecto | Claude | **Codex** (tú) |
 | Perito, cuando algo falla | Claude | **Codex** (tú) |
+| **Director del loop** | Claude | **Codex** (tú) — A-48 |
 | Todo lo que es contar, comprobar o comparar | un programa | nadie: es un programa |
 
-Tienes dos trabajos, y los dos te los pide **el programa**, no tú mismo:
+### Director del loop (A-48, 2026-09-22) — cuando Julio te abre en tu ventana
+
+Julio: *"Codex debe operar al 100%, debe saber qué hacer, dónde hacerlo, cómo hacerlo, por qué hacerlo,
+cuándo hacerlo, que no dependa de su memoria"*. Esto es lo que hace Claude cada día, paso a paso.
+**Tú no escribes nada a mano: cada paso es una orden del sistema, y el sistema escribe.**
+
+1. **Al empezar (siempre):** `python ingeniero.py arranca` y lee `memoria/AL_VOLVER.md` si existe.
+   Luego `python ingeniero.py director estado`: te dice cuántas tareas hay de cada tipo, cuáles siguen y
+   por qué fallaron las últimas. **Eso es tu memoria**, no lo que creas recordar.
+2. **Poner la máquina a trabajar:** `python ingeniero.py pit ingeniero` (una tarea a la vez). La máquina
+   escribe, revisa, prueba y guarda sola, con el equipo (DeepSeek escribe; Big Pickle → Grok 4.7 revisan).
+3. **Cada vez que termina una tarea**, `python ingeniero.py director estado` otra vez:
+   - **HECHA** → nada que hacer.
+   - **FALLIDA / SIN_TERMINAR** → **ley A-43: se repara la herramienta PRIMERO.** Lee las líneas del
+     expediente (VEREDICTO, fallo, GUARDIA). Decide la **causa raíz** (esto es lo único que es juicio tuyo):
+     - *La prueba de la tarea está mal escrita* (falla por algo que no es lo que mide) → orden nueva que
+       corrige la prueba.
+     - *Al que escribe no le llegó el trozo de archivo* ("el material no trae…") → orden nueva con las
+       **líneas exactas** (número de línea y texto literal) dentro del encargo.
+     - *Se rompe una prueba vecina* → orden nueva que adapta esa prueba **antes**, y la tarea depende de ella.
+     - *El trabajo está bien y su prueba pasa* → `python ingeniero.py director hecha <id>` (el programa
+       corre la prueba; si no pasa, no la marca).
+     - Luego `python ingeniero.py director reintentar <id>` para la tarea original.
+   - Una orden nueva se da con `python ingeniero.py director nueva '<la orden en JSON>'`
+     (id, titulo, pieza, encargo, vigia; `depende` si espera a otra; `crear: true` si crea archivo).
+     La orden nueva queda **la primera** de la lista.
+4. **Método de toda orden:** primero la prueba (nace roja), después la pieza, después el sabotaje. Un
+   encargo pide **un solo cambio**, o varios en la lista `cambios` del mismo archivo; siempre con el
+   texto literal del sitio.
+5. **Cuándo parar:** solo si se agota el saldo de DeepSeek, o si una decisión es de Julio
+   (`PREGUNTA_REQUERIDA:` en palabras simples). Si no, sigues en loop.
+
+Además tienes dos trabajos que te pide **el programa**, no tú mismo:
 
 - **A) Reemplazo de Claude.** Cuando Claude no contesta (ventana cerrada, cupo agotado, se pasa del
   tiempo), el programa te llama a ti como **arquitecto** o como **perito**. Haces exactamente lo que
