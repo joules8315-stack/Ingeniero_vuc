@@ -198,6 +198,38 @@ def aplicar_cambio(propuesta, raiz=None):
         _apuntar_log(False, archivo, funcion, f"no se pudo leer: {e}")
         return False, f"No se pudo leer el archivo: {e}"
 
+    # 2026-09-22: crear=true con contenido y sin texto_viejo sobre un archivo que YA existe:
+    # si es identico no se toca el disco; si difiere se sobreescribe entero (validando .py).
+    if propuesta.get("crear") and not texto_viejo:
+        contenido_propuesto = codigo if codigo else texto_nuevo
+        if not contenido_propuesto:
+            _apuntar_log(False, archivo, funcion, "crear sin contenido")
+            return False, "La propuesta no trae contenido para crear."
+        if contenido == contenido_propuesto:
+            _apuntar_log(True, archivo, funcion, "archivo ya existe identico")
+            return True, "El archivo ya existe identico; nada que aplicar."
+        dir_archivo = os.path.dirname(archivo) or "."
+        fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(contenido_propuesto)
+            if archivo.endswith(".py"):
+                try:
+                    with open(tmp_path, "r", encoding="utf-8-sig") as f:
+                        ast.parse(f.read())
+                except SyntaxError as e:
+                    os.remove(tmp_path)
+                    _apuntar_log(False, archivo, funcion, f"sintaxis rota: {e}")
+                    return False, f"El cambio deja el codigo roto (renglon {e.lineno}): {e.msg}"
+            os.replace(tmp_path, archivo)
+            _apuntar_log(True, archivo, funcion, "archivo recreado")
+            return True, "Archivo recreado."
+        except Exception as e:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            _apuntar_log(False, archivo, funcion, f"error al aplicar: {e}")
+            return False, f"Error al aplicar el cambio: {e}"
+
     if not texto_viejo:
         _apuntar_log(False, archivo, funcion, "texto_viejo vacio")
         return False, "La propuesta no trae 'texto_viejo'."
