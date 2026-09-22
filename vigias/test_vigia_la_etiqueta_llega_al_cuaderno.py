@@ -69,7 +69,26 @@ def test_capataz_pasa_la_etiqueta_al_equipo(monkeypatch):
         guardado["env"] = kwargs.get("env")
         return types.SimpleNamespace(returncode=0, stdout="", stderr="")
 
+    class PopenFalso:
+        def __init__(self, comando, **kw):
+            guardado["env"] = kw.get("env")
+            self.pid = 1
+            self.returncode = 0
+
+        def poll(self):
+            return 0
+
+        def kill(self):
+            pass
+
+        def wait(self, timeout=None):
+            return 0
+
     monkeypatch.setattr(capataz.subprocess, "run", falso_run)
+    monkeypatch.setattr(capataz.subprocess, "Popen", PopenFalso)
+
+    from cuerpo import vigilante
+    monkeypatch.setattr(vigilante, "esperar", lambda *a, **k: "termino")
 
     capataz.lanzar_al_equipo(
         "ingeniero", {"id": "P9", "encargo": "x", "pieza": "y"}
