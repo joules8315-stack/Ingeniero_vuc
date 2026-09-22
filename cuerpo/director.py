@@ -298,7 +298,7 @@ def orden_corta(raiz, id, pieza, vigia, que_hacer):
                         else:
                             break
                     if nombre and nombre in palabras:
-                        lineas.append('def %s(...): (linea %d) %s' % (nombre, numero, linea))
+                        lineas.append('%s (linea %d)' % (limpia, numero))
 
     lineas.append('No toques ningun otro archivo.')
     encargo = '\n'.join(lineas)
