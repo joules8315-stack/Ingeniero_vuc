@@ -172,7 +172,7 @@
     "vigia": "vigias/test_vigia_si_bigpickle_cae_revisa_otro.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "hoy la vigia esta verde y debe seguir verde; con el cambio de 99 tambien."
@@ -193,7 +193,7 @@
     "vigia": "vigias/test_vigia_si_big_pickle_falla_revisa_grok.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "cadena de revision por A-45: Big Pickle -> Grok 4.7 -> relevo de hoy; Codex queda sobre todo para reemplazar a Claude (arquitecto y perito)."
@@ -213,9 +213,9 @@
     "vigia": "vigias/test_vigia_recoger_no_devuelve_llaves.py",
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
-    "paso_fallido": "",
-    "fallos_seguidos": 0,
+    "estado": "fallida",
+    "paso_fallido": "vigia_verde",
+    "fallos_seguidos": 1,
     "nota": ""
   },
   {
@@ -312,10 +312,28 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
+  },
+  {
+    "id": "121",
+    "titulo": "La vigia de recoger y las llaves imita bien la funcion del guardia",
+    "origen": "medido el 2026-09-21 (A-43): la orden 118 quedo SIN_TERMINAR; su pieza esta bien pero la vigia imita _hay_llaves con un solo argumento y la de verdad recibe dos (raiz, archivos): TypeError",
+    "repara": "una vigia mal hecha deja sin terminar una pieza correcta",
+    "pieza": "vigias/test_vigia_recoger_no_devuelve_llaves.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la imitacion tiene que tener la misma forma que la funcion de verdad",
+    "encargo": "En vigias/test_vigia_recoger_no_devuelve_llaves.py, la linea def hay_llaves_falso(carpeta): se cambia por def hay_llaves_falso(raiz, archivos):, porque guardia_de_guardado._hay_llaves recibe la carpeta y la lista de archivos. Es UN solo cambio. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_recoger_no_devuelve_llaves.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "con esto la orden 118 queda terminada."
   },
   {
     "id": "49",
@@ -334,7 +352,7 @@
     "crear": true,
     "prueba_real": "",
     "comando": "",
-    "estado": "pendiente",
+    "estado": "corriendo",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": ""
