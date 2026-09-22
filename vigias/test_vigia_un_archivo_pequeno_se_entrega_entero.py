@@ -25,7 +25,12 @@ RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if RAIZ not in sys.path:
     sys.path.insert(0, RAIZ)
 
+from cerebro import router
 
+
+def entregar_enteros_los_cortos(pedazos, codigo):
+    """La funcion vigilada vive en cerebro/router.py; mientras no exista, cada prueba falla con AttributeError, que es lo correcto (medido 2026-09-22)."""
+    return router.entregar_enteros_los_cortos(pedazos, codigo)
 
 
 LIMITE = 600
