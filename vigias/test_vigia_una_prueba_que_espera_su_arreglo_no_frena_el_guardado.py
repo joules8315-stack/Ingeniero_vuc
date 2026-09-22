@@ -226,6 +226,35 @@ def test_roja_de_otra_tarea_que_la_corrige_deja_pasar(tmp_path, monkeypatch):
         "mensaje: %r" % mensaje)
 
 
+def test_roja_que_la_propia_tarea_declara_que_queda_roja_deja_pasar(tmp_path, monkeypatch):
+    monkeypatch.setenv('INGENIERO_ETIQUETA', 'tarea-1')
+    modulo = _cargar_guardia()
+    ordenes = [
+        {
+            "id": "tarea-1",
+            "estado": "en_curso",
+            "vigia": "vigias/test_roja.py",
+            "pieza": "vigias/test_roja.py",
+            "queda_roja": True,
+        }
+    ]
+    raiz = _preparar_raiz(tmp_path, ordenes)
+
+    salida = (
+        "F                                                                        [100%]\n"
+        "FAILED vigias/test_roja.py::test_roja - AssertionError: assert False\n"
+        "1 failed in 0.01s\n"
+    )
+    _parchear(monkeypatch, modulo,
+              salida_pytest=salida, returncode_pytest=1,
+              guardados_en_head={"vigias/test_roja.py"})
+
+    paso, mensaje = modulo._vigias(raiz)
+    assert paso is True, (
+        "una roja que la propia tarea declara que queda roja debe DEJAR PASAR; "
+        "mensaje: %r" % mensaje)
+
+
 # ---------------------------------------------------------------------------
 # CASO 3: todo verde -> deja pasar
 # ---------------------------------------------------------------------------
