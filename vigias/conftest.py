@@ -81,4 +81,9 @@ def _nada_toca_lo_real(tmp_path, monkeypatch):
     monkeypatch.setattr(_cd, "RUTA", str(tmp_path / "DIAGNOSTICO.json"))
     monkeypatch.setattr(_cmem, "AVISADOS", str(tmp_path / ".avisos_ya_dados.json"))
     monkeypatch.setattr(_cpr, "PRUEBAS", str(tmp_path / "pruebas_real"))
+    # El registro de descansos de los revisores (memoria/CUOTAS.json) tambien es estado real;
+    # medido 2026-09-21 (orden 132): con Big Pickle descansando de verdad, las vigias del
+    # revisor no lo llamaban y llamaban a cerebros reales.
+    from cuerpo import cuotas as _cuo
+    monkeypatch.setattr(_cuo, "RUTA", str(tmp_path / "CUOTAS.json"))
     yield
