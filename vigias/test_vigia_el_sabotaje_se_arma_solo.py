@@ -143,6 +143,28 @@ def test_sin_texto_viejo_no_arma_nada(tmp_path):
     assert not _ruta_sabotaje(tmp_path, orden).exists()
 
 
+def test_el_sabotaje_apunta_la_ruta_entera_de_la_pieza(tmp_path):
+    _escribir_trabajo_aprobado(
+        tmp_path,
+        '2026-09-21_100000_APROBADO_pieza.py.json',
+        {
+            'archivo': 'carpeta/pieza.py',
+            'texto_viejo': 'def pieza():\n    return 1\n',
+            'texto_nuevo': 'def pieza():\n    return 2\n',
+        },
+    )
+    orden = _orden()
+    orden['pieza'] = 'carpeta/pieza.py'
+
+    resultado = capataz.armar_sabotaje(orden, raiz=str(tmp_path))
+
+    assert resultado is True
+    datos = json.loads(_ruta_sabotaje(tmp_path, orden).read_text(encoding='utf-8'))
+    assert datos
+    for objeto in datos:
+        assert objeto['archivo'] == 'carpeta/pieza.py'
+
+
 # ---------------------------------------------------------------------------
 # (4) Si no hay ningun trabajo APROBADO de la pieza, devuelve False.
 # ---------------------------------------------------------------------------
