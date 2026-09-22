@@ -18,7 +18,8 @@ Lo que comprueba esta vigia:
   3. varias lineas sueltas se entregan cada una como su propio tramo;
   4. un texto sin numeros no inventa tramos: devuelve lista vacia;
   5. el propio cerebro/router.py usa tramos_nombrados(problema) dentro del bloque que
-     empieza con el comentario LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO.
+     empieza con el comentario LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO, y ese bloque NO
+     define la funcion tramos_nombrados.
 
 No toca ningun otro archivo. Solo lee.
 """
