@@ -10,6 +10,7 @@ Se vigila la funcion auditar de cuerpo/obrero.py con auditor='bigpickle'.
 
 from cuerpo import obrero
 from cuerpo import bigpickle
+from cuerpo import grok
 
 
 PROPUESTA = {'archivo': 'x.py'}
