@@ -190,6 +190,13 @@ def main():
         # LA PUERTA POR DONDE ENTRA LO QUE JULIO ESCRIBE. Aqui se apunta SOLO, sin que nadie
         # tenga que acordarse. Si algo falla, se calla y deja pasar: este modo NO puede
         # estorbarle a Julio al escribir; el que frena es el candado de cierre, no este.
+        # Si el mensaje lo escribio el programa (no Julio), se lee y se descarta: no se apunta.
+        if os.environ.get("INGENIERO_OFF") == "1" or os.environ.get("INGENIERO_LLAMADA_DEL_PROGRAMA") == "1":
+            try:
+                sys.stdin.read()
+            except Exception:
+                pass
+            return 0
         try:
             crudo = sys.stdin.read()
             dentro = json.loads(crudo) if crudo.strip().startswith("{") else {}
