@@ -239,6 +239,21 @@ def revisar(propuesta, tarea=""):
         viejo = str(p.get("texto_viejo") or "")
         nuevo = str(p.get("texto_nuevo") or p.get("codigo") or "")
         tarea = str(tarea or "")
+        # un cambio de varios trozos (lista cambios, ordenes 55-60) se revisa trozo a trozo con las mismas cuentas;
+        # sin esto se miraban texto_viejo y texto_nuevo de arriba, vacios, y se acusaba en falso (medido 2026-09-21, orden 95).
+        if isinstance(p.get("cambios"), list) and p.get("cambios"):
+            todos = []
+            for c in p.get("cambios"):
+                if not isinstance(c, dict):
+                    continue
+                sub = dict(p)
+                sub.pop("cambios", None)
+                sub.pop("codigo", None)
+                sub["archivo"] = c.get("archivo") or p.get("archivo")
+                sub["texto_viejo"] = c.get("texto_viejo", "")
+                sub["texto_nuevo"] = c.get("texto_nuevo", "")
+                todos.extend(revisar(sub, tarea))
+            return todos
 
         # Un cambio que SOLO BORRA es legitimo: quitar codigo que sobra y no poner nada en su
         # lugar es trabajo de verdad. Solo no hay nada que hacer cuando tampoco se dice que quitar.
