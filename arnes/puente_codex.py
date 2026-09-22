@@ -165,6 +165,10 @@ def _escribir_salida_arreglada(salida_normal, evento):
         if isinstance(datos.get("hookSpecificOutput"), dict):
             if not datos["hookSpecificOutput"].get("hookEventName"):
                 datos["hookSpecificOutput"]["hookEventName"] = evento
+            if "additionalContext" in datos:
+                contexto = datos.pop("additionalContext")
+                if not datos["hookSpecificOutput"].get("additionalContext"):
+                    datos["hookSpecificOutput"]["additionalContext"] = contexto
         elif "additionalContext" in datos:
             contexto = datos.pop("additionalContext")
             datos["hookSpecificOutput"] = {
