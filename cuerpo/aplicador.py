@@ -118,22 +118,14 @@ def aplicar_cambio(propuesta, raiz=None):
             _apuntar_log(False, archivo, funcion, "archivo no existe y no trae texto")
             return False, "El archivo no existe y la propuesta no trae texto para crearlo."
 
-    # Comprobacion de humo: si el texto nuevo solo se diferencia del viejo en comentarios,
-    # cadenas de documentacion o lineas en blanco, no se aplica nada.
+    # Comprobacion de humo: si el texto nuevo solo se diferencia del viejo en comentarios
+    # con almohadilla o lineas en blanco, no se aplica nada. Un trozo suelto no dice si
+    # empieza dentro de un texto de ayuda, asi que aqui no se manejan textos de ayuda.
     def _quitar_ruido(texto):
         lineas = []
-        dentro_docstring = False
         for linea in texto.splitlines():
             tira = linea.strip()
             if not tira:
-                continue
-            if dentro_docstring:
-                if '"""' in tira:
-                    dentro_docstring = False
-                continue
-            if tira.startswith('"""'):
-                if tira.count('"""') < 2:
-                    dentro_docstring = True
                 continue
             if tira.startswith('#'):
                 continue
