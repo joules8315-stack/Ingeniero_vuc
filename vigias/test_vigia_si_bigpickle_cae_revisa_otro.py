@@ -23,6 +23,9 @@ import pytest  # noqa: E402
 def _big_pickle_sin_marca(monkeypatch):
     # cada prueba empieza sin la marca de Big Pickle caido (orden 101, 2026-09-21)
     monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False)
+    # Grok tambien cae en estas pruebas, que miden el relevo de hoy; nunca se llama a una IA de verdad (orden 99, 2026-09-21)
+    from cuerpo import grok as _grok
+    monkeypatch.setattr(_grok, 'preguntar', lambda *a, **k: ('', ['Grok no contesto (prueba)']))
 
 
 def test_si_bigpickle_cae_revisa_otro_y_avisa_a38(monkeypatch):
