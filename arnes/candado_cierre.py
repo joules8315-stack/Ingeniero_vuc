@@ -167,7 +167,23 @@ def _vigias_verdes(raiz):
                     ya_estaban.append(arch)
             except Exception:
                 ya_estaban.append(arch)
+        esperando = set()
         if ya_estaban:
+            try:
+                import json as _json
+                ruta_ordenes = os.path.join(raiz, "memoria", "ORDENES.json")
+                with open(ruta_ordenes, encoding="utf-8") as f:
+                    ordenes = _json.load(f)
+                for orden in ordenes:
+                    if str(orden.get("estado", "")).strip().lower() == "hecha":
+                        continue
+                    vigia = str(orden.get("vigia", "")).replace("\\", "/").strip()
+                    if vigia:
+                        esperando.add(vigia)
+            except Exception:
+                esperando = set()
+        frenan = [a for a in ya_estaban if a not in esperando]
+        if frenan:
             return False, (ultima[0] if ultima else "sin salida")
         return True, ("vigias recien escritas y todavia sin su pieza, que es el metodo y no "
                       "una averia: " + "; ".join(nuevas))
