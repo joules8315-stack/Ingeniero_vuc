@@ -102,8 +102,8 @@ def _montar(monkeypatch, returncode=0, stdout="", stderr="", excepcion=None,
     """Falsifica las dos formas de lanzar y el vigilante a la vez."""
     falsa_run = _falsa_run(returncode=returncode, stdout=stdout, stderr=stderr,
                            excepcion=excepcion)
-    falsa_popen = _falsa_popen(returncode=returncode, stdout=stdout, stderr=stderr,
-                               excepcion=excepcion)
+    # el Popen falso no lanza el tiempo agotado; con el vigilante eso lo dice esperar (medido 2026-09-22)
+    falsa_popen = _falsa_popen(returncode=returncode, stdout=stdout, stderr=stderr)
     falsa_esperar = _falsa_esperar(esperar)
     monkeypatch.setattr(capataz.subprocess, "run", falsa_run)
     monkeypatch.setattr(capataz.subprocess, "Popen", falsa_popen)
