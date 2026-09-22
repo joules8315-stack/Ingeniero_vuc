@@ -327,20 +327,41 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
     # llegue al material: si el fragmentador por relevancia no lo trajo, se pide el pedazo del
     # archivo. Es la pantalla (app_web.html) o el motor (app.py) que el equipo necesita ver para
     # revisar y aprobar; sin el, todo se atasca.
+    # Si el encargo nombra lineas, se entregan esas lineas y no los primeros 80 renglones
+    # (A-48, medido 2026-09-22: ordenes 29, 152, 154 y 170).
+    tramos = tramos_nombrados(problema)
     try:
         for fid in list(_nombrados):
             ficha = next((p for p in codigo if p["id"] == fid), None)
             if not ficha or not ficha.get("abs"):
                 continue
-            texto = "\n".join(_lineas_de(ficha["abs"], 1, min(80, ficha.get("lineas", 80) or 80)))
-            if not texto.strip():
-                continue
-            ya = any(t["pieza"] == fid for t in pedazos)
-            if not ya:
-                pedazos.insert(0, {"pieza": fid, "abs": ficha["abs"], "rol": ficha["rol"],
-                                   "desde": 1, "hasta": min(80, ficha.get("lineas", 80) or 80),
-                                   "direccion": "%s:1-%s" % (fid, min(80, ficha.get("lineas", 80) or 80)),
-                                   "texto": texto, "puntaje": 99.0, "_nombrado": fid})
+            renglones = ficha.get("lineas", 80) or 80
+            if tramos:
+                for (desde, hasta) in tramos:
+                    if desde > renglones:
+                        continue
+                    d = max(1, desde - 5)
+                    h = min(renglones, hasta + 5)
+                    texto = "\n".join(_lineas_de(ficha["abs"], d, h))
+                    if not texto.strip():
+                        continue
+                    ya = any(t["pieza"] == fid and t.get("desde") == d and t.get("hasta") == h
+                             for t in pedazos)
+                    if not ya:
+                        pedazos.insert(0, {"pieza": fid, "abs": ficha["abs"], "rol": ficha["rol"],
+                                           "desde": d, "hasta": h,
+                                           "direccion": "%s:%s-%s" % (fid, d, h),
+                                           "texto": texto, "puntaje": 99.0, "_nombrado": fid})
+            else:
+                texto = "\n".join(_lineas_de(ficha["abs"], 1, min(80, renglones)))
+                if not texto.strip():
+                    continue
+                ya = any(t["pieza"] == fid for t in pedazos)
+                if not ya:
+                    pedazos.insert(0, {"pieza": fid, "abs": ficha["abs"], "rol": ficha["rol"],
+                                       "desde": 1, "hasta": min(80, renglones),
+                                       "direccion": "%s:1-%s" % (fid, min(80, renglones)),
+                                       "texto": texto, "puntaje": 99.0, "_nombrado": fid})
     except Exception:
         pass
 
@@ -566,6 +587,40 @@ def main():
     if n > TOPE_LINEAS:
         print(f"  AVISO: el paquete pasa de {TOPE_LINEAS} lineas. Afina el problema.")
     return 0
+
+
+def tramos_nombrados(problema):
+    """Saca los tramos de lineas que el encargo nombra en palabras.
+
+    Julio, 2026-09-22 (A-48, ordenes 29, 152, 154 y 170): si el encargo nombra lineas, se
+    entregan esas lineas y no los primeros 80 renglones.
+
+    Reconoce, sin distinguir mayusculas ni tildes:
+      · "linea 5 a 10" / "lineas 5-10" / "linea 5 hasta 10"  -> (5, 10)
+      · "linea 7"                                             -> (7, 7)
+      · "lineas 3 y 8" / "lineas 3, 8"                        -> (3, 3), (8, 8)
+    Devuelve la lista sin repetidos, en orden. Con texto vacio o sin numeros, [].
+    """
+    import re
+    if not problema:
+        return []
+    texto = problema.lower()
+    texto = texto.replace("á", "a").replace("é", "e").replace("í", "i")
+    texto = texto.replace("ó", "o").replace("ú", "u")
+    tramos = []
+    for m in re.finditer(r"lineas?\s+(\d+)\s*(?:a|hasta|-)\s*(\d+)", texto):
+        tramos.append((int(m.group(1)), int(m.group(2))))
+    for m in re.finditer(r"lineas?\s+(\d+(?:\s*(?:,|y)\s*\d+)+)", texto):
+        for n in re.findall(r"\d+", m.group(1)):
+            tramos.append((int(n), int(n)))
+    for m in re.finditer(r"lineas?\s+(\d+)(?!\s*(?:a|hasta|-|,|y)\s*\d)", texto):
+        tramos.append((int(m.group(1)), int(m.group(1))))
+    vistos, salida = set(), []
+    for t in tramos:
+        if t not in vistos:
+            vistos.add(t)
+            salida.append(t)
+    return salida
 
 
 def completar_funciones(pedazos, codigo):
