@@ -1,0 +1,61 @@
+{
+ "obrero": "groq",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "la detección de palabras corrientes del español usa búsqueda por subcadenas y coincide con partes de otras palabras",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "parece_una_orden",
+  "texto_viejo": "    # (1) si el texto NO tiene ninguna palabra corriente del espanol (por ejemplo que, de, la, el, los, las, un, una, para, con, por, donde, como, esta, esto, hay, no, se, mas, todo) y tampoco tiene vocales acentuadas, entonces no lo escribio Julio: return False.\n    palabras_corrientes = ['que', 'de', 'la', 'el', 'los', 'las', 'un', 'una', 'para', 'con', 'por', 'donde', 'como', 'esta', 'esto', 'hay', 'no', 'se', 'mas', 'todo']\n    acentos = 'áéíóúÁÉÍÓÚ'\n    if not any(c in texto for c in acentos) and not any(palabra in texto.lower() for palabra in palabras_corrientes):\n        return False",
+  "texto_nuevo": "    # (1) si el texto NO tiene ninguna palabra corriente del espanol (por ejemplo que, de, la, el, los, las, un, una, para, con, por, donde, como, esta, esto, hay, no, se, mas, todo) y tampoco tiene vocales acentuadas, entonces no lo escribio Julio: return False.\n    palabras_corrientes = ['que', 'de', 'la', 'el', 'los', 'las', 'un', 'una', 'para', 'con', 'por', 'donde', 'como', 'esta', 'esto', 'hay', 'no', 'se', 'mas', 'todo']\n    acentos = 'áéíóúÁÉÍÓÚ'\n    # buscar palabras completas usando límites de palabra\n    hay_espanol = any(re.search(r'\\b' + re.escape(palabra) + r'\\b', texto.lower()) for palabra in palabras_corrientes)\n    if not any(c in texto for c in acentos) and not hay_espanol:\n        return False",
+  "cambio": "usar búsqueda con límites de palabra para detectar palabras corrientes del español y emplear la variable hay_espanol en la condición",
+  "codigo": "hay_espanol = any(re.search(r'\\b' + re.escape(palabra) + r'\\b', texto.lower()) for palabra in palabras_corrientes)",
+  "vigia": "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "cerebro/protocolo.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_dudas.py",
+   "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_respuestas.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "protocolo.py",
+   "test_vigia_dudas.py",
+   "test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py",
+   "test_vigia_respuestas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación corrige correctamente la detección de palabras españolas usando límites de palabra (\\b) para evitar falsos positivos por subcadenas, cumpliendo estrictamente con las instrucciones del encargo."
+ },
+ "avisos": [
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}

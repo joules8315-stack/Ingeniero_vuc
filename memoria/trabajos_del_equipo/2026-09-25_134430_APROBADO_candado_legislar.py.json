@@ -1,0 +1,57 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El renglón de parece_una_orden compara trozos de letras en vez de palabras enteras, por lo que 'Preserve' pasa el filtro por contener 'se'.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "parece_una_orden",
+  "texto_viejo": "    if not any(c in texto for c in acentos) and not any(palabra in texto.lower() for palabra in palabras_corrientes):",
+  "texto_nuevo": "    palabras_del_texto = re.findall(r\"[a-záéíóúüñ]+\", texto.lower())\n    if not any(c in texto for c in acentos) and not any(palabra in palabras_corrientes for palabra in palabras_del_texto):",
+  "cambio": "Sustituir el renglón que compara trozos de letras por uno que primero parte el texto en palabras enteras con re.findall usando un patrón de solo letras (incluyendo vocales acentuadas y la eñe) y luego comprueba si alguna de esas palabras está en palabras_corrientes.",
+  "codigo": "    palabras_del_texto = re.findall(r\"[a-záéíóúüñ]+\", texto.lower())\n    if not any(c in texto for c in acentos) and not any(palabra in palabras_corrientes for palabra in palabras_del_texto):",
+  "vigia": "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py: 'Preserve ticket references exactly' debe dar False y 'Busca donde esta toda la informacion que necesitas para reparar el equipo' debe dar True.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Repara correctamente la detección de palabras completas sin romper nada."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 19085 a 10999 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'parece_una_orden' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'EXCLUIR_DE_ORDEN' y esa pal",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 4"
+ ]
+}

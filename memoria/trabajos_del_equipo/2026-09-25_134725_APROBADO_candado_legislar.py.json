@@ -1,0 +1,42 @@
+{
+ "obrero": "groq",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "La condición usa búsqueda de subcadenas y detecta partes de palabras, debe usar palabras completas",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "parece_una_orden",
+  "texto_viejo": "    if not any(c in texto for c in acentos) and not any(palabra in texto.lower() for palabra in palabras_corrientes):",
+  "texto_nuevo": "    if not any(c in texto for c in acentos) and not set(palabras_corrientes).intersection(re.findall(r\"[a-zA-ZáéíóúÁÉÍÓÚñÑ]+\", texto.lower())):",
+  "cambio": "Reemplazar la verificación de palabras corrientes por comparación de palabras completas usando re.findall",
+  "codigo": "if not any(c in texto for c in acentos) and not set(palabras_corrientes).intersection(re.findall(r\"[a-zA-ZáéíóúÁÉÍÓÚñÑ]+\", texto.lower())):",
+  "vigia": "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio sustituye la busqueda por subcadenas por comparacion de palabras enteras con re.findall, tal como pide el encargo, sin tocar nada mas; los nombres usados existen y el modulo re ya estaba importado."
+ },
+ "avisos": [
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 1"
+ ]
+}

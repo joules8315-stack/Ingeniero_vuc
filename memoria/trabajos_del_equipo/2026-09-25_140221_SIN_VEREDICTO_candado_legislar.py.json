@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "Falta el bloque del comando marcar-todo dentro de main, justo despues del bloque que atiende listar, y el material no trae el cuerpo de main ni la funcion pendientes().",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "main",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "Anadir en main, justo despues del bloque que atiende el comando listar, un bloque nuevo para marcar-todo que recorra pendientes(), llame a marcar con el texto de cada una, la resolucion y el motivo, cuente cuantas marco, lo escriba por pantalla y devuelva 0.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "Una prueba que ejecute main con ['marcar-todo', 'legislado', 'motivo'] y compruebe que todas las pendientes quedan resueltas y que main devuelve 0.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py"
+  ],
+  "preguntas": [],
+  "confianza": "baja",
+  "NECESITO_LEER": "arnes/candado_legislar.py / motivo: el material no trae el cuerpo de main ni la funcion pendientes(), y sin ellos no puedo copiar el texto literal del bloque listar ni saber como se llama y que devuelve pendientes() / que decide: donde insertar el bloque marcar-todo y como recorrer las pendientes / riesgo: escribir a ciegas y romper los comandos existentes"
+ },
+ "auditoria": {},
+ "avisos": [
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 19652 a 11773 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "Gemini 3 preview dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

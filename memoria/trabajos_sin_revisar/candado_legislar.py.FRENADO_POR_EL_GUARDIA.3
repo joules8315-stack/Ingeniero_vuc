@@ -1,0 +1,256 @@
+# -*- coding: utf-8 -*-
+"""arnes/candado_legislar.py — F5 (punto a de Julio): TODA instruccion se legisla, con candado.
+
+Julio, 2026-08-24 (punto a): "todo lo que yo escriba debe ser legislado, todo, absolutamente todo...
+la orden es clara, siempre. Por eso me toca volver a repetir."
+
+La ley L5 ya estaba escrita (CONTRATO_LEGISLACION_TOTAL), pero dependia de que la IA se acuerde.
+Este candado lo hace FISICO: cada instruccion de Julio queda apuntada como PENDIENTE de legislar, y
+bloquea el cierre hasta que se legisle (o se marque "ya existe" / "no aplica", con justificacion).
+
+Uso (en PowerShell):
+  apuntar:   python arnes/candado_legislar.py apuntar "<la instruccion de Julio>"
+  resolver:  python arnes/candado_legislar.py hecho "<texto>" legislado|ya_existe|no_aplica ["motivo"]
+  listar:    python arnes/candado_legislar.py listar
+  hook:      (sin argumentos) -> si hay pendientes, devuelve 2 (bloquea el cierre).
+"""
+import hashlib
+import json
+import os
+import re
+import sys
+import time
+
+AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LEDGER = os.path.join(AQUI, "memoria", ".legislacion_pendiente.json")
+
+
+def _ruta():
+    return os.environ.get("INGENIERO_LEGISLAR_TEST") or LEDGER
+
+
+def _leer():
+    try:
+        return json.load(open(_ruta(), encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _guardar(d):
+    os.makedirs(os.path.dirname(_ruta()), exist_ok=True)
+    json.dump(d, open(_ruta(), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+
+
+def _h(texto):
+    return hashlib.md5((texto or "").strip().lower().encode("utf-8")).hexdigest()
+
+
+def apuntar(texto, fuente="julio"):
+    """Registra una instruccion como PENDIENTE de legislar. Devuelve cuantas hay pendientes."""
+    texto = (texto or "").strip()
+    if not texto:
+        return 0
+    d = _leer()
+    d[_h(texto)] = {"texto": texto[:2000], "fuente": fuente, "cuando": time.time(),
+                    "estado": "pendiente", "resolucion": "", "motivo": ""}
+    _guardar(d)
+    return len([e for e in d.values() if e.get("estado") == "pendiente"])
+
+
+# LAS MARCAS DE MANDO: por aqui se reconoce que Julio esta ORDENANDO y no preguntando.
+# Se anaden aqui, sin tocar la funcion, segun se vean formas nuevas de decirlo.
+MARCAS_DE_MANDO = (
+    "no vuelvas", "no vas a", "siempre", "nunca", "que se ", "asignale", "asigna ",
+    "repara", "legisla", "haz ", "pon ", "elimina", "debe ser", "tienes que",
+    "quiero que", "no dejes", "no quiero", "y despues", "de una vez",
+)
+
+MINIMO_LETRAS = 20      # menos que esto es ruido, no una orden
+MINIMO_PALABRAS = 4
+
+
+def _llano(texto):
+    """El texto en minusculas y sin tildes, para que 'función' y 'funcion' sean lo mismo.
+
+    Se usa la misma manera que el diccionario, no una copia a mano con reemplazos: esa copia
+    llego con las tildes corrompidas y habria comparado contra basura.
+    """
+    import unicodedata
+    return "".join(c for c in unicodedata.normalize("NFD", (texto or "").lower())
+                   if unicodedata.category(c) != "Mn")
+
+
+# Lista de patrones que NO son órdenes (avisos de máquina, etc.)
+EXCLUIR_DE_ORDEN = (
+    "background command",
+    "monitor event",
+    "stream ended",
+    "exit code",
+    "task-notification",
+    "system-reminder",
+    "eres el",
+    "responde solo un objeto json",
+    "analiza este fallo solo con el expediente",
+    "obrero deepseek",
+    "auditor groq",
+    "veredicto",
+    "aprobado y aplicado",
+    "escribe=deepseek",
+    "revisa=bigpickle",
+    "guardia: no se guarda",
+    "guardia: verde",
+    "trabajo archivado",
+)
+
+def parece_una_orden(texto):
+    """True si Julio esta MANDANDO algo; False si pregunta, saluda o comenta.
+
+    Ahora la detección se basa en excluir los casos que claramente no son órdenes:
+    - avisos de máquina (empiezan con '<' o contienen palabras clave),
+    - preguntas (terminan con '?'),
+    - textos demasiado cortos.
+    Todo lo demás se considera una orden.
+    """
+    texto = (texto or "").strip()
+    if not texto:
+        return False
+    # a) Aviso de máquina
+    if texto.startswith("<"):
+        return False
+    if any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN):
+        return False
+    # b) Renglon suelto de un informe con formato, no una orden
+    if texto.startswith('"') and '":' in texto:
+        return False
+    limpio = texto.strip()
+    # un pedazo que empieza por una extension de archivo es basura de haber partido por el punto
+    if re.match(r"^(py|json|md|sh)(?![a-zA-Z0-9])", limpio.lower()):
+        return False
+    # un renglon con una palabra, varios espacios y dos puntos es un renglon de informe
+    if re.search(r"(toca|resumen|fallo|diagnostico|aviso|confianza)\s+:", limpio):
+        return False
+    # b) Pregunta
+    if texto.rstrip().endswith("?"):
+        return False
+    # c) Demasiado corto
+    if len(texto.split()) < MINIMO_PALABRAS:
+        return False
+    # (1) si el texto NO tiene ninguna palabra corriente del espanol (por ejemplo que, de, la, el, los, las, un, una, para, con, por, donde, como, esta, esto, hay, no, se, mas, todo) y tampoco tiene vocales acentuadas, entonces no lo escribio Julio: return False.
+    palabras_corrientes = ['que', 'de', 'la', 'el', 'los', 'las', 'un', 'una', 'para', 'con', 'por', 'donde', 'como', 'esta', 'esto', 'hay', 'no', 'se', 'mas', 'todo']
+    acentos = 'áéíóúÁÉÍÓÚ'
+    palabras_del_texto = re.findall(r"[a-záéíóúüñ]+", texto.lower())
+    if not any(c in texto for c in acentos) and not any(palabra in palabras_corrientes for palabra in palabras_del_texto):
+        return False
+    # (2) si el texto contiene alguna de estas senales de maquina: the user, task title, markdown, tool chatter, codex, catch-up, entonces tampoco es de Julio: return False.
+    senales_maquina = ['the user', 'task title', 'markdown', 'tool chatter', 'codex', 'catch-up']
+    if any(palabra in texto.lower() for palabra in senales_maquina):
+        return False
+    return True
+
+
+def apuntar_lo_que_dijo_julio(texto):
+    """Apunta SOLAS las ordenes que vengan en lo que Julio acaba de escribir. Devuelve cuantas.
+
+    ESTO ES LO QUE FALTABA (Julio, 2026-08-31): "te digo cosas y no las legislas, esa es una ley
+    y no se cumple". El candado que bloquea el cierre ya existia y funcionaba, pero las
+    instrucciones solo entraban si alguien llamaba a apuntar() A MANO. O sea: dependia de que la
+    IA se acordara, y eso ya estaba escrito en la memoria de fallos como algo que NO funciona.
+    """
+    texto = (texto or "").strip()
+    if not texto:
+        return 0
+    trozos = []
+    for renglon in texto.splitlines():
+        for trozo in renglon.split("."):
+            trozo = trozo.strip(" ,;:-\t")
+            if len(trozo) >= MINIMO_LETRAS:
+                trozos.append(trozo)
+    puestas = 0
+    for trozo in trozos:
+        if parece_una_orden(trozo):
+            apuntar(trozo, fuente="julio")
+            puestas += 1
+    return puestas
+
+
+def marcar(texto, resolucion, motivo=""):
+    """Marca una instruccion como resuelta: legislado / ya_existe / no_aplica (con motivo)."""
+    d = _leer()
+    h = _h(texto)
+    if h not in d:
+        return False
+    if resolucion not in ("legislado", "ya_existe", "no_aplica"):
+        return False
+    d[h]["estado"] = "resuelto"
+    d[h]["resolucion"] = resolucion
+    d[h]["motivo"] = (motivo or "")[:400]
+    d[h]["cuando_resuelto"] = time.time()
+    _guardar(d)
+    return True
+
+
+def pendientes():
+    """Instrucciones que aun no estan legisladas (ni marcadas)."""
+    return [e for e in _leer().values() if e.get("estado") == "pendiente" and parece_una_orden(e.get("texto", ""))]
+
+
+def main():
+    args = sys.argv[1:]
+    if args and args[0] == "desde-julio":
+        # LA PUERTA POR DONDE ENTRA LO QUE JULIO ESCRIBE. Aqui se apunta SOLO, sin que nadie
+        # tenga que acordarse. Si algo falla, se calla y deja pasar: este modo NO puede
+        # estorbarle a Julio al escribir; el que frena es el candado de cierre, no este.
+        # Si el mensaje lo escribio el programa (no Julio), se lee y se descarta: no se apunta.
+        if os.environ.get("INGENIERO_OFF") == "1" or os.environ.get("INGENIERO_LLAMADA_DEL_PROGRAMA") == "1":
+            try:
+                sys.stdin.read()
+            except Exception:
+                pass
+            return 0
+        try:
+            crudo = sys.stdin.read()
+            dentro = json.loads(crudo) if crudo.strip().startswith("{") else {}
+            dicho = str(dentro.get("prompt") or dentro.get("user_prompt") or crudo or "")
+            n = apuntar_lo_que_dijo_julio(dicho)
+            if n:
+                sys.stderr.write("(apuntada%s %d instruccion%s de Julio para legislar)\n"
+                                 % ("s" if n > 1 else "", n, "es" if n > 1 else ""))
+        except Exception:
+            pass
+        return 0
+    if args and args[0] == "apuntar":
+        n = apuntar(" ".join(args[1:]))
+        sys.stdout.write("apuntado. pendientes: %d\n" % n)
+        return 0
+    if args and args[0] == "hecho" and len(args) >= 3:
+        ok = marcar(args[1], args[2], " ".join(args[3:]))
+        sys.stdout.write("ok\n" if ok else "no_encontrado (o resolucion invalida)\n")
+        return 0 if ok else 2
+    if args and args[0] == "listar":
+        p = pendientes()
+        sys.stdout.write(("\n".join("- " + e["texto"][:120] for e in p)) or "sin pendientes\n")
+        return 0
+    import autorizacion
+    if autorizacion.autorizada():  # F7: solo Julio apaga (comando autorizar-off)
+        return 0
+    # modo HOOK de cierre: si hay instrucciones sin legislar, bloquea.
+    p = pendientes()
+    if not p:
+        return 0
+    sys.stderr.write(
+        "NO SE PUEDE TERMINAR: hay instrucciones de Julio SIN LEGISLAR (L5, punto a):\n\n"
+        + "\n".join("  - " + e["texto"][:160] for e in p[:6])
+        + "\n\n  Cada una debe quedar legislada (contrato + tabla de verdad + matriz + vigia)\n"
+          "  o marcarse 'ya existe' / 'no aplica' con su motivo:\n"
+          "     cd C:\\Ingeniero_VUC; python arnes/candado_legislar.py hecho \"<texto>\" legislado\n")
+    # MEDICION (Julio, 2026-08-25): freno cerrar con instrucciones de Julio sin legislar.
+    try:
+        import candados_medicion
+        candados_medicion.cazado("legislar")
+    except Exception:
+        pass
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
