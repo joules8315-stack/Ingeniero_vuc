@@ -1,0 +1,62 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "mensajes_de_este_turno toma por mensaje de Julio cualquier renglon user con texto, sin descartar avisos de la maquina (isMeta, promptSource system, tool_result, origin de tarea), asi que el turno se reinicia y el freno queda verde y muerto.",
+  "archivo": "arnes/candado_no_repetir.py",
+  "funcion": "mensajes_de_este_turno",
+  "texto_viejo": "    def _es_respuesta_de_herramienta(contenido):\n        if not isinstance(contenido, list):\n            return False\n        for pedazo in contenido:\n            if isinstance(pedazo, dict) and pedazo.get(\"type\") == \"tool_result\":\n                return True\n        return False",
+  "texto_nuevo": "    def _es_respuesta_de_herramienta(contenido):\n        if not isinstance(contenido, list):\n            return False\n        for pedazo in contenido:\n            if isinstance(pedazo, dict) and pedazo.get(\"type\") == \"tool_result\":\n                return True\n        return False\n\n    def _es_aviso_de_la_maquina(renglon, contenido):\n        # Fallo del 2026-09-25, verificado en la conversacion real: entre dos\n        # mensajes escritos siempre se cuela un aviso de la maquina, la cuenta\n        # se reinicia y nunca llega a dos. Sin esto el freno queda verde y muerto.\n        if renglon.get(\"isMeta\") is True:\n            return True\n        if renglon.get(\"promptSource\") == \"system\":\n            return True\n        if _es_respuesta_de_herramienta(contenido):\n            return True\n        origen = renglon.get(\"origin\")\n        if isinstance(origen, dict) and origen.get(\"type\") == \"task\":\n            return True\n        return False",
+  "cambios": [
+   {
+    "texto_viejo": "    def _es_respuesta_de_herramienta(contenido):\n        if not isinstance(contenido, list):\n            return False\n        for pedazo in contenido:\n            if isinstance(pedazo, dict) and pedazo.get(\"type\") == \"tool_result\":\n                return True\n        return False",
+    "texto_nuevo": "    def _es_respuesta_de_herramienta(contenido):\n        if not isinstance(contenido, list):\n            return False\n        for pedazo in contenido:\n            if isinstance(pedazo, dict) and pedazo.get(\"type\") == \"tool_result\":\n                return True\n        return False\n\n    def _es_aviso_de_la_maquina(renglon, contenido):\n        # Fallo del 2026-09-25, verificado en la conversacion real: entre dos\n        # mensajes escritos siempre se cuela un aviso de la maquina, la cuenta\n        # se reinicia y nunca llega a dos. Sin esto el freno queda verde y muerto.\n        if renglon.get(\"isMeta\") is True:\n            return True\n        if renglon.get(\"promptSource\") == \"system\":\n            return True\n        if _es_respuesta_de_herramienta(contenido):\n            return True\n        origen = renglon.get(\"origin\")\n        if isinstance(origen, dict) and origen.get(\"type\") == \"task\":\n            return True\n        return False"
+   },
+   {
+    "texto_viejo": "        if renglon.get(\"type\") == \"user\":\n            contenido = renglon.get(\"content\")\n            if contenido is None and isinstance(renglon.get(\"message\"), dict):\n                contenido = renglon[\"message\"].get(\"content\")\n            if not _es_respuesta_de_herramienta(contenido):\n                inicio = i",
+    "texto_nuevo": "        if renglon.get(\"type\") == \"user\":\n            contenido = renglon.get(\"content\")\n            if contenido is None and isinstance(renglon.get(\"message\"), dict):\n                contenido = renglon[\"message\"].get(\"content\")\n            if not _es_aviso_de_la_maquina(renglon, contenido):\n                inicio = i"
+   }
+  ],
+  "cambio": "Anadir el ayudante _es_aviso_de_la_maquina que descarta isMeta verdadero, promptSource system, contenido con tool_result y origin de tarea, y usarlo en el bucle que decide donde empieza el turno en lugar de solo _es_respuesta_de_herramienta.",
+  "codigo": "    def _es_aviso_de_la_maquina(renglon, contenido):\n        # Fallo del 2026-09-25, verificado en la conversacion real: entre dos\n        # mensajes escritos siempre se cuela un aviso de la maquina, la cuenta\n        # se reinicia y nunca llega a dos. Sin esto el freno queda verde y muerto.\n        if renglon.get(\"isMeta\") is True:\n            return True\n        if renglon.get(\"promptSource\") == \"system\":\n            return True\n        if _es_respuesta_de_herramienta(contenido):\n            return True\n        origen = renglon.get(\"origin\")\n        if isinstance(origen, dict) and origen.get(\"type\") == \"task\":\n            return True\n        return False",
+  "vigia": "Un test que pase una conversacion con dos mensajes de Julio separados por un renglon user con isMeta verdadero (y otro con promptSource system, y otro con tool_result, y otro con origin de tarea) y compruebe que mensajes_de_este_turno cuenta los dos mensajes del asistente en vez de devolver 0.",
+  "puede_danar": [
+   "arnes/candado_no_repetir.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Si un mensaje de verdad de Julio llegara con origin de tipo task o promptSource system, el turno se contaria mas largo de lo real y el freno podria parar antes de tiempo; el material viene cortado y no deja comprobar que esos campos solo los pone la maquina",
+   "isMeta se compara con 'is True': si el conversacional lo serializa como 1 o como texto, el aviso no se descarta y el freno sigue muerto, o sea el arreglo no serviria sin cambiar esa comparacion"
+  ],
+  "que_falta": [
+   "El docstring de mensajes_de_este_turno sigue diciendo que el turno empieza en el ultimo user que no sea respuesta de herramienta: ya no describe lo que hace el codigo",
+   "La lista de condiciones del encargo llega cortada en 'cuando pasa cualquiera de esta', asi que no se pudo cotejar una por una contra el texto pedido; se asume que son las cuatro nombradas en el diagnostico",
+   "La rama de origin de tarea no se ve en ningun renglon del material: si el conversacional nunca la escribe, es codigo muerto (inofensivo, porque es get sobre dict)"
+  ],
+  "resumen_para_el_jefe": "El arreglo esta bien puesto y deja de reiniciar la cuenta con los avisos de la maquina; solo falta actualizar el docstring y confirmar que origin e isMeta llegan como se esperan, porque si no el freno sigue sin medir."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 4"
+ ]
+}
