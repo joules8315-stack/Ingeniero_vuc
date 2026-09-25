@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En salida() no existe el freno que impide escribir un segundo mensaje a Julio en el mismo turno cuando ya lleva dos o mas mensajes escritos.",
+  "archivo": "arnes/candado_no_repetir.py",
+  "funcion": "salida",
+  "texto_viejo": "    ultimo = str(data.get(\"last_assistant_message\") or \"\")",
+  "texto_nuevo": "    ruta_transcripcion = data.get(\"transcript_path\")\n    if ruta_transcripcion:\n        if mensajes_de_este_turno(ruta_transcripcion) >= 2:\n            veces = _bloqueos_seguidos()\n            if veces >= TOPE_BLOQUEOS:\n                _apuntar_bloqueo(0)\n                _registrar(\"AVISO: se deja pasar para no atascar a Julio, pero ya le escribio dos veces en el turno.\")\n                sys.stderr.write(\"AVISO: ya le hablaste a Julio en este turno. Se deja pasar para no\\n\"\n                                 \"  atascar a Julio, pero incumple CONTRATO_NO_REPETIR.md.\\n\")\n                return 0\n            _apuntar_bloqueo(veces + 1)\n            _registrar(\"BLOQUEO: ya le escribio a Julio en este turno, se frena.\")\n            sys.stderr.write(\n                \"NO SE PUEDE TERMINAR: ya le hablaste a Julio en este turno, no le escribas otra vez;\\n\"\n                \"  guarda lo que falte y termina sin escribir nada mas.\\n\")\n            return 2\n    ultimo = str(data.get(\"last_assistant_message\") or \"\")",
+  "cambio": "Anadir, justo encima del renglon 'ultimo = str(data.get(\"last_assistant_message\") or \"\")' y dejando ese renglon tal cual debajo, el freno nuevo: leer transcript_path de data; si no viene, seguir como hasta ahora; si viene, preguntar a mensajes_de_este_turno cuantos mensajes escritos lleva el turno; si son dos o mas, mirar _bloqueos_seguidos: si ya llego a TOPE_BLOQUEOS, poner el contador a cero con _apuntar_bloqueo, dejar pasar y solo avisar; si no, subir el contador con _apuntar_bloqueo, dejar rastro con _registrar y devolver 2 con el aviso indicado. No tocar nada de lo que salida() hace hoy con las frases repetidas.",
+  "codigo": "    ruta_transcripcion = data.get(\"transcript_path\")\n    if ruta_transcripcion:\n        if mensajes_de_este_turno(ruta_transcripcion) >= 2:\n            veces = _bloqueos_seguidos()\n            if veces >= TOPE_BLOQUEOS:\n                _apuntar_bloqueo(0)\n                _registrar(\"AVISO: se deja pasar para no atascar a Julio, pero ya le escribio dos veces en el turno.\")\n                sys.stderr.write(\"AVISO: ya le hablaste a Julio en este turno. Se deja pasar para no\\n\"\n                                 \"  atascar a Julio, pero incumple CONTRATO_NO_REPETIR.md.\\n\")\n                return 0\n            _apuntar_bloqueo(veces + 1)\n            _registrar(\"BLOQUEO: ya le escribio a Julio en este turno, se frena.\")\n            sys.stderr.write(\n                \"NO SE PUEDE TERMINAR: ya le hablaste a Julio en este turno, no le escribas otra vez;\\n\"\n                \"  guarda lo que falte y termina sin escribir nada mas.\\n\")\n            return 2",
+  "vigia": "Una prueba que llame a salida() con un data que traiga transcript_path de un turno con dos mensajes escritos y compruebe que devuelve 2 y escribe el aviso; y otra con el contador ya en TOPE_BLOQUEOS que compruebe que devuelve 0, deja el contador a cero y solo avisa.",
+  "puede_danar": [
+   "arnes/candado_no_repetir.py::salida",
+   "arnes/candado_no_repetir.py::_bloqueos_seguidos",
+   "arnes/candado_no_repetir.py::_apuntar_bloqueo",
+   "arnes/candado_no_repetir.py::_registrar",
+   "arnes/candado_no_repetir.py::mensajes_de_este_turno"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: mensajes_de_este_turno no aparece en el material; confirma su firma exacta (recibe la ruta del transcript y devuelve el numero de mensajes escritos del turno) y que ya existe en arnes/candado_no_repetir.py."
+  ],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El freno nuevo y el freno de frases repetidas comparten el MISMO contador (_bloqueos_seguidos/_apuntar_bloqueo): dos bloqueos de motivos distintos suman juntos y pueden llegar a TOPE_BLOQUEOS antes de tiempo, dejando pasar un caso que deberia frenarse. Es lo que pidio el encargo, asi que no es motivo de rechazo, pero conviene tenerlo fichado.",
+   "El freno va por encima de 'if not ultimo: return 0', asi que con un data sin last_assistant_message (vacio) y transcript_path presente puede devolver 2 en vez de 0. Es la ubicacion que pidio el encargo; solo conste por si aparece un Stop con mensaje vacio."
+  ],
+  "que_falta": [
+   "La firma exacta de mensajes_de_este_turno no se ve en el material: se llama con un solo argumento posicional (la ruta). El paquete confirma que existe y que recibe la ruta del transcript, pero que el programa haya comprobado que el archivo carga no dice que la llamada con ese argumento sea correcta. Es lo unico pendiente de medir.",
+   "La vigia cubre los dos caminos con transcript_path, pero no el caso 'sin transcript_path' (debe seguir igual que hoy, sin tocar el contador) ni el caso 'turno con un solo mensaje' (no debe frenar). Son dos asserts de una linea que cierran el trato."
+  ],
+  "resumen_para_el_jefe": "El freno va bien colocado y hace justo lo pedido (lee transcript_path de data, no vuelve a leer la entrada, frena con 2 al segundo mensaje, y con tope deja pasar y avisa como con las frases repetidas), sin tocar un renglon de lo que salida ya hacia; lo unico por medir es que la llamada a mensajes_de_este_turno con la ruta sea la firma real."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}
