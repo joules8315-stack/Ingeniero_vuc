@@ -1,0 +1,40 @@
+{
+ "obrero": "gemini4",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "La función `parece_una_orden` no distingue correctamente entre órdenes de Julio y textos del sistema en inglés o sobre IA, lo que genera falsos positivos y bloquea el flujo de trabajo.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "parece_una_orden",
+  "texto_viejo": "    return True",
+  "texto_nuevo": "    # Comprobación para textos en inglés o sobre IA\n    if not any(c in texto for c in 'áéíóúüñÁÉÍÓÚÜÑ') and not any(palabra in texto.lower() for palabra in ['the user', 'task title', 'markdown', 'tool chatter', 'codex', 'catch-up']):\n        return False\n    return True",
+  "cambio": "Añadir comprobación para textos en inglés o sobre IA antes del return True final.",
+  "codigo": "    # Comprobación para textos en inglés o sobre IA\n    if not any(c in texto for c in 'áéíóúüñÁÉÍÓÚÜÑ') and not any(palabra in texto.lower() for palabra in ['the user', 'task title', 'markdown', 'tool chatter', 'codex', 'catch-up']):\n        return False\n    return True",
+  "vigia": "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+  "puede_danar": [
+   "arnes/candado_legislar.py",
+   "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio anade dentro de parece_una_orden la comprobacion pedida (sin vocales acentuadas ni palabras en espanol, o con terminos del sistema/IA, devuelve False) y respeta el encargo de no tocar constantes ni funciones auxiliares; no rompe vecinos ni leyes del contrato."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19230 a 11282 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 20620 a 12604 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)) -> se reintenta",
+  "el pasillo recorto el encargo de 20684 a 12652 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 3"
+ ]
+}

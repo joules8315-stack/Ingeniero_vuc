@@ -1,0 +1,77 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "parece_una_orden devuelve True para textos internos del sistema en ingles porque solo excluye frases en espanol de EXCLUIR_DE_ORDEN y no mira si el texto esta en espanol ni si habla del propio sistema o de otra IA.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "parece_una_orden",
+  "texto_viejo": "def parece_una_orden(texto):\n    \"\"\"True si Julio esta MANDANDO algo; False si pregunta, saluda o comenta.\n\n    Ahora la detección se basa en excluir los casos que claramente no son órdenes:\n    - avisos de máquina (empiezan con '<' o contienen palabras clave),\n    - preguntas (terminan con '?'),\n    - textos demasiado cortos.\n    Todo lo demás se considera una orden.\n    \"\"\"\n    texto = (texto or \"\").strip()\n    if not texto:\n        return False\n    # a) Aviso de máquina\n    if texto.startswith(\"<\"):\n        return False\n    if any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN):\n        return False\n    # b) Renglon suelto de un informe con formato, no una orden\n    if texto.startswith('\"') and '\":' in texto:\n        return False\n    limpio = texto.strip()\n    # un pedazo que empieza por una extension de archivo es basura de haber partido por el punto\n    if re.match(r\"^(py|json|md|sh)(?![a-zA-Z0-9])\", limpio.lower()):\n        return False\n    # un renglon con una palabra, varios espacios y dos puntos es un renglon de informe\n    if re.search(r\"(toca|resumen|fallo|diagnostico|aviso|confianza)\\s+:\", limpio):\n        return False\n    # b) Pregunta\n    if texto.rstrip().endswith(\"?\"):\n        return False\n    # c) Demasiado corto\n    if len(texto.split()) < MINIMO_PALABRAS:\n        return False\n    return True",
+  "texto_nuevo": "def parece_una_orden(texto):\n    \"\"\"True si Julio esta MANDANDO algo; False si pregunta, saluda o comenta.\n\n    Ahora la detección se basa en excluir los casos que claramente no son órdenes:\n    - avisos de máquina (empiezan con '<' o contienen palabras clave),\n    - preguntas (terminan con '?'),\n    - textos demasiado cortos,\n    - textos que NO escribio Julio: sin ninguna palabra en espanol ni acentos,\n      o que hablan del propio sistema o de otra IA.\n    Todo lo demás se considera una orden.\n    \"\"\"\n    texto = (texto or \"\").strip()\n    if not texto:\n        return False\n    # a) Aviso de máquina\n    if texto.startswith(\"<\"):\n        return False\n    if any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN):\n        return False\n    # b) Renglon suelto de un informe con formato, no una orden\n    if texto.startswith('\"') and '\":' in texto:\n        return False\n    limpio = texto.strip()\n    # un pedazo que empieza por una extension de archivo es basura de haber partido por el punto\n    if re.match(r\"^(py|json|md|sh)(?![a-zA-Z0-9])\", limpio.lower()):\n        return False\n    # un renglon con una palabra, varios espacios y dos puntos es un renglon de informe\n    if re.search(r\"(toca|resumen|fallo|diagnostico|aviso|confianza)\\s+:\", limpio):\n        return False\n    # b) Pregunta\n    if texto.rstrip().endswith(\"?\"):\n        return False\n    # c) Demasiado corto\n    if len(texto.split()) < MINIMO_PALABRAS:\n        return False\n    # d) No lo escribio Julio: sin palabra en espanol ni acentos, no es suyo\n    if not _tiene_espanol(limpio):\n        return False\n    # e) Habla del propio sistema o de otra IA, no es una orden de Julio\n    if any(palabra in limpio.lower() for palabra in PALABRAS_DE_MAQUINA):\n        return False\n    return True",
+  "cambios": [
+   {
+    "texto_viejo": "def parece_una_orden(texto):\n    \"\"\"True si Julio esta MANDANDO algo; False si pregunta, saluda o comenta.\n\n    Ahora la detección se basa en excluir los casos que claramente no son órdenes:\n    - avisos de máquina (empiezan con '<' o contienen palabras clave),\n    - preguntas (terminan con '?'),\n    - textos demasiado cortos.\n    Todo lo demás se considera una orden.\n    \"\"\"\n    texto = (texto or \"\").strip()\n    if not texto:\n        return False\n    # a) Aviso de máquina\n    if texto.startswith(\"<\"):\n        return False\n    if any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN):\n        return False\n    # b) Renglon suelto de un informe con formato, no una orden\n    if texto.startswith('\"') and '\":' in texto:\n        return False\n    limpio = texto.strip()\n    # un pedazo que empieza por una extension de archivo es basura de haber partido por el punto\n    if re.match(r\"^(py|json|md|sh)(?![a-zA-Z0-9])\", limpio.lower()):\n        return False\n    # un renglon con una palabra, varios espacios y dos puntos es un renglon de informe\n    if re.search(r\"(toca|resumen|fallo|diagnostico|aviso|confianza)\\s+:\", limpio):\n        return False\n    # b) Pregunta\n    if texto.rstrip().endswith(\"?\"):\n        return False\n    # c) Demasiado corto\n    if len(texto.split()) < MINIMO_PALABRAS:\n        return False\n    return True",
+    "texto_nuevo": "def parece_una_orden(texto):\n    \"\"\"True si Julio esta MANDANDO algo; False si pregunta, saluda o comenta.\n\n    Ahora la detección se basa en excluir los casos que claramente no son órdenes:\n    - avisos de máquina (empiezan con '<' o contienen palabras clave),\n    - preguntas (terminan con '?'),\n    - textos demasiado cortos,\n    - textos que NO escribio Julio: sin ninguna palabra en espanol ni acentos,\n      o que hablan del propio sistema o de otra IA.\n    Todo lo demás se considera una orden.\n    \"\"\"\n    texto = (texto or \"\").strip()\n    if not texto:\n        return False\n    # a) Aviso de máquina\n    if texto.startswith(\"<\"):\n        return False\n    if any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN):\n        return False\n    # b) Renglon suelto de un informe con formato, no una orden\n    if texto.startswith('\"') and '\":' in texto:\n        return False\n    limpio = texto.strip()\n    # un pedazo que empieza por una extension de archivo es basura de haber partido por el punto\n    if re.match(r\"^(py|json|md|sh)(?![a-zA-Z0-9])\", limpio.lower()):\n        return False\n    # un renglon con una palabra, varios espacios y dos puntos es un renglon de informe\n    if re.search(r\"(toca|resumen|fallo|diagnostico|aviso|confianza)\\s+:\", limpio):\n        return False\n    # b) Pregunta\n    if texto.rstrip().endswith(\"?\"):\n        return False\n    # c) Demasiado corto\n    if len(texto.split()) < MINIMO_PALABRAS:\n        return False\n    # d) No lo escribio Julio: sin palabra en espanol ni acentos, no es suyo\n    if not _tiene_espanol(limpio):\n        return False\n    # e) Habla del propio sistema o de otra IA, no es una orden de Julio\n    if any(palabra in limpio.lower() for palabra in PALABRAS_DE_MAQUINA):\n        return False\n    return True"
+   },
+   {
+    "texto_viejo": "    \"guardia: no se guarda\",\n    \"guardia: verde\",\n    \"trabajo archivado\",\n)",
+    "texto_nuevo": "    \"guardia: no se guarda\",\n    \"guardia: verde\",\n    \"trabajo archivado\",\n)\n\n# Palabras que delatan que el texto habla del propio sistema o de otra IA,\n# no de una orden de Julio.\nPALABRAS_DE_MAQUINA = (\n    \"the user\",\n    \"task title\",\n    \"markdown\",\n    \"tool chatter\",\n    \"codex\",\n    \"catch-up\",\n)\n\n# Palabras y letras que solo aparecen en un texto escrito en espanol.\nPALABRAS_EN_ESPANOL = (\n    \" el \", \" la \", \" los \", \" las \", \" un \", \" una \", \" de \", \" del \",\n    \" que \", \" y \", \" o \", \" en \", \" con \", \" por \", \" para \", \" no \",\n    \" se \", \" es \", \" esta \", \" este \", \" esto \", \" como \", \" mas \",\n    \" pero \", \" si \", \" al \", \" lo \", \" su \", \" mi \", \" tu \",\n)\n\n\ndef _tiene_espanol(texto):\n    \"\"\"True si el texto tiene alguna palabra en espanol o algun acento.\"\"\"\n    bajo = \" \" + texto.lower() + \" \"\n    if any(palabra in bajo for palabra in PALABRAS_EN_ESPANOL):\n        return True\n    return any(c in texto for c in \"áéíóúñÁÉÍÓÚÑ¿¡\")"
+   }
+  ],
+  "cambio": "En arnes/candado_legislar.py: (1) anadir las constantes PALABRAS_DE_MAQUINA (the user, task title, markdown, tool chatter, Codex, catch-up), PALABRAS_EN_ESPANOL y la funcion auxiliar _tiene_espanol; (2) en parece_una_orden, antes del return True, devolver False si el texto no tiene ninguna palabra en espanol ni acentos, y devolver False si contiene alguna palabra de PALABRAS_DE_MAQUINA. No se toca el modo desde-julio, ni el bloqueo del cierre, ni apuntar.",
+  "codigo": "PALABRAS_DE_MAQUINA = (\n    \"the user\",\n    \"task title\",\n    \"markdown\",\n    \"tool chatter\",\n    \"codex\",\n    \"catch-up\",\n)\n\nPALABRAS_EN_ESPANOL = (\n    \" el \", \" la \", \" los \", \" las \", \" un \", \" una \", \" de \", \" del \",\n    \" que \", \" y \", \" o \", \" en \", \" con \", \" por \", \" para \", \" no \",\n    \" se \", \" es \", \" esta \", \" este \", \" esto \", \" como \", \" mas \",\n    \" pero \", \" si \", \" al \", \" lo \", \" su \", \" mi \", \" tu \",\n)\n\n\ndef _tiene_espanol(texto):\n    \"\"\"True si el texto tiene alguna palabra en espanol o algun acento.\"\"\"\n    bajo = \" \" + texto.lower() + \" \"\n    if any(palabra in bajo for palabra in PALABRAS_EN_ESPANOL):\n        return True\n    return any(c in texto for c in \"áéíóúñÁÉÍÓÚÑ¿¡\")\n\n\n# dentro de parece_una_orden, antes del return True:\n    if not _tiene_espanol(limpio):\n        return False\n    if any(palabra in limpio.lower() for palabra in PALABRAS_DE_MAQUINA):\n        return False\n    return True",
+  "vigia": "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py: comprueba que 'Generate a concise, single-line task title...' y 'Write a brief catch-up for a user returning to this Codex task' devuelven False, y que 'Busca donde esta toda la informacion que necesitas para reparar el equipo' devuelve True.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "cuerpo/privacidad.py",
+   "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "Constante PALABRAS_DE_MAQUINA",
+   "Constante PALABRAS_EN_ESPANOL",
+   "Función _tiene_espanol"
+  ],
+  "fallos": [
+   "Se inventaron las constantes PALABRAS_DE_MAQUINA y PALABRAS_EN_ESPANOL, y la función _tiene_espanol, que no estaban en el material original.",
+   "La ubicación de la adición de las nuevas constantes y la función _tiene_espanol no está especificada en el material original. Se asume que se añadieron al principio del archivo, pero no hay texto que lo confirme."
+  ],
+  "riesgo_vecinos": [
+   "El cambio podría afectar a 'arnes/autorizacion.py', 'arnes/candado_cierre.py', 'arnes/candados_medicion.py', 'cuerpo/privacidad.py' y varios archivos 'vigias' si dependen de la lógica de 'parece_una_orden' de una manera que no prevea la nueva exclusión de textos en inglés o sobre el sistema."
+  ],
+  "que_falta": [
+   "El material original no incluye la definición de las constantes 'EXCLUIR_DE_ORDEN' ni 'MINIMO_PALABRAS', ni la importación del módulo 're'. Sin embargo, la propuesta asume su existencia y las utiliza."
+  ],
+  "resumen_para_el_jefe": "La reparación introduce código nuevo (constantes y función) que no estaba en el material original, lo cual constituye un invento y un riesgo potencial para otros módulos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 19997 a 12406 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'PALABRAS_DE_OTRA_IA'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'PALABRAS_EN_ESPANOL'. No se importa, no ",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'PALABRAS_EN_ESPANOL'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'PALABRAS_DE_OTRA_IA'. No se importa, no ",
+  "vueltas_dadas: 4"
+ ]
+}

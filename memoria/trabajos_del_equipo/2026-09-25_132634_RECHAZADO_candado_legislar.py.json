@@ -1,0 +1,48 @@
+{
+ "obrero": "gemini4",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "La consulta python arnes/candado_legislar.py listar confirma cinco entradas que deben ser marcadas como 'no aplica' si se confirma que son internas, pero el procedimiento actual no permite marcar instrucciones internas como 'no aplica' sin un motivo específico.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "marcar",
+  "texto_viejo": "    if resolucion not in (\"legislado\", \"ya_existe\", \"no_aplica\"):\n        return False",
+  "texto_nuevo": "    if resolucion not in (\"legislado\", \"ya_existe\", \"no_aplica\"):\n        return False\n    if resolucion == \"no_aplica\" and not motivo:\n        return False",
+  "cambios": [],
+  "cambio": "Se debe permitir marcar una instrucción como 'no aplica' solo si se proporciona un motivo, para asegurar que las instrucciones internas no se descarten sin justificación.",
+  "codigo": "    if resolucion == \"no_aplica\" and not motivo:\n        return False",
+  "vigia": "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+  "puede_danar": [
+   "arnes/candado_legislar.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El cambio contradice el encargo: el paquete pide marcar las cinco instrucciones internas como 'no aplica' mediante el procedimiento existente, y el procedimiento existente YA permite 'no_aplica' con motivo (el propio docstring dice 'no_aplica (con motivo)'). El cambio añade una restriccion que impide marcar 'no_aplica' sin motivo, pero no aporta nada para marcar las cinco entradas: no las marca, no las identifica, no las recorre. La reparacion no ejecuta la tarea pedida.",
+   "El diagnostico es falso: afirma que 'el procedimiento actual no permite marcar instrucciones internas como no aplica sin un motivo especifico', pero el codigo original ya acepta 'no_aplica' y ya guarda el motivo con truncado a 400. No hay tal bloqueo. La premisa del diagnostico no se sostiene con el material.",
+   "El texto_nuevo repite el texto_viejo y añade una condicion redundante/contradictoria con el proposito declarado: si el objetivo es marcar cinco entradas como no_aplica, exigir motivo no ayuda; y si el motivo ya se pasa, la condicion no cambia nada. No arregla ningun fallo observable."
+  ],
+  "riesgo_vecinos": [
+   "arnes/asignador.py (importa candado_legislar desde medir_el_pasillo.py y medir_las_nueve_puertas.py): si algun flujo llama marcar(texto, 'no_aplica') sin motivo, ahora devolvera False donde antes devolvia True, rompiendo el marcado silenciosamente."
+  ],
+  "que_falta": [
+   "Identificar y marcar efectivamente las cinco entradas internas como 'no_aplica' con su motivo, que es lo que pide el paquete.",
+   "Justificar con evidencia por que el procedimiento actual no permitia marcarlas (no se aporta ninguna).",
+   "Verificar que ningun llamador existente invoca marcar con 'no_aplica' sin motivo antes de endurecer la validacion."
+  ],
+  "resumen_para_el_jefe": "El cambio no hace lo pedido: el codigo ya permitia 'no_aplica' con motivo, el diagnostico es falso, y la reparacion ni marca las cinco entradas ni arregla nada; ademas puede romper llamadores que marquen sin motivo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19073 a 13693 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 19852 a 14278 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "vueltas_dadas: 4"
+ ]
+}
