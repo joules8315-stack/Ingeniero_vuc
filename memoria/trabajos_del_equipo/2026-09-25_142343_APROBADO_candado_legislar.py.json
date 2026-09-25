@@ -1,0 +1,35 @@
+{
+ "obrero": "groq",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "Falta el comando marcar-todo en la función main",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "main",
+  "texto_viejo": "    if args and args[0] == \"listar\":\n        p = pendientes()\n        sys.stdout.write((\"\\n\".join(\"- \" + e[\"texto\"][:120] for e in p)) or \"sin pendientes\\n\")\n        return 0",
+  "texto_nuevo": "    if args and args[0] == \"listar\":\n        p = pendientes()\n        sys.stdout.write((\"\\n\".join(\"- \" + e[\"texto\"][:120] for e in p)) or \"sin pendientes\\n\")\n        return 0\n    if args and args[0] == \"marcar-todo\" and len(args) >= 3:\n        resolucion = args[1]\n        motivo = \" \".join(args[2:])\n        marcados = 0\n        for e in pendientes():\n            if marcar(e[\"texto\"], resolucion, motivo):\n                marcados += 1\n        sys.stdout.write(f\"{marcados} marcados\\n\")\n        return 0",
+  "cambio": "Añadir bloque para el comando marcar-todo justo después del return 0 del bloque listar",
+  "codigo": "if args and args[0] == \"marcar-todo\" and len(args) >= 3:\n    resolucion = args[1]\n    motivo = \" \".join(args[2:])\n    marcados = 0\n    for e in pendientes():\n        if marcar(e[\"texto\"], resolucion, motivo):\n            marcados += 1\n    sys.stdout.write(f\"{marcados} marcados\\n\")\n    return 0",
+  "vigia": "Ejecutar arnes/candado_legislar.py marcar-todo <resolucion> <motivo> y comprobar que la salida indica el número de pendientes marcados y que el proceso termina con código de salida 0",
+  "puede_danar": [
+   "marcar",
+   "pendientes"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación añade correctamente el comando 'marcar-todo' siguiendo las instrucciones exactas y utilizando las funciones existentes sin errores de lógica o sintaxis."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19109 a 11140 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}
