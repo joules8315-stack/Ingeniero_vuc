@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion mensajes_de_este_turno toma por mensaje de Julio cualquier renglon de tipo user con texto, incluidos los avisos de la maquina (isMeta, promptSource system) y las respuestas de herramientas, y por eso reinician la cuenta del turno; faltan tres casos de prueba que lo demuestren.",
+  "archivo": "vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py",
+  "funcion": "test_dos_mensajes_del_asistente_despues_del_ultimo_user",
+  "texto_viejo": "    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 1",
+  "texto_nuevo": "    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 1\n\n\ndef test_aviso_de_candado_con_ismeta_no_abre_turno(tmp_path):\n    # 2026-09-25: comprobado en la conversacion real que los avisos de la maquina\n    # llegan como renglones de tipo user y reiniciaban la cuenta, dejando el freno muerto.\n    ruta = tmp_path / \"conversacion.jsonl\"\n    _escribir_jsonl(ruta, [\n        {\"type\": \"user\", \"text\": \"Julio pregunta algo\"},\n        {\"type\": \"assistant\", \"text\": \"Primer mensaje escrito\"},\n        {\"type\": \"user\", \"text\": \"Aviso del candado\", \"isMeta\": True},\n        {\"type\": \"assistant\", \"text\": \"Segundo mensaje escrito\"},\n    ])\n    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 2\n\n\ndef test_aviso_de_tarea_de_fondo_con_promptsource_system_no_abre_turno(tmp_path):\n    # 2026-09-25: comprobado en la conversacion real que los avisos de la maquina\n    # llegan como renglones de tipo user y reiniciaban la cuenta, dejando el freno muerto.\n    ruta = tmp_path / \"conversacion.jsonl\"\n    _escribir_jsonl(ruta, [\n        {\"type\": \"user\", \"text\": \"Julio pregunta algo\"},\n        {\"type\": \"assistant\", \"text\": \"Primer mensaje escrito\"},\n        {\"type\": \"user\", \"text\": \"Aviso de tarea de fondo\", \"promptSource\": \"system\"},\n        {\"type\": \"assistant\", \"text\": \"Segundo mensaje escrito\"},\n    ])\n    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 2\n\n\ndef test_respuesta_de_herramienta_no_abre_turno(tmp_path):\n    # 2026-09-25: comprobado en la conversacion real que los avisos de la maquina\n    # llegan como renglones de tipo user y reiniciaban la cuenta, dejando el freno muerto.\n    ruta = tmp_path / \"conversacion.jsonl\"\n    _escribir_jsonl(ruta, [\n        {\"type\": \"user\", \"text\": \"Julio pregunta algo\"},\n        {\"type\": \"assistant\", \"text\": \"Primer mensaje escrito\"},\n        {\"type\": \"user\", \"content\": [{\"type\": \"tool_result\", \"content\": \"salida\"}]},\n        {\"type\": \"assistant\", \"text\": \"Segundo mensaje escrito\"},\n    ])\n    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 2",
+  "cambios": "",
+  "cambio": "Anadir al final del archivo tres funciones de prueba nuevas (aviso con isMeta, aviso con promptSource system, respuesta de herramienta), cada una escribiendo su jsonl en tmp_path y esperando cuenta 2, justo debajo del assert final existente.",
+  "codigo": "def test_aviso_de_candado_con_ismeta_no_abre_turno(tmp_path):\n    # 2026-09-25: comprobado en la conversacion real que los avisos de la maquina\n    # llegan como renglones de tipo user y reiniciaban la cuenta, dejando el freno muerto.\n    ruta = tmp_path / \"conversacion.jsonl\"\n    _escribir_jsonl(ruta, [\n        {\"type\": \"user\", \"text\": \"Julio pregunta algo\"},\n        {\"type\": \"assistant\", \"text\": \"Primer mensaje escrito\"},\n        {\"type\": \"user\", \"text\": \"Aviso del candado\", \"isMeta\": True},\n        {\"type\": \"assistant\", \"text\": \"Segundo mensaje escrito\"},\n    ])\n    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 2\n\n\ndef test_aviso_de_tarea_de_fondo_con_promptsource_system_no_abre_turno(tmp_path):\n    # 2026-09-25: comprobado en la conversacion real que los avisos de la maquina\n    # llegan como renglones de tipo user y reiniciaban la cuenta, dejando el freno muerto.\n    ruta = tmp_path / \"conversacion.jsonl\"\n    _escribir_jsonl(ruta, [\n        {\"type\": \"user\", \"text\": \"Julio pregunta algo\"},\n        {\"type\": \"assistant\", \"text\": \"Primer mensaje escrito\"},\n        {\"type\": \"user\", \"text\": \"Aviso de tarea de fondo\", \"promptSource\": \"system\"},\n        {\"type\": \"assistant\", \"text\": \"Segundo mensaje escrito\"},\n    ])\n    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 2\n\n\ndef test_respuesta_de_herramienta_no_abre_turno(tmp_path):\n    # 2026-09-25: comprobado en la conversacion real que los avisos de la maquina\n    # llegan como renglones de tipo user y reiniciaban la cuenta, dejando el freno muerto.\n    ruta = tmp_path / \"conversacion.jsonl\"\n    _escribir_jsonl(ruta, [\n        {\"type\": \"user\", \"text\": \"Julio pregunta algo\"},\n        {\"type\": \"assistant\", \"text\": \"Primer mensaje escrito\"},\n        {\"type\": \"user\", \"content\": [{\"type\": \"tool_result\", \"content\": \"salida\"}]},\n        {\"type\": \"assistant\", \"text\": \"Segundo mensaje escrito\"},\n    ])\n    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 2",
+  "vigia": "vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py, que debe nacer rojo en los tres casos nuevos mientras mensajes_de_este_turno siga contando los avisos de la maquina como mensajes de Julio.",
+  "puede_danar": [
+   "arnes/candado_no_repetir.py",
+   "vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "conversacion.js"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Las tres pruebas se anaden al final del mismo archivo de vigias; si algun dia se importara este archivo con estas pruebas, el paso de datos podria lasting mas de lo normal, pero no se tocan las pruebas vecinas ni se modifica codigo de produccion"
+  ],
+  "que_falta": [
+   "No se puede comprobar con el material dado (conversacion.js esta fuera del paquete) que el caso tres, el de la lista content con tool_result, nace rojo: si la funcion actual ya se salta los renglones de user sin clave text, esa prueba pasaria de salida. El encargo lo da por rojo y asi se entrego, asi que no es motivo de rechazo, pero conviene confirmarlo cuando se arregle la pieza."
+  ],
+  "resumen_para_el_jefe": "Los tres casos que pedias estan escritos tal cual, con el ancla correcta y sin tocar el candado; aprobado, y solo queda pendiente de confirmar en la pieza que la prueba de la herramienta nace roja."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 1"
+ ]
+}
