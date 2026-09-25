@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py, la funcion recoger_lo_frenado devuelve la copia recogida sin comprobar antes si trae algo con forma de llave, asi que una copia con llaves se deja en el disco.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "recoger_lo_frenado",
+  "texto_viejo": "        resultado = recoger_los_pedazos.recoger(raiz, nombre)\n        if not isinstance(resultado, dict) or not resultado.get('ok'):\n            return resultado\n        if orden.get('entrega_la_prueba') == 'si':",
+  "texto_nuevo": "        resultado = recoger_los_pedazos.recoger(raiz, nombre)\n        if not isinstance(resultado, dict) or not resultado.get('ok'):\n            return resultado\n        from arnes import guardia_de_guardado\n        if guardia_de_guardado._hay_llaves(raiz, [pieza]):\n            os.replace(pieza, os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.LLAVE'))\n            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida trae algo con forma de llave: no se deja en el disco'}\n        if orden.get('entrega_la_prueba') == 'si':",
+  "cambio": "Justo despues de las dos lineas 'if not isinstance(resultado, dict) or not resultado.get('ok'):' y 'return resultado', y ANTES de mirar entrega_la_prueba, anadir la comprobacion de llaves: importar guardia_de_guardado, y si _hay_llaves(raiz, [pieza]) devuelve algo no vacio, mover el archivo con os.replace a memoria/trabajos_sin_revisar/<basename>.LLAVE y devolver ok False con destino y razon.",
+  "codigo": "        from arnes import guardia_de_guardado\n        if guardia_de_guardado._hay_llaves(raiz, [pieza]):\n            os.replace(pieza, os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.LLAVE'))\n            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida trae algo con forma de llave: no se deja en el disco'}",
+  "vigia": "Una prueba que deje una copia recogida con algo con forma de llave y compruebe que recoger_lo_frenado devuelve ok False, que el archivo acaba en memoria/trabajos_sin_revisar con final .LLAVE y que no se queda en su sitio original.",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo pedido: antes de mirar entrega_la_prueba comprueba llaves con _hay_llaves (que existe, confirmado en el encargo), y si las hay mueve la copia a trabajos_sin_revisar con final .LLAVE y devuelve ok False, sin tocar mas archivos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (28734 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

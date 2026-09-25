@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py, la funcion auditar no tiene el atajo que devuelve APROBADO sin llamar a ninguna IA cuando la propuesta trae la marca '_juez_de_la_prueba' con texto de verdad.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    auditoria = None\n    avisos = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor\n    quien_aud = None\n    auditor_ok = auditor\n    if auditor == evitar:",
+  "texto_nuevo": "    auditoria = None\n    avisos = []   # se acumulan TODOS los avisos de TODOS los intentos del revisor\n    quien_aud = None\n    # A-39 (Julio 2026-09-20): correr la prueba es CUENTA, no JUICIO. Si un programa ya\n    # demostro que la prueba estaba roja antes, verde con el cambio y roja al deshacerlo,\n    # no se paga una IA para que lo confirme. Se devuelve APROBADO aqui mismo.\n    if isinstance(propuesta, dict) and str(propuesta.get('_juez_de_la_prueba') or '').strip():\n        auditoria = {\n            'veredicto': 'APROBADO',\n            'invento_algo': False,\n            'que_invento': [],\n            'fallos': [],\n            'riesgo_vecinos': [],\n            'que_falta': [],\n            'resumen_para_el_jefe': ('el juez de la prueba ya lo demostro: la prueba estaba roja antes, '\n                                     'quedo verde despues y volvio a roja al deshacer el cambio; '\n                                     'por eso esta ronda no paga revision de IA'),\n        }\n        return auditoria, 'juez de la prueba (programa)', avisos\n    auditor_ok = auditor\n    if auditor == evitar:",
+  "cambio": "Insertar al principio de auditar, justo despues de quien_aud = None y antes de auditor_ok = auditor, un atajo que si la propuesta es un diccionario y trae '_juez_de_la_prueba' con texto no vacio ni solo espacios, devuelve (auditoria APROBADO con los campos pedidos, 'juez de la prueba (programa)', avisos) sin llamar a ninguna IA ni armar material.",
+  "codigo": "    if isinstance(propuesta, dict) and str(propuesta.get('_juez_de_la_prueba') or '').strip():\n        auditoria = {\n            'veredicto': 'APROBADO',\n            'invento_algo': False,\n            'que_invento': [],\n            'fallos': [],\n            'riesgo_vecinos': [],\n            'que_falta': [],\n            'resumen_para_el_jefe': ('el juez de la prueba ya lo demostro: la prueba estaba roja antes, '\n                                     'quedo verde despues y volvio a roja al deshacer el cambio; '\n                                     'por eso esta ronda no paga revision de IA'),\n        }\n        return auditoria, 'juez de la prueba (programa)', avisos",
+  "vigia": "Una prueba que llame a auditar con una propuesta que traiga '_juez_de_la_prueba' con texto y compruebe que devuelve veredicto APROBADO, quien_reviso 'juez de la prueba (programa)' y que no se hizo ninguna llamada a IA (por ejemplo, contando llamadas o pasando un auditor que reventaria si se usara).",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Se añadió el atajo que devuelve APROBADO cuando la propuesta contiene '_juez_de_la_prueba' con texto, cumpliendo el diagnóstico sin inventar nada ni afectar a los módulos vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38920 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

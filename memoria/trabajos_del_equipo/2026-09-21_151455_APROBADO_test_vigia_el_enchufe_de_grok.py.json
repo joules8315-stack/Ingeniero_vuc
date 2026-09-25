@@ -1,0 +1,27 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_el_enchufe_de_grok.py que prueba la funcion preguntar de cuerpo/grok.py con monkeypatch de shutil.which y subprocess.Popen, cubriendo exito, orden, cwd, llave de mentira y timeout.",
+  "archivo": "vigias/test_vigia_el_enchufe_de_grok.py",
+  "texto_nuevo": "import subprocess\nimport shutil\nfrom cuerpo import grok\n\n\nclass _PopenFalso:\n    \"\"\"Doble de subprocess.Popen que apunta lo que recibe y devuelve un JSON fijo.\"\"\"\n\n    ultima_orden = None\n    ultimo_cwd = None\n    ultimo_input = None\n    veces_llamado = 0\n    lanzar_timeout = False\n\n    def __init__(self, orden, cwd=None, stdin=None, stdout=None, stderr=None, text=None, **kwargs):\n        _PopenFalso.ultima_orden = orden\n        _PopenFalso.ultimo_cwd = cwd\n        _PopenFalso.veces_llamado += 1\n        self.returncode = 0\n\n    def communicate(self, input=None, timeout=None):\n        _PopenFalso.ultimo_input = input\n        if _PopenFalso.lanzar_timeout:\n            raise subprocess.TimeoutExpired(cmd='opencode', timeout=timeout)\n        texto = (\n            '{\"type\": \"text\", \"part\": {\"text\": \"HOLA\"}}\\n'\n            '{\"type\": \"step_finish\", \"part\": {\"cost\": 0.01}}\\n'\n        )\n        return (texto, '')\n\n    def __enter__(self):\n        return self\n\n    def __exit__(self, *args):\n        return False\n\n    def wait(self, timeout=None):\n        return 0\n\n    def kill(self):\n        return None\n\n\ndef _reset():\n    _PopenFalso.ultima_orden = None\n    _PopenFalso.ultimo_cwd = None\n    _PopenFalso.ultimo_input = None\n    _PopenFalso.veces_llamado = 0\n    _PopenFalso.lanzar_timeout = False\n\n\ndef _preparar(monkeypatch):\n    _reset()\n    monkeypatch.setattr(shutil, 'which', lambda nombre: 'opencode')\n    monkeypatch.setattr(subprocess, 'Popen', _PopenFalso)\n\n\ndef test_preguntar_devuelve_texto_y_lista(monkeypatch):\n    _preparar(monkeypatch)\n    texto, avisos = grok.preguntar('hola')\n    assert texto == 'HOLA'\n    assert avisos == []\n\n\ndef test_la_orden_lleva_modelo_y_formato_y_el_encargo_va_por_input(monkeypatch):\n    _preparar(monkeypatch)\n    grok.preguntar('hola')\n    orden = _PopenFalso.ultima_orden\n    assert orden is not None\n    if isinstance(orden, str):\n        orden_texto = orden\n    else:\n        orden_texto = ' '.join(str(x) for x in orden)\n    assert 'opencode-go/grok-4.7' in orden_texto\n    assert '--format' in orden_texto\n    assert 'json' in orden_texto\n    assert 'hola' not in orden_texto\n    assert _PopenFalso.ultimo_input is not None\n    assert 'hola' in _PopenFalso.ultimo_input\n\n\ndef test_el_cwd_no_es_la_carpeta_del_proyecto(monkeypatch):\n    _preparar(monkeypatch)\n    grok.preguntar('hola')\n    cwd = _PopenFalso.ultimo_cwd\n    assert cwd is not None\n    assert 'Ingeniero_VUC' not in str(cwd)\n\n\ndef test_con_llave_de_mentira_no_se_llama_a_popen(monkeypatch):\n    _preparar(monkeypatch)\n    llave = 's' + 'k' + '-' + ('a' * 24)\n    monkeypatch.setenv('OPENCODE_API_KEY', llave)\n    texto, avisos = grok.preguntar('hola')\n    assert texto == ''\n    assert _PopenFalso.veces_llamado == 0\n\n\ndef test_si_communicate_lanza_timeout_devuelve_aviso_con_grok(monkeypatch):\n    _preparar(monkeypatch)\n    _PopenFalso.lanzar_timeout = True\n    texto, avisos = grok.preguntar('hola')\n    assert texto == ''\n    assert any('Grok' in str(a) for a in avisos)\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico creando el test solicitado sin tocar otros archivos."
+ },
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 2"
+ ]
+}

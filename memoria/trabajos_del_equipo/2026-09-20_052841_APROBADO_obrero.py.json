@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El bloque del juez de la prueba en cuerpo/obrero.py::trabajar arranca pytest dentro de pytest cuando el propio obrero se prueba desde una prueba, y ademas los intentos previos rompieron el try/except al insertar la condicion.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "        # Correr la prueba es CUENTA, no juicio: lo decide un programa, gratis.\n        # Por eso no se paga una IA para saber si la prueba pasa o no.\n        try:\n            import os as _os_juez\n            from arnes import juez_de_la_prueba as _juez_prueba\n            _ruta_prop = propuesta.get('archivo') if isinstance(propuesta, dict) else None\n            _viejo_prop = propuesta.get('texto_viejo') if isinstance(propuesta, dict) else None\n            _nuevo_prop = propuesta.get('texto_nuevo') if isinstance(propuesta, dict) else None\n            if isinstance(propuesta, dict) and _ruta_prop and _viejo_prop:\n                _raiz_proy = _os_juez.path.abspath(_os_juez.path.join(_os_juez.path.dirname(_os_juez.path.abspath(__file__)), '..'))\n                _ruta_rel = str(_ruta_prop).replace('\\\\', '/')\n                _raiz_norm = _raiz_proy.replace('\\\\', '/')\n                if _ruta_rel.startswith(_raiz_norm):\n                    _ruta_rel = _ruta_rel[len(_raiz_norm):].lstrip('/')\n                _res_juez = _juez_prueba.juzgar_con_vecinas(_raiz_proy, _ruta_rel, _viejo_prop, _nuevo_prop, dejar_el_cambio=False)\n                if isinstance(_res_juez, dict) and _res_juez.get('ok') is False and _vuelta < 3:\n                    _razon_juez = str(_res_juez.get('razon', ''))\n                    motivos_rechazo.append(_razon_juez)\n                    avisos_totales.append('el juez de la prueba lo freno antes de pagar la revision: ' + _razon_juez[:200])\n                    continue\n                if isinstance(_res_juez, dict) and _res_juez.get('ok') is True:\n                    propuesta['_juez_de_la_prueba'] = _res_juez.get('razon', '')\n        except Exception:\n            pass",
+  "texto_nuevo": "        # Correr la prueba es CUENTA, no juicio: lo decide un programa, gratis.\n        # Por eso no se paga una IA para saber si la prueba pasa o no.\n        # Dentro de una prueba no se relanza pytest, porque se cuelga.\n        import os as _os_juez\n        if not _os_juez.environ.get('PYTEST_CURRENT_TEST'):\n            try:\n                from arnes import juez_de_la_prueba as _juez_prueba\n                _ruta_prop = propuesta.get('archivo') if isinstance(propuesta, dict) else None\n                _viejo_prop = propuesta.get('texto_viejo') if isinstance(propuesta, dict) else None\n                _nuevo_prop = propuesta.get('texto_nuevo') if isinstance(propuesta, dict) else None\n                if isinstance(propuesta, dict) and _ruta_prop and _viejo_prop:\n                    _raiz_proy = _os_juez.path.abspath(_os_juez.path.join(_os_juez.path.dirname(_os_juez.path.abspath(__file__)), '..'))\n                    _ruta_rel = str(_ruta_prop).replace('\\\\', '/')\n                    _raiz_norm = _raiz_proy.replace('\\\\', '/')\n                    if _ruta_rel.startswith(_raiz_norm):\n                        _ruta_rel = _ruta_rel[len(_raiz_norm):].lstrip('/')\n                    _res_juez = _juez_prueba.juzgar_con_vecinas(_raiz_proy, _ruta_rel, _viejo_prop, _nuevo_prop, dejar_el_cambio=False)\n                    if isinstance(_res_juez, dict) and _res_juez.get('ok') is False and _vuelta < 3:\n                        _razon_juez = str(_res_juez.get('razon', ''))\n                        motivos_rechazo.append(_razon_juez)\n                        avisos_totales.append('el juez de la prueba lo freno antes de pagar la revision: ' + _razon_juez[:200])\n                        continue\n                    if isinstance(_res_juez, dict) and _res_juez.get('ok') is True:\n                        propuesta['_juez_de_la_prueba'] = _res_juez.get('razon', '')\n            except Exception:\n                pass",
+  "cambio": "Envolver TODO el bloque del juez de la prueba (import de arnes.juez_de_la_prueba y la llamada a juzgar_con_vecinas) dentro de un if que comprueba que la variable de entorno PYTEST_CURRENT_TEST no exista. El import de os se saca fuera del try para poder leer el entorno antes de importar nada del arnes. Se anade un comentario corto en castellano explicando que dentro de una prueba no se relanza pytest porque se cuelga. El try/except se mantiene completo y bien indentado para no romper la sintaxis.",
+  "codigo": "        # Correr la prueba es CUENTA, no juicio: lo decide un programa, gratis.\n        # Por eso no se paga una IA para saber si la prueba pasa o no.\n        # Dentro de una prueba no se relanza pytest, porque se cuelga.\n        import os as _os_juez\n        if not _os_juez.environ.get('PYTEST_CURRENT_TEST'):\n            try:\n                from arnes import juez_de_la_prueba as _juez_prueba\n                _ruta_prop = propuesta.get('archivo') if isinstance(propuesta, dict) else None\n                _viejo_prop = propuesta.get('texto_viejo') if isinstance(propuesta, dict) else None\n                _nuevo_prop = propuesta.get('texto_nuevo') if isinstance(propuesta, dict) else None\n                if isinstance(propuesta, dict) and _ruta_prop and _viejo_prop:\n                    _raiz_proy = _os_juez.path.abspath(_os_juez.path.join(_os_juez.path.dirname(_os_juez.path.abspath(__file__)), '..'))\n                    _ruta_rel = str(_ruta_prop).replace('\\\\', '/')\n                    _raiz_norm = _raiz_proy.replace('\\\\', '/')\n                    if _ruta_rel.startswith(_raiz_norm):\n                        _ruta_rel = _ruta_rel[len(_raiz_norm):].lstrip('/')\n                    _res_juez = _juez_prueba.juzgar_con_vecinas(_raiz_proy, _ruta_rel, _viejo_prop, _nuevo_prop, dejar_el_cambio=False)\n                    if isinstance(_res_juez, dict) and _res_juez.get('ok') is False and _vuelta < 3:\n                        _razon_juez = str(_res_juez.get('razon', ''))\n                        motivos_rechazo.append(_razon_juez)\n                        avisos_totales.append('el juez de la prueba lo freno antes de pagar la revision: ' + _razon_juez[:200])\n                        continue\n                    if isinstance(_res_juez, dict) and _res_juez.get('ok') is True:\n                        propuesta['_juez_de_la_prueba'] = _res_juez.get('razon', '')\n            except Exception:\n                pass",
+  "vigia": "Una vigia que ponga PYTEST_CURRENT_TEST en el entorno y llame a trabajar() comprobando que NO se importa ni se ejecuta juzgar_con_vecinas (por ejemplo, midiendo que no se cuelga y que no se llama al juez), y que el archivo cuerpo/obrero.py compila sin SyntaxError.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio evita relanzar pytest dentro de pytest y mantiene la lógica original sin introducir elementos inexistentes ni romper código vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (36972 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1210 del archivo completo: expected 'except' or 'finally' block. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (37914 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1210 del archivo completo: expected 'except' or 'finally' block. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (38030 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1208 del archivo completo: expected 'except' or 'finally' block. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (38146 letras, aguanta 19042) -> se le salta",
+  "OpenCode termino con codigo 1",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 4"
+ ]
+}

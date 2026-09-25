@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "En _revisar_privacidad falta el filtro de Big Pickle: no se comprueba _bp._trae_llave(texto) antes de intentar importar privacidad, asi que un texto con forma de llave podria pasar a Codex.",
+  "archivo": "cuerpo/codex.py",
+  "funcion": "_revisar_privacidad",
+  "texto_viejo": "    Devuelve (texto_limpio, avisos). Si hay avisos, NO se debe llamar a Codex.\n    \"\"\"\n    try:\n        from cuerpo import privacidad  # type: ignore",
+  "texto_nuevo": "    Devuelve (texto_limpio, avisos). Si hay avisos, NO se debe llamar a Codex.\n    \"\"\"\n    from cuerpo import bigpickle as _bp\n    if _bp._trae_llave(texto):\n        return texto, ['NO se manda a Codex: el texto trae algo con forma de llave (mismo filtro que Big Pickle).']\n\n    try:\n        from cuerpo import privacidad  # type: ignore",
+  "cambio": "Insertar, justo antes del primer try de _revisar_privacidad y con la misma sangria, el import de bigpickle como _bp y la comprobacion _bp._trae_llave(texto) que devuelve el texto con el aviso si es verdadero.",
+  "codigo": "    from cuerpo import bigpickle as _bp\n    if _bp._trae_llave(texto):\n        return texto, ['NO se manda a Codex: el texto trae algo con forma de llave (mismo filtro que Big Pickle).']",
+  "vigia": "Una prueba que llame a _revisar_privacidad con un texto que traiga forma de llave y compruebe que devuelve el aviso de Big Pickle sin llamar a Codex.",
+  "puede_danar": [
+   "cuerpo/codex.py",
+   "cuerpo/privacidad.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25895 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

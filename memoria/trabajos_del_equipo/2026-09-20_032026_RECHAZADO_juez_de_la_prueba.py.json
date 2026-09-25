@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El bloque final de juzgar_con_vecinas solo restaura el original cuando dejar_el_cambio es falso, y no deja el arreglo puesto cuando se pidio dejarlo y el juez dijo que si.",
+  "archivo": "arnes/juez_de_la_prueba.py",
+  "funcion": "juzgar_con_vecinas",
+  "texto_viejo": "        finally:\n            if not dejar_el_cambio and contenido_original is not None:\n                try:\n                    with open(ruta_archivo, 'w', encoding='utf-8') as f:\n                        f.write(contenido_original)\n                except Exception:\n                    pass",
+  "texto_nuevo": "        finally:\n            # El archivo siempre vuelve a su sitio; solo se deja el arreglo puesto\n            # cuando se pidio dejarlo y el juez dijo que si.\n            try:\n                if contenido_original is not None:\n                    with open(ruta_archivo, 'w', encoding='utf-8') as f:\n                        f.write(contenido_original)\n                    if dejar_el_cambio and respuesta.get('ok'):\n                        contenido_con_arreglo = contenido_original.replace(\n                            texto_viejo, texto_nuevo, 1\n                        )\n                        with open(ruta_archivo, 'w', encoding='utf-8') as f:\n                            f.write(contenido_con_arreglo)\n            except Exception:\n                pass",
+  "cambio": "Sustituir el bloque finally para que: (1) siempre que contenido_original no sea None se reescriba el original, sin mirar dejar_el_cambio; (2) despues, solo si dejar_el_cambio es verdadero y la respuesta que se va a devolver tiene ok verdadero, se reescriba el original con texto_viejo cambiado por texto_nuevo una sola vez. Las dos escrituras dentro de un try que traga el error. Anadir un comentario corto en castellano. Ademas, como el bloque finally necesita saber que se va a devolver, hay que guardar la respuesta en una variable 'respuesta' antes del finally y devolverla al final, para que exista y no falle en silencio.",
+  "codigo": "        finally:\n            # El archivo siempre vuelve a su sitio; solo se deja el arreglo puesto\n            # cuando se pidio dejarlo y el juez dijo que si.\n            try:\n                if contenido_original is not None:\n                    with open(ruta_archivo, 'w', encoding='utf-8') as f:\n                        f.write(contenido_original)\n                    if dejar_el_cambio and respuesta.get('ok'):\n                        contenido_con_arreglo = contenido_original.replace(\n                            texto_viejo, texto_nuevo, 1\n                        )\n                        with open(ruta_archivo, 'w', encoding='utf-8') as f:\n                            f.write(contenido_con_arreglo)\n            except Exception:\n                pass",
+  "vigia": "Una prueba que llame a juzgar_con_vecinas con dejar_el_cambio=True sobre un archivo con una prueba roja que se pone verde, y compruebe que al terminar el archivo tiene el texto nuevo puesto; y otra con dejar_el_cambio=False que compruebe que el archivo queda con el texto viejo.",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "arnes/vecinas.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/obrero.py"
+  ],
+  "preguntas": [
+   "Para que la variable 'respuesta' exista antes del finally, hay que reestructurar la funcion para guardar el diccionario que se devuelve en cada rama (los return de dentro del try) en una variable 'respuesta' y devolverla al final. Se puede tocar esa parte de la funcion o solo el bloque finally?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "la variable `respuesta` dentro del finally: en el material (arnes/juez_de_la_prueba.py:182-261) la funcion juzgar_con_vecinas no define `respuesta` en ningun sitio, devuelve los dicts con `return { ... }` literales. El propio proponer lo admite en 'preguntas' y no entrega la reforma que la habria creado."
+  ],
+  "fallos": [
+   "El codigo entregado usa `respuesta.get('ok')` pero `respuesta` no existe: al evaluar `dejar_el_cambio and respuesta.get('ok')` salta NameError que atrapa el except exterior, la funcion devuelve ok=None y NUNCA se deja el arreglo puesto. Es decir, el cambio no arregla exactamente lo que el diagnostico dice que no se arreglaba.",
+   "Falta el trozo de reforma que el propio proponer pide en 'preguntas': guardar el dict que se devuelve en cada rama en una variable y devolverla al final. Sin eso, el codigo entregado es incompleto y no funciona.",
+   "El contrato del paquete dice 'No toques nada mas del archivo'; la solucion real (para que `respuesta` exista) requiere retocar los `return` de cada rama, cosa que el paquete no autoriza expresamente: falta que el proponer lo resuelva con Julio antes de fijar el codigo."
+  ],
+  "riesgo_vecinos": [
+   "cuerpo/obrero.py y arnes/revisor_de_programa.py o quienes llamen a juzgar_con_vecinas con dejar_el_cambio=True: si `respuesta` no existe, la llamada acaba devolviendo ok=None desde el except, y esos flujos creerian que el juez fallo y no selarian el arreglo.",
+   "arnes/juez_de_la_prueba.py: el nuevo finally reescribe el original SIEMPRE (antes solo si `not dejar_el_cambio`); con juzgar interno ya restaurando (dejar_el_cambio=False) eso es idempotente, pero el cambio queda a una variable inexistente, asi que el comportamiento global deja de ser el prometido."
+  ],
+  "que_falta": [
+   "Entregar (o resolver primero con Julio) como se crea `respuesta`: guardar el dict en cada rama antes del finally y devolverlo al final; solo entonces el cop atualizado hace lo pedido.",
+   "La vigia propuesta que pruebe dejar_el_cambio=True con juez ok (archivo queda con el texto nuevo) y dejar_el_cambio=False (queda el viejo)."
+  ],
+  "resumen_para_el_jefe": "El plan logico es correcto y minimo, pero el codigo entregado usa una variable 'respuesta' que no existe en el material, asi que el NameError devuelve ok=None y el arreglo nunca se deja puesto: no arregla lo que dice arreglar hasta que se entregue la reforma que el proponer mismo pide."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20204 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (21627 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (21732 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (21933 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

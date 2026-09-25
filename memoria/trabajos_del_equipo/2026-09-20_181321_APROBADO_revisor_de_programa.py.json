@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "En arnes/revisor_de_programa.py, dentro de revisar, las llamadas a _pruebas_sin_cuerpo se hacen antes de que mas abajo se defina una funcion local con ese mismo nombre, por lo que Python la trata como local en toda la funcion y las llamadas de arriba revientan en silencio sin frenar las pruebas vaciadas.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "                    _arbol_despues_c = ast.parse(_despues_c)\n                    _sin_antes = _pruebas_sin_cuerpo(_arbol_antes_c)\n                    _sin_despues = _pruebas_sin_cuerpo(_arbol_despues_c)",
+  "texto_nuevo": "                    _arbol_despues_c = ast.parse(_despues_c)\n                    # Se busca la funcion suelta del archivo a proposito: mas abajo se escribe\n                    # una con el mismo nombre dentro de esta funcion y eso taparia a la de fuera.\n                    _mirar = globals()[\"_pruebas_sin_cuerpo\"]\n                    _sin_antes = _mirar(_arbol_antes_c)\n                    _sin_despues = _mirar(_arbol_despues_c)",
+  "cambio": "Sustituir las tres lineas seguidas (la de _arbol_despues_c y las dos llamadas directas a _pruebas_sin_cuerpo) por cinco lineas: la misma de _arbol_despues_c, un comentario que explique por que se busca la funcion suelta, una linea que guarde en _mirar el resultado de globals()[\"_pruebas_sin_cuerpo\"], y las dos llamadas usando _mirar en vez del nombre directo.",
+  "codigo": "                    _arbol_despues_c = ast.parse(_despues_c)\n                    # Se busca la funcion suelta del archivo a proposito: mas abajo se escribe\n                    # una con el mismo nombre dentro de esta funcion y eso taparia a la de fuera.\n                    _mirar = globals()[\"_pruebas_sin_cuerpo\"]\n                    _sin_antes = _mirar(_arbol_antes_c)\n                    _sin_despues = _mirar(_arbol_despues_c)",
+  "vigia": "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py debe seguir en verde y ademas comprobar que un cambio que deja una prueba test_ sin cuerpo hace que revisar devuelva el fallo SE QUEDA SIN CUERPO.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+   "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_un_cambio_no_puede_vaciar_una_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno. El cambio restaura una validación de seguridad que estaba siendo ignorada debido a un error de ámbito (scope) de Python."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Se aprueba la corrección del error de ámbito en Python mediante el uso de globals(), lo que permite que la detección de pruebas sin cuerpo funcione correctamente."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (28193 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini2 con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

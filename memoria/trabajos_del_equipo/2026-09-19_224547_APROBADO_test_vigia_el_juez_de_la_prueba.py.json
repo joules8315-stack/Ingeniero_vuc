@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la tercera prueba que comprueba que el juez no da por bueno un cambio inutil cuando la prueba ya estaba verde, y ademas hay que definir la constante PIEZA_BUENA_ORDEN_CAMBIADO que esa prueba usa.",
+  "archivo": "vigias/test_vigia_el_juez_de_la_prueba.py",
+  "funcion": "final del archivo (tras test_juzgar_arregla_de_verdad)",
+  "texto_viejo": "    texto_final = ruta_pieza.read_text(encoding=\"utf-8\")\n    assert texto_final == PIEZA_BUENA, (\n        \"el archivo no quedo con el texto nuevo: si esto falla, el juez dice que arreglo \"\n        \"pero no dejo el arreglo escrito en el disco\"\n    )",
+  "texto_nuevo": "    texto_final = ruta_pieza.read_text(encoding=\"utf-8\")\n    assert texto_final == PIEZA_BUENA, (\n        \"el archivo no quedo con el texto nuevo: si esto falla, el juez dice que arreglo \"\n        \"pero no dejo el arreglo escrito en el disco\"\n    )\n\n\ndef test_juzgar_no_da_por_bueno_si_ya_estaba_verde(tmp_path):\n    \"\"\"Si el juez no mira como estaba ANTES, cualquier cambio inutil pasa por reparacion.\"\"\"\n    raiz = _armar_raiz(tmp_path)\n    ruta_prueba = raiz / \"vigias\" / \"test_vigia_suma.py\"\n    ruta_pieza = raiz / \"pieza.py\"\n\n    ruta_pieza.write_text(PIEZA_BUENA, encoding=\"utf-8\")\n\n    resultado = juzgar(\n        str(raiz),\n        str(ruta_prueba),\n        str(ruta_pieza),\n        PIEZA_BUENA,\n        PIEZA_BUENA_ORDEN_CAMBIADO,\n    )\n\n    assert resultado[\"antes_roja\"] is False, (\n        \"el juez no miro como estaba antes: la prueba ya estaba verde y el juez \"\n        \"la dio por roja\"\n    )\n    assert resultado[\"ok\"] is False, (\n        \"asi se cuela como reparacion un cambio que no reparo nada: la prueba ya \"\n        \"pasaba sola y el juez lo dio por bueno\"\n    )",
+  "cambio": "Anadir al final del archivo la constante PIEZA_BUENA_ORDEN_CAMBIADO (texto bueno con los dos numeros en el otro orden) y la tercera prueba test_juzgar_no_da_por_bueno_si_ya_estaba_verde, que arma la raiz con _armar_raiz, deja pieza.py ya arreglada con PIEZA_BUENA, llama a juzgar con PIEZA_BUENA como texto viejo y PIEZA_BUENA_ORDEN_CAMBIADO como texto nuevo, y comprueba que antes_roja es False y ok es False.",
+  "codigo": "PIEZA_BUENA_ORDEN_CAMBIADO = '''def suma(a, b):\n    return b + a\n'''\n\n\ndef test_juzgar_no_da_por_bueno_si_ya_estaba_verde(tmp_path):\n    \"\"\"Si el juez no mira como estaba ANTES, cualquier cambio inutil pasa por reparacion.\"\"\"\n    raiz = _armar_raiz(tmp_path)\n    ruta_prueba = raiz / \"vigias\" / \"test_vigia_suma.py\"\n    ruta_pieza = raiz / \"pieza.py\"\n\n    ruta_pieza.write_text(PIEZA_BUENA, encoding=\"utf-8\")\n\n    resultado = juzgar(\n        str(raiz),\n        str(ruta_prueba),\n        str(ruta_pieza),\n        PIEZA_BUENA,\n        PIEZA_BUENA_ORDEN_CAMBIADO,\n    )\n\n    assert resultado[\"antes_roja\"] is False, (\n        \"el juez no miro como estaba antes: la prueba ya estaba verde y el juez \"\n        \"la dio por roja\"\n    )\n    assert resultado[\"ok\"] is False, (\n        \"asi se cuela como reparacion un cambio que no reparo nada: la prueba ya \"\n        \"pasaba sola y el juez lo dio por bueno\"\n    )",
+  "vigia": "vigias/test_vigia_el_juez_de_la_prueba.py (la propia prueba nueva comprueba que el juez no aprueba un cambio inutil sobre una prueba ya verde)",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "juez_de_la_prueba.py",
+   "test_vigia_suma.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La tercera prueba se agrega tal cual pide el encargo: define el texto con la suma en el otro orden (b+a), deja la pieza ya buena antes de llamar al juez y comprueba que antes_roja y ok son falsos con los mensajes pedidos; usa solo helpers que ya existian (_armar_raiz, juzgar, PIEZA_BUENA) y no toca nada mas del archivo."
+ },
+ "avisos": [
+  "vueltas_dadas: 2"
+ ]
+}

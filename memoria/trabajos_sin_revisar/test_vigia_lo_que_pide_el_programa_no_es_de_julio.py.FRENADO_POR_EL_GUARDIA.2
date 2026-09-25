@@ -1,0 +1,181 @@
+# -*- coding: utf-8 -*-
+"""vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py
+
+VIGIA: lo que pide el programa NO es de Julio.
+
+Vigila arnes/candado_legislar.py cuando se corre con el argumento `desde-julio`.
+Ese modo lee un JSON por stdin y apunta como PENDIENTES de legislar las frases que
+parecen ordenes dentro del campo `prompt`.
+
+Lo que se exige aqui:
+
+  (1) Con INGENIERO_OFF=1 en el entorno, el candado NO apunta nada.
+  (2) Con INGENIERO_LLAMADA_DEL_PROGRAMA=1 en el entorno, el candado NO apunta nada.
+  (3) Sin ninguna de las dos marcas, SI apunta (como hoy).
+
+En la prueba (3) se quitan las dos marcas del entorno copiado, para que no se cuele
+el valor que tuviera la sesion que lanza la vigia.
+
+AISLAMIENTO: el ledger de verdad vive en memoria/.legislacion_pendiente.json. Para no
+ensuciarlo, cada corrida usa INGENIERO_LEGISLAR_TEST apuntando a un archivo dentro de
+una carpeta temporal (igual que hacen las otras vigias de este candado).
+
+Se corre con subprocess y sys.executable, con un JSON de mentira cuyo prompt trae
+frases que parecen ordenes.
+"""
+
+import json
+import os
+import subprocess
+import sys
+import tempfile
+
+
+AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CANDADO = os.path.join(AQUI, "arnes", "candado_legislar.py")
+
+# Frases que parecen ordenes de Julio, para que el filtro las coja si no hay marca.
+PROMPT_DE_MENTIRA = (
+    "Julio dice: hay que legislar todo lo que yo escriba. "
+    "Debes apuntar cada instruccion. "
+    "Tienes que bloquear el cierre si hay pendientes. "
+    "Ordeno que se guarde en el ledger. "
+)
+
+
+def _entorno_limpio(tmpdir, marcas):
+    """Entorno copiado del actual, con el ledger aislado y las marcas que se pidan.
+
+    `marcas` es un dict: nombre -> valor. Si el valor es None, la marca se QUITA
+    del entorno copiado (no se hereda de la sesion que lanza la vigia).
+    """
+    env = dict(os.environ)
+    env["INGENIERO_LEGISLAR_TEST"] = os.path.join(tmpdir, ".legislacion_pendiente.json")
+    for nombre, valor in marcas.items():
+        if valor is None:
+            env.pop(nombre, None)
+        else:
+            env[nombre] = valor
+    return env
+
+
+def _correr_desde_julio(env):
+    """Corre el candado en modo desde-julio con un JSON de mentira por stdin."""
+    entrada = json.dumps({"prompt": PROMPT_DE_MENTIRA})
+    proc = subprocess.run(
+        [sys.executable, CANDADO, "desde-julio"],
+        input=entrada,
+        capture_output=True,
+        text=True,
+        env=env,
+        cwd=AQUI,
+    )
+    return proc
+
+
+def _leer_ledger(env):
+    """Lee el ledger aislado. Si no existe o esta vacio, devuelve {}."""
+    ruta = env["INGENIERO_LEGISLAR_TEST"]
+    try:
+        with open(ruta, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _cuantos_pendientes(env):
+    """Cuenta las entradas del ledger aislado, sea dict o lista."""
+    datos = _leer_ledger(env)
+    if isinstance(datos, dict):
+        return len(datos)
+    if isinstance(datos, list):
+        return len(datos)
+    return 0
+
+
+def prueba_1_con_ingeniero_off_no_apunta():
+    """(1) Con INGENIERO_OFF=1 NO apunta nada."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        env = _entorno_limpio(tmpdir, {
+            "INGENIERO_OFF": "1",
+            "INGENIERO_LLAMADA_DEL_PROGRAMA": None,
+        })
+        proc = _correr_desde_julio(env)
+        assert proc.returncode == 0, (
+            "con INGENIERO_OFF=1 el candado debe salir 0, salio %r\nstderr:\n%s"
+            % (proc.returncode, proc.stderr)
+        )
+        n = _cuantos_pendientes(env)
+        assert n == 0, (
+            "con INGENIERO_OFF=1 NO debe apuntar nada, apunto %d\nledger:\n%s"
+            % (n, _leer_ledger(env))
+        )
+
+
+def prueba_2_con_llamada_del_programa_no_apunta():
+    """(2) Con INGENIERO_LLAMADA_DEL_PROGRAMA=1 NO apunta nada."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        env = _entorno_limpio(tmpdir, {
+            "INGENIERO_OFF": None,
+            "INGENIERO_LLAMADA_DEL_PROGRAMA": "1",
+        })
+        proc = _correr_desde_julio(env)
+        assert proc.returncode == 0, (
+            "con INGENIERO_LLAMADA_DEL_PROGRAMA=1 el candado debe salir 0, salio %r\nstderr:\n%s"
+            % (proc.returncode, proc.stderr)
+        )
+        n = _cuantos_pendientes(env)
+        assert n == 0, (
+            "con INGENIERO_LLAMADA_DEL_PROGRAMA=1 NO debe apuntar nada, apunto %d\nledger:\n%s"
+            % (n, _leer_ledger(env))
+        )
+
+
+def prueba_3_sin_marcas_si_apunta():
+    """(3) Sin ninguna de las dos marcas, SI apunta, como hoy.
+
+    Se quitan las dos marcas del entorno copiado para que no se hereden de la sesion.
+    """
+    with tempfile.TemporaryDirectory() as tmpdir:
+        env = _entorno_limpio(tmpdir, {
+            "INGENIERO_OFF": None,
+            "INGENIERO_LLAMADA_DEL_PROGRAMA": None,
+        })
+        proc = _correr_desde_julio(env)
+        assert proc.returncode == 0, (
+            "sin marcas el candado debe salir 0, salio %r\nstderr:\n%s"
+            % (proc.returncode, proc.stderr)
+        )
+        n = _cuantos_pendientes(env)
+        assert n > 0, (
+            "sin marcas SI debe apuntar, pero apunto %d\nledger:\n%s\nstderr:\n%s"
+            % (n, _leer_ledger(env), proc.stderr)
+        )
+
+
+def main():
+    pruebas = [
+        prueba_1_con_ingeniero_off_no_apunta,
+        prueba_2_con_llamada_del_programa_no_apunta,
+        prueba_3_sin_marcas_si_apunta,
+    ]
+    fallos = 0
+    for prueba in pruebas:
+        try:
+            prueba()
+            sys.stdout.write("OK   %s\n" % prueba.__name__)
+        except AssertionError as e:
+            fallos += 1
+            sys.stdout.write("FALLO %s\n  %s\n" % (prueba.__name__, e))
+        except Exception as e:
+            fallos += 1
+            sys.stdout.write("ERROR %s\n  %r\n" % (prueba.__name__, e))
+    if fallos:
+        sys.stdout.write("\n%d prueba(s) en rojo\n" % fallos)
+        return 1
+    sys.stdout.write("\ntodas en verde\n")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

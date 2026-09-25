@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_legislar.py falta el import de re, que el archivo usa mas abajo para buscar formas en un texto, y por eso revienta con NameError.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "imports del encabezado del archivo (lineas de os y sys)",
+  "texto_viejo": "import os\nimport sys",
+  "texto_nuevo": "import os\nimport re\nimport sys",
+  "cambio": "Anadir la linea 'import re' entre 'import os' y 'import sys' para que queden en orden alfabetico.",
+  "codigo": "import os\nimport re\nimport sys",
+  "vigia": "Un test que ejecute arnes/candado_legislar.py y compruebe que no lanza NameError al usar re, y que los imports quedan en orden os, re, sys.",
+  "puede_danar": [
+   "arnes/candado_cierre.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candados_medicion.py",
+   "arnes/guard_pasado.py",
+   "arnes/medidor_de_rondas.py",
+   "arnes/via_canonica.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_supervisor.py",
+   "candados_medicion.py",
+   "guard_pasado.py",
+   "medidor_de_rondas.py",
+   "via_canonica.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

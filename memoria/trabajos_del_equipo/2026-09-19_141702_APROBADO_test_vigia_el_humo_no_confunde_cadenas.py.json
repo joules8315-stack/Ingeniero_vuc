@@ -1,0 +1,23 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la vigia que impide que sin_ruido borre desde un numeral dentro de una cadena, y el material solo trae el codigo actual de sin_ruido (que usa re.sub(r'#.*$', ...) sobre cada linea) sin la version arreglada, asi que la vigia nace roja tal como pide la orden.",
+  "archivo": "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+  "texto_nuevo": "\"\"\"Vigia: el humo no debe confundir cadenas con comentarios.\n\nsin_ruido borra desde cualquier signo numeral hasta el final de la linea. Si ese\nnumeral esta dentro de unas comillas, no es un comentario: es parte de la cadena.\nEsta vigia nace roja y avisa de ese freno en falso.\n\"\"\"\nimport os\nimport sys\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n\nimport revisor_de_programa as r\n\n\ndef test_el_numeral_dentro_de_una_cadena_no_se_borra():\n    \"\"\"Un numeral dentro de comillas es contenido, no comentario.\"\"\"\n    texto = \"x.append(\" + repr(\"### a relevancia\") + \")\"\n    limpio = r.sin_ruido(texto)\n    assert \"relevancia\" in limpio, (\n        \"sin_ruido borro el contenido de una cadena que llevaba numeral: %r\" % limpio\n    )\n\n\ndef test_un_comentario_de_verdad_si_se_quita():\n    \"\"\"Un numeral fuera de comillas si es un comentario y debe desaparecer.\"\"\"\n    limpio = r.sin_ruido(\"x = 1  # comentario\")\n    assert \"comentario\" not in limpio, (\n        \"sin_ruido no quito un comentario de verdad: %r\" % limpio\n    )\n    assert \"x = 1\" in limpio, (\n        \"sin_ruido se llevo por delante el codigo al quitar el comentario: %r\" % limpio\n    )\n\n\ndef test_dos_cadenas_que_solo_difieren_en_el_numeral_no_se_confunden():\n    \"\"\"Si el numeral esta dentro de comillas, dos lineas distintas deben seguir distintas.\"\"\"\n    uno = r.sin_ruido(\"a = \" + repr(\"# uno\"))\n    dos = r.sin_ruido(\"a = \" + repr(\"# dos\"))\n    assert uno != dos, (\n        \"sin_ruido aplano dos lineas que solo difieren dentro de una cadena con numeral: %r\"\n        % uno\n    )\n\n\ndef test_un_trozo_que_no_se_puede_tokenizar_no_revienta_y_quita_el_comentario():\n    \"\"\"Con codigo roto sin_ruido no debe lanzar, y aun asi debe quitar el comentario.\"\"\"\n    roto = \"def f(:\\n    x = 1  # c\"\n    limpio = r.sin_ruido(roto)\n    assert \"# c\" not in limpio, (\n        \"sin_ruido dejo un comentario en un trozo que no se puede tokenizar: %r\" % limpio\n    )\n    assert \"x = 1\" in limpio, (\n        \"sin_ruido perdio el codigo de un trozo que no se puede tokenizar: %r\" % limpio\n    )\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigia se crea en la ubicación correcta, con los tests requeridos y sin infringir contrato."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20805 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

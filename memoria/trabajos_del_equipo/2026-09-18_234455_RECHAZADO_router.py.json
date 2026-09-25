@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El bloque 'LO QUE EL PROBLEMA NOMBRA COMO FUNCION, ENTRA ENTERO' no aparece en el material; solo se ve el bloque 'LO QUE EL PROBLEMA NOMBRA, ENTRA' y no contiene ni 'if _lineas_funcion > TOPE_FUNCION_ENTERA:' ni el comentario 'respetando el tope TOPE_FUNCION_ENTERA.'",
+  "archivo": "cerebro/router.py",
+  "funcion": "armar",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "vigias/test_vigia_memoria_completa.py",
+  "puede_danar": [
+   "cerebro/router.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [
+   "El material trae el bloque 'LO QUE EL PROBLEMA NOMBRA, ENTRA' pero no el bloque 'LO QUE EL PROBLEMA NOMBRA COMO FUNCION, ENTRA ENTERO' con las dos lineas a cambiar. ¿Puedes darme el trozo completo de cerebro/router.py que contiene ese bloque, con la linea 'if _lineas_funcion > TOPE_FUNCION_ENTERA:' y la ultima linea del comentario 'respetando el tope TOPE_FUNCION_ENTERA.'?"
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Hace la mitad del encargo: el pedido manda CAMBIAR DOS LINEAS del mismo bloque (\"Son dos lineas del mismo bloque\"). La propuesta solo toca el 'if' (router.py:310) y deja sin hacer la segunda: la ultima linea del comentario, que debe pasar de 'respetando el tope TOPE_FUNCION_ENTERA.' a 'respetando el tope TOPE_FUNCION_NOMBRADA (300 lineas).' (router.py:298).",
+   "La pregunta que hace es falsa: afirma que el material no trae el texto literal del comentario, pero el enunciado del material trae las dos variantes exactas (vieja y nueva). No hay nada que preguntar: hay que hacer la edicion, no pedir confirmacion por algo que el propio material dice.",
+   "Declara '_fuera_del_paquete' para vigias/test_vigia_memoria_completa.py cuando la seccion 5 del material lo lista como vecino dentro del paquete. Etiqueta de metadatos incorrecta (no es inventar, pero desinforma)."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno detectado: el encargo dice no tocar el resto del bloque y la propuesta respeta la comprobacion de la linea 615 ('duena [...] > TOPE_FUNCION_ENTERA'), que pertenece a otro bloque y NO debe cambiarse. El cambio de 120 a 300 hace entrar enteras funciones de 121-300 lineas; es lo que el encargo ordena expresamente."
+  ],
+  "que_falta": [
+   "Editar tambien la segunda linea: en cerebro/router.py:298 'respetando el tope TOPE_FUNCION_ENTERA.' -> 'respetando el tope TOPE_FUNCION_NOMBRADA (300 lineas).'",
+   "Retirar la pregunta: el material ya contiene el texto exacto de ambas variantes."
+  ],
+  "resumen_para_el_jefe": "La propuesta esta bien dirigida y no inventa nada, pero solo cumple la mitad del pedido (cambia el 'if' y deja sin tocar la linea del comentario que el encargo tambien manda cambiar, preguntando algo que el propio material ya responde)."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19043 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (19889 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (19947 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (20005 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

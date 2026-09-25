@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_cierre.py, la funcion _vigias_verdes frena ante cualquier vigia roja ya guardada, sin aplicar la excepcion que ya usa arnes/guardia_de_guardado.py: una roja ya guardada que la maquina declaro como vigia de una orden sin terminar (estado != 'hecha') espera su arreglo y no debe frenar.",
+  "archivo": "arnes/candado_cierre.py",
+  "funcion": "_vigias_verdes",
+  "texto_viejo": "        if ya_estaban:\n            return False, (ultima[0] if ultima else \"sin salida\")\n        return True, (\"vigias recien escritas y todavia sin su pieza, que es el metodo y no \"",
+  "texto_nuevo": "        esperando = set()\n        if ya_estaban:\n            try:\n                import json as _json\n                ruta_ordenes = os.path.join(raiz, \"memoria\", \"ORDENES.json\")\n                with open(ruta_ordenes, encoding=\"utf-8\") as f:\n                    ordenes = _json.load(f)\n                for orden in ordenes:\n                    if str(orden.get(\"estado\", \"\")).strip().lower() == \"hecha\":\n                        continue\n                    vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                    if vigia:\n                        esperando.add(vigia)\n            except Exception:\n                esperando = set()\n        frenan = [a for a in ya_estaban if a not in esperando]\n        if frenan:\n            return False, (ultima[0] if ultima else \"sin salida\")\n        return True, (\"vigias recien escritas y todavia sin su pieza, que es el metodo y no \"",
+  "cambio": "Sustituir el bloque que hoy frena ante cualquier roja ya guardada por: armar el conjunto esperando leyendo memoria/ORDENES.json (campos vigia con barras normalizadas, saltando las ordenes con estado 'hecha'; si no se puede leer, conjunto vacio), calcular frenan = [a for a in ya_estaban if a not in esperando], y frenar solo si frenan no esta vacio. Importar json dentro de la funcion si no esta importado arriba.",
+  "codigo": "        esperando = set()\n        if ya_estaban:\n            try:\n                import json as _json\n                ruta_ordenes = os.path.join(raiz, \"memoria\", \"ORDENES.json\")\n                with open(ruta_ordenes, encoding=\"utf-8\") as f:\n                    ordenes = _json.load(f)\n                for orden in ordenes:\n                    if str(orden.get(\"estado\", \"\")).strip().lower() == \"hecha\":\n                        continue\n                    vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                    if vigia:\n                        esperando.add(vigia)\n            except Exception:\n                esperando = set()\n        frenan = [a for a in ya_estaban if a not in esperando]\n        if frenan:\n            return False, (ultima[0] if ultima else \"sin salida\")\n        return True, (\"vigias recien escritas y todavia sin su pieza, que es el metodo y no \"",
+  "vigia": "Una prueba que, con una vigia roja ya guardada cuyo archivo figura como 'vigia' de una orden con estado distinto de 'hecha' en memoria/ORDENES.json, compruebe que _vigias_verdes devuelve True (deja pasar); y con una roja ya guardada que no figura en ninguna orden pendiente, devuelva False (frena).",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_legislar.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candados_medicion.py",
+   "arnes/guard_pasado.py",
+   "arnes/medidor_de_rondas.py",
+   "arnes/via_canonica.py",
+   "vigias/test_vigia_el_cierre_lee_en_utf8.py",
+   "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_legislar.py",
+   "candado_supervisor.py",
+   "candados_medicion.py",
+   "guard_pasado.py",
+   "medidor_de_rondas.py",
+   "test_vigia_el_cierre_lee_en_utf8.py",
+   "test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py",
+   "via_canonica.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo que pide la orden 62: usa los campos reales de memoria/ORDENES.json (estado y vigia, comprobados en el archivo), replica la regla que de verdad usa guardia_de_guardado.py (_vigias, lineas 341-366) y no toca otro archivo; la ubicacion por texto coincide con el material y la prueba hermana test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py (ya existente, orden 61) la verifica verde."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

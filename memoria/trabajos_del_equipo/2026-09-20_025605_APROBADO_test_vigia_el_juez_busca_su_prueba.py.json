@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta al final de vigias/test_vigia_el_juez_busca_su_prueba.py una prueba que compruebe que con varias vecinas el archivo no se cambia dos veces, porque juzgar_con_vecinas lee y reescribe el archivo en cada intento y si uno no lo devuelve el siguiente lo mete otra vez.",
+  "archivo": "vigias/test_vigia_el_juez_busca_su_prueba.py",
+  "funcion": "test_sin_prueba_que_lo_nombre_ok_es_nada_y_la_razon_lo_explica",
+  "texto_viejo": "    assert isinstance(razon, str) and razon.strip(), (\n        \"la razon tiene que ser un texto en castellano que explique que ninguna prueba \"\n        \"nombra al archivo y por eso no se puede comprobar corriendo nada\"\n    )",
+  "texto_nuevo": "    assert isinstance(razon, str) and razon.strip(), (\n        \"la razon tiene que ser un texto en castellano que explique que ninguna prueba \"\n        \"nombra al archivo y por eso no se puede comprobar corriendo nada\"\n    )\n\n\ndef test_con_varias_vecinas_el_archivo_no_se_cambia_dos_veces(tmp_path):\n    raiz = _armar_raiz(tmp_path)\n\n    (raiz / \"vigias\" / \"test_vigia_pieza_otra.py\").write_text(\n        \"from pieza import suma\\n\"\n        \"\\n\"\n        \"\\n\"\n        \"def test_suma_de_cero_y_cero_da_cero():\\n\"\n        \"    assert suma(0, 0) == 0\\n\",\n        encoding=\"utf-8\",\n    )\n\n    antes = (raiz / \"pieza.py\").read_text(encoding=\"utf-8\")\n\n    juzgar_con_vecinas(\n        str(raiz),\n        \"pieza.py\",\n        \"def suma(a, b):\\n    return a - b\\n\",\n        \"def suma(a, b):\\n    return a + b\\n\",\n        dejar_el_cambio=False,\n    )\n\n    despues = (raiz / \"pieza.py\").read_text(encoding=\"utf-8\")\n\n    assert despues == antes, (\n        \"si el archivo no queda como estaba, se cuela codigo repetido que nadie \"\n        \"escribio ni aprobo\"\n    )",
+  "cambio": "Agregar al final del archivo, despues del ultimo renglon de test_sin_prueba_que_lo_nombre_ok_es_nada_y_la_razon_lo_explica y al margen izquierdo, una prueba nueva llamada test_con_varias_vecinas_el_archivo_no_se_cambia_dos_veces que arma la raiz con _armar_raiz, escribe en vigias/test_vigia_pieza_otra.py una segunda prueba de mentira que importa suma de pieza y comprueba suma(0,0)==0, guarda el texto de pieza.py, llama a juzgar_con_vecinas con dejar_el_cambio=False y comprueba que pieza.py queda exactamente igual.",
+  "codigo": "def test_con_varias_vecinas_el_archivo_no_se_cambia_dos_veces(tmp_path):\n    raiz = _armar_raiz(tmp_path)\n\n    (raiz / \"vigias\" / \"test_vigia_pieza_otra.py\").write_text(\n        \"from pieza import suma\\n\"\n        \"\\n\"\n        \"\\n\"\n        \"def test_suma_de_cero_y_cero_da_cero():\\n\"\n        \"    assert suma(0, 0) == 0\\n\",\n        encoding=\"utf-8\",\n    )\n\n    antes = (raiz / \"pieza.py\").read_text(encoding=\"utf-8\")\n\n    juzgar_con_vecinas(\n        str(raiz),\n        \"pieza.py\",\n        \"def suma(a, b):\\n    return a - b\\n\",\n        \"def suma(a, b):\\n    return a + b\\n\",\n        dejar_el_cambio=False,\n    )\n\n    despues = (raiz / \"pieza.py\").read_text(encoding=\"utf-8\")\n\n    assert despues == antes, (\n        \"si el archivo no queda como estaba, se cuela codigo repetido que nadie \"\n        \"escribio ni aprobo\"\n    )",
+  "vigia": "vigias/test_vigia_el_juez_busca_su_prueba.py, corriendo la prueba nueva test_con_varias_vecinas_el_archivo_no_se_cambia_dos_veces: con dos vecinas, una verde desde el principio, el texto de pieza.py tiene que quedar exactamente igual al que habia antes de llamar a juzgar_con_vecinas.",
+  "puede_danar": [
+   "vigias/test_vigia_el_juez_busca_su_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "ninguno: el cambio solo agrega una prueba al final de vigias/test_vigia_el_juez_busca_su_prueba.py, al margen izquierdo y fuera de comillas triples; no toca ninguna otra linea ni otro archivo"
+  ],
+  "que_falta": [
+   "nada: la prueba usa _armar_raiz y juzgar_con_vecinas (ya presentes en el archivo), escribe test_vigia_pieza_otra.py (nombre pedido por el encargo), guarda el texto de pieza.py antes, llama con el texto viejo de resta, el nuevo de suma y dejar_el_cambio=False, y comprueba que el archivo queda exactamente igual con el mensaje que pide el material"
+  ],
+  "resumen_para_el_jefe": "La prueba nueva cumple el encargo al pie de la letra: reproduce el fallo medido (dos vecinas, una verde, dejar_el_cambio en falso) y verifica que pieza.py queda exactamente como estaba; nada inventado, ningun vecino en riesgo."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

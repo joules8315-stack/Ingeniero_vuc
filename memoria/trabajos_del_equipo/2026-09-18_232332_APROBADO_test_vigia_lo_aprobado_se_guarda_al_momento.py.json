@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba test_si_el_guardia_frena_no_se_pierde_nada no aísla el libro de fallos real, así que cada corrida ensucia memoria/FALLOS.json.",
+  "archivo": "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py",
+  "funcion": "test_si_el_guardia_frena_no_se_pierde_nada",
+  "texto_viejo": "def test_si_el_guardia_frena_no_se_pierde_nada(tmp_path):\n    \"\"\"Si el guardia de guardado frena, el trabajo no se pierde: sigue en el disco o queda apartado.\"\"\"\n    _repo(tmp_path)",
+  "texto_nuevo": "def test_si_el_guardia_frena_no_se_pierde_nada(tmp_path, monkeypatch):\n    \"\"\"Si el guardia de guardado frena, el trabajo no se pierde: sigue en el disco o queda apartado.\"\"\"\n    monkeypatch.setenv('INGENIERO_FALLOS_TEST', str(tmp_path / 'fallos_prueba.json'))\n    _repo(tmp_path)",
+  "cambio": "Añadir monkeypatch a la firma y poner la variable INGENIERO_FALLOS_TEST apuntando a un archivo dentro de tmp_path como primera línea tras el docstring.",
+  "codigo": "def test_si_el_guardia_frena_no_se_pierde_nada(tmp_path, monkeypatch):\n    \"\"\"Si el guardia de guardado frena, el trabajo no se pierde: sigue en el disco o queda apartado.\"\"\"\n    monkeypatch.setenv('INGENIERO_FALLOS_TEST', str(tmp_path / 'fallos_prueba.json'))\n    _repo(tmp_path)",
+  "vigia": "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py::test_si_el_guardia_frena_no_se_pierde_nada",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "memoria/FALLOS.json"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta hace exactamente el unico cambio que el paquete ordena (firma con monkeypatch + setenv de INGENIERO_FALLOS_TEST apuntando a tmp_path como primera linea tras el docstring), todo lo que usa existe en el material y en pytest, no toca arnes/candado_equipo.py ni nada fuera de la prueba, asi que isola FALLOS.json sin romper vecinos."
+ },
+ "avisos": [
+  "PRIVACIDAD: se taparon 2 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "vueltas_dadas: 1"
+ ]
+}

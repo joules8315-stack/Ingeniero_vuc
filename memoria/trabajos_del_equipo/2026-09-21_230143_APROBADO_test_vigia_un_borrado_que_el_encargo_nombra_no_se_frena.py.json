@@ -1,0 +1,24 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El revisor ya tiene la cuenta de piezas que desaparecen (funcion _piezas y el bloque 5 de revisar), pero solo debe frenar cuando el borrado no lo nombra el encargo; la vigia nueva comprueba que con la tarea nombrando el cambio no sale 'DESAPARECE' y con una tarea que no lo nombra si sale.",
+  "archivo": "vigias/test_vigia_un_borrado_que_el_encargo_nombra_no_se_frena.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"VIGIA — UN BORRADO QUE EL ENCARGO NOMBRA NO SE FRENA.\n\nEl revisor de programa (arnes/revisor_de_programa.py) tiene una cuenta que avisa cuando un\ncambio se lleva por delante una funcion o una clase que ya estaba: el aviso lleva la palabra\nDESAPARECE. Esa cuenta es un aviso, no una condena: si el encargo PIDE ese borrado, el aviso\nno debe salir; si el encargo NO lo pide, el aviso tiene que seguir saliendo para que nadie\npierda codigo en silencio.\n\nEsta vigia fija las dos caras con la misma propuesta:\n\n  1. tarea que NOMBRA el cambio (la funcion vieja se cambia por nueva) -> ningun texto de la\n     lista que devuelve revisar contiene 'DESAPARECE'.\n  2. tarea que NO nombra el borrado (solo cambia el return) -> algun texto de la lista\n     contiene 'DESAPARECE'.\n\nSe carga el revisor igual que las demas vigias: metiendo la raiz y la carpeta arnes en\nsys.path e importando revisor_de_programa.\n\"\"\"\nimport os\nimport sys\n\nimport pytest\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, AQUI)\nsys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n\n\n# La propuesta es la misma en las dos pruebas: se borra la funcion vieja y se pone la nueva.\n# El texto viejo y el nuevo son archivos enteros que se dejan leer, que es cuando el revisor\n# puede comparar las piezas de antes y de despues.\nPROPUESTA = {\n    \"archivo\": \"m.py\",\n    \"texto_viejo\": \"def vieja():\\n    return 1\\n\",\n    \"texto_nuevo\": \"def nueva():\\n    return 1\\n\",\n}\n\n\ndef _revisor():\n    try:\n        import revisor_de_programa\n    except ImportError:\n        pytest.fail(\n            \"NO EXISTE arnes/revisor_de_programa.py (el ojo 2). Sin el, lo mecanico depende \"\n            \"de que un cerebro se fije, y el 2026-09-08 quedo medido que no se fija.\")\n    return revisor_de_programa\n\n\ndef test_un_borrado_que_el_encargo_nombra_no_se_frena():\n    \"\"\"Si la tarea dice que la funcion vieja se cambia por nueva, el borrado esta pedido:\n    el revisor no debe sacar el aviso DESAPARECE.\"\"\"\n    r = _revisor()\n    tarea = \"En m.py la funcion vieja se cambia por nueva\"\n    fallos = r.revisar(PROPUESTA, tarea=tarea)\n    assert not any(\"DESAPARECE\" in str(f) for f in fallos), (\n        \"SE FRENO UN BORRADO QUE EL ENCARGO NOMBRA: la tarea pedia cambiar la funcion vieja \"\n        \"por la nueva y el revisor saco el aviso DESAPARECE. Dijo: \" + str(fallos))\n\n\ndef test_un_borrado_que_el_encargo_no_nombra_sigue_frenando():\n    \"\"\"Si la tarea no pide el borrado (solo cambia el return), el aviso DESAPARECE tiene que\n    seguir saliendo: el codigo no puede perderse en silencio.\"\"\"\n    r = _revisor()\n    tarea = \"En m.py cambia el return\"\n    fallos = r.revisar(PROPUESTA, tarea=tarea)\n    assert any(\"DESAPARECE\" in str(f) for f in fallos), (\n        \"NO SE FRENO UN BORRADO QUE EL ENCARGO NO NOMBRA: la tarea solo pedia cambiar el \"\n        \"return y el revisor dejo pasar la desaparicion de la funcion vieja sin avisar. \"\n        \"Dijo: \" + str(fallos))\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigia reproduce exactamente lo que pedia el encargo: mismo archivo, misma propuesta {'archivo':'m.py', texto_viejo/nuevo idénticos}, las dos tareas textuales y las dos comprobaciones de DESAPARECE que se pidieron, y solo crea ese archivo sin tocar a ningún vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (23506 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

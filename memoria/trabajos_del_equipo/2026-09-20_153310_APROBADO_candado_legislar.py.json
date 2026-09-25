@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_legislar.py, la lista EXCLUIR_DE_ORDEN solo tiene seis marcas y le faltan las doce nuevas que el vigilante debe apartar para no recoger como dichas por Julio lo que dice la maquina.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "EXCLUIR_DE_ORDEN",
+  "texto_viejo": "    \"system-reminder\",\n)",
+  "texto_nuevo": "    \"system-reminder\",\n    \"eres el\",\n    \"responde solo un objeto json\",\n    \"analiza este fallo solo con el expediente\",\n    \"obrero deepseek\",\n    \"auditor groq\",\n    \"veredicto\",\n    \"aprobado y aplicado\",\n    \"escribe=deepseek\",\n    \"revisa=bigpickle\",\n    \"guardia: no se guarda\",\n    \"guardia: verde\",\n    \"trabajo archivado\",\n)",
+  "cambio": "Anadir doce lineas nuevas a la lista EXCLUIR_DE_ORDEN, con la misma sangria de cuatro espacios, cada una con su texto entre comillas y coma al final, en minusculas y sin tildes, justo despues de la linea \"system-reminder\", y antes del parentesis que cierra. No se quita ninguna de las que ya estan.",
+  "codigo": "    \"system-reminder\",\n    \"eres el\",\n    \"responde solo un objeto json\",\n    \"analiza este fallo solo con el expediente\",\n    \"obrero deepseek\",\n    \"auditor groq\",\n    \"veredicto\",\n    \"aprobado y aplicado\",\n    \"escribe=deepseek\",\n    \"revisa=bigpickle\",\n    \"guardia: no se guarda\",\n    \"guardia: verde\",\n    \"trabajo archivado\",\n)",
+  "vigia": "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py y vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py: comprobar que las doce marcas nuevas quedan excluidas y que las frases normales de Julio siguen entrando.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion anade correctamente doce marcas a la lista EXCLUIR_DE_ORDEN en arnes/candado_legislar.py, cumpliendo con el diagnostico sin introducir inventos ni romper el contrato."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

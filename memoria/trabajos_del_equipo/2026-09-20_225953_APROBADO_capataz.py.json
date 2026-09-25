@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En comprobar_pasos, cuando entrega_la_prueba es 'si', solo se mira el returncode de pytest: cualquier rojo se acepta, aunque venga de un reventon de la prueba (AttributeError, NameError, TypeError) en vez de una comprobacion no cumplida (AssertionError).",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "comprobar_pasos",
+  "texto_viejo": "    if orden.get(\"entrega_la_prueba\") == \"si\":\n        # La tarea ENTREGA la prueba: se comprueba al reves. La prueba tiene\n        # que existir y estar ROJA. Si ya esta verde, este paso falla, porque\n        # una prueba que pasa antes del cambio no demuestra nada.\n        if resultado_vigia.returncode == 0:\n            return \"vigia_verde\"\n        return \"\"",
+  "texto_nuevo": "    if orden.get(\"entrega_la_prueba\") == \"si\":\n        # La tarea ENTREGA la prueba: se comprueba al reves. La prueba tiene\n        # que existir y estar ROJA. Si ya esta verde, este paso falla, porque\n        # una prueba que pasa antes del cambio no demuestra nada.\n        if resultado_vigia.returncode == 0:\n            return \"vigia_verde\"\n        # No basta con que pytest devuelva rojo: hay que mirar la salida.\n        # Si el rojo viene de una comprobacion no cumplida (AssertionError)\n        # la prueba nacio roja de verdad y el paso esta bien. Si viene de un\n        # reventon de la propia prueba (AttributeError, NameError o TypeError\n        # sin AssertionError) el paso FALLA, porque una prueba que revienta no\n        # mide nada. Excepcion: ImportError o ModuleNotFoundError nombrando\n        # justo la pieza que esta orden va a crear SI valen, porque es normal\n        # que la prueba no encuentre todavia una pieza que aun no existe.\n        salida_vigia = (resultado_vigia.stdout or \"\") + (resultado_vigia.stderr or \"\")\n        if \"AssertionError\" in salida_vigia:\n            return \"\"\n        pieza_de_la_orden = orden.get(\"pieza\") or \"\"\n        nombre_pieza = os.path.splitext(os.path.basename(pieza_de_la_orden))[0]\n        if nombre_pieza and (\"ImportError\" in salida_vigia or \"ModuleNotFoundError\" in salida_vigia) and nombre_pieza in salida_vigia:\n            return \"\"\n        if \"AttributeError\" in salida_vigia or \"NameError\" in salida_vigia or \"TypeError\" in salida_vigia:\n            return \"vigia_verde\"\n        return \"\"",
+  "cambio": "Dentro del bloque 'if orden.get(\"entrega_la_prueba\") == \"si\":' de comprobar_pasos, despues de comprobar que pytest devolvio rojo (returncode != 0), anadir el examen de la salida: si aparece AssertionError, el paso pasa (return \"\"); si aparece ImportError o ModuleNotFoundError nombrando la pieza de la orden, tambien pasa; si aparece AttributeError, NameError o TypeError sin AssertionError, el paso falla (return \"vigia_verde\").",
+  "codigo": "        salida_vigia = (resultado_vigia.stdout or \"\") + (resultado_vigia.stderr or \"\")\n        if \"AssertionError\" in salida_vigia:\n            return \"\"\n        pieza_de_la_orden = orden.get(\"pieza\") or \"\"\n        nombre_pieza = os.path.splitext(os.path.basename(pieza_de_la_orden))[0]\n        if nombre_pieza and (\"ImportError\" in salida_vigia or \"ModuleNotFoundError\" in salida_vigia) and nombre_pieza in salida_vigia:\n            return \"\"\n        if \"AttributeError\" in salida_vigia or \"NameError\" in salida_vigia or \"TypeError\" in salida_vigia:\n            return \"vigia_verde\"\n        return \"\"",
+  "vigia": "Una prueba que corre comprobar_pasos con entrega_la_prueba='si' y una vigia que revienta con AttributeError (sin AssertionError) y comprueba que devuelve 'vigia_verde'; otra con una vigia que falla con AssertionError y comprueba que devuelve ''; otra con ImportError nombrando la pieza de la orden y comprueba que devuelve ''.",
+  "puede_danar": [
+   "cuerpo/capataz.py (comprobar_pasos)",
+   "el bucle de capataz que usa comprobar_pasos para marcar ordenes hechas o fallidas"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "cuerpo/capataz.py (comprobar_pasos): el criterio para entrega_la_prueba='si' cambia; una vigia roja por AttributeError/NameError/TypeError pasa de darse por hecha ('') a marcarse fallida ('vigia_verde'). Es exactamente lo que pide el diagnostico, no un dano.",
+   "el bucle de capataz vera re-clasificadas (fallidas) algunas ordenes que antes se daban por hechas; efecto buscado, no rompe codigo."
+  ],
+  "que_falta": [
+   "El rojo de otros reventones no tipados (SyntaxError, KeyError, OSError, error de coleccion que no nombre la pieza) aun devuelve '' y se acepta; si Julio quiere cobertura exhaustiva hay que legislar esos casos.",
+   "Una salida que mezcle AssertionError con un reventon a la vez se acepta (pasa); definir si es lo deseado."
+  ],
+  "resumen_para_el_jefe": "El cambio hace lo pedido: para las ordenes que entregan una prueba, distingue el rojo por AssertionError (pasa) del rojo por reventon AttributeError/NameError/TypeError (falla), usa solo stdout/stderr, os y orden['pieza'] que ya existen (nada inventado), el texto coincide con el material y no rompe vecinos; apruebaselo, con la nota de que otros reventones no tipados todavia se aceptan si algun dia quiere tapar ese hueco."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39157 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

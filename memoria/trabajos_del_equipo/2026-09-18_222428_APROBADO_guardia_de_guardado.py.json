@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La llamada a pytest dentro de _vigias hereda las variables de entorno de git del commit en curso (GIT_INDEX_FILE, GIT_DIR, GIT_WORK_TREE, GIT_PREFIX, GIT_OBJECT_DIRECTORY), y la vigia que crea un repo temporal escribe en el indice real del commit, frenando en falso y pudiendo colar archivos ajenos.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\"] + objetivo,\n                           cwd=raiz, capture_output=True, text=True, timeout=900,\n                           stdin=subprocess.DEVNULL)",
+  "texto_nuevo": "        _entorno_limpio = {k: v for k, v in os.environ.items()\n                           if k not in (\"GIT_INDEX_FILE\", \"GIT_DIR\", \"GIT_WORK_TREE\",\n                                        \"GIT_PREFIX\", \"GIT_OBJECT_DIRECTORY\")}\n        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\"] + objetivo,\n                           cwd=raiz, capture_output=True, text=True, timeout=900,\n                           stdin=subprocess.DEVNULL, env=_entorno_limpio)",
+  "cambio": "En la llamada subprocess.run de pytest dentro de _vigias, anadir env= con una copia de os.environ sin las variables GIT_INDEX_FILE, GIT_DIR, GIT_WORK_TREE, GIT_PREFIX y GIT_OBJECT_DIRECTORY. No tocar nada mas.",
+  "codigo": "_entorno_limpio = {k: v for k, v in os.environ.items()\n                   if k not in (\"GIT_INDEX_FILE\", \"GIT_DIR\", \"GIT_WORK_TREE\",\n                                \"GIT_PREFIX\", \"GIT_OBJECT_DIRECTORY\")}\nr = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\"] + objetivo,\n                   cwd=raiz, capture_output=True, text=True, timeout=900,\n                   stdin=subprocess.DEVNULL, env=_entorno_limpio)",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py: comprobar que _cubierto_por_equipo sigue dando True despues de correr las vigias cuando el commit es 'git commit -- rutas' (con GIT_INDEX_FILE apuntando a un indice temporal), y que el indice real no se modifica.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/guardia_de_guardado.py",
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "vecinas.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No rompe vecinos: el cambio es local a la llamada subprocess.run de pytest dentro de _vigias; vecinas.py se importa antes y no se toca, y candado_equipo.py/vecinas.py no intervienen en esa llamada. Pasar env= con copia filtrada de os.environ mantiene el resto del entorno intacto, asi que las demas vigias corren igual."
+  ],
+  "que_falta": [
+   "Ejecutar de verdad la prueba interna (Ley 7) con la vigia vigias/test_vigia_el_guardia_se_acuerda_y_frena.py bajo 'git commit -- rutas' (GIT_INDEX_FILE a indice temporal), y declarar en el sellado cual de los vecinos de 'A QUIEN PUEDE DANAR' se reviso, como pide el paquete."
+  ],
+  "resumen_para_el_jefe": "El cambio reproduce exactamente la cura que el material pedia (env= con copia de os.environ sin las 5 variables GIT, una sola llamada, nada mas), no inventa nada, arregla el freno falso, y se aprueba."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19048 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,66 @@
+{
+  "orden": {
+    "id": "48",
+    "titulo": "La vigia de la pieza que le pregunta a Codex",
+    "origen": "acuerdo A-40 de Julio, 2026-09-21: Codex solo lectura, lo llama el programa",
+    "repara": "hoy ningun programa del Ingeniero sabe llamar a Codex, asi que Codex no puede reemplazar a Claude ni revisar cuando Big Pickle falla",
+    "pieza": "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py. Vigila una pieza NUEVA, cuerpo/codex.py, hermana de cuerpo/bigpickle.py, con una funcion preguntar(prompt, timeout=600, raiz=None) que devuelve una pareja (texto, avisos) y nunca lanza. Con monkeypatch sobre subprocess.run y shutil.which (apartados en sus propios modulos, no a traves de cuerpo.codex) y sin llamar nunca a Codex de verdad, seis pruebas: (1) la orden que arma lleva exec, --sandbox read-only, un -c con approval_policy puesto a never, --dangerously-bypass-hook-trust, --skip-git-repo-check, -C con la carpeta y -o con un archivo donde Codex deja su respuesta final; (2) el entorno que le pasa lleva INGENIERO_OFF puesto a 1; (3) si el texto a mandar trae una llave (algo que cuerpo/privacidad.py limpia como CLAVE) NO se llama a Codex y se devuelve texto vacio con un aviso; (4) si trae datos personales tampoco se llama y se avisa; (5) si Codex se pasa del tope se devuelve texto vacio y un aviso con los segundos; (6) si Codex contesta, se devuelve lo que dejo en el archivo de la respuesta final. Importa la pieza dentro de cada prueba. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "54a61491eaebe82c",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_181025_APROBADO_test_vigia_la_pieza_que_le_pregunta_a_codex.py.json\nOBRERO deepseek -> AUDITOR gemini4\n  aviso       : GPT-OSS 120B (Groq) no le cabe (33507 letras, aguanta 19042) -> se le salta\n  aviso       : PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta\n  diagnostico : Falta la vigia nueva que prueba cuerpo/codex.py con seis casos usando monkeypatch sobre subprocess.run y shutil.which, sin llamar a Codex de verdad.\n  toca        : vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py funcion ?\n  confianza   : media\n  VEREDICTO   : APROBADO\n  resumen     : La vigía nueva para cuerpo/codex.py se ha implementado correctamente, cubriendo los seis casos especificados en el diagnóstico sin inventar ni romper nada.\n\nAPLICADO en disco (lo escribio el equipo): vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Ibas a subir un archivo de LLAVES:\n   vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py   (lleva algo con pinta de llave DENTRO)\n\n  Una clave subida NO se puede desubir. Ya paso una vez.\n  Sacala del guardado y ponla en la lista de lo que nunca se sube.\n\n\nSE VOLVIO ATRAS: apartada (nueva): vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py\nLLAVE GUARDADA: se puede escribir en 42 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T18:10:26",
+  "analisis": {
+    "que_paso": "La orden 48 pedia crear la vigia nueva vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py. El equipo (deepseek escribe, gemini4 revisa) la escribio, la aprobo y se aplico en disco. Pero al guardar, el guardia_de_guardado la freno: detecto que el archivo lleva 'algo con pinta de llave DENTRO' y no dejo guardar; el trabajo se volvio atras y quedo apartado en memoria/trabajos_sin_revisar. La vigia NO se sello.",
+    "causa_raiz": "Choque entre dos candados. El encargo de la orden 48 (caso 3) obliga a que la vigia contenga un texto que 'trae una llave (algo que cuerpo/privacidad.py limpia como CLAVE)', o sea un cebo con forma de llave DENTRO del archivo de prueba. El guardia_de_guardado, por su lado, frena CUALQUIER archivo cuyo contenido case con PINTA_DE_LLAVE, sin distinguir una llave real de una llave-cebo puesta a proposito en una vigia para probar la deteccion. No existe forma de declarar 'esto es un cebo de prueba', asi que la unica vigia que puede cumplir la orden 48 es, por construccion, imposible de guardar.",
+    "donde": "arnes/guardia_de_guardado.py — funcion _hay_llaves y su patron PINTA_DE_LLAVE (lineas 86-127; el freno se dispara en la 123-124), actuando sobre vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py; el cebo que el patron caza es el mismo que cuerpo/privacidad.py etiqueta como <CLAVE>.",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "                if PINTA_DE_LLAVE.search(f.read()):\n                    malos.append(a + \"   (lleva algo con pinta de llave DENTRO)\")"
+      },
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "# Las cuatro primeras ramas (las llaves de verdad, por su forma) NO se tocan.\nPINTA_DE_LLAVE = re.compile(\n    r\"sk-[A-Za-z0-9]{16,}\""
+      },
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "\\nGUARDIA: NO SE GUARDA. Ibas a subir un archivo de LLAVES:\\n"
+      },
+      {
+        "archivo": "cuerpo/privacidad.py",
+        "texto": "(\"<CLAVE>\", re.compile(r\"(?i)[\\w-]*(?:api[_-]?key|apikey|token|password|passwd|clave|secret)\""
+      }
+    ],
+    "no_volver_a": "Una vigia que NECESITA una llave-cebo para probar el detector de llaves nunca se podra guardar mientras el guardia frene todo lo que tenga pinta de llave: el cebo debe armarse en tiempo de ejecucion (que el literal no aparezca en el archivo) o el guardia debe saber reconocer un cebo declarado en una prueba.",
+    "tarea_nueva": {
+      "repara": "El guardia frena cualquier archivo con pinta de llave dentro, aun cuando es una vigia que necesita una llave-cebo para probar la deteccion; hoy esa vigia es imposible de guardar y por eso la orden 48 no puede cerrar.",
+      "pieza": "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
+      "razon": "Distinta de la orden 48 (que crea la vigia tal cual). Esta ataca la causa de fondo: el literal con pinta de llave que exige el caso 3 no debe existir en el archivo. Se afina el encargo para que el cebo se construya en tiempo de ejecucion (concatenando pedazos) de modo que cuerpo/privacidad.py siga recibiendo un texto con forma de llave, pero el archivo fuente NUNCA case con PINTA_DE_LLAVE del guardia, sin aflojar el candado.",
+      "encargo": "Reescribir el encargo de la orden 48 anadiendo una regla explicita: el texto-cebo del caso 3 (la 'llave' que privacidad debe tapar como CLAVE) se arma DENTRO de la prueba en tiempo de ejecucion, uniendo trozos (p.ej. prefijo + digitos) para que ese literal no aparezca escrito de una sola pieza en el archivo. Asi se prueba la deteccion sin que el guardia_de_guardado (PINTA_DE_LLAVE) frene el guardado. Verificar corriendo el guardia sobre el archivo resultante y comprobando que ya no lo marca como 'archivo de LLAVES'.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: NO se manda: trae una llave",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\48_20260921_181026.json"
+  }
+}

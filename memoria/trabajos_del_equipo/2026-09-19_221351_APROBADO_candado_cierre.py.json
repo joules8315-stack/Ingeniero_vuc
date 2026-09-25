@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_cierre.py, dentro de main, tras el renglon 'faltas = []' falta el bloque que mide las rondas perdidas con medidor_de_rondas y avisa por stderr.",
+  "archivo": "arnes/candado_cierre.py",
+  "funcion": "main",
+  "texto_viejo": "    sys.path.insert(0, AQUI)\n    sys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n    faltas = []\n",
+  "texto_nuevo": "    sys.path.insert(0, AQUI)\n    sys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n    faltas = []\n\n    # Lo que no se mide no se corrige: este numero dice si el equipo esta perdiendo rondas.\n    try:\n        import medidor_de_rondas\n        from datetime import datetime\n        hoy = datetime.now().strftime(\"%Y-%m-%d\")\n        r = medidor_de_rondas.contar(AQUI, hoy)\n        sys.stderr.write(\"MEDIDOR DE RONDAS: \" + str(r.get(\"razon\", \"\")) + \"\\n\")\n        sys.stderr.write(\"La meta de Julio es guardar nueve de cada diez rondas.\\n\")\n    except Exception:\n        pass\n",
+  "cambio": "Agregar, justo debajo de 'faltas = []' dentro de main, un bloque try/except que importe medidor_de_rondas, calcule la fecha de hoy con datetime, llame a contar con AQUI y la fecha, y escriba en stderr dos renglones: uno que empiece por 'MEDIDOR DE RONDAS: ' seguido de la razon devuelta, y otro que diga que la meta de Julio es guardar nueve de cada diez rondas. Todo dentro de un try que si falla no dice nada y sigue.",
+  "codigo": "    # Lo que no se mide no se corrige: este numero dice si el equipo esta perdiendo rondas.\n    try:\n        import medidor_de_rondas\n        from datetime import datetime\n        hoy = datetime.now().strftime(\"%Y-%m-%d\")\n        r = medidor_de_rondas.contar(AQUI, hoy)\n        sys.stderr.write(\"MEDIDOR DE RONDAS: \" + str(r.get(\"razon\", \"\")) + \"\\n\")\n        sys.stderr.write(\"La meta de Julio es guardar nueve de cada diez rondas.\\n\")\n    except Exception:\n        pass\n",
+  "vigia": "vigias/test_vigia_medidor.py — comprueba que el medidor de rondas cuenta y avisa; y que candado_cierre sigue funcionando sin romper sus importadores.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_legislar.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candados_medicion.py",
+   "arnes/guard_pasado.py",
+   "arnes/via_canonica.py",
+   "vigias/test_vigia_medidor.py"
+  ],
+  "preguntas": [
+   "El material no muestra la firma exacta de medidor_de_rondas.contar: ¿recibe (carpeta, fecha) y devuelve un diccionario con la clave 'razon'? Si no es asi, hay que ajustar la llamada.",
+   "El material no muestra si 'datetime' ya esta importado arriba en candado_cierre.py; el encargo dice importarlo dentro del bloque si no lo esta, y aqui se importa dentro del bloque para no tocar nada mas."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_legislar.py",
+   "candado_supervisor.py",
+   "candados_medicion.py",
+   "guard_pasado.py",
+   "test_vigia_medidor.py",
+   "via_canonica.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Nada del cambio en si; solo que el equipo corra la prueba interna real antes de pedirle a Julio que lo vea con sus ojos (ley 7)."
+  ],
+  "resumen_para_el_jefe": "El bloque nuevo va exactamente donde y como pide el encargo (bajo 'faltas = []', dentro de main, en try/except mudo), importa medidor_de_rondas, llama contar(AQUI, hoy) con la fecha ano-mes-dia sacada de datetime importado dentro del bloque, escribe en stderr el renglon 'MEDIDOR DE RONDAS: <razon>' y el de la meta de nueve de cada diez, con su comentario: no usa nada que no exista, no toca nada mas del archivo y no puede romper vecinos porque es aditivo y va blindado; se puede aprobar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21696 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

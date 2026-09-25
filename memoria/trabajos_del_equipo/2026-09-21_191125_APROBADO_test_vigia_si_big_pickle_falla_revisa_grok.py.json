@@ -1,0 +1,26 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El codigo anterior quedo roto en el renglon 1 por sintaxis invalida; ahora se escribe la vigia completa y ejecutable que comprueba el relevo a grok cuando bigpickle falla en obrero.auditar.",
+  "archivo": "vigias/test_vigia_si_big_pickle_falla_revisa_grok.py",
+  "texto_nuevo": "\"\"\"Vigia: si Big Pickle falla al auditar, revisa grok47.\n\nVigila cuerpo/obrero.py::auditar cuando se le pide auditor='bigpickle'.\n\nReglas que comprueba:\n  1. Si bigpickle.preguntar devuelve ('', ['timeout']), el relevo lo hace grok\n     y el veredicto es APROBADO con quien_reviso == 'grok47'.\n  2. En ese caso NO se llama a obrero._preguntar_con_relevo.\n  3. Si grok.preguntar tambien devuelve ('', ['timeout']), entonces SI se llama\n     a obrero._preguntar_con_relevo, como hoy.\n\nNunca se llama a Claude: obrero._claude_directo se monkeypatchea para que\nlance AssertionError si alguien lo invoca.\n\"\"\"\n\nfrom cuerpo import obrero\nfrom cuerpo import bigpickle\nfrom cuerpo import grok\n\n\nPAQUETE = ''\nPROPUESTA = {'archivo': 'x.py'}\n\n\ndef _claude_prohibido(*args, **kwargs):\n    raise AssertionError('no se debe llamar a Claude en esta vigia')\n\n\ndef _preparar(monkeypatch, grok_respuesta, apuntes):\n    \"\"\"Deja los dobles puestos. apuntes es un dict donde se anotan las llamadas.\"\"\"\n    monkeypatch.setattr(obrero, '_claude_directo', _claude_prohibido)\n\n    def _bp_preguntar(*args, **kwargs):\n        apuntes['bigpickle'] = apuntes.get('bigpickle', 0) + 1\n        return ('', ['timeout'])\n\n    def _grok_preguntar(*args, **kwargs):\n        apuntes['grok'] = apuntes.get('grok', 0) + 1\n        return grok_respuesta\n\n    def _relevo_preguntar(*args, **kwargs):\n        apuntes['relevo'] = apuntes.get('relevo', 0) + 1\n        return ('', None, [])\n\n    monkeypatch.setattr(bigpickle, 'preguntar', _bp_preguntar)\n    monkeypatch.setattr(grok, 'preguntar', _grok_preguntar)\n    monkeypatch.setattr(obrero, '_preguntar_con_relevo', _relevo_preguntar)\n\n\ndef test_si_big_pickle_falla_revisa_grok(monkeypatch):\n    apuntes = {}\n    _preparar(\n        monkeypatch,\n        ('{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}', []),\n        apuntes,\n    )\n\n    auditoria, quien, avisos = obrero.auditar(\n        '', {'archivo': 'x.py'}, auditor='bigpickle', evitar='deepseek')\n\n    assert quien == 'grok47', 'deberia revisar grok47, reviso %r' % (quien,)\n    assert auditoria is not None, 'la auditoria no puede ser None'\n    assert auditoria.get('veredicto') == 'APROBADO', (\n        'el veredicto deberia ser APROBADO, fue %r' % (auditoria.get('veredicto'),))\n    assert apuntes.get('grok', 0) >= 1, 'grok deberia haber sido llamado'\n\n\ndef test_no_se_llama_al_relevo_si_grok_contesta(monkeypatch):\n    apuntes = {}\n    _preparar(\n        monkeypatch,\n        ('{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}', []),\n        apuntes,\n    )\n\n    auditoria, quien, avisos = obrero.auditar(\n        '', {'archivo': 'x.py'}, auditor='bigpickle', evitar='deepseek')\n\n    assert apuntes.get('relevo', 0) == 0, (\n        'no se debe llamar a obrero._preguntar_con_relevo cuando grok contesta; '\n        'se llamo %d veces' % (apuntes.get('relevo', 0),))\n\n\ndef test_si_grok_tambien_falla_si_se_llama_al_relevo(monkeypatch):\n    apuntes = {}\n    _preparar(monkeypatch, ('', ['timeout']), apuntes)\n\n    auditoria, quien, avisos = obrero.auditar(\n        '', {'archivo': 'x.py'}, auditor='bigpickle', evitar='deepseek')\n\n    assert apuntes.get('relevo', 0) >= 1, (\n        'si grok tambien falla, se debe llamar a obrero._preguntar_con_relevo; '\n        'se llamo %d veces' % (apuntes.get('relevo', 0),))\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigia hace exactamente lo que pidio el encargo: crea el archivo nuevo, los tres asserts comprueban el relevo a grok47 cuando bigpickle falla, y no toca ningun otro archivo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (36965 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (37153 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

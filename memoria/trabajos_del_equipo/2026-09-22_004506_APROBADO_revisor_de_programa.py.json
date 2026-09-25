@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/revisor_de_programa.py, en la funcion revisar, el bloque que agrego la orden 152 revisa cada trozo por separado y por eso frena cuando la palabra del encargo esta en otro trozo distinto del que se revisa.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "                todos.extend(revisar(sub, tarea))\n            return todos",
+  "texto_nuevo": "                todos.extend(revisar(sub, tarea))\n            # la palabra del encargo basta con que este en alguno de los trozos (medido 2026-09-22, orden 95)\n            juntos = \"\"\n            for p in (p.get(\"cambios\") or []):\n                if isinstance(p, dict):\n                    juntos += str(p.get(\"texto_viejo\") or \"\") + str(p.get(\"texto_nuevo\") or \"\")\n            todos = [f for f in todos if not (f.startswith('NO HACE LO QUE SE PIDIO') and f.split(chr(39))[1] in juntos)]\n            return todos",
+  "cambio": "Justo antes del return todos del bloque que agrego la orden 152, unir el texto_viejo y el texto_nuevo de todos los trozos (los de la lista p.get(\"cambios\") que son dict) y descartar los fallos 'NO HACE LO QUE SE PIDIO' cuya palabra ya aparece en alguno de los trozos.",
+  "codigo": "            # la palabra del encargo basta con que este en alguno de los trozos (medido 2026-09-22, orden 95)\n            juntos = \"\"\n            for p in (p.get(\"cambios\") or []):\n                if isinstance(p, dict):\n                    juntos += str(p.get(\"texto_viejo\") or \"\") + str(p.get(\"texto_nuevo\") or \"\")\n            todos = [f for f in todos if not (f.startswith('NO HACE LO QUE SE PIDIO') and f.split(chr(39))[1] in juntos)]",
+  "vigia": "vigias/test_vigia_el_revisor_de_programa_revisa_cada_trozo.py: un encargo cuya palabra obligatoria solo aparece en un trozo distinto del que la contiene no debe frenar la ronda.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_revisor_de_programa_revisa_cada_trozo.py",
+   "vigias/test_vigia_el_texto_viejo_tiene_que_existir.py",
+   "vigias/test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_el_revisor_de_programa_revisa_cada_trozo.py",
+   "test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "test_vigia_el_texto_viejo_tiene_que_existir.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que se pidio: une los textos de todos los trozos y descarta el freno falso 'NO HACE LO QUE SE PIDIO' cuando la palabra del encargo si aparece en otro trozo, sin tocar ninguna otra cuenta ni ningun vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (23839 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

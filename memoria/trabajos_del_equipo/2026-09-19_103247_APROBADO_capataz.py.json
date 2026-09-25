@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion forense(orden, resultado, raiz=None) en cuerpo/capataz.py, que debe ir justo antes de 'def ya_fallo(orden):' y encadenar expediente, perito, citas, juez, libro de fallos y tarea nueva.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "forense (nueva, justo antes de ya_fallo)",
+  "texto_viejo": "def ya_fallo(orden):\n    \"\"\"True si la huella_de(orden) aparece en el archivo; nunca lanza.\"\"\"",
+  "texto_nuevo": "def forense(orden, resultado, raiz=None):\n    \"\"\"Analiza un fallo con el perito, comprueba sus citas, lo juzga y deja tarea nueva. Nunca lanza.\"\"\"\n    if raiz is None:\n        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta, expediente = armar_expediente(orden, resultado)\n    analisis, estado = pedir_al_perito(expediente, raiz)\n    if analisis is None:\n        informe = {'ok': False, 'paso': 'perito', 'motivo': estado}\n    else:\n        citas = analisis.get('citas')\n        if not isinstance(citas, list) or not citas:\n            informe = {'ok': False, 'paso': 'citas', 'motivo': 'el perito no trajo citas'}\n        else:\n            malas = citas_que_no_existen(citas, raiz)\n            if malas:\n                informe = {'ok': False, 'paso': 'citas', 'motivo': 'citas que no existen: ' + json.dumps(malas, ensure_ascii=False)[:500]}\n            else:\n                prueban, por_que = juzgar_citas(analisis)\n                if not prueban:\n                    informe = {'ok': False, 'paso': 'juez', 'motivo': por_que}\n                else:\n                    try:\n                        from cuerpo import fallos\n                        import re\n                        fallos.apuntar(\n                            que_paso=str(analisis.get('que_paso') or 'fallo en el pit')[:200],\n                            causa_raiz=str(analisis.get('causa_raiz', ''))[:300],\n                            cura='tarea nueva del forense',\n                            no_volver_a=str(analisis.get('no_volver_a', ''))[:200],\n                            proyecto=os.path.basename(str(raiz)),\n                            piezas=[str(orden.get('pieza', ''))],\n                            quien_lo_caza='pit (forense)',\n                            disparador=re.escape(str(orden.get('pieza', ''))) or 'pit',\n                        )\n                    except Exception:\n                        pass\n                    tarea = dict(analisis.get('tarea_nueva') or {})\n                    tarea['id'] = str(orden.get('id', '')) + '-F' + datetime.datetime.now().strftime('%H%M%S')\n                    tarea['origen'] = 'forense:' + str(orden.get('id', ''))\n                    if 'depende' not in tarea:\n                        tarea['depende'] = []\n                    ok, motivo = agregar_orden(tarea)\n                    informe = {'ok': ok, 'paso': 'tarea', 'motivo': motivo, 'tarea': tarea['id']}\n    informe['expediente'] = ruta\n    if ruta is not None:\n        try:\n            junto = dict(expediente)\n            junto['analisis'] = analisis\n            junto['informe'] = informe\n            with open(ruta, 'w', encoding='utf-8') as f:\n                json.dump(junto, f, indent=2, ensure_ascii=False)\n        except Exception:\n            pass\n    return informe\n\n\ndef ya_fallo(orden):\n    \"\"\"True si la huella_de(orden) aparece en el archivo; nunca lanza.\"\"\"",
+  "cambio": "Insertar la funcion forense(orden, resultado, raiz=None) inmediatamente antes de la definicion de ya_fallo, con los 6 pasos del encargo (expediente, perito, citas, juez, libro de fallos + tarea nueva, y volcado del informe en el expediente).",
+  "codigo": "def forense(orden, resultado, raiz=None):\n    \"\"\"Analiza un fallo con el perito, comprueba sus citas, lo juzga y deja tarea nueva. Nunca lanza.\"\"\"\n    if raiz is None:\n        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta, expediente = armar_expediente(orden, resultado)\n    analisis, estado = pedir_al_perito(expediente, raiz)\n    if analisis is None:\n        informe = {'ok': False, 'paso': 'perito', 'motivo': estado}\n    else:\n        citas = analisis.get('citas')\n        if not isinstance(citas, list) or not citas:\n            informe = {'ok': False, 'paso': 'citas', 'motivo': 'el perito no trajo citas'}\n        else:\n            malas = citas_que_no_existen(citas, raiz)\n            if malas:\n                informe = {'ok': False, 'paso': 'citas', 'motivo': 'citas que no existen: ' + json.dumps(malas, ensure_ascii=False)[:500]}\n            else:\n                prueban, por_que = juzgar_citas(analisis)\n                if not prueban:\n                    informe = {'ok': False, 'paso': 'juez', 'motivo': por_que}\n                else:\n                    try:\n                        from cuerpo import fallos\n                        import re\n                        fallos.apuntar(\n                            que_paso=str(analisis.get('que_paso') or 'fallo en el pit')[:200],\n                            causa_raiz=str(analisis.get('causa_raiz', ''))[:300],\n                            cura='tarea nueva del forense',\n                            no_volver_a=str(analisis.get('no_volver_a', ''))[:200],\n                            proyecto=os.path.basename(str(raiz)),\n                            piezas=[str(orden.get('pieza', ''))],\n                            quien_lo_caza='pit (forense)',\n                            disparador=re.escape(str(orden.get('pieza', ''))) or 'pit',\n                        )\n                    except Exception:\n                        pass\n                    tarea = dict(analisis.get('tarea_nueva') or {})\n                    tarea['id'] = str(orden.get('id', '')) + '-F' + datetime.datetime.now().strftime('%H%M%S')\n                    tarea['origen'] = 'forense:' + str(orden.get('id', ''))\n                    if 'depende' not in tarea:\n                        tarea['depende'] = []\n                    ok, motivo = agregar_orden(tarea)\n                    informe = {'ok': ok, 'paso': 'tarea', 'motivo': motivo, 'tarea': tarea['id']}\n    informe['expediente'] = ruta\n    if ruta is not None:\n        try:\n            junto = dict(expediente)\n            junto['analisis'] = analisis\n            junto['informe'] = informe\n            with open(ruta, 'w', encoding='utf-8') as f:\n                json.dump(junto, f, indent=2, ensure_ascii=False)\n        except Exception:\n            pass\n    return informe",
+  "vigia": "Una prueba que llame a forense con un perito simulado que devuelva citas validas y compruebe que se crea la tarea nueva con id terminado en '-F<HHMMSS>' y origen 'forense:<id>', que el expediente en disco lleva las claves 'analisis' e 'informe', y que con citas inexistentes el informe trae paso 'citas'.",
+  "puede_danar": [
+   "cerebro/piezas.py",
+   "mapa/inventario.py",
+   "memoria/ORDENES.json",
+   "memoria/EXPEDIENTES",
+   "memoria/HUELLAS_QUE_FALLARON.jsonl"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "HUELLAS_QUE_FALLARON.js",
+   "ORDENES.js"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "La insercion es puramente aditiva antes de 'def ya_fallo(orden):' (texto que aparece en el material en capataz.py:486) y no toca ninguna funcion existente; cerebro/piezas.py y mapa/inventario.py importan de capataz.py pero un def nuevo no rompe ningun import.",
+   "agregar_orden se dispara desde forense como manda el encargo, lo que puede escribir en memoria/ORDENES.json, pero eso es el paso 5 del contrato, no un cambio fuera de lo pedido."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta cumple el encargo al pie de la letra: crea forense(orden, resultado, raiz=None) justo antes de ya_fallo, encadena los 6 pasos (expediente, perito, citas, juez, libro de fallos y tarea nueva con id -F<HHMMSS>) y solo usa funciones que ya existen en el material (armar_expediente, pedir_al_perito, citas_que_no_existen, juzgar_citas, agregar_orden); sin inventos y sin tocar a los vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (28513 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

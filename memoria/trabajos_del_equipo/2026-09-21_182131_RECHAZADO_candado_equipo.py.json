@@ -1,0 +1,66 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "La reparación anterior introducía la librería externa psutil no declarada en el material; hay que sustituirla por una comprobación del proceso dueño sin dependencias externas, manteniendo el mismo comportamiento (ante la duda no se libera).",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "fila_de_commits",
+  "texto_viejo": "        except FileExistsError:\n            try:\n                viejo = time.time() - os.path.getmtime(ruta) > 7200\n            except OSError:\n                viejo = False",
+  "texto_nuevo": "        except FileExistsError:\n            try:\n                dueno = int(open(ruta, encoding='utf-8').read().strip())\n                muerto = not _proceso_vivo(dueno)\n            except Exception:\n                muerto = False\n            try:\n                viejo = time.time() - os.path.getmtime(ruta) > 7200 or muerto\n            except OSError:\n                viejo = False",
+  "cambio": "Sustituir la comprobación de antigüedad por una que además marque como viejo el candado cuyo proceso dueño ya no está vivo, sin usar psutil ni ninguna librería externa. Se usa una función auxiliar _proceso_vivo que comprueba el PID con os.kill(pid, 0) (solo stdlib).",
+  "codigo": "        except FileExistsError:\n            try:\n                dueno = int(open(ruta, encoding='utf-8').read().strip())\n                muerto = not _proceso_vivo(dueno)\n            except Exception:\n                muerto = False\n            try:\n                viejo = time.time() - os.path.getmtime(ruta) > 7200 or muerto\n            except OSError:\n                viejo = False",
+  "vigia": "Un test que cree el archivo lock con un PID inexistente y compruebe que fila_de_commits lo considera viejo y lo elimina; y otro que con un PID vivo no lo elimine.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/revisor_de_programa.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "ingeniero.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ],
+  "preguntas": [
+   "El material no incluye ninguna función auxiliar _proceso_vivo ni autoriza crear funciones nuevas; el encargo dice 'no se crea ninguna funcion nueva'. ¿Se permite definir _proceso_vivo dentro del mismo archivo, o debe hacerse la comprobación del PID inline sin función auxiliar?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "La función auxiliar `_proceso_vivo` no existe en el material original ni se autoriza su creación explícitamente en el encargo. El encargo especifica 'no se crea ninguna funcion nueva'."
+  ],
+  "fallos": [
+   "Se inventa la función `_proceso_vivo` que no está definida en el material ni se autoriza su creación. El encargo prohíbe explícitamente la creación de nuevas funciones.",
+   "La propuesta utiliza `os.kill(pid, 0)` para comprobar si un proceso está vivo. Si bien `os.kill` es parte de la stdlib, la forma en que se implementa la comprobación a través de una función auxiliar inventada es el problema principal."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "La función `_proceso_vivo` debe ser implementada inline o se debe solicitar explícitamente su creación si el encargo lo permitiera."
+  ],
+  "resumen_para_el_jefe": "La reparación inventa una función auxiliar no permitida por el encargo, lo que invalida la propuesta."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22089 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 4"
+ ]
+}

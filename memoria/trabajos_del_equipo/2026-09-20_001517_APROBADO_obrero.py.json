@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _filtrar_paquete, cuando el paquete filtrado aun pasa del tope, se sueltan renglones del final uno a uno sin avisar, y eso deja trozos empezados sin su final y hace que el cerebro se invente lo que no ve.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_filtrar_paquete",
+  "texto_viejo": "    # Si aun asi se pasa del tope, se va soltando el relleno del final hasta caber: la cabecera,\n    # la ley y \"a quien puede danar\" son LO NECESARIO, no se tocan.\n    while len(\"\\n\".join(salida)) > tope and len(salida) > len(bloques[\"__cabecera__\"]):\n        salida.pop()\n    return \"\\n\".join(salida)",
+  "texto_nuevo": "    # Si aun asi se pasa del tope, se va soltando el relleno del final hasta caber: la cabecera,\n    # la ley y \"a quien puede danar\" son LO NECESARIO, no se tocan.\n    aviso = (\"AVISO: este material se recorto para que entrara. Puede faltar algun archivo entero. \"\n             \"NO adivines lo que no ves: si te falta algo, contesta NECESITO_LEER seguido del \"\n             \"archivo que hace falta.\")\n    tope_trabajo = tope - len(aviso) - 1\n    recortado = False\n    while len(\"\\n\".join(salida)) > tope_trabajo and len(salida) > len(bloques[\"__cabecera__\"]):\n        cabecera = len(bloques[\"__cabecera__\"])\n        ultimo = None\n        for i in range(len(salida) - 1, cabecera - 1, -1):\n            if salida[i].startswith(\"### `\"):\n                ultimo = i\n                break\n        if ultimo is not None:\n            del salida[ultimo:]\n            recortado = True\n        else:\n            if len(salida) <= cabecera:\n                break\n            salida.pop()\n            recortado = True\n    if recortado:\n        salida.append(aviso)\n    return \"\\n\".join(salida)",
+  "cambio": "Sustituir el comentario, el bucle while que suelta renglones uno a uno y el return final de _filtrar_paquete por: preparar el renglon de aviso en castellano, calcular el tope de trabajo restando el largo del aviso mas uno, marcar si se recorto empezando en falso, en el bucle quitar de un golpe desde el ULTIMO renglon que empieza por '### `' (sin contar la cabecera) hasta el final y marcar recortado, o si no hay tal renglon quitar el ultimo suelto y marcar recortado, cortar si ya no puede encogerse, y al final si se recorto agregar el aviso y devolver la lista unida por saltos de linea.",
+  "codigo": "    aviso = (\"AVISO: este material se recorto para que entrara. Puede faltar algun archivo entero. \"\n             \"NO adivines lo que no ves: si te falta algo, contesta NECESITO_LEER seguido del \"\n             \"archivo que hace falta.\")\n    tope_trabajo = tope - len(aviso) - 1\n    recortado = False\n    while len(\"\\n\".join(salida)) > tope_trabajo and len(salida) > len(bloques[\"__cabecera__\"]):\n        cabecera = len(bloques[\"__cabecera__\"])\n        ultimo = None\n        for i in range(len(salida) - 1, cabecera - 1, -1):\n            if salida[i].startswith(\"### `\"):\n                ultimo = i\n                break\n        if ultimo is not None:\n            del salida[ultimo:]\n            recortado = True\n        else:\n            if len(salida) <= cabecera:\n                break\n            salida.pop()\n            recortado = True\n    if recortado:\n        salida.append(aviso)\n    return \"\\n\".join(salida)",
+  "vigia": "Un test que llame a _filtrar_paquete con un paquete que pase del tope y compruebe que el resultado no pasa del tope, que termina con el renglon de aviso que dice NECESITO_LEER, y que ningun bloque de trozos quedo cortado a la mitad (no hay un '### `' sin su contenido completo).",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El resultado del filtro ahora termina (cuando se recorta) con un renglon extra 'AVISO: ...' fuera de cualquier bloque '### `'. Quien lea el material con un parser estricto del formato (arnes/revisor_de_programa.py, arnes/asignador.py, el test nombrado en _fuera_del_paquete, todos fuera del material) vera una linea nueva; no hay evidencia en el paquete de que eso los rompa, pero conviene que la vigia los corra."
+  ],
+  "que_falta": [
+   "Correr una prueba real (vigia) que llame a _filtrar_paquete con un paquete que pase del tope (o con rellenar bloques verbosos) y compruebe: no pasa del tope de verdad, termina con el AVISO que nombra NECESITO_LEER, y no queda ningun '### `' cortado a la mitad. Tambien confirmar de pasada que los tres archivos de _fuera_del_paquete toleran la linea nueva final."
+  ],
+  "resumen_para_el_jefe": "El obrero hizo exactamente lo pedido: recorta por bloques enteros (no deja trozos a medio leer), avisa con NECESITO_LEER cuando falta material, no inventa nada, toca solo el punto indicado y guarda el tope restando el largo del aviso (cuenta nueva). Aprobarlo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (35339 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py, en la funcion auditar, el bloque de bigpickle no consulta si bigpickle desperto (cuotas.desperto) ni registra aciertos y fallos en cuotas.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False):\n        # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de\n        # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.\n        from cuerpo import bigpickle\n        _texto_bp, _avisos_bp = bigpickle.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_bp or [])\n        if _texto_bp:\n            quien_aud = 'bigpickle'\n            auditoria = _json_de(_texto_bp)\n        else:\n            auditar._bp_caido = True\n            avisos.append('bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)')",
+  "texto_nuevo": "    if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False) and cuotas.desperto('bigpickle'):\n        # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de\n        # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.\n        from cuerpo import bigpickle\n        _texto_bp, _avisos_bp = bigpickle.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_bp or [])\n        if _texto_bp:\n            quien_aud = 'bigpickle'\n            cuotas.bigpickle_acierto()\n            auditoria = _json_de(_texto_bp)\n        else:\n            auditar._bp_caido = True\n            cuotas.bigpickle_fallo()\n            avisos.append('bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)')",
+  "cambio": "Anadir 'and cuotas.desperto('bigpickle')' al final de la condicion del if; agregar cuotas.bigpickle_acierto() justo despues de quien_aud = 'bigpickle'; agregar cuotas.bigpickle_fallo() dentro del else, despues de auditar._bp_caido = True.",
+  "codigo": "    if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False) and cuotas.desperto('bigpickle'):\n        # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de\n        # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.\n        from cuerpo import bigpickle\n        _texto_bp, _avisos_bp = bigpickle.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_bp or [])\n        if _texto_bp:\n            quien_aud = 'bigpickle'\n            cuotas.bigpickle_acierto()\n            auditoria = _json_de(_texto_bp)\n        else:\n            auditar._bp_caido = True\n            cuotas.bigpickle_fallo()\n            avisos.append('bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)')",
+  "vigia": "Una prueba que llame a auditar con auditor='bigpickle' y compruebe que cuando cuotas.desperto('bigpickle') es falso no se llama a bigpickle.preguntar, y que cuando contesta se registra un acierto y cuando no contesta se registra un fallo.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo que pide la orden A-46, usa unicamente funciones que existen (cuotas.desperto, cuotas.bigpickle_acierto, cuotas.bigpickle_fallo, ya confirmadas en el codigo) y el bloque tocado coincide literal con el material, sin romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (33599 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El filtro de trozos ata el material del obrero a un solo archivo (el primero que nombra la tarea), y si la tarea nombra antes otro archivo de contexto, el archivo que hay que tocar no llega y el obrero no lo encuentra.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_filtrar_paquete",
+  "texto_viejo": "    if trozos and archivo:\n        solo = []\n        i = 0\n        t = bloques[trozos]\n        while i < len(t):\n            if t[i].startswith(\"### `\"):\n                j = i + 1\n                while j < len(t) and not t[j].startswith(\"### `\"):\n                    j += 1\n                if archivo in t[i]:\n                    solo += t[i:j]\n                i = j\n            else:\n                solo.append(t[i])\n                i += 1\n        if solo:\n            salida += solo",
+  "texto_nuevo": "    if trozos and archivo:\n        _lista = [archivo] if isinstance(archivo, str) else [a for a in archivo if a]\n        solo = []\n        i = 0\n        t = bloques[trozos]\n        while i < len(t):\n            if t[i].startswith(\"### `\"):\n                j = i + 1\n                while j < len(t) and not t[j].startswith(\"### `\"):\n                    j += 1\n                if any(a in t[i] for a in _lista):\n                    solo += t[i:j]\n                i = j\n            else:\n                solo.append(t[i])\n                i += 1\n        if solo:\n            salida += solo",
+  "cambio": "Dentro del bloque 'if trozos and archivo:' de _filtrar_paquete, anadir como primera linea _lista = [archivo] if isinstance(archivo, str) else [a for a in archivo if a]; y cambiar la comprobacion 'if archivo in t[i]:' por 'if any(a in t[i] for a in _lista):'. Con un texto se comporta exactamente como hoy. No tocar nada mas.",
+  "codigo": "    if trozos and archivo:\n        _lista = [archivo] if isinstance(archivo, str) else [a for a in archivo if a]\n        solo = []\n        i = 0\n        t = bloques[trozos]\n        while i < len(t):\n            if t[i].startswith(\"### `\"):\n                j = i + 1\n                while j < len(t) and not t[j].startswith(\"### `\"):\n                    j += 1\n                if any(a in t[i] for a in _lista):\n                    solo += t[i:j]\n                i = j\n            else:\n                solo.append(t[i])\n                i += 1\n        if solo:\n            salida += solo",
+  "vigia": "Un test que llame a _filtrar_paquete con archivo como texto (comportamiento identico a hoy) y con archivo como lista de dos rutas, comprobando que en el segundo caso llegan los trozos de ambas rutas y no solo los de la primera.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "cerebro/protocolo.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_dudas.py",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_respuestas.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "protocolo.py",
+   "test_vigia_dudas.py",
+   "test_vigia_memoria_completa.py",
+   "test_vigia_respuestas.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El unico riesgo posible seria que el llamador siga pasando archivo como texto, pero con texto la linea _lista = [archivo] lo conserva y any(a in t[i] for a in [archivo]) es identico a archivo in t[i], asi que ningun importador existente (asignador, trozos, dudas, respuestas y sus vigias) cambia de comportamiento."
+  ],
+  "que_falta": [
+   "Nada para este encargo. La contraparte del lado del llamador (que la tarea pase la lista con las rutas de contexto) queda para el encargo 2, fuera del alcance de este cambio."
+  ],
+  "resumen_para_el_jefe": "Hace exactamente lo que el encargo pide — el parametro archivo acepta texto o lista, con texto se comporta igual que hoy y no inventa archivos ni funciones ni toca a ningun vecino."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

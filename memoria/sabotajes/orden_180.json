@@ -1,0 +1,7 @@
+[
+ {
+  "archivo": "cuerpo/aplicador.py",
+  "viejo": "    if not os.path.exists(archivo):\n        try:\n            # la carpeta de un archivo nuevo se crea si falta (medido 2026-09-22, orden 176)\n            os.makedirs(os.path.dirname(archivo) or \".\", exist_ok=True)\n            with open(archivo, \"w\", encoding=\"utf-8\") as f:\n                f.write(contenido)",
+  "nuevo": "    if not os.path.exists(archivo):\n        try:\n            with open(archivo, \"w\", encoding=\"utf-8\") as f:\n                f.write(contenido)"
+ }
+]

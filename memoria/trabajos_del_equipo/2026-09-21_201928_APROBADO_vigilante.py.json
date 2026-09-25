@@ -1,0 +1,23 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "No existe cuerpo/vigilante.py; hay que crearlo con la funcion esperar que vigila un proceso por avance, limite y tope duro segun la directriz A-44.",
+  "archivo": "cuerpo/vigilante.py",
+  "texto_nuevo": "\"\"\"Vigilante de tareas que pasan su tiempo limite.\n\nDirectriz de Julio A-44 del 2026-09-21:\nsi una tarea pasa su tiempo limite se revisa si sigue trabajando o se dano;\nsi avanza se espera; si no, se detiene para buscar la causa.\n\nEste modulo expone una sola funcion, esperar(), que aplica esa directriz\nsobre un proceso ya lanzado. La funcion no decide que hacer con el\nresultado: solo devuelve el motivo por el que dejo de esperar.\n\"\"\"\n\nimport time\n\n\ndef esperar(proceso, limite, sin_avance, tope_duro, avance,\n            dormir=time.sleep, reloj=time.monotonic):\n    \"\"\"Espera a que un proceso termine o haya que detenerlo.\n\n    Parametros:\n        proceso: objeto con .poll() y .kill() (por ejemplo subprocess.Popen).\n        limite: segundos desde el arranque a partir de los cuales se empieza\n            a mirar si la tarea sigue avanzando.\n        sin_avance: segundos sin avance que se toleran una vez pasado el\n            limite antes de darla por colgada.\n        tope_duro: segundos maximos desde el arranque, se avance o no.\n        avance: funcion sin argumentos que devuelve una marca de progreso\n            (numero, cadena, lo que sea comparable).\n        dormir: funcion para pausar entre comprobaciones (por defecto\n            time.sleep).\n        reloj: funcion de reloj monotono (por defecto time.monotonic).\n\n    Devuelve:\n        'termino'    si el proceso acabo por su cuenta.\n        'tope_duro'  si se paso el tope duro y hubo que matarlo.\n        'colgada'    si paso el limite y llevaba demasiado sin avanzar.\n\n    Si avance() lanza una excepcion, se toma como que no hubo avance.\n    \"\"\"\n    inicio = reloj()\n    ultimo = avance()\n    momento_ultimo_avance = inicio\n\n    while True:\n        if proceso.poll() is not None:\n            return 'termino'\n\n        if reloj() - inicio > tope_duro:\n            proceso.kill()\n            return 'tope_duro'\n\n        try:\n            ahora = avance()\n        except Exception:\n            ahora = ultimo\n\n        if ahora != ultimo:\n            ultimo = ahora\n            momento_ultimo_avance = reloj()\n\n        if (reloj() - inicio > limite\n                and reloj() - momento_ultimo_avance > sin_avance):\n            proceso.kill()\n            return 'colgada'\n\n        dormir(5)\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Crea cuerpo/vigilante.py tal como lo pide el encargo: firma exacta de esperar(), lógica de A-44 copiada al pie de la letra (limite, sin_avance, tope_duro, kill correspondiente, dormir(5) y avance que lanza excepción como no-avance), no inventa nada y no toca ningún otro archivo."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

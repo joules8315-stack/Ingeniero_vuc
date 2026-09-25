@@ -1,0 +1,26 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la vigia nueva que comprueba que recoger_lo_frenado aparta la pieza nueva como .ROJO cuando su prueba queda roja; el material solo trae un fragmento parcial de esa vigia sin los imports ni el _run_falso.",
+  "archivo": "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py",
+  "texto_nuevo": "import os\nimport subprocess\n\nfrom cuerpo import capataz\nfrom arnes import recoger_los_pedazos\nfrom arnes import guardia_de_guardado\n\n\nTEXTO_NUEVO = (\n    \"# pieza nueva\\n\"\n    \"def saludar():\\n\"\n    \"    return 'hola'\\n\"\n)\n\n\ndef _run_falso(palabras, *args, **kwargs):\n    \"\"\"Nunca corre nada de verdad: devuelve un returncode segun la orden.\n\n    - pytest -> 1 (la prueba de la pieza nueva queda roja)\n    - git cat-file -> 1 (la pieza no esta guardada en git)\n    - cualquier otra -> 0\n    \"\"\"\n    if isinstance(palabras, (list, tuple)):\n        texto = ' '.join(str(p) for p in palabras)\n    else:\n        texto = str(palabras)\n\n    class _Resultado(object):\n        pass\n\n    resultado = _Resultado()\n    resultado.stdout = ''\n    resultado.stderr = ''\n    if 'pytest' in texto:\n        resultado.returncode = 1\n    elif 'cat-file' in texto:\n        resultado.returncode = 1\n    else:\n        resultado.returncode = 0\n    return resultado\n\n\ndef _preparar(tmp_path, monkeypatch):\n    raiz = tmp_path\n    pieza = raiz / 'pieza.py'\n    pieza.write_text(TEXTO_NUEVO, encoding='utf-8')\n    memoria = raiz / 'memoria' / 'trabajos_sin_revisar'\n    memoria.mkdir(parents=True, exist_ok=True)\n\n    def recoger_falso(raiz_arg, nombre):\n        return {'ok': True, 'destino': 'pieza.py', 'razon': 'x'}\n\n    monkeypatch.setattr(recoger_los_pedazos, 'recoger', recoger_falso)\n    monkeypatch.setattr(subprocess, 'run', _run_falso)\n    monkeypatch.setattr(guardia_de_guardado, '_vigias', lambda raiz_arg: (True, 'x'))\n    return raiz\n\n\ndef test_la_pieza_nueva_ya_no_esta_en_su_sitio(tmp_path, monkeypatch):\n    raiz = _preparar(tmp_path, monkeypatch)\n    orden = {'id': '1', 'pieza': 'pieza.py', 'vigia': 'vigias/test_x.py'}\n    capataz.recoger_lo_frenado(orden, str(raiz))\n    assert not (raiz / 'pieza.py').exists(), 'la pieza nueva se quedo en su sitio'\n\n\ndef test_la_pieza_nueva_queda_apartada_como_rojo(tmp_path, monkeypatch):\n    raiz = _preparar(tmp_path, monkeypatch)\n    orden = {'id': '1', 'pieza': 'pieza.py', 'vigia': 'vigias/test_x.py'}\n    capataz.recoger_lo_frenado(orden, str(raiz))\n    carpeta = raiz / 'memoria' / 'trabajos_sin_revisar'\n    candidatos = [\n        n for n in os.listdir(str(carpeta))\n        if n.startswith('pieza.py') and n.endswith('.ROJO')\n    ]\n    assert candidatos, 'no hay ningun archivo pieza.py*.ROJO en trabajos_sin_revisar'\n    with open(str(carpeta / candidatos[0]), encoding='utf-8') as f:\n        contenido = f.read()\n    assert contenido == TEXTO_NUEVO, 'el archivo apartado no lleva el texto NUEVO dentro'\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El monkeypatch de subprocess.run reemplaza cualquier llamada real que haga recoger_lo_frenado, pero es en memoria durante la prueba y el encargo lo pide expresamente: no rompe vecinos"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigia nueva cumple el encargo al pie de la letra: imports, textos, orden, dobles falsos y las dos pruebas con assert; no inventa nada ni toca otro archivo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (34381 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

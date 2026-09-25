@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En sabotear_la_orden, cuando no hay sabotaje escrito la funcion devuelve None sin intentar armar_sabotaje, y el encargo pide que si no existe el archivo de sabotaje se llame a armar_sabotaje(orden) y, si devuelve False, se devuelva el motivo indicado; si devuelve True, siga como hoy y corra el sabotaje.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "sabotear_la_orden",
+  "texto_viejo": "        vigia = orden.get('vigia') if isinstance(orden, dict) else None\n        sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None\n        if not vigia or not sabotaje:\n            return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}\n        palabras = [sys.executable, 'arnes/sabotaje.py', vigia, sabotaje]",
+  "texto_nuevo": "        vigia = orden.get('vigia') if isinstance(orden, dict) else None\n        sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None\n        if not vigia or not sabotaje:\n            return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}\n        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        ruta_sabotaje = sabotaje\n        if not os.path.isabs(ruta_sabotaje):\n            ruta_sabotaje = os.path.join(raiz, ruta_sabotaje)\n        if not os.path.exists(ruta_sabotaje):\n            armado = armar_sabotaje(orden)\n            if not armado:\n                return {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}\n        palabras = [sys.executable, 'arnes/sabotaje.py', vigia, sabotaje]",
+  "cambio": "Justo despues del if not vigia or not sabotaje y su return, calcular la raiz del proyecto, resolver la ruta del sabotaje (absoluta o relativa a la raiz) y, si el archivo no existe, llamar a armar_sabotaje(orden); si devuelve False, devolver {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}; si devuelve True, seguir como hoy y correr el sabotaje.",
+  "codigo": "        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        ruta_sabotaje = sabotaje\n        if not os.path.isabs(ruta_sabotaje):\n            ruta_sabotaje = os.path.join(raiz, ruta_sabotaje)\n        if not os.path.exists(ruta_sabotaje):\n            armado = armar_sabotaje(orden)\n            if not armado:\n                return {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}",
+  "vigia": "Una prueba que llame a sabotear_la_orden con una orden cuyo archivo de sabotaje no existe y con un trabajo aprobado disponible: debe llamarse armar_sabotaje, y si devuelve True debe correrse el sabotaje (no devolver el return viejo); si armar_sabotaje devuelve False debe devolverse exactamente {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}.",
+  "puede_danar": [
+   "cuerpo/capataz.py::bucle",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "cuerpo/codex.py no se ve afectado: no contiene sabotear_la_orden, sabotaje ni vigia (comprobado por lectura). El unico llamador es capataz.py:340 (el bucle), y este ya sabe tratar el return {'ok': None, ...}, porque el return viejo de 'no trae lista de sabotaje' devuelve la misma forma; el nuevo return (ok None) no cambia las ramas de fallida/hecha que ese bucle toma."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cambio aprobado: arma el sabotaje desde el trabajo aprobado cuando el archivo de sabotaje no existe, exactamente como lo pide el encargo, usando solo armar_sabotaje (capataz.py:422) y os/sys ya importados; no rompe a sus vecinos porque el bucle ya maneja el return {ok: None} y codex.py ni siquiera usa esa funcion."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (29730 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (30455 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El esquema JSON de respuesta del prompt de reparar en _prompt_obrero no tiene el campo opcional 'cambios' ni la regla dura que obliga a usarlo cuando el encargo pide tocar varios sitios separados.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_prompt_obrero",
+  "texto_viejo": "  \"cambios\": \"OPCIONAL, SOLO si hay que cambiar VARIOS sitios del MISMO archivo: una lista de objetos con texto_viejo y texto_nuevo, uno por sitio; si la usas, deja vacios texto_viejo y texto_nuevo de arriba\",\n  \"cambio\": \"que hay que cambiar, concreto\",",
+  "texto_nuevo": "  \"cambios\": \"OPCIONAL, SOLO si hay que cambiar VARIOS sitios del MISMO archivo: una lista de objetos con texto_viejo y texto_nuevo, uno por sitio; si la usas, deja vacios texto_viejo y texto_nuevo de arriba\",\n  \"cambio\": \"que hay que cambiar, concreto\",",
+  "cambios": [
+   {
+    "texto_viejo": "5. Trabaja SOLO con la memoria del PAQUETE de abajo (la informacion indexada). Si te falta material\n   para responder, pidelo asi y nada mas: NECESITO_LEER: archivo / motivo / que decide / riesgo.\n   No rechaces el trabajo ni te inventes excusas: el material es el suficiente para lo que se te pide.",
+    "texto_nuevo": "5. Trabaja SOLO con la memoria del PAQUETE de abajo (la informacion indexada). Si te falta material\n   para responder, pidelo asi y nada mas: NECESITO_LEER: archivo / motivo / que decide / riesgo.\n   No rechaces el trabajo ni te inventes excusas: el material es el suficiente para lo que se te pide.\n6. REGLA DURA: cuando el encargo pida tocar VARIOS sitios separados, o pida expresamente la lista\n   'cambios', entrega cada cambio como un elemento de \"cambios\" (con su texto_viejo y su texto_nuevo),\n   en lugar de un unico texto_viejo/texto_nuevo. Deja vacios texto_viejo y texto_nuevo de arriba."
+   }
+  ],
+  "cambio": "Anadir al prompt de reparar (rama 'reparar' de _prompt_obrero) una regla dura nueva que obligue a entregar los cambios como elementos de la lista 'cambios' cuando el encargo pida tocar varios sitios separados o pida expresamente esa lista. El campo 'cambios' ya esta en el esquema JSON del prompt; solo falta la regla que lo activa.",
+  "codigo": "6. REGLA DURA: cuando el encargo pida tocar VARIOS sitios separados, o pida expresamente la lista\n   'cambios', entrega cada cambio como un elemento de \"cambios\" (con su texto_viejo y su texto_nuevo),\n   en lugar de un unico texto_viejo/texto_nuevo. Deja vacios texto_viejo y texto_nuevo de arriba.",
+  "vigia": "Una vigia que mande un encargo pidiendo tocar varios sitios separados y compruebe que la propuesta del obrero trae la lista 'cambios' con un elemento por sitio, y que aplicador.aplicar_propuesta la reparte por aplicar_cambios.",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "cuerpo/aplicador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Se incorpora la regla dura que obliga a usar el campo 'cambios' al tocar varios sitios, cumpliendo el diagnóstico y sin afectar a los archivos vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (35158 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 470.40000000000003s (timeout)",
+  "bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "Codex termino con codigo 1: OpenAI Codex v0.155.1\n--------\nworkdir: C:\\Ingeniero_VUC\nmodel: gpt-6-astra\nprovider: openai\napproval: never\nsandbox: read-only\nreasoning effort: low\nreasoning summaries: none\nsession id: 01a0c9f8-e02c-7170-b473-b5fa2ad4f571\n--------\nuser\nEres el AUDITOR. Otro modelo propuso una reparacion. Tu traba",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

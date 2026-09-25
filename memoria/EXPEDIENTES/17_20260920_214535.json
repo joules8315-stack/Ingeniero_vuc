@@ -1,0 +1,29 @@
+{
+  "orden": {
+    "id": "17",
+    "titulo": "El registro del candado dice la verdad",
+    "origen": "punto 4 del plan v4, medido el 2026-09-20 sobre el registro de decisiones",
+    "repara": "el candado apunta como FRENO decisiones que en realidad dejan pasar, asi que el recuento de frenos esta inflado y nadie puede clasificar cual freno es falso",
+    "pieza": "arnes/candado_equipo.py",
+    "depende": [
+      "16"
+    ],
+    "modo": "IA",
+    "razon": "antes de reparar un freno falso hay que poder verlo; hoy los datos mienten",
+    "encargo": "En arnes/candado_equipo.py, dentro de la funcion main, hay dos llamadas a _apuntar_frenada cuyo camino termina en return 0, o sea que dejan pasar: la del motivo documento libre y la del motivo veredicto del equipo cubre el archivo. A las dos hay que ponerles el motivo empezando por DEJO PASAR, igual que ya lo hacen las de es el propio arnes y vigia nueva de verdad, para que el registro diga la verdad. No se quita ningun freno ni se cambia ninguna decision. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_registro_del_candado_no_miente.py",
+    "sabotaje": "memoria/sabotajes/el_registro_del_candado_no_miente.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "5af4f8bd46e86941",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_214458_APROBADO_candado_equipo.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (32514 letras, aguanta 19042) -> se le salta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (33287 letras, aguanta 19042) -> se le salta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (33499 letras, aguanta 19042) -> se le salta\n  diagnostico : En arnes/candado_equipo.py, dentro de main, las llamadas a _apuntar_frenada de los motivos 'documento libre' y 'veredicto del equipo cubre el archivo' no empiezan por DEJO PASAR, asi que el registro de decisiones las clasifica como FRENO aunque su camino termina en return 0 (dejan pasar).\n  toca        : arnes/candado_equipo.py funcion main\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : Cambio minimo y correcto: solo agrega el prefijo DEJO PASAR a dos motivos que ya terminan en return 0, alineandolos con el patron que usan las otras rutas que dejan pasar; no toca ninguna decision ni return, y una vigia nueva lo comprueba.\n\nAPLICADO en disco (lo escribio el equipo): arnes/candado_equipo.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   4 failed, 99 passed in 33.23s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): arnes/candado_equipo.py\nLLAVE GUARDADA: se puede escribir en 70 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T21:45:35"
+}

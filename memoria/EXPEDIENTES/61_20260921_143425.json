@@ -1,0 +1,74 @@
+{
+  "orden": {
+    "id": "61",
+    "titulo": "La vigia de que el candado de cierre no para por una prueba que espera su arreglo",
+    "origen": "medido una y otra vez el 2026-09-20 y 21: el candado de cierre para el trabajo diciendo 15 rojas, y 14 de ellas son pruebas nacidas rojas a proposito que esperan su arreglo",
+    "repara": "el candado de cierre tiene el mismo choque de leyes que tenia el guardia (pareja 3 del informe del 14-09): no distingue una prueba que espera su arreglo de una prueba rota. El guardia ya se reparo (orden 35); el candado de cierre no, y para en falso cada vez que se termina un turno",
+    "pieza": "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py. Vigila la funcion _vigias_verdes(raiz) de arnes/candado_cierre.py. Arriba: import json, import subprocess, import sys, sys.path con la carpeta arnes si hace falta, e import candado_cierre (mira como lo importan otras vigias de ese candado). Con monkeypatch: delenv de PYTEST_CURRENT_TEST con raising=False; candado_cierre._ya_hay_otra_corrida devuelve False; candado_cierre._poner_cerrojo y candado_cierre._quitar_cerrojo no hacen nada; subprocess.run es una funcion falsa que NUNCA corre nada de verdad: si la orden contiene pytest devuelve un objeto con returncode 1, stdout 'FAILED vigias/test_a.py::test_x - AssertionError' y stderr vacio; si contiene git devuelve returncode 0 (la prueba ya estaba guardada). raiz es tmp_path, con tmp_path/vigias creada y tmp_path/memoria/ORDENES.json. Pruebas, cada una con assert: (1) si ORDENES.json trae una orden con estado pendiente y vigia vigias/test_a.py, el primer valor que devuelve _vigias_verdes es True; (2) si esa orden tiene estado hecha, el primer valor es False; (3) si ORDENES.json no existe, el primer valor es False, como hoy. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "0d0c23de523a7f61",
+  "tipo": "tiempo",
+  "codigo": null,
+  "salida": "TOPE DE TIEMPO: 900 s",
+  "apartados": [],
+  "fecha": "2026-09-21T14:34:25",
+  "analisis": {
+    "que_paso": "La orden 61 (crear la vigia nueva del candado de cierre, en modo IA) no termino: el equipo estuvo mas de 900 s y el capataz lo mato. Por eso el expediente es tipo \"tiempo\", codigo null y salida \"TOPE DE TIEMPO: 900 s\". La pieza pedida ni siquiera llego a guardarse (no existe en disco: Glob de vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py no encuentra nada).",
+    "causa_raiz": "Dos topes de tiempo ANIDADOS y del MISMO valor (900 s). El capataz envuelve TODO el trabajo del equipo con un tope de 900 s (cuerpo/capataz.py:10). Dentro, ese trabajo hace hasta 4 vueltas de escribir->revisar->aplicar->guardar (cuerpo/obrero.py:1155), y en cada guardado la guardia corre TODAS las vigias con su PROPIO tope de 900 s (arnes/guardia_de_guardado.py:292). Como el tope de afuera (capataz) incluye escribir+revisar+vueltas+guardar y vale lo mismo que el de adentro (guardia), el de afuera SIEMPRE salta primero: la guardia nunca alcanza a dar su aviso claro y todo aparece como un mudo \"TOPE DE TIEMPO: 900 s\". Ademas el propio encargo empuja al cuelgue: manda borrar PYTEST_CURRENT_TEST (monkeypatch.delenv), que es la UNICA reja de _vigias_verdes contra arrancar pytest dentro de pytest (arnes/candado_cierre.py:122); si el subprocess.run falso que escribe la IA no tapa perfecto la llamada, la vigia lanza pytest de verdad dentro de pytest y se cuelga (fallo real ya documentado el 2026-08-20 en candado_cierre.py:119-121, \"se quedo 8 minutos girando\"), consumiendo los 900 s.",
+    "donde": "cuerpo/capataz.py:10 (tope del equipo 900 s) junto con arnes/guardia_de_guardado.py:292 (tope de la guardia 900 s) y cuerpo/obrero.py:1155 (hasta 4 vueltas). La reja que el encargo desactiva esta en arnes/candado_cierre.py:122.",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "def lanzar_al_equipo(proyecto, orden, tope_segundos=900):"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "\"salida\": \"TOPE DE TIEMPO: \" + str(tope_segundos) + \" s\","
+      },
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "                           cwd=raiz, capture_output=True, text=True, timeout=900,"
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "    for _vuelta in range(4):"
+      },
+      {
+        "archivo": "arnes/candado_cierre.py",
+        "texto": "    if os.environ.get(\"PYTEST_CURRENT_TEST\"):\n        return None, \"dentro de una vigia no se corren vigias (evita pytest dentro de pytest)\""
+      },
+      {
+        "archivo": "arnes/candado_cierre.py",
+        "texto": "    OJO (fallo real 2026-08-20): si este candado se llama DESDE una vigia, arranca pytest\n    dentro de pytest y el sistema se cuelga (se quedo 8 minutos girando)."
+      }
+    ],
+    "no_volver_a": "No poner el tope del equipo (capataz) igual al tope interno de la guardia: el de afuera siempre revienta primero y esconde cual vigia se colgo.",
+    "tarea_nueva": {
+      "repara": "separar los dos topes anidados: que el tope del equipo (capataz) sea mayor que el tope interno de la guardia, para que ante un cuelgue salte primero la guardia con su mensaje claro y no el mudo TOPE DE TIEMPO",
+      "pieza": "cuerpo/capataz.py",
+      "razon": "hoy lanzar_al_equipo/bucle y guardia_de_guardado usan el mismo 900 s anidado; el de afuera envuelve escribir+revisar+hasta 4 vueltas+guardar, asi que siempre salta antes que el de adentro y no dice cual vigia se colgo",
+      "encargo": "En cuerpo/capataz.py subir el tope por defecto de tope_segundos en lanzar_al_equipo() y en bucle() a 1200 s (el de la guardia, 900 s, +300 s de margen), sin tocar arnes/guardia_de_guardado.py. Asi, si una vigia se cuelga, salta primero el aviso de la guardia ('las vigias NO terminaron en 15 minutos: no se guarda sin probar') y el fallo queda diagnosticado, en vez de 'TOPE DE TIEMPO: 900 s' que no dice nada. No tocar ningun otro archivo.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 300s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\61_20260921_143425.json"
+  }
+}

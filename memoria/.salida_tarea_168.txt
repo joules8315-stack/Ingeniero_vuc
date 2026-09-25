@@ -1,0 +1,16 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-22_063612_APROBADO_test_vigia_el_sabotaje_se_arma_solo.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : GPT-OSS 120B (Groq) no le cabe (26177 letras, aguanta 19042) -> se le salta
+  aviso       : GPT-OSS 120B (Groq) no le cabe (27145 letras, aguanta 19042) -> se le salta
+  aviso       : vueltas_dadas: 2
+  diagnostico : Falta la prueba nueva que verifique que el sabotaje apunta la ruta entera de la pieza cuando la orden pide 'carpeta/pieza.py', y el rechazo previo vino de que armar_sabotaje recorta con basename, cosa que este encargo no autoriza tocar.
+  toca        : vigias/test_vigia_el_sabotaje_se_arma_solo.py funcion test_sin_texto_viejo_no_arma_nada
+  confianza   : media
+  PREGUNTA_REQUERIDA: El material no muestra el cuerpo de _orden() ni el de _ruta_sabotaje(); se asume que _orden() devuelve un dict con la clave 'pieza' y que _ruta_sabotaje(tmp_path, orden) devuelve la ruta del archivo de sabotaje. Si _orden() no acepta la clave 'pieza' o _ruta_sabotaje usa otra clave, la prueba fallara. ¿Se confirma que _orden() devuelve un dict con 'pieza' y que _ruta_sabotaje(tmp_path, orden) es la ruta correcta?
+  VEREDICTO   : APROBADO
+  resumen     : Anade solo la prueba pedida, con los mismos helpers que ya usan las pruebas vecinas y el texto de cierre que si esta en el material; no toca capataz ni ningun otro archivo.
+
+APLICADO en disco (lo escribio el equipo): vigias/test_vigia_el_sabotaje_se_arma_solo.py
+GUARDADO AL MOMENTO: guardado en la historia: vigias/test_vigia_el_sabotaje_se_arma_solo.py
+LLAVE GUARDADA: se puede escribir en 130 archivo(s) durante 90 min.

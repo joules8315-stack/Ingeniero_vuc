@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "sin_ruido quita TODO texto entre triples comillas, incluso cuando es el VALOR de algo (disparador=r'''...'''), y eso hace que un cambio real de patron se rechace como HUMO.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "sin_ruido",
+  "texto_viejo": "    t = re.sub(r'\"\"\"(?:.|\\n)*?\"\"\"', \" \", t)\n    t = re.sub(r\"'''(?:.|\\n)*?'''\", \" \", t)",
+  "texto_nuevo": "    t = re.sub(r'(?m)^\\s*[rRbBuUfF]*\"\"\"(?:.|\\n)*?\"\"\"', \" \", t)\n    t = re.sub(r\"(?m)^\\s*[rRbBuUfF]*'''(?:.|\\n)*?'''\", \" \", t)",
+  "cambio": "Anadir el modo multilinea y el prefijo opcional de cadena ((?m)^\\s*[rRbBuUfF]*) delante de las comillas en las dos lineas t = re.sub, para que solo se quite el texto entre triples comillas que empieza una linea (docstring). Las cadenas que van despues de =, ( o una coma se quedan. Nada mas cambia.",
+  "codigo": "    t = re.sub(r'(?m)^\\s*[rRbBuUfF]*\"\"\"(?:.|\\n)*?\"\"\"', \" \", t)\n    t = re.sub(r\"(?m)^\\s*[rRbBuUfF]*'''(?:.|\\n)*?'''\", \" \", t)",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py: comprobar que sin_ruido conserva una cadena triple usada como valor (por ejemplo disparador=r'''git\\s+commit''') y sigue quitando un docstring que empieza linea.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no rompe vecinos y respeta el contrato."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21261 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

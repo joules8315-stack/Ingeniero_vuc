@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba test_las_vigias_no_heredan_el_indice_del_commit sale roja sin probar nada porque _vigias llama a vecinas.elegir(raiz) y con subprocess.run falseado elegir devuelve [] y _vigias sale antes con 'solo cambiaron documentos', sin lanzar pytest.",
+  "archivo": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+  "funcion": "test_las_vigias_no_heredan_el_indice_del_commit",
+  "texto_viejo": "    monkeypatch.setattr(guardia_de_guardado.subprocess, \"run\", falso)",
+  "texto_nuevo": "    import vecinas\n    monkeypatch.setattr(vecinas, \"elegir\", lambda raiz: None)\n    monkeypatch.setattr(guardia_de_guardado.subprocess, \"run\", falso)",
+  "cambio": "Justo antes de monkeypatch.setattr(guardia_de_guardado.subprocess, 'run', falso), agregar 'import vecinas' y monkeypatch.setattr(vecinas, 'elegir', lambda raiz: None). No tocar nada mas.",
+  "codigo": "    import vecinas\n    monkeypatch.setattr(vecinas, \"elegir\", lambda raiz: None)\n    monkeypatch.setattr(guardia_de_guardado.subprocess, \"run\", falso)",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py::test_las_vigias_no_heredan_el_indice_del_commit",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "vecinas.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Bajo: solo se toca vigias/test_vigia_el_guardia_se_acuerda_y_frena.py; el monkeypatch sobre vecinas.elegir lo restaura el propio monkeypatch al terminar la prueba, y ningun otro test de la tanda llama a _vigias mientras esta corre. arnes/vecinas.py y arnes/guardia_de_guardado.py no se modifican."
+  ],
+  "que_falta": [
+   "Correr la prueba (pytest vigias/test_vigia_el_guardia_se_acuerda_y_frena.py) para confirmar el objetivo; el paquete manda CONTRATO_ENCHUFADO_SE_PRUEBA_EJECUTANDO y la ley 7 del 2026-08-24, y la propuesta no trae el resultado de esa corrida."
+  ],
+  "resumen_para_el_jefe": "La cura es correcta, usada y minima: falseca vecinas.elegir para que devuelva None, la rama 'solo cambiaron documentos' deja de cortarse antes de tiempo y la prueba por fin ejercita el codigo que quiere vigilar; no inventa nada (vecinas.elegir esta en el propio paquete), no rompe vecinos y lo unico pendiente es correr la prueba para verla verde."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

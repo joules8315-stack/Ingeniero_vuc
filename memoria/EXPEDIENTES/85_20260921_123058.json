@@ -1,0 +1,62 @@
+{
+  "orden": {
+    "id": "85",
+    "titulo": "La vigia de que el arreglo de la herramienta pasa al frente",
+    "origen": "ley de Julio A-43 (2026-09-21): los fallos de la herramienta no pueden quedar en cola",
+    "repara": "agregar_orden pone la tarea que deja el forense al final de la lista, detras de decenas de tareas, y el mismo fallo se paga una y otra vez",
+    "pieza": "vigias/test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py. Vigila la funcion agregar_orden de cuerpo/capataz.py. Arriba: import json, from cuerpo import capataz. Con monkeypatch cambia capataz.leer_lista para que devuelva una lista con dos ordenes validas de ids A y B, capataz.ya_fallo para que devuelva False, y la funcion open que usa agregar_orden no se toca: en su lugar pon capataz.__file__ con monkeypatch apuntando a tmp_path/cuerpo/capataz.py y crea tmp_path/memoria, para que la lista se escriba en tmp_path/memoria/ORDENES.json. Una orden valida tiene titulo, origen, repara, pieza, depende (lista vacia), modo, razon, encargo e id; copia los campos de una orden real de memoria/ORDENES.json si hace falta. Pruebas, cada una con assert leyendo ese ORDENES.json: (1) una orden nueva con origen que empieza por forense: queda la PRIMERA de la lista; (2) una orden nueva con otro origen queda la ULTIMA, como hoy. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "4304a0ca1db74f31",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_123051_APROBADO_test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py.json\nOBRERO deepseek -> AUDITOR groq\n  aviso       : GPT-OSS 120B (Groq) no le cabe (34368 letras, aguanta 19042) -> se le salta\n  aviso       : Big Pickle no contesto en 300s (timeout)\n  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None\n  diagnostico : Falta la vigia que comprueba que agregar_orden pone al frente las ordenes de origen forense y al final las demas, sin tocar open; se crea con monkeypatch sobre leer_lista, ya_fallo y __file__ apuntando a tmp_path.\n  toca        : vigias/test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py funcion ?\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : Vigia de prueba implementada correctamente, cumple diagnóstico sin romper nada.\n\nAPLICADO en disco (lo escribio el equipo): vigias/test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   12 failed, 110 passed in 5.24s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: apartada (nueva): vigias/test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py\nLLAVE GUARDADA: se puede escribir en 108 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T12:30:58",
+  "analisis": {
+    "que_paso": "El equipo creo y aprobo la vigia nueva de la orden 85 (deepseek escribe, groq revisa, VEREDICTO APROBADO) y se aplico en disco. Pero al guardar, el GUARDIA DE GUARDADO freno: \"12 failed, 110 passed\". La pieza se volvio atras y quedo apartada en memoria/trabajos_sin_revisar. Nadie toco el codigo malo: la vigia 85 nace roja a proposito (test-first), no es la culpable.",
+    "causa_raiz": "No fallo la vigia 85. El guardia de guardado frena TODO guardado cuando hay pruebas rojas que YA estaban guardadas en HEAD. Como la maquina OBLIGA a que las vigias nazcan rojas y se guarden antes que su arreglo, se acumulan vigias rojas en el arbol (por eso 12 failed, no 1) y cada nuevo guardado tropieza con ellas. La excepcion que dejaria pasar las rojas que son vigia de una orden pendiente ya se escribio y aprobo, pero quedo FRENADA por el propio guardia en memoria/trabajos_sin_revisar/guardia_de_guardado.py.FRENADO_POR_EL_GUARDIA.RECOGIDO. Es un deadlock: el arreglo que abriria el candado no puede guardarse porque el candado sigue cerrado.",
+    "donde": "arnes/guardia_de_guardado.py, funcion _vigias; y las vigias rojas acumuladas en vigias/ que ya estan en HEAD.",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": ".claude/rules/vigias.md",
+        "texto": "la vigia se escribe ANTES de la reparacion, y debe ponerse ROJA primero."
+      },
+      {
+        "archivo": "vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+        "texto": "freno TODOS los guardados siguientes y la maquina se quedo trabada sin poder avanzar"
+      },
+      {
+        "archivo": "vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+        "texto": "si alguna roja ya estaba guardada -> FRENA"
+      }
+    ],
+    "no_volver_a": "Una maquina que obliga a que las vigias nazcan rojas no puede a la vez frenar todo guardado por cualquier roja ya guardada: se traba sola.",
+    "tarea_nueva": {
+      "repara": "romper el deadlock del guardia: aplicar la excepcion ya aprobada (que quedo FRENADA en trabajos_sin_revisar) para que una roja que es la vigia de una orden pendiente no frene el guardado, con un desbloqueo de una sola vez para poder guardar el propio arreglo del guardia",
+      "pieza": "arnes/guardia_de_guardado.py",
+      "razon": "sin esa excepcion la maquina queda trabada y ni la orden 85 ni ninguna otra tarea puede guardarse jamas",
+      "encargo": "Recuperar el arreglo APROBADO de arnes/guardia_de_guardado.py::_vigias que esta en memoria/trabajos_sin_revisar/guardia_de_guardado.py.FRENADO_POR_EL_GUARDIA.RECOGIDO (o su JSON en trabajos_del_equipo), aplicarlo con un bypass de una sola vez del propio guardia (el candado del huevo), y verificar con las tres pruebas de vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py: (1) roja guardada sin tarea pendiente FRENA, (2) roja guardada que es vigia de una orden con estado distinto de 'hecha' deja pasar con aviso, (3) todo verde deja pasar. No tocar la logica de la orden 85.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 300s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\85_20260921_123058.json"
+  }
+}

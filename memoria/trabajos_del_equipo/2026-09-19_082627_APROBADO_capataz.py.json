@@ -1,0 +1,31 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py falta el import de sys en el bloque de importaciones de arriba, despues de subprocess.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "lanzar_al_equipo (bloque de importaciones al inicio del archivo)",
+  "texto_viejo": "import datetime\nimport hashlib\nimport json\nimport os\nimport subprocess\n\n\ndef lanzar_al_equipo(encargo):",
+  "texto_nuevo": "import datetime\nimport hashlib\nimport json\nimport os\nimport subprocess\nimport sys\n\n\ndef lanzar_al_equipo(encargo):",
+  "cambio": "Agregar la linea 'import sys' despues de 'import subprocess' en las importaciones de arriba, respetando el orden alfabetico.",
+  "codigo": "import sys",
+  "vigia": "Que al importar cuerpo/capataz.py no falle y que sys este disponible para usar sys.executable al lanzar al equipo.",
+  "puede_danar": [
+   "cuerpo/capataz.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Agrega exactamente la linea 'import sys' despues de 'import subprocess' en el bloque de importaciones que el paquete muestra, respetando el orden alfabetico (sys va despues de subprocess), sin inventar nada, sin tocar vecinos y sin ir mas alla del 'Nada mas' del encargo."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

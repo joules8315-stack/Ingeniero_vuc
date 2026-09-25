@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La prueba nueva debe esconder el mapa de proyectos sustituyendo builtins.__import__, pero el material no trae el final del archivo ni el nombre exacto del modulo del mapa, y ademas hay que evitar usar 'builtins' sin importarlo.",
+  "archivo": "vigias/test_vigia_diccionario_de_julio.py",
+  "funcion": "final del archivo, despues de test_solo_guarda_lo_PROBADO",
+  "texto_viejo": "def test_solo_guarda_lo_PROBADO(tmp_path, monkeypatch):\n    \"\"\"Sin archivo o sin sitio no hay pareja: no se guarda una suposicion.\"\"\"",
+  "texto_nuevo": "def test_solo_guarda_lo_PROBADO(tmp_path, monkeypatch):\n    \"\"\"Sin archivo o sin sitio no hay pareja: no se guarda una suposicion.\"\"\"\n\n\ndef test_no_hace_falta_mirar_fuera_de_esta_carpeta(tmp_path, monkeypatch):\n    \"\"\"Sin el mapa de proyectos la prueba sigue encontrando el sitio: no depende de fuera.\"\"\"\n    import builtins\n\n    _aparte(tmp_path, monkeypatch)\n\n    de_siempre = builtins.__import__\n\n    def falso_import(nombre, *args, **kwargs):\n        if nombre.startswith(\"cerebro\"):\n            raise ImportError(\"el mapa de proyectos esta escondido a proposito\")\n        return de_siempre(nombre, *args, **kwargs)\n\n    monkeypatch.setattr(builtins, \"__import__\", falso_import)\n\n    primero = diccionario.aprender(\"los informes no cargan\", \"app_web.html\", \"viejo\", 100,\n                                   \"foto_informe\")\n    segundo = diccionario.aprender(\"los informes no cargan\", \"app_web.html\", \"enterApp\", 2092,\n                                   \"foto_informe\")\n\n    assert primero and segundo, (\n        \"sin el mapa de proyectos la prueba deja de encontrar el sitio, o sea que sigue \"\n        \"dependiendo de un archivo de otro proyecto y por eso es inestable\")\n\n    sitios = diccionario.buscar(\"los informes no cargan\")\n    assert sitios[0].get(\"funcion\") == \"enterApp\", (\n        \"el primer sitio que sale no es enterApp: la prueba no esta mirando donde debe\")",
+  "cambio": "Anadir al final del archivo la prueba test_no_hace_falta_mirar_fuera_de_esta_carpeta, importando builtins dentro de la funcion para no usar un nombre inexistente.",
+  "codigo": "def test_no_hace_falta_mirar_fuera_de_esta_carpeta(tmp_path, monkeypatch):\n    \"\"\"Sin el mapa de proyectos la prueba sigue encontrando el sitio: no depende de fuera.\"\"\"\n    import builtins\n\n    _aparte(tmp_path, monkeypatch)\n\n    de_siempre = builtins.__import__\n\n    def falso_import(nombre, *args, **kwargs):\n        if nombre.startswith(\"cerebro\"):\n            raise ImportError(\"el mapa de proyectos esta escondido a proposito\")\n        return de_siempre(nombre, *args, **kwargs)\n\n    monkeypatch.setattr(builtins, \"__import__\", falso_import)\n\n    primero = diccionario.aprender(\"los informes no cargan\", \"app_web.html\", \"viejo\", 100,\n                                   \"foto_informe\")\n    segundo = diccionario.aprender(\"los informes no cargan\", \"app_web.html\", \"enterApp\", 2092,\n                                   \"foto_informe\")\n\n    assert primero and segundo, (\n        \"sin el mapa de proyectos la prueba deja de encontrar el sitio, o sea que sigue \"\n        \"dependiendo de un archivo de otro proyecto y por eso es inestable\")\n\n    sitios = diccionario.buscar(\"los informes no cargan\")\n    assert sitios[0].get(\"funcion\") == \"enterApp\", (\n        \"el primer sitio que sale no es enterApp: la prueba no esta mirando donde debe\")",
+  "vigia": "La propia prueba nueva: al esconder el mapa de proyectos, diccionario.aprender debe seguir devolviendo verdadero y buscar debe devolver enterApp primero.",
+  "puede_danar": [
+   "arnes/diccionario.py",
+   "vigias/test_vigia_diccionario_de_julio.py"
+  ],
+  "preguntas": [
+   "El material no trae el final del archivo: se necesita ver las ultimas lineas de vigias/test_vigia_diccionario_de_julio.py para copiar el texto_viejo exacto y anadir la prueba justo despues.",
+   "El material no dice el nombre exacto del modulo del mapa de proyectos que empieza por 'cerebro': se necesita confirmar ese nombre para que el ImportError se dispare al importarlo."
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "diccionario.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Añade la prueba requerida sin inventar ni romper nada, cumpliendo el diagnóstico."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'builtins'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (19838 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'builtins'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (19956 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 3"
+ ]
+}

@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El material trae el cuerpo exacto de lanzar_al_equipo en cuerpo/capataz.py, que solo anade --crear si orden.get('crear') es verdadero; la vigia nueva debe probar que ademas se anade cuando el archivo de la pieza no existe en disco, espiando subprocess.run con monkeypatch.",
+  "archivo": "vigias/test_vigia_una_pieza_que_no_existe_se_manda_como_creacion.py",
+  "texto_nuevo": "import os\nimport sys\n\nimport pytest\n\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif RAIZ not in sys.path:\n    sys.path.insert(0, RAIZ)\n\nfrom cuerpo import capataz\n\n\nclass ResultadoFalso:\n    \"\"\"Resultado de mentira para que lanzar_al_equipo no note que no se ejecuto nada.\"\"\"\n\n    def __init__(self):\n        self.stdout = \"\"\n        self.stderr = \"\"\n        self.returncode = 0\n\n\ndef _espiar_subprocess(monkeypatch):\n    \"\"\"Sustituye subprocess.run dentro de cuerpo/capataz.py y devuelve la lista donde se guardan los comandos.\"\"\"\n    comandos = []\n\n    def falso_run(comando, *args, **kwargs):\n        comandos.append(list(comando))\n        return ResultadoFalso()\n\n    monkeypatch.setattr(capataz.subprocess, \"run\", falso_run)\n    return comandos\n\n\ndef _orden(encargo, pieza, crear=None):\n    orden = {\"id\": \"V-1\", \"encargo\": encargo, \"pieza\": pieza}\n    if crear is not None:\n        orden[\"crear\"] = crear\n    return orden\n\n\ndef test_pieza_que_no_existe_se_manda_como_creacion(tmp_path, monkeypatch):\n    \"\"\"Si el archivo de la pieza NO existe en disco, el comando lleva --crear aunque la orden no traiga la marca crear.\"\"\"\n    comandos = _espiar_subprocess(monkeypatch)\n    pieza_que_no_existe = os.path.join(str(tmp_path), \"pieza_que_no_existe.py\")\n    assert not os.path.exists(pieza_que_no_existe)\n\n    orden = _orden(\"crear la pieza nueva\", pieza_que_no_existe)\n    assert \"crear\" not in orden\n\n    capataz.lanzar_al_equipo(\"proyecto_de_prueba\", orden)\n\n    assert len(comandos) == 1\n    assert \"--crear\" in comandos[0]\n\n\ndef test_pieza_que_si_existe_no_se_manda_como_creacion(tmp_path, monkeypatch):\n    \"\"\"Si el archivo de la pieza SI existe en disco, el comando NO lleva --crear.\"\"\"\n    comandos = _espiar_subprocess(monkeypatch)\n    pieza_que_existe = os.path.join(str(tmp_path), \"pieza_que_existe.py\")\n    with open(pieza_que_existe, \"w\", encoding=\"utf-8\") as f:\n        f.write(\"# pieza que ya existe\\n\")\n    assert os.path.exists(pieza_que_existe)\n\n    orden = _orden(\"reparar la pieza\", pieza_que_existe)\n\n    capataz.lanzar_al_equipo(\"proyecto_de_prueba\", orden)\n\n    assert len(comandos) == 1\n    assert \"--crear\" not in comandos[0]\n\n\ndef test_la_marca_crear_de_la_orden_sigue_mandando(tmp_path, monkeypatch):\n    \"\"\"Si la orden trae la marca crear, el comando lleva --crear aunque el archivo exista.\"\"\"\n    comandos = _espiar_subprocess(monkeypatch)\n    pieza_que_existe = os.path.join(str(tmp_path), \"pieza_que_existe.py\")\n    with open(pieza_que_existe, \"w\", encoding=\"utf-8\") as f:\n        f.write(\"# pieza que ya existe\\n\")\n\n    orden = _orden(\"crear la pieza\", pieza_que_existe, crear=True)\n\n    capataz.lanzar_al_equipo(\"proyecto_de_prueba\", orden)\n\n    assert len(comandos) == 1\n    assert \"--crear\" in comandos[0]\n\n\ndef test_la_pieza_que_no_existe_no_se_toca_en_disco(tmp_path, monkeypatch):\n    \"\"\"La vigia no debe crear el archivo: solo espia el comando.\"\"\"\n    _espiar_subprocess(monkeypatch)\n    pieza_que_no_existe = os.path.join(str(tmp_path), \"pieza_que_no_existe.py\")\n\n    capataz.lanzar_al_equipo(\"proyecto_de_prueba\", _orden(\"crear la pieza nueva\", pieza_que_no_existe))\n\n    assert not os.path.exists(pieza_que_no_existe)\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El diagnostico afirma 'El material trae el cuerpo exacto de lanzar_al_equipo en cuerpo/capataz.py' pero en el material ese cuerpo NO aparece (viene recortado). Si el obrero no tenia el cuerpo, debia pedirlo con NECESITO_LEER, no afirmar su contenido: esa es una afirmacion no verificable y posiblemente falsa.",
+   "Contradiccion interna con su propio diagnostico: dice que capataz.py 'solo anade --crear si orden.get(\"crear\") es verdadero', y sin embargo entrega una vigia que exige --crear SIN la marca cuando el archivo no existe. Con el codigo que el mismo describe, test_pieza_que_no_existe_se_manda_como_creacion da ROJO (assert '--crear' in comandos[0] fallaria), o sea: o el diagnostico miente o la vigia esta predestinada a quedar en rojo.",
+   "No probo de verdad (ley 7): no hay evidencia de que la vigia se haya corrido internamente y quedado verde; se envia el archivo sin demostrar que pasa contra el capataz real."
+  ],
+  "riesgo_vecinos": [
+   "Si test_pieza_que_no_existe_se_manda_como_creacion falla, toda la suite (python -m pytest -q vigias/) queda en rojo: se rompe el candado de 'no sellar con vigia roja' y se bloquea el sello de lo que sea que corra despues.",
+   "La prueba del medio (archivo existe -> sin --crear) pasa de forma vacua aunque el codigo ignore por completo la existencia del archivo: sola no demuestra la distincion que el encargo pide, solo el test principal la demuestra, y ese es justo el que su diagnostico predice en rojo.",
+   "ResultadoFalso devuelve stdout como cadena; si lanzar_al_equipo lee result.stdout.decode() o espera bytes, la vigia truena aunque el comportamiento sea correcto (no se puede confirmar sin el cuerpo)."
+  ],
+  "que_falta": [
+   "NECESITO_LEER de cuerpo/capataz.py (o confirmarlo de otra forma) para saber si lanzar_al_equipo realmente agrega --crear cuando el archivo no existe en disco.",
+   "Correr la nueva vigia internamente y mostrar que queda verde; si queda roja, hace falta tocar capataz.py, lo que este paquete prohibe, asi que se necesita paquete nuevo o permiso, no entregar la vigia roja.",
+   "Verificar que el comando llega como lista (para que list(comando) no lo convierta en caracteres) y que ResultadoFalso sea compatible con lo que lanzar_al_equipo lee del resultado."
+  ],
+  "resumen_para_el_jefe": "El archivo nuevo esta bien escrito y hace exactamente lo que pidio el encargo, pero el diagnostico afirma que el material trae un cuerpo que no trae, y su propia descripcion del codigo predice que el test principal queda en rojo: hay que confirmar el codigo real y correr la vigia antes de sellar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (37482 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

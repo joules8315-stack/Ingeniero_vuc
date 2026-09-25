@@ -1,0 +1,61 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta, dentro de la funcion revisar y justo antes de la linea 'if es_un_pedazo(nuevo):', una cuenta nueva que use no_carga para avisar cuando el cambio deja el archivo sin arrancar.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        if es_un_pedazo(nuevo):\n            return fallos\n        conocidos = set(_conocidos(arbol))",
+  "texto_nuevo": "        # 2b — NO CARGA: si el archivo tal como quedaria no arranca, se dice aqui.\n        # Es CUENTA con no_carga, sin ejecutar nada. Solo se avisa si ANTES cargaba y DESPUES\n        # no: si antes ya no cargaba, no lo rompio este cambio y no se dice nada.\n        try:\n            _ruta_nc = str(p.get(\"archivo\") or \"\")\n            if (_ruta_nc.lower().endswith(\".py\") and os.path.isfile(_ruta_nc)\n                    and viejo.strip()):\n                with open(_ruta_nc, encoding=\"utf-8-sig\", errors=\"replace\") as _fnc:\n                    _antes_nc = _fnc.read()\n                if viejo in _antes_nc:\n                    _despues_nc = _antes_nc.replace(viejo, nuevo, 1)\n                    _fallos_antes = no_carga(_antes_nc)\n                    _fallos_despues = no_carga(_despues_nc)\n                    if not _fallos_antes and _fallos_despues:\n                        fallos.append(\n                            \"NO CARGA: el archivo se queda sin arrancar. Primera razon: %s\"\n                            % _fallos_despues[0])\n        except Exception:\n            pass\n\n        if es_un_pedazo(nuevo):\n            return fallos\n        conocidos = set(_conocidos(arbol))",
+  "cambio": "Insertar, dentro de revisar y justo antes de 'if es_un_pedazo(nuevo):', un bloque envuelto en try/except que: solo si la ruta termina en .py, el archivo existe y viejo no esta vacio, lee el archivo, si viejo aparece en el arma el contenido de despues cambiando viejo por nuevo una sola vez, llama a no_carga con el contenido de antes y con el de despues, y solo si antes la lista vino vacia y despues trae algo agrega a fallos una frase que empieza por 'NO CARGA' y menciona la primera razon.",
+  "codigo": "        # 2b — NO CARGA: si el archivo tal como quedaria no arranca, se dice aqui.\n        # Es CUENTA con no_carga, sin ejecutar nada. Solo se avisa si ANTES cargaba y DESPUES\n        # no: si antes ya no cargaba, no lo rompio este cambio y no se dice nada.\n        try:\n            _ruta_nc = str(p.get(\"archivo\") or \"\")\n            if (_ruta_nc.lower().endswith(\".py\") and os.path.isfile(_ruta_nc)\n                    and viejo.strip()):\n                with open(_ruta_nc, encoding=\"utf-8-sig\", errors=\"replace\") as _fnc:\n                    _antes_nc = _fnc.read()\n                if viejo in _antes_nc:\n                    _despues_nc = _antes_nc.replace(viejo, nuevo, 1)\n                    _fallos_antes = no_carga(_antes_nc)\n                    _fallos_despues = no_carga(_despues_nc)\n                    if not _fallos_antes and _fallos_despues:\n                        fallos.append(\n                            \"NO CARGA: el archivo se queda sin arrancar. Primera razon: %s\"\n                            % _fallos_despues[0])\n        except Exception:\n            pass\n",
+  "vigia": "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py: con un archivo .py que carga bien y una propuesta que lo deja sin arrancar, revisar debe devolver un fallo que empiece por 'NO CARGA'; y con un archivo que ya no cargaba antes, revisar no debe decir nada por esta cuenta.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_el_archivo_carga.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_cambio_que_solo_borra_vale.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "candado_equipo.py",
+   "test_vigia_el_archivo_carga.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_cambio_que_solo_borra_vale.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa y no rompe nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39175 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

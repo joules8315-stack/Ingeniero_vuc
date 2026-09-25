@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta una prueba que compruebe que _vigias no hereda GIT_INDEX_FILE del commit al correr pytest",
+  "archivo": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+  "funcion": "test_la_llave_de_julio_con_motivo_abre",
+  "texto_viejo": "def test_la_llave_de_julio_con_motivo_abre(monkeypatch, tmp_path):\n    \"\"\"La llave de Julio con un motivo valido debe permitir el guardado.\"\"\"\n    monkeypatch.setenv(\"INGENIERO_VEREDICTO_TEST\", str(tmp_path / \"veredicto.json\"))\n    monkeypatch.setenv(\"INGENIERO_BALANCE_EQUIPO\", str(tmp_path / \"trabajos.log\"))\n    # La llave de Julio debe tener 20 letras o mas\n    monkeypatch.setenv(\"JULIO_LO_AUTORIZA\", \"lo autorizo porque es una urgencia del cliente\")\n    monkeypatch.setattr(candado_equipo, \"_fallos_mecanicos\", lambda tarea, archivos=None: [])\n\n    # Simular la importacion de guardia_de_guardado\n    AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    sys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n    import guardia_de_guardado\n\n    # Monkeypatch para simular el comportamiento de las funciones internas de guardia_de_guardado\n    monkeypatch.setattr(guardia_de_guardado, \"_lo_que_se_va_a_guardar\", lambda raiz: [\"web/a_solas_de_prueba.py\"])\n    monkeypatch.setattr(guardia_de_guardado, \"_hay_llaves\", lambda raiz, archivos: [])\n    monkeypatch.setattr(guardia_de_guardado, \"_vigias\", lambda raiz: (True, \"todo verde de mentira\"))\n    monkeypatch.setattr(guardia_de_guardado, \"_apuntar\", lambda raiz, texto: None)\n    monkeypatch.setattr(guardia_de_guardado, \"_apuntar_balance\", lambda raiz, tipo, archivos: None)\n\n    # main() devuelve 0 (permite guardar)\n    assert guardia_de_guardado.main() == 0",
+  "texto_nuevo": "def test_la_llave_de_julio_con_motivo_abre(monkeypatch, tmp_path):\n    \"\"\"La llave de Julio con un motivo valido debe permitir el guardado.\"\"\"\n    monkeypatch.setenv(\"INGENIERO_VEREDICTO_TEST\", str(tmp_path / \"veredicto.json\"))\n    monkeypatch.setenv(\"INGENIERO_BALANCE_EQUIPO\", str(tmp_path / \"trabajos.log\"))\n    # La llave de Julio debe tener 20 letras o mas\n    monkeypatch.setenv(\"JULIO_LO_AUTORIZA\", \"lo autorizo porque es una urgencia del cliente\")\n    monkeypatch.setattr(candado_equipo, \"_fallos_mecanicos\", lambda tarea, archivos=None: [])\n\n    # Simular la importacion de guardia_de_guardado\n    AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    sys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n    import guardia_de_guardado\n\n    # Monkeypatch para simular el comportamiento de las funciones internas de guardia_de_guardado\n    monkeypatch.setattr(guardia_de_guardado, \"_lo_que_se_va_a_guardar\", lambda raiz: [\"web/a_solas_de_prueba.py\"])\n    monkeypatch.setattr(guardia_de_guardado, \"_hay_llaves\", lambda raiz, archivos: [])\n    monkeypatch.setattr(guardia_de_guardado, \"_vigias\", lambda raiz: (True, \"todo verde de mentira\"))\n    monkeypatch.setattr(guardia_de_guardado, \"_apuntar\", lambda raiz, texto: None)\n    monkeypatch.setattr(guardia_de_guardado, \"_apuntar_balance\", lambda raiz, tipo, archivos: None)\n\n    # main() devuelve 0 (permite guardar)\n    assert guardia_de_guardado.main() == 0\n\n\ndef test_las_vigias_no_heredan_el_indice_del_commit(monkeypatch, tmp_path):\n    \"\"\"Las vigias no deben heredar GIT_INDEX_FILE del commit al correr pytest.\"\"\"\n    (tmp_path / \"vigias\").mkdir()\n    monkeypatch.setenv(\"GIT_INDEX_FILE\", str(tmp_path / \"indice_del_commit\"))\n\n    AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    sys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n    import guardia_de_guardado\n\n    capturadas = []\n\n    def falso(*a, **k):\n        capturadas.append(k.get(\"env\"))\n        return types.SimpleNamespace(returncode=0, stdout=\"1 passed\", stderr=\"\")\n\n    monkeypatch.setattr(guardia_de_guardado.subprocess, \"run\", falso)\n\n    try:\n        guardia_de_guardado._vigias(str(tmp_path))\n    except Exception:\n        pass\n\n    assert any(env is not None for env in capturadas)\n    for env in capturadas:\n        if env is not None:\n            assert \"GIT_INDEX_FILE\" not in env",
+  "cambio": "Agregar al final del archivo, despues de test_la_llave_de_julio_con_motivo_abre, la prueba test_las_vigias_no_heredan_el_indice_del_commit que verifica que _vigias pasa env sin GIT_INDEX_FILE a subprocess.run",
+  "codigo": "def test_las_vigias_no_heredan_el_indice_del_commit(monkeypatch, tmp_path):\n    \"\"\"Las vigias no deben heredar GIT_INDEX_FILE del commit al correr pytest.\"\"\"\n    (tmp_path / \"vigias\").mkdir()\n    monkeypatch.setenv(\"GIT_INDEX_FILE\", str(tmp_path / \"indice_del_commit\"))\n\n    AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    sys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n    import guardia_de_guardado\n\n    capturadas = []\n\n    def falso(*a, **k):\n        capturadas.append(k.get(\"env\"))\n        return types.SimpleNamespace(returncode=0, stdout=\"1 passed\", stderr=\"\")\n\n    monkeypatch.setattr(guardia_de_guardado.subprocess, \"run\", falso)\n\n    try:\n        guardia_de_guardado._vigias(str(tmp_path))\n    except Exception:\n        pass\n\n    assert any(env is not None for env in capturadas)\n    for env in capturadas:\n        if env is not None:\n            assert \"GIT_INDEX_FILE\" not in env",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py::test_las_vigias_no_heredan_el_indice_del_commit",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "arnes/vecinas.py",
+   "arnes/candado_equipo.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "vecinas.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La prueba nueva usa types.SimpleNamespace y el paquete no muestra que el archivo vigias/test_vigia_el_guardia_se_acuerda_y_frena.py importe types: si ese import no existe en la cabecera (que no viene en el material), la prueba falla con NameError y la vigia queda roja. No alcanza a ser invento (el encargo pide types.SimpleNamespace literal), pero es un riesgo real que el material no deja verificar.",
+   "El trabajo no demuestra que la prueba corre: confianza 'media', sin prueba interna ejecutada, y la ley pide probar de verdad antes de pedirle a Julio."
+  ],
+  "riesgo_vecinos": [
+   "Si falta import types, el fallo es en runtime solo dentro de la prueba nueva (el resto del archivo se importa bien), asi que no rompe a las demas pruebas, pero deja la vigia nueva en rojo e impide sellar.",
+   "Los monkeypatch (subprocess.run, env GIT_INDEX_FILE) se revierten solos con el fixture, no contaminan a vecinos."
+  ],
+  "que_falta": [
+   "Confirmar que el archivo objetivo ya tiene import types (y que os/sys estan importados; casi seguro por el uso en la funcion existente) o agregar el import faltante.",
+   "Correr la prueba real y mostrar que pasa, para sellar."
+  ],
+  "resumen_para_el_jefe": "La reparacion copia exacto el encargo, toca el lugar indicado y no inventa nada, pero usa types.SimpleNamespace sin que el paquete demuestre que 'types' esta importado en el archivo: hay que confirmar ese import y ejecutar la prueba antes de sellar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19070 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

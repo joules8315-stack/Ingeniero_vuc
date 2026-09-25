@@ -1,0 +1,32 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion puede_revisar_bigpickle en cuerpo/cuotas.py: el Acuerdo A-32 manda que cuando todas las IA gratis duermen revise Big Pickle (nunca Claude, y nunca lo que escribio Big Pickle).",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "puede_revisar_claude",
+  "texto_viejo": "def puede_revisar_claude(escritor, dormidos):\n    # Ley Julio 2026-09-14: Claude revisa a DeepSeek solo si todas las IA gratis duermen.\n    if escritor == 'claude':\n        return False\n    gratis = [q for q in ORDEN if not q.startswith('deepseek')]\n    return all(q in dormidos for q in gratis)",
+  "texto_nuevo": "def puede_revisar_claude(escritor, dormidos):\n    # Ley Julio 2026-09-14: Claude revisa a DeepSeek solo si todas las IA gratis duermen.\n    if escritor == 'claude':\n        return False\n    gratis = [q for q in ORDEN if not q.startswith('deepseek')]\n    return all(q in dormidos for q in gratis)\n\ndef puede_revisar_bigpickle(escritor, dormidos):\n    # A-32 (Julio 2026-09-18): si todas las IA gratis duermen, revisa Big Pickle, nunca Claude; y nunca lo que escribio Big Pickle.\n    if escritor == 'bigpickle':\n        return False\n    gratis = [q for q in ORDEN if not q.startswith('deepseek')]\n    return all(q in dormidos for q in gratis)",
+  "cambio": "Anadir inmediatamente despues de puede_revisar_claude una funcion NUEVA llamada puede_revisar_bigpickle(escritor, dormidos) con el comentario del Acuerdo A-32, que devuelve False si escritor == 'bigpickle' y en caso contrario calcula gratis = [q for q in ORDEN if not q.startswith('deepseek')] y devuelve all(q in dormidos for q in gratis). No tocar nada mas.",
+  "codigo": "def puede_revisar_bigpickle(escritor, dormidos):\n    # A-32 (Julio 2026-09-18): si todas las IA gratis duermen, revisa Big Pickle, nunca Claude; y nunca lo que escribio Big Pickle.\n    if escritor == 'bigpickle':\n        return False\n    gratis = [q for q in ORDEN if not q.startswith('deepseek')]\n    return all(q in dormidos for q in gratis)",
+  "vigia": "Un test que llame a puede_revisar_bigpickle('bigpickle', dormidos) y compruebe que devuelve False aunque todas las gratis duerman; y que con escritor distinto y todas las gratis dormidas devuelva True, y con alguna despierta devuelva False.",
+  "puede_danar": [
+   "cuerpo/cuotas.py",
+   "quien decide el revisor de una tarea (relevo de cerebros)"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion agrega exactamente la funcion puede_revisar_bigpickle que pide el Acuerdo A-32, con su firma, comentario literal y logica del material, dejando intacta puede_revisar_claude y sin tocar nada mas: no inventa, no rompe vecinos y cumple el encargo, se puede aprobar."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

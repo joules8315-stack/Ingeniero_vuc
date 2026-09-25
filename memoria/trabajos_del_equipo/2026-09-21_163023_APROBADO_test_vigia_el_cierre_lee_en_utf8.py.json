@@ -1,0 +1,27 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la vigia que comprueba que _vigias_verdes lanza pytest con encoding utf-8 y errors replace, espiando subprocess.run sin ejecutar nada real.",
+  "archivo": "vigias/test_vigia_el_cierre_lee_en_utf8.py",
+  "texto_nuevo": "\"\"\"Vigia: el candado de cierre tiene que leer la salida de pytest en UTF-8.\n\nCAUSA RAIZ: en Windows, subprocess.run con text=True usa la codificacion por defecto del\nsistema (cp1252 o similar). La salida de pytest trae acentos y simbolos; si se decodifica\nmal, el candado puede leer basura y confundir un verde con un rojo (o al reves).\n\nEsta vigia NO corre pytest de verdad: pone un espia en subprocess.run que nunca ejecuta\nnada, guarda los kwargs de cada llamada y devuelve una salida falsa. Asi se comprueba que\nla llamada a pytest lleva encoding='utf-8' y errors='replace'.\n\"\"\"\nimport os\nimport subprocess\nimport sys\n\n# La carpeta arnes tiene que estar en sys.path para poder importar candado_cierre.\nAQUI = os.path.dirname(os.path.abspath(__file__))\nRAIZ = os.path.dirname(AQUI)\nARNES = os.path.join(RAIZ, \"arnes\")\nif ARNES not in sys.path:\n    sys.path.insert(0, ARNES)\n\nimport candado_cierre  # noqa: E402\n\n\nclass _ResultadoFalso:\n    \"\"\"Lo que devuelve el espia: parece un CompletedProcess pero no corrio nada.\"\"\"\n\n    def __init__(self):\n        self.returncode = 0\n        self.stdout = \"1 passed\"\n        self.stderr = \"\"\n\n\nclass _EspiaRun:\n    \"\"\"Espia de subprocess.run: nunca ejecuta, guarda los kwargs de cada llamada.\"\"\"\n\n    def __init__(self):\n        self.llamadas = []\n\n    def __call__(self, *args, **kwargs):\n        self.llamadas.append({\"args\": args, \"kwargs\": kwargs})\n        return _ResultadoFalso()\n\n\ndef _llamada_a_pytest(espia):\n    \"\"\"Devuelve la llamada cuyo comando menciona pytest, o None si no hubo.\"\"\"\n    for llamada in espia.llamadas:\n        args = llamada[\"args\"]\n        if not args:\n            continue\n        cmd = args[0]\n        if isinstance(cmd, (list, tuple)) and any(\"pytest\" in str(p) for p in cmd):\n            return llamada\n    return None\n\n\ndef test_el_cierre_lee_en_utf8(tmp_path, monkeypatch):\n    # Dentro de una vigia no se corren vigias: se quita la marca para que _vigias_verdes\n    # no corte por la guarda de pytest-dentro-de-pytest.\n    monkeypatch.delenv(\"PYTEST_CURRENT_TEST\", raising=False)\n\n    # No hay otra corrida en marcha.\n    monkeypatch.setattr(candado_cierre, \"_ya_hay_otra_corrida\", lambda: False)\n\n    # El cerrojo no toca el disco.\n    monkeypatch.setattr(candado_cierre, \"_poner_cerrojo\", lambda: None)\n    monkeypatch.setattr(candado_cierre, \"_quitar_cerrojo\", lambda: None)\n\n    # El espia: subprocess.run nunca corre nada de verdad.\n    espia = _EspiaRun()\n    monkeypatch.setattr(subprocess, \"run\", espia)\n\n    # La raiz tiene que tener la carpeta vigias/ o _vigias_verdes corta antes de llamar.\n    (tmp_path / \"vigias\").mkdir()\n\n    verde, detalle = candado_cierre._vigias_verdes(str(tmp_path))\n\n    # El espia devolvio returncode 0, asi que el candado tiene que decir verde.\n    assert verde is True, \"con returncode 0 el candado tiene que dar verde: \" + str(detalle)\n\n    llamada = _llamada_a_pytest(espia)\n    assert llamada is not None, \"no se llamo a pytest: \" + str(espia.llamadas)\n\n    kwargs = llamada[\"kwargs\"]\n    assert kwargs.get(\"encoding\") == \"utf-8\", (\n        \"la llamada a pytest tiene que llevar encoding='utf-8', \"\n        \"y llevaba: \" + repr(kwargs.get(\"encoding\"))\n    )\n    assert kwargs.get(\"errors\") == \"replace\", (\n        \"la llamada a pytest tiene que llevar errors='replace', \"\n        \"y llevaba: \" + repr(kwargs.get(\"errors\"))\n    )\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada y no rompe nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20590 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

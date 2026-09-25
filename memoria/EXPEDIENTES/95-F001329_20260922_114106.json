@@ -1,0 +1,28 @@
+{
+  "orden": {
+    "repara": "la contradiccion del encargo de la orden 95: exigir Popen y a la vez 'no tocar otro archivo' rompe la vigia vecina",
+    "pieza": "vigias/test_vigia_el_capataz_lanza_al_equipo.py (junto con cuerpo/capataz.py)",
+    "razon": "la vigia vecina falsea subprocess.run y comprueba que fue llamado; con Popen queda roja y ademas lanza al equipo real gastando dinero y colgandose hasta 3000 s",
+    "encargo": "Reescribir la orden 95 quitando la restriccion 'No toques ningun otro archivo' e incluyendo en el MISMO trabajo la vigia vigias/test_vigia_el_capataz_lanza_al_equipo.py: cambiar el monkeypatch de capataz.subprocess.run por capataz.subprocess.Popen (falso que apunte args/kwargs y devuelva un objeto con pid, returncode y wait), falsear cuerpo.vigilante.esperar para que devuelva 'termino' o el estado de corte sin correr el proceso real, adaptar la lectura de salida al archivo .salida_tarea_*.txt en vez de communicate, y cambiar la prueba de timeout para que espere 'COLGADA:' en vez de 'TOPE DE TIEMPO'. Ademas el paquete del obrero debe traer en el trozo la funcion tipo_de_fallo (capataz.py:248) para poder anadir la comprobacion 'COLGADA:'. Recien con la vigia adaptada en verde se aplica el cambio de lanzar_al_equipo.",
+    "modo": "IA",
+    "id": "95-F001329",
+    "origen": "forense:95",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0
+  },
+  "huella": "385e33f63b298811",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_114101_RECHAZADO_test_vigia_el_capataz_lanza_al_equipo.py.json\nOBRERO deepseek -> AUDITOR grok47\n  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None\n  aviso       : bigpickle no contesto: revisa Grok 4.7 (A-45)\n  aviso       : GPT-OSS 120B (Groq) no le cabe (19941 letras, aguanta 19042) -> se le salta\n  diagnostico : El material trae la funcion lanzar_al_equipo ya con Popen y COLGADA:, pero la vigia solo tiene el encabezado y no el cuerpo completo, y falta el resto de la vigia para adaptarla.\n  toca        : vigias/test_vigia_el_capataz_lanza_al_equipo.py funcion NO_ENCONTRADO\n  confianza   : baja\n  PREGUNTA_REQUERIDA: El material solo trae las primeras 40 lineas de la vigia; necesito el archivo completo para adaptar el monkeypatch, la lectura de salida y la prueba de timeout.\n  VEREDICTO   : RECHAZADO\n  fallo       : El parche no reescribe la vigia: solo cambia el helper _falsa_run por _FalsoPopen/_falsa_popen y un comentario. No hay monkeypatch de cuerpo.vigilante.esperar, no se lee .salida_tarea_*.txt y la prueba de timeout no pasa a esperar 'COLGADA:'.\n  fallo       : El falso promete apuntar args/kwargs en la lista de llamadas y acepta stdout/stderr, pero no anota ninguna llamada ni escribe el archivo de salida; wait ignora el timeout. Quitar _falsa_run sin tocar el resto de las pruebas deja la vigia rota.\n  resumen     : No aplica: solo cambia el muñeco y un comentario, y deja la vigia a medias, sin la salida por archivo ni el aviso COLGADA:.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T11:41:06",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: You've hit your weekly limit · resets Sep 25, 11am (America/Bogota)\n",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\95-F001329_20260922_114106.json"
+  }
+}

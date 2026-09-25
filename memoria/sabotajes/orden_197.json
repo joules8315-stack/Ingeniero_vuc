@@ -1,0 +1,7 @@
+[
+ {
+  "archivo": "arnes/puente_codex.py",
+  "viejo": "        if isinstance(datos.get(\"hookSpecificOutput\"), dict):\n            if not datos[\"hookSpecificOutput\"].get(\"hookEventName\"):\n                datos[\"hookSpecificOutput\"][\"hookEventName\"] = evento\n            if \"additionalContext\" in datos:\n                contexto = datos.pop(\"additionalContext\")\n                if not datos[\"hookSpecificOutput\"].get(\"additionalContext\"):\n                    datos[\"hookSpecificOutput\"][\"additionalContext\"] = contexto\n        elif \"additionalContext\" in datos:\n            contexto = datos.pop(\"additionalContext\")\n            datos[\"hookSpecificOutput\"] = {\n                \"hookEventName\": evento,\n                \"additionalContext\": contexto,\n            }\n        _escribir_json(datos)",
+  "nuevo": "        if isinstance(datos.get(\"hookSpecificOutput\"), dict):\n            if not datos[\"hookSpecificOutput\"].get(\"hookEventName\"):\n                datos[\"hookSpecificOutput\"][\"hookEventName\"] = evento\n        elif \"additionalContext\" in datos:\n            contexto = datos.pop(\"additionalContext\")\n            datos[\"hookSpecificOutput\"] = {\n                \"hookEventName\": evento,\n                \"additionalContext\": contexto,\n            }\n        _escribir_json(datos)"
+ }
+]

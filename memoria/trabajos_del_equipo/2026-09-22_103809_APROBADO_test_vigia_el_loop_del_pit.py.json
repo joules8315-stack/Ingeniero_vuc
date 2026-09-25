@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "grok47",
+ "propuesta": {
+  "diagnostico": "En test_tope_de_gasto_para_antes_de_llamar las dos aserciones finales esperan que el bucle pare por tope de gasto, pero deben cambiarse por las nuevas que exige el encargo.",
+  "archivo": "vigias/test_vigia_el_loop_del_pit.py",
+  "funcion": "test_tope_de_gasto_para_antes_de_llamar",
+  "texto_viejo": "    assert texto.startswith('PARADO: TOPE DE GASTO')\n    assert llamadas == []",
+  "texto_nuevo": "    assert not texto.startswith('PARADO: TOPE DE GASTO')  # A-42: sin tope en dolares\n    assert llamadas == ['o1']",
+  "cambio": "Sustituir las dos aserciones finales de test_tope_de_gasto_para_antes_de_llamar por las dos nuevas que indican que ya no hay tope en dolares y que si se llamo al equipo con la orden o1.",
+  "codigo": "    assert not texto.startswith('PARADO: TOPE DE GASTO')  # A-42: sin tope en dolares\n    assert llamadas == ['o1']",
+  "vigia": "vigias/test_vigia_el_loop_del_pit.py::test_tope_de_gasto_para_antes_de_llamar",
+  "puede_danar": [
+   "vigias/test_vigia_el_loop_del_pit.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio sustituye solo las dos aserciones pedidas, con el texto exacto del encargo, y no toca nada mas."
+ },
+ "avisos": [
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "vueltas_dadas: 1"
+ ]
+}

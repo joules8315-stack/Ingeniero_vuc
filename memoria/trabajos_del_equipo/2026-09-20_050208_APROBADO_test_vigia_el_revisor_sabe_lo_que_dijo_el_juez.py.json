@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La funcion de mentira _falso_preguntar_con_relevo en la segunda prueba solo acepta el prompt y argumentos sueltos, no argumentos con nombre, por lo que revienta al llamarla con evitar u otros nombres.",
+  "archivo": "vigias/test_vigia_el_revisor_sabe_lo_que_dijo_el_juez.py",
+  "funcion": "test_el_material_del_revisor_lleva_la_razon_del_juez",
+  "texto_viejo": "    def _falso_preguntar_con_relevo(prompt, *resto):",
+  "texto_nuevo": "    def _falso_preguntar_con_relevo(prompt, *resto, **con_nombre):",
+  "cambio": "Anadir **con_nombre a la firma de _falso_preguntar_con_relevo para que acepte argumentos con nombre ademas de los sueltos, igual que la funcion de mentira de vigias/test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py.",
+  "codigo": "    def _falso_preguntar_con_relevo(prompt, *resto, **con_nombre):",
+  "vigia": "vigias/test_vigia_el_revisor_sabe_lo_que_dijo_el_juez.py::test_el_material_del_revisor_lleva_la_razon_del_juez",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cambio aprobado, corrige el diagnóstico sin introducir inventos ni dañar vecinos."
+ },
+ "avisos": [
+  "OpenCode termino con codigo 1",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

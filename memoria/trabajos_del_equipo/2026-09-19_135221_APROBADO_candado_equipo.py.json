@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El disparador del libro de fallos en volver_atras usa un patron que salta en cada llamada al equipo, asi que el candado de memoria frena todas las acciones normales.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "volver_atras",
+  "texto_viejo": "            disparador=r'''ingeniero\\.py\\s+equipo''',",
+  "texto_nuevo": "            disparador=r'''git\\s+commit[^\\n]*--no-verify|INGENIERO_OFF\\s*=\\s*1''',",
+  "cambio": "Sustituir el disparador del apunte en el libro de fallos dentro de volver_atras: el patron viejo salta en cada llamada al equipo y frena acciones normales; el nuevo mira el peligro real (saltarse al guardia con --no-verify o con INGENIERO_OFF=1).",
+  "codigo": "            disparador=r'''git\\s+commit[^\\n]*--no-verify|INGENIERO_OFF\\s*=\\s*1''',",
+  "vigia": "Una prueba que llame al equipo normalmente y compruebe que el candado de memoria NO frena (no aparece el apunte con disparador del nombre del comando), y que si aparece cuando se usa git commit --no-verify o INGENIERO_OFF=1.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cambio correcto del disparador, soluciona el diagnóstico sin romper nada ni infringir contrato."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25629 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

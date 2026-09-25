@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "main arma una sola huella con la COMBINACION de ids de los fallos revividos, asi que si al siguiente comando cambia la combinacion (una leccion mas o una menos) vuelve a frenar aunque todas las lecciones ya se hayan mostrado hace un momento",
+  "archivo": "arnes/candado_memoria.py",
+  "funcion": "main",
+  "texto_viejo": "    huella = hashlib.sha1(\n        (\"|\".join(sorted(str(f.get(\"id\", \"\")) for f in revividos))\n         ).encode(\"utf-8\", \"replace\")).hexdigest()\n\n    if _ya_avisado(huella):\n        partes.append(\"\")\n        partes.append(\"  (De esto ya te avise hace un momento y vuelves a intentarlo: PASA.\")\n        partes.append(\"   Insistir despues de leer el aviso es una decision, no un descuido.)\")\n        sys.stderr.write(\"\\n\".join(partes) + \"\\n\")\n        return 0\n\n    _apuntar_aviso(huella)",
+  "texto_nuevo": "    huellas = [hashlib.sha1(\n        (\"fallo-\" + str(f.get(\"id\", \"\"))).encode(\"utf-8\", \"replace\")).hexdigest()\n        for f in revividos]\n\n    if all(_ya_avisado(h) for h in huellas):\n        partes.append(\"\")\n        partes.append(\"  (De esto ya te avise hace un momento y vuelves a intentarlo: PASA.\")\n        partes.append(\"   Insistir despues de leer el aviso es una decision, no un descuido.)\")\n        sys.stderr.write(\"\\n\".join(partes) + \"\\n\")\n        return 0\n\n    for h in huellas:\n        _apuntar_aviso(h)",
+  "cambio": "Sustituir el bloque de la huella unica por una huella POR LECCION: una huella por cada fallo revivido con hashlib.sha1(('fallo-' + str(f.get('id', ''))).encode('utf-8', 'replace')).hexdigest(); si TODAS las huellas ya estan avisadas (_ya_avisado) se deja pasar como hoy (mensaje de ya te avise, return 0); si no, se apuntan TODAS con _apuntar_aviso, se agrega la linea de repite la misma accion y se devuelve 2 como hoy. La leccion se sigue mostrando siempre la primera vez; el candado no se quita. Nada mas cambia.",
+  "codigo": "    huellas = [hashlib.sha1(\n        (\"fallo-\" + str(f.get(\"id\", \"\"))).encode(\"utf-8\", \"replace\")).hexdigest()\n        for f in revividos]\n\n    if all(_ya_avisado(h) for h in huellas):\n        partes.append(\"\")\n        partes.append(\"  (De esto ya te avise hace un momento y vuelves a intentarlo: PASA.\")\n        partes.append(\"   Insistir despues de leer el aviso es una decision, no un descuido.)\")\n        sys.stderr.write(\"\\n\".join(partes) + \"\\n\")\n        return 0\n\n    for h in huellas:\n        _apuntar_aviso(h)",
+  "vigia": "vigias/test_vigia_commit_limpio.py y vigias/conftest.py (vigilan arnes/candado_memoria.py); comprobar que al repetir la misma accion con una leccion mas o una menos ya no vuelve a frenar y que la primera vez sigue mostrando la leccion y devolviendo 2",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candados_medicion.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_commit_limpio.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "test_vigia_commit_limpio.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el requisito, no inventa, no rompe vecinos y arregla el diagnóstico."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

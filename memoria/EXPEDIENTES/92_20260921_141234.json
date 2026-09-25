@@ -1,0 +1,66 @@
+{
+  "orden": {
+    "id": "92",
+    "titulo": "La vigia del vigilante de la tarea que se demora",
+    "origen": "directriz de Julio A-44 (2026-09-21): si una tarea pasa su tiempo limite, se revisa si sigue trabajando o se dano; si avanza se espera, si no se detiene y se busca la causa",
+    "repara": "hoy lanzar_al_equipo corta toda tarea a los 900 s aunque este avanzando, y espera los 900 s enteros aunque este colgada desde el principio",
+    "pieza": "vigias/test_vigia_el_vigilante_de_la_tarea.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_vigilante_de_la_tarea.py. Vigila la funcion esperar del archivo nuevo cuerpo/vigilante.py, con la firma esperar(proceso, limite, sin_avance, tope_duro, avance, dormir, reloj). Arriba: from cuerpo import vigilante. Usa un reloj falso (una lista con el tiempo actual que avanza cuando se llama a dormir con los segundos que se le pasen) y un proceso falso con poll() que devuelve None hasta el momento que le digas y despues 0, y kill() que apunta que se le llamo. avance es una funcion que devuelve un numero. Pruebas, cada una con assert, con limite 100, sin_avance 30 y tope_duro 1000: (1) si el proceso termina a los 50, devuelve 'termino' y no se llamo a kill; (2) si el proceso termina a los 300 y avance devuelve un numero que sube cada vez que se le llama, devuelve 'termino' y no se llamo a kill, porque pasado el limite seguia avanzando; (3) si el proceso nunca termina y avance devuelve siempre el mismo numero, devuelve 'colgada', se llamo a kill y el reloj no paso de 100 mas 30 mas 10; (4) si el proceso nunca termina pero avance sube siempre, devuelve 'tope_duro', se llamo a kill y el reloj llego al menos a 1000. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_vigilante_de_la_tarea.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "9c6dc1a445fa2e35",
+  "tipo": "tiempo",
+  "codigo": null,
+  "salida": "TOPE DE TIEMPO: 900 s",
+  "apartados": [],
+  "fecha": "2026-09-21T14:12:34",
+  "analisis": {
+    "que_paso": "La orden 92 mando al equipo (deepseek escribe, bigpickle revisa) CREAR la vigia nueva vigias/test_vigia_el_vigilante_de_la_tarea.py en modo IA con --crear. La corrida del subproceso del equipo no termino en 900 s y lanzar_al_equipo la corto con un tope duro, devolviendo unicamente 'TOPE DE TIEMPO: 900 s'. No se guardo nada (guardado=False, codigo=null) y el expediente quedo sin apartados ni salida util.",
+    "causa_raiz": "lanzar_al_equipo corre el subproceso del equipo con un tope de tiempo rigido (subprocess.run(..., timeout=tope_segundos) con tope_segundos=900) y, al vencer, en el except de TimeoutExpired devuelve solo la cadena 'TOPE DE TIEMPO' botando TODA la salida parcial del proceso. No existe ningun vigilante que mire si la tarea seguia avanzando: una corrida que quiza progresaba (o que ya estaba colgada desde el arranque) se corta igual a los 900 s, sin dejar rastro de cual de las dos era. Es exactamente el defecto que la propia orden 92 buscaba reparar — y la orden se ejecuto sobre ese mismo mecanismo sin proteger, de modo que la herramienta que iba a arreglarse fue la que la mato. El archivo cuerpo/vigilante.py que la orden nombra todavia no existe (la vigia nace roja a proposito), asi que la falta de esa pieza no es la causa: la causa es el cortador ciego de 900 s del capataz.",
+    "donde": "cuerpo/capataz.py, funcion lanzar_al_equipo (lineas 10-50): el tope en la linea 36 (timeout=tope_segundos) y el bloque except de las lineas 39-44 que devuelve 'TOPE DE TIEMPO' descartando resultado.stdout/stderr.",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "def lanzar_al_equipo(proyecto, orden, tope_segundos=900):"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "            timeout=tope_segundos,"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "    except subprocess.TimeoutExpired:\n        return {\n            \"guardado\": False,\n            \"codigo\": None,\n            \"salida\": \"TOPE DE TIEMPO: \" + str(tope_segundos) + \" s\",\n        }"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "    salida = resultado.stdout + resultado.stderr\n    return {\n        \"guardado\": \"GUARDADO AL MOMENTO\" in salida,"
+      }
+    ],
+    "no_volver_a": "Nunca cortar una tarea por tope de tiempo botando su salida parcial: sin ella no se puede saber si avanzaba o estaba colgada, ni reparar la causa.",
+    "tarea_nueva": {
+      "repara": "cuando lanzar_al_equipo corta por tope de tiempo hoy bota resultado.stdout/stderr y solo deja 'TOPE DE TIEMPO: 900 s', dejando al perito sin evidencia para decidir si el equipo avanzaba o estaba colgado",
+      "pieza": "cuerpo/capataz.py",
+      "razon": "guardar la salida parcial es el paso previo y DISTINTO a crear la vigia: sin esa evidencia el vigilante que pide A-44 no tendra con que decidir 'avanza / se colgo'",
+      "encargo": "En cuerpo/capataz.py, dentro de lanzar_al_equipo, en el except subprocess.TimeoutExpired: leer lo parcial que trae la excepcion (e.stdout y e.stderr, que pueden ser None) y adjuntarlo al valor devuelto, de modo que 'salida' incluya 'TOPE DE TIEMPO: 900 s' seguido de esa salida parcial. No cambiar el tope ni la firma ni ningun otro archivo. Nace primero su vigia roja que compruebe que, tras un TimeoutExpired con stdout='...avance...', el diccionario devuelto contiene ese texto.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 300s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\92_20260921_141234.json"
+  }
+}

@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_legislar.py, la funcion parece_una_orden no descarta textos que traen palabras o formas que solo usa la maquina (monkeypatch, subprocess, TypeError, assert, tmp_path, nombre pegado a parentesis vacios, o ruta que acabe en .py), asi que esos renglones pasan como ordenes de Julio.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "parece_una_orden",
+  "texto_viejo": "    # b) Pregunta\n    if texto.rstrip().endswith(\"?\"):\n        return False\n    # c) Demasiado corto\n    if len(texto.split()) < MINIMO_PALABRAS:\n        return False\n    return True",
+  "texto_nuevo": "    # b) Pregunta\n    if texto.rstrip().endswith(\"?\"):\n        return False\n    # c) Demasiado corto\n    if len(texto.split()) < MINIMO_PALABRAS:\n        return False\n    # d) Palabra o forma que solo usa la maquina, no una orden de Julio\n    if any(palabra in texto.lower() for palabra in PALABRAS_DE_MAQUINA):\n        return False\n    if re.search(r\"[A-Za-z_][A-Za-z0-9_]*\\s*\\(\\s*\\)\", texto):\n        return False\n    if re.search(r\"\\S+\\.py\\b\", texto):\n        return False\n    return True",
+  "cambio": "Anadir al final de parece_una_orden, despues del descarte por texto demasiado corto y antes del return True, tres descartes nuevos: (1) si el texto trae alguna palabra de la lista de palabras que solo usa la maquina (monkeypatch, subprocess, TypeError, assert, tmp_path); (2) si trae un nombre pegado a parentesis vacios; (3) si trae una ruta que acabe en .py. Las reglas que ya estan no se tocan.",
+  "codigo": "    # d) Palabra o forma que solo usa la maquina, no una orden de Julio\n    if any(palabra in texto.lower() for palabra in PALABRAS_DE_MAQUINA):\n        return False\n    if re.search(r\"[A-Za-z_][A-Za-z0-9_]*\\s*\\(\\s*\\)\", texto):\n        return False\n    if re.search(r\"\\S+\\.py\\b\", texto):\n        return False\n    return True",
+  "vigia": "Un vigia que llame a parece_una_orden con renglones que traen monkeypatch, subprocess, TypeError, assert, tmp_path, un nombre con parentesis vacios o una ruta .py y compruebe que devuelve False, y con frases normales de Julio y compruebe que sigue devolviendo True.",
+  "puede_danar": [
+   "arnes/candado_legislar.py",
+   "el candado de cierre que usa parece_una_orden para apuntar lo que dice Julio"
+  ],
+  "preguntas": [
+   "De donde sale la lista PALABRAS_DE_MAQUINA: hay que crearla nueva en arnes/candado_legislar.py o ya existe en el archivo y no se ha mostrado en el material?"
+  ],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La pieza critica del fix es PALABRAS_DE_MAQUINA y la propuesta misma no sabe si existe ni que contiene ('De donde sale la lista': pregunta abierta). No aparece en el material (que solo muestra EXCLUIR_DE_ORDEN y MINIMO_PALABRAS) y el codigo propuesto no la crea: si no existe, cada llamada a parece_una_orden lanza NameError y el candado deja de registrar TODO, no solo lo nuevo. Si existe pero no contiene exactamente monkeypatch, subprocess, typeerror, assert y tmp_path (en minusculas), el descarte (1) no caza nada y el diagnostico queda sin arreglar.",
+   "El cambio va sin la otra mitad: define o crea la lista. El paquete pide 'una regla mas' con palabras textuales; poner la lista arriba con su nombre y solo nombre es lo correcto, pero aqui no viene ni una ni otra cosa.",
+   "El vigia propuesto (crear una prueba que llame a parece_una_orden) implica escribir en otro archivo, y el encargo dice 'No toques ningun otro archivo'. Falta decidir donde vive esa prueba sin violar esa ley.",
+   "El match por subcadena (palabra in texto.lower()) es laxo pero es exactamente el mismo patron de EXCLUIR_DE_ORDEN que ya existe en el archivo: no lo cuento como fallo, solo marco que el 'sin tocar ni una frase de Julio' depende de que la lista traiga las palabras exactas."
+  ],
+  "riesgo_vecinos": [
+   "Si PALABRAS_DE_MAQUINA no existe, se rompe el candado de cierre completo: toda orden de Julio deja de apuntarse (NameError en cada llamada), no solo la regla nueva.",
+   "El descarte .py (\\S+\\.py\\b) es amplio: cualquier frase con un nombre de archivo terminado en .py queda fuera, aunque sea una orden legitima de Julio. El encargo lo pide asi, pero la medicion '10 de 26 sin tocar frases' hay que probarla de verdad, no darla por cierta."
+  ],
+  "que_falta": [
+   "Confirmar si PALABRAS_DE_MAQUINA ya existe en arnes/candado_legislar.py y que contiene exactamente esas 5 palabras; si no existe, crear esa constante arriba del archivo con las palabras textuales del encargo.",
+   "Prueba real interna antes de Julio (Ley 7): correr los 26 renglones del 2026-09-20 y verificar que caen 10 y que ninguna frase de Julio deja de entrar.",
+   "Decidir donde vive el vigia sin tocar otro archivo, respetando la ley 'No toques ningun otro archivo'."
+  ],
+  "resumen_para_el_jefe": "El codigo nuevo hace justo lo que pide el encargo (tres descartes nuevos, reglas viejas intactas y ubicacion correcta), pero todo depende de una lista PALABRAS_DE_MAQUINA que ni el material ni la propuesta muestran: hay que confirmar que existe con esas 5 palabras o crearla, porque si falta el fix no caza o, peor, rompe el registro completo de ordenes."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

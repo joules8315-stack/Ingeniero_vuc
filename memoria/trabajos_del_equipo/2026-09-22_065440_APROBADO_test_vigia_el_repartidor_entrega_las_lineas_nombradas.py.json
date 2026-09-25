@@ -1,0 +1,24 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "No existe la vigia pedida y la funcion tramos_nombrados(problema) aun no esta en cerebro/router.py; el material solo muestra el bloque 'LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO' dentro de armar(), asi que la vigia debe comprobar su presencia por texto sin inventar la implementacion.",
+  "archivo": "vigias/test_vigia_el_repartidor_entrega_las_lineas_nombradas.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"vigias/test_vigia_el_repartidor_entrega_las_lineas_nombradas.py\n\nVIGIA: EL REPARTIDOR ENTREGA LAS LINEAS NOMBRADAS.\n\nVigila una funcion NUEVA de cerebro/router.py:\n\n    tramos_nombrados(problema) -> [(desde, hasta), ...]\n\nDevuelve la lista de tramos de lineas que el texto del problema nombra. Es la pieza que\nfaltaba: el repartidor sabia hablar de tramos, pero no tenia forma de pedir POR SU NOMBRE\nlas lineas que el encargo nombra, y por eso se escribian numeros a mano que se corrian solos\n(fallo real: los numeros 87 y 227 dentro de armar()).\n\nLo que comprueba esta vigia:\n  1. una linea suelta se entrega como tramo de un solo renglon;\n  2. un rango \"de la 351 a la 356\" se entrega como (351, 356);\n  3. varias lineas sueltas se entregan cada una como su propio tramo;\n  4. un texto sin numeros no inventa tramos: devuelve lista vacia;\n  5. el propio cerebro/router.py usa tramos_nombrados(problema) dentro del bloque que\n     empieza con el comentario LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO.\n\nNo toca ningun otro archivo. Solo lee.\n\"\"\"\nimport os\n\nfrom cerebro import router\n\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nRUTA_ROUTER = os.path.join(AQUI, \"cerebro\", \"router.py\")\n\n\ndef _texto_router():\n    \"\"\"Devuelve el texto entero de cerebro/router.py, o cadena vacia si no se puede leer.\"\"\"\n    try:\n        with open(RUTA_ROUTER, \"r\", encoding=\"utf-8\") as f:\n            return f.read()\n    except Exception:\n        return \"\"\n\n\ndef test_una_linea_suelta():\n    assert router.tramos_nombrados(\"cambia la linea 1142\") == [(1142, 1142)]\n\n\ndef test_un_rango_de_lineas():\n    tramos = router.tramos_nombrados(\"las lineas 351 a 356 y la 634\")\n    assert (351, 356) in tramos\n\n\ndef test_varias_lineas_sueltas():\n    tramos = router.tramos_nombrados(\"lineas 1142 y 1174\")\n    assert (1142, 1142) in tramos\n    assert (1174, 1174) in tramos\n\n\ndef test_sin_numeros_no_inventa():\n    assert router.tramos_nombrados(\"sin numeros\") == []\n\n\ndef test_el_router_usa_la_funcion_en_su_bloque():\n    texto = _texto_router()\n    assert texto, \"no se pudo leer cerebro/router.py\"\n    marca = \"LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO\"\n    pos = texto.find(marca)\n    assert pos != -1, \"no aparece el comentario %r en cerebro/router.py\" % marca\n    bloque = texto[pos:]\n    assert \"tramos_nombrados(problema)\" in bloque, (\n        \"el bloque que empieza con %r no llama a tramos_nombrados(problema)\" % marca)\n\n\nif __name__ == \"__main__\":\n    test_una_linea_suelta()\n    test_un_rango_de_lineas()\n    test_varias_lineas_sueltas()\n    test_sin_numeros_no_inventa()\n    test_el_router_usa_la_funcion_en_su_bloque()\n    print(\"VIGIA OK: el repartidor entrega las lineas nombradas\")\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigia nueva hace exactamente las 5 pruebas que pedia el encargo, usa solo archivos y funciones pedidos (cerebro/router.py, tramos_nombrados, el comentario 'LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO'), no toca ningun archivo que no sea ella y crea la funcion que se pide crear; la linea 1142, el rango 351-356 y las sueltas 1142/1174 vienen literal del encargo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (37754 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

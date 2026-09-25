@@ -1,0 +1,16 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-22_114101_RECHAZADO_test_vigia_el_capataz_lanza_al_equipo.py.json
+OBRERO deepseek -> AUDITOR grok47
+  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None
+  aviso       : bigpickle no contesto: revisa Grok 4.7 (A-45)
+  aviso       : GPT-OSS 120B (Groq) no le cabe (19941 letras, aguanta 19042) -> se le salta
+  diagnostico : El material trae la funcion lanzar_al_equipo ya con Popen y COLGADA:, pero la vigia solo tiene el encabezado y no el cuerpo completo, y falta el resto de la vigia para adaptarla.
+  toca        : vigias/test_vigia_el_capataz_lanza_al_equipo.py funcion NO_ENCONTRADO
+  confianza   : baja
+  PREGUNTA_REQUERIDA: El material solo trae las primeras 40 lineas de la vigia; necesito el archivo completo para adaptar el monkeypatch, la lectura de salida y la prueba de timeout.
+  VEREDICTO   : RECHAZADO
+  fallo       : El parche no reescribe la vigia: solo cambia el helper _falsa_run por _FalsoPopen/_falsa_popen y un comentario. No hay monkeypatch de cuerpo.vigilante.esperar, no se lee .salida_tarea_*.txt y la prueba de timeout no pasa a esperar 'COLGADA:'.
+  fallo       : El falso promete apuntar args/kwargs en la lista de llamadas y acepta stdout/stderr, pero no anota ninguna llamada ni escribe el archivo de salida; wait ignora el timeout. Quitar _falsa_run sin tocar el resto de las pruebas deja la vigia rota.
+  resumen     : No aplica: solo cambia el muñeco y un comentario, y deja la vigia a medias, sin la salida por archivo ni el aviso COLGADA:.
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.

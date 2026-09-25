@@ -1,0 +1,29 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion tipo_de_fallo(salida) que clasifique el tipo de fallo segun el texto de salida del comando equipo.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "se_paso_del_tope",
+  "texto_viejo": "def se_paso_del_tope(hoy=None):\n    \"\"\"True si ya se gasto el tope del mes.\"\"\"\n    return gastado_del_mes(hoy) >= TOPE_MES_USD",
+  "texto_nuevo": "def se_paso_del_tope(hoy=None):\n    \"\"\"True si ya se gasto el tope del mes.\"\"\"\n    return gastado_del_mes(hoy) >= TOPE_MES_USD\n\n\ndef tipo_de_fallo(salida):\n    \"\"\"Devuelve de que tipo fue el fallo, mirando el texto de salida.\"\"\"\n    if not isinstance(salida, str):\n        return \"otro\"\n    if salida.startswith(\"TOPE DE TIEMPO\"):\n        return \"tiempo\"\n    if \"EL GUARDIA NO DEJO GUARDAR\" in salida or \"NO SE GUARDO\" in salida:\n        return \"guardia\"\n    if \"EL EQUIPO NO APROBO\" in salida:\n        return \"no_aprobo\"\n    if \"no se pudo aplicar\" in salida:\n        return \"no_aplico\"\n    return \"otro\"",
+  "cambio": "Agregar despues de se_paso_del_tope la funcion tipo_de_fallo(salida) que clasifica el fallo por prioridad: tiempo, guardia, no_aprobo, no_aplico, otro.",
+  "codigo": "def tipo_de_fallo(salida):\n    \"\"\"Devuelve de que tipo fue el fallo, mirando el texto de salida.\"\"\"\n    if not isinstance(salida, str):\n        return \"otro\"\n    if salida.startswith(\"TOPE DE TIEMPO\"):\n        return \"tiempo\"\n    if \"EL GUARDIA NO DEJO GUARDAR\" in salida or \"NO SE GUARDO\" in salida:\n        return \"guardia\"\n    if \"EL EQUIPO NO APROBO\" in salida:\n        return \"no_aprobo\"\n    if \"no se pudo aplicar\" in salida:\n        return \"no_aplico\"\n    return \"otro\"",
+  "vigia": "Una prueba que llame a tipo_de_fallo con cada texto de salida (empezando por 'TOPE DE TIEMPO', con 'EL GUARDIA NO DEJO GUARDAR', con 'NO SE GUARDO', con 'EL EQUIPO NO APROBO', con 'no se pudo aplicar', con otro texto y con algo que no sea texto) y compruebe que devuelve 'tiempo', 'guardia', 'guardia', 'no_aprobo', 'no_aplico', 'otro' y 'otro' respectivamente.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La funcion tipo_de_fallo(salida) cumple exactamente el encargo: se agrega despues de se_paso_del_tope, respeta el orden de prioridad (tiempo > guardia > no_aprobo > no_aplico > otro) y el caso 'salida no es texto', usa solo texto que aparece en el contrato, no toca otras funciones y nadie puede salir danado; se puede aprobar."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

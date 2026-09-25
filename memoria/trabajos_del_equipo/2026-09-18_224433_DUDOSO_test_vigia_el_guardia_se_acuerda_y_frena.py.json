@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba sale roja sin probar nada porque guardia_de_guardado._vigias llama primero a vecinas.elegir(raiz) y con subprocess.run falseado elegir devuelve [] y _vigias sale antes de lanzar pytest.",
+  "archivo": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+  "funcion": "test_las_vigias_no_heredan_el_indice_del_commit",
+  "texto_viejo": "    monkeypatch.setattr(guardia_de_guardado.subprocess, \"run\", falso)",
+  "texto_nuevo": "    import vecinas\n    monkeypatch.setattr(vecinas, \"elegir\", lambda raiz: None)\n    monkeypatch.setattr(guardia_de_guardado.subprocess, \"run\", falso)",
+  "cambio": "Justo antes de monkeypatch.setattr(guardia_de_guardado.subprocess, 'run', falso), agregar 'import vecinas' y monkeypatch.setattr(vecinas, 'elegir', lambda raiz: None) para que se corran todas las vigias. No tocar nada mas.",
+  "codigo": "    import vecinas\n    monkeypatch.setattr(vecinas, \"elegir\", lambda raiz: None)\n    monkeypatch.setattr(guardia_de_guardado.subprocess, \"run\", falso)",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py::test_las_vigias_no_heredan_el_indice_del_commit",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/guardia_de_guardado.py",
+   "vigias/test_vigia_vecinas.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "guardia_de_guardado.py",
+   "test_vigia_vecinas.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El valor con el que se falsifica vecinas.elegir es sospechoso: el propio diagnóstico dice que elegir, devolviendo [], ya saca a _vigias antes con 'solo cambiaron documentos' y sin lanzar pytest. None también es falsy, así que si el guardia es 'if not elegidas:' (lo natural), el test se sigue yendo por el mismo camino y sigue rojo; si el guardia hace len(elegidas), None explota y el try/except deja capturadas vacías (rojo igual). Para que el cambio arregle de verdad hacia falta devolver una lista no vacía, p. ej. lambda raiz: ['una_vigia.py'], o comprobar el guardia real.",
+   "El fix solo funciona si el guardia de _vigias es exactamente 'if elegidas == []:', y el material no da ninguna pista de que sea así; al contrario, dice que [] es el 'nada que probar' normal de elegir, lo que sugiere justo un chequeo de falsy/len en vez de igualdad exacta."
+  ],
+  "riesgo_vecinos": [
+   "No rompe vecinos: el monkeypatch de vecinas.elegir se restaura al terminar la prueba y solo vive dentro de este test. test_vigia_vecinas.py no se ve afectada."
+  ],
+  "que_falta": [
+   "Verificar en arnes/guardia_de_guardado.py (declarado fuera del paquete) la condición exacta con la que _vigias sale por 'solo cambiaron documentos' y si llama a elegir como 'vecinas.elegir' (viable) o con un from-import (en cuyo caso este monkeypatch no la alcanzaría)."
+  ],
+  "resumen_para_el_jefe": "No inventó nada y copió al pie de la letra las líneas que pedía el paquete, pero falsificar vecinas.elegir con None probablemente no arregla la prueba: None es tan 'vacío' como el [] que el propio diagnóstico señala como causa de la salida temprana, así que lo más probable es que el test siga rojo; hay que confirmar el guardia de _vigias o devolver una lista no vacía."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19054 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

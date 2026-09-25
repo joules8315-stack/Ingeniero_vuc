@@ -1,0 +1,70 @@
+{
+ "obrero": "deepseek",
+ "auditor": "grok47",
+ "propuesta": {
+  "diagnostico": "En vigias/test_vigia_codex_sigue_sin_manos.py falta el prefijo 'python ingeniero.py director' en _PREFIJOS_ALLOW y el mensaje de error de la prueba 3 no lo menciona.",
+  "archivo": "vigias/test_vigia_codex_sigue_sin_manos.py",
+  "funcion": "_PREFIJOS_ALLOW y test de reglas allow (Prueba 3)",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "# Son las ordenes al equipo, igual que Claude: arranca, trabaja, equipo, pit.\n_PREFIJOS_ALLOW = (\n    \"python ingeniero.py arranca\",\n    \"python ingeniero.py trabaja\",\n    \"python ingeniero.py equipo\",\n    \"python ingeniero.py pit\",\n)",
+    "texto_nuevo": "# Son las ordenes al equipo y al director, igual que Claude: arranca, trabaja, equipo, pit y director (A-48, 2026-09-22).\n_PREFIJOS_ALLOW = (\n    \"python ingeniero.py arranca\",\n    \"python ingeniero.py trabaja\",\n    \"python ingeniero.py equipo\",\n    \"python ingeniero.py pit\",\n    \"python ingeniero.py director\",\n)"
+   },
+   {
+    "texto_viejo": "            \"Solo se permite 'python ingeniero.py arranca|trabaja|equipo|pit'. \"",
+    "texto_nuevo": "            \"Solo se permite 'python ingeniero.py arranca|trabaja|equipo|pit|director'. \""
+   }
+  ],
+  "cambio": "Anadir el prefijo 'python ingeniero.py director' a _PREFIJOS_ALLOW y actualizar el mensaje de error de la prueba 3 para incluir 'director'.",
+  "codigo": "# Son las ordenes al equipo y al director, igual que Claude: arranca, trabaja, equipo, pit y director (A-48, 2026-09-22).\n_PREFIJOS_ALLOW = (\n    \"python ingeniero.py arranca\",\n    \"python ingeniero.py trabaja\",\n    \"python ingeniero.py equipo\",\n    \"python ingeniero.py pit\",\n    \"python ingeniero.py director\",\n)",
+  "vigia": "vigias/test_vigia_codex_sigue_sin_manos.py (la propia prueba 3, que comprueba que las reglas allow empiezan por un prefijo permitido)",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_director.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "test_vigia_director.py",
+   "via_canonica.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo pedido: mete el prefijo director en la lista permitida y lo nombra en el mensaje de la prueba 3, sin tocar otro archivo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (36857 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion pedir_al_perito en cuerpo/capataz.py, que llama a Claude como perito en solo lectura cuando algo falla.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "citas_que_no_existen",
+  "texto_viejo": "        if texto.replace('\\r', '') not in contenido.replace('\\r', ''):\n            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'no aparece literal'})\n    return malas",
+  "texto_nuevo": "        if texto.replace('\\r', '') not in contenido.replace('\\r', ''):\n            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'no aparece literal'})\n    return malas\n\n\ndef pedir_al_perito(expediente, raiz, tope_segundos=600):\n    \"\"\"Llama a Claude como perito en solo lectura para analizar un fallo con el expediente.\"\"\"\n    import shutil\n    exe = shutil.which('claude')\n    if not exe:\n        return (None, 'no encuentro claude en el PATH')\n    pedido = ('Eres el perito del pit (acuerdo A-22). Analiza este fallo SOLO con el expediente y leyendo el codigo del proyecto; no uses tu memoria. Responde SOLO un objeto JSON con: que_paso, causa_raiz, donde, quien_fallo (herramienta, programa, equipo o diseno), citas (lista de {archivo, texto} copiados LITERAL del proyecto, que prueban la causa), no_volver_a (la leccion en una frase), tarea_nueva ({repara, pieza, razon, encargo, modo: PROGRAMA o IA}; distinta de la orden que fallo). EXPEDIENTE:' + json.dumps(expediente, ensure_ascii=False, indent=2))\n    try:\n        resultado = subprocess.run(\n            [exe, '-p', '--tools', 'Read,Grep,Glob', '--permission-mode', 'plan'],\n            input=pedido,\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            encoding='utf-8',\n            errors='replace',\n            timeout=tope_segundos,\n        )\n    except subprocess.TimeoutExpired:\n        return (None, 'el perito no contesto en %d s' % tope_segundos)\n    except Exception:\n        return (None, 'el perito no contesto')\n    salida = resultado.stdout or ''\n    inicio = salida.find('{')\n    fin = salida.rfind('}')\n    if inicio == -1 or fin == -1 or fin < inicio:\n        return (None, 'el perito no devolvio JSON: ' + salida[:200])\n    trozo = salida[inicio:fin + 1]\n    try:\n        datos = json.loads(trozo)\n    except (ValueError, TypeError):\n        return (None, 'el perito no devolvio JSON: ' + salida[:200])\n    if not isinstance(datos, dict):\n        return (None, 'el perito no devolvio JSON: ' + salida[:200])\n    return (datos, 'ok')",
+  "cambio": "Anadir despues de citas_que_no_existen la funcion pedir_al_perito(expediente, raiz, tope_segundos=600) que busca claude en el PATH, arma el pedido con el expediente, corre subprocess.run en solo lectura, y devuelve (dict, 'ok') o (None, motivo). Nunca lanza.",
+  "codigo": "def pedir_al_perito(expediente, raiz, tope_segundos=600):\n    \"\"\"Llama a Claude como perito en solo lectura para analizar un fallo con el expediente.\"\"\"\n    import shutil\n    exe = shutil.which('claude')\n    if not exe:\n        return (None, 'no encuentro claude en el PATH')\n    pedido = ('Eres el perito del pit (acuerdo A-22). Analiza este fallo SOLO con el expediente y leyendo el codigo del proyecto; no uses tu memoria. Responde SOLO un objeto JSON con: que_paso, causa_raiz, donde, quien_fallo (herramienta, programa, equipo o diseno), citas (lista de {archivo, texto} copiados LITERAL del proyecto, que prueban la causa), no_volver_a (la leccion en una frase), tarea_nueva ({repara, pieza, razon, encargo, modo: PROGRAMA o IA}; distinta de la orden que fallo). EXPEDIENTE:' + json.dumps(expediente, ensure_ascii=False, indent=2))\n    try:\n        resultado = subprocess.run(\n            [exe, '-p', '--tools', 'Read,Grep,Glob', '--permission-mode', 'plan'],\n            input=pedido,\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            encoding='utf-8',\n            errors='replace',\n            timeout=tope_segundos,\n        )\n    except subprocess.TimeoutExpired:\n        return (None, 'el perito no contesto en %d s' % tope_segundos)\n    except Exception:\n        return (None, 'el perito no contesto')\n    salida = resultado.stdout or ''\n    inicio = salida.find('{')\n    fin = salida.rfind('}')\n    if inicio == -1 or fin == -1 or fin < inicio:\n        return (None, 'el perito no devolvio JSON: ' + salida[:200])\n    trozo = salida[inicio:fin + 1]\n    try:\n        datos = json.loads(trozo)\n    except (ValueError, TypeError):\n        return (None, 'el perito no devolvio JSON: ' + salida[:200])\n    if not isinstance(datos, dict):\n        return (None, 'el perito no devolvio JSON: ' + salida[:200])\n    return (datos, 'ok')",
+  "vigia": "Una prueba que llame a pedir_al_perito con un expediente de mentira y compruebe que devuelve (None, 'no encuentro claude en el PATH') cuando claude no esta, y que con un claude de mentira que devuelva JSON valido devuelve (dict, 'ok'), y que con salida no-JSON devuelve (None, 'el perito no devolvio JSON: ...').",
+  "puede_danar": [
+   "cuerpo/capataz.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno: el paquete dice 'Nadie depende de estas piezas. Reparacion aislada' y el cambio solo agrega la funcion nueva al final de citas_que_no_existen sin tocar otras funciones."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El obrero implemento al pie de la letra la funcion pedir_al_perito que el encargo pedia (mismo nombre, mismos parametros, mismo pedido, mismos devoluciones y nunca lanza), la ubicacion cuadra con el texto literal del material, no rompe a nadie y no invento nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (24248 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

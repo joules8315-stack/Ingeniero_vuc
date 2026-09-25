@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "juzgar_con_vecinas no acepta ni propaga el dato opcional dejar_el_cambio que ya tiene juzgar, asi que no puede dejar el archivo como estaba cuando el juez se usa antes de aprobar el trabajo",
+  "archivo": "arnes/juez_de_la_prueba.py",
+  "funcion": "juzgar_con_vecinas",
+  "texto_viejo": "def juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo):",
+  "texto_nuevo": "def juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo, dejar_el_cambio=True):\n    # dejar_el_cambio: si es falso, el archivo se queda como estaba (para cuando el juez se usa antes de aprobar el trabajo).",
+  "cambio": "Anadir el quinto dato opcional dejar_el_cambio=True a la firma de juzgar_con_vecinas con un comentario corto en castellano, y pasarlo tal cual como ultimo dato en la unica llamada que hace a juzgar.",
+  "codigo": "def juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo, dejar_el_cambio=True):\n    # dejar_el_cambio: si es falso, el archivo se queda como estaba (para cuando el juez se usa antes de aprobar el trabajo).\n    \"\"\"Busca sola la prueba que cubre el archivo y la juzga.\n\n    Devuelve un diccionario con ok, prueba y razon. Nunca lanza error: si algo\n    revienta, ok en None y la razon lo explica.\n    \"\"\"\n    try:\n        from pathlib import Path\n\n        from arnes import vecinas\n\n        raiz = str(raiz)\n        ruta_relativa = str(ruta_relativa)\n\n        vigias = vecinas._vigias_existentes(raiz)\n        candidatas = vecinas._vecinas_por_stem([ruta_relativa], raiz, vigias)\n\n        if not candidatas:\n            return {\n                'ok': None,\n                'prueba': None,\n                'razon': (\n                    'ninguna prueba nombra ese archivo, asi que no hay nada que '\n                    'correr para comprobarlo'\n                ),\n            }\n\n        for vigia in candidatas:\n            ruta_vigia = str(Path(raiz) / vigia)\n            ruta_archivo = str(Path(raiz) / ruta_relativa)\n            resultado = juzgar(\n                raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo,\n                dejar_el_cambio\n            )\n\n            if not resultado.get('antes_roja'):\n                continue\n\n            if resultado.get('despues_verde') and resultado.get('vuelve_roja'):\n                return {\n                    'ok': True,\n                    'prueba': vigia,\n                    'razon': resultado.get('razon', ''),\n                }\n\n            return {\n                'ok': False,\n                'prueba': vigia,\n                'razon': resultado.get('razon', ''),\n            }\n\n        return {\n            'ok': None,\n            'prueba': None,\n            'razon': (\n                'ninguna de las pruebas que nombran ese archivo estaba roja, '\n                'asi que no habia nada que demostrar'\n            ),\n        }\n    except Exception as error:\n        return {\n            'ok': None,\n            'prueba': None,\n            'razon': 'al buscar la prueba que cubre el archivo, revento: %s' % error,\n        }",
+  "vigia": "Una prueba que llame a juzgar_con_vecinas con dejar_el_cambio=False y compruebe que el archivo queda con su contenido original tras el juicio, y otra que con el valor por defecto (True) compruebe que queda con el cambio nuevo puesto.",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "arnes/autorizacion.py",
+   "arnes/candados_medicion.py",
+   "arnes/via_canonica.py",
+   "vigias/test_vigia_ruta_de_acceso.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candados_medicion.py",
+   "test_vigia_ruta_de_acceso.py",
+   "via_canonica.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio anade el quinto dato opcional dejar_el_cambio=True solo a la firma de juzgar_con_vecinas, lo explica con un comentario en castellano y se lo pasa como ultimo argumento a juzgar, tal como pide el contrato, sin tocar nada mas ni romper a ningun vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20632 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

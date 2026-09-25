@@ -1,0 +1,26 @@
+{
+  "orden": {
+    "id": "170",
+    "titulo": "Dos avisos de la memoria de fallos vuelven a ser senal y no frase",
+    "origen": "medido el 2026-09-22: Claude acoto A MANO los avisos 71 y 73 de memoria/FALLOS.json y los escribio como frase larga sin barras; vigias/test_vigia_fallos_de_verdad_avisan.py (test_el_disparador_es_una_SENAL_y_no_una_frase) se puso roja. Julio: nada de trabajo a mano",
+    "repara": "dos avisos no coinciden con nada y la vigia de la memoria de fallos esta roja",
+    "pieza": "memoria/FALLOS.json",
+    "modo": "IA",
+    "razon": "un disparador es una senal: trozos cortos separados por barras",
+    "encargo": "En memoria/FALLOS.json hay dos lineas que cambiar, entregalas en la lista cambios, cada una copiada tal cual como texto_viejo. (1) La linea 1142 es (2 espacios) \"disparador\": \"subprocess\\\\.Popen[^\\\\n]{0,300}No toques ningun otro archivo\", ; cambiala por (2 espacios) \"disparador\": \"falsea subprocess\\\\.run|solo falsifica subprocess\\\\.run\", . (2) La linea 1174 es (2 espacios) \"disparador\": \"NO HACE LO QUE SE PIDIO[^\\\\n]{0,80}tipo_de_fallo\", ; cambiala por (2 espacios) \"disparador\": \"NO HACE LO QUE SE PIDIO|edita el CUERPO de la funcion\", . Copia las comas y comillas tal cual estan en el archivo. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_fallos_de_verdad_avisan.py",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "da6afcef46c21cac",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_065020_SIN_VEREDICTO_FALLOS.json.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).\n  diagnostico : El material no trae el archivo memoria/FALLOS.json ni sus lineas 1142 y 1174, asi que no puedo copiar el texto_viejo literal que se exige.\n  toca        : memoria/FALLOS.json funcion NO_ENCONTRADO\n  confianza   : baja\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T06:50:24"
+}

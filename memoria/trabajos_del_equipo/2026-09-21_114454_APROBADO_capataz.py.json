@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La funcion recoger_lo_frenado devuelve directamente el resultado de recoger_los_pedazos.recoger sin comprobar la prueba de la copia recogida, y ademas usa subprocess/sys sin que conste su importacion en el material.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "recoger_lo_frenado",
+  "texto_viejo": "        nombre = os.path.basename(pieza) + '.FRENADO_POR_EL_GUARDIA'\n        from arnes import recoger_los_pedazos\n        return recoger_los_pedazos.recoger(raiz, nombre)",
+  "texto_nuevo": "        nombre = os.path.basename(pieza) + '.FRENADO_POR_EL_GUARDIA'\n        from arnes import recoger_los_pedazos\n        import subprocess\n        import sys\n        resultado = recoger_los_pedazos.recoger(raiz, nombre)\n        if not isinstance(resultado, dict) or not resultado.get('ok'):\n            return resultado\n        if orden.get('entrega_la_prueba') == 'si':\n            return resultado\n        vigia = orden.get('vigia')\n        if not vigia:\n            return resultado\n        entorno = dict(os.environ)\n        entorno['INGENIERO_OFF'] = '1'\n        prueba = subprocess.run(\n            [sys.executable, '-m', 'pytest', '-q', vigia],\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            timeout=300,\n            env=entorno,\n        )\n        if prueba.returncode != 0:\n            subprocess.run(\n                ['git', 'checkout', 'HEAD', '--', pieza],\n                cwd=raiz,\n                capture_output=True,\n                text=True,\n                timeout=60,\n            )\n            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida deja su prueba roja: no se deja en el disco'}\n        return resultado",
+  "cambio": "Sustituir el return directo de recoger_los_pedazos.recoger por: guardar el resultado en una variable; si no es dict con ok verdadero, o la orden trae entrega_la_prueba igual a 'si', o la orden no trae vigia, devolver el resultado; si no, correr pytest sobre la vigia con INGENIERO_OFF=1 y timeout 300; si returncode no es 0, hacer git checkout HEAD -- pieza y devolver {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida deja su prueba roja: no se deja en el disco'}; si es 0, devolver el resultado. Importar subprocess y sys dentro de la funcion.",
+  "codigo": "        nombre = os.path.basename(pieza) + '.FRENADO_POR_EL_GUARDIA'\n        from arnes import recoger_los_pedazos\n        import subprocess\n        import sys\n        resultado = recoger_los_pedazos.recoger(raiz, nombre)\n        if not isinstance(resultado, dict) or not resultado.get('ok'):\n            return resultado\n        if orden.get('entrega_la_prueba') == 'si':\n            return resultado\n        vigia = orden.get('vigia')\n        if not vigia:\n            return resultado\n        entorno = dict(os.environ)\n        entorno['INGENIERO_OFF'] = '1'\n        prueba = subprocess.run(\n            [sys.executable, '-m', 'pytest', '-q', vigia],\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            timeout=300,\n            env=entorno,\n        )\n        if prueba.returncode != 0:\n            subprocess.run(\n                ['git', 'checkout', 'HEAD', '--', pieza],\n                cwd=raiz,\n                capture_output=True,\n                text=True,\n                timeout=60,\n            )\n            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida deja su prueba roja: no se deja en el disco'}\n        return resultado",
+  "vigia": "Una prueba que llame a recoger_lo_frenado con una orden que traiga vigia y entrega_la_prueba distinto de 'si', con una copia recogida que deja la vigia roja, y compruebe que devuelve ok False con la razon 'la copia recogida deja su prueba roja: no se deja en el disco' y que la pieza quedo restaurada con git checkout; y otra que con la vigia verde devuelva el resultado tal cual.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "arnes/recoger_los_pedazos.py",
+   "memoria/trabajos_sin_revisar"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "recoger_los_pedazos.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada y no rompe a los vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (34936 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "GPT-OSS 120B (Groq) no le cabe (35975 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 2"
+ ]
+}

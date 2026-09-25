@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La tercera prueba usa una cuarta constante que no existe en el archivo, y hay que crearla justo debajo de la constante de la multiplicacion con el mismo nombre que ya usa la prueba y con los numeros de la suma en orden invertido.",
+  "archivo": "vigias/test_vigia_el_juez_de_la_prueba.py",
+  "funcion": "constantes de textos de ejemplo (PIEZA_ROTA, PIEZA_BUENA, PIEZA_MALA)",
+  "texto_viejo": "PIEZA_MALA",
+  "texto_nuevo": "PIEZA_MALA",
+  "cambio": "NO_ENCONTRADO: el material no trae el texto literal de las constantes PIEZA_ROTA, PIEZA_BUENA ni PIEZA_MALA, ni el nombre exacto de la cuarta constante que usa la tercera prueba. Sin ese texto literal no se puede copiar palabra por palabra ni saber el nombre exacto que ya usa la prueba.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "vigias/test_vigia_el_juez_de_la_prueba.py (tercera prueba del archivo)",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: cual es el nombre exacto de la cuarta constante que usa la tercera prueba del archivo, y cual es el texto literal exacto de PIEZA_BUENA para copiarlo con los dos numeros en el otro orden?"
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El contenido del codigo NO es 'igual al de la buena': PIEZA_BUENA define `def suma(a, b):` (esta literal en el material) y el codigo propuesto define `def sumar(a, b):`. Cambia el nombre de la funcion sin que el encargo lo pida; el encargo solo pide intercambiar el orden de los numeros en la suma.",
+   "Con `sumar` la pieza no expone la funcion `suma` que llama VIGIA (`pieza.suma(2, 3) == 5`, esta literal en el material): la tercera prueba que se quiere arreglar seguiria roja (AttributeError). El cambio no arregla de verdad lo que dice el diagnostico.",
+   "El cambio se apoya en su propia PREGUNTA_REQUERIDA (nombre exacto de la cuarta constante y texto literal de PIEZA_BUENA, aun sin responder) y pese a eso emite codigo con conjeturas (`PIEZA_OTRA_BUENA`, `sumar`). Si el nombre real que usa la tercera prueba difiere, la reparacion no hace nada.",
+   "Segun el texto del encargo, la constante debe ser 'el mismo nombre que ya usa la tercera prueba', y el propositor admite no saberlo: emitir codigo antes de tener ese dato es asumir, y la ley 'nunca asumir' de este paquete lo prohibe."
+  ],
+  "riesgo_vecinos": [
+   "arnes/juez_de_la_prueba.py no se toca y no se rompe.",
+   "Riesgo real sobre la propia tercera prueba: si esa prueba escribe la pieza desde `PIEZA_OTRA_BUENA` y la pieza queda con `def sumar`, `pieza.suma` no existira y la prueba seguira roja.",
+   "Las otras dos pruebas no se tocan: no hay riesgo en ellas."
+  ],
+  "que_falta": [
+   "Contestar la PREGUNTA_REQUERIDA: confirmar el nombre EXACTO de la cuarta constante que ya usa la tercera prueba y el texto literal de PIEZA_BUENA.",
+   "Reemitir el codigo copiando PIEZA_BUENA tal cual (`def suma(a, b):`) y cambiando solo `return a + b` por `return b + a`.",
+   "Correr la vigia de verdad y verla en verde antes de volver a presentar."
+  ],
+  "resumen_para_el_jefe": "El cambio adivina el nombre y el texto que el mismo deja como PREGUNTA_REQUERIDA y encima escribe `def sumar` en vez de `def suma`, con lo que la pieza no responde a `pieza.suma(2,3)` de VIGIA y la tercera prueba seguiria roja: rechazado hasta que confirmen el nombre y reescriban el contenido fiel a la buena."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (24826 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (25545 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (25856 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (25914 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

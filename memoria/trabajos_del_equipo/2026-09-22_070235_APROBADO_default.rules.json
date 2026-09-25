@@ -1,0 +1,27 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El material no trae el archivo config/codex/default.rules (no existe aun) pero si confirma los subcomandos de ingeniero.py (arranca, trabaja, equipo, pit, director) y la prohibicion de que Codex escriba o haga git, asi que se crea entero con el comentario y las 20 lineas prefix_rule pedidas.",
+  "archivo": "config/codex/default.rules",
+  "texto_nuevo": "# Reglas de Codex, guardadas en el proyecto (A-40 y A-48, 2026-09-22). Codex no escribe codigo ni guarda trabajo: solo da ordenes al equipo y al director del Ingeniero, y el programa escribe. Se instalan con python arnes/instalar_reglas_codex.py.\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"arranca\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"trabaja\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"equipo\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"pit\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"director\"], decision=\"allow\")\nprefix_rule(pattern=[\"git\", \"add\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"commit\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"push\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"reset\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"restore\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"checkout\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"switch\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"rm\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"mv\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"stash\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"rebase\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"merge\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"cherry-pick\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"clean\"], decision=\"forbidden\")\n",
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "default.rules"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Crea el archivo nuevo completo con el comentario exacto pedido, las 5 reglas allow (arranca, trabaja, equipo, pit, director) y las 14 forbidden de git (add, commit, push, reset, restore, checkout, switch, rm, mv, stash, rebase, merge, cherry-pick, clean), todo en el orden del encargo y sin tocar nada mas; no hay inventos ni vecinos en riesgo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27356 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

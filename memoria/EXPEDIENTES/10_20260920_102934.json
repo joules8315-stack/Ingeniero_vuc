@@ -1,0 +1,32 @@
+{
+  "orden": {
+    "id": "10",
+    "titulo": "Limpiar el codigo muerto del final de comprobar_pasos",
+    "origen": "revision del 2026-09-20 al enchufar el juez",
+    "repara": "en cuerpo/capataz.py, despues del return del paso 5 hay un bloque entero que nunca se ejecuta (quedo de una edicion vieja)",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "codigo que nunca corre confunde a quien lo lee y hace creer que el marcar estado vive en dos sitios",
+    "encargo": "En cuerpo/capataz.py, al final de la funcion comprobar_pasos, quitar el bloque de lineas que viene DESPUES del return del paso 5 y que por eso nunca se ejecuta (empieza con encontrada = False y termina devolviendo True). Solo se borra ese bloque muerto, no se agrega nada. Un solo archivo: cuerpo/capataz.py y ninguno mas.",
+    "vigia": "vigias/test_vigia_comprobar_pasos_sin_codigo_muerto.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0
+  },
+  "huella": "717b6f51530e0117",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_102749_APROBADO_capataz.py.json\nOBRERO deepseek -> AUDITOR groq\n  aviso       : GPT-OSS 120B (Groq) no le cabe (19257 letras, aguanta 19042) -> se le salta\n  aviso       : Big Pickle no contesto en 300s (timeout)\n  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None\n  diagnostico : Al final de comprobar_pasos hay un bloque de codigo despues del return del paso 5 que nunca se ejecuta (empieza con 'encontrada = False' y termina con 'return True'), y hay que borrarlo.\n  toca        : cuerpo/capataz.py funcion comprobar_pasos\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : El bloque muerto se elimina correctamente, sin introducir errores ni romper contratos.\n\nAPLICADO en disco (lo escribio el equipo): cuerpo/capataz.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   1 failed, 306 passed in 103.53s (0:01:43)\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): cuerpo/capataz.py\nLLAVE GUARDADA: se puede escribir en 89 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T10:29:34",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no contesto en 600 s",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\10_20260920_102934.json"
+  }
+}

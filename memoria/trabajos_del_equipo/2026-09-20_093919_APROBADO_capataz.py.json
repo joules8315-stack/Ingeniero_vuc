@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py, dentro de la funcion bucle, cuando el resultado si se guardo solo se marca la orden como hecha y se avisa HECHA, sin enchufar el sabotaje que comprueba por programa que la vigia de verdad protege.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "            if resultado.get('guardado'):\n                marcar_estado(orden.get('id'), 'hecha', '', 0)\n                aviso('HECHA ' + orden_id)",
+  "texto_nuevo": "            if resultado.get('guardado'):\n                sabotaje = sabotear_la_orden(orden)\n                if isinstance(sabotaje, dict) and not sabotaje.get('ok'):\n                    aviso('SABOTAJE ' + orden_id + ' ' + str(sabotaje.get('razon')))\n                    marcar_estado(orden.get('id'), 'fallida', 'sabotaje', (orden.get('fallos_seguidos') or 0) + 1)\n                    continue\n                marcar_estado(orden.get('id'), 'hecha', '', 0)\n                aviso('HECHA ' + orden_id)\n                if isinstance(sabotaje, dict) and sabotaje.get('ok'):\n                    aviso('SABOTAJE ' + orden_id + ' ' + str(sabotaje.get('razon')))",
+  "cambio": "Sustituir las dos lineas que marcan la orden como hecha y avisan HECHA por: primero llamar a sabotear_la_orden(orden) guardando el resultado; si el resultado es un diccionario con ok falso, avisar SABOTAJE con el numero de orden y la razon, marcar la orden como fallida con paso 'sabotaje' y un fallo mas, y seguir con la siguiente orden sin darla por hecha; si no, las mismas dos lineas de antes (marcar hecha y avisar HECHA) y ademas, cuando ok valga verdadero, un aviso mas con SABOTAJE, el numero de orden y la razon. Todo con la misma sangria que ya tienen esas dos lineas.",
+  "codigo": "            if resultado.get('guardado'):\n                sabotaje = sabotear_la_orden(orden)\n                if isinstance(sabotaje, dict) and not sabotaje.get('ok'):\n                    aviso('SABOTAJE ' + orden_id + ' ' + str(sabotaje.get('razon')))\n                    marcar_estado(orden.get('id'), 'fallida', 'sabotaje', (orden.get('fallos_seguidos') or 0) + 1)\n                    continue\n                marcar_estado(orden.get('id'), 'hecha', '', 0)\n                aviso('HECHA ' + orden_id)\n                if isinstance(sabotaje, dict) and sabotaje.get('ok'):\n                    aviso('SABOTAJE ' + orden_id + ' ' + str(sabotaje.get('razon')))",
+  "vigia": "Una prueba determinista que corra el bucle con una orden cuyo resultado se guarda y compruebe que se llama a sabotear_la_orden, que si contesta ok falso la orden queda fallida con paso 'sabotaje' y no se avisa HECHA, y que si contesta ok verdadero se avisa HECHA y ademas SABOTAJE con la razon.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "arnes/sabotaje.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "sabotaje.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no usa elementos inexistentes y no afecta a archivos vecinos."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

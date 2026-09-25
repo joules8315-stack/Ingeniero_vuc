@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py falta la constante CAMPOS_ETIQUETA y la funcion validar_etiqueta que comprueba que la etiqueta de una orden este completa antes de correrla.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "leer_lista",
+  "texto_viejo": "    if isinstance(datos, list):\n        return datos\n    return []",
+  "texto_nuevo": "    if isinstance(datos, list):\n        return datos\n    return []\n\n\nCAMPOS_ETIQUETA = ('id', 'origen', 'repara', 'pieza', 'depende', 'modo', 'razon', 'encargo')\n\n\ndef validar_etiqueta(orden):\n    \"\"\"Devuelve la lista de problemas de la etiqueta de una orden (vacia = completa).\"\"\"\n    if not isinstance(orden, dict):\n        return ['no es una orden']\n    problemas = []\n    for campo in CAMPOS_ETIQUETA:\n        if campo not in orden:\n            problemas.append('falta ' + campo)\n            continue\n        if campo == 'depende':\n            if not isinstance(orden[campo], list):\n                problemas.append('depende no es una lista')\n            continue\n        valor = orden[campo]\n        if not isinstance(valor, str) or valor.strip() == '':\n            problemas.append('falta ' + campo)\n    if 'modo' in orden and orden['modo'] not in ('PROGRAMA', 'IA'):\n        problemas.append('modo debe ser PROGRAMA o IA')\n    return problemas",
+  "cambio": "Agregar despues de leer_lista la constante CAMPOS_ETIQUETA y la funcion validar_etiqueta con su docstring corto, sin tocar otras funciones.",
+  "codigo": "CAMPOS_ETIQUETA = ('id', 'origen', 'repara', 'pieza', 'depende', 'modo', 'razon', 'encargo')\n\n\ndef validar_etiqueta(orden):\n    \"\"\"Devuelve la lista de problemas de la etiqueta de una orden (vacia = completa).\"\"\"\n    if not isinstance(orden, dict):\n        return ['no es una orden']\n    problemas = []\n    for campo in CAMPOS_ETIQUETA:\n        if campo not in orden:\n            problemas.append('falta ' + campo)\n            continue\n        if campo == 'depende':\n            if not isinstance(orden[campo], list):\n                problemas.append('depende no es una lista')\n            continue\n        valor = orden[campo]\n        if not isinstance(valor, str) or valor.strip() == '':\n            problemas.append('falta ' + campo)\n    if 'modo' in orden and orden['modo'] not in ('PROGRAMA', 'IA'):\n        problemas.append('modo debe ser PROGRAMA o IA')\n    return problemas",
+  "vigia": "Una prueba que llame validar_etiqueta con una orden completa (espera []), con una orden sin 'razon' (espera ['falta razon']), con 'depende' no lista (espera ['depende no es una lista']), con 'modo' distinto de PROGRAMA/IA (espera ['modo debe ser PROGRAMA o IA']) y con algo que no es dict (espera ['no es una orden']).",
+  "puede_danar": [
+   "cuerpo/capataz.py::leer_lista",
+   "cuerpo/capataz.py::siguiente_pendiente",
+   "cuerpo/capataz.py::comprobar_pasos"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "ninguno: la insercion va despues del cierre de leer_lista y no modifica el texto de leer_lista, siguiente_pendiente ni comprobar_pasos; las tres piezas listadas en puede_danar quedan intactas"
+  ],
+  "que_falta": [
+   "crear la vigia descrita y correrla (pytest) para probar de verdad los 5 casos antes de pedirle a Julio que mire"
+  ],
+  "resumen_para_el_jefe": "La constante CAMPOS_ETIQUETA y la funcion validar_etiqueta cumplen exactamente el encargo (mismos campos, mismas reglas, misma ubicacion 'despues de leer_lista'); no se toca ninguna otra funcion y no hay invento; solo resta correr la prueba real."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27229 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,33 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La segunda prueba vigila la ley vieja A-38 (que el material del revisor lleve la razon del juez), pero la orden A-39 ya no pregunta a ninguna IA cuando el juez demostro el cambio, asi que la lista de prompts debe quedar vacia.",
+  "archivo": "vigias/test_vigia_el_revisor_sabe_lo_que_dijo_el_juez.py",
+  "funcion": "test_el_material_del_revisor_lleva_la_razon_del_juez",
+  "texto_viejo": "    assert prompts, (\n        'el revisor no llego a preguntar nada: si el revisor no sabe que la prueba ya '\n        'se corrio y quedo verde, vuelve a juzgar a ciegas lo que ya esta demostrado')\n    assert 'YA SE CORRIO LA PRUEBA' in prompts[0], (\n        'el material del revisor NO dice que la prueba ya se corrio: si el revisor no '\n        'sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar a ciegas lo '\n        'que ya esta demostrado. Material: ' + prompts[0][:400])\n    assert RAZON_DEL_JUEZ in prompts[0], (\n        'el material del revisor NO dice lo que ya decidio el juez: si el revisor no '\n        'sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar a ciegas lo '\n        'que ya esta demostrado. Material: ' + prompts[0][:400])",
+  "texto_nuevo": "    assert not prompts, (\n        'se le pregunto a una IA algo que el juez ya habia demostrado: eso es gastar '\n        'sin ganar (orden A-39)')",
+  "cambio": "Sustituir los tres assert finales de la funcion de prueba por un unico assert que exija que la lista de prompts quede vacia, con mensaje en espanol que diga que se le pregunto a una IA algo que el juez ya habia demostrado y que eso es gastar sin ganar (orden A-39).",
+  "codigo": "    assert not prompts, (\n        'se le pregunto a una IA algo que el juez ya habia demostrado: eso es gastar '\n        'sin ganar (orden A-39)')",
+  "vigia": "vigias/test_vigia_el_revisor_sabe_lo_que_dijo_el_juez.py::test_el_material_del_revisor_lleva_la_razon_del_juez debe quedar verde exigiendo que prompts quede vacio tras obrero.auditar con _juez_de_la_prueba.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada y no afecta a otros tests."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

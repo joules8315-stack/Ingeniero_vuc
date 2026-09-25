@@ -1,0 +1,26 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "No existe la vigia vigias/test_vigia_el_comando_director.py y hay que crearla corriendo de verdad el subcomando 'director' de ingeniero.py con subprocess.run desde la raiz del proyecto.",
+  "archivo": "vigias/test_vigia_el_comando_director.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"Vigia del comando `python ingeniero.py director ...` (A-48, 2026-09-22).\n\nCorre el comando DE VERDAD con subprocess.run y comprueba tres cosas:\n\n  1. `director estado` sale con 0 y su salida habla de 'pendientes o corriendo'.\n  2. `director nueva 'esto no es json'` sale con 1 y su salida dice 'JSON'.\n  3. `director loquesea` sale con 1 y su salida ensena el uso ('director estado').\n\nSolo lee: ninguna prueba cambia la lista de tareas. La prueba 2 manda un texto que NO es\nJSON, asi que el director lo rechaza antes de tocar nada; aun asi, si algun dia dejara de\nrechazarlo, esta vigia no escribe ni borra nada por su cuenta.\n\nLa raiz del proyecto es la carpeta de arriba de `vigias/`, o sea la que contiene\n`ingeniero.py`. Se calcula desde la ruta de este mismo archivo, sin numeros a mano.\n\"\"\"\n\nimport os\nimport subprocess\nimport sys\n\n\n# La carpeta de esta vigia es .../vigias; la raiz del proyecto es la de arriba.\nAQUI = os.path.dirname(os.path.abspath(__file__))\nRAIZ = os.path.dirname(AQUI)\nINGENIERO = os.path.join(RAIZ, \"ingeniero.py\")\n\n\ndef _correr_director(*argumentos):\n    \"\"\"Corre `python ingeniero.py director <argumentos>` desde la raiz del proyecto.\n\n    Devuelve el objeto CompletedProcess. No usa shell: la lista de argumentos va tal cual,\n    para que un texto con espacios o comillas no se rompa por el camino.\n    \"\"\"\n    return subprocess.run(\n        [sys.executable, \"ingeniero.py\", \"director\"] + list(argumentos),\n        cwd=RAIZ,\n        capture_output=True,\n        text=True,\n        encoding=\"utf-8\",\n        errors=\"replace\",\n        timeout=120,\n    )\n\n\ndef _salida(r):\n    \"\"\"Salida completa (stdout + stderr) para poder buscar dentro sin perder nada.\"\"\"\n    return (r.stdout or \"\") + (r.stderr or \"\")\n\n\ndef test_estado_sale_con_cero_y_habla_de_pendientes_o_corriendo():\n    \"\"\"`director estado` es la foto del tablero: debe salir con 0 y decir que hay pendientes.\"\"\"\n    assert os.path.isfile(INGENIERO), \"no encuentro ingeniero.py en %s\" % RAIZ\n    r = _correr_director(\"estado\")\n    texto = _salida(r)\n    assert r.returncode == 0, (\n        \"`director estado` deberia salir con 0 y salio con %s. Salida:\\n%s\"\n        % (r.returncode, texto)\n    )\n    assert \"pendientes o corriendo\" in texto, (\n        \"la salida de `director estado` no habla de 'pendientes o corriendo'. Salida:\\n%s\"\n        % texto\n    )\n\n\ndef test_nueva_con_texto_que_no_es_json_sale_con_uno_y_dice_json():\n    \"\"\"Una orden que no es JSON se rechaza: sale con 1 y la salida nombra 'JSON'.\"\"\"\n    r = _correr_director(\"nueva\", \"esto no es json\")\n    texto = _salida(r)\n    assert r.returncode == 1, (\n        \"`director nueva 'esto no es json'` deberia salir con 1 y salio con %s. Salida:\\n%s\"\n        % (r.returncode, texto)\n    )\n    assert \"JSON\" in texto, (\n        \"la salida no dice 'JSON' al rechazar una orden que no es JSON. Salida:\\n%s\" % texto\n    )\n\n\ndef test_accion_desconocida_sale_con_uno_y_ensena_el_uso():\n    \"\"\"Una accion que no existe no se inventa: sale con 1 y ensena el uso del comando.\"\"\"\n    r = _correr_director(\"loquesea\")\n    texto = _salida(r)\n    assert r.returncode == 1, (\n        \"`director loquesea` deberia salir con 1 y salio con %s. Salida:\\n%s\"\n        % (r.returncode, texto)\n    )\n    assert \"director estado\" in texto, (\n        \"la salida no ensena el uso ('director estado') ante una accion desconocida. Salida:\\n%s\"\n        % texto\n    )\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno: solo crea un archivo nuevo en vigias/ y no toca ningun otro"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Crea exactamente el archivo pedido, con los tres asserts que pide el encargo, usando solo os/subprocess/sys y sin escribir nada; no inventa ni rompe nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27090 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

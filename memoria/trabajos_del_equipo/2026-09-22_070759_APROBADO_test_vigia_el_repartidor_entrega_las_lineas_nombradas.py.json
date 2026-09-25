@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba (5) busca tramos_nombrados(problema) en todo el texto de router.py en vez de limitarse al trozo entre los comentarios LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO y FILTRAR POR ARCHIVOS NOMBRADOS, y no comprueba que ese trozo NO contenga def tramos_nombrados.",
+  "archivo": "vigias/test_vigia_el_repartidor_entrega_las_lineas_nombradas.py",
+  "funcion": "prueba (5) — la que abre cerebro/router.py como texto",
+  "texto_viejo": "  5. el propio cerebro/router.py usa tramos_nombrados(problema) dentro del bloque que\n     empieza con el comentario LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO.",
+  "texto_nuevo": "  5. el propio cerebro/router.py usa tramos_nombrados(problema) dentro del bloque que\n     empieza con el comentario LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO, y ese bloque NO\n     define la funcion tramos_nombrados.",
+  "cambio": "En la prueba (5), en vez de buscar tramos_nombrados(problema) en todo el texto de router.py, tomar solo el trozo que va desde el comentario LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO hasta el comentario FILTRAR POR ARCHIVOS NOMBRADOS, y comprobar con assert que ese trozo contiene tramos_nombrados( y que NO contiene def tramos_nombrados.",
+  "codigo": "    # 5. el bloque que empieza con LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO usa\n    #    tramos_nombrados(problema) y NO define la funcion tramos_nombrados.\n    texto = _texto_router()\n    assert texto, \"no se pudo leer cerebro/router.py\"\n    inicio = texto.find(\"LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO\")\n    assert inicio != -1, \"no aparece el comentario LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO\"\n    fin = texto.find(\"FILTRAR POR ARCHIVOS NOMBRADOS\", inicio)\n    assert fin != -1, \"no aparece el comentario FILTRAR POR ARCHIVOS NOMBRADOS\"\n    trozo = texto[inicio:fin]\n    assert \"tramos_nombrados(\" in trozo, \"el bloque no usa tramos_nombrados(\"\n    assert \"def tramos_nombrados\" not in trozo, \"el bloque no debe definir tramos_nombrados\"",
+  "vigia": "vigias/test_vigia_el_repartidor_entrega_las_lineas_nombradas.py comprueba que el bloque entre los dos comentarios usa tramos_nombrados( y no define def tramos_nombrados.",
+  "puede_danar": [
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio recorta la busqueda al trozo entre los dos comentarios y anade el assert que faltaba (el bloque no define def tramos_nombrados); hace exactamente lo que pide el encargo, sin tocar otros archivos ni inventar nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38759 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (39364 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

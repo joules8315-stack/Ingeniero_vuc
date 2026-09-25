@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "guardar_en_la_historia hace git add y git commit sin esperar turno, y dos tareas del pit pueden mezclarse al guardar a la vez",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "guardar_en_la_historia",
+  "texto_viejo": "        comun = dict(cwd=raiz, capture_output=True, text=True, stdin=subprocess.DEVNULL)\n        r = subprocess.run([\"git\", \"add\", \"--\"] + rutas, timeout=60, **comun)\n        if r.returncode != 0:\n            return False, \"no se pudo preparar el guardado: \" + ((r.stderr or \"\") + (r.stdout or \"\"))[-300:]\n        r = subprocess.run([\"git\", \"commit\", \"-q\", \"-m\", str(mensaje), \"--\"] + rutas, timeout=1800, **comun)\n        if r.returncode != 0:\n            motivo = ((r.stderr or \"\") + (r.stdout or \"\"))[-600:]\n            hechos = volver_atras(raiz, rutas, motivo)\n            return False, \"EL GUARDIA NO DEJO GUARDAR: \" + motivo + \"\\nSE VOLVIO ATRAS: \" + \"; \".join(hechos)\n        return True, \"guardado en la historia: \" + \", \".join(rutas)",
+  "texto_nuevo": "        comun = dict(cwd=raiz, capture_output=True, text=True, stdin=subprocess.DEVNULL)\n        with fila_de_commits(raiz):\n            r = subprocess.run([\"git\", \"add\", \"--\"] + rutas, timeout=60, **comun)\n            if r.returncode != 0:\n                return False, \"no se pudo preparar el guardado: \" + ((r.stderr or \"\") + (r.stdout or \"\"))[-300:]\n            r = subprocess.run([\"git\", \"commit\", \"-q\", \"-m\", str(mensaje), \"--\"] + rutas, timeout=1800, **comun)\n            if r.returncode != 0:\n                motivo = ((r.stderr or \"\") + (r.stdout or \"\"))[-600:]\n                hechos = volver_atras(raiz, rutas, motivo)\n                return False, \"EL GUARDIA NO DEJO GUARDAR: \" + motivo + \"\\nSE VOLVIO ATRAS: \" + \"; \".join(hechos)\n            return True, \"guardado en la historia: \" + \", \".join(rutas)",
+  "cambio": "Envolver desde el primer subprocess.run de git add hasta el return True final (incluida la vuelta atras si el commit falla) dentro de 'with fila_de_commits(raiz):', indentando ese bloque un nivel mas. El except que ya existe sigue capturando el TimeoutError de fila_de_commits y lo devuelve como (False, 'no se pudo guardar: ...'). El resto de la funcion no cambia.",
+  "codigo": "        with fila_de_commits(raiz):\n            r = subprocess.run([\"git\", \"add\", \"--\"] + rutas, timeout=60, **comun)\n            if r.returncode != 0:\n                return False, \"no se pudo preparar el guardado: \" + ((r.stderr or \"\") + (r.stdout or \"\"))[-300:]\n            r = subprocess.run([\"git\", \"commit\", \"-q\", \"-m\", str(mensaje), \"--\"] + rutas, timeout=1800, **comun)\n            if r.returncode != 0:\n                motivo = ((r.stderr or \"\") + (r.stdout or \"\"))[-600:]\n                hechos = volver_atras(raiz, rutas, motivo)\n                return False, \"EL GUARDIA NO DEJO GUARDAR: \" + motivo + \"\\nSE VOLVIO ATRAS: \" + \"; \".join(hechos)\n            return True, \"guardado en la historia: \" + \", \".join(rutas)",
+  "vigia": "Una prueba que lance dos guardados a la vez sobre el mismo repo y compruebe que no se mezclan: el segundo espera turno o devuelve (False, 'no se pudo guardar: ...') si vence la espera, sin corromper el commit del primero.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "ingeniero.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Redactar y correr la vigia nueva que propone (dos guardados a la vez, el segundo espera o devuelve (False, 'no se pudo guardar...') si vence la espera) antes de pedirle a Julio que pruebe, cumpliendo la Ley de probar de verdad primero"
+  ],
+  "resumen_para_el_jefe": "El obrero hizo exactamente lo que pedía el paquete: envolvio git add y git commit (incluida la vuelta atras) en 'with fila_de_commits(raiz):', que ya existe en el material (arnes/candado_equipo.py:298-333), sin inventarse nada ni tocar otra cosa, y el except ya existente sigue cazando el TimeoutError; se aprueba."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

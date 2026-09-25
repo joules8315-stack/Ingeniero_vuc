@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El bloque que inserta el pedazo del archivo NOMBRADO recorta siempre a 80 renglones aunque el archivo tenga menos o mas, y no comprueba si meterlo entero respeta TOPE_LINEAS.",
+  "archivo": "cerebro/router.py",
+  "funcion": "armar",
+  "texto_viejo": "            else:\n                texto = \"\\n\".join(_lineas_de(ficha[\"abs\"], 1, min(80, renglones)))\n                if not texto.strip():\n                    continue\n                ya = any(t[\"pieza\"] == fid for t in pedazos)\n                if not ya:\n                    pedazos.insert(0, {\"pieza\": fid, \"abs\": ficha[\"abs\"], \"rol\": ficha[\"rol\"],\n                                       \"desde\": 1, \"hasta\": min(80, renglones),\n                                       \"direccion\": \"%s:1-%s\" % (fid, min(80, renglones)),\n                                       \"texto\": texto, \"puntaje\": 99.0, \"_nombrado\": fid})",
+  "texto_nuevo": "            else:\n                # Se intenta meter el archivo ENTERO. Si al meterlo entero la suma de\n                # renglones pasaria de TOPE_LINEAS, se deja el recorte de 80 como estaba\n                # para no romper el tope (A-48, 2026-09-22).\n                _lineas_ya = sum((t.get(\"hasta\", 0) - t.get(\"desde\", 0) + 1) for t in pedazos)\n                if _lineas_ya + renglones <= TOPE_LINEAS:\n                    hasta = renglones\n                else:\n                    hasta = min(80, renglones)\n                texto = \"\\n\".join(_lineas_de(ficha[\"abs\"], 1, hasta))\n                if not texto.strip():\n                    continue\n                ya = any(t[\"pieza\"] == fid for t in pedazos)\n                if not ya:\n                    pedazos.insert(0, {\"pieza\": fid, \"abs\": ficha[\"abs\"], \"rol\": ficha[\"rol\"],\n                                       \"desde\": 1, \"hasta\": hasta,\n                                       \"direccion\": \"%s:1-%s\" % (fid, hasta),\n                                       \"texto\": texto, \"puntaje\": 99.0, \"_nombrado\": fid})",
+  "cambio": "En el bloque else del bucle for fid in list(_nombrados), sustituir el recorte fijo a 80 renglones por: usar el total real de renglones del archivo (ficha.get('lineas') o renglones) como 'hasta' y como texto entero, ajustando 'direccion' a fid + ':1-' + hasta; pero si la suma de renglones ya presentes en pedazos mas el total del archivo supera TOPE_LINEAS, dejar el recorte de 80 como estaba.",
+  "codigo": "            else:\n                # Se intenta meter el archivo ENTERO. Si al meterlo entero la suma de\n                # renglones pasaria de TOPE_LINEAS, se deja el recorte de 80 como estaba\n                # para no romper el tope (A-48, 2026-09-22).\n                _lineas_ya = sum((t.get(\"hasta\", 0) - t.get(\"desde\", 0) + 1) for t in pedazos)\n                if _lineas_ya + renglones <= TOPE_LINEAS:\n                    hasta = renglones\n                else:\n                    hasta = min(80, renglones)\n                texto = \"\\n\".join(_lineas_de(ficha[\"abs\"], 1, hasta))\n                if not texto.strip():\n                    continue\n                ya = any(t[\"pieza\"] == fid for t in pedazos)\n                if not ya:\n                    pedazos.insert(0, {\"pieza\": fid, \"abs\": ficha[\"abs\"], \"rol\": ficha[\"rol\"],\n                                       \"desde\": 1, \"hasta\": hasta,\n                                       \"direccion\": \"%s:1-%s\" % (fid, hasta),\n                                       \"texto\": texto, \"puntaje\": 99.0, \"_nombrado\": fid})",
+  "vigia": "Una vigia que arme un paquete con un problema que nombre un archivo pequeno (menos de TOPE_LINEAS renglones) y compruebe que el trozo insertado tiene 'hasta' igual al total de renglones del archivo y 'direccion' fid:1-hasta; y otra que con un archivo grande compruebe que 'hasta' sigue siendo 80 y que la suma de renglones de pedazos no pasa de TOPE_LINEAS.",
+  "puede_danar": [
+   "cuerpo/codex.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico sin introducir elementos inexistentes ni romper código vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40272 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "GPT-OSS 120B (Groq) no le cabe (40944 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "Codex termino con codigo 1: OpenAI Codex v0.155.1\n--------\nworkdir: C:\\Ingeniero_VUC\nmodel: gpt-6-astra\nprovider: openai\napproval: never\nsandbox: read-only\nreasoning effort: low\nreasoning summaries: none\nsession id: 01a0ca0d-01b8-7663-b6ae-e1b05ea35d03\n--------\nuser\nEres el AUDITOR. Otro modelo propuso una reparacion. Tu traba",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 2"
+ ]
+}

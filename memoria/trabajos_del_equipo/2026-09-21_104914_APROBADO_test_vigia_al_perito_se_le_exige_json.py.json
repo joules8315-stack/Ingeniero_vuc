@@ -1,0 +1,23 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_al_perito_se_le_exige_json.py que vigile que pedir_al_perito exige JSON con --json-schema y reintenta con RECORDATORIO hasta 3 veces.",
+  "archivo": "vigias/test_vigia_al_perito_se_le_exige_json.py",
+  "texto_nuevo": "import subprocess\nimport shutil\nimport json\nfrom cuerpo import capataz\n\n\nclass _Respuesta:\n    \"\"\"Objeto que imita lo que devuelve subprocess.run: stdout, stderr y returncode.\"\"\"\n\n    def __init__(self, stdout='', stderr='', returncode=0):\n        self.stdout = stdout\n        self.stderr = stderr\n        self.returncode = returncode\n\n\ndef _montar(monkeypatch, respuestas):\n    \"\"\"Deja shutil.which devolviendo 'claude' y subprocess.run falso.\n\n    Devuelve (ordenes, entradas) donde ordenes guarda el primer argumento de\n    cada llamada y entradas guarda el input de cada llamada.\n    \"\"\"\n    monkeypatch.setattr(shutil, 'which', lambda nombre: 'claude')\n    ordenes = []\n    entradas = []\n    cola = list(respuestas)\n\n    def falso_run(orden, *args, **kwargs):\n        ordenes.append(orden)\n        entradas.append(kwargs.get('input'))\n        if cola:\n            texto = cola.pop(0)\n        else:\n            texto = ''\n        return _Respuesta(stdout=texto, stderr='', returncode=0)\n\n    monkeypatch.setattr(subprocess, 'run', falso_run)\n    return ordenes, entradas\n\n\ndef test_la_orden_exige_json_schema(monkeypatch):\n    \"\"\"La primera llamada al perito tiene que pedir el JSON con --json-schema.\"\"\"\n    ordenes, _ = _montar(monkeypatch, ['{\"que_paso\": \"x\", \"causa_raiz\": \"y\"}'])\n    capataz.pedir_al_perito({'fallo': 'algo'}, '.')\n    assert ordenes, 'no se llamo al perito'\n    assert '--json-schema' in ordenes[0]\n\n\ndef test_si_la_primera_no_trae_json_reintenta_con_recordatorio(monkeypatch):\n    \"\"\"Si la primera respuesta no trae JSON, la segunda lleva RECORDATORIO y devuelve dict.\"\"\"\n    respuestas = [\n        'esto no es JSON, es texto suelto',\n        '{\"que_paso\": \"x\", \"causa_raiz\": \"y\"}',\n    ]\n    ordenes, entradas = _montar(monkeypatch, respuestas)\n    datos, estado = capataz.pedir_al_perito({'fallo': 'algo'}, '.')\n    assert isinstance(datos, dict)\n    assert datos.get('que_paso') == 'x'\n    assert len(ordenes) == 2\n    assert 'RECORDATORIO' in (entradas[1] or '')\n\n\ndef test_si_las_tres_son_texto_devuelve_none_y_tres_llamadas(monkeypatch):\n    \"\"\"Si las tres respuestas son texto sin JSON, devuelve None y se llamo 3 veces.\"\"\"\n    respuestas = ['texto uno', 'texto dos', 'texto tres']\n    ordenes, _ = _montar(monkeypatch, respuestas)\n    datos, estado = capataz.pedir_al_perito({'fallo': 'algo'}, '.')\n    assert datos is None\n    assert len(ordenes) == 3\n\n\ndef test_si_la_primera_ya_es_json_solo_una_llamada(monkeypatch):\n    \"\"\"Si la primera respuesta ya es JSON valido, se llama una sola vez.\"\"\"\n    respuestas = ['{\"que_paso\": \"x\", \"causa_raiz\": \"y\"}']\n    ordenes, _ = _montar(monkeypatch, respuestas)\n    datos, estado = capataz.pedir_al_perito({'fallo': 'algo'}, '.')\n    assert isinstance(datos, dict)\n    assert datos.get('que_paso') == 'x'\n    assert len(ordenes) == 1\n",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigia pedida se crea en la ruta exacta, con las cuatro pruebas exigidas (json-schema en la orden, reintento con RECORDATORIO y 2 llamadas, tres textos devuelven None con 3 llamadas, json valido a la primera con 1 llamada); no toca ningun otro archivo ni inventa piezas inexistentes."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21493 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

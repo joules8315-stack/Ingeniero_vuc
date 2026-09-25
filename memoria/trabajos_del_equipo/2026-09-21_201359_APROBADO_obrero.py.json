@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la regla 7 sobre no escribir formas de llave en el camino de crear codigo de _prompt_obrero, justo despues de la regla 6 que termina en NECESITO_LEER: archivo / motivo / que decide / riesgo.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_prompt_obrero",
+  "texto_viejo": "6. Trabaja SOLO con el material de abajo. Si te falta algo, pidelo asi y nada mas:\n   NECESITO_LEER: archivo / motivo / que decide / riesgo.\n\nTAREA: {tarea}\n\nResponde SOLO un JSON valido, sin texto alrededor:\n{{\"diagnostico\": \"que has encontrado, en una frase\",\n  \"archivo\": \"la ruta del archivo de codigo que creas\",",
+  "texto_nuevo": "6. Trabaja SOLO con el material de abajo. Si te falta algo, pidelo asi y nada mas:\n   NECESITO_LEER: archivo / motivo / que decide / riesgo.\n7. NUNCA escribas nada con forma de llave (sk- seguido de letras o numeros, AIza, gsk_), ni en el codigo ni en comentarios ni en textos de ayuda: el guardia no deja guardar un archivo con forma de llave. Si una prueba necesita una llave de mentira, se arma POR PARTES dentro de la prueba, juntando trozos con +.\n\nTAREA: {tarea}\n\nResponde SOLO un JSON valido, sin texto alrededor:\n{{\"diagnostico\": \"que has encontrado, en una frase\",\n  \"archivo\": \"la ruta del archivo de codigo que creas\",",
+  "cambio": "Insertar la regla 7 con la misma sangria justo despues de la regla 6 (la que termina en NECESITO_LEER: archivo / motivo / que decide / riesgo.) dentro del f-string del camino de crear codigo (.py) de _prompt_obrero, antes de la linea en blanco que precede a TAREA: {tarea}.",
+  "codigo": "7. NUNCA escribas nada con forma de llave (sk- seguido de letras o numeros, AIza, gsk_), ni en el codigo ni en comentarios ni en textos de ayuda: el guardia no deja guardar un archivo con forma de llave. Si una prueba necesita una llave de mentira, se arma POR PARTES dentro de la prueba, juntando trozos con +.",
+  "vigia": "Una vigia que ejecute _prompt_obrero con una tarea que pida crear un .py y compruebe que el prompt devuelto contiene la regla 7 (por ejemplo, que aparece 'NUNCA escribas nada con forma de llave' y 'se arma POR PARTES dentro de la prueba').",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion inserta la regla 7 exactamente donde el diagnostico la pide, sobre un texto que si existe en el material y es unico (el camino .py, donde las reglas terminan en NECESITO_LEER), sin tocar el camino de documentos ni el de reparar, y sin usar nada que no exista."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (29556 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

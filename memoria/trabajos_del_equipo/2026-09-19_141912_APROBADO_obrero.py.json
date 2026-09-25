@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El revisor recibe el paquete recortado desde el final por _filtrar_paquete y el trozo tocado se pierde; hay que anteponerle los bloques de trozo enteros que contienen el texto viejo.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_material_del_revisor",
+  "texto_viejo": "TOPE_LOCAL = 26000",
+  "texto_nuevo": "def _material_del_revisor(paquete, propuesta, tope):\n    \"\"\"Devuelve el material para el revisor con el trozo tocado entero delante.\"\"\"\n    try:\n        archivo = propuesta.get(\"archivo\") if isinstance(propuesta, dict) else None\n        base = _filtrar_paquete(paquete, archivo=archivo, tope=tope)\n        if not isinstance(propuesta, dict):\n            return base\n        viejo = str(propuesta.get(\"texto\" + \"_viejo\") or \"\").strip()\n        if not viejo:\n            return base\n        if not isinstance(paquete, str):\n            from cerebro import router as _r\n            paquete = _r.a_texto(paquete)\n        lineas = paquete.splitlines()\n        bloques = []\n        i = 0\n        while i < len(lineas):\n            if lineas[i].startswith(\"### \" + chr(96)):\n                j = i + 1\n                while j < len(lineas) and not lineas[j].startswith(\"### \" + chr(96)) and not lineas[j].startswith(\"## \"):\n                    j += 1\n                bloques.append(lineas[i:j])\n                i = j\n            else:\n                i += 1\n        tocados = [b for b in bloques if viejo in \"\\n\".join(b)]\n        if not tocados:\n            return base\n        arriba = [\"## EL CAMBIO SE HACE AQUI (trozo entero)\"]\n        for b in tocados:\n            arriba += b\n        resultado = \"\\n\".join(arriba) + \"\\n\" + base\n        if len(resultado) > tope:\n            resultado = resultado[:tope]\n        return resultado\n    except Exception:\n        try:\n            return base\n        except Exception:\n            return \"\"\n\n\nTOPE_LOCAL = 26000",
+  "cambio": "Insertar la funcion _material_del_revisor justo antes de la linea TOPE_LOCAL = 26000, sin tocar nada mas.",
+  "codigo": "def _material_del_revisor(paquete, propuesta, tope):\n    \"\"\"Devuelve el material para el revisor con el trozo tocado entero delante.\"\"\"\n    try:\n        archivo = propuesta.get(\"archivo\") if isinstance(propuesta, dict) else None\n        base = _filtrar_paquete(paquete, archivo=archivo, tope=tope)\n        if not isinstance(propuesta, dict):\n            return base\n        viejo = str(propuesta.get(\"texto\" + \"_viejo\") or \"\").strip()\n        if not viejo:\n            return base\n        if not isinstance(paquete, str):\n            from cerebro import router as _r\n            paquete = _r.a_texto(paquete)\n        lineas = paquete.splitlines()\n        bloques = []\n        i = 0\n        while i < len(lineas):\n            if lineas[i].startswith(\"### \" + chr(96)):\n                j = i + 1\n                while j < len(lineas) and not lineas[j].startswith(\"### \" + chr(96)) and not lineas[j].startswith(\"## \"):\n                    j += 1\n                bloques.append(lineas[i:j])\n                i = j\n            else:\n                i += 1\n        tocados = [b for b in bloques if viejo in \"\\n\".join(b)]\n        if not tocados:\n            return base\n        arriba = [\"## EL CAMBIO SE HACE AQUI (trozo entero)\"]\n        for b in tocados:\n            arriba += b\n        resultado = \"\\n\".join(arriba) + \"\\n\" + base\n        if len(resultado) > tope:\n            resultado = resultado[:tope]\n        return resultado\n    except Exception:\n        try:\n            return base\n        except Exception:\n            return \"\"",
+  "vigia": "Un test que llame a _material_del_revisor con un paquete que tenga un bloque ### `cuerpo/x.py` cuyo texto contenga el texto_viejo de la propuesta y compruebe que ese bloque entero aparece al principio del resultado, y que con propuesta no dict o sin texto_viejo devuelve exactamente _filtrar_paquete.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, inserta la función antes de TOPE_LOCAL sin afectar vecinos ni contratos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39705 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (41258 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

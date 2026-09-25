@@ -1,0 +1,64 @@
+{
+  "orden": {
+    "id": "155",
+    "titulo": "La vigia vieja del lanzamiento sirve para la forma vieja y para la del vigilante",
+    "origen": "medido el 2026-09-22: Big Pickle rechazo la orden 95 porque vigias/test_vigia_el_capataz_lanza_al_equipo.py solo falsifica subprocess.run; con Popen ya no se llama, y peor: el Popen de verdad lanzaria el equipo real (gasta dinero) y se colgaria hasta el tope duro",
+    "repara": "la orden 95 no puede entrar sin romper una vigia vecina que ademas gastaria dinero",
+    "pieza": "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "de paso: la vigia vale para las dos formas y queda verde antes y despues de la 95; la orden 156 quita la forma vieja cuando la 95 este",
+    "encargo": "Reescribe entero vigias/test_vigia_el_capataz_lanza_al_equipo.py (es corto: entregalo entero como UN solo cambio). Mismas seis pruebas, pero cada una falsifica LAS DOS formas de lanzar a la vez, para que valga hoy (subprocess.run) y cuando lanzar_al_equipo pase a subprocess.Popen con el vigilante: (a) monkeypatch de capataz.subprocess.run con la falsa de hoy; (b) monkeypatch de capataz.subprocess.Popen con una clase falsa: su __init__(self, comando, **kw) apunta comando y kw en la misma lista de llamadas (args=(comando,), kwargs=kw), y si kw['stdout'] tiene metodo write escribe ahi el mismo stdout que se le da a la falsa y hace flush; tiene pid = 1, returncode igual al de la falsa, poll() que devuelve 0, kill() que no hace nada y wait(timeout=None) que devuelve 0; (c) monkeypatch de vigilante.esperar (from cuerpo import vigilante) que devuelve 'termino', salvo en la prueba del tiempo agotado, donde devuelve 'tope_duro'. Nunca se lanza nada de verdad. Cambios en las pruebas: la del timeout y entorno comprueba env PYTHONIOENCODING utf-8 siempre, y timeout == 42 solo si la llamada fue a run (si 'timeout' esta en kwargs); la del tiempo agotado acepta que la salida empiece por 'TOPE DE TIEMPO' o por 'COLGADA:'. Las otras cuatro quedan igual. Texto de ayuda de arriba: vale para las dos formas de lanzar mientras entra la orden 95 (2026-09-22). No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "prueba de que quedo: la vigia sigue verde hoy"
+  },
+  "huella": "cf3a2e599d8aadfc",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_002628_SIN_VEREDICTO_test_vigia_el_capataz_lanza_al_equipo.py.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  diagnostico : El archivo vigias/test_vigia_el_capataz_lanza_al_equipo.py no viene en el material, solo dos trozos sueltos, y la tarea pide reescribirlo entero con seis pruebas que falsifiquen run y Popen a la vez.\n  toca        : vigias/test_vigia_el_capataz_lanza_al_equipo.py funcion archivo entero\n  confianza   : baja\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T00:26:28",
+  "analisis": {
+    "que_paso": "La orden 155 pedia reescribir ENTERO vigias/test_vigia_el_capataz_lanza_al_equipo.py (archivo corto, 144 lineas). El equipo no aprobo: DeepSeek entrego tres veces la propuesta con la marca NO_ENCONTRADO y el guardia la rechazo, quedando SIN_VEREDICTO y sin llave guardada. El propio diagnostico del obrero lo dice: el archivo no vino en el material, solo dos trozos sueltos, y la tarea pedia reescribirlo entero.",
+    "causa_raiz": "El armador del paquete (cerebro/router.py, funcion armar) nunca entrega el archivo COMPLETO: solo trae trozos elegidos por relevancia (ventanas de ~40 lineas) y, del archivo nombrado, apenas sus primeras 80 lineas como maximo (min(80, lineas)). Como el encargo obligaba a reescribir el archivo entero pero el material solo traia dos trozos sueltos, el obrero, obedeciendo la regla dura de no inventar, marco correctamente NO_ENCONTRADO en lo que no podia ver; y el guardia _trae_no_encontrado de cuerpo/obrero.py rechaza toda propuesta que traiga esa marca. Resultado: ninguna orden de reescritura entera puede entrar, porque el paquete jamas trae el archivo entero.",
+    "donde": "cerebro/router.py (funcion armar: fragmentacion por trozos y el bloque de archivos nombrados que solo inserta lineas 1..min(80,lineas)) y cuerpo/obrero.py (_trae_no_encontrado / _propuesta_cumple, que rechaza la propuesta por la marca NO_ENCONTRADO).",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "cerebro/router.py",
+        "texto": "            texto = \"\\n\".join(_lineas_de(ficha[\"abs\"], 1, min(80, ficha.get(\"lineas\", 80) or 80)))"
+      },
+      {
+        "archivo": "cerebro/router.py",
+        "texto": "    # Cuando el problema toca al REPARTIDOR, el fragmentador corta router.py en trozos de 40 lineas\n    # y elige por relevancia: trae 1-40 y 129-168, pero NO la funcion `armar` completa (87-227)."
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "            return False, \"la propuesta NO cumple porque trae la marca NO_ENCONTRADO\""
+      },
+      {
+        "archivo": "cerebro/router.py",
+        "texto": "   NO_ENCONTRADO en ese punto. Jamas lo rellenes a ojo."
+      }
+    ],
+    "no_volver_a": "Nunca mandar reescribir un archivo entero si el paquete solo trae trozos: cuando la orden pide reescritura completa, el material tiene que llevar el archivo ENTERO, no las primeras 80 lineas.",
+    "tarea_nueva": {
+      "repara": "El paquete no trae el archivo completo cuando la orden manda reescribirlo entero: router.armar solo entrega trozos por relevancia y, del archivo nombrado, apenas las primeras 80 lineas (min(80, lineas)).",
+      "pieza": "cerebro/router.py",
+      "razon": "Sin el archivo completo el obrero no puede reescribirlo y marca NO_ENCONTRADO; el guardia rechaza esa marca, asi que NINGUNA orden de reescritura entera puede entrar. Es la causa de fondo, distinta de reescribir la vigia (orden 155).",
+      "encargo": "En cerebro/router.py, funcion armar: cuando un archivo NOMBRADO es corto (cabe bajo el tope seguro de tokens/lineas) o la orden pide reescribirlo entero, insertar su contenido COMPLETO en el material con su direccion archivo:1-<lineas> como un solo pedazo, en vez de min(80, lineas). Anadir una vigia que compruebe que un archivo corto nombrado llega ENTERO al paquete (no cortado a 80 lineas). No tocar la logica de los archivos largos.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "citas",
+    "motivo": "citas que no existen: [{\"archivo\": \"cerebro/router.py\", \"texto\": \"   NO_ENCONTRADO en ese punto. Jamas lo rellenes a ojo.\", \"por_que\": \"no aparece literal\"}]",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\155_20260922_002628.json"
+  }
+}

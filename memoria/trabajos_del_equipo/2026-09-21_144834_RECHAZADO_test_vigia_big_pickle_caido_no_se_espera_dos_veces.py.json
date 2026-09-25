@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta ver como llaman a obrero.auditar las vigias existentes con bigpickle en el nombre para copiar esa forma exacta de llamarla.",
+  "archivo": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+  "texto_nuevo": "NECESITO_LEER: vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py / no existe aun, pero necesito ver una vigia hermana que ya exista con 'bigpickle' en el nombre para copiar la forma exacta de llamar a obrero.auditar (firma, argumentos, como se prepara el paquete y la propuesta) / decide la forma exacta de la llamada a obrero.auditar(paquete, propuesta, auditor='bigpickle', ...) y el formato del paquete/propuesta que la funcion espera / riesgo: inventar la firma o el formato del paquete y que la vigia no arranque o no ejercite el camino de bigpickle.",
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "Se solicita leer el archivo vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py que no existe en el material"
+  ],
+  "fallos": [
+   "No se entrega código que implemente la llamada a obrero.auditar según el diagnóstico",
+   "Se inventa un recurso (archivo inexistente) para “copiar” la forma de llamada",
+   "Se viola la regla del paquete que prohíbe abrir o crear archivos no especificados sin petición formal"
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Código que reproduzca exactamente la llamada a obrero.auditar usada en vigias con 'bigpickle'",
+   "Un archivo de referencia existente con esa llamada para poder copiarla",
+   "Cumplir con la regla de no abrir archivos adicionales sin solicitar permiso"
+  ],
+  "resumen_para_el_jefe": "Rechazado: inventa un archivo inexistente y no entrega la implementación requerida."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38565 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (38745 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (38807 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Perhaps you forgot a comma?. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (38906 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 4"
+ ]
+}

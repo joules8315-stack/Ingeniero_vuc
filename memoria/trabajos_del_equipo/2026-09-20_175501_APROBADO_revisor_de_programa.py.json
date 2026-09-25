@@ -1,0 +1,58 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "Dentro de la funcion revisar hay dos funciones locales (_cuerpo_vacio y _pruebas_sin_cuerpo) que repiten a las de arriba y, por ser locales, anulan las globales dentro de revisar y dejan sin efecto la cuenta que frena las pruebas vaciadas.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "def _cuerpo_vacio(nodo):\n    \"\"\"Dice si el cuerpo de un nodo quedo vacio o solo con pass.\"\"\"\n    cuerpo = list(nodo.body)\n    if (cuerpo and isinstance(cuerpo[0], ast.Expr)\n            and isinstance(cuerpo[0].value, ast.Constant)\n            and isinstance(cuerpo[0].value.value, str)):\n        cuerpo = cuerpo[1:]\n    if not cuerpo:\n        return True\n    if len(cuerpo) == 1 and isinstance(cuerpo[0], ast.Pass):\n        return True\n    return False\n\n\ndef _pruebas_sin_cuerpo(arbol):\n    \"\"\"Devuelve los nombres de las pruebas test_ que quedaron sin cuerpo.\"\"\"\n    sin = set()\n    for n in ast.walk(arbol):\n        if (isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))\n                and n.name.startswith(\"test_\")\n                and _cuerpo_vacio(n)):\n            sin.add(n.name)\n    return sin\n",
+  "texto_nuevo": "",
+  "cambio": "Borrar, dentro de la funcion revisar, las dos funciones locales _cuerpo_vacio y _pruebas_sin_cuerpo (con sus lineas en blanco intermedias y la de despues), sin poner nada en su lugar. Las llamadas de mas abajo se quedan igual y pasaran a usar las funciones globales de arriba, que hacen lo mismo.",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "cuerpo/obrero.py",
+   "arnes/candado_equipo.py",
+   "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_un_cambio_no_puede_vaciar_una_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio elimina correctamente las funciones redundantes que causaban un sombreado de nombres (shadowing), permitiendo que el revisor use las funciones globales y detecte correctamente las pruebas vaciadas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21798 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini2 con solo lo necesario (A-38)",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "GPT-OSS 120B (Groq) no le cabe (23067 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini2 con solo lo necesario (A-38)",
+  "vueltas_dadas: 3"
+ ]
+}

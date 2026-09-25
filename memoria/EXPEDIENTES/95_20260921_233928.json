@@ -1,0 +1,68 @@
+{
+  "orden": {
+    "id": "95",
+    "titulo": "El pit vigila la tarea que se demora",
+    "origen": "directriz de Julio A-44 (2026-09-21)",
+    "repara": "lanzar_al_equipo corta a ciegas a los 900 s",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "94",
+      "60",
+      "57"
+    ],
+    "modo": "IA",
+    "razon": "los limites salen de los datos medidos del cuaderno de llamadas, no de una suposicion",
+    "encargo": "En cuerpo/capataz.py hay que hacer tres cambios, entregalos en la lista cambios. (1) Arriba de def lanzar_al_equipo agrega las constantes con su comentario: LIMITE_TAREA_SEGUNDOS = 420 y SIN_AVANCE_SEGUNDOS = 660 y TOPE_DURO_SEGUNDOS = 3000 (medido el 2026-09-21 en el cuaderno de llamadas: DeepSeek tarda 4 a 11 s, Big Pickle hasta 328 s y con A-47 se le espera hasta 600 s, el guardia corre la bateria en 262 s, y una tarea puede dar 4 vueltas de revision: 4 por (11 + 600) + 262 = 2706 s, y el tope de fuera tiene que ser mayor que la suma de los de dentro; SIN_AVANCE tiene que ser MAYOR que la llamada callada mas larga, la espera de Big Pickle de hasta 600 s, o se cortaria a una IA que esta contestando). (2) En lanzar_al_equipo cambia el subprocess.run por subprocess.Popen con los mismos cwd y env. La salida NO va por tuberia (una tuberia que nadie vacia se llena y cuelga al equipo): abre archivo = open(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'), 'w', encoding='utf-8', errors='replace') y pasa stdout=archivo, stderr=subprocess.STDOUT. El avance es una funcion que devuelve el tiempo de procesador gastado por el proceso y todos sus hijos (import psutil dentro de la funcion; pp = psutil.Process(proceso.pid); suma de cpu_times().user + cpu_times().system de pp y de cada pp.children(recursive=True), ignorando los que ya terminaron con psutil.Error), redondeado a 1 decimal, mas el tamano de ese archivo de salida, mas la suma de os.path.getmtime de memoria/CUADERNO_DE_LLAMADAS.jsonl y memoria/APLICACIONES.log que existan; si psutil falla, sin el tiempo de procesador. Despues de esperar: cierra el archivo y lee todo su texto como salida (encoding utf-8, errors replace); si el estado no es 'termino', la salida leida va ENTERA detras del aviso COLGADA, para que el forense vea lo que dijo el revisor. Motivo medido el 2026-09-21: las pruebas vecinas del candado de cierre tardan 212 s sin escribir en ningun registro, y una tarea que corre pruebas SI esta trabajando (from cuerpo import vigilante dentro de la funcion); llama estado = vigilante.esperar(proceso, LIMITE_TAREA_SEGUNDOS, SIN_AVANCE_SEGUNDOS, TOPE_DURO_SEGUNDOS, avance); despues salida_normal, salida_errores = proceso.communicate(); si estado no es 'termino' devuelve {'guardado': False, 'codigo': None, 'salida': 'COLGADA: ' + estado + ' (sin avance pasado el limite; se busca la causa raiz)\\n' + salida_normal + salida_errores}; si es 'termino' devuelve lo mismo que hoy con proceso.returncode. El parametro tope_segundos se queda en la firma sin usarse, para no romper a quien lo pasa. (3) En tipo_de_fallo, como primera comprobacion, si la salida empieza por 'COLGADA:' devuelve 'colgada'. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "una tarea 'colgada' va al forense como cualquier fallo (causa raiz) y, por A-43, su arreglo pasa al frente."
+  },
+  "huella": "25eddfc88f54678f",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_233928_DUDOSO_capataz.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (20859 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'sys'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'os'. No se importa, no se define y no es de Python. En c\n  aviso       : GPT-OSS 120B (Groq) no le cabe (23982 letras, aguanta 19042) -> se le salta\n  diagnostico : En cuerpo/capataz.py hay que agregar tres constantes de tiempo arriba de lanzar_al_equipo, cambiar subprocess.run por subprocess.Popen con salida a archivo y avance por CPU+archivos, y hacer que tipo_de_fallo reconozca 'COLGADA:'.\n  toca        : cuerpo/capataz.py funcion lanzar_al_equipo\n  confianza   : media\n  VEREDICTO   : DUDOSO\n  fallo       : El ramo COLGADA no cumple lo que pide el material: 'la salida leida va ENTERA detras del aviso COLGADA, para que el forense vea lo que dijo el revisor'. El codigo lee el archivo en la variable 'salida' pero en ese ramo concatena salida_normal + salida_errores de proceso.communicate(), que estaran vacios porque stdout va a archivo y stderr a subprocess.STDOUT; el forense no ve nada de lo que dijo el revisor por mas que la salida ya estaba leida.\n  resumen     : El grueso del arreglo (constantes, Popen con salida a archivo, avance por CPU+archivos y tipo_de_fallo con 'colgada') esta correcto y no inventa nada, pero hay que decidir una contradiccion del material: el aviso COLGADA deberia llevar la salida leida del archivo y hoy lleva la de communicate(), que saldra vacia.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T23:39:28",
+  "analisis": {
+    "que_paso": "El equipo dio VEREDICTO DUDOSO a la orden 95 y NO guardo llave, asi que no se pudo tocar cuerpo/capataz.py. El grueso del arreglo estaba bien (las tres constantes, Popen con salida a archivo, avance por CPU+archivos y tipo_de_fallo reconociendo 'colgada'), pero el ramo COLGADA arma su aviso con salida_normal + salida_errores de proceso.communicate(), que salen vacios porque stdout ya va al archivo y stderr a subprocess.STDOUT. Resultado: el forense NO veria lo que dijo el revisor, justo lo contrario de lo que pedia el encargo.",
+    "causa_raiz": "El propio encargo de la orden 95 se contradice a si mismo. En prosa manda que 'la salida leida va ENTERA detras del aviso COLGADA, para que el forense vea lo que dijo el revisor', pero acto seguido fija la formula literal 'COLGADA: ' + estado + ... + salida_normal + salida_errores usando proceso.communicate(). Como el mismo encargo tambien manda que stdout vaya al archivo (stdout=archivo, stderr=subprocess.STDOUT), communicate() devuelve vacio. El obrero deepseek copio la formula literal (que es lo que hace un obrero) y el auditor bigpickle detecto la contradiccion. El fallo no es del obrero ni del equipo: es del diseno del encargo, que pide una cosa en palabras y la opuesta en la formula.",
+    "donde": "cuerpo/capataz.py, funcion lanzar_al_equipo, ramo COLGADA (cuando estado != 'termino'); la raiz esta en el texto del encargo de la orden 95 (memoria/ORDENES.json).",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_233928_DUDOSO_capataz.py.json",
+        "texto": "El codigo lee el archivo en la variable 'salida' pero en ese ramo concatena salida_normal + salida_errores de proceso.communicate(), que estaran vacios porque stdout va a archivo y stderr a subprocess.STDOUT; el forense no ve nada de lo que dijo el revisor por mas que la salida ya estaba leida."
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_233928_DUDOSO_capataz.py.json",
+        "texto": "'salida': 'COLGADA: ' + estado + ' (sin avance pasado el limite; se busca la causa raiz)\\n' + salida_normal + salida_errores,"
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_233928_DUDOSO_capataz.py.json",
+        "texto": "El material se contradice solo: por un lado dice que la salida leida del archivo va ENTERA detras del aviso COLGADA y por otro fija la formula literal 'salida': 'COLGADA: ' + estado + '...\\n' + salida_normal + salida_errores. Hay que decidir cual gana; si gana la primera, el ramo COLGADA debe usar la salida leida del archivo (o ambas)."
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_233928_DUDOSO_capataz.py.json",
+        "texto": "stdout=archivo,\\n        stderr=subprocess.STDOUT,"
+      }
+    ],
+    "no_volver_a": "No escribir un encargo que se contradiga: si la salida se lee del archivo, el aviso COLGADA debe usar esa variable leida, nunca communicate() (que queda vacio cuando stdout va al archivo).",
+    "tarea_nueva": {
+      "repara": "el encargo de la orden 95 se contradice: manda mostrar la salida leida del archivo tras COLGADA pero la formula usa salida_normal + salida_errores de communicate(), que quedan vacios porque stdout va al archivo",
+      "pieza": "memoria/ORDENES.json (encargo de la orden 95)",
+      "razon": "para que el forense vea lo que dijo el revisor, el ramo COLGADA tiene que llevar la variable salida ya leida del archivo, no el resultado de communicate()",
+      "encargo": "Reescribir el encargo de la orden 95 para quitar la contradiccion: en el ramo COLGADA (estado != 'termino') la clave 'salida' debe ser 'COLGADA: ' + estado + ' (sin avance pasado el limite; se busca la causa raiz)\\n' + salida (la variable ya leida del archivo), NO + salida_normal + salida_errores. Dejar proceso.communicate() solo para vaciar buffers y cerrar el proceso, sin usar su valor en el aviso. Reemitir la orden corregida al equipo.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "citas",
+    "motivo": "citas que no existen: [{\"archivo\": \"memoria/trabajos_del_equipo/2026-09-21_233928_DUDOSO_capataz.py.json\", \"texto\": \"'salida': 'COLGADA: ' + estado + ' (sin avance pasado el limite; se busca la causa raiz)\\\\n' + salida_normal + salida_errores,\", \"por_que\": \"no aparece literal\"}, {\"archivo\": \"memoria/trabajos_del_equipo/2026-09-21_233928_DUDOSO_capataz.py.json\", \"texto\": \"El material se contradice solo: por un lado dice que la salida leida del archivo va ENTERA detras del aviso COLGADA y por otro fija la formula liter",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\95_20260921_233928.json"
+  }
+}

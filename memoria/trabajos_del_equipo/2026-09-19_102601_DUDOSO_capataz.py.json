@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion agregar_orden(orden) en cuerpo/capataz.py, que debe validar y anadir una orden nueva a memoria/ORDENES.json despues de juzgar_citas.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "agregar_orden",
+  "texto_viejo": "def huella_de(orden):",
+  "texto_nuevo": "def agregar_orden(orden):\n    \"\"\"Agrega una orden nueva a la lista si pasa las comprobaciones.\"\"\"\n    if not isinstance(orden, dict):\n        return (False, 'no es una orden')\n    problemas = validar_etiqueta(orden)\n    if problemas:\n        return (False, 'etiqueta incompleta: ' + ', '.join(problemas))\n    lista = leer_lista()\n    orden_id = orden.get('id')\n    for otra in lista:\n        if isinstance(otra, dict) and otra.get('id') == orden_id:\n            return (False, 'ya existe el id ' + str(orden_id))\n    if ya_fallo(orden):\n        return (False, 'esa misma tarea ya fallo')\n    huella = huella_de(orden)\n    for otra in lista:\n        if isinstance(otra, dict) and huella_de(otra) == huella:\n            return (False, 'ya esta en la lista')\n    nueva = dict(orden)\n    nueva['estado'] = 'pendiente'\n    nueva['paso_fallido'] = ''\n    nueva['fallos_seguidos'] = 0\n    lista.append(nueva)\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, 'memoria', 'ORDENES.json')\n    with open(ruta, 'w', encoding='utf-8') as f:\n        json.dump(lista, f, indent=2, ensure_ascii=False)\n    return (True, 'agregada ' + str(orden_id))\n\n\ndef huella_de(orden):",
+  "cambio": "Insertar la funcion agregar_orden(orden) justo antes de la funcion huella_de, sin tocar ninguna otra funcion.",
+  "codigo": "def agregar_orden(orden):\n    \"\"\"Agrega una orden nueva a la lista si pasa las comprobaciones.\"\"\"\n    if not isinstance(orden, dict):\n        return (False, 'no es una orden')\n    problemas = validar_etiqueta(orden)\n    if problemas:\n        return (False, 'etiqueta incompleta: ' + ', '.join(problemas))\n    lista = leer_lista()\n    orden_id = orden.get('id')\n    for otra in lista:\n        if isinstance(otra, dict) and otra.get('id') == orden_id:\n            return (False, 'ya existe el id ' + str(orden_id))\n    if ya_fallo(orden):\n        return (False, 'esa misma tarea ya fallo')\n    huella = huella_de(orden)\n    for otra in lista:\n        if isinstance(otra, dict) and huella_de(otra) == huella:\n            return (False, 'ya esta en la lista')\n    nueva = dict(orden)\n    nueva['estado'] = 'pendiente'\n    nueva['paso_fallido'] = ''\n    nueva['fallos_seguidos'] = 0\n    lista.append(nueva)\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, 'memoria', 'ORDENES.json')\n    with open(ruta, 'w', encoding='utf-8') as f:\n        json.dump(lista, f, indent=2, ensure_ascii=False)\n    return (True, 'agregada ' + str(orden_id))",
+  "vigia": "Una prueba que llame agregar_orden con una orden valida y compruebe que devuelve (True, 'agregada <id>') y que la orden aparece en memoria/ORDENES.json con estado 'pendiente'; y que con orden no dict, etiqueta incompleta, id repetido, huella ya fallida o huella ya en lista devuelva (False, motivo) sin escribir.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "memoria/ORDENES.json"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La funcion agregar_orden esta bien escrita: usa leer_lista, validar_etiqueta, ya_fallo y huella_de (todas existen en el material), respeta el orden y los textos exactos de los 5 motivos de rechazo del contrato, guarda con json indent=2 / ensure_ascii=False en la misma ruta que marcar_estado, agrega estado 'pendiente', paso_fallido '' y fallos_seguidos 0, y devuelve (True, 'agregada ' + str(id)). No escribe en los casos de fallo.",
+   "PERO la ubicacion no cumple el contrato: el material pide 'agrega, despues de juzgar_citas, la funcion agregar_orden'. La propuesta la inserta 'justo antes de huella_de' y en el material huella_de es capataz.py:90-99 mientras juzgar_citas es capataz.py:434-453, o sea huella_de esta ANTES de juzgar_citas: la funcion quedaria a ~340 lineas del lugar que pedia el contrato."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno: el material declara 'reparacion aislada, nadie depende', y el cambio solo anade una funcion nueva (no modifica huella_de ni ninguna otra). El desvio de ubicacion no rompe nada porque Python resuelve los nombres al llamar."
+  ],
+  "que_falta": [
+   "Confirmar con Julio si la posicion fisica 'despues de juzgar_citas' importa o si era descripcion de flujo; si importa, reubicar el inserto justo despues de juzgar_citas."
+  ],
+  "resumen_para_el_jefe": "La funcion cumple todo lo pedido (validaciones, mensajes y guardado exactos; no inventa ni rompe vecinos), pero el obrero la inserta antes de huella_de en vez de despues de juzgar_citas como pide el contrato: no afecta el funcionamiento, solo falta decidir si la posicion fisica manda."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22876 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

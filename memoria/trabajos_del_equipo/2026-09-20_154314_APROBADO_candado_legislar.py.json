@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_legislar.py, la funcion parece_una_orden no reconoce las lineas sueltas de un informe con formato que empiezan con comillas dobles y llevan luego dos puntos, y esas lineas se colaron el 2026-09-20 como si fueran ordenes de Julio.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "parece_una_orden",
+  "texto_viejo": "    # b) Pregunta\n    if texto.rstrip().endswith(\"?\"):\n        return False",
+  "texto_nuevo": "    # b) Renglon suelto de un informe con formato, no una orden\n    if texto.startswith('\"') and '\":' in texto:\n        return False\n    # b) Pregunta\n    if texto.rstrip().endswith(\"?\"):\n        return False",
+  "cambio": "Anadir, encima del apartado b (pregunta), tres lineas con la misma sangria: un comentario que diga que es un renglon suelto de un informe con formato y no una orden, y una condicion que devuelva False cuando el texto empieza por comillas dobles y ademas contiene unas comillas dobles seguidas de dos puntos.",
+  "codigo": "    # b) Renglon suelto de un informe con formato, no una orden\n    if texto.startswith('\"') and '\":' in texto:\n        return False",
+  "vigia": "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

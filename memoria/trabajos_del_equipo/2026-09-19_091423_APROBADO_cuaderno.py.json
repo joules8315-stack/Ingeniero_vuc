@@ -1,0 +1,29 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion apuntar no guarda para que tarea del pit fue la llamada: falta la clave 'etiqueta' tomada de la variable de entorno INGENIERO_ETIQUETA.",
+  "archivo": "cuerpo/cuaderno.py",
+  "funcion": "apuntar",
+  "texto_viejo": "        if segundos is not None:\n            fila[\"segundos\"] = round(float(segundos), 1)\n        ruta = _ruta()",
+  "texto_nuevo": "        if segundos is not None:\n            fila[\"segundos\"] = round(float(segundos), 1)\n        etiqueta = (os.environ.get(\"INGENIERO_ETIQUETA\") or \"\").strip()\n        if etiqueta:\n            fila[\"etiqueta\"] = etiqueta[:80]\n        ruta = _ruta()",
+  "cambio": "Justo despues de agregar los segundos a la fila, leer INGENIERO_ETIQUETA del entorno, quitarle espacios; si queda algo, anadir la clave 'etiqueta' con ese valor recortado a 80 caracteres; si no, no anadir la clave. Nada mas cambia.",
+  "codigo": "        etiqueta = (os.environ.get(\"INGENIERO_ETIQUETA\") or \"\").strip()\n        if etiqueta:\n            fila[\"etiqueta\"] = etiqueta[:80]",
+  "vigia": "Una prueba que llame a apuntar con INGENIERO_ETIQUETA puesta y compruebe que la linea del cuaderno lleva 'etiqueta' con ese valor (recortado a 80), y otra sin la variable que compruebe que la linea NO lleva la clave 'etiqueta'.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que pide el encargo: lee INGENIERO_ETIQUETA con os.environ (que ya esta importado en el archivo), le quita espacios, y solo si queda algo anade la clave 'etiqueta' recortada a 80; el punto de insercion coincide con el texto del material, no rompe a nadie y no toca nada mas."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

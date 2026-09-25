@@ -1,0 +1,33 @@
+{
+  "orden": {
+    "id": "18",
+    "titulo": "La vigia de que no se pisa el trabajo apartado",
+    "origen": "limite medido el 2026-09-20 al recoger los pedazos",
+    "repara": "cuando el guardia frena dos veces seguidas la misma pieza, la segunda copia apartada se escribe encima de la primera y el trabajo anterior se pierde sin que nadie lo note. Paso de verdad esa tarde",
+    "pieza": "vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "En vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py las dos pruebas revientan con AttributeError: module arnes.candado_equipo has no attribute subprocess, en las dos lineas que dicen monkeypatch.setattr(candado.subprocess, \"run\", _hacer_run_falso(registro_git), raising=True). La causa: arnes/candado_equipo.py importa subprocess DENTRO de la funcion volver_atras, no arriba del archivo. Hay que cambiar esas dos lineas para que aparten subprocess.run en su propio modulo: agregar import subprocess arriba del archivo de la vigia, junto a los otros import, y en las dos lineas usar monkeypatch.setattr(subprocess, \"run\", _hacer_run_falso(registro_git), raising=True). Si hace falta cambiar varios sitios del mismo archivo, entregalos en la lista cambios. Lo que comprueba cada prueba no cambia. La reparacion que vigilan ya esta hecha, asi que tienen que quedar VERDES. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "la vigia entro mal hecha: sus dos pruebas apartan subprocess a traves de arnes.candado_equipo, que lo importa DENTRO de la funcion, y revientan con AttributeError. La reparacion que vigila (orden 19) esta bien y guardada. Se corrige la vigia, que tiene que quedar VERDE."
+  },
+  "huella": "bdcd1844a764038d",
+  "tipo": "no_aplico",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_101303_APROBADO_test_vigia_no_se_pisa_el_trabajo_apartado.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (21726 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : Las dos pruebas de vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py revientan con AttributeError porque apartan subprocess.run sobre el modulo arnes.candado_equipo, que importa subprocess dentro de volver_atras y no lo tiene como atributo.\n  toca        : vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py funcion las dos pruebas que llaman a monkeypatch.setattr(candado.subprocess, \"run\", _hacer_run_falso(registro_git), raising=True)\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : La reparacion es correcta: arnes/candado_equipo.py importa subprocess dentro de la funcion (linea 374) y no tiene el atributo subprocess en el modulo, el diagnostico es exacto, y el cambio de las dos lineas a monkeypatch.setattr(subprocess, \"run\", ...) con su import arriba aparta subprocess.run en el propio modulo de subprocess, que es el modulo que volver_atras importa por dentro, asi que arregla el AttributeError sin tocar otra cosa.\n\nEL EQUIPO APROBO, pero no se pudo aplicar: El texto_viejo aparece 2 veces; no se sabe cual es.\nLLAVE GUARDADA: se puede escribir en 106 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T10:13:03",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: Julio, estoy atascado por diseño y no te voy a marear repitiendo lo mismo.\n\nLos dos guardias que faltan me piden **guardar el trabajo** y **contestar el recado de Big Pickle en el canal**. Las dos son",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\18_20260921_101303.json"
+  }
+}

@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Cuando una vigia no carga, pytest escribe 'ERROR vigias/test_x.py - NameError: ...' sin '::', y el guardia toma todo el texto como nombre de archivo, git no lo reconoce, lo cree NUEVO y deja pasar un archivo roto.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "            # Quedarse con la parte anterior a los dos puntos dobles.\n            archivo = linea.split(\"::\")[0].strip()\n            # Quitar el prefijo FAILED o ERROR y los espacios, y normalizar barras.\n            for prefijo in (\"FAILED\", \"ERROR\"):\n                if archivo.startswith(prefijo):\n                    archivo = archivo[len(prefijo):].strip()\n                    break\n            archivo = archivo.replace(\"\\\\\", \"/\")",
+  "texto_nuevo": "            # Quedarse con la parte anterior a los dos puntos dobles.\n            archivo = linea.split(\"::\")[0].strip()\n            # Quitar el prefijo FAILED o ERROR y los espacios, y normalizar barras.\n            for prefijo in (\"FAILED\", \"ERROR\"):\n                if archivo.startswith(prefijo):\n                    archivo = archivo[len(prefijo):].strip()\n                    break\n            # Una vigia que ni carga no trae '::': pytest escribe\n            # 'ERROR vigias/test_x.py - NameError: ...'. Cortar tambien por ' - '\n            # y quedarse con la parte de antes, antes de normalizar las barras.\n            archivo = archivo.split(\" - \")[0].strip()\n            archivo = archivo.replace(\"\\\\\", \"/\")",
+  "cambio": "En _vigias, tras quitar el prefijo FAILED/ERROR y antes de normalizar las barras, cortar el nombre del archivo por ' - ' y quedarse con la parte de antes.",
+  "codigo": "            archivo = archivo.split(\" - \")[0].strip()",
+  "vigia": "Una vigia que compruebe que ante una linea 'ERROR vigias/test_x.py - NameError: name ...' el guardia extrae 'vigias/test_x.py' y, si ese archivo ya estaba guardado, FRENA en vez de dejarlo pasar.",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_no_se_aplica_lo_frenado.py",
+   "vigias/test_vigia_nunca_sin_revisar.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_no_se_aplica_lo_frenado.py",
+   "test_vigia_nunca_sin_revisar.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "ninguno real: verifique en el disco que ningun archivo del repo tiene ' - ' en el nombre (glob '**/* - *' sin resultados), asi el corte por ' - ' nunca trunca un nombre legitimo; los vecinos listados (arnes/vecinas.py y las 3 vigias) no se tocan (el cambio es interno a _vigias, no cambia firma ni retorno), y la vigia test_vigia_el_guardia_se_acuerda_y_frena.py no prueba el parseo FAILED/ERROR con ' - ', asi que no rompe"
+  ],
+  "que_falta": [
+   "nada. El texto_viejo coincide literal con el material (arnes/guardia_de_guardado.py:309-317 en disco y en el paquete), el corte por ' - ' va despues de quitar el prefijo y antes de normalizar barras, exactamente como pide el encargo; lineas FAILED con '::' ya perdieron el ' - motivo' en el primer split, asi que el cambio solo afecta al caso ERROR sin '::', que es justo el del diagnostico"
+  ],
+  "resumen_para_el_jefe": "Sin inventos, toca solo lo pedido y arregla el fallo real (la vigia que no carga queda bien identificada y frena), sin romper vecinos: aprobar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (24941 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

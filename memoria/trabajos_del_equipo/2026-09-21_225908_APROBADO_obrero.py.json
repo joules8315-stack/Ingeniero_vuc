@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _propuesta_cumple, la rama de reparar exige que la propuesta traiga codigo, texto_viejo o texto_nuevo, y rechaza una propuesta que en su lugar trae la lista cambios con varios trozos.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_propuesta_cumple",
+  "texto_viejo": "        if \"codigo\" not in propuesta and \"texto_viejo\" not in propuesta and \"texto_nuevo\" not in propuesta:\n            return False, \"la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)\"",
+  "texto_nuevo": "        if \"codigo\" not in propuesta and \"texto_viejo\" not in propuesta and \"texto_nuevo\" not in propuesta and not isinstance(propuesta.get(\"cambios\"), list):\n            return False, \"la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)\"",
+  "cambio": "Anadir al final de la condicion de la rama else (reparar) el termino 'and not isinstance(propuesta.get(\"cambios\"), list)' para que una propuesta con la lista cambios con varios trozos tambien cumpla.",
+  "codigo": "        if \"codigo\" not in propuesta and \"texto_viejo\" not in propuesta and \"texto_nuevo\" not in propuesta and not isinstance(propuesta.get(\"cambios\"), list):\n            return False, \"la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)\"",
+  "vigia": "Una prueba que llame a _propuesta_cumple con una propuesta de clase reparar que solo traiga 'cambios' como lista y compruebe que devuelve (True, \"\").",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cerebro/protocolo.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_dudas.py",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "protocolo.py",
+   "revisor_de_programa.py",
+   "test_vigia_dudas.py",
+   "test_vigia_memoria_completa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Añade exactamente la condición que pedía el encargo a la línea de la rama reparar, el texto viejo aparece literal en el material y una propuesta con solo 'cambios' como lista ahora pasa la comprobación sin cerrar la puerta a las que no traen nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (23258 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

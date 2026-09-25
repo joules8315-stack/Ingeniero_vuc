@@ -1,0 +1,31 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la vigia que comprueba que el revisor frena cuando el texto_viejo no existe en el archivo, y el material solo muestra el inicio de test_vigia_revisor_de_programa.py y parte de revisar(), pero no la frase exacta ni el resto de la funcion.",
+  "archivo": "vigias/test_vigia_el_texto_viejo_tiene_que_existir.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"VIGIA — EL TEXTO VIEJO TIENE QUE EXISTIR EN EL ARCHIVO.\n\nNace de la mitad de los rechazos medidos el 2026-09-19: al que escribe el codigo le llega\nsolo un PEDAZO del archivo y, cuando le falta, se inventa el resto. Entonces el texto que\ndice estar cambiando NO existe tal cual en el archivo. Eso es una CUENTA que sale gratis\n(comparar dos cadenas) y hoy se descubre tarde, despues de pagar una revision.\n\nLa frase que se vigila es: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO.\n\nPRUEBA 1: archivo real en disco con cuenta_bien; texto_viejo inventado -> SI sale el fallo.\nPRUEBA 2: el mismo archivo, texto_viejo que SI esta -> NINGUN fallo con esa frase.\nPRUEBA 3: archivo que no existe y texto_viejo vacio (pieza nueva) -> tampoco sale la frase.\n\"\"\"\nimport os\nimport sys\n\nimport pytest\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, AQUI)\nsys.path.insert(0, os.path.join(AQUI, \"arnes\"))\n\nFRASE = \"EL TEXTO VIEJO NO ESTA EN EL ARCHIVO\"\n\n\ndef _revisor():\n    try:\n        import revisor_de_programa\n    except ImportError:\n        pytest.fail(\n            \"NO EXISTE arnes/revisor_de_programa.py (el ojo 2). Sin el, lo mecanico depende \"\n            \"de que un cerebro se fije, y el 2026-09-08 quedo medido que no se fija.\")\n    return revisor_de_programa\n\n\ndef _escribir_archivo(tmp_path):\n    archivo = tmp_path / \"pieza.py\"\n    archivo.write_text(\n        \"def cuenta_bien(n):\\n\"\n        \"    return n + 1\\n\",\n        encoding=\"utf-8\")\n    return archivo\n\n\ndef test_texto_viejo_inventado_si_frena(tmp_path):\n    \"\"\"PRUEBA 1: el texto viejo NO esta en el archivo -> tiene que salir el fallo.\"\"\"\n    r = _revisor()\n    archivo = _escribir_archivo(tmp_path)\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def cuenta_mal(n):\\n    return n - 1\\n\",\n        \"texto_nuevo\": \"def cuenta_bien(n):\\n    return n + 2\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"cambiar cuenta_bien\")\n    assert any(FRASE in str(f) for f in fallos), (\n        \"NO FRENO cuando el texto viejo no esta en el archivo. Sin esta cuenta se paga una \"\n        \"revision para descubrir algo que se sabia gratis comparando dos cadenas. Dijo: \"\n        + str(fallos))\n\n\ndef test_texto_viejo_que_si_esta_no_frena(tmp_path):\n    \"\"\"PRUEBA 2: el texto viejo SI esta en el archivo -> ningun fallo con esa frase.\"\"\"\n    r = _revisor()\n    archivo = _escribir_archivo(tmp_path)\n    propuesta = {\n        \"archivo\": str(archivo),\n        \"texto_viejo\": \"def cuenta_bien(n):\\n    return n + 1\\n\",\n        \"texto_nuevo\": \"def cuenta_bien(n):\\n    return n + 2\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"cambiar cuenta_bien\")\n    assert not any(FRASE in str(f) for f in fallos), (\n        \"FRENO EN FALSO: el texto viejo SI esta en el archivo y aun asi salio la frase. \"\n        \"Un candado que frena lo legitimo ensena a ignorarlos todos. Dijo: \" + str(fallos))\n\n\ndef test_archivo_nuevo_sin_texto_viejo_no_frena(tmp_path):\n    \"\"\"PRUEBA 3: pieza nueva (archivo que no existe, texto viejo vacio) -> no hay contra que comparar.\"\"\"\n    r = _revisor()\n    propuesta = {\n        \"archivo\": str(tmp_path / \"no_existe_todavia.py\"),\n        \"texto_viejo\": \"\",\n        \"texto_nuevo\": \"def cuenta_bien(n):\\n    return n + 1\\n\",\n    }\n    fallos = r.revisar(propuesta, tarea=\"crear pieza nueva\")\n    assert not any(FRASE in str(f) for f in fallos), (\n        \"FRENO EN FALSO al crear una pieza nueva: no hay archivo ni texto viejo contra que \"\n        \"comparar, asi que esa frase no puede salir. Dijo: \" + str(fallos))\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Ninguno funcional. Nota menor: el diagnostico afirma que el material 'no muestra la frase exacta', pero la frase 'EL TEXTO VIEJO NO ESTA EN EL ARCHIVO' esta en el material; eso no afecta al codigo, que usa la frase exacta correcta."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno: archivo nuevo en vigias/, toca solo tmp_path y su propio sys.path dentro del proceso pytest; no modifica revisor_de_programa.py ni test_vigia_revisor_de_programa.py."
+  ],
+  "que_falta": [
+   "Correr `python -m pytest -q vigias/test_vigia_el_texto_viejo_tiene_que_existir.py` contra el revisor real para confirmar que `revisar(propuesta, tarea=...)` acepta esos argumentos y devuelve una colleccion iterable; eso no se puede verificar leyendo el material.",
+   "Si el revisor hoy no tiene la cuenta del texto viejo, PRUEBA 1 quedara roja hasta que se le sume la cuenta; es lo esperado, la vigia es el guardian, no el arreglo del revisor."
+  ],
+  "resumen_para_el_jefe": "La vigia nueva hace exactamente lo que el encargo pide (las 3 pruebas con la frase exacta, ningun repo inventado, ningun vecino tocado); solo falta correrla una vez contra el revisor real para confirmar la firma."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40317 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_el_descanso_de_big_pickle_crece.py que vigile el crecimiento del descanso de bigpickle (30 min -> 60 min) y el borrado por acierto.",
+  "archivo": "vigias/test_vigia_el_descanso_de_big_pickle_crece.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"Vigia: el descanso de bigpickle crece cuando vuelve a fallar dos veces seguidas.\n\nOrden de Julio A-46 (2026-09-21): bigpickle, al segundo fallo seguido, duerme 30 min.\nSi al despertar vuelve a fallar dos veces seguidas, el descanso crece a 60 min.\nUn acierto borra la cuenta de fallos seguidos y el descanso vuelve a 30 min.\n\nEsta vigia comprueba ese crecimiento y ese borrado, aislando la memoria en tmp_path.\n\"\"\"\nimport time\n\nfrom cuerpo import cuotas\n\n\nimport pytest\n\n\n@pytest.fixture(autouse=True)\ndef _aislar_memoria(tmp_path, monkeypatch):\n    \"\"\"Aisla la memoria de cuotas en un archivo temporal por prueba.\"\"\"\n    monkeypatch.setattr(cuotas, \"RUTA\", str(tmp_path / \"CUOTAS.json\"))\n\n\ndef _despertar():\n    \"\"\"Fuerza que bigpickle ya haya despertado: pone su 'hasta' en el pasado y llama a desperto.\"\"\"\n    d = cuotas._leer()\n    d[\"dormidos\"][\"bigpickle\"][\"hasta\"] = time.time() - 1\n    cuotas._guardar(d)\n    cuotas.desperto(\"bigpickle\")\n\n\ndef _dura():\n    \"\"\"Segundos que le quedan de descanso a bigpickle (negativo si ya desperto).\"\"\"\n    return cuotas._leer()[\"dormidos\"][\"bigpickle\"][\"hasta\"] - time.time()\n\n\ndef test_dos_fallos_duermen_30_min():\n    cuotas.bigpickle_fallo()\n    cuotas.bigpickle_fallo()\n    assert cuotas.desperto(\"bigpickle\") is False\n    assert 1790 < _dura() < 1810\n\n\ndef test_segundo_ciclo_duerme_60_min():\n    cuotas.bigpickle_fallo()\n    cuotas.bigpickle_fallo()\n    _despertar()\n    cuotas.bigpickle_fallo()\n    assert cuotas.desperto(\"bigpickle\") is True\n    cuotas.bigpickle_fallo()\n    assert 3590 < _dura() < 3610\n\n\ndef test_tercer_y_cuarto_ciclo_duermen_60_min():\n    cuotas.bigpickle_fallo()\n    cuotas.bigpickle_fallo()\n    _despertar()\n    cuotas.bigpickle_fallo()\n    cuotas.bigpickle_fallo()\n    assert 3590 < _dura() < 3610\n\n    _despertar()\n    cuotas.bigpickle_fallo()\n    assert cuotas.desperto(\"bigpickle\") is True\n    cuotas.bigpickle_fallo()\n    assert 3590 < _dura() < 3610\n\n    _despertar()\n    cuotas.bigpickle_fallo()\n    assert cuotas.desperto(\"bigpickle\") is True\n    cuotas.bigpickle_fallo()\n    assert 3590 < _dura() < 3610\n\n\ndef test_acierto_borra_todo_y_vuelve_a_30_min():\n    cuotas.bigpickle_fallo()\n    cuotas.bigpickle_fallo()\n    _despertar()\n    cuotas.bigpickle_acierto()\n    cuotas.bigpickle_fallo()\n    cuotas.bigpickle_fallo()\n    assert 1790 < _dura() < 1810\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Crea solo el archivo de prueba que el encargo pide expresamente, usa solo funciones que ya existen (bigpickle_fallo, bigpickle_acierto, desperto, _leer, _guardar, RUTA) y reproduce las cuatro pruebas con sus valores exactos, sin tocar ningun otro archivo."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Faltan dos pruebas nuevas: una en el vigia del guardado (roja guardada que la propia tarea edita debe frenar) y otra en el vigia del cierre (orden que edita su propia prueba debe hacer parar el cierre).",
+  "archivo": "vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+  "funcion": "test_roja_guardada_que_espera_su_arreglo_deja_pasar",
+  "texto_viejo": "    paso, mensaje = modulo._vigias(raiz)\n    assert paso is True, (\n        \"una roja guardada que es la vigia de una tarea pendiente debe DEJAR \"\n        \"PASAR con aviso; mensaje: %r\" % mensaje)\n    assert \"espera\" in mensaje.lower() or \"arreglo\" in mensaje.lower() \\\n        or \"tarea\" in mensaje.lower(), (\n        \"el aviso debe decir que la prueba espera su arreglo o que es de una \"\n        \"tarea pendiente; mensaje: %r\" % mensaje)",
+  "texto_nuevo": "    paso, mensaje = modulo._vigias(raiz)\n    assert paso is True, (\n        \"una roja guardada que es la vigia de una tarea pendiente debe DEJAR \"\n        \"PASAR con aviso; mensaje: %r\" % mensaje)\n    assert \"espera\" in mensaje.lower() or \"arreglo\" in mensaje.lower() \\\n        or \"tarea\" in mensaje.lower(), (\n        \"el aviso debe decir que la prueba espera su arreglo o que es de una \"\n        \"tarea pendiente; mensaje: %r\" % mensaje)\n\n\ndef test_roja_guardada_que_la_propia_tarea_edita_frena(tmp_path, monkeypatch):\n    modulo = _cargar_guardia()\n    ordenes = [\n        {\n            \"id\": \"tarea-1\",\n            \"estado\": \"en_curso\",\n            \"vigia\": \"vigias/test_roja.py\",\n            \"pieza\": \"vigias/test_roja.py\",\n        }\n    ]\n    raiz = _preparar_raiz(tmp_path, ordenes)\n\n    salida = (\n        \"F                                                                        [100%]\\n\"\n        \"FAILED vigias/test_roja.py::test_roja - AssertionError: assert False\\n\"\n        \"1 failed in 0.01s\\n\"\n    )\n    _parchear(monkeypatch, modulo,\n              salida_pytest=salida, returncode_pytest=1,\n              guardados_en_head={\"vigias/test_roja.py\"})\n\n    paso, mensaje = modulo._vigias(raiz)\n    assert paso is False, (\n        \"una roja guardada que la propia tarea edita debe FRENAR; \"\n        \"mensaje: %r\" % mensaje)",
+  "cambio": "Anadir al final del archivo la funcion de prueba test_roja_guardada_que_la_propia_tarea_edita_frena, copiando el estilo de test_roja_guardada_que_espera_su_arreglo_deja_pasar pero con 'pieza': 'vigias/test_roja.py' en la orden y assert paso is False.",
+  "codigo": "def test_roja_guardada_que_la_propia_tarea_edita_frena(tmp_path, monkeypatch):\n    modulo = _cargar_guardia()\n    ordenes = [\n        {\n            \"id\": \"tarea-1\",\n            \"estado\": \"en_curso\",\n            \"vigia\": \"vigias/test_roja.py\",\n            \"pieza\": \"vigias/test_roja.py\",\n        }\n    ]\n    raiz = _preparar_raiz(tmp_path, ordenes)\n\n    salida = (\n        \"F                                                                        [100%]\\n\"\n        \"FAILED vigias/test_roja.py::test_roja - AssertionError: assert False\\n\"\n        \"1 failed in 0.01s\\n\"\n    )\n    _parchear(monkeypatch, modulo,\n              salida_pytest=salida, returncode_pytest=1,\n              guardados_en_head={\"vigias/test_roja.py\"})\n\n    paso, mensaje = modulo._vigias(raiz)\n    assert paso is False, (\n        \"una roja guardada que la propia tarea edita debe FRENAR; \"\n        \"mensaje: %r\" % mensaje)",
+  "vigia": "Ejecutar pytest sobre vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py y comprobar que el nuevo test_roja_guardada_que_la_propia_tarea_edita_frena pasa (paso is False).",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "arnes/vecinas.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "guardia_de_guardado.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno detectado: solo anade una funcion de prueba al final del archivo; no modifica las funciones existentes ni las piezas de arnes que se pueden danar, y no usa imports nuevos (todo lo que llama ya lo usa la prueba vecina)."
+  ],
+  "que_falta": [
+   "La parte (B) del encargo (test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare, en el vigia del cierre) no pertenece a este cambio: es otro archivo y debe llegar en su propio cambio. Este cambio queda completo en si mismo."
+  ],
+  "resumen_para_el_jefe": "La prueba nueva del vigia del guardado es identica en forma a la que ya existia, la orden lleva 'pieza' igual que la propia vigia (como pidio el encargo) y espera frenar (paso is False); no inventa nada, no toca vecinos y solo falta la prueba del cierre que va en otro archivo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (28135 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

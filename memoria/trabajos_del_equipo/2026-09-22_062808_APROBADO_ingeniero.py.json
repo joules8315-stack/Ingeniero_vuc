@@ -1,0 +1,60 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En ingeniero.py, dentro de main, falta el subcomando 'director' que permita a Codex o Claude dirigir el loop sin escribir archivos a mano.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "    if cmd == \"pit\" and len(sys.argv) >= 3:\n        from cuerpo import capataz as _cap\n        return _cap.bucle(sys.argv[2])",
+  "texto_nuevo": "    if cmd == \"pit\" and len(sys.argv) >= 3:\n        from cuerpo import capataz as _cap\n        return _cap.bucle(sys.argv[2])\n    # A-48 (2026-09-22): con esto Codex o Claude dirigen el loop sin escribir archivos a mano.\n    if cmd == \"director\" and len(sys.argv) >= 3:\n        from cuerpo import director as _dir\n        _raiz_dir = os.path.dirname(os.path.abspath(__file__))\n        _acc = sys.argv[2]\n        if _acc == 'estado':\n            print(_dir.estado(_raiz_dir))\n            return 0\n        if _acc == 'nueva' and len(sys.argv) >= 4:\n            ok, motivo = _dir.orden_nueva(_raiz_dir, sys.argv[3])\n            print(motivo)\n            return 0 if ok else 1\n        if _acc == 'reintentar' and len(sys.argv) >= 4:\n            ok, motivo = _dir.reintentar(_raiz_dir, sys.argv[3])\n            print(motivo)\n            return 0 if ok else 1\n        if _acc == 'hecha' and len(sys.argv) >= 4:\n            ok, motivo = _dir.hecha(_raiz_dir, sys.argv[3])\n            print(motivo)\n            return 0 if ok else 1\n        print(\"uso: python ingeniero.py director estado | nueva '<orden en JSON>' | reintentar <id> | hecha <id>\")\n        return 1",
+  "cambio": "Anadir el subcomando 'director' justo despues del bloque de 'pit' en main, con las acciones estado, nueva, reintentar y hecha, y el uso por defecto.",
+  "codigo": "    # A-48 (2026-09-22): con esto Codex o Claude dirigen el loop sin escribir archivos a mano.\n    if cmd == \"director\" and len(sys.argv) >= 3:\n        from cuerpo import director as _dir\n        _raiz_dir = os.path.dirname(os.path.abspath(__file__))\n        _acc = sys.argv[2]\n        if _acc == 'estado':\n            print(_dir.estado(_raiz_dir))\n            return 0\n        if _acc == 'nueva' and len(sys.argv) >= 4:\n            ok, motivo = _dir.orden_nueva(_raiz_dir, sys.argv[3])\n            print(motivo)\n            return 0 if ok else 1\n        if _acc == 'reintentar' and len(sys.argv) >= 4:\n            ok, motivo = _dir.reintentar(_raiz_dir, sys.argv[3])\n            print(motivo)\n            return 0 if ok else 1\n        if _acc == 'hecha' and len(sys.argv) >= 4:\n            ok, motivo = _dir.hecha(_raiz_dir, sys.argv[3])\n            print(motivo)\n            return 0 if ok else 1\n        print(\"uso: python ingeniero.py director estado | nueva '<orden en JSON>' | reintentar <id> | hecha <id>\")\n        return 1",
+  "vigia": "Ejecutar 'python ingeniero.py director estado' y comprobar que imprime el estado del director; ejecutar 'python ingeniero.py director nueva <json>' y comprobar que crea la orden; ejecutar 'python ingeniero.py director' sin accion y comprobar que imprime el uso y devuelve 1.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py",
+   "cuerpo/privacidad.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_director.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "test_vigia_director.py",
+   "via_canonica.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Si cuerpo/director.py no estuviera creado, el subcomando director fallaria al importar, pero el paquete indica que no se toca otro archivo y la comprobacion de programa dice que los nombres usados existen/estan importados; el cambio es aditivo y no altera los bloques existentes de main"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que pidio el encargo, solo toca ingeniero.py, no inventa nada y no rompe vecinos: se aprueba."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

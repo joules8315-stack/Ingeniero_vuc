@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_cierre.py, la llamada a subprocess.run dentro de _vigias_verdes usa text=True sin encoding, lo que puede romper con la salida de pytest en Windows.",
+  "archivo": "arnes/candado_cierre.py",
+  "funcion": "_vigias_verdes",
+  "texto_viejo": "        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\", \"vigias/\"],\n                           cwd=raiz, capture_output=True, text=True, timeout=300)",
+  "texto_nuevo": "        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\", \"vigias/\"],\n                           cwd=raiz, capture_output=True, text=True, encoding=\"utf-8\", errors=\"replace\", timeout=300)",
+  "cambio": "Anadir encoding=\"utf-8\", errors=\"replace\" a la llamada subprocess.run de _vigias_verdes, dejando text=True y el resto igual.",
+  "codigo": "        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\", \"vigias/\"],\n                           cwd=raiz, capture_output=True, text=True, encoding=\"utf-8\", errors=\"replace\", timeout=300)",
+  "vigia": "Correr las vigias del proyecto y comprobar que _vigias_verdes sigue devolviendo el mismo veredicto (verde/rojo) que antes del cambio, sin UnicodeDecodeError al leer la salida de pytest.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/candados_medicion.py",
+   "arnes/guardia_de_guardado.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_candados_duros.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "candados_medicion.py",
+   "guardia_de_guardado.py",
+   "test_vigia_candados_duros.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Corrige el posible UnicodeDecodeError añadiendo encoding='utf-8' y errors='replace' sin introducir código inexistente ni afectar a otros módulos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (23218 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "juzgar_con_vecinas llama a juzgar (y por tanto a pytest) una vez por cada vecina, y con 45 pruebas nombrando un archivo son 135 corridas que cuelgan el trabajo.",
+  "archivo": "arnes/juez_de_la_prueba.py",
+  "funcion": "_correr_prueba / juzgar_con_vecinas",
+  "texto_viejo": "    if proceso.returncode == 0:\n        return True, 'la prueba paso'\n    return False, 'la prueba no paso (codigo %s)' % proceso.returncode\n",
+  "texto_nuevo": "    if proceso.returncode == 0:\n        return True, 'la prueba paso'\n    return False, 'la prueba no paso (codigo %s)' % proceso.returncode\n\n\ndef _alguna_esta_roja(raiz, rutas_pruebas):\n    \"\"\"Corre pytest UNA sola vez sobre todas las rutas juntas.\n\n    Devuelve True si alguna no paso, y False si pasaron todas o si no se pudo correr.\n    \"\"\"\n    orden = [\n        sys.executable,\n        '-m',\n        'pytest',\n        '-q',\n    ]\n    orden.extend(str(ruta) for ruta in rutas_pruebas)\n    try:\n        proceso = subprocess.run(\n            orden,\n            cwd=str(raiz),\n            env=_entorno_limpio(),\n            stdout=subprocess.PIPE,\n            stderr=subprocess.STDOUT,\n            timeout=TOPE_SEGUNDOS,\n        )\n    except subprocess.TimeoutExpired:\n        return False\n    except Exception:\n        return False\n    return proceso.returncode != 0\n",
+  "cambio": "Agregar justo debajo de _correr_prueba la funcion nueva _alguna_esta_roja, que corre pytest UNA sola vez sobre todas las rutas juntas (misma orden, misma carpeta de trabajo, mismo entorno limpio y mismo tope de segundos) y devuelve True si alguna no paso, False si pasaron todas o si no se pudo correr. Y dentro de juzgar_con_vecinas, justo antes del recorrido de las vecinas, armar la lista de rutas completas de todas las candidatas, llamar a _alguna_esta_roja y, si devuelve False, devolver de inmediato un diccionario con ok en None, prueba en None y una razon en castellano que diga que ninguna de las pruebas que nombran ese archivo estaba roja. Ademas, del recorrido de vecinas mirar como maximo las cinco primeras, con un comentario corto en castellano que explique que se mira primero de un vistazo si hay alguna roja, porque correr pytest 135 veces cuesta mas que la revision que se quiere ahorrar.",
+  "codigo": "def _alguna_esta_roja(raiz, rutas_pruebas):\n    \"\"\"Corre pytest UNA sola vez sobre todas las rutas juntas.\n\n    Devuelve True si alguna no paso, y False si pasaron todas o si no se pudo correr.\n    \"\"\"\n    orden = [\n        sys.executable,\n        '-m',\n        'pytest',\n        '-q',\n    ]\n    orden.extend(str(ruta) for ruta in rutas_pruebas)\n    try:\n        proceso = subprocess.run(\n            orden,\n            cwd=str(raiz),\n            env=_entorno_limpio(),\n            stdout=subprocess.PIPE,\n            stderr=subprocess.STDOUT,\n            timeout=TOPE_SEGUNDOS,\n        )\n    except subprocess.TimeoutExpired:\n        return False\n    except Exception:\n        return False\n    return proceso.returncode != 0\n\n\n# Se mira primero de un vistazo si hay alguna roja, porque correr pytest 135 veces\n# cuesta mas que la revision que se quiere ahorrar.\nrutas_candidatas = [str(Path(raiz) / vigia) for vigia in candidatas]\nif not _alguna_esta_roja(raiz, rutas_candidatas):\n    return {\n        'ok': None,\n        'prueba': None,\n        'razon': (\n            'ninguna de las pruebas que nombran ese archivo estaba roja, '\n            'asi que no habia nada que demostrar'\n        ),\n    }\n\nfor vigia in candidatas[:5]:",
+  "vigia": "vigias/test_vigia_el_juez_busca_su_prueba.py y vigias/test_vigia_el_juez_de_la_prueba.py: comprobar que con varias pruebas candidatas pytest se corre una sola vez y que con ninguna roja se devuelve ok None sin correr juzgar.",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "vigias/test_vigia_el_juez_busca_su_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_el_juez_busca_su_prueba.py",
+   "test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El bloque 'codigo' mezcla la definicion de _alguna_esta_roja con las lineas que van DENTRO de juzgar_con_vecinas como si fueran contiguas; un aplicador descuidado podria pegar todo bajo _correr_prueba y romper la sintaxis. Es un riesgo de forma, no de fondo: el campo 'cambio' separa bien los dos sitios."
+  ],
+  "riesgo_vecinos": [
+   "El corte a candidatas[:5] es tal cual lo pide el encargo, pero deja un hueco teorico: si el pre-analisis ve una roja que vive mas alla de la posicion 5, el recorrido no la encuentra. Queda como el encargo lo manda; no es rechazo, pero si las vigias lo permiten conviene que el post-recorrido no diga 'no habia roja' en ese caso."
+  ],
+  "que_falta": [
+   "Correr con el equipo la prueba real interna de la ley del 2026-08-24: que con varias candidatas pytest se dispara UNA vez y que con cero rojas se devuelve el diccionario con ok None sin llegar a juzgar. La vigia pide exactamente eso y aun no esta demostrado."
+  ],
+  "resumen_para_el_jefe": "El obrero hizo lo que el encargo pedia al pie de la letra, sin inventar nada (todo lo que usa existe o esta importado y el programa ya lo verifico), y arregla de verdad el diagnostico: de 135 corridas de pytest pasa a una sola pasada previa mas un tope de 5 vecinas; solo conviene probarlo con el equipo antes de pedirle las llaves a Julio."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (24031 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

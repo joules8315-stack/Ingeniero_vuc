@@ -1,0 +1,33 @@
+{
+  "orden": {
+    "id": "195",
+    "titulo": "Ninguna prueba llama de verdad a Big Pickle, Grok ni Codex",
+    "repara": "cada cerebro nuevo del relevo hace que las pruebas viejas del revisor lo llamen de verdad: lentas (370 s) y rojas en falso",
+    "origen": "medido 2026-09-22: la orden 53 (Codex revisa si Big Pickle y Grok fallan) la freno el guardia: 16 rojas en 370 s; las vigias del revisor falsifican Big Pickle y Grok pero no Codex, asi que lo llaman de verdad. Mismo mal que la orden 136 con Grok (ley 23). Reemplaza a la 194, que traia mal el nombre de la prueba del enchufe de Grok",
+    "pieza": "vigias/conftest.py",
+    "modo": "IA",
+    "razon": "se cura en un sitio para todas las pruebas y para los cerebros que vengan",
+    "vigia": "vigias/test_vigia_el_revisor_respeta_el_descanso_de_big_pickle.py",
+    "encargo": "En vigias/conftest.py, en la funcion _nada_toca_lo_real, justo antes de la linea yield, agrega: por cada modulo de cerebro con salida de pago o externa (cuerpo.bigpickle, cuerpo.grok y cuerpo.codex, importados dentro de un try por si alguno no existe), monkeypatch.setattr(modulo, \"preguntar\", una funcion que devuelve (\"\", [\"en las pruebas no se llama a un cerebro de verdad\"])), SALVO si el nombre del archivo de la prueba que corre (request.node.fspath.basename; agrega request a los parametros del fixture) esta en una lista _PRUEBAN_EL_ENCHUFE con estos nombres: test_vigia_bigpickle_enchufe.py, test_vigia_la_pieza_que_le_pregunta_a_codex.py, test_vigia_el_enchufe_de_grok.py (esas prueban el enchufe mismo y falsifican por dentro). Las pruebas que falsifican preguntar a su manera siguen igual, porque su monkeypatch va despues. Comentario corto: ninguna prueba llama a un cerebro de verdad (ley 23; medido 2026-09-22, orden 53: 16 rojas en 370 s). Es UN solo cambio. No toques ningun otro archivo.",
+    "depende": [],
+    "nota": "",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0
+  },
+  "huella": "022f7ea5f0cb1094",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_091113_APROBADO_conftest.py.json\nOBRERO deepseek -> AUDITOR groq\n  aviso       : GPT-OSS 120B (Groq) no le cabe (27011 letras, aguanta 19042) -> se le salta\n  aviso       : PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).\n  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None\n  diagnostico : En vigias/conftest.py, la funcion _nada_toca_lo_real no impide que las pruebas llamen a cerebros de pago o externos (bigpickle, grok, codex) cuando no son las tres vigias del enchufe.\n  toca        : vigias/conftest.py funcion _nada_toca_lo_real\n  confianza   : media\n  PREGUNTA_REQUERIDA: El fixture _nada_toca_lo_real no aparece en el material con su firma actual (solo se ve el cuerpo desde 'def _nada_toca_lo_real(tmp_path, monkeypatch):'); hay que anadir 'request' a los parametros, pero no se ve la linea de firma exacta en el material para copiarla literalmente. ¿Se confirma que la firma es exactamente 'def _nada_toca_lo_real(tmp_path, monkeypatch):' y que hay que cambiarla a 'def _nada_toca_lo_real(tmp_path, monkeypatch, request):'?\n  VEREDICTO   : APROBADO\n  resumen     : Cumple el diagnóstico sin introducir inventos ni dañar vecinos.\n\nAPLICADO en disco (lo escribio el equipo): vigias/conftest.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   1187 errors in 36.73s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): vigias/conftest.py\nLLAVE GUARDADA: se puede escribir en 66 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T09:12:13",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no contesto en 600 s",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\195_20260922_091213.json"
+  }
+}

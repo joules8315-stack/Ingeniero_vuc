@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py, la funcion pedir_al_perito llama a subprocess.run sin pasarle el parametro env, asi que el perito hereda los candados pensados para hablar con Julio y no puede contestar en JSON.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "pedir_al_perito",
+  "texto_viejo": "        resultado = subprocess.run(\n            [exe, '-p', '--tools', 'Read,Grep,Glob', '--permission-mode', 'plan'],\n            input=pedido,\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            encoding='utf-8',\n            errors='replace',\n            timeout=tope_segundos,\n        )",
+  "texto_nuevo": "        entorno = dict(os.environ)\n        entorno['INGENIERO_OFF'] = '1'\n        resultado = subprocess.run(\n            [exe, '-p', '--tools', 'Read,Grep,Glob', '--permission-mode', 'plan'],\n            input=pedido,\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            encoding='utf-8',\n            errors='replace',\n            timeout=tope_segundos,\n            env=entorno,\n        )",
+  "cambio": "Anadir a la llamada a subprocess.run el parametro env con una copia del entorno actual (dict(os.environ)) mas la marca INGENIERO_OFF puesta a '1'. No se quita ningun candado ni se cambia nada mas.",
+  "codigo": "        entorno = dict(os.environ)\n        entorno['INGENIERO_OFF'] = '1'\n        resultado = subprocess.run(\n            [exe, '-p', '--tools', 'Read,Grep,Glob', '--permission-mode', 'plan'],\n            input=pedido,\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            encoding='utf-8',\n            errors='replace',\n            timeout=tope_segundos,\n            env=entorno,\n        )",
+  "vigia": "Una prueba que llame a pedir_al_perito con un claude falso que compruebe que en su entorno esta INGENIERO_OFF=1 y que el resto del entorno se conserva, y que el perito devuelve JSON correctamente.",
+  "puede_danar": [],
+  "preguntas": [
+   "El material no muestra si cuerpo/capataz.py ya importa os en la cabecera del archivo; si no lo importa, hay que anadirlo, pero el material no lo dice."
+  ],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "La copia con dict(os.environ) conserva TODO el entorno del padre y solo anade INGENIERO_OFF=1, asi que PATH (necesario para shutil.which('claude') ya resuelto antes) y el resto se preservan; no se despoja a ningun vecino de variables."
+  ],
+  "que_falta": [
+   "Solo ejecutar la vigia propuesta con un claude falso que verifique que el hijo recibe INGENIERO_OFF=1 y el resto del entorno intacto, y que responde JSON. La duda sobre si os viene importado ya la despeja el propio material ('los nombres que usa el cambio existen en el archivo o estan importados y el archivo sigue cargando')."
+  ],
+  "resumen_para_el_jefe": "El cambio es exactamente lo que ordena el encargo—pasar env al subprocess.run con la copia del entorno mas INGENIERO_OFF=1—sin tocar nada mas, sin inventar nada (la marca la pide el propio contrato) y sin riesgo para los vecinos; apruebase."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

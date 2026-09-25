@@ -1,0 +1,25 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El rechazo previo fue porque la vigia no llamaba a armar_sabotaje; ahora la vigia parchea armar_sabotaje y correr_orden_del_sistema con monkeypatch y mide exactamente lo que dice la tarea.",
+  "archivo": "vigias/test_vigia_el_pit_arma_el_sabotaje_que_falta.py",
+  "texto_nuevo": "import os\n\nfrom cuerpo import capataz\n\n\ndef _orden(tmp_path):\n    return {\n        'id': '9',\n        'pieza': 'pieza.py',\n        'vigia': 'vigias/test_x.py',\n        'sabotaje': str(tmp_path / 'no_existe.json'),\n    }\n\n\ndef test_si_armar_sabotaje_devuelve_false_no_se_corre_la_orden(tmp_path, monkeypatch):\n    llamadas = []\n\n    def correr_falso(palabras):\n        llamadas.append(palabras)\n        return 0\n\n    def armar_falso(orden, raiz=None):\n        return False\n\n    monkeypatch.setattr(capataz, 'correr_orden_del_sistema', correr_falso)\n    monkeypatch.setattr(capataz, 'armar_sabotaje', armar_falso)\n\n    resultado = capataz.sabotear_la_orden(_orden(tmp_path))\n\n    assert isinstance(resultado, dict)\n    assert resultado.get('ok') is None\n    assert 'armar' in str(resultado.get('razon', '')).lower()\n    assert llamadas == []\n\n\ndef test_si_armar_sabotaje_devuelve_true_se_corre_la_orden_una_vez(tmp_path, monkeypatch):\n    llamadas = []\n\n    def correr_falso(palabras):\n        llamadas.append(palabras)\n        return 0\n\n    def armar_falso(orden, raiz=None):\n        return True\n\n    monkeypatch.setattr(capataz, 'correr_orden_del_sistema', correr_falso)\n    monkeypatch.setattr(capataz, 'armar_sabotaje', armar_falso)\n\n    resultado = capataz.sabotear_la_orden(_orden(tmp_path))\n\n    assert len(llamadas) == 1\n    assert isinstance(resultado, dict)\n    assert resultado.get('ok') is True\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Crea exactamente la vigia pedida, con los dos imports, la orden '9', los monkeypatch de armar_sabotaje y correr_orden_del_sistema, y las dos pruebas con asserts que miden False/corre nada y True/corre una vez; no toca otro archivo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39573 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (39945 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

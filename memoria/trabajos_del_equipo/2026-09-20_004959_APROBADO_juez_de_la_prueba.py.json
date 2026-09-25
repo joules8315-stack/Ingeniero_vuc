@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El bloque final de juzgar escribe siempre el contenido nuevo en el archivo, ignorando el parametro dejar_el_cambio, y el mensaje del except siempre habla del cambio nuevo aunque no se haya pedido dejarlo.",
+  "archivo": "arnes/juez_de_la_prueba.py",
+  "funcion": "juzgar",
+  "texto_viejo": "    # Dejar el cambio nuevo puesto, como pide la tarea.\n    try:\n        with open(ruta_archivo, 'w', encoding='utf-8') as f:\n            f.write(contenido_nuevo)\n    except Exception as error:\n        resultado['razon'] = (\n            'antes de tocar nada: %s. Despues del juicio no se pudo dejar el cambio '\n            'nuevo puesto: %s' % (detalle_antes, error)\n        )\n        return resultado",
+  "texto_nuevo": "    # Dejar el archivo como pide la tarea: el cambio nuevo si dejar_el_cambio es\n    # verdadero, y el contenido original si es falso.\n    if dejar_el_cambio:\n        contenido_a_dejar = contenido_nuevo\n        que_se_queria_dejar = 'el cambio nuevo puesto'\n    else:\n        contenido_a_dejar = contenido_original\n        que_se_queria_dejar = 'el archivo como estaba'\n    try:\n        with open(ruta_archivo, 'w', encoding='utf-8') as f:\n            f.write(contenido_a_dejar)\n    except Exception as error:\n        resultado['razon'] = (\n            'antes de tocar nada: %s. Despues del juicio no se pudo dejar %s: %s'\n            % (detalle_antes, que_se_queria_dejar, error)\n        )\n        return resultado",
+  "cambio": "Sustituir el bloque final de juzgar que empieza con el comentario '# Dejar el cambio nuevo puesto, como pide la tarea.' por un bloque que elija el contenido a escribir segun dejar_el_cambio (contenido_nuevo si es verdadero, contenido_original si es falso) y que arme el mensaje del except con el texto correspondiente ('el cambio nuevo puesto' o 'el archivo como estaba').",
+  "codigo": "    # Dejar el archivo como pide la tarea: el cambio nuevo si dejar_el_cambio es\n    # verdadero, y el contenido original si es falso.\n    if dejar_el_cambio:\n        contenido_a_dejar = contenido_nuevo\n        que_se_queria_dejar = 'el cambio nuevo puesto'\n    else:\n        contenido_a_dejar = contenido_original\n        que_se_queria_dejar = 'el archivo como estaba'\n    try:\n        with open(ruta_archivo, 'w', encoding='utf-8') as f:\n            f.write(contenido_a_dejar)\n    except Exception as error:\n        resultado['razon'] = (\n            'antes de tocar nada: %s. Despues del juicio no se pudo dejar %s: %s'\n            % (detalle_antes, que_se_queria_dejar, error)\n        )\n        return resultado",
+  "vigia": "Una prueba que llame a juzgar con dejar_el_cambio=False y compruebe que el archivo queda con su contenido original, y otra con dejar_el_cambio=True que compruebe que queda con el contenido nuevo; y que en el caso de fallo al escribir, la razon mencione 'el archivo como estaba' o 'el cambio nuevo puesto' segun corresponda.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candado_equipo.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_texto_viejo_tiene_que_existir.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_equipo.py",
+   "test_vigia_el_texto_viejo_tiene_que_existir.py",
+   "test_vigia_revisor_de_programa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No se detectan roturas: el parametro dejar_el_cambio tiene valor por defecto True, asi que quienes lo omiten siguen recibiendo el cambio puesto igual que antes; solo quienes pasaban False (que el docstring ya prometia que dejaria el archivo como estaba) veran el comportamiento corregido."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El obrero arregla justo lo que se le pidio —honrar dejar_el_cambio al escribir el archivo y ajustar el mensaje del except— usando solo nombres que ya existian en juzgar, sin tocar nada fuera del bloque final y sin romper vecinos; se aprueba."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20511 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

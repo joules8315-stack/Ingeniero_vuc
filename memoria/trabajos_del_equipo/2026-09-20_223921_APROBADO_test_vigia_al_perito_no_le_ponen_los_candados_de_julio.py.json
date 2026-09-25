@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El archivo vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py usa shutil y subprocess pero no los importa, provocando NameError.",
+  "archivo": "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py",
+  "funcion": "imports del modulo (cabecera del archivo)",
+  "texto_viejo": "import importlib\nimport json\nimport os\nimport sys",
+  "texto_nuevo": "import importlib\nimport json\nimport os\nimport shutil\nimport subprocess\nimport sys",
+  "cambio": "Anadir 'import shutil' e 'import subprocess' en la zona de imports, junto a los demas, sin tocar nada mas.",
+  "codigo": "import importlib\nimport json\nimport os\nimport shutil\nimport subprocess\nimport sys",
+  "vigia": "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py (debe dejar de lanzar NameError y pasar)",
+  "puede_danar": [
+   "cuerpo/capataz.py (via monkeypatch de subprocess.run y shutil.which)",
+   "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "capataz.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno nuevo: el archivo ya usaba shutil y subprocess (monkeypatch en el fixture), solo faltaban los imports. Los parches se restauran solos con la fixture monkeypatch de pytest; cuerpo/capataz.py no se toca."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El obrero agrega exactamente las dos importaciones que faltaban (shutil y subprocess) en la cabecera del archivo de vigia, sin tocar nada mas, y eso elimina el NameError que el propio material muestra que existe."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

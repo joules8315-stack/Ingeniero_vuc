@@ -1,0 +1,29 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py se usan hashlib (en huella_de) y datetime (en anotar_huella_fallida) pero el archivo no los importa, por lo que lanza NameError.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "importaciones de arriba del archivo (cabecera, antes de lanzar_al_equipo)",
+  "texto_viejo": "import json\nimport os\nimport subprocess",
+  "texto_nuevo": "import datetime\nimport hashlib\nimport json\nimport os\nimport subprocess",
+  "cambio": "Agregar 'import datetime' e 'import hashlib' a las importaciones de arriba, en orden alfabetico con json, os, subprocess. Nada mas.",
+  "codigo": "import datetime\nimport hashlib\nimport json\nimport os\nimport subprocess",
+  "vigia": "Una prueba que importe cuerpo/capataz.py y llame a huella_de y anotar_huella_fallida comprobando que no lanza NameError.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Agrega solo las dos importaciones que faltan (datetime y hashlib, en orden alfabetico) y ambas se usan de verdad en capataz.py: huella_de usa hashlib.sha256 y anotar_huella_fallida usa datetime.date.today().isoformat(), ambas presentes en el material, asi que el cambio arregla el NameError sin tocar nada mas y sin vecinos que romper."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,26 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "No existe la vigia que fija en 1 el valor por defecto de 'en_paralelo' en capataz.bucle, y hay que crearla con su prueba y su explicacion del fallo medido el 2026-09-21.",
+  "archivo": "vigias/test_vigia_el_pit_corre_una_tarea_a_la_vez.py",
+  "texto_nuevo": "\"\"\"Vigia: el pit corre UNA tarea a la vez.\n\nQue vigila\n----------\nQue `cuerpo.capataz.bucle` siga teniendo `en_paralelo=1` por defecto.\n\nPor que\n-------\nMedido el 2026-09-21: con dos tareas a la vez, las dos comparten la misma\ncarpeta de trabajo, y el guardia de una ve el trabajo a medias de la otra.\nEl guardia entonces no distingue lo que esta terminado de lo que esta a\nmedio hacer, y da por bueno (o por malo) lo que no le toca.\n\nCuando se vuelve a 2\n--------------------\nSolo cuando cada tarea trabaje en su PROPIA COPIA de la carpeta. Mientras\nlas dos escriban en el mismo sitio, el pit corre una tarea a la vez.\n\nSi esta vigia se pone roja\n--------------------------\nAlguien subio `en_paralelo` a 2 sin darle a cada tarea su propia copia.\nNo lo dejes asi: o vuelves a 1, o separas las carpetas primero.\n\"\"\"\n\nimport inspect\n\nfrom cuerpo import capataz\n\n\n# El valor por defecto tiene que ser 1: una tarea a la vez.\n# Dos a la vez comparten carpeta y el guardia de una ve el trabajo a medias\n# de la otra (medido el 2026-09-21).\n# Se vuelve a 2 solo cuando cada tarea trabaje en su propia copia.\ndef test_el_pit_corre_una_tarea_a_la_vez():\n    parametros = inspect.signature(capataz.bucle).parameters\n    assert 'en_paralelo' in parametros, (\n        \"capataz.bucle ya no tiene el parametro 'en_paralelo': \"\n        \"la vigia no puede comprobar que el pit corre una tarea a la vez\"\n    )\n    assert parametros['en_paralelo'].default == 1, (\n        \"capataz.bucle tiene en_paralelo=%r por defecto, y tiene que ser 1: \"\n        \"con dos tareas a la vez comparten la misma carpeta y el guardia de \"\n        \"una ve el trabajo a medias de la otra (medido el 2026-09-21). \"\n        \"Se vuelve a 2 solo cuando cada tarea trabaje en su propia copia.\"\n        % (parametros['en_paralelo'].default,)\n    )\n\n\nif __name__ == '__main__':\n    test_el_pit_corre_una_tarea_a_la_vez()\n    print('OK: el pit corre una tarea a la vez (en_paralelo=1)')\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Crea la vigia solicitada, cumple el diagnóstico y no rompe nada."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,58 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El revisor rechaza con 'La propuesta no trae texto nuevo' cualquier cambio que solo borra, aunque borrar codigo que sobra es legitimo.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        if not nuevo.strip():\n            return [\"La propuesta no trae texto nuevo: no hay nada que aplicar.\"]",
+  "texto_nuevo": "        # Un cambio que SOLO BORRA es legitimo: quitar codigo que sobra y no poner nada en su\n        # lugar es trabajo de verdad. Solo no hay nada que hacer cuando tampoco se dice que quitar.\n        if not nuevo.strip() and not viejo.strip():\n            return [\"La propuesta no trae texto nuevo: no hay nada que aplicar.\"]\n        if not nuevo.strip():\n            # Solo se borra: las demas cuentas suponen que hay codigo nuevo que leer, asi que\n            # se devuelve la lista de fallos tal como va, sin mirar mas cuentas.\n            return fallos",
+  "cambio": "Sustituir el rechazo incondicional por texto nuevo vacio: primero un comentario en castellano diciendo que un cambio que solo borra es legitimo y que solo no hay nada que hacer cuando tampoco se dice que quitar; despues la queja con la misma frase solo cuando el texto nuevo esta vacio Y el texto viejo tambien esta vacio; y despues, cuando solo el texto nuevo esta vacio, devolver la lista de fallos tal como va, sin mirar mas cuentas.",
+  "codigo": "        # Un cambio que SOLO BORRA es legitimo: quitar codigo que sobra y no poner nada en su\n        # lugar es trabajo de verdad. Solo no hay nada que hacer cuando tampoco se dice que quitar.\n        if not nuevo.strip() and not viejo.strip():\n            return [\"La propuesta no trae texto nuevo: no hay nada que aplicar.\"]\n        if not nuevo.strip():\n            # Solo se borra: las demas cuentas suponen que hay codigo nuevo que leer, asi que\n            # se devuelve la lista de fallos tal como va, sin mirar mas cuentas.\n            return fallos",
+  "vigia": "vigias/test_vigia_un_cambio_que_solo_borra_vale.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_archivo_carga.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_cambio_que_solo_borra_vale.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "candado_equipo.py",
+   "test_vigia_el_archivo_carga.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_cambio_que_solo_borra_vale.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el requerimiento de aceptar cambios que solo borran y no rompe nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (30678 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

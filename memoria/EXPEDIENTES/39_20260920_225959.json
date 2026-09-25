@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "39",
+    "titulo": "Una prueba que revienta no cuenta como nacida roja",
+    "origen": "agujero visto el 2026-09-20 en la orden 18",
+    "repara": "sin esto, el candado de la prueba roja se puede cumplir con una prueba rota, que es la peor clase de vigilancia: parece que esta y no esta",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "38"
+    ],
+    "modo": "IA",
+    "razon": "es el mismo fallo que ya costo cinco rondas con la prueba sin cuerpo: una vigilancia que parece que esta y no esta",
+    "encargo": "En cuerpo/capataz.py, en la funcion comprobar_pasos, donde se comprueba al reves la vigia de una orden con el campo entrega_la_prueba puesto a si, no basta con que pytest devuelva rojo: hay que mirar la salida. Si el rojo viene de una comprobacion no cumplida (aparece AssertionError) la prueba nacio roja de verdad y ese paso esta bien. Si el rojo viene de un reventon de la propia prueba (aparece AttributeError, NameError o TypeError sin que aparezca AssertionError) ese paso FALLA, porque una prueba que revienta no mide nada. OJO, excepcion importante: si aparece ImportError o ModuleNotFoundError nombrando justo la pieza que esa orden va a crear, eso SI vale, porque es normal que la prueba no encuentre todavia una pieza que aun no existe. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_una_prueba_que_revienta_no_nace_roja.py",
+    "sabotaje": "memoria/sabotajes/una_prueba_que_revienta_no_nace_roja.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "f133b7ee818f8a35",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_225953_APROBADO_capataz.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (39157 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : En comprobar_pasos, cuando entrega_la_prueba es 'si', solo se mira el returncode de pytest: cualquier rojo se acepta, aunque venga de un reventon de la prueba (AttributeError, NameError, TypeError) en vez de una comprobacion no cumplida (AssertionError).\n  toca        : cuerpo/capataz.py funcion comprobar_pasos\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : El cambio hace lo pedido: para las ordenes que entregan una prueba, distingue el rojo por AssertionError (pasa) del rojo por reventon AttributeError/NameError/TypeError (falla), usa solo stdout/stderr, os y orden['pieza'] que ya existen (nada inventado), el texto coincide con el material y no rompe vecinos; apruebaselo, con la nota de que otros reventones no tipados todavia se aceptan si algun dia quiere tapar ese hueco.\n\nAPLICADO en disco (lo escribio el equipo): cuerpo/capataz.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   8 failed, 99 passed in 4.24s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): cuerpo/capataz.py\nLLAVE GUARDADA: se puede escribir en 179 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T22:59:59",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: You've hit your session limit · resets 11:10pm (America/Bogota)\n",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\39_20260920_225959.json"
+  }
+}

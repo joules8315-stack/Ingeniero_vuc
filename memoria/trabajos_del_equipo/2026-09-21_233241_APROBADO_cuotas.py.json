@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "Falta la funcion espera_de_bigpickle en cuerpo/cuotas.py, justo despues de se_paso_de_su_marca, que calcule la espera a partir de las filas reales del cuaderno de llamadas para bigpickle.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "se_paso_de_su_marca",
+  "texto_viejo": "def se_paso_de_su_marca(quien, segundos):\n    \"\"\"¿Tardo MAS de lo que el mismo ha tardado nunca? Entonces se descarta y se busca otro.\"\"\"\n    return float(segundos) > cuanto_esperarle(quien)",
+  "texto_nuevo": "def se_paso_de_su_marca(quien, segundos):\n    \"\"\"¿Tardo MAS de lo que el mismo ha tardado nunca? Entonces se descarta y se busca otro.\"\"\"\n    return float(segundos) > cuanto_esperarle(quien)\n\n\ndef espera_de_bigpickle(letras):\n    \"\"\"CUANTO ESPERARLE A BIG PICKLE, segun lo que tarda de verdad con tareas de ese tamano.\n\n    Orden de Julio A-47 del 2026-09-21: la espera sale de lo que Big Pickle tarda de verdad con\n    tareas de ese tamano, nunca menor, para no descartarlo por darle un tiempo que no le\n    corresponde ni esperar de mas en una tarea chica. Completa la ley del 2026-08-21 de\n    cuanto_esperarle.\n\n    Lee las filas del cuaderno de llamadas (cuerpo/cuaderno.py::_ruta()). Solo cuentan las\n    filas con quien == 'bigpickle', resultado == cuaderno.OK y segundos mayor que 0.\n    Parecidas = las filas con tamano entre letras/2 y letras*2 (y tamano mayor que 0).\n    Si hay 5 o mas parecidas: devuelve max(MINIMO_ESPERA, el mayor segundos de las parecidas\n    por MARGEN). Si no: devuelve max(MINIMO_ESPERA, el mayor segundos de todas por MARGEN).\n    Sin filas: devuelve 600.0.\"\"\"\n    from cuerpo import cuaderno\n    filas = []\n    try:\n        with open(cuaderno._ruta(), encoding=\"utf-8\") as f:\n            for linea in f:\n                linea = linea.strip()\n                if not linea:\n                    continue\n                try:\n                    fila = json.loads(linea)\n                except Exception:\n                    continue\n                if not isinstance(fila, dict):\n                    continue\n                if fila.get(\"quien\") != \"bigpickle\":\n                    continue\n                if fila.get(\"resultado\") != cuaderno.OK:\n                    continue\n                try:\n                    seg = float(fila.get(\"segundos\") or 0)\n                except Exception:\n                    continue\n                if seg <= 0:\n                    continue\n                try:\n                    tam = int(fila.get(\"tamano\") or 0)\n                except Exception:\n                    tam = 0\n                filas.append({\"segundos\": seg, \"tamano\": tam})\n    except Exception:\n        filas = []\n    if not filas:\n        return 600.0\n    try:\n        letras = float(letras)\n    except Exception:\n        letras = 0.0\n    parecidas = [f for f in filas\n                 if f[\"tamano\"] > 0 and letras / 2.0 <= f[\"tamano\"] <= letras * 2.0]\n    if len(parecidas) >= 5:\n        mayor = max(f[\"segundos\"] for f in parecidas)\n    else:\n        mayor = max(f[\"segundos\"] for f in filas)\n    return max(float(MINIMO_ESPERA), mayor * MARGEN)",
+  "cambio": "Agregar la funcion espera_de_bigpickle(letras) justo despues de se_paso_de_su_marca, que lee las filas del cuaderno de llamadas, filtra las de bigpickle con resultado OK y segundos>0, calcula las parecidas por tamano entre letras/2 y letras*2, y devuelve max(MINIMO_ESPERA, mayor segundos por MARGEN) usando las parecidas si hay 5 o mas, o todas si no; 600.0 si no hay filas.",
+  "codigo": "def espera_de_bigpickle(letras):\n    \"\"\"CUANTO ESPERARLE A BIG PICKLE, segun lo que tarda de verdad con tareas de ese tamano.\n\n    Orden de Julio A-47 del 2026-09-21: la espera sale de lo que Big Pickle tarda de verdad con\n    tareas de ese tamano, nunca menor, para no descartarlo por darle un tiempo que no le\n    corresponde ni esperar de mas en una tarea chica. Completa la ley del 2026-08-21 de\n    cuanto_esperarle.\n\n    Lee las filas del cuaderno de llamadas (cuerpo/cuaderno.py::_ruta()). Solo cuentan las\n    filas con quien == 'bigpickle', resultado == cuaderno.OK y segundos mayor que 0.\n    Parecidas = las filas con tamano entre letras/2 y letras*2 (y tamano mayor que 0).\n    Si hay 5 o mas parecidas: devuelve max(MINIMO_ESPERA, el mayor segundos de las parecidas\n    por MARGEN). Si no: devuelve max(MINIMO_ESPERA, el mayor segundos de todas por MARGEN).\n    Sin filas: devuelve 600.0.\"\"\"\n    from cuerpo import cuaderno\n    filas = []\n    try:\n        with open(cuaderno._ruta(), encoding=\"utf-8\") as f:\n            for linea in f:\n                linea = linea.strip()\n                if not linea:\n                    continue\n                try:\n                    fila = json.loads(linea)\n                except Exception:\n                    continue\n                if not isinstance(fila, dict):\n                    continue\n                if fila.get(\"quien\") != \"bigpickle\":\n                    continue\n                if fila.get(\"resultado\") != cuaderno.OK:\n                    continue\n                try:\n                    seg = float(fila.get(\"segundos\") or 0)\n                except Exception:\n                    continue\n                if seg <= 0:\n                    continue\n                try:\n                    tam = int(fila.get(\"tamano\") or 0)\n                except Exception:\n                    tam = 0\n                filas.append({\"segundos\": seg, \"tamano\": tam})\n    except Exception:\n        filas = []\n    if not filas:\n        return 600.0\n    try:\n        letras = float(letras)\n    except Exception:\n        letras = 0.0\n    parecidas = [f for f in filas\n                 if f[\"tamano\"] > 0 and letras / 2.0 <= f[\"tamano\"] <= letras * 2.0]\n    if len(parecidas) >= 5:\n        mayor = max(f[\"segundos\"] for f in parecidas)\n    else:\n        mayor = max(f[\"segundos\"] for f in filas)\n    return max(float(MINIMO_ESPERA), mayor * MARGEN)",
+  "vigia": "Una prueba que escriba filas de prueba en el cuaderno (via INGENIERO_CUADERNO_TEST) con quien='bigpickle', resultado=cuaderno.OK y segundos>0, y compruebe: (a) sin filas devuelve 600.0; (b) con menos de 5 parecidas usa el mayor de todas por MARGEN; (c) con 5 o mas parecidas usa el mayor de las parecidas por MARGEN; (d) nunca baja de MINIMO_ESPERA; (e) ignora filas con otro quien, otro resultado o segundos<=0.",
+  "puede_danar": [
+   "cuerpo/cuotas.py",
+   "cuerpo/cuaderno.py",
+   "cuerpo/codex.py",
+   "cuerpo/privacidad.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (24220 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

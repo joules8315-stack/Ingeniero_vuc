@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba test_si_el_guardia_frena_no_se_pierde_nada solo comprueba que el trabajo siga en el disco, pero no acepta la otra forma de no perder nada: que quede apartado en memoria/trabajos_sin_revisar/pieza.py.FRENADO_POR_EL_GUARDIA.",
+  "archivo": "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py",
+  "funcion": "test_si_el_guardia_frena_no_se_pierde_nada",
+  "texto_viejo": "def test_si_el_guardia_frena_no_se_pierde_nada(tmp_path):\n    \"\"\"Si el guardia de guardado frena, el trabajo sigue en el disco.\"\"\"\n    _repo(tmp_path)\n    hook = tmp_path / \".git\" / \"hooks\" / \"pre-commit\"\n    hook.write_text(\"#!/bin/sh\\nexit 1\\n\", encoding=\"utf-8\")\n    try:\n        os.chmod(str(hook), 0o755)\n    except OSError:\n        pass\n    (tmp_path / \"pieza.py\").write_text(\"y = 2\\n\", encoding=\"utf-8\")\n\n    ok, msg = candado_equipo.guardar_en_la_historia(\n        str(tmp_path), [\"pieza.py\"], \"equipo aprobado\"\n    )\n\n    assert ok is False, \"el guardia freno y la funcion dijo que si guardo\"\n    contenido = (tmp_path / \"pieza.py\").read_text(encoding=\"utf-8\")\n    assert \"y = 2\" in contenido, (\n        \"el guardia freno y el trabajo desaparecio del disco\"\n    )",
+  "texto_nuevo": "def test_si_el_guardia_frena_no_se_pierde_nada(tmp_path):\n    \"\"\"Si el guardia de guardado frena, el trabajo no se pierde: sigue en el disco o queda apartado.\"\"\"\n    _repo(tmp_path)\n    hook = tmp_path / \".git\" / \"hooks\" / \"pre-commit\"\n    hook.write_text(\"#!/bin/sh\\nexit 1\\n\", encoding=\"utf-8\")\n    try:\n        os.chmod(str(hook), 0o755)\n    except OSError:\n        pass\n    (tmp_path / \"pieza.py\").write_text(\"y = 2\\n\", encoding=\"utf-8\")\n\n    ok, msg = candado_equipo.guardar_en_la_historia(\n        str(tmp_path), [\"pieza.py\"], \"equipo aprobado\"\n    )\n\n    assert ok is False, \"el guardia freno y la funcion dijo que si guardo\"\n    en_el_disco = tmp_path / \"pieza.py\"\n    apartado = (\n        tmp_path\n        / \"memoria\"\n        / \"trabajos_sin_revisar\"\n        / \"pieza.py.FRENADO_POR_EL_GUARDIA\"\n    )\n    contenido = \"\"\n    if en_el_disco.exists():\n        contenido = en_el_disco.read_text(encoding=\"utf-8\")\n    elif apartado.exists():\n        contenido = apartado.read_text(encoding=\"utf-8\")\n    assert \"y = 2\" in contenido, (\n        \"el guardia freno y el trabajo desaparecio: ni en el disco ni apartado\"\n    )",
+  "cambio": "En la funcion test_si_el_guardia_frena_no_se_pierde_nada: cambiar el docstring por 'Si el guardia de guardado frena, el trabajo no se pierde: sigue en el disco o queda apartado.' y sustituir la comprobacion final (leer solo tmp_path/'pieza.py' y comprobar 'y = 2') por una que acepte las dos formas: leer tmp_path/'pieza.py' si existe, o si no tmp_path/'memoria'/'trabajos_sin_revisar'/'pieza.py.FRENADO_POR_EL_GUARDIA', y exigir 'y = 2' en lo leido con el mensaje 'el guardia freno y el trabajo desaparecio: ni en el disco ni apartado'. No tocar nada mas.",
+  "codigo": "    assert ok is False, \"el guardia freno y la funcion dijo que si guardo\"\n    en_el_disco = tmp_path / \"pieza.py\"\n    apartado = (\n        tmp_path\n        / \"memoria\"\n        / \"trabajos_sin_revisar\"\n        / \"pieza.py.FRENADO_POR_EL_GUARDIA\"\n    )\n    contenido = \"\"\n    if en_el_disco.exists():\n        contenido = en_el_disco.read_text(encoding=\"utf-8\")\n    elif apartado.exists():\n        contenido = apartado.read_text(encoding=\"utf-8\")\n    assert \"y = 2\" in contenido, (\n        \"el guardia freno y el trabajo desaparecio: ni en el disco ni apartado\"\n    )",
+  "vigia": "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py::test_si_el_guardia_frena_no_se_pierde_nada",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No rompe a candado_equipo.py: solo relaja una expectativa de la vigia, cambia el docstring y la comprobacion final, nada mas. Si ninguna de las dos ubicaciones tiene el contenido, el assert sigue fallando igual."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Hace exactamente lo que pedia el encargo: acepta las dos formas de no perder nada (en el disco o apartado en memoria/trabajos_sin_revisar), con el mensaje y el docstring literales del encargo, sin tocar nada mas."
+ },
+ "avisos": [
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "vueltas_dadas: 1"
+ ]
+}

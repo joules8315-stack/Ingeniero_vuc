@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py, funcion _preguntar_con_relevo, el bucle 'for quien in turnos:' no mide el tiempo de cada llamada ni lo pasa a cuaderno.apuntar, aunque cuaderno.apuntar ya acepta segundos=None.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_preguntar_con_relevo",
+  "texto_viejo": "    for quien in turnos:\n        try:\n            txt = _con_tope(lambda: _pedirle_a(quien), max(tope, cuotas.cuanto_esperarle(quien)))\n            if not (txt or \"\").strip():\n                cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,\n                                 resultado=cuaderno.VACIO, crudo=\"\")\n                raise ValueError(\"contesto vacio\")\n            cuotas.apuntar_uso(quien, ok=True, tamano=len(prompt_nube))\n            cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,\n                             resultado=cuaderno.OK, crudo=(txt or \"\")[:120])\n            return txt, quien, avisos\n        except TimeoutError as e:\n            cuotas.apuntar_uso(quien, ok=False)\n            cuotas.dormir(quien, \"LENTO: \" + str(e))\n            avisos.append(f\"{cuotas.APODO[quien]} tardo demasiado -> pasa el turno\")\n            continue\n        except Exception as e:\n            msg = str(e)\n            cuotas.apuntar_uso(quien, ok=False)\n            if cuotas.es_agote(msg):\n                cuotas.dormir(quien, msg)\n                avisos.append(f\"{cuotas.APODO[quien]} se agoto -> pasa el turno\")\n            elif cuotas.es_no_cupo(msg):\n                cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,\n                                 resultado=cuaderno.NO_CUPO, crudo=msg[:120])\n                cuotas.apuntar_no_cupo(quien, len(prompt_nube))\n                avisos.append(f\"{cuotas.APODO[quien]} NO LE CUPO ({len(prompt_nube)} letras) \"\n                              f\"-> se le baja el techo y no se le vuelve a pedir de este tamano\")\n            else:\n                cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,\n                                 resultado=cuaderno.ERROR, crudo=msg[:120])\n                avisos.append(f\"{cuotas.APODO[quien]} fallo (no es cuota): {msg[:90]}\")\n    return _ultimo_recurso(avisos)          # ningun gratis pudo: ahora si, el de pago",
+  "texto_nuevo": "    for quien in turnos:\n        try:\n            _t0 = time.time()\n            txt = _con_tope(lambda: _pedirle_a(quien), max(tope, cuotas.cuanto_esperarle(quien)))\n            if not (txt or \"\").strip():\n                cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,\n                                 resultado=cuaderno.VACIO, crudo=\"\", segundos=time.time() - _t0)\n                raise ValueError(\"contesto vacio\")\n            cuotas.apuntar_uso(quien, ok=True, tamano=len(prompt_nube))\n            cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,\n                             resultado=cuaderno.OK, crudo=(txt or \"\")[:120], segundos=time.time() - _t0)\n            return txt, quien, avisos\n        except TimeoutError as e:\n            cuotas.apuntar_uso(quien, ok=False)\n            cuotas.dormir(quien, \"LENTO: \" + str(e))\n            avisos.append(f\"{cuotas.APODO[quien]} tardo demasiado -> pasa el turno\")\n            continue\n        except Exception as e:\n            msg = str(e)\n            cuotas.apuntar_uso(quien, ok=False)\n            if cuotas.es_agote(msg):\n                cuotas.dormir(quien, msg)\n                avisos.append(f\"{cuotas.APODO[quien]} se agoto -> pasa el turno\")\n            elif cuotas.es_no_cupo(msg):\n                cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,\n                                 resultado=cuaderno.NO_CUPO, crudo=msg[:120], segundos=time.time() - _t0)\n                cuotas.apuntar_no_cupo(quien, len(prompt_nube))\n                avisos.append(f\"{cuotas.APODO[quien]} NO LE CUPO ({len(prompt_nube)} letras) \"\n                              f\"-> se le baja el techo y no se le vuelve a pedir de este tamano\")\n            else:\n                cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,\n                                 resultado=cuaderno.ERROR, crudo=msg[:120], segundos=time.time() - _t0)\n                avisos.append(f\"{cuotas.APODO[quien]} fallo (no es cuota): {msg[:90]}\")\n    return _ultimo_recurso(avisos)          # ningun gratis pudo: ahora si, el de pago",
+  "cambio": "Dentro del bucle 'for quien in turnos:' de _preguntar_con_relevo: agregar _t0 = time.time() como primera linea dentro del try (antes de txt = _con_tope(...)), y pasar segundos=time.time() - _t0 a las cuatro llamadas cuaderno.apuntar de ese bucle (VACIO, OK, NO_CUPO y ERROR). No tocar nada mas.",
+  "codigo": "            _t0 = time.time()\n            txt = _con_tope(lambda: _pedirle_a(quien), max(tope, cuotas.cuanto_esperarle(quien)))\n            if not (txt or \"\").strip():\n                cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,\n                                 resultado=cuaderno.VACIO, crudo=\"\", segundos=time.time() - _t0)\n                raise ValueError(\"contesto vacio\")\n            cuotas.apuntar_uso(quien, ok=True, tamano=len(prompt_nube))\n            cuaderno.apuntar(quien, tamano=len(prompt_nube), vuelta=vuelta, clase=clase,\n                             resultado=cuaderno.OK, crudo=(txt or \"\")[:120], segundos=time.time() - _t0)\n            return txt, quien, avisos",
+  "vigia": "Una prueba que llame a _preguntar_con_relevo con un cerebro simulado y compruebe que cada linea escrita en el cuaderno (via INGENIERO_CUADERNO_TEST) trae el campo 'segundos' con un valor numerico >= 0, tanto en el caso OK como en VACIO, NO_CUPO y ERROR.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No toca nada fuera del bucle de _preguntar_con_relevo; arnes/asignador.py y vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py están marcados como _fuera_del_paquete y no se modifican. cuaderno.apuntar ya aceptaba segundos=None (paso previo hecho y guardado), así que el contrato con los lectores del cuaderno no cambia."
+  ],
+  "que_falta": [
+   "Correr vigias 'antes' y 'despues' y que Julio lo vea funcionar con sus ojos; la vigia propuesta usa el gancho INGENIERO_CUADERNO_TEST y no pude confirmarlo en el material porque el paquete llego truncado en la seccion de vigias."
+  ],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo que pide el plan: mide cada llamada con _t0 y pasa segundos=time.time()-_t0 a las 4 apuntar del bucle (VACIO, OK, NO_CUPO y ERROR), sin tocar nada mas, con el texto viejo identico al material, sin inventar nada y sin romper vecinos."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

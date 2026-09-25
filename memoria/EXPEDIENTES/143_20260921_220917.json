@@ -1,0 +1,78 @@
+{
+  "orden": {
+    "id": "143",
+    "titulo": "Una prueba que la propia tarea rompe SI frena el guardado",
+    "origen": "medido el 2026-09-21 (A-43), orden 136",
+    "repara": "una tarea que edita una prueba y la rompe se guarda igual",
+    "pieza": "arnes/guardia_de_guardado.py",
+    "depende": [
+      "142"
+    ],
+    "modo": "IA",
+    "razon": "una prueba solo espera arreglo si la declara una orden cuya pieza es OTRA cosa (el codigo que falta); si la pieza es la propia prueba, la orden la esta editando y tiene que quedar verde. Las pruebas nuevas ya van aparte (nuevos)",
+    "encargo": "En arnes/guardia_de_guardado.py, en la funcion _vigias, en el bucle for orden in ordenes: que llena esperando, justo despues de calcular vigia agrega: pieza = str(orden.get('pieza', '')).replace(chr(92), '/').strip(), y cambia if vigia: por if vigia and vigia != pieza:. Agrega un comentario corto encima: si la pieza de la orden es la propia prueba, la orden la edita y no espera arreglo: tiene que quedar verde (medido 2026-09-21, orden 136). Es UN solo cambio. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "1633e224b640b99d",
+  "tipo": "tiempo",
+  "codigo": null,
+  "salida": "TOPE DE TIEMPO: 900 s",
+  "apartados": [],
+  "fecha": "2026-09-21T22:09:17",
+  "analisis": {
+    "que_paso": "La orden 143 (modo IA) mando su encargo —un cambio de UNA sola linea en arnes/guardia_de_guardado.py::_vigias (agregar 'pieza = ...' y cambiar 'if vigia:' por 'if vigia and vigia != pieza:')— al equipo gratis (deepseek escribe, bigpickle revisa) con tope de 900 s. La ronda no termino dentro de los 900 s, el capataz mato el subproceso y registro \"TOPE DE TIEMPO: 900 s\" (tipo=tiempo, codigo=null). No se aplico nada: guardia_de_guardado.py sigue con 'if vigia:' sin el filtro de pieza.",
+    "causa_raiz": "Un encargo deterministico y totalmente especificado (\"Es UN solo cambio\") se enruto por modo IA. En el capataz, lanzar_al_equipo ignora el modo y SIEMPRE dispara el equipo gratis (deepseek + bigpickle) bajo un tope duro de 900 s (timeout=tope_segundos). La lentitud/cola de la ronda de escritura+revision agoto el tope antes de aplicar la unica linea. El fallo NO esta en la logica de _vigias (no se toco): esta en el modo elegido — un parche mecanico de una linea no debe depender de la latencia de dos IA con muro de 900 s.",
+    "donde": "cuerpo/capataz.py::lanzar_al_equipo (tope de 900 s) aplicado a la orden 143 (modo IA) sobre arnes/guardia_de_guardado.py::_vigias",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "memoria/EXPEDIENTES/143_20260921_220917.json (orden.encargo)",
+        "texto": "Es UN solo cambio. No toques ningun otro archivo."
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "def lanzar_al_equipo(proyecto, orden, tope_segundos=900):"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "        \"--escribe\",\n        \"deepseek\",\n        \"--revisa\",\n        \"bigpickle\","
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "            timeout=tope_segundos,"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "    except subprocess.TimeoutExpired:\n        return {\n            \"guardado\": False,\n            \"codigo\": None,\n            \"salida\": \"TOPE DE TIEMPO: \" + str(tope_segundos) + \" s\",\n        }"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "    if salida.startswith(\"TOPE DE TIEMPO\"):\n        return \"tiempo\""
+      },
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "                vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                if vigia:\n                    esperando.add(vigia)"
+      }
+    ],
+    "no_volver_a": "Un cambio de una sola linea totalmente especificado se aplica con un programa deterministico (modo PROGRAMA), no se manda al equipo de IA gratis con muro de 900 s.",
+    "tarea_nueva": {
+      "repara": "aplicar el filtro de pieza en _vigias sin depender de la latencia de dos IA que revienta el tope de 900 s",
+      "pieza": "arnes/guardia_de_guardado.py",
+      "razon": "el encargo es una edicion mecanica de una sola linea totalmente especificada; en modo IA el equipo gratis se paso de los 900 s sin aplicar nada. Un parche deterministico lo aplica al instante y no se cuelga.",
+      "encargo": "En arnes/guardia_de_guardado.py, funcion _vigias, en el bucle 'for orden in ordenes:', justo despues de la linea 'vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()' agrega 'pieza = str(orden.get(\"pieza\", \"\")).replace(\"\\\\\", \"/\").strip()' y cambia 'if vigia:' por 'if vigia and vigia != pieza:'. Agrega el comentario: si la pieza de la orden es la propia prueba, la orden la edita y no espera arreglo: tiene que quedar verde (medido 2026-09-21, orden 136). UN solo cambio, no toques otro archivo.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "citas",
+    "motivo": "citas que no existen: [{\"archivo\": \"memoria/EXPEDIENTES/143_20260921_220917.json (orden.encargo)\", \"texto\": \"Es UN solo cambio. No toques ningun otro archivo.\", \"por_que\": \"el archivo no existe\"}]",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\143_20260921_220917.json"
+  }
+}

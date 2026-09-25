@@ -1,0 +1,31 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la vigia de texto que comprueba que el comando equipo usa aplicar_propuesta (varios trozos) y ya no aplicar_cambio (un solo trozo).",
+  "archivo": "vigias/test_vigia_el_equipo_aplica_varios_trozos.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"Vigia de texto: el comando equipo aplica VARIOS trozos de un mismo arreglo.\n\nQUE PROTEGE\n------------\nEl comando `equipo` de ingeniero.py, cuando el veredicto es APROBADO, tiene que\npoder escribir en disco TODOS los trozos que trae la propuesta de un mismo\narreglo (varios archivos, o varios trozos del mismo archivo) en UNA sola ronda.\n\nPOR QUE\n-------\n`aplicador.aplicar_cambio(prop, raiz=...)` solo sabe aplicar UN trozo: se le da\nuna propuesta con un unico cambio y escribe ese. Si el arreglo de verdad trae\nvarios trozos, hay que llamar a `aplicador.aplicar_propuesta(prop, raiz=...)`,\nque recorre la propuesta entera y aplica cada trozo.\n\nSi el comando `equipo` se queda con `aplicar_cambio`, el equipo paga una ronda\nCOMPLETA (obrero + auditor) por cada trozo de un mismo arreglo: se aprueba el\ntrozo 1, se aplica, se vuelve a llamar al equipo para el trozo 2, se aprueba, se\naplica... y asi hasta el ultimo. Eso es pagar N rondas por un solo arreglo.\n\nCOMO\n----\nEs una vigia de TEXTO: abre ingeniero.py y comprueba, con assert, dos cosas\ndel comando equipo:\n\n  1) que YA NO aparece la llamada vieja:\n         _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)\n\n  2) que SI aparece la llamada nueva:\n         _ok, _msg = aplicador.aplicar_propuesta(prop, raiz=_raiz)\n\nNo toca ningun otro archivo. Solo lee ingeniero.py.\n\"\"\"\n\nimport os\n\n\nAQUI = os.path.dirname(os.path.abspath(__file__))\nRAIZ = os.path.dirname(AQUI)\nINGENIERO = os.path.join(RAIZ, \"ingeniero.py\")\n\n# El texto viejo: aplicar_cambio solo sabe aplicar UN trozo.\nTEXTO_VIEJO = \"_ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)\"\n\n# El texto nuevo: aplicar_propuesta recorre la propuesta entera y aplica cada trozo.\nTEXTO_NUEVO = \"_ok, _msg = aplicador.aplicar_propuesta(prop, raiz=_raiz)\"\n\n\ndef _leer_ingeniero():\n    \"\"\"Devuelve el contenido de ingeniero.py como texto.\n\n    Si el archivo no existe, la vigia tiene que ponerse ROJA con un mensaje claro:\n    no se puede comprobar nada sobre un archivo que no esta.\n    \"\"\"\n    assert os.path.exists(INGENIERO), (\n        \"No encuentro ingeniero.py en %s. Sin ese archivo no puedo comprobar \"\n        \"que el comando equipo aplique varios trozos de un mismo arreglo.\" % INGENIERO\n    )\n    with open(INGENIERO, encoding=\"utf-8\") as f:\n        return f.read()\n\n\ndef test_el_equipo_ya_no_usa_aplicar_cambio():\n    \"\"\"El comando equipo YA NO llama a aplicar_cambio.\n\n    aplicar_cambio solo sabe aplicar UN trozo. Si el comando equipo sigue\n    llamandolo, un arreglo con varios trozos se queda a medias: el equipo paga\n    una ronda por cada trozo de un mismo arreglo.\n    \"\"\"\n    texto = _leer_ingeniero()\n    assert TEXTO_VIEJO not in texto, (\n        \"El comando equipo todavia llama a aplicar_cambio: \"\n        \"'%s'.\\n\"\n        \"aplicar_cambio solo sabe aplicar UN trozo, asi que un arreglo con varios \"\n        \"trozos se queda a medias y el equipo paga una ronda por cada trozo de un \"\n        \"mismo arreglo. Tiene que llamar a aplicar_propuesta, que recorre la \"\n        \"propuesta entera y aplica cada trozo en la misma ronda.\" % TEXTO_VIEJO\n    )\n\n\ndef test_el_equipo_si_usa_aplicar_propuesta():\n    \"\"\"El comando equipo SI llama a aplicar_propuesta.\n\n    aplicar_propuesta recorre la propuesta entera y aplica cada trozo. Sin esto,\n    el equipo paga una ronda por cada trozo de un mismo arreglo.\n    \"\"\"\n    texto = _leer_ingeniero()\n    assert TEXTO_NUEVO in texto, (\n        \"El comando equipo NO llama a aplicar_propuesta: falta el texto \"\n        \"'%s'.\\n\"\n        \"Sin esto, el equipo solo aplica un trozo por ronda y paga una ronda \"\n        \"completa (obrero + auditor) por cada trozo de un mismo arreglo. \"\n        \"aplicar_propuesta aplica todos los trozos en la misma ronda.\" % TEXTO_NUEVO\n    )\n\n\nif __name__ == \"__main__\":\n    # Permite correr la vigia a mano: python vigias/test_vigia_el_equipo_aplica_varios_trozos.py\n    test_el_equipo_ya_no_usa_aplicar_cambio()\n    test_el_equipo_si_usa_aplicar_propuesta()\n    print(\"VIGIA VERDE: el comando equipo aplica varios trozos de un mismo arreglo en una ronda.\")\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple exactamente el diagnóstico, crea la vigia requerida sin inventar ni romper contratos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (29348 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (29524 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (29582 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 3"
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_el_sabotaje_es_programa.py; se crea entero con las tres pruebas pedidas contra arnes/sabotaje.py, que aun no existe pero se importa en tiempo de ejecucion.",
+  "archivo": "vigias/test_vigia_el_sabotaje_es_programa.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"VIGIA — EL SABOTAJE ES PROGRAMA, NO MANO HUMANA.\n\nLa pieza `arnes/sabotaje.py` rompe a proposito un archivo de la raiz, corre UNA vigia\ncon pytest y mira si se pone roja. Si se pone roja, la vigia sirve. Si se queda verde,\nla vigia no vigila nada. Y pase lo que pase, deja los archivos como estaban.\n\nLO QUE SE MIDE\n  1. Un sabotaje de verdad pone la vigia roja, ok es True y el archivo queda igual.\n  2. Un sabotaje que no encuentra su texto se marca 'no_encontrado' y ok es False.\n  3. Un sabotaje que no cambia nada deja la vigia verde y ok es False.\n\"\"\"\nimport os\nimport sys\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, 'arnes'))\nimport sabotaje  # noqa: E402\n\n\nPIEZA = 'def doble(x):\\n    return x * 2\\n'\n\nTEST_P = (\n    'import sys, os\\n'\n    'sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))\\n'\n    'import pieza\\n'\n    '\\n'\n    'def test_doble():\\n'\n    '    assert pieza.doble(2) == 4\\n'\n)\n\n\ndef _montar(tmp_path):\n    \"\"\"Escribe la pieza y su vigia en la raiz temporal y devuelve sus rutas.\"\"\"\n    pieza = tmp_path / 'pieza.py'\n    test_p = tmp_path / 'test_p.py'\n    pieza.write_text(PIEZA, encoding='utf-8')\n    test_p.write_text(TEST_P, encoding='utf-8')\n    return pieza, test_p\n\n\ndef test_sabotaje_de_verdad_pone_la_vigia_roja_y_deja_todo_igual(tmp_path):\n    \"\"\"Rompe el doble y la vigia se pone roja; el archivo queda byte a byte igual.\"\"\"\n    pieza, _ = _montar(tmp_path)\n    antes = pieza.read_bytes()\n\n    salida = sabotaje.sabotear(\n        str(tmp_path),\n        'test_p.py',\n        [{'archivo': 'pieza.py', 'viejo': 'x * 2', 'nuevo': 'x * 3'}],\n    )\n\n    assert salida['ok'] is True\n    assert salida['resultados'][0]['estado'] == 'roja'\n    assert pieza.read_bytes() == antes\n\n\ndef test_sabotaje_que_no_encuentra_su_texto(tmp_path):\n    \"\"\"Si el texto viejo no esta, se marca 'no_encontrado' y ok es False.\"\"\"\n    pieza, _ = _montar(tmp_path)\n    antes = pieza.read_bytes()\n\n    salida = sabotaje.sabotear(\n        str(tmp_path),\n        'test_p.py',\n        [{'archivo': 'pieza.py', 'viejo': 'no existe', 'nuevo': 'x * 3'}],\n    )\n\n    assert salida['ok'] is False\n    assert salida['resultados'][0]['estado'] == 'no_encontrado'\n    assert pieza.read_bytes() == antes\n\n\ndef test_sabotaje_que_no_cambia_nada_deja_la_vigia_verde(tmp_path):\n    \"\"\"Cambiar un texto por el mismo texto no rompe nada: verde y ok False.\"\"\"\n    pieza, _ = _montar(tmp_path)\n    antes = pieza.read_bytes()\n\n    salida = sabotaje.sabotear(\n        str(tmp_path),\n        'test_p.py',\n        [{'archivo': 'pieza.py', 'viejo': 'def doble', 'nuevo': 'def doble'}],\n    )\n\n    assert salida['ok'] is False\n    assert salida['resultados'][0]['estado'] == 'verde'\n    assert pieza.read_bytes() == antes\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La nueva vigia vigias/test_vigia_el_sabotaje_es_programa.py se ha creado correctamente, implementando las tres pruebas solicitadas contra arnes/sabotaje.py sin inventar ningun archivo o funcion existente."
+ },
+ "avisos": [
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 1"
+ ]
+}

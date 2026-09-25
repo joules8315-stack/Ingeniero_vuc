@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta en el archivo una prueba que compruebe que una orden pendiente sobre la propia prueba hace que el cierre pare (verde is False).",
+  "archivo": "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py",
+  "funcion": "test_orden_pendiente_hace_que_el_cierre_no_pare",
+  "texto_viejo": "    raiz = _preparar(monkeypatch, tmp_path, ordenes)\n    verde, detalle = candado_cierre._vigias_verdes(raiz)\n    assert verde is True, detalle",
+  "texto_nuevo": "    raiz = _preparar(monkeypatch, tmp_path, ordenes)\n    verde, detalle = candado_cierre._vigias_verdes(raiz)\n    assert verde is True, detalle\n\n\ndef test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare(monkeypatch, tmp_path):\n    \"\"\"Si hay una orden pendiente sobre la propia prueba, el primer valor es False:\n    el cierre para por una prueba que se edita a si misma.\"\"\"\n    ordenes = {\n        \"ordenes\": [\n            {\"estado\": \"pendiente\", \"vigia\": \"vigias/test_a.py\", \"pieza\": \"vigias/test_a.py\"},\n        ]\n    }\n    raiz = _preparar(monkeypatch, tmp_path, ordenes)\n    verde, detalle = candado_cierre._vigias_verdes(raiz)\n    assert verde is False, detalle",
+  "cambio": "Agregar al final del archivo una funcion de prueba nueva llamada test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare, copiando el estilo de test_orden_pendiente_hace_que_el_cierre_no_pare, pero con la orden {'estado': 'pendiente', 'vigia': 'vigias/test_a.py', 'pieza': 'vigias/test_a.py'} y el assert verde is False.",
+  "codigo": "def test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare(monkeypatch, tmp_path):\n    \"\"\"Si hay una orden pendiente sobre la propia prueba, el primer valor es False:\n    el cierre para por una prueba que se edita a si misma.\"\"\"\n    ordenes = {\n        \"ordenes\": [\n            {\"estado\": \"pendiente\", \"vigia\": \"vigias/test_a.py\", \"pieza\": \"vigias/test_a.py\"},\n        ]\n    }\n    raiz = _preparar(monkeypatch, tmp_path, ordenes)\n    verde, detalle = candado_cierre._vigias_verdes(raiz)\n    assert verde is False, detalle",
+  "vigia": "Ejecutar la prueba nueva test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare y comprobar que pasa en verde; y sabotear candado_cierre._vigias_verdes para que devuelva True y comprobar que la prueba se pone roja.",
+  "puede_danar": [
+   "arnes/candado_cierre.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_cierre.py",
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El obrero agrego exactamente la prueba que pedia el encargo (orden pendiente sobre la propia prueba con assert verde is False), copiando el estilo de la existente y sin tocar ningun otro archivo; se aprueba."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (23777 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

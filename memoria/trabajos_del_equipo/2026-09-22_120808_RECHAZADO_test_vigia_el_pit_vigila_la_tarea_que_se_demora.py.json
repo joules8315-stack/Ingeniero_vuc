@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "grok47",
+ "propuesta": {
+  "diagnostico": "Las dos vigias leen el limite y el env de la forma equivocada (kw en vez de args posicionales, y solo subprocess.run), por lo que hay que ajustarlas al contrato de la orden 95.",
+  "archivo": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+  "funcion": "test_si_el_equipo_termina_la_salida_se_recoge",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    limite = apuntes[0]['kw'].get('limite', apuntes[0]['kw'].get('tope_segundos'))\n    assert limite == capataz.LIMITE_TAREA_SEGUNDOS",
+    "texto_nuevo": "    limite = apuntes[0]['args'][1]\n    assert limite == capataz.LIMITE_TAREA_SEGUNDOS"
+   },
+   {
+    "texto_viejo": "def test_capataz_pasa_la_etiqueta_al_equipo(monkeypatch):\n    \"\"\"lanzar_al_equipo pasa INGENIERO_ETIQUETA con el id de la orden.\"\"\"\n    guardado = {}\n\n    def falso_run(*args, **kwargs):\n        guardado[\"env\"] = kwargs.get(\"env\")\n        return types.SimpleNamespace(returncode=0, stdout=\"\", stderr=\"\")\n\n    class PopenFalso:\n        def __init__(self, comando, **kw):\n            guardado[\"env\"] = kw.get(\"env\")\n            self.pid = 1\n            self.returncode = 0\n\n        def poll(self):\n            return 0\n\n        def kill(self):\n            pass\n\n        def wait(self, timeout=None):\n            return 0\n\n    monkeypatch.setattr(capataz.subprocess, \"run\", falso_run)\n    monkeypatch.setattr(capataz.subprocess, \"Popen\", PopenFalso)\n\n    from cuerpo import vigilante\n    monkeypatch.setattr(vigilante, \"esperar\", lambda *a, **k: \"termino\")\n\n    capataz.lanzar_al_equipo(\n        \"ingeniero\", {\"id\": \"P9\", \"encargo\": \"x\", \"pieza\": \"y\"}\n    )\n\n    assert guardado[\"env\"][\"INGENIERO_ETIQUETA\"] == \"P9\"",
+    "texto_nuevo": "def test_capataz_pasa_la_etiqueta_al_equipo(monkeypatch):\n    \"\"\"lanzar_al_equipo pasa INGENIERO_ETIQUETA con el id de la orden.\"\"\"\n    guardado = {}\n\n    def falso_run(*args, **kwargs):\n        guardado[\"env\"] = kwargs.get(\"env\")\n        return types.SimpleNamespace(returncode=0, stdout=\"\", stderr=\"\")\n\n    class PopenFalso:\n        def __init__(self, comando, **kw):\n            guardado[\"env\"] = kw.get(\"env\")\n            self.pid = 1\n            self.returncode = 0\n\n        def poll(self):\n            return 0\n\n        def kill(self):\n            pass\n\n        def wait(self, timeout=None):\n            return 0\n\n    monkeypatch.setattr(capataz.subprocess, \"run\", falso_run)\n    monkeypatch.setattr(capataz.subprocess, \"Popen\", PopenFalso)\n\n    from cuerpo import vigilante\n    monkeypatch.setattr(vigilante, \"esperar\", lambda *a, **k: \"termino\")\n\n    capataz.lanzar_al_equipo(\n        \"ingeniero\", {\"id\": \"P9\", \"encargo\": \"x\", \"pieza\": \"y\"}\n    )\n\n    assert guardado[\"env\"][\"INGENIERO_ETIQUETA\"] == \"P9\""
+   }
+  ],
+  "cambio": "En test_si_el_equipo_termina_la_salida_se_recoge, tomar el limite de apuntes[0]['args'][1] (argumento posicional que sigue al proceso) en vez de apuntes[0]['kw']. En test_capataz_pasa_la_etiqueta_al_equipo, falsificar capataz.subprocess.run, capataz.subprocess.Popen y vigilante.esperar, guardando el env de la llamada que se use, para que la asercion valga con Popen.",
+  "codigo": "    limite = apuntes[0]['args'][1]\n    assert limite == capataz.LIMITE_TAREA_SEGUNDOS",
+  "vigia": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py y vigias/test_vigia_la_etiqueta_llega_al_cuaderno.py",
+  "puede_danar": [
+   "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+   "vigias/test_vigia_la_etiqueta_llega_al_cuaderno.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El primer trozo lee apuntes[0]['args'][1], pero lanzar_al_equipo llama a vigilante.esperar solo por nombre (proceso=, limite=, sin_avance=, tope_duro=, avance=). args queda vacio y args[1] revienta; el limite esta en kw['limite']. La vigia que hoy pasa se pone roja y deja de medir la llamada real.",
+   "El segundo trozo tiene texto_viejo igual a texto_nuevo: no cambia nada. Ese texto ya esta en vigias/test_vigia_la_etiqueta_llega_al_cuaderno.py (ya falsifica run, Popen y vigilante.esperar). La propuesta no le pone archivo propio, asi que el aplicador lo busca en vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py, no aparece una vez y no aplica ningun trozo.",
+   "El diagnostico es falso: la segunda vigia no lee el limite ni se queda solo en subprocess.run."
+  ],
+  "riesgo_vecinos": [
+   "Si el primer trozo se aplicara solo, test_si_el_equipo_termina_la_salida_se_recoge queda roja. Las otras vigias del mismo archivo no leen args[1]. El segundo archivo no llega a tocarse."
+  ],
+  "que_falta": [
+   "Mientras la llamada siga por nombre, el limite hay que leerlo de apuntes[0]['kw']['limite']. Pasarlo a posicion exige cambiar el capataz, y este encargo lo prohibe.",
+   "Quitar el segundo trozo: ese archivo ya cumple. Si se toca otro archivo, cada trozo tiene que traer su archivo."
+  ],
+  "resumen_para_el_jefe": "No apruebes: el arreglo del limite mira un sitio que la llamada real no usa, y el segundo trozo no cambia nada y va al archivo equivocado, asi que no se aplica nada."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "vueltas_dadas: 4"
+ ]
+}

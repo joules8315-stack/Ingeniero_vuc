@@ -1,0 +1,28 @@
+{
+  "orden": {
+    "repara": "La cuenta 4 del revisor frena reparaciones que editan el cuerpo de una funcion nombrada en el encargo pero cuyo nombre no se repite en el trozo (falso 'NO HACE LO QUE SE PIDIO').",
+    "pieza": "arnes/revisor_de_programa.py",
+    "razon": "El equipo hizo el cambio bien y la IA lo aprobo, pero el programa lo mordio en falso 4 veces; un candado que frena lo legitimo ensena a ignorar todos los candados.",
+    "encargo": "En revisar(), en el bloque de la lista cambios (donde se arma 'juntos' y se filtra 'todos' en las lineas 256-261), ampliar el descarte de 'NO HACE LO QUE SE PIDIO': ademas de comprobar si la palabra esta en 'juntos', tratar la palabra como satisfecha cuando nombre una funcion o clase definida en el archivo que se cambia Y el texto_viejo de algun trozo este contenido dentro del rango de lineas de esa funcion/clase en el archivo original. Usar ast para parsear el archivo, ubicar el nodo FunctionDef/ClassDef por su nombre, tomar su lineno-end_lineno y ver si algun texto_viejo del cambio cae dentro de esas lineas. Si el parseo o la lectura falla, NO acusar (callar, como el resto de las cuentas). No tocar ninguna otra cuenta ni otro archivo. Sabotear a proposito para ver la vigia roja, y agregar una vigia que edite el cuerpo de una funcion sin repetir su nombre y compruebe que el revisor ya NO frena.",
+    "modo": "IA",
+    "id": "95-F011402",
+    "origen": "forense:95",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0
+  },
+  "huella": "d2958e803fa114d5",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_120244_RECHAZADO_NO_ENCONTRADO.json\nOBRERO deepseek -> AUDITOR grok47\n  aviso       : el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.\n  aviso       : GPT-OSS 120B (Groq) no le cabe (19877 letras, aguanta 19042) -> se le salta\n  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None\n  diagnostico : El material entregado no contiene el bloque de la lista 'cambios' de revisar() (donde se arma 'juntos' y se filtra 'todos'), ni el archivo que lo contiene, ni la funcion revisar() completa con ese bloque; solo aparece la funcion revisar() de skills/lista_blanca.py, que es otra cuenta distinta.\n  toca        : NO_ENCONTRADO funcion NO_ENCONTRADO\n  confianza   : baja\n  PREGUNTA_REQUERIDA: ¿En qué archivo y en qué función está el bloque de la lista 'cambios' de revisar() donde se arma 'juntos' y se filtra 'todos'? El material solo trae skills/lista_blanca.py::revisar, que no tiene ese bloque.\n  VEREDICTO   : RECHAZADO\n  *** INVENTO: Afirma que el bloque que arma 'juntos' y filtra 'todos' esta en skills/lista_blanca.py::revisar. Esa funcion no tiene lista 'cambios', ni 'juntos', ni 'NO HACE LO QUE SE PIDIO'. El bloque real es arnes/revisor_de_programa.py::revisar, linea 261: todos = [f for f in todos if not (f.startswith('NO HACE LO QUE SE PIDIO') and f.split(chr(39))[1] in juntos)] -> SE DESCARTA\n  fallo       : El arreglo no toca el filtro. En el cambio, texto_viejo y texto_nuevo de revisar() son el mismo texto: el cuerpo no cambia.\n  fallo       : Los tres helpers se cuelgan de skills/lista_blanca.py y nadie los llama, asi que ninguna palabra queda perdonada.\n  fallo       : Archivo equivocado: la frenada vive en arnes/revisor_de_programa.py, no en la lista blanca. El propio obrero pregunto si ese bloque estaba ahi y aun asi lo dio por hecho.\n  fallo       : No trae la vigia que el encargo pide.\n  resumen     : Rechazado: el arreglo se puso en la lista blanca, que no tiene ese filtro, y el revisor que de verdad frena quedo igual.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T12:02:46",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: You've hit your weekly limit · resets Sep 25, 11am (America/Bogota)\n",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\95-F011402_20260922_120246.json"
+  }
+}

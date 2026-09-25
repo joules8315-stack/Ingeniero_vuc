@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _vigias_verdes hay dos lineas anadidas por la orden 144 (comentario y pieza = str(orden.get('pieza',''))...) que hacen que una orden cuya pieza es la propia prueba no espere arreglo, y el filtro if vigia and vigia != pieza: debe volver a ser if vigia:.",
+  "archivo": "arnes/candado_cierre.py",
+  "funcion": "_vigias_verdes",
+  "texto_viejo": "                    vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                    # si la pieza de la orden es la propia prueba, la orden la edita y no espera arreglo (medido 2026-09-21, orden 136)\n                    pieza = str(orden.get('pieza', '')).replace(chr(92), '/').strip()\n                    if vigia and vigia != pieza:\n                        esperando.add(vigia)",
+  "texto_nuevo": "                    vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                    # el cierre no sabe que tarea se guarda ahora; una prueba que su propia tarea rompe la frena el guardia (medido 2026-09-21)\n                    if vigia:\n                        esperando.add(vigia)",
+  "cambio": "Quitar el comentario que empieza por '# si la pieza de la orden es la propia prueba' y la linea 'pieza = str(orden.get('pieza', '')).replace(chr(92), '/').strip()', y cambiar 'if vigia and vigia != pieza:' por 'if vigia:'. Dejar en su lugar el comentario corto indicado.",
+  "codigo": "                    vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                    # el cierre no sabe que tarea se guarda ahora; una prueba que su propia tarea rompe la frena el guardia (medido 2026-09-21)\n                    if vigia:\n                        esperando.add(vigia)",
+  "vigia": "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py (y test_vigia_el_cierre_lee_en_utf8.py) deben seguir verdes tras el cambio",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_legislar.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candados_medicion.py",
+   "arnes/guard_pasado.py",
+   "arnes/medidor_de_rondas.py",
+   "arnes/via_canonica.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_cierre_lee_en_utf8.py",
+   "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_legislar.py",
+   "candado_supervisor.py",
+   "candados_medicion.py",
+   "codex.py",
+   "guard_pasado.py",
+   "medidor_de_rondas.py",
+   "test_vigia_el_cierre_lee_en_utf8.py",
+   "test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py",
+   "via_canonica.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Quita exactamente las dos lineas de la orden 144, deja el if vigia: y el comentario corto pedido al pie de la letra, y no toca nada mas: es el cambio unico que pedia el encargo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (35259 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

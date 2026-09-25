@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "En _material_del_revisor, cuando el trozo tocado no aparece en los bloques del paquete, devuelve base sin buscar en el disco, y el revisor rechaza por 'no aparece en el material'.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_material_del_revisor",
+  "texto_viejo": "        tocados = [b for b in bloques if viejo in \"\\n\".join(b)]\n        if not tocados:\n            return base\n        arriba = [\"## EL CAMBIO SE HACE AQUI (trozo entero)\"]",
+  "texto_nuevo": "        tocados = [b for b in bloques if viejo in \"\\n\".join(b)]\n        if not tocados:\n            import ast\n            ruta = str(propuesta.get(\"archivo\") or \"\")\n            if os.path.isfile(ruta):\n                try:\n                    with open(ruta, \"r\", encoding=\"utf-8\", errors=\"replace\") as _f:\n                        contenido = _f.read()\n                except Exception:\n                    contenido = \"\"\n                if contenido and viejo in contenido:\n                    linea = contenido[:contenido.index(viejo)].count(chr(10)) + 1\n                    trozo = None\n                    try:\n                        arbol = ast.parse(contenido)\n                        for nodo in arbol.body:\n                            if isinstance(nodo, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):\n                                if nodo.lineno <= linea <= (nodo.end_lineno or nodo.lineno):\n                                    trozo = \"\\n\".join(contenido.splitlines()[nodo.lineno - 1:nodo.end_lineno])\n                                    break\n                    except Exception:\n                        trozo = None\n                    if trozo is None:\n                        lineas_disco = contenido.splitlines()\n                        ini = max(0, linea - 1 - 15)\n                        fin = min(len(lineas_disco), linea - 1 + 15)\n                        trozo = \"\\n\".join(lineas_disco[ini:fin])\n                    tocados = [[\"### \" + ruta, trozo]]\n        if not tocados:\n            return base\n        arriba = [\"## EL CAMBIO SE HACE AQUI (trozo entero)\"]",
+  "cambio": "En _material_del_revisor, sustituir el bloque 'if not tocados: return base' para que, cuando no haya trozos en el paquete, busque en el disco con ast: import ast dentro de la funcion, ruta = str(propuesta.get('archivo') or ''), si os.path.isfile(ruta) lee el archivo (utf-8, errors='replace'), si viejo esta en el contenido localiza el nodo de primer nivel (def, async def o class) cuyas lineas lineno..end_lineno contienen la linea donde empieza viejo, y si lo hay toma esas lineas enteras como trozo tocado; si no hay nodo, toma 30 lineas alrededor. Con eso arma el mismo resultado de arriba. Si no lo encuentra en ningun lado, devuelve base como hoy. Nunca lanza.",
+  "codigo": "        if not tocados:\n            import ast\n            ruta = str(propuesta.get(\"archivo\") or \"\")\n            if os.path.isfile(ruta):\n                try:\n                    with open(ruta, \"r\", encoding=\"utf-8\", errors=\"replace\") as _f:\n                        contenido = _f.read()\n                except Exception:\n                    contenido = \"\"\n                if contenido and viejo in contenido:\n                    linea = contenido[:contenido.index(viejo)].count(chr(10)) + 1\n                    trozo = None\n                    try:\n                        arbol = ast.parse(contenido)\n                        for nodo in arbol.body:\n                            if isinstance(nodo, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):\n                                if nodo.lineno <= linea <= (nodo.end_lineno or nodo.lineno):\n                                    trozo = \"\\n\".join(contenido.splitlines()[nodo.lineno - 1:nodo.end_lineno])\n                                    break\n                    except Exception:\n                        trozo = None\n                    if trozo is None:\n                        lineas_disco = contenido.splitlines()\n                        ini = max(0, linea - 1 - 15)\n                        fin = min(len(lineas_disco), linea - 1 + 15)\n                        trozo = \"\\n\".join(lineas_disco[ini:fin])\n                    tocados = [[\"### \" + ruta, trozo]]",
+  "vigia": "Un test que llame a _material_del_revisor con un paquete que no contenga el texto viejo y una propuesta cuyo archivo exista en disco con ese texto dentro de una funcion: debe devolver el trozo entero de la funcion precedido de '## EL CAMBIO SE HACE AQUI (trozo entero)'. Y con un archivo que no exista o sin el texto, debe devolver base sin lanzar.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación implementa correctamente la búsqueda en disco como fallback cuando el código no está en el paquete, siguiendo todas las instrucciones técnicas y de seguridad (ast, try-except, encoding)."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (34222 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso gemini2",
+  "vueltas_dadas: 1"
+ ]
+}

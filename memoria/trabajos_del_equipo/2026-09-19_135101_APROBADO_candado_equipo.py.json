@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El disparador del libro de fallos en volver_atras usa r'''ingeniero\\.py\\s+equipo''', que salta en cada llamada al equipo y hace que el candado de memoria frene acciones normales.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "volver_atras",
+  "texto_viejo": "            disparador=r'''ingeniero\\.py\\s+equipo''',",
+  "texto_nuevo": "            disparador=r'''git\\s+commit[^\\n]*--no-verify|INGENIERO_OFF\\s*=\\s*1''',",
+  "cambio": "Sustituir el patron del disparador en la llamada a fallos.apuntar dentro de volver_atras: el viejo salta en cada llamada al equipo; el nuevo solo salta cuando de verdad se salta al guardia (commit con --no-verify o INGENIERO_OFF=1).",
+  "codigo": "            disparador=r'''git\\s+commit[^\\n]*--no-verify|INGENIERO_OFF\\s*=\\s*1''',",
+  "vigia": "Una prueba que llame al equipo normalmente y compruebe que el candado NO frena ni apunta fallo, y que con un commit --no-verify o INGENIERO_OFF=1 SI lo apunte.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/fallos.py",
+   "ingeniero.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "fallos.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El reemplazo del patrón corrige el problema sin inventar nada ni afectar a otros módulos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25629 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

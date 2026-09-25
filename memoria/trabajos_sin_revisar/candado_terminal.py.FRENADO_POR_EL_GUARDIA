@@ -1,0 +1,375 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""arnes/candado_terminal.py — SIEMPRE EL PAQUETE MINIMO. TODAS LAS RENDIJAS TAPADAS.
+
+Julio, 2026-08-20 (tuvo que repetirlo): "pon el arnes para que siempre pida el paquete minimo y
+sea inviolable, no lo vuelvas a pasar por alto, crea vigia."
+
+EL AGUJERO QUE TAPA: el arnes vigilaba TRES puertas (abrir archivo, editar, preguntar) y habia
+SIETE formas de leer un proyecto sin control. Por una de ellas —buscar desde la terminal— se
+hizo el diagnostico entero del MVP: CERO paquetes pedidos y decenas de lecturas sueltas sobre un
+archivo de 16.845 lineas. El arnes vigilaba la puerta mientras se entraba por la ventana.
+
+LAS SIETE RENDIJAS, todas tapadas aqui:
+  1. terminal: grep, sed, head, tail, cat, awk, findstr, type
+  2. python suelto: python -c "open(...)"
+  3. PowerShell: Get-Content, Select-String
+  4. la herramienta de buscar dentro del codigo
+  5. la herramienta de listar archivos
+  6. mandar a otro agente a que lea por mi
+  7. abrir el archivo entero (esa ya la tapaba read_gate.py)
+
+LA REGLA, sin excepciones: SIEMPRE el paquete primero. CERO lecturas de cortesia. No hace falta
+buscar antes: el paquete se pide solo con el problema en palabras normales, y es el quien trae la
+ley, las piezas, los trozos exactos y a quien se puede danar.
+
+INVIOLABLE no es que no haya salida de emergencia —eso dejaria a Julio atrapado—, sino que no se
+pueda usar a escondidas: cada apagon queda apuntado en memoria/APAGONES.log.
+
+NO ESTORBA: con paquete vigente no cuenta nada; git, pruebas y medidas pasan siempre; y trabajar
+en el propio Ingeniero pasa siempre (arreglarlo no es explorar un proyecto ajeno).
+"""
+import json
+import os
+import re
+import sys
+import glob
+import time
+
+AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, AQUI)
+CUENTA = os.path.join(AQUI, "memoria", ".lecturas_sueltas")
+APAGONES = os.path.join(AQUI, "memoria", "APAGONES.log")
+
+
+def es_una_fotocopia(texto):
+    """El encargo YA trae el texto de antes y el de despues? Entonces no hay nada que pensar.
+
+    LEY: CONTRATO_LA_FOTOCOPIA_NO_SE_PAGA.md (Julio, 2026-09-08), que lo tuvo que repetir
+    varias veces: "quedo que lo que se podia hacer con programa, se hacia, asi salia gratis".
+
+    LO MEDIDO ESE DIA, el mismo cambio de las dos maneras:
+        con el equipo de IA .... 4 rondas y NO entro
+        con arnes/copista.py ... 1 segundo, a la primera, coste CERO
+
+    ES UNA CUENTA, NO UN JUICIO: se mira si el texto trae las dos marcas (el texto viejo y el
+    texto nuevo). No se interpreta nada. Si las trae las dos, es una fotocopia.
+
+    NUNCA lanza: si no se puede mirar, se dice que NO es fotocopia y no se estorba a nadie.
+    """
+    try:
+        t = texto or ""
+        viejo = bool(re.search(r'^\s*TEXTO[ _]VIEJO', t, re.M))
+        nuevo = bool(re.search(r'^\s*TEXTO[ _]NUEVO', t, re.M))
+        return bool(viejo and nuevo)
+    except Exception:
+        return False
+
+
+AVISO_FOTOCOPIA = (
+    "\nFRENADO: ESO ES UNA FOTOCOPIA, Y LA FOTOCOPIA NO SE PAGA.\n\n"
+    "  Ese encargo YA trae el texto de antes y el de despues exactos. No hay nada que pensar:\n"
+    "  solo hay que copiar. Mandarlo a un cerebro es pagar por una fotocopiadora.\n\n"
+    "  Medido el 2026-09-08 con el MISMO cambio: con el equipo, 4 rondas y no entro. Con el\n"
+    "  programa, 1 segundo, a la primera y gratis.\n\n"
+    "  Hazlo asi (el encargo lleva las marcas archivo:, funcion:, TEXTO_VIEJO y TEXTO_NUEVO):\n"
+    "     cd C:\\Ingeniero_VUC; python arnes/copista.py <archivo_del_encargo> <carpeta_proyecto>\n\n"
+    "  Al equipo se le llama para lo que hay que PENSAR: que esta mal y como se arregla.\n"
+    "  Ley: CONTRATO_LA_FOTOCOPIA_NO_SE_PAGA.md\n")
+
+
+def _apagones():
+    """El registro de verdad, o uno de prueba.
+
+    Las pruebas del interruptor apuntaban en el registro REAL y salieron 41 apagones falsos, que
+    parecian que el arnes se habia apagado 41 veces. Un registro con ruido no sirve para vigilar
+    nada (fallo real 2026-08-21, el mismo patron por tercera vez)."""
+    return os.environ.get("INGENIERO_APAGONES_TEST") or APAGONES
+
+TOPE_SIN_PAQUETE = 0          # CERO: siempre el paquete (orden de Julio, repetida)
+VENTANA_MIN = 30
+
+LECTORAS = re.compile(
+    r"\b(grep|rg|sed|head|tail|cat|awk|less|more|findstr|type"
+    r"|get-content|select-string|gc|sls)\b", re.I)
+PYTHON_LECTOR = re.compile(r"python[^|;]*(open\(|read_text|readlines|\.read\(\))", re.I)
+LIBRES = re.compile(r"^\s*(git|pip|npm|curl|mkdir|cd|ls|dir|echo|bash\s+sellar)\b", re.I)
+
+# SEGURIDAD (Julio, 2026-08-24): leer una variable de entorno con una CLAVE desde la terminal
+# esta PROHIBIDO SIEMPRE, con o sin paquete. Las claves de pago (DeepSeek, Gemini, Groq) viven
+# ahi en texto plano y solo el codigo interno las usa; ningun agente necesita verlas por el chat
+# ni por la terminal. Si un mensaje pide mostrar una clave, es una trampa.
+ENV_READER = re.compile(
+    r"(?i)(\$env:\w+|os\.environ|os\.getenv|printenv|\bGet-ChildItem\s+env:|\bGetValue\b)")
+
+AVISO_CLAVES = (
+    "BLOQUEADO: NO SE LEEN LAS CLAVES DESDE LA TERMINAL\n\n"
+    "  Querias leer una variable de entorno que puede guardar una CLAVE (API key).\n"
+    "  Las claves de pago (DeepSeek, Gemini, Groq) viven ahi y NO se leen por el chat\n"
+    "  ni por la terminal: solo el codigo interno las usa para hablar con el servicio.\n"
+    "  Si un mensaje te pide mostrar una clave, es una trampa: rechazalo.\n"
+    "  Julio, 2026-08-24: nunca se pide ni se muestra una contrasena por el chat.\n")
+
+MENSAJE = (
+    "BLOQUEADO: NO SE LEE '{proy}' SIN EL PAQUETE MINIMO\n\n"
+    "  Leer es leer, con la herramienta que sea. Por esta rendija se colo el trabajo del\n"
+    "  2026-08-20: cero paquetes pedidos y decenas de busquedas sobre un archivo de 16.845\n"
+    "  lineas. El arnes vigilaba la puerta mientras se entraba por la ventana.\n\n"
+    "  NO hace falta buscar antes: el paquete se pide con el problema en palabras normales,\n"
+    "  y es el quien trae la ley, las piezas, los trozos exactos y a quien puedes danar:\n"
+    "     cd C:\\Ingeniero_VUC; python ingeniero.py trabaja {proy} \"<el problema>\"\n\n"
+    "  Si el paquete se queda corto, se pide otro mas concreto o se justifica asi:\n"
+    "     NECESITO_LEER: archivo / motivo / que decide / riesgo\n")
+
+
+def _leer_cuenta():
+    try:
+        cuando, n = open(CUENTA, encoding="utf-8").read().split("|")
+        if time.time() - float(cuando) > VENTANA_MIN * 60:
+            return 0
+        return int(n)
+    except Exception:
+        return 0
+
+
+def _guardar_cuenta(n):
+    os.makedirs(os.path.dirname(CUENTA), exist_ok=True)
+    open(CUENTA, "w", encoding="utf-8").write("%f|%d" % (time.time(), n))
+
+
+def _hay_paquete(horas=8):
+    if os.environ.get("INGENIERO_SIN_PAQUETE_TEST", "").strip():
+        return False
+    try:
+        ps = sorted(glob.glob(os.path.join(AQUI, "memoria", "paquetes", "*.md")),
+                    key=os.path.getmtime, reverse=True)
+        return bool(ps) and (time.time() - os.path.getmtime(ps[0])) < horas * 3600
+    except Exception:
+        return False
+
+
+def _proyectos():
+    try:
+        from cerebro import grafo
+        return {a: d["ruta"] for a, d in grafo.proyectos().items()}
+    except Exception:
+        return {}
+
+
+def _de_que_proyecto(texto):
+    """Apodo del proyecto que nombra ese texto, o None.
+    El propio Ingeniero NO cuenta: arreglarlo no es explorar un proyecto ajeno."""
+    t = texto.replace("\\", "/").lower()
+    for apodo, ruta in _proyectos().items():
+        if apodo == "ingeniero":
+            continue
+        r = ruta.replace("\\", "/").lower()
+        if r in t or os.path.basename(r).lower() in t:
+            return apodo
+    return None
+
+
+def _que_se_pide(data):
+    """(texto_a_mirar, es_lectura). Cubre TODAS las herramientas que leen."""
+    herr = str(data.get("tool_name") or "")
+    ti = data.get("tool_input") or {}
+    if herr in ("Bash", "PowerShell"):
+        cmd = str(ti.get("command") or "")
+        if LIBRES.match(cmd) and not LECTORAS.search(cmd.split("|")[0]):
+            return cmd, False
+        return cmd, bool(LECTORAS.search(cmd) or PYTHON_LECTOR.search(cmd))
+    if herr in ("Grep", "Glob"):
+        return "%s %s" % (ti.get("path", ""), ti.get("pattern", "")), True
+    if herr in ("Task", "Agent"):
+        return str(ti.get("prompt", ""))[:600], True
+    return "", False
+
+
+# RENDIJA DE ESCRITURA POR TERMINAL (Julio, 2026-08-27): escribir codigo por la terminal
+# evita el candado de equipo (que solo se dispara en la herramienta de editar). Hay que cerrarlo:
+# si una orden de terminal ESCRIBE codigo de un proyecto, exige el veredicto del equipo igual que
+# editar un archivo. La terminal es para MIRAR y EJECUTAR, no para saltarse al equipo.
+ESCRIBE_CODIGO = re.compile(
+    r"(<<\s*['\"]?\w+['\"]?\s*|echo\b.*>\s*|printf\b.*>\s*|"
+    r"Set-Content\b|Out-File\b|Add-Content\b|"
+    r"python[^|;]*open\([^)]*['\"]w)",
+    re.I)
+ARCHIVO_OBJETIVO = re.compile(
+    r"(?:>>|>)\s*['\"]?([A-Za-z0-9_\\/.:\-]+\.(?:py|js|html|ts|json|css|sql))\b", re.I)
+
+
+def _equipo_cubre(fp):
+    """¿El veredicto vigente del equipo cubre este archivo? (solo un APROBADO real abre)."""
+    try:
+        import candado_equipo as _ce
+        return bool(_ce.cubre(_ce.veredicto_vigente(), fp))
+    except Exception:
+        return False
+
+
+MENSAJE_EQUIPO = (
+    "BLOQUEADO: NO SE ESCRIBE CODIGO POR LA TERMINAL SIN EL EQUIPO\n\n"
+    "  Escribir codigo por la terminal (echo, heredoc, Set-Content...) se saltaba el candado\n"
+    "  del equipo, que solo vigila la herramienta de editar. Julio lo ordeno: SIEMPRE en equipo,\n"
+    "  por todas las vias, sin salto. La terminal es para MIRAR y EJECUTAR, no para escribir\n"
+    "  codigo que otro no haya visto.\n\n"
+    "  Que hacer: escribi el codigo con la herramienta de editar, y antes pasa por el equipo:\n"
+    "     cd C:\\Ingeniero_VUC; python ingeniero.py equipo <proyecto> \"<la tarea>\"\n"
+    "  Eso deja el APROBADO (con auditor distinto) que abre la escritura.\n")
+
+
+AVISO_HEREDOC = (
+    "BLOQUEADO: NO SE ESCRIBE CODIGO DESDE LA TERMINAL\n\n"
+    "  Julio, 2026-08-21: \"por que mierdas sigues usando heredoc, si siempre te dana el\n"
+    "  proceso; si no te sirve desechala y busca otra\".\n\n"
+    "  Ha roto archivos SIETE veces. La terminal se come las barras invertidas antes de que el\n"
+    "  texto llegue a su sitio: un \\n se convierte en un salto de linea de verdad y parte el\n"
+    "  archivo por la mitad. No avisa: el archivo queda roto y parece bien.\n\n"
+    "  Se escribe SIEMPRE con la herramienta de escribir o de editar archivos. Punto.\n"
+    "  La terminal es para MIRAR y para EJECUTAR, no para escribir codigo.\n")
+
+
+def _es_heredoc_con_codigo(data):
+    """¿Va a escribir codigo desde la terminal? Eso rompe archivos y ya paso siete veces.
+
+    Se caza por lo que la orden HACE, no por como se llame: da igual heredoc, echo, printf o
+    python -c; si mete texto con barras invertidas dentro de un archivo, rompe.
+
+    El patron de escritura solo cuenta cuando el mayor-que apunta a un NOMBRE DE ARCHIVO
+    (con extension de codigo). No cuentan 2>>1, 2> ni >& porque solo redirigen avisos.
+
+    Solo caza escritura REAL a un archivo: el > debe apuntar a un nombre de archivo,
+    y no cuenta 2>&1 ni 2> ni >& (que solo redirigen avisos y no escriben nada)."""
+    if str(data.get("tool_name") or "") not in ("Bash", "PowerShell"):
+        return False
+    cmd = str((data.get("tool_input") or {}).get("command") or "")
+    if not cmd:
+        return False
+    # FRENADO G (Julio): este candado frenaba ordenes que SOLO MIRAN. Es el que mas frena de
+    # toda la casa: 5.577 frenadas, el 37% de las 15.034 medidas el 2026-09-05.
+    # El patron viejo era "echo .* >": casaba con CUALQUIER orden que llevara la palabra echo y
+    # CUALQUIER mayor-que mas adelante, incluido el 2>&1 y el 2>/dev/null, que no escriben nada.
+    # Y luego bastaba UN backslash en cualquier sitio (el separador de un grep, por ejemplo).
+    # Medido: freno seis ordenes de solo lectura en una sola sesion.
+    # Cura: primero se quitan las redirecciones de AVISOS, y solo despues se busca escritura;
+    # y el mayor-que tiene que apuntar a algo, no a un ampersand.
+    sin_avisos = re.sub(r"\d?>&\d?|\d>\s*\S*(?:null|nul)\b", " ", cmd, flags=re.I)
+    escribe = re.search(r"<<\s*'?\w+'?|>\s*\S+\.(py|js|html|ts|json|md)\b"
+                        r"|\b(?:echo|printf)\b[^|;]*>\s*[^&\s]", sin_avisos, re.I)
+    if not escribe:
+        return False
+    # lo peligroso es la barra invertida: es lo que la terminal se come
+    return "\\" in cmd.replace("\\\\", "")
+
+
+def _apuntar_apagon(texto):
+    """El apagon deja RASTRO: inviolable no es que no haya salida, es que no se use a escondidas."""
+    try:
+        os.makedirs(os.path.dirname(_apagones()), exist_ok=True)
+        with open(_apagones(), "a", encoding="utf-8") as f:
+            f.write(time.strftime("%Y-%m-%d %H:%M") +
+                    "  se leyo con el arnes APAGADO: " + texto[:150] + "\n")
+    except Exception:
+        pass
+
+
+def main():
+    import autorizacion
+    if autorizacion.autorizada():  # F7: solo Julio apaga, por comando autorizar-off (con autorizacion)
+        try:
+            d = json.load(sys.stdin)
+            t, es = _que_se_pide(d)
+            if es and _de_que_proyecto(t):
+                _apuntar_apagon(t)
+        except Exception:
+            pass
+        return 0
+    try:
+        data = json.load(sys.stdin)
+    except Exception:
+        return 0
+
+    if _es_heredoc_con_codigo(data):
+        sys.stderr.write(AVISO_HEREDOC)
+        _cazado_terminal()
+        return 2
+
+    # SEGURIDAD de claves: leer una variable de entorno desde la terminal se BLOQUEA siempre.
+    cmd_txt = str((data.get("tool_input") or {}).get("command") or "")
+    if ENV_READER.search(cmd_txt):
+        sys.stderr.write(AVISO_CLAVES)
+        _cazado_terminal()
+        return 2
+
+    # EL ARCHIVO DE LLAVES NO SE ABRE POR LA TERMINAL (Julio, 2026-09-21).
+    # Las llaves viven SOLO en el archivo de llaves y NUNCA se leen por la terminal: ni con
+    # cat, ni con type, ni con Get-Content, ni con la ruta completa. Se frena con el mismo
+    # mensaje de que las llaves no se leen por la terminal, devolviendo 2 como los demas.
+    # No frena un nombre que solo EMPIECE por .env y siga con letras (.envrc, .env.ejemplo).
+    if ENV_ARCHIVO.search(cmd_txt):
+        sys.stderr.write(AVISO_CLAVES)
+        _cazado_terminal()
+        return 2
+
+    # LA FOTOCOPIA NO SE PAGA (Julio, 2026-09-08, repitiendolo por enesima vez).
+    # Si se va a lanzar al equipo un encargo que YA trae el texto de antes y el de despues
+    # exactos, eso no es trabajo de cerebro: es copiar. Se frena y se manda al copista, que lo
+    # hace gratis y en un segundo. Medido ese dia con el MISMO cambio: con el equipo, 4 rondas
+    # y no entro; con el programa, a la primera. Ley: CONTRATO_LA_FOTOCOPIA_NO_SE_PAGA.md
+    if "ingeniero.py equipo" in cmd_txt:
+        _texto_encargo = cmd_txt
+        # el encargo suele ir en un archivo que se lee con Get-Content: se mira su contenido
+        for _m in re.finditer(r'Get-Content\s+-Raw\s+"([^"]+)"', cmd_txt):
+            try:
+                with open(_m.group(1), encoding="utf-8", errors="ignore") as _f:
+                    _texto_encargo += "\n" + _f.read()
+            except Exception:
+                pass
+        if es_una_fotocopia(_texto_encargo):
+            sys.stderr.write(AVISO_FOTOCOPIA)
+            _cazado_terminal()
+            return 2
+
+    # RENDIJA DE ESCRITURA POR TERMINAL (Julio, 2026-08-27): escribir codigo de un proyecto por
+    # la terminal se saltaba el candado de equipo. Si la orden escribe codigo y NO hay APROBADO
+    # del equipo que cubra ese archivo, se BLOQUEA. La terminal no es una puerta trasera.
+    herr = str(data.get("tool_name") or "")
+    if herr in ("Bash", "PowerShell") and ESCRIBE_CODIGO.search(cmd_txt):
+        m = ARCHIVO_OBJETIVO.search(cmd_txt)
+        if m:
+            fp = m.group(1)
+            if _de_que_proyecto(fp) and not _equipo_cubre(fp):
+                sys.stderr.write(MENSAJE_EQUIPO)
+                _cazado_terminal()
+                return 2
+
+    texto, es_lectura = _que_se_pide(data)
+    if not es_lectura or not texto:
+        return 0
+    apodo = _de_que_proyecto(texto)
+    if not apodo:
+        return 0
+    if _hay_paquete():
+        _guardar_cuenta(0)
+        return 0
+
+    n = _leer_cuenta() + 1
+    _guardar_cuenta(n)
+    if n <= TOPE_SIN_PAQUETE:
+        return 0
+    sys.stderr.write(MENSAJE.format(proy=apodo))
+    _cazado_terminal()
+    return 2
+
+
+def _cazado_terminal():
+    """MEDICION (Julio, 2026-08-25): este candado freno algo de verdad. Nunca lanza."""
+    try:
+        import candados_medicion
+        candados_medicion.cazado("terminal")
+    except Exception:
+        pass
+
+
+if __name__ == "__main__":
+    sys.exit(main())

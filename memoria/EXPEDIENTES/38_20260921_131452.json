@@ -1,0 +1,72 @@
+{
+  "orden": {
+    "id": "38",
+    "titulo": "La vigia de que una prueba que revienta no cuenta como nacida roja",
+    "origen": "agujero visto el 2026-09-20 en la orden 18",
+    "repara": "una prueba recien escrita que se cae por un error suyo (no por lo que vigila) da rojo igual, asi que la maquina la acepta como nacida roja y la da por buena. No esta midiendo nada: en la orden 18 la prueba intentaba apartar algo que no existe a ese nivel y se caia antes de comprobar nada, mientras la reparacion que decia vigilar ya estaba hecha y correcta",
+    "pieza": "vigias/test_vigia_una_prueba_que_revienta_no_nace_roja.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "En vigias/test_vigia_una_prueba_que_revienta_no_nace_roja.py las pruebas se caen en el paso aplicada, antes de llegar al paso de la vigia que es el que vigilan, porque la orden de mentira no supera los pasos 1 y 2 de comprobar_pasos. Hay que montar cada orden de mentira igual que lo hace vigias/test_vigia_una_tarea_que_entrega_la_prueba_se_comprueba_al_reves.py, que si llega a ese paso: copia de ahi la forma de preparar la ronda aprobada y la pieza. Lo que comprueba cada prueba no cambia. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_una_prueba_que_revienta_no_nace_roja.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "la vigia existe pero sus pruebas se caen en el paso aplicada, antes de llegar al paso que vigilan: la orden de mentira no pasa los pasos 1 y 2. Hay que montarla igual que la vigia de la orden 26, que si funciona."
+  },
+  "huella": "8d32c302069449da",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_131452_SIN_VEREDICTO_test_vigia_una_prueba_que_revienta_no_nace_roja.py.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : GPT-OSS 120B (Groq) no le cabe (21691 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (22303 letras, aguanta 19042) -> se le salta\n  diagnostico : Las pruebas de test_vigia_una_prueba_que_revienta_no_nace_roja.py usan un montaje propio (_montar) que no prepara la ronda aprobada ni la pieza como exige comprobar_pasos, por lo que se caen en el paso 'aplicada' antes de llegar al paso de la vigia; hay que copiar el montaje de test_vigia_una_tarea_que_entrega_la_prueba_se_comprueba_al_reves.py.\n  toca        : vigias/test_vigia_una_prueba_que_revienta_no_nace_roja.py funcion _montar\n  confianza   : baja\n  PREGUNTA_REQUERIDA: El material solo trae fragmentos sueltos de test_vigia_una_prueba_que_revienta_no_nace_roja.py (lineas 33-72, 129-168, 225-246) y de test_vigia_una_tarea_que_entrega_la_prueba_se_comprueba_al_reves.py (lineas 1-40, 152-166, 223-251). No aparece la funcion _montar completa ni las utilidades _preparar_ronda/_preparar_pieza/_preparar_vigia/_orden/_fabricar_subprocess_run/_montar_proyecto_falso completas de ninguno de los dos archivos. Sin ver el cuerpo entero de _montar y de las utilidades que copia, no puedo escribir el texto_viejo y texto_nuevo literales ni el codigo nuevo sin inventar.\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T13:14:52",
+  "analisis": {
+    "que_paso": "La orden 38 (reescribir la funcion _montar de la vigia para que sus pruebas lleguen al paso de la vigia) NO se aprobo. El obrero DeepSeek devolvio la marca NO_ENCONTRADO y una PREGUNTA_REQUERIDA (no invento), el auditor Groq no cupo dos veces (21691 y 22303 letras contra 19042 que aguanta) y se quedo sin auditor: veredicto '?', no se guardo llave, no se pudo tocar codigo.",
+    "causa_raiz": "El paquete que se le dio al equipo trajo solo FRAGMENTOS de los dos archivos (lineas sueltas), sin la funcion _montar completa ni las utilidades que hay que copiar (_preparar_ronda/_preparar_pieza/_preparar_vigia del que falla y _montar_proyecto_falso/_orden/_fabricar_subprocess_run del que funciona). Sin ver esos cuerpos completos, por la ley de nunca inventar el obrero tuvo que escribir NO_ENCONTRADO en vez del texto_viejo/texto_nuevo literal; y ademas el material era mas grande de lo que aguanta el unico auditor disponible. El bug tecnico de fondo que la orden 38 apunta es real: el _montar que falla parchea os.path.abspath solo para capataz.py y usa una ruta de pieza RELATIVA ('cuerpo/pieza_de_prueba.py'), asi que comprobar_pasos resuelve os.path.exists(pieza) contra el cwd real, no la encuentra y devuelve 'aplicada' en el Paso 2, antes de llegar al pytest del Paso 3 que dice vigilar; el archivo que si funciona lo evita porque monta un proyecto falso, parchea capataz.__file__ y usa rutas ABSOLUTAS.",
+    "donde": "El armador del paquete del equipo (cerebro/router.py, lo que recorta el material) alimentando a cuerpo/capataz.py::comprobar_pasos. El bug tecnico de fondo vive en vigias/test_vigia_una_prueba_que_revienta_no_nace_roja.py, funcion _montar.",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "    # Paso 2 aplicada: la ruta del campo pieza existe en disco\n    if not os.path.exists(pieza):\n        return \"aplicada\""
+      },
+      {
+        "archivo": "vigias/test_vigia_una_prueba_que_revienta_no_nace_roja.py",
+        "texto": "    pieza = 'cuerpo/pieza_de_prueba.py'"
+      },
+      {
+        "archivo": "vigias/test_vigia_una_prueba_que_revienta_no_nace_roja.py",
+        "texto": "    monkeypatch.setattr(capataz.os.path, 'abspath', abspath_falso)"
+      },
+      {
+        "archivo": "vigias/test_vigia_una_tarea_que_entrega_la_prueba_se_comprueba_al_reves.py",
+        "texto": "    monkeypatch.setattr(capataz, \"__file__\", os.path.join(carpeta, \"cuerpo\", \"capataz.py\"))"
+      },
+      {
+        "archivo": "vigias/test_vigia_una_tarea_que_entrega_la_prueba_se_comprueba_al_reves.py",
+        "texto": "    return str(carpeta_proyecto), str(ruta_pieza), str(ruta_vigia)"
+      }
+    ],
+    "no_volver_a": "Un paquete que pide reparar por texto literal debe traer COMPLETAS las funciones que se van a tocar y las que se van a copiar, y caber en el auditor; con fragmentos el equipo no puede aprobar sin inventar.",
+    "tarea_nueva": {
+      "repara": "El paquete del equipo para reparaciones por texto literal trae solo fragmentos: falta la funcion _montar completa de la vigia a tocar y las utilidades completas de la vigia modelo que se manda copiar, y el material excede lo que aguanta el auditor Groq (mas de 19042 letras), por eso el equipo no pudo dar veredicto a la orden 38.",
+      "pieza": "cerebro/router.py",
+      "razon": "distinta de la orden 38: aquella pedia a una IA reescribir _montar; esta repara la herramienta que arma el material para que el equipo pueda trabajar.",
+      "encargo": "Cuando el encargo manda copiar el montaje de otra vigia, el paquete debe incluir COMPLETAS la funcion a modificar (_montar y sus ayudantes en el archivo destino) y las funciones a copiar del archivo modelo (_montar_proyecto_falso, _orden, _fabricar_subprocess_run), no lineas sueltas; y si el total supera la capacidad del auditor, partir o reencaminar para que quepa. Escribir antes una vigia que nazca roja demostrando que hoy el paquete llega fragmentado.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 300s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\38_20260921_131452.json"
+  }
+}

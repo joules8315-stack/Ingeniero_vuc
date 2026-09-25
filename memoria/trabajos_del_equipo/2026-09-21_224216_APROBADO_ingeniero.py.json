@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En ingeniero.py, en el comando equipo, se llama a aplicador.aplicar_cambio(prop, raiz=_raiz) en vez de aplicador.aplicar_propuesta(prop, raiz=_raiz), que ya existe y aplica todos los trozos de una propuesta con lista 'cambios' o delega en aplicar_cambio si no la trae.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "                _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)",
+  "texto_nuevo": "                _ok, _msg = aplicador.aplicar_propuesta(prop, raiz=_raiz)",
+  "cambio": "Sustituir la llamada a aplicador.aplicar_cambio por aplicador.aplicar_propuesta en el comando equipo, dejando el resto igual.",
+  "codigo": "_ok, _msg = aplicador.aplicar_propuesta(prop, raiz=_raiz)",
+  "vigia": "vigias/test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py (comprueba que varios trozos de una ronda se aplican todos o ninguno) y vigias/test_vigia_aplicador.py",
+  "puede_danar": [
+   "cuerpo/aplicador.py",
+   "arnes/candado_equipo.py",
+   "arnes/copista.py",
+   "vigias/test_vigia_aplicador.py",
+   "vigias/test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "copista.py",
+   "test_vigia_aplicador.py",
+   "test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion cambia solo la llamada del comando equipo a aplicar_propuesta, que ya existe en cuerpo/aplicador.py:21 y hace exactamente lo que pide el encargo, cumple la vigia test_vigia_el_equipo_aplica_varios_trozos.py palabra por palabra, y para propuestas sin 'cambios' delega en aplicar_cambio, asi que no rompe nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38522 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

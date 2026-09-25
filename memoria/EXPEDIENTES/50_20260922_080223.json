@@ -1,0 +1,64 @@
+{
+  "orden": {
+    "id": "50",
+    "titulo": "La vigia de que si el perito no contesta, entra Codex",
+    "origen": "acuerdo A-40 de Julio, 2026-09-21; medido la noche del 2026-09-20: tres fallos se quedaron sin investigar porque Claude se quedo sin cupo",
+    "repara": "cuando Claude no contesta como perito (ventana cerrada, cupo agotado, se pasa del tiempo o no devuelve JSON), el expediente se queda sin leer",
+    "pieza": "vigias/test_vigia_si_el_perito_no_contesta_entra_codex.py",
+    "depende": [
+      "49"
+    ],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_si_el_perito_no_contesta_entra_codex.py. Vigila la funcion pedir_al_perito de cuerpo/capataz.py. Con monkeypatch (subprocess.run y shutil.which apartados en sus propios modulos, y la funcion preguntar de cuerpo/codex.py cambiada por una de mentira), tres pruebas: (1) si Claude no contesta a tiempo, se le pregunta a Codex con el mismo pedido y, si Codex devuelve un JSON, pedir_al_perito devuelve ese JSON y un estado que diga que contesto Codex; (2) si Claude contesta con un JSON valido, a Codex NO se le pregunta; (3) si ni Claude ni Codex devuelven JSON, se devuelve None con un estado que nombre a los dos. Importa lo que se prueba dentro de cada prueba. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_si_el_perito_no_contesta_entra_codex.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "8c8a0aa90faf7343",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_080221_SIN_VEREDICTO_test_vigia_si_el_perito_no_contesta_entra_codex.py.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : GPT-OSS 120B (Groq) no le cabe (36490 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.\n  aviso       : GPT-OSS 120B (Groq) no le cabe (36678 letras, aguanta 19042) -> se le salta\n  diagnostico : Falta ver el codigo real de pedir_al_perito para saber como llama a Codex y que forma tiene el estado que devuelve; el material solo muestra la version que llama a Claude y no incluye la rama de Codex ni el contrato exacto del estado.\n  toca        : vigias/test_vigia_si_el_perito_no_contesta_entra_codex.py funcion ?\n  confianza   : baja\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T08:02:23",
+  "analisis": {
+    "que_paso": "La orden 50 mandaba CREAR una vigia nueva (vigias/test_vigia_si_el_perito_no_contesta_entra_codex.py) que probara que pedir_al_perito, cuando Claude no contesta, le pregunta a Codex. El obrero deepseek no pudo escribirla: entrego codigo roto (invalid syntax en el renglon 1), el revisor de programa lo freno antes de pagar la revision, y el auditor GPT-OSS 120B (Groq) se salto dos veces por tamano (36490 y 36678 letras contra un tope de 19042). Termino SIN_VEREDICTO: el equipo no aprobo, no se guardo llave y no se pudo tocar codigo. El propio diagnostico del obrero lo dice: 'Falta ver el codigo real de pedir_al_perito... el material solo muestra la version que llama a Claude y no incluye la rama de Codex ni el contrato exacto del estado.'",
+    "causa_raiz": "pedir_al_perito en cuerpo/capataz.py hoy NO tiene rama de Codex: solo busca 'claude' con shutil.which y ante cualquier fallo devuelve (None, ...). La orden pidio una vigia que 'nace roja antes que el cambio' contra un comportamiento (llamar a cuerpo/codex.py::preguntar) y un contrato de estado ('que contesto Codex', 'que nombre a los dos') que todavia no existen en el codigo ni fueron legislados/entregados en el paquete. Al no tener el contrato exacto (a que modulo/funcion apuntar el monkeypatch y que forma tiene el estado devuelto), el obrero tuvo que inventar —contra las leyes 'nunca asumir' y 'nunca inventar'— y entrego un archivo con sintaxis rota y confianza baja.",
+    "donde": "cuerpo/capataz.py, funcion pedir_al_perito (lineas 662-724). La pieza pedida, vigias/test_vigia_si_el_perito_no_contesta_entra_codex.py, aun no existe.",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "    exe = shutil.which('claude')"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "        return (None, 'no encuentro claude en el PATH')"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "    return (None, 'el perito no devolvio JSON: ' + salida[:200])"
+      }
+    ],
+    "no_volver_a": "No mandar escribir una vigia contra un comportamiento cuyo contrato aun no existe: primero se legisla el contrato exacto (a quien se llama y que estado devuelve) y recien despues nace la vigia roja.",
+    "tarea_nueva": {
+      "repara": "El encargo pide una vigia sobre una rama Codex de pedir_al_perito que no existe ni tiene contrato definido; hay que fijar el contrato antes de la vigia.",
+      "pieza": "cuerpo/capataz.py (funcion pedir_al_perito)",
+      "razon": "sin el contrato exacto —que se llama a cuerpo.codex.preguntar con el mismo pedido y cuales son los estados exactos ('contesto Codex' y el que nombra a los dos)— el obrero tiene que inventar y viola 'nunca asumir/nunca inventar', por eso entrego codigo roto.",
+      "encargo": "Legislar en texto el contrato de la rama Codex de pedir_al_perito (a que funcion apunta el monkeypatch y las cadenas de estado exactas) y escribir esa rama minima en pedir_al_perito, para que la vigia 50 pueda renacer roja contra un contrato ya fijo. No tocar la vigia todavia.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 237.60000000000002s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\50_20260922_080223.json"
+  }
+}

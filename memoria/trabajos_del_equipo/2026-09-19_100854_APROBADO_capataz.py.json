@@ -1,0 +1,29 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En citas_que_no_existen, el open().read() del archivo citado solo atrapa OSError, pero un archivo no utf-8 lanza UnicodeDecodeError (ValueError) y la funcion revienta en vez de contar la cita como 'el archivo no existe'.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "citas_que_no_existen",
+  "texto_viejo": "        try:\n            with open(ruta, 'r', encoding='utf-8') as f:\n                contenido = f.read()\n        except OSError:\n            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'el archivo no existe'})\n            continue",
+  "texto_nuevo": "        try:\n            with open(ruta, 'r', encoding='utf-8') as f:\n                contenido = f.read()\n        except (OSError, ValueError):\n            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'el archivo no existe'})\n            continue",
+  "cambio": "Cambiar el except OSError por except (OSError, ValueError) en el bloque que lee el archivo citado, para que un UnicodeDecodeError (archivo binario o no utf-8) cuente la cita como 'el archivo no existe' en vez de lanzar.",
+  "codigo": "        try:\n            with open(ruta, 'r', encoding='utf-8') as f:\n                contenido = f.read()\n        except (OSError, ValueError):\n            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'el archivo no existe'})\n            continue",
+  "vigia": "Una prueba que llame a citas_que_no_existen con una cita cuyo archivo existe pero no es texto utf-8 (por ejemplo un binario) y compruebe que no lanza y que devuelve la cita con por_que 'el archivo no existe'.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio atrapa exactamente lo que siembra el diagnostico (UnicodeDecodeError es ValueError), solo toca una linea y no moja a nadie: se puede aplicar tal cual."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

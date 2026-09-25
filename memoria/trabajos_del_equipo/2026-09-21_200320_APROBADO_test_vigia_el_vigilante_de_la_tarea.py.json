@@ -1,0 +1,23 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La vigia anterior fallaba porque el proceso falso no recibia el reloj, asi que esperar no podia avanzar el tiempo al dormir; ahora el reloj falso se pasa dentro del proceso falso y dormir lo incrementa.",
+  "archivo": "vigias/test_vigia_el_vigilante_de_la_tarea.py",
+  "texto_nuevo": "from cuerpo import vigilante\n\n\ndef _reloj_falso(inicio=0.0):\n    \"\"\"Reloj falso: una lista con el tiempo actual.\n\n    Se avanza cuando se llama a dormir con los segundos que se le pasen.\n    \"\"\"\n    return [float(inicio)]\n\n\ndef _dormir_falso(reloj):\n    \"\"\"Devuelve una funcion dormir que avanza el reloj falso.\"\"\"\n    def dormir(segundos):\n        reloj[0] += float(segundos)\n    return dormir\n\n\ndef _proceso_falso(reloj, termina_en=None):\n    \"\"\"Proceso falso.\n\n    poll() devuelve None hasta que el reloj falso alcanza termina_en;\n    a partir de ahi devuelve 0. Si termina_en es None, nunca termina.\n    kill() apunta que se le llamo.\n    \"\"\"\n    estado = {\"matado\": False}\n\n    class ProcesoFalso:\n        def poll(self):\n            if termina_en is None:\n                return None\n            if reloj[0] >= termina_en:\n                return 0\n            return None\n\n        def kill(self):\n            estado[\"matado\"] = True\n\n    return ProcesoFalso(), estado\n\n\ndef _avance_que_sube():\n    \"\"\"Funcion avance que devuelve un numero que sube cada vez.\"\"\"\n    caja = {\"n\": 0}\n\n    def avance():\n        caja[\"n\"] += 1\n        return caja[\"n\"]\n\n    return avance\n\n\ndef _avance_quieto():\n    \"\"\"Funcion avance que devuelve siempre el mismo numero.\"\"\"\n    def avance():\n        return 7\n\n    return avance\n\n\ndef test_proceso_termina_antes_del_limite():\n    \"\"\"(1) Si el proceso termina a los 50, devuelve 'termino' y no se llamo a kill.\"\"\"\n    reloj = _reloj_falso()\n    proceso, estado = _proceso_falso(reloj, termina_en=50)\n    resultado = vigilante.esperar(\n        proceso=proceso,\n        limite=100,\n        sin_avance=30,\n        tope_duro=1000,\n        avance=_avance_que_sube(),\n        dormir=_dormir_falso(reloj),\n        reloj=reloj,\n    )\n    assert resultado == \"termino\"\n    assert estado[\"matado\"] is False\n\n\ndef test_proceso_termina_pasado_el_limite_si_avanza():\n    \"\"\"(2) Si termina a los 300 y avance sube, devuelve 'termino' y no se llamo a kill.\"\"\"\n    reloj = _reloj_falso()\n    proceso, estado = _proceso_falso(reloj, termina_en=300)\n    resultado = vigilante.esperar(\n        proceso=proceso,\n        limite=100,\n        sin_avance=30,\n        tope_duro=1000,\n        avance=_avance_que_sube(),\n        dormir=_dormir_falso(reloj),\n        reloj=reloj,\n    )\n    assert resultado == \"termino\"\n    assert estado[\"matado\"] is False\n\n\ndef test_proceso_colgado_sin_avance():\n    \"\"\"(3) Si nunca termina y avance no sube, devuelve 'colgada', se mato y el reloj no paso de 100+30+10.\"\"\"\n    reloj = _reloj_falso()\n    proceso, estado = _proceso_falso(reloj, termina_en=None)\n    resultado = vigilante.esperar(\n        proceso=proceso,\n        limite=100,\n        sin_avance=30,\n        tope_duro=1000,\n        avance=_avance_quieto(),\n        dormir=_dormir_falso(reloj),\n        reloj=reloj,\n    )\n    assert resultado == \"colgada\"\n    assert estado[\"matado\"] is True\n    assert reloj[0] <= 100 + 30 + 10\n\n\ndef test_proceso_tope_duro():\n    \"\"\"(4) Si nunca termina pero avance sube siempre, devuelve 'tope_duro', se mato y el reloj llego al menos a 1000.\"\"\"\n    reloj = _reloj_falso()\n    proceso, estado = _proceso_falso(reloj, termina_en=None)\n    resultado = vigilante.esperar(\n        proceso=proceso,\n        limite=100,\n        sin_avance=30,\n        tope_duro=1000,\n        avance=_avance_que_sube(),\n        dormir=_dormir_falso(reloj),\n        reloj=reloj,\n    )\n    assert resultado == \"tope_duro\"\n    assert estado[\"matado\"] is True\n    assert reloj[0] >= 1000\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion crea exactamente el archivo de prueba que el encargo pide, con el reloj falso ya dentro del proceso falso, las cuatro pruebas pedidas con sus asserts y sin tocar ningun otro archivo."
+ },
+ "avisos": [
+  "vueltas_dadas: 2"
+ ]
+}

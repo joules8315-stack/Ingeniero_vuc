@@ -1,0 +1,66 @@
+{
+  "orden": {
+    "id": "65",
+    "titulo": "La vigia de que lo que el programa le pide a una IA no entra como orden de Julio",
+    "origen": "medido el 2026-09-21: el gancho de Codex recogio como ordenes de Julio los pedidos que le hizo el programa, incluida la hoja entera de la revision",
+    "repara": "cuando el programa le manda un pedido a Codex, el gancho de legislar de Codex lo toma por un mensaje de Julio; el interruptor INGENIERO_OFF no lo para porque ese candado no lo mira. Cada llamada del programa a Codex llenaria la lista de ordenes de Julio de ruido",
+    "pieza": "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py. Vigila arnes/candado_legislar.py cuando se corre con el argumento desde-julio. Aisla la lista de ordenes de Julio en una carpeta temporal para no ensuciar la de verdad (mira como lo hacen las otras vigias de ese candado). Pruebas, corriendolo con subprocess y sys.executable, con un JSON de entrada de mentira cuyo prompt trae frases que parecen ordenes, cada una con assert: (1) con INGENIERO_OFF puesta a 1 en el entorno NO apunta nada; (2) con INGENIERO_LLAMADA_DEL_PROGRAMA puesta a 1 NO apunta nada; (3) sin ninguna de las dos marcas, SI apunta, como hoy. Quita las dos marcas del entorno copiado en la prueba (3). No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "c92aac6a127e6c4f",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_121203_APROBADO_test_vigia_lo_que_pide_el_programa_no_es_de_julio.py.json\nOBRERO deepseek -> AUDITOR groq\n  aviso       : Big Pickle no contesto en 300s (timeout)\n  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None\n  aviso       : bigpickle no estaba: revisa groq con solo lo necesario (A-38)\n  diagnostico : Falta la vigia que prueba el modo desde-julio de arnes/candado_legislar.py aislando el ledger con INGENIERO_LEGISLAR_TEST y comprobando que INGENIERO_OFF e INGENIERO_LLAMADA_DEL_PROGRAMA silencian el apunte mientras que sin marcas si apunta.\n  toca        : vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py funcion ?\n  confianza   : media\n  VEREDICTO   : APROBADO\n  resumen     : Cumple el diagnóstico, no usa recursos inexistentes, no viola contratos ni afecta a vecinos.\n\nAPLICADO en disco (lo escribio el equipo): vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   9 failed, 108 passed in 4.69s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: apartada (nueva): vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py\nLLAVE GUARDADA: se puede escribir en 124 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T12:12:10",
+  "analisis": {
+    "que_paso": "El equipo escribio y groq aprobo la vigia nueva vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py, que nace roja a proposito (TDD): 2 de sus 3 pruebas fallan porque el candado aun no silencia el apunte con INGENIERO_OFF ni con INGENIERO_LLAMADA_DEL_PROGRAMA (esa pieza todavia no existe). La vigia se aplico a disco, pero al guardar el guardia corrio TODA la carpeta vigias/ y vio 9 rojas. Las 2 nuevas se perdonan por ser nuevas, pero entre las 9 habia vigias YA GUARDADAS que no estan ligadas a ninguna orden pendiente en ORDENES.json, y por eso el guardia FRENO y se volvio atras. El trabajo nuevo y correcto quedo bloqueado por rojas viejas ajenas a la tarea, y el aviso solo dijo \"9 failed, 108 passed\" sin nombrar cuales frenan.",
+    "causa_raiz": "El guardia de guardado evalua la suite ENTERA en cada guardado y frena si alguna roja YA GUARDADA no esta declarada como vigia de una orden con estado distinto de 'hecha'. La vigia nueva nacio roja legitimamente (la pieza que prueba no existe todavia), pero el guardado lo tumbaron rojas preexistentes acumuladas de otras tareas test-first sin ligar (o vigias rotas) que no son de esta orden. Ademas, cuando frena, el guardia devuelve el resumen generico de pytest (ultima[0]) y NO lista los archivos guardados_que_frenan, asi que la maquina no puede saber que rojas viejas la traban: se queda atascada, exactamente el escenario que ya advirtio la vigia hermana.",
+    "donde": "arnes/guardia_de_guardado.py, funcion _vigias (lineas 360-363: guardados_que_frenan y el return False con ultima[0]). Secundariamente arnes/candado_legislar.py, modo desde-julio (lineas 189-203), que apunta sin mirar ninguna marca del entorno (por eso las 2 pruebas nuevas nacen rojas, como debe ser).",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "    guardados_que_frenan = [a for a in guardados if a not in esperando]\n    if guardados_que_frenan:\n        # Al menos uno ya estaba guardado y no espera arreglo: es romper algo que estaba verde. Frenar.\n        return False, ultima[0].strip()"
+      },
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "Si TODAS las rojas son nuevas, se DEJA PASAR con aviso. Si alguna ya estaba guardada,\n    se FRENA."
+      },
+      {
+        "archivo": "vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+        "texto": "Julio, 2026-09-20: el pit dejo dos pruebas rojas esperando su arreglo, el guardia\nfreno TODOS los guardados siguientes y la maquina se quedo trabada sin poder avanzar\nni una tarea."
+      },
+      {
+        "archivo": "arnes/candado_legislar.py",
+        "texto": "            dicho = str(dentro.get(\"prompt\") or dentro.get(\"user_prompt\") or crudo or \"\")\n            n = apuntar_lo_que_dijo_julio(dicho)"
+      }
+    ],
+    "no_volver_a": "Una roja ya guardada y no ligada a su orden no puede frenar el guardado de un trabajo nuevo y correcto sin decir siquiera cual es la que traba.",
+    "tarea_nueva": {
+      "repara": "cuando el guardia frena por rojas YA GUARDADAS, el mensaje solo dice '9 failed, 108 passed' y esconde CUALES vigias viejas son las que frenan; sin ese dato la maquina no puede limpiarlas ni ligarlas a su orden y todo guardado nuevo queda bloqueado",
+      "pieza": "arnes/guardia_de_guardado.py",
+      "razon": "hoy el return que frena devuelve ultima[0] (el resumen generico de pytest) en vez de la lista guardados_que_frenan que ya esta calculada justo arriba",
+      "encargo": "En arnes/guardia_de_guardado.py, funcion _vigias, cuando guardados_que_frenan NO este vacio, devolver un mensaje que LISTE esos archivos (guardados_que_frenan) en vez del resumen generico 'N failed, M passed'. No tocar la logica de decision (nuevas/esperando/ORDENES.json), solo el texto del return que frena. Crear una vigia nueva que lo pruebe con monkeypatch sobre subprocess.run igual que las otras vigias del guardia, y que compruebe que el mensaje nombra el archivo rojo ya guardado que frena.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 300s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\65_20260921_121210.json"
+  }
+}

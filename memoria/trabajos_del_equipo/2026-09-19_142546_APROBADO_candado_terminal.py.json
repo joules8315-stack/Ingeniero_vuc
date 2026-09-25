@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "es_una_fotocopia pasa el texto a mayusculas y busca las marcas en cualquier lugar, por lo que un encargo que solo las menciona dentro de una frase se frena como fotocopia; una fotocopia real trae cada marca al inicio de una linea.",
+  "archivo": "arnes/candado_terminal.py",
+  "funcion": "es_una_fotocopia",
+  "texto_viejo": "        t = (texto or \"\").upper()\n        viejo = (\"TEXTO VIEJO\" in t) or (\"TEXTO_VIEJO\" in t)\n        nuevo = (\"TEXTO NUEVO\" in t) or (\"TEXTO_NUEVO\" in t)",
+  "texto_nuevo": "        t = texto or \"\"\n        viejo = bool(re.search(r'^\\s*TEXTO[ _]VIEJO', t, re.M))\n        nuevo = bool(re.search(r'^\\s*TEXTO[ _]NUEVO', t, re.M))",
+  "cambio": "Sustituir las dos lineas que calculan viejo y nuevo (y la linea que pasa el texto a mayusculas) para que usen re.search con re.M sobre el texto original t, exigiendo que cada marca aparezca al inicio de una linea.",
+  "codigo": "        t = texto or \"\"\n        viejo = bool(re.search(r'^\\s*TEXTO[ _]VIEJO', t, re.M))\n        nuevo = bool(re.search(r'^\\s*TEXTO[ _]NUEVO', t, re.M))",
+  "vigia": "vigias/test_vigia_fotocopia_solo_con_marcas.py y vigias/test_vigia_la_fotocopia_no_se_paga.py",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_equipo.py",
+   "arnes/candados_medicion.py",
+   "ingeniero.py",
+   "vigias/test_vigia_fotocopia_solo_con_marcas.py",
+   "vigias/test_vigia_la_fotocopia_no_se_paga.py",
+   "vigias/test_vigia_no_inventa.py",
+   "vigias/test_vigia_sin_rendijas.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_equipo.py",
+   "candados_medicion.py",
+   "test_vigia_fotocopia_solo_con_marcas.py",
+   "test_vigia_la_fotocopia_no_se_paga.py",
+   "test_vigia_no_inventa.py",
+   "test_vigia_sin_rendijas.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada, no rompe vecinos y respeta la ubicación; aprobado."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_big_pickle_usa_su_espera_medida.py; se crea entero con monkeypatch de cuotas.espera_de_bigpickle, shutil.which y subprocess.Popen, y tres pruebas con assert sobre timeout, letras y tamano en el cuaderno.",
+  "archivo": "vigias/test_vigia_big_pickle_usa_su_espera_medida.py",
+  "texto_nuevo": "import json\n\nfrom cuerpo import bigpickle\nfrom cuerpo import cuotas\nfrom cuerpo import cuaderno\n\n\nclass ProcesoFalso:\n    \"\"\"Proceso de mentira que imita lo que bigpickle.preguntar espera de Popen.\"\"\"\n\n    def __init__(self, salida, tiempos):\n        self._salida = salida\n        self._tiempos = tiempos\n        self.returncode = 0\n        self.pid = 4242\n\n    def communicate(self, input=None, timeout=None):\n        self._tiempos.append(timeout)\n        return (self._salida, \"\")\n\n    def kill(self):\n        pass\n\n\ndef _salida_ok(texto):\n    \"\"\"Arma la salida JSON por lineas que bigpickle._parsear_salida sabe leer.\n\n    bigpickle lee la salida de opencode como JSON por lineas y saca el texto\n    de los campos de contenido. Se arma una linea con la forma que el parser\n    reconoce para que devuelva el texto ok.\n    \"\"\"\n    linea = json.dumps({\"type\": \"text\", \"text\": texto})\n    return linea + \"\\n\"\n\n\ndef _preparar(monkeypatch, texto=\"ok\"):\n    \"\"\"Deja el enchufe con dobles de prueba y devuelve las listas de control.\"\"\"\n    letras = []\n    tiempos = []\n\n    def espera_falsa(letras_recibidas):\n        letras.append(letras_recibidas)\n        return 777.0\n\n    monkeypatch.setattr(cuotas, \"espera_de_bigpickle\", espera_falsa)\n    monkeypatch.setattr(bigpickle.shutil, \"which\", lambda nombre: \"opencode\")\n\n    def popen_falso(*args, **kwargs):\n        return ProcesoFalso(_salida_ok(texto), tiempos)\n\n    monkeypatch.setattr(bigpickle.subprocess, \"Popen\", popen_falso)\n    return letras, tiempos\n\n\ndef test_preguntar_usa_la_espera_medida(monkeypatch):\n    letras, tiempos = _preparar(monkeypatch)\n\n    bigpickle.preguntar(\"hola mundo\")\n\n    assert tiempos == [777.0]\n    assert len(letras) == 1\n    assert len(letras[0]) == 10\n\n\ndef test_preguntar_respeta_el_timeout_que_le_dan(monkeypatch):\n    letras, tiempos = _preparar(monkeypatch)\n\n    bigpickle.preguntar(\"hola\", timeout=50)\n\n    assert tiempos == [50]\n\n\ndef test_el_cuaderno_apunta_el_tamano_del_encargo(monkeypatch):\n    letras, tiempos = _preparar(monkeypatch)\n\n    bigpickle.preguntar(\"hola mundo\")\n\n    with open(cuaderno._ruta(), \"r\", encoding=\"utf-8\") as fh:\n        filas = [linea for linea in fh.read().splitlines() if linea.strip()]\n    ultima = json.loads(filas[-1])\n    assert ultima[\"tamano\"] == 10\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No toca ningun archivo existente: solo crea el archivo nuevo que el encargo pide, y los monkeypatch van sobre cuotas, bigpickle.shutil y bigpickle.subprocess con restore automatico de pytest. Unico punto de atencion de corrida (no de diseno): la prueba 3 lee el cuaderno real y asume que la ultima fila es la del test; si el archivo acumula entradas de corridas reales, conviene confirmarlo al ejecutar."
+  ],
+  "que_falta": [
+   "Ejecutar el vigia y verlo verde: (a) que _salida_ok (JSON por linea con type/text) coincida con como cuerpo/bigpickle.py parsea la salida, incluida la funcion bigpickle._parsear_salida que la docstring nombra; (b) que bigpickle.preguntar acepte timeout= y use cuotas.espera_de_bigpickle cuando no se lo dan; (c) que la fila del cuaderno realmente tenga el campo tamano."
+  ],
+  "resumen_para_el_jefe": "La vigia se crea exactamente como pide el encargo (imports, monkeypatch, proceso falso con communicate y returncode 0, y las tres pruebas con assert sobre timeout, 10 letras y tamano 10 en el cuaderno); no inventa nada y no rompe vecinos; lo unico pendiente es que corra y salga verde, sobre todo que el formato de la salida falsa coincida con lo que bigpickle realmente lee."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (29589 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (29769 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

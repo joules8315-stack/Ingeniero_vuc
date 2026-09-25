@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En guardar_en_la_historia, el segundo bloque 'if r.returncode != 0:' (tras el git commit) devuelve False sin llamar a volver_atras, dejando el trabajo a medias sin deshacer.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "guardar_en_la_historia",
+  "texto_viejo": "        if r.returncode != 0:\n            return False, \"EL GUARDIA NO DEJO GUARDAR: \" + ((r.stderr or \"\") + (r.stdout or \"\"))[-600:]",
+  "texto_nuevo": "        if r.returncode != 0:\n            motivo = ((r.stderr or \"\") + (r.stdout or \"\"))[-600:]\n            hechos = volver_atras(raiz, rutas, motivo)\n            return False, \"EL GUARDIA NO DEJO GUARDAR: \" + motivo + \"\\nSE VOLVIO ATRAS: \" + \"; \".join(hechos)",
+  "cambio": "Sustituir el segundo bloque 'if r.returncode != 0:' (el que va despues del git commit) para que guarde el motivo en una variable, llame a volver_atras(raiz, rutas, motivo) y devuelva el mensaje con los hechos del retroceso.",
+  "codigo": "        if r.returncode != 0:\n            motivo = ((r.stderr or \"\") + (r.stdout or \"\"))[-600:]\n            hechos = volver_atras(raiz, rutas, motivo)\n            return False, \"EL GUARDIA NO DEJO GUARDAR: \" + motivo + \"\\nSE VOLVIO ATRAS: \" + \"; \".join(hechos)",
+  "vigia": "Una prueba que fuerce el fallo del git commit en guardar_en_la_historia y compruebe que se llama a volver_atras y que el mensaje devuelto contiene 'SE VOLVIO ATRAS: ' con los hechos.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "volver_atras",
+   "guardar_en_la_historia",
+   "el flujo que llama a guardar_en_la_historia"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Bajo: se toca solo el segundo bloque 'if r.returncode != 0:' de guardar_en_la_historia; la forma de devolver (False, mensaje) no cambia. El texto del mensaje se alarga con '\\nSE VOLVIO ATRAS: ...', asi que cualquier consumidor que compare el string exacto (no por prefijo) podria descolocarse; es un riesgo menor y de forma, no de fondo."
+  ],
+  "que_falta": [
+   "Ninguno del lado de la propuesta: el texto viejo, el texto nuevo y el cambio son copia literal del encargo del paquete. Falta solo ejecutar la vigia que propone y que Julio lo compruebe con sus ojos."
+  ],
+  "resumen_para_el_jefe": "La propuesta dice exactamente lo que manda el paquete (sustituir el segundo 'if r.returncode != 0:' de guardar_en_la_historia para llamar a volver_atras, que el propio material confirma que ya existe en el mismo archivo) y no toca nada mas; aprobada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19065 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

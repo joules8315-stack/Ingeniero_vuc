@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion listas_para_correr() en cuerpo/capataz.py, que debe leer la lista de ordenes y devolver las que se pueden correr ya segun las reglas del encargo.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "listas_para_correr",
+  "texto_viejo": "def ya_fallo(orden):\n    \"\"\"True si la huella_de(orden) aparece en el archivo; nunca lanza.\"\"\"",
+  "texto_nuevo": "def listas_para_correr():\n    \"\"\"Devuelve, en el mismo orden de la lista, las ordenes que se pueden correr ya.\"\"\"\n    lista = leer_lista()\n    resultado = []\n    piezas_en_resultado = set()\n    piezas_corriendo = set()\n    for orden in lista:\n        if isinstance(orden, dict) and orden.get('estado') == 'corriendo':\n            pieza = orden.get('pieza')\n            if pieza:\n                piezas_corriendo.add(pieza)\n    for orden in lista:\n        if not isinstance(orden, dict):\n            continue\n        if orden.get('estado') != 'pendiente':\n            continue\n        if validar_etiqueta(orden):\n            continue\n        if ya_fallo(orden):\n            continue\n        depende = orden.get('depende')\n        if not isinstance(depende, list):\n            continue\n        ok_depende = True\n        for dep_id in depende:\n            encontrada = None\n            for otra in lista:\n                if isinstance(otra, dict) and otra.get('id') == dep_id:\n                    encontrada = otra\n                    break\n            if encontrada is None or encontrada.get('estado') != 'hecha':\n                ok_depende = False\n                break\n        if not ok_depende:\n            continue\n        pieza = orden.get('pieza')\n        if pieza in piezas_corriendo:\n            continue\n        if pieza in piezas_en_resultado:\n            continue\n        resultado.append(orden)\n        if pieza:\n            piezas_en_resultado.add(pieza)\n    return resultado\n\n\ndef ya_fallo(orden):\n    \"\"\"True si la huella_de(orden) aparece en el archivo; nunca lanza.\"\"\"",
+  "cambio": "Agregar la funcion listas_para_correr() justo antes de ya_fallo, con docstring corto en espanol simple, sin tocar las demas funciones.",
+  "codigo": "def listas_para_correr():\n    \"\"\"Devuelve, en el mismo orden de la lista, las ordenes que se pueden correr ya.\"\"\"\n    lista = leer_lista()\n    resultado = []\n    piezas_en_resultado = set()\n    piezas_corriendo = set()\n    for orden in lista:\n        if isinstance(orden, dict) and orden.get('estado') == 'corriendo':\n            pieza = orden.get('pieza')\n            if pieza:\n                piezas_corriendo.add(pieza)\n    for orden in lista:\n        if not isinstance(orden, dict):\n            continue\n        if orden.get('estado') != 'pendiente':\n            continue\n        if validar_etiqueta(orden):\n            continue\n        if ya_fallo(orden):\n            continue\n        depende = orden.get('depende')\n        if not isinstance(depende, list):\n            continue\n        ok_depende = True\n        for dep_id in depende:\n            encontrada = None\n            for otra in lista:\n                if isinstance(otra, dict) and otra.get('id') == dep_id:\n                    encontrada = otra\n                    break\n            if encontrada is None or encontrada.get('estado') != 'hecha':\n                ok_depende = False\n                break\n        if not ok_depende:\n            continue\n        pieza = orden.get('pieza')\n        if pieza in piezas_corriendo:\n            continue\n        if pieza in piezas_en_resultado:\n            continue\n        resultado.append(orden)\n        if pieza:\n            piezas_en_resultado.add(pieza)\n    return resultado",
+  "vigia": "Un test que cargue una lista con ordenes pendientes, una con dependencia hecha, una con dependencia inexistente, una con pieza repetida y una con pieza en estado corriendo, y compruebe que listas_para_correr() devuelve solo las que cumplen todas las reglas y en el orden original.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "despachador que use listas_para_correr"
+  ],
+  "preguntas": [],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La funcion se inserta ANTES de ya_fallo y el encargo pedia 'despues de ya_fallo'. No bloquea: en Python las funciones de un modulo se resuelven en el momento de la llamada, no en el de la definicion, asi que listas_para_correr() llamara a ya_fallo sin error."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno. El paquete dice que nadie depende de estas piezas (reparacion aislada). La funcion solo usa leer_lista(), validar_etiqueta() y ya_fallo(), todas presentes en el material, y no modifica ninguna."
+  ],
+  "que_falta": [
+   "Nada del contrato. Unica observacion: confirmar con Julio si exige la posicion textual 'despues de ya_fallo' o si le vale el resultado; funcionalmente es identico."
+  ],
+  "resumen_para_el_jefe": "La funcion cumple las 5 reglas del encargo (estado 'pendiente', etiqueta valida, sin fallo previo, cada depende existente y 'hecha', pieza unica por ronda sin colision con 'corriendo'), usa solo piezas que ya existen, no toca otras funciones ni rompe vecinos; su unica desviacion es colocarse antes de ya_fallo en vez de despues, sin cambio de resultado."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

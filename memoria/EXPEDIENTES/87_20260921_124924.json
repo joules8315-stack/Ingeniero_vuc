@@ -1,0 +1,70 @@
+{
+  "orden": {
+    "id": "87",
+    "titulo": "La vigia de que la tarea que fallo se reintenta despues del arreglo",
+    "origen": "ley de Julio A-43 (2026-09-21): la prueba de que la herramienta quedo reparada es que la tarea llega a su resultado",
+    "repara": "hoy una tarea que fallo queda marcada para siempre y no se vuelve a correr, asi que nunca se comprueba que el arreglo de la herramienta sirvio",
+    "pieza": "vigias/test_vigia_la_tarea_que_fallo_se_reintenta_tras_el_arreglo.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_la_tarea_que_fallo_se_reintenta_tras_el_arreglo.py. Vigila la funcion nueva reintentar_tras_el_arreglo(orden_id, arreglo_id) de cuerpo/capataz.py. Arriba: import json, from cuerpo import capataz. Con monkeypatch pon capataz.__file__ apuntando a tmp_path/cuerpo/capataz.py y crea tmp_path/memoria con un ORDENES.json que tiene la orden de id 5 en estado fallida, paso_fallido guardia, fallos_seguidos 1 y depende lista vacia, y un HUELLAS_QUE_FALLARON.jsonl con una linea con la huella de esa orden (capataz.huella_de) y otra linea con otra huella. Pruebas, cada una con assert: (1) tras capataz.reintentar_tras_el_arreglo('5', '5-F1'), en ORDENES.json la orden 5 tiene estado pendiente, fallos_seguidos 0 y depende contiene 5-F1; (2) HUELLAS_QUE_FALLARON.jsonl ya no tiene la huella de la orden 5 y conserva la otra linea; (3) con un id que no existe devuelve False y no cambia nada. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_la_tarea_que_fallo_se_reintenta_tras_el_arreglo.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "516f1c06ad6a2fe6",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_124924_RECHAZADO_test_vigia_la_tarea_que_fallo_se_reintenta_tras_el_arreglo.py.json\nOBRERO deepseek -> AUDITOR groq\n  aviso       : Big Pickle no contesto en 300s (timeout)\n  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None\n  aviso       : bigpickle no estaba: revisa groq con solo lo necesario (A-38)\n  diagnostico : Falta la implementacion de reintentar_tras_el_arreglo en cuerpo/capataz.py; el material solo muestra fragmentos y no el archivo completo, asi que no puedo escribir la vigia sin inventar la funcion ni el resto del modulo.\n  toca        : vigias/test_vigia_la_tarea_que_fallo_se_reintenta_tras_el_arreglo.py funcion ?\n  confianza   : baja\n  VEREDICTO   : RECHAZADO\n  fallo       : No se incluye la implementación de la función reintentar_tras_el_arreglo en cuerpo/capataz.py; solo se añaden pruebas.\n  fallo       : El test crea un archivo capataz.py vacío y solo cambia su atributo __file__, lo que no aporta la lógica requerida y puede generar comportamientos inesperados.\n  resumen     : Falta la implementación solicitada; solo se añadió la vigia sin el código requerido.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T12:49:24",
+  "analisis": {
+    "que_paso": "La orden 87 pedia crear SOLO la vigia red-first vigias/test_vigia_la_tarea_que_fallo_se_reintenta_tras_el_arreglo.py, que vigila la funcion aun inexistente capataz.reintentar_tras_el_arreglo. Como Big Pickle no contesto en 300s (timeout), escribio deepseek y reviso groq con material reducido (A-38). El obrero se nego ('no puedo escribir la vigia sin inventar la funcion'), devolvio texto_nuevo vacio, y el auditor groq dicto RECHAZADO porque falta la implementacion de la funcion en capataz.py, pese a que el encargo dice 'No toques ningun otro archivo' y que la vigia 'nace roja'. Resultado: no_aprobo, no se guardo llave.",
+    "causa_raiz": "El equipo trato una vigia que nace roja (TDD: la prueba primero, el codigo despues) como si estuviera rota por faltar la funcion objetivo, exigiendo un codigo que otra orden (la 88) implementa y que la orden 87 prohibe expresamente escribir. El encargo 87 era autosuficiente para escribir el test (imports, monkeypatch de __file__, archivos en tmp_path y tres asserts), pero obrero y auditor aplicaron el criterio de 'codigo normal': sin implementacion = fallo. Contribuyo el timeout de Big Pickle, que forzo a groq a auditar con 'solo lo necesario' (A-38) perdiendo el contexto de que la funcion todavia no existe a proposito.",
+    "donde": "Flujo del equipo evaluando la orden 87 (obrero deepseek -> auditor groq); el armado del material/prompt para obrero y auditor en cuerpo/obrero.py, que no marca cuando una vigia es red-first y su funcion objetivo aun no existe.",
+    "quien_fallo": "equipo",
+    "citas": [
+      {
+        "archivo": "memoria/ORDENES.json",
+        "texto": "\"razon\": \"la vigia nace antes que el cambio, y nace roja\""
+      },
+      {
+        "archivo": "memoria/ORDENES.json",
+        "texto": "Pruebas, cada una con assert: (1) tras capataz.reintentar_tras_el_arreglo('5', '5-F1')... No toques ningun otro archivo."
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_124924_RECHAZADO_test_vigia_la_tarea_que_fallo_se_reintenta_tras_el_arreglo.py.json",
+        "texto": "No se incluye la implementación de la función reintentar_tras_el_arreglo en cuerpo/capataz.py; solo se añaden pruebas."
+      },
+      {
+        "archivo": "memoria/ORDENES.json",
+        "texto": "En cuerpo/capataz.py, justo despues de la funcion agregar_orden, agrega la funcion nueva reintentar_tras_el_arreglo(orden_id, arreglo_id)."
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_124924_RECHAZADO_test_vigia_la_tarea_que_fallo_se_reintenta_tras_el_arreglo.py.json",
+        "texto": "bigpickle no estaba: revisa groq con solo lo necesario (A-38)"
+      }
+    ],
+    "no_volver_a": "Una vigia que nace roja no se rechaza por faltar la funcion que aun no existe: si el encargo pide solo la prueba, entregar solo la prueba es aprobar.",
+    "tarea_nueva": {
+      "repara": "el equipo rechaza una vigia red-first por faltar la implementacion que otra orden hara despues",
+      "pieza": "cuerpo/obrero.py",
+      "razon": "la prueba nace antes que el codigo; hoy obrero y auditor la marcan fallo por faltar la funcion, y bloquean el ciclo TDD",
+      "encargo": "En cuerpo/obrero.py, cuando la orden es crear una vigia cuya funcion objetivo aun no existe (crear=true y su razon indica que 'nace roja'/red-first), agregar al material que reciben el obrero y el auditor una nota explicita al inicio: 'ESTA FUNCION TODAVIA NO EXISTE A PROPOSITO. Se pide SOLO la vigia, que nace roja. Entregar unicamente la prueba es CORRECTO; el auditor NO debe exigir la implementacion ni marcarla como fallo.' No toques ningun otro archivo.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "citas",
+    "motivo": "citas que no existen: [{\"archivo\": \"memoria/ORDENES.json\", \"texto\": \"Pruebas, cada una con assert: (1) tras capataz.reintentar_tras_el_arreglo('5', '5-F1')... No toques ningun otro archivo.\", \"por_que\": \"no aparece literal\"}]",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\87_20260921_124924.json"
+  }
+}

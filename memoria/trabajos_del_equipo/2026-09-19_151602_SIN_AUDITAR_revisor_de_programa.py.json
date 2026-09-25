@@ -1,0 +1,66 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "Falta la regla 4b en revisar: no comprueba que el archivo siga cargando tras el cambio antes de la regla 5.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        # 5 — DESAPARECE LO QUE YA ESTABA. EL AGUJERO MEDIDO EL 2026-09-11: este revisor",
+  "texto_nuevo": "        # 4b — EL ARCHIVO TIENE QUE SEGUIR CARGANDO. Solo frena si antes cargaba, para no\n        # frenar en falso. Orden de Julio A-38, tarea E-3.\n        try:\n            if contenido_archivo is not None and str(p.get('archivo') or '').endswith('.py') and viejo and viejo in contenido_archivo and not no_carga(contenido_archivo):\n                fallos.extend(no_carga(contenido_archivo.replace(viejo, nuevo, 1)))\n        except Exception:\n            pass\n\n        # 5 — DESAPARECE LO QUE YA ESTABA. EL AGUJERO MEDIDO EL 2026-09-11: este revisor",
+  "cambio": "Insertar la regla 4b (comentario corto + bloque try/except que llama a no_carga sobre el archivo tal como quedaria) justo antes del comentario que abre la regla 5, dentro de revisar.",
+  "codigo": "        # 4b — EL ARCHIVO TIENE QUE SEGUIR CARGANDO. Solo frena si antes cargaba, para no\n        # frenar en falso. Orden de Julio A-38, tarea E-3.\n        try:\n            if contenido_archivo is not None and str(p.get('archivo') or '').endswith('.py') and viejo and viejo in contenido_archivo and not no_carga(contenido_archivo):\n                fallos.extend(no_carga(contenido_archivo.replace(viejo, nuevo, 1)))\n        except Exception:\n            pass",
+  "vigia": "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/candado_equipo.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_archivo_carga.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+   "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "candado_equipo.py",
+   "test_vigia_el_archivo_carga.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (37840 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a groq y no esta disponible: reviso ",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 1"
+ ]
+}

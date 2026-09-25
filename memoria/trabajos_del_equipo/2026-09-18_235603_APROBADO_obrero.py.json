@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py, la llamada que arma material_obrero usa siempre el tope de los gratis (TOPE_GRATIS - 2690) aunque quien escribe sea DeepSeek, que aguanta mucho mas, cortando funciones enteras de 221 lineas.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "la llamada que arma material_obrero (dentro de la funcion que la contiene; el material solo muestra _preguntar_con_relevo y _filtrar_paquete, no la funcion que llama a material_obrero)",
+  "texto_viejo": "tope=TOPE_GRATIS - 2690)",
+  "texto_nuevo": "tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)",
+  "cambio": "Sustituir el argumento literal 'tope=TOPE_GRATIS - 2690)' por 'tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)' en la llamada que arma material_obrero. Asi: si se eligio quien escribe, se usa lo que aguanta de verdad con techo de 40.000 letras; si no se eligio, queda como hoy; y nunca baja del tope de hoy (cuotas._capacidad da 0 para un nombre que no conoce). cuotas ya esta importado. Un solo cambio, no tocar nada mas.",
+  "codigo": "tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)",
+  "vigia": "Que en el veredicto de un trabajo real con DeepSeek como generador, el material_obrero entregue la funcion nombrada entera (221 lineas, 15.084 letras) sin cortarla por el tope de los gratis; y que sin generador elegido el tope siga siendo TOPE_GRATIS - 2690.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "El material no trae la funcion completa que contiene la llamada a material_obrero (solo muestra _preguntar_con_relevo y _filtrar_paquete). Para copiar el texto_viejo con su contexto unico y verificar que 'generador' esta en el ambito de esa llamada, hace falta ver esa funcion entera."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno: el cambio es un argumento de una sola llamada dentro del cuerpo de trabajar(); no cambia firmas, ni imports, ni retornos. asignador.py (importa desde obrero.py) y el test del revisor roto no se ven afectados"
+  ],
+  "que_falta": [
+   "Nada para aprobar. El objeto que el paquete NO trae (la funcion que arma material_obrero) fue verificado contra el codigo real por el auditor: generador esta en ambito y el literal text_viejo existe tal cual"
+  ],
+  "resumen_para_el_jefe": "El cambio es exactamente el que a Julian se le pidio aplicar (tope del material que crece solo cuando se elige quien escribe, con techo de 40.000 y sin bajar nunca del tope actual), usa solo cosas que ya existen en el codigo y no rompe a nadie: puede sellarse."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19058 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

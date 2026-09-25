@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Al final de comprobar_pasos hay un bloque de codigo despues del return del paso 5 que nunca se ejecuta (empieza con 'encontrada = False' y termina con 'return True'), y hay que borrarlo.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "comprobar_pasos",
+  "texto_viejo": "    # Paso 5 guardado: si el comando no esta vacio ya se corrio en el paso 4\n    return \"\"\n    encontrada = False\n    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            orden[\"paso_fallido\"] = paso_fallido\n            orden[\"fallos_seguidos\"] = fallos_seguidos\n            encontrada = True\n            break\n    if not encontrada:\n        return False\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2)\n    return True",
+  "texto_nuevo": "    # Paso 5 guardado: si el comando no esta vacio ya se corrio en el paso 4\n    return \"\"",
+  "cambio": "Borrar el bloque muerto que va despues del return del paso 5: desde 'encontrada = False' hasta 'return True'. Solo se quita ese bloque; el return del paso 5 se queda igual.",
+  "codigo": "    # Paso 5 guardado: si el comando no esta vacio ya se corrio en el paso 4\n    return \"\"",
+  "vigia": "Importar cuerpo/capataz.py y comprobar que comprobar_pasos sigue existiendo y que ya no queda el bloque muerto (por ejemplo, que el archivo no contiene 'encontrada = False' dentro de comprobar_pasos).",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El bloque muerto se elimina correctamente, sin introducir errores ni romper contratos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19257 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

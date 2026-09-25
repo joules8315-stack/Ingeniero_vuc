@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El candado arnes/candado_terminal.py no frena las ordenes que nombran el archivo .env (cat .env, type .env, Get-Content .env, Get-Content C:/Ingeniero_VUC/.env) porque solo frena leer variables de entorno con claves, no el archivo .env.",
+  "archivo": "arnes/candado_terminal.py",
+  "funcion": "main",
+  "texto_viejo": "    # SEGURIDAD de claves: leer una variable de entorno desde la terminal se BLOQUEA siempre.\n    cmd_txt = str((data.get(\"tool_input\") or {}).get(\"command\") or \"\")\n    if ENV_READER.search(cmd_txt):\n        sys.stderr.write(AVISO_CLAVES)\n        _cazado_terminal()\n        return 2",
+  "texto_nuevo": "    # SEGURIDAD de claves: leer una variable de entorno desde la terminal se BLOQUEA siempre.\n    cmd_txt = str((data.get(\"tool_input\") or {}).get(\"command\") or \"\")\n    if ENV_READER.search(cmd_txt):\n        sys.stderr.write(AVISO_CLAVES)\n        _cazado_terminal()\n        return 2\n\n    # SEGURIDAD de claves: el archivo .env NO se abre por la terminal, ni solo ni al final\n    # de una ruta con barra normal o invertida. No frena .envrc ni .env.ejemplo.\n    if re.search(r'(?:^|[\\s/\\\\])\\.env(?![\\w.])', cmd_txt):\n        sys.stderr.write(AVISO_CLAVES)\n        _cazado_terminal()\n        return 2",
+  "cambio": "Anadir, justo despues del bloque que frena leer variables de entorno con claves (el que usa ENV_READER) y dentro de main, un freno nuevo que use re.search directamente (sin constante nueva) para bloquear cuando la orden nombra un archivo llamado exactamente .env, sea solo o al final de una ruta con barra normal o invertida, sin frenar .envrc ni .env.ejemplo. Al frenar escribe AVISO_CLAVES, llama a _cazado_terminal y devuelve 2.",
+  "codigo": "    if re.search(r'(?:^|[\\s/\\\\])\\.env(?![\\w.])', cmd_txt):\n        sys.stderr.write(AVISO_CLAVES)\n        _cazado_terminal()\n        return 2",
+  "vigia": "vigias/test_vigia_el_archivo_de_llaves_no_se_abre_por_la_terminal.py, que hoy tiene una roja y debe quedar verde: las cuatro ordenes prohibidas (cat .env, type .env, Get-Content .env, Get-Content C:/Ingeniero_VUC/.env) deben devolver 2, y las permitidas (dir, git status, python -m pytest vigias) deben seguir devolviendo 0.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/candados_medicion.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_archivo_de_llaves_no_se_abre_por_la_terminal.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "candados_medicion.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El encargo pide que el freno vaya 'justo antes del bloque que ya frena leer variables de entorno con claves' y la propuesta lo coloca 'justo despues'. No cambia el resultado: ningun bloque toca cmd_txt y ENV_READER no coincide con las cuatro ordenes prohibidas, asi que ambas posiciones dan exactamente los mismos devuelves para la vigia; es una desviacion literal, no funcional."
+  ],
+  "riesgo_vecinos": [
+   "Cualquier otra vigia del candado que ejecute una orden que mencione '.env' como segmento completo (p.ej. rutas a .env dentro de otras pruebas) pasaria a devolver 2; conviene confirmar que ninguna prueba permitida usa '.env'."
+  ],
+  "que_falta": [
+   "Si se exige literalidad estricta del encargo, reemplazar el bloque de forma que quede 'justo antes' del bloque de ENV_READER; es un reordenamiento sin efecto sobre el resultado."
+  ],
+  "resumen_para_el_jefe": "La reparacion frena las cuatro ordenes sobre el archivo .env (devuelve 2) y deja libres .envrc, .env.ejemplo, dir, git status y pytest, sin inventar nada ni romper vecinos; unica observacion: el encargo queria el bloque 'justo antes' del freno de variables y queda 'justo despues', lo que da el mismo resultado."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22704 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

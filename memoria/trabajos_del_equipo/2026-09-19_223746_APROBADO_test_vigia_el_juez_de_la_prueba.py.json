@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El texto de ejemplo VIGIA nombra la prueba como 'test_suma_da_cuatro' y comprueba 'pieza.suma(2, 2) == 4', lo que hace que la pieza mala (multiplicacion) tambien pase por casualidad.",
+  "archivo": "vigias/test_vigia_el_juez_de_la_prueba.py",
+  "funcion": "VIGIA (constante de texto de ejemplo)",
+  "texto_viejo": "def test_suma_da_cuatro():\n    assert pieza.suma(2, 2) == 4",
+  "texto_nuevo": "def test_suma_da_cinco():\n    assert pieza.suma(2, 3) == 5",
+  "cambio": "Sustituir el nombre de la prueba de mentira y su comprobacion: que se llame diciendo que la suma da cinco y que compruebe que la suma de dos y tres da cinco.",
+  "codigo": "def test_suma_da_cinco():\n    assert pieza.suma(2, 3) == 5",
+  "vigia": "vigias/test_vigia_el_juez_de_la_prueba.py (la segunda prueba del archivo debe salir roja con PIEZA_MALA y verde solo con PIEZA_BUENA)",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "juez_de_la_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que pide el encargo: la prueba de mentira ahora exige suma(2,3)==5, asi la resta da -1, la multiplicacion da 6 y solo la suma de verdad pasa (la pieza mala ya no pasa por casualidad), no usa nada que no exista y no toca ni juez_de_la_prueba.py ni nada mas del archivo."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

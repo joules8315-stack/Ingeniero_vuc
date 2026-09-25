@@ -1,0 +1,29 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py que vigile que fila_de_commits libera el turno si el proceso dueno murio, y que lo mantiene si el dueno vive.",
+  "archivo": "vigias/test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"vigias/test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py\n\nVIGIA: EL TURNO DE GUARDADO SE LIBERA SI SU DUENO MURIO.\n\nVigila arnes/candado_equipo.py::fila_de_commits(raiz, espera=2400), que es un\nadministrador de contexto (se usa con `with`).\n\nQue se prueba, con assert y de verdad (ejecutando, no leyendo):\n\n  1) Si el turno existe recien escrito con el numero 999999 (un proceso que NO\nexiste), el `with` entra en menos de 3 segundos: el candado reconoce que el dueno\nmurio y libera el turno.\n\n  2) Si el turno existe con el numero del PROPIO proceso de la prueba\n(os.getpid(), que esta vivo), el `with` con espera=2 lanza TimeoutError: el\ncandado NO libera el turno de un dueno vivo.\n\n  3) Al salir del `with` el archivo del turno ya no existe: el candado limpia.\n\nLa ruta del turno se calcula igual que en la funcion vigilada:\n\n    os.path.join(tempfile.gettempdir(),\n                 'ingeniero_fila_' +\n                 hashlib.sha1(os.path.abspath(str(raiz)).lower()\n                              .encode('utf-8')).hexdigest()[:12] +\n                 '.lock')\n\ncon raiz = str(tmp_path).\n\nCada prueba borra el archivo del turno al final, para no dejar basura en el\ntemporal ni ensuciar a las demas vigias.\n\"\"\"\n\nimport hashlib\nimport os\nimport sys\nimport tempfile\nimport time\n\nimport pytest\n\n\n# --- La carpeta arnes tiene que estar en sys.path para poder importar candado_equipo ---\nAQUI = os.path.dirname(os.path.abspath(__file__))\nRAIZ_DEL_PROYECTO = os.path.dirname(AQUI)\nARNES = os.path.join(RAIZ_DEL_PROYECTO, \"arnes\")\nif ARNES not in sys.path:\n    sys.path.insert(0, ARNES)\n\nimport candado_equipo  # noqa: E402\n\n\n# --- El numero de un proceso que no existe (para simular un dueno muerto) ---\nPID_MUERTO = 999999\n\n\ndef _ruta_del_turno(raiz):\n    \"\"\"Calcula la ruta del turno EXACTAMENTE igual que fila_de_commits.\"\"\"\n    clave = hashlib.sha1(\n        os.path.abspath(str(raiz)).lower().encode(\"utf-8\")\n    ).hexdigest()[:12]\n    return os.path.join(\n        tempfile.gettempdir(), \"ingeniero_fila_\" + clave + \".lock\"\n    )\n\n\ndef _escribir_turno(ruta, pid):\n    \"\"\"Deja el turno escrito con el numero de proceso que se le diga.\"\"\"\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        f.write(str(pid))\n\n\ndef _borrar_turno(ruta):\n    \"\"\"Borra el archivo del turno si existe. Nunca revienta.\"\"\"\n    try:\n        os.remove(ruta)\n    except OSError:\n        pass\n\n\ndef test_el_turno_de_un_dueno_muerto_se_libera(tmp_path):\n    \"\"\"(1) Turno con pid 999999 (proceso que no existe): el with entra rapido.\"\"\"\n    raiz = str(tmp_path)\n    ruta = _ruta_del_turno(raiz)\n    _borrar_turno(ruta)\n    try:\n        _escribir_turno(ruta, PID_MUERTO)\n        assert os.path.exists(ruta), \"el turno de prueba no llego a escribirse\"\n\n        inicio = time.time()\n        with candado_equipo.fila_de_commits(raiz, espera=3):\n            paso = time.time() - inicio\n            # Entro: el candado reconocio que el dueno murio y libero el turno.\n            assert paso < 3, (\n                \"el candado no libero el turno de un dueno muerto: \"\n                \"tardo %.2f s (espera=3)\" % paso\n            )\n    finally:\n        _borrar_turno(ruta)\n\n\ndef test_el_turno_de_un_dueno_vivo_no_se_libera(tmp_path):\n    \"\"\"(2) Turno con el pid de ESTE proceso (vivo): el with lanza TimeoutError.\"\"\"\n    raiz = str(tmp_path)\n    ruta = _ruta_del_turno(raiz)\n    _borrar_turno(ruta)\n    try:\n        _escribir_turno(ruta, os.getpid())\n        assert os.path.exists(ruta), \"el turno de prueba no llego a escribirse\"\n\n        with pytest.raises(TimeoutError):\n            with candado_equipo.fila_de_commits(raiz, espera=2):\n                # No deberia llegar aqui: el dueno esta vivo.\n                pass\n    finally:\n        _borrar_turno(ruta)\n\n\ndef test_al_salir_del_with_el_turno_ya_no_existe(tmp_path):\n    \"\"\"(3) Al salir del with, el archivo del turno ya no esta.\"\"\"\n    raiz = str(tmp_path)\n    ruta = _ruta_del_turno(raiz)\n    _borrar_turno(ruta)\n    try:\n        with candado_equipo.fila_de_commits(raiz, espera=3):\n            # Dentro del with el turno tiene que existir: lo acaba de tomar.\n            assert os.path.exists(ruta), (\n                \"dentro del with el turno no existe: el candado no lo tomo\"\n            )\n        # Fuera del with el candado tiene que haberlo soltado.\n        assert not os.path.exists(ruta), (\n            \"al salir del with el turno sigue ahi: el candado no lo solto\"\n        )\n    finally:\n        _borrar_turno(ruta)\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La nueva vigia se creo correctamente y cumple con todos los requisitos del encargo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (23571 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

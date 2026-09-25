@@ -1,0 +1,27 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la vigia que comprueba que agregar_orden pone al frente las ordenes de origen forense y al final las demas, sin tocar open; se crea con monkeypatch sobre leer_lista, ya_fallo y __file__ apuntando a tmp_path.",
+  "archivo": "vigias/test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py",
+  "texto_nuevo": "import json\n\nfrom cuerpo import capataz\n\n\n# Campos de una orden valida, copiados de una orden real de memoria/ORDENES.json.\n# 'depende' va como lista vacia y 'modo' tiene que ser PROGRAMA o IA.\ndef _orden_de_ejemplo(id_orden, origen, encargo):\n    return {\n        'id': id_orden,\n        'origen': origen,\n        'repara': 'nada',\n        'pieza': 'cuerpo/capataz.py',\n        'depende': [],\n        'modo': 'PROGRAMA',\n        'razon': 'prueba de la vigia',\n        'encargo': encargo,\n    }\n\n\ndef _preparar(monkeypatch, tmp_path, lista_inicial):\n    \"\"\"Deja capataz apuntando a una memoria de mentira dentro de tmp_path.\n\n    No se toca open: se cambia capataz.__file__ para que la carpeta del\n    proyecto que calcula agregar_orden caiga en tmp_path/cuerpo/capataz.py,\n    y asi la lista se escriba en tmp_path/memoria/ORDENES.json.\n    \"\"\"\n    carpeta_cuerpo = tmp_path / 'cuerpo'\n    carpeta_cuerpo.mkdir(parents=True, exist_ok=True)\n    archivo_falso = carpeta_cuerpo / 'capataz.py'\n    archivo_falso.write_text('# copia de mentira para la prueba\\n', encoding='utf-8')\n    monkeypatch.setattr(capataz, '__file__', str(archivo_falso))\n\n    carpeta_memoria = tmp_path / 'memoria'\n    carpeta_memoria.mkdir(parents=True, exist_ok=True)\n    ruta_ordenes = carpeta_memoria / 'ORDENES.json'\n    ruta_ordenes.write_text(json.dumps(lista_inicial, indent=2, ensure_ascii=False), encoding='utf-8')\n\n    monkeypatch.setattr(capataz, 'leer_lista', lambda: list(lista_inicial))\n    monkeypatch.setattr(capataz, 'ya_fallo', lambda orden: False)\n    return ruta_ordenes\n\n\ndef _leer_ordenes(ruta_ordenes):\n    with open(ruta_ordenes, encoding='utf-8') as f:\n        return json.load(f)\n\n\ndef test_orden_forense_queda_la_primera(monkeypatch, tmp_path):\n    \"\"\"Una orden nueva con origen que empieza por 'forense:' queda la PRIMERA.\"\"\"\n    orden_a = _orden_de_ejemplo('A', 'humano', 'encargo A')\n    orden_b = _orden_de_ejemplo('B', 'humano', 'encargo B')\n    ruta_ordenes = _preparar(monkeypatch, tmp_path, [orden_a, orden_b])\n\n    nueva = _orden_de_ejemplo('C', 'forense:A', 'encargo C')\n    ok, motivo = capataz.agregar_orden(nueva)\n    assert ok is True, motivo\n\n    lista = _leer_ordenes(ruta_ordenes)\n    assert lista[0]['id'] == 'C'\n    assert lista[1]['id'] == 'A'\n    assert lista[2]['id'] == 'B'\n\n\ndef test_orden_normal_queda_la_ultima(monkeypatch, tmp_path):\n    \"\"\"Una orden nueva con otro origen queda la ULTIMA, como hoy.\"\"\"\n    orden_a = _orden_de_ejemplo('A', 'humano', 'encargo A')\n    orden_b = _orden_de_ejemplo('B', 'humano', 'encargo B')\n    ruta_ordenes = _preparar(monkeypatch, tmp_path, [orden_a, orden_b])\n\n    nueva = _orden_de_ejemplo('C', 'humano', 'encargo C')\n    ok, motivo = capataz.agregar_orden(nueva)\n    assert ok is True, motivo\n\n    lista = _leer_ordenes(ruta_ordenes)\n    assert lista[0]['id'] == 'A'\n    assert lista[1]['id'] == 'B'\n    assert lista[2]['id'] == 'C'\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Vigia de prueba implementada correctamente, cumple diagnóstico sin romper nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (34368 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

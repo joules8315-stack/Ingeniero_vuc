@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El texto de ayuda y las dos lineas assert de test_tope_de_gasto_para_antes_de_llamar dicen lo contrario de lo que ahora manda la orden A-42: hay que invertir el assert del texto y esperar que si se llame al equipo.",
+  "archivo": "vigias/test_vigia_el_loop_del_pit.py",
+  "funcion": "test_tope_de_gasto_para_antes_de_llamar",
+  "texto_viejo": "    \"\"\"Si el gasto del mes ya paso el tope, para y no llama al equipo.\"\"\"",
+  "texto_nuevo": "    \"\"\"Orden de Julio A-42 (2026-09-21): no hay tope en dolares; aunque el gasto del mes sea grande, el loop no para por eso y llama al equipo.\"\"\"",
+  "cambio": "En la funcion test_tope_de_gasto_para_antes_de_llamar: (1) sustituir el texto de ayuda por el de la orden A-42; (2) cambiar 'assert texto.startswith('PARADO: TOPE DE GASTO')' por 'assert not texto.startswith('PARADO: TOPE DE GASTO')'; (3) cambiar 'assert llamadas == []' por \"assert llamadas == ['o1']\". Nada mas.",
+  "codigo": "def test_tope_de_gasto_para_antes_de_llamar(tmp_path, monkeypatch):\n    \"\"\"Orden de Julio A-42 (2026-09-21): no hay tope en dolares; aunque el gasto del mes sea grande, el loop no para por eso y llama al equipo.\"\"\"\n    ordenes = [orden('o1', 'pieza_a.py')]\n    memoria = preparar(tmp_path, monkeypatch, ordenes)\n\n    cuando = datetime.datetime.now().isoformat()\n    linea = {\n        'cuando': cuando,\n        'modelo': 'deepseek-v4-pro',\n        'uso': {'completion_tokens': 2000000},\n    }\n    with open(memoria / 'GASTO_USD.jsonl', 'w', encoding='utf-8') as f:\n        f.write(json.dumps(linea) + '\\n')\n\n    llamadas = []\n\n    def falsa(proyecto, orden, tope_segundos):\n        llamadas.append(orden.get('id'))\n        return {'guardado': True, 'codigo': 0, 'salida': 'GUARDADO AL MOMENTO'}\n\n    monkeypatch.setattr(capataz, 'lanzar_al_equipo', falsa)\n\n    texto = capataz.bucle('prueba', aviso=lambda t: None)\n\n    assert not texto.startswith('PARADO: TOPE DE GASTO')\n    assert llamadas == ['o1']",
+  "vigia": "vigias/test_vigia_el_loop_del_pit.py::test_tope_de_gasto_para_antes_de_llamar — comprueba que con gasto grande el loop NO para por tope y llama al equipo con 'o1'.",
+  "puede_danar": [
+   "capataz.bucle (comportamiento del tope de gasto en el loop del pit)",
+   "vigias/test_vigia_el_loop_del_pit.py (resto de tests del archivo)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "GASTO_USD.js",
+   "pieza_a.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta cumple exactamente con el diagnóstico, no inventa nada, no rompe vecinos ni contratos, y modifica sólo lo solicitado."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 4"
+ ]
+}

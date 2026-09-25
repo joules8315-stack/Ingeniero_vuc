@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta ver el cuerpo de arnes/sabotaje.py (como aplica el texto viejo y como informa el resultado) para escribir una vigia que lo llame tal cual y compruebe el caso de texto repetido.",
+  "archivo": "vigias/test_vigia_el_sabotaje_no_acepta_texto_repetido.py",
+  "texto_nuevo": "NECESITO_LEER: arnes/sabotaje.py / necesito saber como aplica el texto viejo de un sabotaje y como informa el resultado (nombres de funciones, firma de la lista de sabotajes, claves del informe) / decide si la vigia puede llamar al programa como es y comprobar el caso de texto repetido / riesgo de inventar nombres de funciones o claves y dejar la vigia rota o enganosa.",
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "Referencia al archivo arnes/sabotaje.py que no aparece en el material proporcionado"
+  ],
+  "fallos": [
+   "Invoca un archivo (arnes/sabotaje.py) que no existe en el material, lo que constituye un invento.",
+   "No incluye la justificación requerida por los contratos (las cinco respuestas) para crear una pieza nueva.",
+   "Al crear la vigía sin que exista el archivo que debe vigilar, la pieza queda huérfana y no cumple la regla de que una pieza nueva debe estar conectada."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "El archivo arnes/sabotaje.py debe estar disponible o solicitarse explícitamente con NECESITO_LEER.",
+   "Justificación contractual (qué, dónde, por qué, cuándo, cómo) para crear la vigía."
+  ],
+  "resumen_para_el_jefe": "Rechazado: la propuesta usa un archivo inexistente y carece de justificación contractual para crear la nueva vigía."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (24170 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (24358 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 129: unterminated string literal (detected at line 129). Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (24466 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "GPT-OSS 120B (Groq) no le cabe (24584 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 470.40000000000003s (timeout)",
+  "bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "Codex termino con codigo 1: OpenAI Codex v0.155.1\n--------\nworkdir: C:\\Ingeniero_VUC\nmodel: gpt-6-astra\nprovider: openai\napproval: never\nsandbox: read-only\nreasoning effort: low\nreasoning summaries: none\nsession id: 01a0c9e8-e0b9-7523-a2d4-5f5dd2a00bb4\n--------\nuser\nEres el AUDITOR. Otro modelo propuso una reparacion. Tu traba",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 4"
+ ]
+}

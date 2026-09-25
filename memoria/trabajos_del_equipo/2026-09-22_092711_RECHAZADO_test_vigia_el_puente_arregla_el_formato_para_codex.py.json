@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta al final del archivo una prueba nueva que use un candado de mentira con evento SessionStart y compruebe que el puente quita additionalContext de arriba y lo mete en hookSpecificOutput.",
+  "archivo": "vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py",
+  "funcion": "final del archivo (tras _correr_puente)",
+  "texto_viejo": "def _correr_puente(ruta_candado):\n    \"\"\"Corre el puente con el candado dado y devuelve su salida normal.\"\"\"\n    entrada = json.dumps({\"hook_event_name\": EVENTO})\n    resultado = subprocess.run(",
+  "texto_nuevo": "def _correr_puente(ruta_candado):\n    \"\"\"Corre el puente con el candado dado y devuelve su salida normal.\"\"\"\n    entrada = json.dumps({\"hook_event_name\": EVENTO})\n    resultado = subprocess.run(\n\n\ndef test_el_puente_quita_additionalcontext_de_arriba_con_sessionstart(tmp_path):\n    \"\"\"Con evento SessionStart, el puente sube additionalContext a hookSpecificOutput.\"\"\"\n    salida_candado = json.dumps({\n        \"systemMessage\": \"hola\",\n        \"additionalContext\": \"CTX\",\n        \"hookSpecificOutput\": {\n            \"hookEventName\": \"SessionStart\",\n            \"additionalContext\": \"CTX\",\n        },\n    })\n    ruta = _escribir_candado(tmp_path, salida_candado)\n    entrada = json.dumps({\"hook_event_name\": \"SessionStart\"})\n    resultado = subprocess.run(\n        [sys.executable, PUENTE, ruta],\n        input=entrada,\n        capture_output=True,\n        text=True,\n        timeout=TOPE_SEGUNDOS,\n    )\n    salida = json.loads(resultado.stdout)\n    assert \"additionalContext\" not in salida\n    assert salida[\"hookSpecificOutput\"][\"additionalContext\"] == \"CTX\"",
+  "cambio": "Anadir al final del archivo una prueba nueva que escribe un candado de mentira con salida JSON que incluye systemMessage, additionalContext arriba y hookSpecificOutput con hookEventName SessionStart y additionalContext CTX; corre el puente con evento SessionStart; y comprueba que la salida es JSON, que no tiene additionalContext arriba y que hookSpecificOutput.additionalContext es CTX.",
+  "codigo": "def test_el_puente_quita_additionalcontext_de_arriba_con_sessionstart(tmp_path):\n    \"\"\"Con evento SessionStart, el puente sube additionalContext a hookSpecificOutput.\"\"\"\n    salida_candado = json.dumps({\n        \"systemMessage\": \"hola\",\n        \"additionalContext\": \"CTX\",\n        \"hookSpecificOutput\": {\n            \"hookEventName\": \"SessionStart\",\n            \"additionalContext\": \"CTX\",\n        },\n    })\n    ruta = _escribir_candado(tmp_path, salida_candado)\n    entrada = json.dumps({\"hook_event_name\": \"SessionStart\"})\n    resultado = subprocess.run(\n        [sys.executable, PUENTE, ruta],\n        input=entrada,\n        capture_output=True,\n        text=True,\n        timeout=TOPE_SEGUNDOS,\n    )\n    salida = json.loads(resultado.stdout)\n    assert \"additionalContext\" not in salida\n    assert salida[\"hookSpecificOutput\"][\"additionalContext\"] == \"CTX\"",
+  "vigia": "La propia prueba nueva: corre el puente con un candado de mentira y comprueba que la salida es JSON valido, sin additionalContext arriba, y con hookSpecificOutput.additionalContext igual a CTX.",
+  "puede_danar": [
+   "arnes/puente_codex.py",
+   "vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "puente_codex.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Se inserta la nueva prueba dentro del cuerpo de la función _correr_puente, interrumpiendo la llamada a subprocess.run y eliminando el resto del código de la función.",
+   "El cambio modifica más de lo solicitado: no solo se agrega una prueba al final del archivo, sino que se altera la implementación existente de _correr_puente."
+  ],
+  "riesgo_vecinos": [
+   "Cualquier prueba o código que dependa de _correr_puente fallará porque la función queda incompleta.",
+   "Posible ruptura de la vigia original que verifica el comportamiento del puente."
+  ],
+  "que_falta": [
+   "Restaurar la implementación completa de _correr_puente tal como estaba en el material original antes de añadir la nueva prueba."
+  ],
+  "resumen_para_el_jefe": "El parche corta la función _correr_puente y altera código existente, por lo que rompe la vigia y debe rechazarse."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25688 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (26318 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 43 del archivo completo: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (26410 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 43 del archivo completo: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (26502 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 4"
+ ]
+}

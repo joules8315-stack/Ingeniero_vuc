@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En la funcion bucle, cuando una orden falla, se avisa FALLIDA pero nunca se intenta recoger el trabajo que el guardia dejo apartado, asi que alguien lo devuelve a mano.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "                aviso('FALLIDA ' + orden_id + ' (' + tipo + ')')",
+  "texto_nuevo": "                aviso('FALLIDA ' + orden_id + ' (' + tipo + ')')\n                try:\n                    recogido = recoger_lo_frenado(orden, None)\n                    if isinstance(recogido, dict) and recogido.get('ok'):\n                        aviso('RECOGIDO ' + orden_id + ' ' + str(recogido.get('destino')))\n                except Exception as e:\n                    aviso('NO SE PUDO RECOGER ' + orden_id + ' ' + str(e)[:200])",
+  "cambio": "Debajo de la linea que avisa FALLIDA con el numero de la orden y el tipo entre parentesis, anadir un bloque try que llame a recoger_lo_frenado pasandole la orden, guarde lo que conteste, y si lo que conteste es un diccionario cuya clave ok vale verdadero, avise con la palabra RECOGIDO, el numero de la orden y el valor de la clave destino; el except recoge cualquier tropiezo y avisa con la frase NO SE PUDO RECOGER, el numero de la orden y los primeros doscientos caracteres del fallo.",
+  "codigo": "                try:\n                    recogido = recoger_lo_frenado(orden, None)\n                    if isinstance(recogido, dict) and recogido.get('ok'):\n                        aviso('RECOGIDO ' + orden_id + ' ' + str(recogido.get('destino')))\n                except Exception as e:\n                    aviso('NO SE PUDO RECOGER ' + orden_id + ' ' + str(e)[:200])",
+  "vigia": "Una prueba que simule una orden fallida con trabajo frenado por el guardia y compruebe que el aviso incluye RECOGIDO con el numero de la orden y el destino, y que si recoger_lo_frenado lanza, el aviso incluye NO SE PUDO RECOGER sin tumbar el bucle.",
+  "puede_danar": [
+   "cuerpo/capataz.py"
+  ],
+  "preguntas": [
+   "recoger_lo_frenado recibe la raiz como segundo argumento y en el material se llama con (orden, raiz); en el bucle no hay variable raiz disponible, ¿que valor se le pasa: None para que ella misma lo deduzca, o hay que calcular la raiz del proyecto antes?"
+  ],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El bloque añadido cumple el diagnóstico, no usa código inexistente, no rompe vecinos ni contratos y respeta la ubicación indicada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19668 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

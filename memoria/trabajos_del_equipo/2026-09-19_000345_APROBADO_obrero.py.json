@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El material que se le pasa al auditor Big Pickle se recorta al tope de los gratis (TOPE_GRATIS) en vez de a 40.000 letras, y por eso no ve el codigo y duda con razon.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "tope=TOPE_GRATIS - 3344 - 47 -",
+  "texto_nuevo": "tope=(40000 if auditor == \"bigpickle\" else TOPE_GRATIS) - 3344 - 47 -",
+  "cambio": "En la llamada a _filtrar_paquete dentro de auditar(), sustituir el tope fijo TOPE_GRATIS por 40000 cuando el auditor es bigpickle, dejando el resto de la expresion intacto.",
+  "codigo": "tope=(40000 if auditor == \"bigpickle\" else TOPE_GRATIS) - 3344 - 47 -",
+  "vigia": "Un test que llame a auditar() con auditor='bigpickle' y compruebe que el material_auditor que recibe bigpickle.preguntar tiene tope 40000 (no TOPE_GRATIS), y que con otro auditor sigue siendo TOPE_GRATIS.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "asignador.py y la vigia de revisor roto usan auditar() pero el cambio toca solo el tope cuando auditor=='bigpickle', el filtrado y la logica de reintentos/quien_aud/avisos no cambian; riesgo bajo",
+   "si la vigia nueva se implementa llamando a auditar() sin suplir bigpickle.preguntar, depende de un cerebro real y viola el 'NO VOLVER A: vigia que dependa de algo no determinista'"
+  ],
+  "que_falta": [
+   "precisar que la vigia de verificacion debe inyectar un juez de mentira (monkeypatch de bigpickle.preguntar) para no depender de una llamada real a un cerebro"
+  ],
+  "resumen_para_el_jefe": "El cambio es literalmente el encargo: sube a 40000 el tope del material solo cuando el auditor es bigpickle usando el parametro auditor que ya existe en esa funcion, no toca la linea siguiente, usa solo simbolos que aparecen en el material y no inventa nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (32566 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

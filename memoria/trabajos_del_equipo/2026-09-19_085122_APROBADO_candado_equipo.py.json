@@ -1,0 +1,61 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta el gestor de contexto fila_de_commits que impide que dos tareas del pit guarden en git a la vez, y debe ir justo antes de guardar_en_la_historia.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "guardar_en_la_historia",
+  "texto_viejo": "def guardar_en_la_historia(raiz, archivos, mensaje):",
+  "texto_nuevo": "@contextlib.contextmanager\ndef fila_de_commits(raiz, espera=2400):\n    \"\"\"Espera el turno para guardar en git: dos tareas del pit no guardan a la vez.\"\"\"\n    import hashlib\n    import tempfile\n    clave = hashlib.sha1(os.path.abspath(str(raiz)).lower().encode('utf-8')).hexdigest()[:12]\n    ruta = os.path.join(tempfile.gettempdir(), 'ingeniero_fila_' + clave + '.lock')\n    inicio = time.time()\n    while True:\n        try:\n            fd = os.open(ruta, os.O_CREAT | os.O_EXCL | os.O_WRONLY)\n            try:\n                os.write(fd, str(os.getpid()).encode('utf-8'))\n            finally:\n                os.close(fd)\n            break\n        except FileExistsError:\n            try:\n                viejo = time.time() - os.path.getmtime(ruta) > 7200\n            except OSError:\n                viejo = False\n            if viejo:\n                try:\n                    os.remove(ruta)\n                except OSError:\n                    pass\n                continue\n            if time.time() - inicio >= espera:\n                raise TimeoutError('la fila de guardado no avanzo en %d s' % espera)\n            time.sleep(0.5)\n    try:\n        yield\n    finally:\n        try:\n            os.remove(ruta)\n        except OSError:\n            pass\n\n\ndef guardar_en_la_historia(raiz, archivos, mensaje):",
+  "cambio": "Insertar el gestor de contexto fila_de_commits(raiz, espera=2400) decorado con @contextlib.contextmanager justo antes de la definicion de guardar_en_la_historia, sin tocar el resto de la funcion.",
+  "codigo": "@contextlib.contextmanager\ndef fila_de_commits(raiz, espera=2400):\n    \"\"\"Espera el turno para guardar en git: dos tareas del pit no guardan a la vez.\"\"\"\n    import hashlib\n    import tempfile\n    clave = hashlib.sha1(os.path.abspath(str(raiz)).lower().encode('utf-8')).hexdigest()[:12]\n    ruta = os.path.join(tempfile.gettempdir(), 'ingeniero_fila_' + clave + '.lock')\n    inicio = time.time()\n    while True:\n        try:\n            fd = os.open(ruta, os.O_CREAT | os.O_EXCL | os.O_WRONLY)\n            try:\n                os.write(fd, str(os.getpid()).encode('utf-8'))\n            finally:\n                os.close(fd)\n            break\n        except FileExistsError:\n            try:\n                viejo = time.time() - os.path.getmtime(ruta) > 7200\n            except OSError:\n                viejo = False\n            if viejo:\n                try:\n                    os.remove(ruta)\n                except OSError:\n                    pass\n                continue\n            if time.time() - inicio >= espera:\n                raise TimeoutError('la fila de guardado no avanzo en %d s' % espera)\n            time.sleep(0.5)\n    try:\n        yield\n    finally:\n        try:\n            os.remove(ruta)\n        except OSError:\n            pass",
+  "vigia": "Una prueba que abra dos hilos o procesos llamando a fila_de_commits con la misma raiz y compruebe que el segundo espera a que el primero salga, y que tras el timeout lanza TimeoutError con el mensaje esperado.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_fuera_de_casa.py",
+   "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "test_vigia_equipo_siempre.py",
+   "test_vigia_fuera_de_casa.py",
+   "test_vigia_lo_aprobado_se_guarda_al_momento.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No rompe vecinos: candado_equipo.py solo gana una funcion nueva top-level; es aditivo y no se toca guardar_en_la_historia ni ninguna otra funcion. Los importadores del archivo (autorizacion, candado_supervisor, candado_terminal, candados_medicion, revisor_de_programa, ingeniero.py, vigias) quedan igual."
+  ],
+  "que_falta": [
+   "La vigia descrita (dos hilos/procesos sobre fila_de_commits) solo se promete en el campo 'vigia'; no se entrega el codigo de la prueba en 'codigo'. La reparacion queda sin su prueba de proteccion hasta que exista ese test.",
+   "Nota menor, no bloqueante: si un guardado legitimo supera 7200 s, otro proceso podria borrar su candado como 'abandonado' y entrar; es un riesgo del diseno del contrato, no una desviacion de este."
+  ],
+  "resumen_para_el_jefe": "Hace exactamente lo que pide el contrato: inserta el gestor fila_de_commits(raiz, espera=2400) decorado con @contextlib.contextmanager, justo antes de def guardar_en_la_historia, con lock O_EXCL en temp, el pid dentro, borrado por abandonado a 7200 s, TimeoutError a los 2400 s y limpia en finally — sin inventar nada ni tocar otras funciones; solo falta entregar la vigia que lo protege."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25233 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

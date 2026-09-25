@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En el bloque de cuerpo/obrero.py::trabajar, _archivo_tarea se queda solo con el PRIMER archivo que nombra la tarea (re.search) en vez de pasar TODOS los nombres encontrados.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "        _archivo_tarea = None\n        _m = re.search(r\"[\\w./\\\\]*(?:\\.py|\\.md)\\b\", str(tarea))\n        if _m:\n            _archivo_tarea = _m.group(0).strip()\n        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=TOPE_GRATIS - 2690)",
+  "texto_nuevo": "        _archivo_tarea = None\n        _encontrados = re.findall(r\"[\\w./\\\\]*(?:\\.py|\\.md)\\b\", str(tarea))\n        _vistos = []\n        for _n in _encontrados:\n            _n = _n.strip()\n            if _n and _n not in _vistos:\n                _vistos.append(_n)\n        if _vistos:\n            _archivo_tarea = _vistos\n        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=TOPE_GRATIS - 2690)",
+  "cambio": "Sustituir el bloque que usa re.search por uno que use re.findall con el mismo patron r\"[\\w./\\\\]*(?:\\.py|\\.md)\\b\", sin repetidos y conservando el orden, sin espacios alrededor; si no hay ninguno queda None. La llamada a _filtrar_paquete no se toca.",
+  "codigo": "        _archivo_tarea = None\n        _encontrados = re.findall(r\"[\\w./\\\\]*(?:\\.py|\\.md)\\b\", str(tarea))\n        _vistos = []\n        for _n in _encontrados:\n            _n = _n.strip()\n            if _n and _n not in _vistos:\n                _vistos.append(_n)\n        if _vistos:\n            _archivo_tarea = _vistos\n        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=TOPE_GRATIS - 2690)",
+  "vigia": "Un test que llame a trabajar con una tarea que nombre dos archivos .py y compruebe que _filtrar_paquete recibe la lista con ambos, sin repetidos y en orden; y con una tarea sin archivos que reciba None.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "arnes/asignador.py y vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py: el obrero declaro no haberlos leido (_fuera_del_paquete). La firma de trabajar no cambia y el cambio es interno, pero como asignador lo importa y el test lo vigila, hay que correr esas dos vigias antes de sellar para certificar que no rompen.",
+   "el texto del paquete afirma que _filtrar_paquete ya acepta una lista ('hecho y guardado'); la unica base para todo el cambio es esa afirmacion, asi que la prueba real tiene que pasar al filtro una lista con dos nombres y devolver material de ambos."
+  ],
+  "que_falta": [
+   "Correr las dos vigias de los vecinos (asignador y test_vigia_revisor_roto_no_tira_la_vuelta) antes de sellar.",
+   "Probar de verdad (ley 7) que con una tarea que nombre dos archivos el filtro recibe la lista con ambos en orden y sin repetidos, y con una sin archivos recibe None."
+  ],
+  "resumen_para_el_jefe": "Cumple el encargo al pie de la letra (mismo patron, re.findall, sin repetidos, orden, None si nada, llamada al filtro intocada) y no inventa nada; se aprueba, con la condicion de correr las vigias de los dos vecinos y la prueba real antes de sellar."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

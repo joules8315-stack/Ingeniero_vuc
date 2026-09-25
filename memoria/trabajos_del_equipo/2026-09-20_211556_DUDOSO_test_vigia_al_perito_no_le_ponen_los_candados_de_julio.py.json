@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La vigia anterior se rechazo por traer NO_ENCONTRADO y por inventarse la funcion llamar_al_perito en vez de usar el nombre real pedir_al_perito; hay que crear la vigia nueva usando el nombre real y sin marcas NO_ENCONTRADO.",
+  "archivo": "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py",
+  "funcion": "archivo nuevo (no existe en el material)",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambio": "Crear el archivo vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py. La vigia debe: (1) monkeypatch sobre shutil.which para que crea que el programa del perito existe; (2) monkeypatch sobre subprocess.run dentro de cuerpo/capataz.py para espiar con que entorno se llama; (3) invocar la funcion real pedir_al_perito con sus argumentos; (4) comprobar que en el entorno de la llamada esta INGENIERO_OFF=1. No tocar ningun otro archivo.",
+  "codigo": "import os\nimport subprocess\nimport shutil\n\nimport cuerpo.capataz as capataz\n\n\ndef test_al_perito_no_le_ponen_los_candados_de_julio(monkeypatch):\n    \"\"\"Cuando el pit llama al perito, la llamada lleva INGENIERO_OFF=1 en su entorno.\"\"\"\n    llamadas = []\n\n    def run_falso(*args, **kwargs):\n        llamadas.append({\"args\": args, \"kwargs\": kwargs})\n        return subprocess.CompletedProcess(\n            args=args[0] if args else [],\n            returncode=0,\n            stdout=\"\",\n            stderr=\"\",\n        )\n\n    monkeypatch.setattr(capataz.subprocess, \"run\", run_falso)\n    monkeypatch.setattr(shutil, \"which\", lambda nombre: \"/usr/bin/\" + str(nombre))\n\n    capataz.pedir_al_perito(\"prueba\")\n\n    assert llamadas, \"no se llamo al perito\"\n    entorno = llamadas[0][\"kwargs\"].get(\"env\")\n    assert entorno is not None, \"la llamada al perito no lleva entorno\"\n    assert entorno.get(\"INGENIERO_OFF\") == \"1\", (\n        \"la llamada al perito no lleva INGENIERO_OFF=1 en su entorno\"\n    )\n",
+  "vigia": "Comprueba que al llamar a pedir_al_perito, la llamada a subprocess.run lleva en su entorno INGENIERO_OFF=1, para que los candados pensados para hablar con Julio no le prohiban al perito contestar en formato de datos.",
+  "puede_danar": [
+   "cuerpo/capataz.py"
+  ],
+  "preguntas": [
+   "PREGNTA_REQUERIDA: ¿cuales son los argumentos exactos que recibe pedir_al_perito y que devuelve, para invocarla correctamente en la vigia?",
+   "PREGUNTA_REQUERIDA: ¿como se llama exactamente la variable de entorno del interruptor (INGENIERO_OFF) y con que valor se pone (1 o '1') en la llamada real al perito?"
+  ],
+  "confianza": "baja",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La vigia invoca capataz.pedir_al_perito(\"prueba\") con un argumento de relleno sin conocer la firma real de la funcion; si la firma no acepta un argumento posicional, la vigia falla en la recoleccion/ejecucion.",
+   "El espia lee solo llamadas[0][\"kwargs\"][\"env\"]; si pedir_al_perito hace migas mas de una llamada a subprocess o pasa el entorno por otra via (Popen, env de os.environ, o sin env), la vigia no espia lo que dice espiar.",
+   "Assert INGENIERO_OFF == \"1\": el valor real podria ser int 1 u otra forma; el obrero mismo lo deja como PREGUNTA_REQUERIDA abierta y declara confianza 'baja', asi que la vigia no esta certificada para pasar ni para reflejar la implementacion real.",
+   "Ningun fallo de invento: todos los nombres (cuerpo.capataz, pedir_al_perito, capataz.subprocess, shutil.which, INGENIERO_OFF) existen o los pide el encargo, y el archivo nuevo lo pide expresamente el encargo con su ruta."
+  ],
+  "riesgo_vecinos": [
+   "No modifica ningun archivo salvo el nuevo en vigias/, y el monkeypatch lo restaura la fixture: no rompe cuerpo/capataz.py.",
+   "Riesgo indirecto: importar cuerpo.capataz al recolectar la vigia podria ejecutar codigo de arranque del modulo; si importar tiene efectos, la suite completa de vigias se tocaría.",
+   "Si la vigia queda roja porque el codigo real no pone INGENIERO_OFF en env, bloquearía el sellado; eso no es romper vecino pero obliga a decidir si el problema es la implementacion o la vigia."
+  ],
+  "que_falta": [
+   "Confirmar la firma real de pedir_al_perito (cuantos y cuales argumentos y que devuelve) y el trozo exacto de capataz.py donde decide el entorno de la llamada al perito, antes de dar por buena la vigia.",
+   "Confirmar que la llamada real pasa el entorno por kwargs['env'] con INGENIERO_OFF como string '1' (y no como int o sin env).",
+   "Probar la vigia de verdad corriendo pytest (Ley 7): el codigo no puede sellarse solo por leerlo."
+  ],
+  "resumen_para_el_jefe": "No inventa nada y respeta el encargo punto por punto, pero asume la firma de pedir_al_perito y la forma exacta del entorno; hay que confirmar el trozo real de capataz.py (o probarla de verdad) antes de sellarla."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20221 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (20811 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (20869 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (21042 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

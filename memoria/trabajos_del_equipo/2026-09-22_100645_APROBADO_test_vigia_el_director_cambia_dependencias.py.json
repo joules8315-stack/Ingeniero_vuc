@@ -1,0 +1,26 @@
+{
+ "obrero": "deepseek",
+ "auditor": "grok47",
+ "propuesta": {
+  "diagnostico": "No existe la vigia pedida y el material no trae el codigo de cuerpo/director.py, pero la tarea fija con precision el contrato (depende devuelve (bool, ...) y archivar deja estado archivada y nota), asi que la vigia se escribe contra ese contrato.",
+  "archivo": "vigias/test_vigia_el_director_cambia_dependencias.py",
+  "texto_nuevo": "import json\n\nfrom cuerpo import director\n\n\nRUTA_ORDENES = (\"memoria\", \"ORDENES.json\")\n\n\ndef _escribir_ordenes(base, ordenes):\n    \"\"\"Deja memoria/ORDENES.json dentro de la carpeta temporal de la prueba.\"\"\"\n    carpeta = base / RUTA_ORDENES[0]\n    carpeta.mkdir(parents=True, exist_ok=True)\n    archivo = carpeta / RUTA_ORDENES[1]\n    archivo.write_text(json.dumps(ordenes, ensure_ascii=False), encoding=\"utf-8\")\n    return archivo\n\n\ndef _leer_ordenes(base):\n    \"\"\"Devuelve la lista de ordenes tal como quedo en el disco.\"\"\"\n    archivo = base / RUTA_ORDENES[0] / RUTA_ORDENES[1]\n    return json.loads(archivo.read_text(encoding=\"utf-8\"))\n\n\ndef _buscar_orden(ordenes, id_orden):\n    \"\"\"Devuelve la orden con ese id, o None si no esta.\"\"\"\n    for orden in ordenes:\n        if str(orden.get(\"id\")) == str(id_orden):\n            return orden\n    return None\n\n\ndef _ordenes_de_prueba():\n    \"\"\"Las dos ordenes que pide la tarea: la 1 depende de la 2, la 2 no depende de nadie.\"\"\"\n    return [\n        {\"id\": \"1\", \"estado\": \"pendiente\", \"depende\": [\"2\"]},\n        {\"id\": \"2\", \"estado\": \"pendiente\", \"depende\": []},\n    ]\n\n\ndef test_el_director_cambia_dependencias(tmp_path):\n    \"\"\"El director cambia las dependencias de una orden y archiva otra, sin tocar nada mas.\"\"\"\n    _escribir_ordenes(tmp_path, _ordenes_de_prueba())\n\n    # (1) Cambiar las dependencias de la orden 1: se queda sin dependencias.\n    resultado = director.depende(str(tmp_path), \"1\", [])\n    assert resultado[0] is True, \"cambiar las dependencias de una orden que existe debe salir bien\"\n    orden_1 = _buscar_orden(_leer_ordenes(tmp_path), \"1\")\n    assert orden_1 is not None, \"la orden 1 tiene que seguir existiendo\"\n    assert orden_1[\"depende\"] == [], \"la orden 1 tiene que quedar con depende []\"\n\n    # (2) Un id que no existe: el director dice que no, y no revienta.\n    resultado = director.depende(str(tmp_path), \"999\", [])\n    assert resultado[0] is False, \"cambiar las dependencias de una orden que no existe debe salir mal\"\n\n    # (3) Archivar la orden 2 con su nota.\n    director.archivar(str(tmp_path), \"2\", \"x\")\n    orden_2 = _buscar_orden(_leer_ordenes(tmp_path), \"2\")\n    assert orden_2 is not None, \"la orden 2 tiene que seguir existiendo\"\n    assert orden_2[\"estado\"] == \"archivada\", \"la orden 2 tiene que quedar archivada\"\n    assert orden_2[\"nota\"] == \"x\", \"la orden 2 tiene que quedar con la nota x\"\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigia nueva cubre las tres pruebas del encargo y no toca otro archivo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22530 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "bigpickle_fallo siempre duerme 1800s y no lleva cuenta de descansos, y bigpickle_acierto no borra la cuenta de descansos.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "bigpickle_fallo y bigpickle_acierto",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def bigpickle_fallo():\n    \"\"\"Orden de Julio A-46 del 2026-09-21: cuenta los fallos seguidos de bigpickle.\n    Al segundo fallo seguido, lo duerme 30 min y pide revisar Grok 4.7.\"\"\"\n    d = _leer()\n    seguidos = d.setdefault(\"seguidos\", {})\n    seguidos[\"bigpickle\"] = seguidos.get(\"bigpickle\", 0) + 1\n    if seguidos[\"bigpickle\"] >= 2:\n        d[\"dormidos\"][\"bigpickle\"] = {\n            \"hasta\": time.time() + 1800,\n            \"tipo\": \"dos_fallos\",\n            \"desde\": datetime.datetime.now().strftime(\"%Y-%m-%d %H:%M\"),\n            \"motivo\": \"fallo dos veces seguidas: descansa 30 min y revisa Grok 4.7 (A-46)\"}\n        seguidos[\"bigpickle\"] = 0\n        d[\"historial\"] = (d.get(\"historial\", []) + [\n            {\"cuando\": d[\"dormidos\"][\"bigpickle\"][\"desde\"], \"quien\": \"bigpickle\",\n             \"que\": \"agotado (dos_fallos)\"}])[-80:]\n    _guardar(d)",
+    "texto_nuevo": "def bigpickle_fallo():\n    \"\"\"Orden de Julio A-46 del 2026-09-21: cuenta los fallos seguidos de bigpickle.\n    Al segundo fallo seguido, lo duerme 30 min la primera vez y 1 hora desde la segunda,\n    y pide revisar Grok 4.7.\"\"\"\n    d = _leer()\n    seguidos = d.setdefault(\"seguidos\", {})\n    seguidos[\"bigpickle\"] = seguidos.get(\"bigpickle\", 0) + 1\n    if seguidos[\"bigpickle\"] >= 2:\n        descansos = d.setdefault(\"descansos\", {}).get(\"bigpickle\", 0)\n        if descansos == 0:\n            segundos = 1800\n            motivo = \"fallo dos veces seguidas: descansa 30 min mientras revisa Grok 4.7 (A-46)\"\n        else:\n            segundos = 3600\n            motivo = \"fallo dos veces seguidas: descansa 1 hora mientras revisa Grok 4.7 (A-46)\"\n        d[\"dormidos\"][\"bigpickle\"] = {\n            \"hasta\": time.time() + segundos,\n            \"tipo\": \"dos_fallos\",\n            \"desde\": datetime.datetime.now().strftime(\"%Y-%m-%d %H:%M\"),\n            \"motivo\": motivo}\n        seguidos[\"bigpickle\"] = 0\n        d.setdefault(\"descansos\", {})[\"bigpickle\"] = descansos + 1\n        d[\"historial\"] = (d.get(\"historial\", []) + [\n            {\"cuando\": d[\"dormidos\"][\"bigpickle\"][\"desde\"], \"quien\": \"bigpickle\",\n             \"que\": \"agotado (dos_fallos)\"}])[-80:]\n    _guardar(d)"
+   },
+   {
+    "texto_viejo": "def bigpickle_acierto():\n    \"\"\"Orden de Julio A-46 del 2026-09-21: un acierto de bigpickle borra la cuenta de fallos seguidos.\"\"\"\n    d = _leer()\n    d.setdefault(\"seguidos\", {})[\"bigpickle\"] = 0\n    _guardar(d)",
+    "texto_nuevo": "def bigpickle_acierto():\n    \"\"\"Orden de Julio A-46 del 2026-09-21: un acierto de bigpickle borra la cuenta de fallos seguidos\n    y la cuenta de descansos de bigpickle.\"\"\"\n    d = _leer()\n    d.setdefault(\"seguidos\", {})[\"bigpickle\"] = 0\n    d.setdefault(\"descansos\", {})[\"bigpickle\"] = 0\n    _guardar(d)"
+   }
+  ],
+  "cambio": "En bigpickle_fallo: leer descansos de bigpickle, elegir 1800s con motivo 'descansa 30 min' si es 0 o 3600s con motivo 'descansa 1 hora' si no, siempre anadiendo 'mientras revisa Grok 4.7 (A-46)', y sumar 1 a descansos al dormir. En bigpickle_acierto: poner descansos de bigpickle a 0.",
+  "codigo": "def bigpickle_fallo():\n    \"\"\"Orden de Julio A-46 del 2026-09-21: cuenta los fallos seguidos de bigpickle.\n    Al segundo fallo seguido, lo duerme 30 min la primera vez y 1 hora desde la segunda,\n    y pide revisar Grok 4.7.\"\"\"\n    d = _leer()\n    seguidos = d.setdefault(\"seguidos\", {})\n    seguidos[\"bigpickle\"] = seguidos.get(\"bigpickle\", 0) + 1\n    if seguidos[\"bigpickle\"] >= 2:\n        descansos = d.setdefault(\"descansos\", {}).get(\"bigpickle\", 0)\n        if descansos == 0:\n            segundos = 1800\n            motivo = \"fallo dos veces seguidas: descansa 30 min mientras revisa Grok 4.7 (A-46)\"\n        else:\n            segundos = 3600\n            motivo = \"fallo dos veces seguidas: descansa 1 hora mientras revisa Grok 4.7 (A-46)\"\n        d[\"dormidos\"][\"bigpickle\"] = {\n            \"hasta\": time.time() + segundos,\n            \"tipo\": \"dos_fallos\",\n            \"desde\": datetime.datetime.now().strftime(\"%Y-%m-%d %H:%M\"),\n            \"motivo\": motivo}\n        seguidos[\"bigpickle\"] = 0\n        d.setdefault(\"descansos\", {})[\"bigpickle\"] = descansos + 1\n        d[\"historial\"] = (d.get(\"historial\", []) + [\n            {\"cuando\": d[\"dormidos\"][\"bigpickle\"][\"desde\"], \"quien\": \"bigpickle\",\n             \"que\": \"agotado (dos_fallos)\"}])[-80:]\n    _guardar(d)\n\n\ndef bigpickle_acierto():\n    \"\"\"Orden de Julio A-46 del 2026-09-21: un acierto de bigpickle borra la cuenta de fallos seguidos\n    y la cuenta de descansos de bigpickle.\"\"\"\n    d = _leer()\n    d.setdefault(\"seguidos\", {})[\"bigpickle\"] = 0\n    d.setdefault(\"descansos\", {})[\"bigpickle\"] = 0\n    _guardar(d)",
+  "vigia": "Una prueba que llame a bigpickle_fallo dos veces con descansos a 0 y compruebe que dormidos.bigpickle.hasta es ahora+1800 y el motivo dice 'descansa 30 min mientras revisa Grok 4.7 (A-46)', y que descansos.bigpickle pasa a 1; luego otros dos fallos y compruebe ahora+3600 y 'descansa 1 hora mientras revisa Grok 4.7 (A-46)' y descansos a 2; y que bigpickle_acierto deja seguidos y descansos de bigpickle a 0.",
+  "puede_danar": [
+   "cuerpo/codex.py",
+   "vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "test_vigia_no_se_pisa_el_trabajo_apartado.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que pide el encargo (1800s la primera vez, 3600s desde la segunda, cuenta de descansos que suma al dormir y se borra con el acierto), no inventa nada, no toca otro archivo, y deja en verde las dos vigías de bigpickle que hoy están rojas."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

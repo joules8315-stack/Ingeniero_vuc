@@ -1,0 +1,68 @@
+{
+  "orden": {
+    "id": "173",
+    "titulo": "Las reglas de Codex salen del proyecto, con el director, y se instalan por programa",
+    "origen": "orden de Julio A-48 (2026-09-22), ver 172",
+    "repara": "Codex no puede usar el director, y sus reglas se tocan a mano",
+    "pieza": "arnes/instalar_reglas_codex.py",
+    "depende": [
+      "172"
+    ],
+    "modo": "IA",
+    "razon": "las reglas se guardan en el proyecto, con su vigia, y un programa las pone donde Codex las lee",
+    "crear": true,
+    "encargo": "Dos archivos NUEVOS, entregalos en la lista cambios, cada uno entero. (A) config/codex/default.rules: estas lineas, en este orden: un comentario (con #) que diga: Reglas de Codex, guardadas en el proyecto (A-40 y A-48, 2026-09-22). Codex no escribe codigo ni guarda trabajo: solo da ordenes al equipo y al director del Ingeniero, y el programa escribe. Se instalan con python arnes/instalar_reglas_codex.py. Luego cinco lineas prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"X\"], decision=\"allow\") con X = arranca, trabaja, equipo, pit y director; y luego una linea prefix_rule(pattern=[\"git\", \"Y\"], decision=\"forbidden\") por cada Y de: add, commit, push, reset, restore, checkout, switch, rm, mv, stash, rebase, merge, cherry-pick, clean. (B) arnes/instalar_reglas_codex.py: texto de ayuda con lo mismo; una funcion instalar(origen, destino) que lee los dos (el destino puede no existir), y si son iguales devuelve False; si no, crea la carpeta del destino, guarda el destino viejo como destino + '.antes' si existia, escribe el origen en el destino (utf-8) y devuelve True; y un bloque if __name__ == '__main__': que llama instalar con origen = config/codex/default.rules (relativo a la carpeta de arriba de arnes) y destino = os.path.join(os.path.expanduser('~'), '.codex', 'rules', 'default.rules') e imprime 'reglas de Codex instaladas' o 'reglas de Codex ya estaban al dia'. Solo biblioteca de Python. Nunca abre auth.json. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_las_reglas_de_codex.py",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "b121e3da264220ea",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_064537_DUDOSO_default.rules.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (24395 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : Faltan dos archivos nuevos: las reglas de Codex (config/codex/default.rules) y su instalador (arnes/instalar_reglas_codex.py), sin tocar nada mas.\n  toca        : config/codex/default.rules funcion ?\n  confianza   : alta\n  VEREDICTO   : DUDOSO\n  resumen     : default.rules vino letra por letra como lo manda el encargo (comentario exacto, 5 allow de ingeniero.py para arranca/trabaja/equipo/pit/director, 14 forbidden de git en el orden pedido), no inventa nada y no toca vecinos; la unica duda es que la propuesta trae SOLO 1 de los 2 archivos que pedia el diagnostico: falta el instalador.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T06:45:39",
+  "analisis": {
+    "que_paso": "La orden 173 (modo IA, crear=true) pidio DOS archivos nuevos entregados en una lista \"cambios\": config/codex/default.rules y arnes/instalar_reglas_codex.py. El obrero deepseek entrego solo el primero (default.rules, letra por letra y correcto); el auditor bigpickle marco DUDOSO porque faltaba el segundo (el instalador). El equipo no aprobo, no se guardo llave y no se toco codigo. La orden quedo frenada aunque la mitad del trabajo estaba bien hecha.",
+    "causa_raiz": "El prompt de CREAR del obrero solo permite un archivo por respuesta: su JSON de salida ofrece \"archivo\" (singular) + \"texto_nuevo\", sin ninguna lista \"cambios\". Esa lista para varios sitios SOLO existe en el prompt de REPARAR. Como la orden 173 pedia crear dos archivos \"en la lista cambios\", el esquema del obrero no puede expresar dos piezas en una sola ronda: deepseek se vio obligado a entregar solo una, y el veredicto DUDOSO por \"falta el segundo\" era inevitable, no un error del equipo.",
+    "donde": "cuerpo/obrero.py, funcion _prompt_obrero, rama de creacion (clase != \"reparar\", tanto la subrama de codigo .py como la de documento).",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "Responde SOLO un JSON valido, sin texto alrededor:\n{{\"diagnostico\": \"que has encontrado, en una frase\",\n  \"archivo\": \"la ruta del archivo de codigo que creas\",\n  \"texto_nuevo\": \"el archivo de CODIGO PYTHON ENTERO Y COMPLETO, ejecutable, sin markdown\",\n  \"confianza\": \"alta|media|baja\"}}"
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "\"cambios\": \"OPCIONAL, SOLO si hay que cambiar VARIOS sitios del MISMO archivo: una lista de objetos con texto_viejo y texto_nuevo, uno por sitio; si la usas, deja vacios texto_viejo y texto_nuevo de arriba\","
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-22_064537_DUDOSO_default.rules.json",
+        "texto": "La propuesta solo entrega config/codex/default.rules. El encargo pide DOS archivos nuevos y el segundo, arnes/instalar_reglas_codex.py, no viene aqui"
+      },
+      {
+        "archivo": "memoria/EXPEDIENTES/173_20260922_064539.json",
+        "texto": "Dos archivos NUEVOS, entregalos en la lista cambios, cada uno entero."
+      }
+    ],
+    "no_volver_a": "Un encargo de CREAR no debe pedir mas de un archivo mientras el prompt de creacion del obrero solo sepa entregar uno; primero se le ensena a entregar varios (lista cambios), o se parte la orden en una pieza por encargo.",
+    "tarea_nueva": {
+      "repara": "el obrero de creacion solo puede entregar UN archivo nuevo por ronda; no admite la lista cambios que la orden pedia",
+      "pieza": "cuerpo/obrero.py",
+      "razon": "para que un encargo de crear varios archivos nuevos los entregue todos en una sola ronda, como ya hace la reparacion, y no muera en DUDOSO por 'falta el segundo'",
+      "encargo": "En _prompt_obrero, en las dos subramas de creacion (la de codigo .py y la de documento), anade al JSON de respuesta un campo OPCIONAL \"cambios\": lista de objetos {\"archivo\", \"texto_nuevo\"}, cada archivo ENTERO, para cuando el encargo pida crear VARIOS archivos nuevos; si se usa, deja vacios \"archivo\" y \"texto_nuevo\" de arriba. Que el flujo que aplica la propuesta cree todos los archivos de esa lista, igual que ya recorre la lista cambios en la rama de reparar. No toques la rama de reparar ni el guardia de llaves.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": true,
+    "paso": "tarea",
+    "motivo": "agregada 173-F064924",
+    "tarea": "173-F064924",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\173_20260922_064539.json"
+  }
+}

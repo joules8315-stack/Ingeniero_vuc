@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La vigia parchea capataz.shutil y capataz.subprocess, pero cuerpo/capataz.py importa shutil y subprocess DENTRO de pedir_al_perito, asi que no existen como atributos del modulo y monkeypatch.setattr revienta con AttributeError.",
+  "archivo": "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py",
+  "funcion": "capataz (fixture)",
+  "texto_viejo": "    monkeypatch.setattr(capataz.shutil, 'which', which_falso)\n    monkeypatch.setattr(capataz.subprocess, 'run', run_falso)\n    return capataz, llamadas",
+  "texto_nuevo": "    monkeypatch.setattr(shutil, 'which', which_falso)\n    monkeypatch.setattr(subprocess, 'run', run_falso)\n    return capataz, llamadas",
+  "cambio": "En la fixture capataz, cambiar los dos monkeypatch.setattr para que apunten a los modulos de verdad (shutil.which y subprocess.run) en vez de a atributos de capataz. Ademas hay que importar shutil y subprocess arriba del archivo de la vigia, junto a los otros imports (importlib, json, os, sys).",
+  "codigo": "import importlib\nimport json\nimport os\nimport shutil\nimport subprocess\nimport sys\n\nimport pytest\n\n\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif RAIZ not in sys.path:\n    sys.path.insert(0, RAIZ)\n\n\nclass _ResultadoFalso:\n    \"\"\"Imita lo justo de un CompletedProcess para que pedir_al_perito siga.\"\"\"\n\n    def __init__(self, stdout='', returncode=0):\n        self.stdout = stdout\n        self.stderr = ''\n        self.returncode = returncode\n\n\n@pytest.fixture\ndef capataz(monkeypatch):\n    \"\"\"Importa cuerpo/capataz.py y deja espiar subprocess.run y shutil.which.\"\"\"\n    capataz = importlib.import_module('cuerpo.capataz')\n    llamadas = {'run': [], 'which': []}\n\n    def which_falso(nombre):\n        llamadas['which'].append(nombre)\n        return '/usr/bin/' + str(nombre)\n\n    def run_falso(*args, **kwargs):\n        llamadas['run'].append({'args': args, 'kwargs': kwargs})\n        # El perito contesta un JSON valido para que pedir_al_perito llegue al final.\n        salida = json.dumps({\n            'que_paso': 'prueba',\n            'causa_raiz': 'prueba',\n            'donde': 'prueba',\n            'quien_fallo': 'prueba',\n            'citas': [],\n            'no_volver_a': 'prueba',\n            'tarea_nueva': {\n                'repara': 'prueba',\n                'pieza': 'prueba',\n                'razon': 'prueba',\n                'encargo': 'prueba',\n                'modo': 'PROGRAMA',\n            },\n        })\n        return _ResultadoFalso(stdout=salida, returncode=0)\n\n    monkeypatch.setattr(shutil, 'which', which_falso)\n    monkeypatch.setattr(subprocess, 'run', run_falso)\n    return capataz, llamadas",
+  "vigia": "La propia vigia vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py: al correrla, las cuatro pruebas ya no revientan con AttributeError; ahora fallan (ROJO) porque pedir_al_perito todavia no pone INGENIERO_OFF=1 en el entorno de subprocess.run, que es la comprobacion que la vigia debe hacer.",
+  "puede_danar": [
+   "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Confirmar corriendo la vigia (no solo cargando el archivo) que queda ROJA por la comprobacion de INGENIERO_OFF y no revienta ni queda verde."
+  ],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que pedia el paquete: aparta las funciones de verdad en sus modulos reales (shutil.which y subprocess.run), importa ambos arriba de la vigia, no toca cuerpo/capataz.py ni ningun vecino, y deja la vigia ROJA por la comprobacion pendiente; es correcto y minimo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (28790 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'pedir_al_perito' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "GPT-OSS 120B (Groq) no le cabe (29800 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'shutil'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'subprocess'. No se importa, no se define y no es de P",
+  "GPT-OSS 120B (Groq) no le cabe (30036 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 3"
+ ]
+}

@@ -1,0 +1,32 @@
+{
+ "obrero": "groq",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta crear vigía que verifica que parece_una_orden no reconoce textos en inglés como órdenes",
+  "archivo": "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+  "funcion": "test_el_texto_del_sistema_en_ingles_no_es_de_julio",
+  "texto_viejo": "",
+  "texto_nuevo": "import pytest\nfrom arnes.candado_legislar import parece_una_orden\n\ndef test_el_texto_del_sistema_en_ingles_no_es_de_julio():\n    # Textos internos del sistema en inglés que NO deben ser detectados como órdenes\n    texto1 = 'Generate a concise, single-line task title of at most 36 characters and under five words where possible'\n    texto2 = 'Write a brief catch-up for a user returning to this Codex task'\n    # Texto en español que SÍ debe ser detectado como orden de Julio\n    texto_es = 'Busca donde esta toda la informacion que necesitas para reparar el equipo'\n\n    assert not parece_una_orden(texto1)\n    assert not parece_una_orden(texto2)\n    assert parece_una_orden(texto_es)\n",
+  "cambio": "Crear vigía roja que verifica comportamiento de parece_una_orden con textos en inglés y español",
+  "codigo": "def test_el_texto_del_sistema_en_ingles_no_es_de_julio():\n    assert not parece_una_orden('Generate a concise, single-line task title of at most 36 characters and under five words where possible')\n    assert not parece_una_orden('Write a brief catch-up for a user returning to this Codex task')\n    assert parece_una_orden('Busca donde esta toda la informacion que necesitas para reparar el equipo')\n",
+  "vigia": "test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio",
+  "puede_danar": [
+   "arnes/candado_legislar.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación crea un nuevo test para verificar el comportamiento de la función 'parece_una_orden' con textos en inglés, cumpliendo con el diagnóstico sin inventar ni romper nada."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py falta la linea 'from cuerpo import grok' despues de 'from cuerpo import bigpickle', pero el codigo ya usa grok (monkeypatch.setattr(grok, 'preguntar', ...)), asi que la vigia revienta con NameError.",
+  "archivo": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+  "funcion": "cabecera del archivo (imports, antes de PROPUESTA)",
+  "texto_viejo": "from cuerpo import obrero\nfrom cuerpo import bigpickle\n\n\nPROPUESTA = {'archivo': 'x.py'}",
+  "texto_nuevo": "from cuerpo import obrero\nfrom cuerpo import bigpickle\nfrom cuerpo import grok\n\n\nPROPUESTA = {'archivo': 'x.py'}",
+  "cambio": "Agregar la linea 'from cuerpo import grok' justo despues de 'from cuerpo import bigpickle' y antes de PROPUESTA. Un solo cambio, un solo archivo.",
+  "codigo": "from cuerpo import grok",
+  "vigia": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py debe importar y correr sin NameError sobre grok, y pasar en verde.",
+  "puede_danar": [
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "cuerpo/codex.py no se toca: anadir una linea de import a la cabecera de una vigia no altera su comportamiento de importacion"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion agrega exactamente la linea de import que faltaba: la vigia ya usa grok y reventaria con NameError sin ella; un solo cambio, un solo archivo, no rompe vecinos."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

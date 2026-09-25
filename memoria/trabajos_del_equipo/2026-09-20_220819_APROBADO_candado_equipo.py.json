@@ -1,0 +1,71 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_equipo.py, dentro de volver_atras, la copia de la pieza se guarda siempre con el mismo nombre acabado en .FRENADO_POR_EL_GUARDIA, asi que una segunda frenada de la misma pieza borra la primera copia.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "volver_atras",
+  "texto_viejo": "                if r.returncode == 0:\n                    import shutil\n                    destino_dir = os.path.join(str(raiz), 'memoria', 'trabajos_sin_revisar')\n                    os.makedirs(destino_dir, exist_ok=True)\n                    shutil.copy2(os.path.join(str(raiz), str(ruta)), os.path.join(destino_dir, os.path.basename(str(ruta)) + '.FRENADO_POR_EL_GUARDIA'))\n                    subprocess.run([\"git\", \"restore\", \"--staged\", \"--worktree\", \"--source=HEAD\", \"--\", str(ruta)], timeout=60, **comun)\n                    anotaciones.append(\"devuelta a lo guardado (copia apartada): \" + str(ruta))\n                else:\n                    subprocess.run([\"git\", \"rm\", \"--cached\", \"-q\", \"--ignore-unmatch\", \"--\", str(ruta)], timeout=60, **comun)\n                    destino_dir = os.path.join(str(raiz), \"memoria\", \"trabajos_sin_revisar\")\n                    os.makedirs(destino_dir, exist_ok=True)\n                    destino = os.path.join(destino_dir, os.path.basename(str(ruta)) + \".FRENADO_POR_EL_GUARDIA\")\n                    os.replace(os.path.join(str(raiz), str(ruta)), destino)\n                    anotaciones.append(\"apartada (nueva): \" + str(ruta))",
+  "texto_nuevo": "                if r.returncode == 0:\n                    import shutil\n                    destino_dir = os.path.join(str(raiz), 'memoria', 'trabajos_sin_revisar')\n                    os.makedirs(destino_dir, exist_ok=True)\n                    destino = os.path.join(destino_dir, os.path.basename(str(ruta)) + '.FRENADO_POR_EL_GUARDIA')\n                    if os.path.exists(destino):\n                        n = 2\n                        while os.path.exists(destino + '.' + str(n)):\n                            n += 1\n                        destino = destino + '.' + str(n)\n                    shutil.copy2(os.path.join(str(raiz), str(ruta)), destino)\n                    subprocess.run([\"git\", \"restore\", \"--staged\", \"--worktree\", \"--source=HEAD\", \"--\", str(ruta)], timeout=60, **comun)\n                    anotaciones.append(\"devuelta a lo guardado (copia apartada): \" + str(ruta))\n                else:\n                    subprocess.run([\"git\", \"rm\", \"--cached\", \"-q\", \"--ignore-unmatch\", \"--\", str(ruta)], timeout=60, **comun)\n                    destino_dir = os.path.join(str(raiz), \"memoria\", \"trabajos_sin_revisar\")\n                    os.makedirs(destino_dir, exist_ok=True)\n                    destino = os.path.join(destino_dir, os.path.basename(str(ruta)) + \".FRENADO_POR_EL_GUARDIA\")\n                    if os.path.exists(destino):\n                        n = 2\n                        while os.path.exists(destino + \".\" + str(n)):\n                            n += 1\n                        destino = destino + \".\" + str(n)\n                    os.replace(os.path.join(str(raiz), str(ruta)), destino)\n                    anotaciones.append(\"apartada (nueva): \" + str(ruta))",
+  "cambio": "En los dos caminos de volver_atras (pieza que ya estaba guardada y pieza nueva), antes de copiar o mover la pieza a memoria/trabajos_sin_revisar, comprobar si el destino ya existe; si existe, anadirle un numero al final (.2, .3, ...) hasta encontrar un nombre libre, para que la copia anterior no se borre. Nunca se borra nada.",
+  "codigo": "                    destino = os.path.join(destino_dir, os.path.basename(str(ruta)) + '.FRENADO_POR_EL_GUARDIA')\n                    if os.path.exists(destino):\n                        n = 2\n                        while os.path.exists(destino + '.' + str(n)):\n                            n += 1\n                        destino = destino + '.' + str(n)\n                    shutil.copy2(os.path.join(str(raiz), str(ruta)), destino)",
+  "vigia": "Una vigia que llame dos veces a volver_atras con la misma pieza y compruebe que en memoria/trabajos_sin_revisar quedan DOS copias (la original .FRENADO_POR_EL_GUARDIA y la segunda con numero), y que ninguna se ha borrado.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_fila_de_commits.py",
+   "vigias/test_vigia_fuera_de_casa.py",
+   "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py",
+   "vigias/test_vigia_no_se_aplica_lo_frenado.py",
+   "vigias/test_vigia_nunca_sin_revisar.py",
+   "vigias/test_vigia_siempre_con_equipo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "test_vigia_equipo_siempre.py",
+   "test_vigia_fila_de_commits.py",
+   "test_vigia_fuera_de_casa.py",
+   "test_vigia_lo_aprobado_se_guarda_al_momento.py",
+   "test_vigia_no_se_aplica_lo_frenado.py",
+   "test_vigia_nunca_sin_revisar.py",
+   "test_vigia_siempre_con_equipo.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El archivo con numero (pieza.FRENADO_POR_EL_GUARDIA.2) NO matchea un glob estricto de sufijo tipo *.FRENADO_POR_EL_GUARDIA si alguna vigia u otro revisor cuenta archivos asi; la vigia nueva debe buscar ambas variantes por base de nombre, no por glob que termine en FLAG",
+   "Si algo fuera del paquete consume memoria/trabajos_sin_revisar (p.ej. reinsertar piezas), una segunda copia numerada podria reinsertarse dos veces; no hay evidencia en el material de ese consumidor, pero conviene que la vigia compruebe que nunca se aplica dos veces lo frenado"
+  ],
+  "que_falta": [
+   "La vigia propuesta: llamar dos veces a volver_atras con la misma pieza y comprobar que quedan DOS copias (la original sin numero y la segunda con .2), y que ninguna se borro"
+  ],
+  "resumen_para_el_jefe": "La reparacion es correcta: en los dos caminos de volver_atras se comprueba si el destino .FRENADO_POR_EL_GUARDIA ya existe y, si existe, se anade .2, .3... hasta encontrar nombre libre; copia2 en el camino de pieza guardada y os.replace en el de pieza nueva, con os y shutil ya importados, asi que una segunda frenada ya no borra la primera copia y no se inventa nada; solo queda pendiente escribir la vigia que lo pruebe."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (36939 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

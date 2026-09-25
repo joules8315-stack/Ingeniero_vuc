@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En auditar, cuando el mismo cerebro escribio y reviso solo se agrega un aviso, pero el veredicto sigue valiendo (APROBADO), y la ley exige que la auditoria pase a SIN_AUDITAR con resumen para el jefe y quien reviso vacio.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    # Si al final el mismo cerebro escribio y reviso, se avisa.\n    if evitar and quien_aud == evitar:\n        avisos.append(\"el mismo cerebro escribio y reviso: hay que comprobarlo con los ojos antes de darlo por bueno\")\n\n    return auditoria, quien_aud, avisos",
+  "texto_nuevo": "    # Si al final el mismo cerebro escribio y reviso, se avisa.\n    if evitar and quien_aud == evitar:\n        avisos.append(\"el mismo cerebro escribio y reviso: hay que comprobarlo con los ojos antes de darlo por bueno\")\n        # NADIE REVISA SU PROPIO TRABAJO (Julio, 2026-09-20): el aviso no basta, el trabajo\n        # entraba igual y eso es lo que la ley prohibe. Ademas del aviso, el veredicto NO vale:\n        # pasa a SIN_AUDITAR con resumen para el jefe y el revisor se devuelve vacio.\n        auditoria = {\"veredicto\": \"SIN_AUDITAR\",\n                     \"resumen_para_el_jefe\": \"quien escribio no puede aprobar su propio trabajo\"}\n        quien_aud = None\n\n    return auditoria, quien_aud, avisos",
+  "cambio": "En la funcion auditar, dentro del bloque final que hoy solo agrega el aviso cuando evitar == quien_aud, anadir que ademas el veredicto deje de valer: poner auditoria en SIN_AUDITAR con resumen_para_el_jefe que diga que quien escribio no puede aprobar su propio trabajo, y devolver quien_aud vacio (None). El aviso existente se queda tal cual. No se toca nada mas de la funcion ni ningun otro archivo.",
+  "codigo": "    # Si al final el mismo cerebro escribio y reviso, se avisa.\n    if evitar and quien_aud == evitar:\n        avisos.append(\"el mismo cerebro escribio y reviso: hay que comprobarlo con los ojos antes de darlo por bueno\")\n        # NADIE REVISA SU PROPIO TRABAJO (Julio, 2026-09-20): el aviso no basta, el trabajo\n        # entraba igual y eso es lo que la ley prohibe. Ademas del aviso, el veredicto NO vale:\n        # pasa a SIN_AUDITAR con resumen para el jefe y el revisor se devuelve vacio.\n        auditoria = {\"veredicto\": \"SIN_AUDITAR\",\n                     \"resumen_para_el_jefe\": \"quien escribio no puede aprobar su propio trabajo\"}\n        quien_aud = None\n\n    return auditoria, quien_aud, avisos",
+  "vigia": "vigias/test_vigia_ni_con_revisor_fijo_se_revisa_solo.py (hoy roja, debe quedar verde) y vigias/test_vigia_nadie_revisa_su_propio_trabajo.py (ya verde, debe seguir verde)",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "correr `python -m pytest -q vigias/` con el cambio aplicado y que Julio compruebe con sus ojos que la vigia nueva queda verde"
+  ]
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40027 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

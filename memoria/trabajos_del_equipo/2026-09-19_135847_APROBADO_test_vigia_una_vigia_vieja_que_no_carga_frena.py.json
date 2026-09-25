@@ -1,0 +1,31 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El bloque de 'ls-files' en _falso_run imita el comando viejo; ahora el guardia pregunta con 'cat-file' y hay que responder a ese comando.",
+  "archivo": "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+  "funcion": "_falso_run",
+  "texto_viejo": "    \"\"\"Devuelve una funcion que imita a subprocess.run.\n\n    Si el comando trae 'pytest', devuelve returncode 1 y el stdout que se le pase.\n    Si el comando trae 'ls-files', apunta el ultimo elemento del comando y devuelve\n    returncode 0 solo si ese elemento es exactamente 'vigias/test_viejo.py'.\n    \"\"\"\n    def _run(cmd, *args, **kwargs):\n        cmd = list(cmd)\n        if 'pytest' in cmd:\n            return types.SimpleNamespace(returncode=1, stdout=stdout_pytest, stderr='')\n        if 'ls-files' in cmd:\n            comandos_vistos.append(cmd[-1])\n            if cmd[-1] == 'vigias/test_viejo.py':\n                return types.SimpleNamespace(returncode=0, stdout='vigias/test_viejo.py\\n', stderr='')\n            return types.SimpleNamespace(returncode=1, stdout='', stderr='')\n        return types.SimpleNamespace(returncode=0, stdout='', stderr='')",
+  "texto_nuevo": "    \"\"\"Devuelve una funcion que imita a subprocess.run.\n\n    Si el comando trae 'pytest', devuelve returncode 1 y el stdout que se le pase.\n    Si el comando trae 'cat-file', apunta el ultimo elemento del comando sin el\n    prefijo 'HEAD:' y devuelve returncode 0 solo si ese elemento es exactamente\n    'HEAD:vigias/test_viejo.py'.\n    \"\"\"\n    def _run(cmd, *args, **kwargs):\n        cmd = list(cmd)\n        if 'pytest' in cmd:\n            return types.SimpleNamespace(returncode=1, stdout=stdout_pytest, stderr='')\n        if 'cat-file' in cmd:\n            comandos_vistos.append(cmd[-1].replace('HEAD:', '', 1))\n            if cmd[-1] == 'HEAD:vigias/test_viejo.py':\n                return types.SimpleNamespace(returncode=0, stdout='', stderr='')\n            return types.SimpleNamespace(returncode=1, stdout='', stderr='')\n        return types.SimpleNamespace(returncode=0, stdout='', stderr='')",
+  "cambio": "Sustituir el bloque que detecta 'ls-files' por uno que detecte 'cat-file': apuntar en comandos_vistos el ultimo elemento del comando sin el prefijo 'HEAD:' y devolver returncode 0 solo si ese elemento es exactamente 'HEAD:vigias/test_viejo.py', si no 1. Ajustar el docstring de _falso_run a lo mismo.",
+  "codigo": "    \"\"\"Devuelve una funcion que imita a subprocess.run.\n\n    Si el comando trae 'pytest', devuelve returncode 1 y el stdout que se le pase.\n    Si el comando trae 'cat-file', apunta el ultimo elemento del comando sin el\n    prefijo 'HEAD:' y devuelve returncode 0 solo si ese elemento es exactamente\n    'HEAD:vigias/test_viejo.py'.\n    \"\"\"\n    def _run(cmd, *args, **kwargs):\n        cmd = list(cmd)\n        if 'pytest' in cmd:\n            return types.SimpleNamespace(returncode=1, stdout=stdout_pytest, stderr='')\n        if 'cat-file' in cmd:\n            comandos_vistos.append(cmd[-1].replace('HEAD:', '', 1))\n            if cmd[-1] == 'HEAD:vigias/test_viejo.py':\n                return types.SimpleNamespace(returncode=0, stdout='', stderr='')\n            return types.SimpleNamespace(returncode=1, stdout='', stderr='')\n        return types.SimpleNamespace(returncode=0, stdout='', stderr='')",
+  "vigia": "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py (el propio test que usa _falso_run)",
+  "puede_danar": [
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa ni rompe vecinos, aprobado"
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

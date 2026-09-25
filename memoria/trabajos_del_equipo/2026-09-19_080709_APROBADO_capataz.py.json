@@ -1,0 +1,33 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "siguiente_pendiente devuelve la primera orden 'pendiente' aunque su etiqueta no esté completa, porque no llama a validar_etiqueta.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "siguiente_pendiente",
+  "texto_viejo": "def siguiente_pendiente():\n    for orden in leer_lista():\n        if orden.get(\"estado\") == \"pendiente\":\n            return orden\n    return None",
+  "texto_nuevo": "def siguiente_pendiente():\n    for orden in leer_lista():\n        if orden.get(\"estado\") == \"pendiente\" and not validar_etiqueta(orden):\n            return orden\n    return None",
+  "cambio": "Añadir la condición 'and not validar_etiqueta(orden)' al if de siguiente_pendiente para saltarse las pendientes cuya etiqueta no esté completa.",
+  "codigo": "def siguiente_pendiente():\n    for orden in leer_lista():\n        if orden.get(\"estado\") == \"pendiente\" and not validar_etiqueta(orden):\n            return orden\n    return None",
+  "vigia": "Una prueba que meta una orden pendiente con etiqueta incompleta y otra con etiqueta completa, y compruebe que siguiente_pendiente devuelve la completa y no la incompleta.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Crear la vigia descrita (orden pendiente con etiqueta incompleta + otra completa) y verificarla, segun la ley test-first del proyecto; el texto del cambio en si esta correcto."
+  ],
+  "resumen_para_el_jefe": "El cambio usa validar_etiqueta que si existe en el material, respeta la ley 'solo cambia siguiente_pendiente', arregla exactamente lo que pide el encargo y no dania a nadie: aprobar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (34167 letras, aguanta 19042) -> se le salta",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "vueltas_dadas: 1"
+ ]
+}

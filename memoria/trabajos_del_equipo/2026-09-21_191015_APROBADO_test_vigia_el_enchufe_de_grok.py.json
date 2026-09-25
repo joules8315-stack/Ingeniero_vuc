@@ -1,0 +1,32 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En test_con_llave_de_mentira_no_se_llama_a_popen hay dos lineas seguidas (setenv y preguntar('hola')) que deben unirse en una sola llamada que pasa la clave dentro del texto.",
+  "archivo": "vigias/test_vigia_el_enchufe_de_grok.py",
+  "funcion": "test_con_llave_de_mentira_no_se_llama_a_popen",
+  "texto_viejo": "    monkeypatch.setenv('OPENCODE_API_KEY', llave)\n    texto, avisos = grok.preguntar('hola')",
+  "texto_nuevo": "    texto, avisos = grok.preguntar('mi clave ' + llave)",
+  "cambio": "Sustituir las dos lineas seguidas (monkeypatch.setenv('OPENCODE_API_KEY', llave) y texto, avisos = grok.preguntar('hola')) por una sola linea: texto, avisos = grok.preguntar('mi clave ' + llave). No tocar nada mas.",
+  "codigo": "    texto, avisos = grok.preguntar('mi clave ' + llave)",
+  "vigia": "vigias/test_vigia_el_enchufe_de_grok.py::test_con_llave_de_mentira_no_se_llama_a_popen debe seguir pasando: texto == '' y _PopenFalso.veces_llamado == 0",
+  "puede_danar": [
+   "vigias/test_vigia_el_enchufe_de_grok.py::test_con_llave_de_mentira_no_se_llama_a_popen"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio une las dos lineas en una sola que pasa la clave dentro del texto, exactamente como pidio el encargo, sin tocar nada mas ni inventar nada, y solo afecta a esa prueba."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

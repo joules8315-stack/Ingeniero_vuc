@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "El ayudante _aparte solo redirige el diccionario a tmp_path, pero aprender exige que el archivo del sitio (app_web.html) exista en disco y lo busca via el mapa de proyectos, que apunta fuera de esta carpeta, causando inestabilidad.",
+  "archivo": "vigias/test_vigia_diccionario_de_julio.py",
+  "funcion": "_aparte",
+  "texto_viejo": "def _aparte(tmp_path, monkeypatch):\n    \"\"\"El diccionario de mentira vive aparte: NUNCA se toca el de verdad.\"\"\"\n    falso = str(tmp_path / \"diccionario_de_mentira.json\")\n    monkeypatch.setattr(diccionario, \"RUTA\", falso, raising=False)\n    return falso",
+  "texto_nuevo": "def _aparte(tmp_path, monkeypatch):\n    \"\"\"El diccionario de mentira vive aparte: NUNCA se toca el de verdad.\"\"\"\n    falso = str(tmp_path / \"diccionario_de_mentira.json\")\n    monkeypatch.setattr(diccionario, \"RUTA\", falso, raising=False)\n    sitio = tmp_path / \"app_web.html\"\n    sitio.write_text(\"\", encoding=\"utf-8\")\n    monkeypatch.setattr(diccionario, \"AQUI\", str(tmp_path), raising=False)\n    return falso",
+  "cambio": "Dentro del ayudante _aparte, ademas de lo que ya hace: (1) crear dentro de tmp_path un archivo vacio llamado app_web.html, y (2) monkeypatch.setattr sobre el modulo diccionario y el nombre AQUI con el texto de la ruta de tmp_path, para que el sitio se busque dentro de la casa de mentira.",
+  "codigo": "    sitio = tmp_path / \"app_web.html\"\n    sitio.write_text(\"\", encoding=\"utf-8\")\n    monkeypatch.setattr(diccionario, \"AQUI\", str(tmp_path), raising=False)",
+  "vigia": "vigias/test_vigia_diccionario_de_julio.py (la propia prueba inestable, que debe salir igual siempre, sola y en tanda)",
+  "puede_danar": [
+   "vigias/test_vigia_diccionario_de_julio.py",
+   "memoria/DICCIONARIO.json"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "DICCIONARIO.js"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación crea el archivo app_web.html y ajusta la ruta de búsqueda, solucionando la inestabilidad de la prueba sin inventar ni romper nada."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 2"
+ ]
+}

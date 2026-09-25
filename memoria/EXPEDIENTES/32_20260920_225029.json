@@ -1,0 +1,35 @@
+{
+  "orden": {
+    "id": "32",
+    "titulo": "La vigia de que una pieza que no existe se manda como creacion",
+    "origen": "dos vueltas del pit perdidas el 2026-09-20 por esta causa",
+    "repara": "cuando una orden crea un archivo nuevo pero no trae la marca crear, el pit le pide al obrero CAMBIAR un archivo que todavia no existe, y el obrero contesta que no lo encuentra. Se perdieron ocho rondas pagadas antes de verlo, y el sintoma parecia del reparto de material, que no tenia nada que ver",
+    "pieza": "vigias/test_vigia_una_pieza_que_no_existe_se_manda_como_creacion.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_una_pieza_que_no_existe_se_manda_como_creacion.py. Vigila la funcion lanzar_al_equipo de cuerpo/capataz.py. Prueba que si el archivo de la pieza de la orden NO existe en el disco, el comando que se arma para el equipo lleva la opcion --crear aunque la orden no traiga la marca crear; y que si el archivo si existe, no la lleva. Usa monkeypatch sobre subprocess.run dentro de cuerpo/capataz.py para espiar el comando sin ejecutar nada. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_una_pieza_que_no_existe_se_manda_como_creacion.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "4a0153883c21be60",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_225022_DUDOSO_test_vigia_una_pieza_que_no_existe_se_manda_como_creacion.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (37482 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : El material trae el cuerpo exacto de lanzar_al_equipo en cuerpo/capataz.py, que solo anade --crear si orden.get('crear') es verdadero; la vigia nueva debe probar que ademas se anade cuando el archivo de la pieza no existe en disco, espiando subprocess.run con monkeypatch.\n  toca        : vigias/test_vigia_una_pieza_que_no_existe_se_manda_como_creacion.py funcion ?\n  confianza   : media\n  VEREDICTO   : DUDOSO\n  fallo       : El diagnostico afirma 'El material trae el cuerpo exacto de lanzar_al_equipo en cuerpo/capataz.py' pero en el material ese cuerpo NO aparece (viene recortado). Si el obrero no tenia el cuerpo, debia pedirlo con NECESITO_LEER, no afirmar su contenido: esa es una afirmacion no verificable y posiblemente falsa.\n  fallo       : Contradiccion interna con su propio diagnostico: dice que capataz.py 'solo anade --crear si orden.get(\"crear\") es verdadero', y sin embargo entrega una vigia que exige --crear SIN la marca cuando el archivo no existe. Con el codigo que el mismo describe, test_pieza_que_no_existe_se_manda_como_creacion da ROJO (assert '--crear' in comandos[0] fallaria), o sea: o el diagnostico miente o la vigia esta predestinada a quedar en rojo.\n  fallo       : No probo de verdad (ley 7): no hay evidencia de que la vigia se haya corrido internamente y quedado verde; se envia el archivo sin demostrar que pasa contra el capataz real.\n  resumen     : El archivo nuevo esta bien escrito y hace exactamente lo que pidio el encargo, pero el diagnostico afirma que el material trae un cuerpo que no trae, y su propia descripcion del codigo predice que el test principal queda en rojo: hay que confirmar el codigo real y correr la vigia antes de sellar.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T22:50:29",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: You've hit your session limit · resets 11:10pm (America/Bogota)\n",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\32_20260920_225029.json"
+  }
+}

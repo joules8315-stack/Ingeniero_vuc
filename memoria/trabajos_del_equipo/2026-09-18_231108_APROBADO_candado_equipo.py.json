@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En la rama del guardia que devuelve el archivo a lo guardado (git restore) no se aparta copia del trabajo actual antes de restaurar, por lo que si el guardia frena se pierde lo que habia en disco.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "main",
+  "texto_viejo": "                if r.returncode == 0:\n                    subprocess.run([\"git\", \"restore\", \"--staged\", \"--worktree\", \"--source=HEAD\", \"--\", str(ruta)], timeout=60, **comun)\n                    anotaciones.append(\"devuelta a lo guardado: \" + str(ruta))",
+  "texto_nuevo": "                if r.returncode == 0:\n                    import shutil\n                    destino_dir = os.path.join(str(raiz), 'memoria', 'trabajos_sin_revisar')\n                    os.makedirs(destino_dir, exist_ok=True)\n                    shutil.copy2(os.path.join(str(raiz), str(ruta)), os.path.join(destino_dir, os.path.basename(str(ruta)) + '.FRENADO_POR_EL_GUARDIA'))\n                    subprocess.run([\"git\", \"restore\", \"--staged\", \"--worktree\", \"--source=HEAD\", \"--\", str(ruta)], timeout=60, **comun)\n                    anotaciones.append(\"devuelta a lo guardado (copia apartada): \" + str(ruta))",
+  "cambio": "Antes del git restore, copiar el archivo actual a memoria/trabajos_sin_revisar con sufijo .FRENADO_POR_EL_GUARDIA; si la copia falla, no se hace el restore (cae al except de esa ruta, que ya existe); y cambiar el texto anotado a 'devuelta a lo guardado (copia apartada): '.",
+  "codigo": "                if r.returncode == 0:\n                    import shutil\n                    destino_dir = os.path.join(str(raiz), 'memoria', 'trabajos_sin_revisar')\n                    os.makedirs(destino_dir, exist_ok=True)\n                    shutil.copy2(os.path.join(str(raiz), str(ruta)), os.path.join(destino_dir, os.path.basename(str(ruta)) + '.FRENADO_POR_EL_GUARDIA'))\n                    subprocess.run([\"git\", \"restore\", \"--staged\", \"--worktree\", \"--source=HEAD\", \"--\", str(ruta)], timeout=60, **comun)\n                    anotaciones.append(\"devuelta a lo guardado (copia apartada): \" + str(ruta))",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py (y test_si_el_guardia_frena_no_se_pierde_nada): comprobar que tras un freno del guardia existe la copia .FRENADO_POR_EL_GUARDIA en memoria/trabajos_sin_revisar con el contenido previo.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Dos rutas distintas que compartan el mismo basename (p.ej. cuerpo/foo.py y memoria/foo.py) dejan la copia en la misma ruta de destino: 'foo.py.FRENADO_POR_EL_GUARDIA' y la segunda pisa a la primera. Lo pide asi el paquete, asi que no es motivo de rechazo, pero el que firma la vigia debe saberlo.",
+   "El 'cae al except de esa ruta, que ya existe' es una afirmacion del paquete, no una verificacion del obrero: si ese except no existiera (o no atrapara copy2/os.makedirs), un fallo de copia tiraria la peticion entera en vez de solo saltarse el restore. Hay que confirmarlo al sellar.",
+   "candado_equipo.py esta importado desde ingeniero.py y vigilado por las 2 vigias listadas en el paquete: el cambio no altera firmas ni valores compartidos, asi que no las rompe, pero hay que correrlas despues."
+  ],
+  "que_falta": [
+   "Las dos vigias citadas en 'vigia' (test_vigia_el_guardia_se_acuerda_y_frena.py y test_si_el_guardia_frena_no_se_pierde_nada) estan declaradas como _fuera_del_paquete: si para comprobar hay que leerlas o tocarlas, pedirlas primero con NECESITO_LEER; no abrirlas por cuenta propia.",
+   "Confirmar que las variables raiz, ruta y comun estan en el ambito de main() donde se inserta la rama (el paquete las usa, pero el trozo mostrado en 'LOS TROZOS EXACTOS' no las exhibe).",
+   "Definir que vigia concreta y ya existente comprueba la copia .FRENADO_POR_EL_GUARDIA antes de la prueba real interna (ley 2026-08-24)."
+  ],
+  "resumen_para_el_jefe": "Repara exactamente lo que pide el encargo con el mismo codigo que el paquete especifica (copia previa al git restore en memoria/trabajos_sin_revisar y texto anotado cambiado), no inventa nada, no toca mas que esa rama y no rompe vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19074 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

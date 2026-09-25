@@ -1,0 +1,58 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El juez siempre vuelve a dejar el cambio nuevo puesto al final y no tiene forma de evitarlo cuando se usa antes de aprobar el trabajo; ademas juzgar_con_vecinas no puede propagar esa decision.",
+  "archivo": "arnes/juez_de_la_prueba.py",
+  "funcion": "juzgar",
+  "texto_viejo": "def juzgar(raiz, ruta_prueba, ruta_archivo, texto_viejo, texto_nuevo):\n    \"\"\"Decide por programa si el cambio hace lo pedido.\n\n    Devuelve un diccionario con antes_roja, despues_verde, vuelve_roja, ok y razon.\n    Nunca lanza error: si algo revienta, todo en falso y la razon lo explica.\n    \"\"\"",
+  "texto_nuevo": "def juzgar(raiz, ruta_prueba, ruta_archivo, texto_viejo, texto_nuevo, dejar_el_cambio=True):\n    \"\"\"Decide por programa si el cambio hace lo pedido.\n\n    dejar_el_cambio: si es verdadero (por defecto), al terminar el juicio el archivo\n    se queda con el cambio nuevo puesto. Si es falso, el archivo se queda con su\n    contenido original, tal como estaba antes de todo: sirve cuando el juez se usa\n    ANTES de que el trabajo este aprobado, porque el que aplica los cambios lo hara\n    despues, si se aprueba.\n\n    Devuelve un diccionario con antes_roja, despues_verde, vuelve_roja, ok y razon.\n    Nunca lanza error: si algo revienta, todo en falso y la razon lo explica.\n    \"\"\"",
+  "cambio": "En juzgar: anadir el sexto dato opcional dejar_el_cambio=True en la firma y en el ultimo paso, donde hoy se vuelve a dejar el cambio nuevo puesto, hacerlo solo si dejar_el_cambio es verdadero; si es falso, el archivo se queda con contenido_original. En juzgar_con_vecinas: anadir el mismo dato opcional con el mismo valor por defecto y pasarselo tal cual a la llamada a juzgar, con un comentario corto en castellano que lo explique.",
+  "codigo": "def juzgar(raiz, ruta_prueba, ruta_archivo, texto_viejo, texto_nuevo, dejar_el_cambio=True):\n    \"\"\"Decide por programa si el cambio hace lo pedido.\n\n    dejar_el_cambio: si es verdadero (por defecto), al terminar el juicio el archivo\n    se queda con el cambio nuevo puesto. Si es falso, el archivo se queda con su\n    contenido original, tal como estaba antes de todo: sirve cuando el juez se usa\n    ANTES de que el trabajo este aprobado, porque el que aplica los cambios lo hara\n    despues, si se aprueba.\n\n    Devuelve un diccionario con antes_roja, despues_verde, vuelve_roja, ok y razon.\n    Nunca lanza error: si algo revienta, todo en falso y la razon lo explica.\n    \"\"\"\n\n    # ... (resto de juzgar sin cambios hasta el PASO 4) ...\n\n    # Dejar el cambio nuevo puesto solo si se pidio; si no, se queda el original.\n    try:\n        with open(ruta_archivo, 'w', encoding='utf-8') as f:\n            if dejar_el_cambio:\n                f.write(contenido_nuevo)\n            else:\n                f.write(contenido_original)\n    except Exception as error:\n        resultado['razon'] = (\n            'antes de tocar nada: %s. Despues del juicio no se pudo dejar el archivo '\n            'como correspondia: %s' % (detalle_antes, error)\n        )\n        return resultado\n\n\ndef juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo, dejar_el_cambio=True):\n    \"\"\"Busca sola la prueba que cubre el archivo y la juzga.\n\n    dejar_el_cambio: se pasa tal cual a juzgar. Si es falso, el archivo se queda con\n    su contenido original al terminar el juicio, para cuando el juez se usa ANTES de\n    que el trabajo este aprobado.\n\n    Devuelve un diccionario con ok, prueba y razon. Nunca lanza error: si algo\n    revienta, ok en None y la razon lo explica.\n    \"\"\"\n    try:\n        from pathlib import Path\n\n        from arnes import vecinas\n\n        raiz = str(raiz)\n        ruta_relativa = str(ruta_relativa)\n\n        vigias = vecinas._vigias_existentes(raiz)\n        candidatas = vecinas._vecinas_por_stem([ruta_relativa], raiz, vigias)\n\n        if not candidatas:\n            return {\n                'ok': None,\n                'prueba': None,\n                'razon': (\n                    'ninguna prueba nombra ese archivo, asi que no hay nada que '\n                    'correr para comprobarlo'\n                ),\n            }\n\n        for vigia in candidatas:\n            ruta_vigia = str(Path(raiz) / vigia)\n            ruta_archivo = str(Path(raiz) / ruta_relativa)\n            # Se le pasa dejar_el_cambio tal cual, para que el juez sepa si debe\n            # dejar el cambio puesto o devolver el archivo a su contenido original.\n            resultado = juzgar(\n                raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo,\n                dejar_el_cambio\n            )\n\n            if not resultado.get('antes_roja'):\n                continue\n\n            if resultado.get('despues_verde') and resultado.get('vuelve_roja'):\n                return {\n                    'ok': True,\n                    'prueba': vigia,\n                    'razon': resultado.get('razon', ''),\n                }\n\n            return {\n                'ok': False,\n                'prueba': vigia,\n                'razon': resultado.get('razon', ''),\n            }\n\n        return {\n            'ok': None,\n            'prueba': None,\n            'razon': (\n                'ninguna de las pruebas que nombran ese archivo estaba roja, '\n                'asi que no habia nada que demostrar'\n            ),\n        }\n    except Exception as error:\n        return {\n            'ok': None,\n            'prueba': None,\n            'razon': 'al buscar la prueba que cubre el archivo, revento: %s' % error,\n        }",
+  "vigia": "vigias/test_vigia_el_juez_de_la_prueba.py y vigias/test_vigia_el_juez_busca_su_prueba.py: comprobar que juzgar acepta dejar_el_cambio y que con dejar_el_cambio=False el archivo queda con su contenido original al terminar, y que juzgar_con_vecinas lo propaga a juzgar.",
+  "puede_danar": [
+   "vigias/test_vigia_el_juez_busca_su_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_juez_busca_su_prueba.py",
+   "test_vigia_el_juez_de_la_prueba.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "El cuerpo completo de juzgar_con_vecinas (con sus textos de razon y las llamadas vecinas._vigias_existentes y vecinas._vecinas_por_stem): ese trozo NO aparece en el material. El material solo trae juzgar (arnes/juez_de_la_prueba.py:70-164) y termina cortado en 'PASO 4: devolver el archivo a su contenido original'. Reescribirla entera de memoria es afirmar que ya era asi, y sus helpers ni siquiera se los puede haber leido en el paquete."
+  ],
+  "fallos": [
+   "No pidio NECESITO_LEER para juzgar_con_vecinas y en cambio invento/reconstruyo su cuerpo entero: si la real difiere en claves, manejo de errores o helpers, la rompe entera. Reescribir una funcion sin tener su codigo es usar algo que no esta en el material (el fallo mas grave del contrato).",
+   "La premisa del diagnostico 'el juez siempre vuelve a dejar el cambio puesto al final' no se ve completa en el material: el trozo corta en el encabezado del PASO 4. El bloque final que el obrero reemplaza es asumido, no leido.",
+   "Las dos vigias que nombra estan marcadas _fuera_del_paquete y al mismo tiempo en puede_danar: pretender comprobarlas/modificarlas sin leerlas viola el 'solo con el paquete'. DebiO pedirlas por NECESITO_LEER.",
+   "El cambio solo propaga un dato (dejar_el_cambio) a traves de un cuerpo de juzgar_con_vecinas que nunca vio; eso no esta 'verificando' nada, esta adivinando el contrato de esa funcion."
+  ],
+  "riesgo_vecinos": [
+   "juzgar_con_vecinas real puede tener otro interior (otras claves de retorno, otra logica cuando no hay candidatas, otros helpers de arnes/vecinas): el reemplazo integral puede romper a los llamadores de juzgar_con_vecinas.",
+   "Si el resto real de juzgar (despues del PASO 4) no termina en el escribir contenido_nuevo que el obrero supone, el trozo nuevo puede quedar colgado o pisar la estructura real del return.",
+   "vigias/test_vigia_el_juez_de_la_prueba.py y vigias/test_vigia_el_juez_busca_su_prueba.py pueden esperar otra firma o otro comportamiento y no estan en el paquete: tocarlas a ciegas las puede romper."
+  ],
+  "que_falta": [
+   "NECESITO_LEER del trozo de juzgar_con_vecinas (incluyendo los helpers reales de arnes/vecinas) para saber si existe y en que forma.",
+   "NECESITO_LEER de vigias/test_vigia_el_juez_de_la_prueba.py y vigias/test_vigia_el_juez_busca_su_prueba.py para saber que exigen.",
+   "NECESITO_LEER del final real de juzgar (lo que sigue al PASO 4) para confirmar que alli se vuelve a escribir contenido_nuevo antes de tocar ese bloque."
+  ],
+  "resumen_para_el_jefe": "Reescribio a ciegas el cuerpo entero de juzgar_con_vecinas y prometio cuidar dos vigias sin leerlas ni pedirlas: primero que pida el material que le falta (NECESITO_LEER) antes de volver a proponer, asi no rompe una funcion que nunca vio."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21551 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'juzgar_con_vecinas' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "GPT-OSS 120B (Groq) no le cabe (22769 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'juzgar_con_vecinas' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "GPT-OSS 120B (Groq) no le cabe (22897 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'juzgar_con_vecinas' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "GPT-OSS 120B (Groq) no le cabe (23025 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

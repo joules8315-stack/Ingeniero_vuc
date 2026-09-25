@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _deepseek_directo se recibe d['usage'] y d['model'] pero se tiran: no queda registro del gasto de DeepSeek, que es de pago con tope de 5 USD al mes.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_deepseek_directo",
+  "texto_viejo": "    with _u.urlopen(req, timeout=300) as r:\n        d = _j.load(r)\n    return d[\"choices\"][0][\"message\"][\"content\"]",
+  "texto_nuevo": "    with _u.urlopen(req, timeout=300) as r:\n        d = _j.load(r)\n    try:\n        import datetime\n        _linea = _j.dumps({'cuando': datetime.datetime.now().isoformat(timespec='seconds'),\n                           'modelo': d.get('model', ''), 'uso': d.get('usage') or {}})\n        _destino = _o.environ.get('INGENIERO_GASTO_USD_TEST') or _o.path.join(\n            _o.path.dirname(_o.path.dirname(_o.path.abspath(__file__))), 'memoria', 'GASTO_USD.jsonl')\n        with open(_destino, 'a', encoding='utf-8') as _f:\n            _f.write(_linea + '\\n')\n    except Exception:\n        pass\n    return d[\"choices\"][0][\"message\"][\"content\"]",
+  "cambio": "Justo despues de cargar d y antes del return, agregar un bloque try/except Exception: pass que importe datetime y escriba una linea json con cuando, modelo y uso al archivo indicado por INGENIERO_GASTO_USD_TEST o, si no existe, a memoria/GASTO_USD.jsonl dentro de la carpeta del proyecto. Registrar nunca debe romper la respuesta.",
+  "codigo": "    try:\n        import datetime\n        _linea = _j.dumps({'cuando': datetime.datetime.now().isoformat(timespec='seconds'),\n                           'modelo': d.get('model', ''), 'uso': d.get('usage') or {}})\n        _destino = _o.environ.get('INGENIERO_GASTO_USD_TEST') or _o.path.join(\n            _o.path.dirname(_o.path.dirname(_o.path.abspath(__file__))), 'memoria', 'GASTO_USD.jsonl')\n        with open(_destino, 'a', encoding='utf-8') as _f:\n            _f.write(_linea + '\\n')\n    except Exception:\n        pass",
+  "vigia": "Una prueba que llame a _deepseek_directo con INGENIERO_GASTO_USD_TEST apuntando a un archivo temporal y compruebe que se agrega una linea json con cuando, modelo y uso, y que si el archivo no se puede escribir la respuesta sigue saliendo igual.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Nulo en la practica: el cambio es 100% interno a _deepseek_directo. No cambia firma, ni argumentos, ni el return, asi que arnes/asignador.py y vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py (que importan/vigilan desde cuerpo/obrero.py) no ven ninguna diferencia. El bloque try/except Exception: pass garantiza que un fallo al escribir jamas rompe la respuesta."
+  ],
+  "que_falta": [
+   "Nada imprescindible: el vigia propuesto se describe pero no viene materializado en la propuesta; es la parte habitualmente separada, no un bloqueo para este cambio."
+  ],
+  "resumen_para_el_jefe": "Aplica al pie de la letra lo que pediste: justo despues de cargar la respuesta y antes del return, registra en memoria/GASTO_USD.jsonl (o en la ruta que diga INGENIERO_GASTO_USD_TEST) una linea json con cuando, modelo y uso, importando datetime dentro del bloque y con try/except que nunca rompe la respuesta; no toca nada mas, no inventa funciones ni archivos, y el texto que dice tocar aparece tal cual en el material."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27308 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

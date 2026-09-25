@@ -1,0 +1,24 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la vigia que comprueba que aplicar_cambio no toma por humo un cambio real de codigo cuando el texto viejo incluye renglones de docstring, y que si rechaza un cambio que solo toca un comentario con almohadilla.",
+  "archivo": "vigias/test_vigia_el_humo_no_toma_codigo_por_comentario.py",
+  "texto_nuevo": "from cuerpo import aplicador\n\n\ndef _escribir_m(tmp_path):\n    \"\"\"Escribe tmp_path/m.py con el contenido exacto que pide la vigia.\"\"\"\n    lineas = [\n        'def f(texto):',\n        '    \"\"\"',\n        '    Ayuda.',\n        '    Devuelve algo.',\n        '    \"\"\"',\n        '    return texto',\n    ]\n    ruta = tmp_path / 'm.py'\n    ruta.write_text('\\n'.join(lineas) + '\\n', encoding='utf-8')\n    return ruta\n\n\ndef test_el_humo_no_toma_codigo_por_comentario(tmp_path):\n    \"\"\"Un cambio que mete codigo de verdad no puede confundirse con humo.\n\n    El texto_viejo son dos renglones que viven dentro del docstring, pero el\n    texto_nuevo anade codigo ejecutable (if not texto: / return None). El\n    aplicador tiene que aplicarlo y devolver True.\n    \"\"\"\n    ruta = _escribir_m(tmp_path)\n\n    texto_viejo = '    Devuelve algo.\\n    \"\"\"'\n    texto_nuevo = (\n        '    Devuelve algo.\\n'\n        '    \"\"\"\\n'\n        '    if not texto:\\n'\n        '        return None'\n    )\n\n    propuesta = {\n        'archivo': 'm.py',\n        'texto_viejo': texto_viejo,\n        'texto_nuevo': texto_nuevo,\n    }\n\n    ok, mensaje = aplicador.aplicar_cambio(propuesta, raiz=str(tmp_path))\n\n    # (1) el primer valor que devuelve es True\n    assert ok is True, f'Se esperaba True y llego {ok!r}: {mensaje}'\n\n    # (2) el archivo ahora contiene el codigo nuevo\n    contenido = ruta.read_text(encoding='utf-8')\n    assert 'if not texto:' in contenido\n\n\ndef test_un_cambio_que_solo_toca_un_comentario_sigue_siendo_humo(tmp_path):\n    \"\"\"Un cambio que solo mete un comentario con almohadilla sigue devolviendo False.\"\"\"\n    _escribir_m(tmp_path)\n\n    propuesta = {\n        'archivo': 'm.py',\n        'texto_viejo': '    return texto',\n        'texto_nuevo': '    # nota\\n    return texto',\n    }\n\n    ok, mensaje = aplicador.aplicar_cambio(propuesta, raiz=str(tmp_path))\n\n    # (3) sigue devolviendo False\n    assert ok is False, f'Se esperaba False y llego {ok!r}: {mensaje}'\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigía nueva hace exactamente lo pedido: aplica un cambio que mete código real aunque el texto viejo viva en el docstring, comprueba que el archivo quedó bien y sigue rechazando los cambios que solo tocan comentarios."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25285 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

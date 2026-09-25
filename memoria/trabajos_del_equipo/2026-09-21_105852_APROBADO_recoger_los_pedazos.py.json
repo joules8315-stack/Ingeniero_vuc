@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/recoger_los_pedazos.py, la funcion recoger devuelve la copia apartada a su sitio sin comprobar antes si esa copia es VIEJA comparando la fecha del ultimo guardado en git con la fecha de la copia apartada.",
+  "archivo": "arnes/recoger_los_pedazos.py",
+  "funcion": "recoger",
+  "texto_viejo": "    origen = os.path.join(_carpeta_sin_revisar(raiz), nombre)\n    if not os.path.isfile(origen):\n        return {\n            \"ok\": False,\n            \"destino\": destino,\n            \"razon\": \"No existe la copia apartada '\" + str(nombre) + \"' en trabajos_sin_revisar.\",\n        }\n\n    try:",
+  "texto_nuevo": "    origen = os.path.join(_carpeta_sin_revisar(raiz), nombre)\n    if not os.path.isfile(origen):\n        return {\n            \"ok\": False,\n            \"destino\": destino,\n            \"razon\": \"No existe la copia apartada '\" + str(nombre) + \"' en trabajos_sin_revisar.\",\n        }\n\n    if _es_copia_vieja(raiz, destino, origen):\n        return {\n            \"ok\": False,\n            \"destino\": destino,\n            \"razon\": (\n                \"La copia apartada '\"\n                + str(nombre)\n                + \"' es de antes del ultimo guardado en git, asi que no se toca nada.\"\n            ),\n        }\n\n    try:",
+  "cambio": "Anadir, justo despues de comprobar que existe la copia apartada y antes del bloque try que copia y renombra, una comprobacion de si la copia es VIEJA: se le pregunta a git la fecha del ultimo guardado del archivo de destino con git log -1 y formato de fecha en segundos, y si ese ultimo guardado es mas nuevo que la fecha de la copia apartada, la copia es de antes y NO se devuelve: no se toca nada y se contesta ok en falso con esa razon. Si git no contesta, se devuelve como hoy. Nunca se borra nada.",
+  "codigo": "def _fecha_ultimo_guardado_git(raiz, destino):\n    \"\"\"Devuelve en segundos la fecha del ultimo guardado en git del archivo de destino.\n\n    Pregunta a git con git log -1 y el formato de fecha en segundos. Si git no contesta\n    (no hay git, no hay historial, falla la orden o la salida no es un numero), devuelve\n    None. Nunca revienta.\n    \"\"\"\n    try:\n        resultado = subprocess.run(\n            [\"git\", \"log\", \"-1\", \"--format=%ct\", \"--\", destino],\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n        )\n    except OSError:\n        return None\n    if resultado.returncode != 0:\n        return None\n    salida = resultado.stdout.strip()\n    if not salida:\n        return None\n    try:\n        return int(salida)\n    except ValueError:\n        return None\n\n\ndef _es_copia_vieja(raiz, destino, origen):\n    \"\"\"Dice si la copia apartada es de antes del ultimo guardado en git del destino.\n\n    Compara la fecha del ultimo guardado en git del archivo de destino con la fecha de\n    la copia apartada. Si el ultimo guardado es mas nuevo que la copia, la copia es de\n    antes y devuelve True. Si git no contesta, devuelve False (se devuelve como hoy).\n    OJO: no se compara con la fecha del archivo que hay ahora en el disco, porque el\n    guardia lo restaura justo despues de apartar la copia y siempre parece mas nuevo.\n    \"\"\"\n    fecha_git = _fecha_ultimo_guardado_git(raiz, destino)\n    if fecha_git is None:\n        return False\n    try:\n        fecha_copia = os.path.getmtime(origen)\n    except OSError:\n        return False\n    return fecha_git > fecha_copia",
+  "vigia": "vigias/test_vigia_recoger_los_pedazos.py: comprobar que cuando el ultimo guardado en git del destino es mas nuevo que la copia apartada, recoger devuelve ok en falso con la razon de que la copia es de antes y no toca nada; y que cuando git no contesta, recoger devuelve como hoy.",
+  "puede_danar": [
+   "arnes/recoger_los_pedazos.py",
+   "vigias/test_vigia_recoger_los_pedazos.py"
+  ],
+  "preguntas": [
+   "El material no trae la funcion completa con sus importaciones: falta ver si ya esta importado subprocess en arnes/recoger_los_pedazos.py, y falta el texto literal exacto de las lineas de importacion para anadirlo si no esta."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_recoger_los_pedazos.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Si git contesta y su ultimo guardado del destino es mas nuevo que la copia, recoger responde que no y no toca nada; si git no contesta, se devuelve como hoy: cumple el encargo sin romper vecinos ni inventar nada."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

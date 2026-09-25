@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la prueba nueva que comprueba que _filtrar_paquete conserva los trozos de TODOS los archivos cuando 'archivo' es una lista, y solo del nombrado cuando es texto.",
+  "archivo": "vigias/test_vigia_el_paquete_trae_la_funcion_entera.py",
+  "funcion": "test_si_la_pieza_no_se_puede_leer_no_revienta",
+  "texto_viejo": "def test_si_la_pieza_no_se_puede_leer_no_revienta(tmp_path):\n    \"\"\"Un fallo al leer NO puede tumbar el paquete entero: se devuelve lo que habia.\"\"\"\n    fantasma = {\"id\": \"no_existe.py\", \"abs\": str(tmp_path / \"no_existe.py\"), \"rol\": \"codigo\"}\n    t = {\"pieza\": \"no_existe.py\", \"abs\": fantasma[\"abs\"], \"rol\": \"codigo\",\n         \"desde\": 1, \"hasta\": 3, \"texto\": \"algo\", \"puntaje\": 1.0}\n    salida = router.completar_funciones([t], [fantasma])\n    assert salida and salida[0][\"texto\"] == \"algo\", (\n        \"al no poder leer una pieza se perdio el trozo que ya se tenia\")",
+  "texto_nuevo": "def test_si_la_pieza_no_se_puede_leer_no_revienta(tmp_path):\n    \"\"\"Un fallo al leer NO puede tumbar el paquete entero: se devuelve lo que habia.\"\"\"\n    fantasma = {\"id\": \"no_existe.py\", \"abs\": str(tmp_path / \"no_existe.py\"), \"rol\": \"codigo\"}\n    t = {\"pieza\": \"no_existe.py\", \"abs\": fantasma[\"abs\"], \"rol\": \"codigo\",\n         \"desde\": 1, \"hasta\": 3, \"texto\": \"algo\", \"puntaje\": 1.0}\n    salida = router.completar_funciones([t], [fantasma])\n    assert salida and salida[0][\"texto\"] == \"algo\", (\n        \"al no poder leer una pieza se perdio el trozo que ya se tenia\")\n\n\ndef test_el_obrero_recibe_todos_los_archivos_que_nombra_la_tarea():\n    \"\"\"Si la tarea nombra varios archivos, el obrero tiene que recibir los trozos de TODOS.\"\"\"\n    from cuerpo import obrero\n    paquete = \"\\n\".join([\n        \"# PAQUETE\",\n        \"## 1. LA LEY QUE MANDA\",\n        \"ley\",\n        \"## 3. LOS TROZOS\",\n        \"### `cuerpo/a.py` relevancia 1.0\",\n        \"TEXTO_DE_A\",\n        \"### `cuerpo/b.py` relevancia 0.5\",\n        \"TEXTO_DE_B\",\n        \"### `cuerpo/c.py` relevancia 0.2\",\n        \"TEXTO_DE_C\",\n    ])\n    s = obrero._filtrar_paquete(paquete, archivo=[\"cuerpo/a.py\", \"cuerpo/b.py\"], tope=100000)\n    assert \"TEXTO_DE_A\" in s, \"falta el trozo del primer archivo que la tarea nombra\"\n    assert \"TEXTO_DE_B\" in s, \"falta el trozo del segundo archivo que la tarea nombra\"\n    assert \"TEXTO_DE_C\" not in s, \"se colo un archivo que la tarea no nombro\"\n    s1 = obrero._filtrar_paquete(paquete, archivo=\"cuerpo/b.py\", tope=100000)\n    assert \"TEXTO_DE_B\" in s1, \"falta el trozo del archivo que la tarea nombra\"\n    assert \"TEXTO_DE_A\" not in s1, \"se colo un archivo que la tarea no nombro\"",
+  "cambio": "Anadir al final del archivo, despues de la ultima funcion existente, la prueba nueva test_el_obrero_recibe_todos_los_archivos_que_nombra_la_tarea que comprueba que _filtrar_paquete con lista conserva los trozos de todos los archivos nombrados y con texto solo del nombrado.",
+  "codigo": "def test_el_obrero_recibe_todos_los_archivos_que_nombra_la_tarea():\n    \"\"\"Si la tarea nombra varios archivos, el obrero tiene que recibir los trozos de TODOS.\"\"\"\n    from cuerpo import obrero\n    paquete = \"\\n\".join([\n        \"# PAQUETE\",\n        \"## 1. LA LEY QUE MANDA\",\n        \"ley\",\n        \"## 3. LOS TROZOS\",\n        \"### `cuerpo/a.py` relevancia 1.0\",\n        \"TEXTO_DE_A\",\n        \"### `cuerpo/b.py` relevancia 0.5\",\n        \"TEXTO_DE_B\",\n        \"### `cuerpo/c.py` relevancia 0.2\",\n        \"TEXTO_DE_C\",\n    ])\n    s = obrero._filtrar_paquete(paquete, archivo=[\"cuerpo/a.py\", \"cuerpo/b.py\"], tope=100000)\n    assert \"TEXTO_DE_A\" in s, \"falta el trozo del primer archivo que la tarea nombra\"\n    assert \"TEXTO_DE_B\" in s, \"falta el trozo del segundo archivo que la tarea nombra\"\n    assert \"TEXTO_DE_C\" not in s, \"se colo un archivo que la tarea no nombro\"\n    s1 = obrero._filtrar_paquete(paquete, archivo=\"cuerpo/b.py\", tope=100000)\n    assert \"TEXTO_DE_B\" in s1, \"falta el trozo del archivo que la tarea nombra\"\n    assert \"TEXTO_DE_A\" not in s1, \"se colo un archivo que la tarea no nombro\"",
+  "vigia": "vigias/test_vigia_el_paquete_trae_la_funcion_entera.py::test_el_obrero_recibe_todos_los_archivos_que_nombra_la_tarea",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "cerebro/router.py",
+   "cerebro/trozos.py",
+   "arnes/asignador.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Nada que bloquee: el texto_viejo coincide letra por letra con el 'FINAL ACTUAL DEL ARCHIVO' del material, y la funcion nueva reproduce casi al pie el codigo que el propio paquete prescribe (mismo nombre, mismo paquete de prueba, mismos asserts y mensajes en castellano).",
+   "Detalle menor de declaracion: la lista 'puede_danar' no coincide con la seccion 'A QUIEN PUEDE DANAR' del material (nombra obrero/router/trozos y marca asignador como _fuera_del_paquete; omite protocolo, dudas, respuestas y las dos vigias que el paquete pide revisar). No afecta el funcionamiento porque el cambio solo agrega una prueba a un archivo de vigia."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno real: el cambio anade una funcion nueva al final de test_vigia_el_paquete_trae_la_funcion_entera.py y no modifica ninguna de las piezas vecinas (obrero, router, trozos, asignador, protocolo, dudas, respuestas). El unico prerrequisito, que el archivo ponga 'cuerpo' en sys.path, lo confirma el material."
+  ],
+  "que_falta": [
+   "Nada funcional. En el sellado, declarar explicitamente que se descarto impacto sobre protocolo, dudas, respuestas y las vigias vecinas, como pide el cross-flow."
+  ],
+  "resumen_para_el_jefe": "La prueba pedida esta escrita exactamente como manda el paquete, no inventa nada, no rompe vecinos y cumple con entregar la funcion anterior intacta; se aprueba tal cual."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

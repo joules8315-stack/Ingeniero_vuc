@@ -1,0 +1,66 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py hay que agregar tres constantes de tiempo arriba de lanzar_al_equipo, cambiar subprocess.run por subprocess.Popen con salida a archivo y avance por CPU+archivos, y hacer que tipo_de_fallo reconozca 'COLGADA:'.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "lanzar_al_equipo",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def lanzar_al_equipo(proyecto, orden, tope_segundos=900):",
+    "texto_nuevo": "# Medido el 2026-09-21 en el cuaderno de llamadas: DeepSeek tarda 4 a 11 s, Big Pickle\n# hasta 328 s y con A-47 se le espera hasta 600 s, el guardia corre la bateria en 262 s,\n# y una tarea puede dar 4 vueltas de revision: 4 por (11 + 600) + 262 = 2706 s, y el tope\n# de fuera tiene que ser mayor que la suma de los de dentro; SIN_AVANCE tiene que ser MAYOR\n# que la llamada callada mas larga, la espera de Big Pickle de hasta 600 s, o se cortaria a\n# una IA que esta contestando.\nLIMITE_TAREA_SEGUNDOS = 420\nSIN_AVANCE_SEGUNDOS = 660\nTOPE_DURO_SEGUNDOS = 3000\n\n\ndef lanzar_al_equipo(proyecto, orden, tope_segundos=900):"
+   },
+   {
+    "texto_viejo": "    try:\n        resultado = subprocess.run(\n            comando,\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            encoding=\"utf-8\",\n            errors=\"replace\",\n            timeout=tope_segundos,\n            env=entorno,\n        )\n    except subprocess.TimeoutExpired:\n        return {\n            \"guardado\": False,\n            \"codigo\": None,\n            \"salida\": \"TOPE DE TIEMPO: \" + str(tope_segundos) + \" s\",\n        }\n    salida = resultado.stdout + resultado.stderr\n    return {\n        \"guardado\": \"GUARDADO AL MOMENTO\" in salida,\n        \"codigo\": resultado.returncode,\n        \"salida\": salida,\n    }",
+    "texto_nuevo": "    archivo = open(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'), 'w', encoding='utf-8', errors='replace')\n    proceso = subprocess.Popen(\n        comando,\n        cwd=raiz,\n        stdout=archivo,\n        stderr=subprocess.STDOUT,\n        env=entorno,\n    )\n\n    def avance():\n        total = 0.0\n        try:\n            import psutil\n            pp = psutil.Process(proceso.pid)\n            for p in [pp] + pp.children(recursive=True):\n                try:\n                    t = p.cpu_times()\n                    total += t.user + t.system\n                except psutil.Error:\n                    pass\n            total = round(total, 1)\n        except Exception:\n            pass\n        try:\n            total += os.path.getsize(archivo.name)\n        except Exception:\n            pass\n        for nombre in ('CUADERNO_DE_LLAMADAS.jsonl', 'APLICACIONES.log'):\n            try:\n                total += os.path.getmtime(os.path.join(raiz, 'memoria', nombre))\n            except Exception:\n                pass\n        return total\n\n    from cuerpo import vigilante\n    estado = vigilante.esperar(proceso, LIMITE_TAREA_SEGUNDOS, SIN_AVANCE_SEGUNDOS, TOPE_DURO_SEGUNDOS, avance)\n    archivo.close()\n    try:\n        with open(archivo.name, 'r', encoding='utf-8', errors='replace') as f:\n            salida = f.read()\n    except Exception:\n        salida = ''\n    salida_normal, salida_errores = proceso.communicate()\n    if estado != 'termino':\n        return {\n            'guardado': False,\n            'codigo': None,\n            'salida': 'COLGADA: ' + estado + ' (sin avance pasado el limite; se busca la causa raiz)\\n' + salida_normal + salida_errores,\n        }\n    return {\n        \"guardado\": \"GUARDADO AL MOMENTO\" in salida,\n        \"codigo\": proceso.returncode,\n        \"salida\": salida,\n    }"
+   },
+   {
+    "texto_viejo": "    if not isinstance(salida, str):\n        return \"otro\"\n    if salida.startswith(\"TOPE DE TIEMPO\"):\n        return \"tiempo\"",
+    "texto_nuevo": "    if not isinstance(salida, str):\n        return \"otro\"\n    if salida.startswith(\"COLGADA:\"):\n        return \"colgada\"\n    if salida.startswith(\"TOPE DE TIEMPO\"):\n        return \"tiempo\""
+   }
+  ],
+  "cambio": "Agregar las tres constantes con su comentario arriba de lanzar_al_equipo; cambiar subprocess.run por subprocess.Popen con salida a archivo y avance por CPU+archivos, usando vigilante.esperar y devolviendo COLGADA con la salida entera; y en tipo_de_fallo reconocer 'COLGADA:' como 'colgada'.",
+  "codigo": "# Medido el 2026-09-21 en el cuaderno de llamadas: DeepSeek tarda 4 a 11 s, Big Pickle\n# hasta 328 s y con A-47 se le espera hasta 600 s, el guardia corre la bateria en 262 s,\n# y una tarea puede dar 4 vueltas de revision: 4 por (11 + 600) + 262 = 2706 s, y el tope\n# de fuera tiene que ser mayor que la suma de los de dentro; SIN_AVANCE tiene que ser MAYOR\n# que la llamada callada mas larga, la espera de Big Pickle de hasta 600 s, o se cortaria a\n# una IA que esta contestando.\nLIMITE_TAREA_SEGUNDOS = 420\nSIN_AVANCE_SEGUNDOS = 660\nTOPE_DURO_SEGUNDOS = 3000\n\n\ndef lanzar_al_equipo(proyecto, orden, tope_segundos=900):\n    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    comando = [\n        sys.executable,\n        \"ingeniero.py\",\n        \"equipo\",\n        proyecto,\n        orden[\"encargo\"],\n        \"--escribe\",\n        \"deepseek\",\n        \"--revisa\",\n        \"bigpickle\",\n    ]\n    if orden.get(\"crear\"):\n        comando.append(\"--crear\")\n    entorno = dict(os.environ)\n    entorno[\"PYTHONIOENCODING\"] = \"utf-8\"\n    entorno[\"INGENIERO_ETIQUETA\"] = str(orden.get(\"id\", \"\"))\n    archivo = open(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'), 'w', encoding='utf-8', errors='replace')\n    proceso = subprocess.Popen(\n        comando,\n        cwd=raiz,\n        stdout=archivo,\n        stderr=subprocess.STDOUT,\n        env=entorno,\n    )\n\n    def avance():\n        total = 0.0\n        try:\n            import psutil\n            pp = psutil.Process(proceso.pid)\n            for p in [pp] + pp.children(recursive=True):\n                try:\n                    t = p.cpu_times()\n                    total += t.user + t.system\n                except psutil.Error:\n                    pass\n            total = round(total, 1)\n        except Exception:\n            pass\n        try:\n            total += os.path.getsize(archivo.name)\n        except Exception:\n            pass\n        for nombre in ('CUADERNO_DE_LLAMADAS.jsonl', 'APLICACIONES.log'):\n            try:\n                total += os.path.getmtime(os.path.join(raiz, 'memoria', nombre))\n            except Exception:\n                pass\n        return total\n\n    from cuerpo import vigilante\n    estado = vigilante.esperar(proceso, LIMITE_TAREA_SEGUNDOS, SIN_AVANCE_SEGUNDOS, TOPE_DURO_SEGUNDOS, avance)\n    archivo.close()\n    try:\n        with open(archivo.name, 'r', encoding='utf-8', errors='replace') as f:\n            salida = f.read()\n    except Exception:\n        salida = ''\n    salida_normal, salida_errores = proceso.communicate()\n    if estado != 'termino':\n        return {\n            'guardado': False,\n            'codigo': None,\n            'salida': 'COLGADA: ' + estado + ' (sin avance pasado el limite; se busca la causa raiz)\\n' + salida_normal + salida_errores,\n        }\n    return {\n        \"guardado\": \"GUARDADO AL MOMENTO\" in salida,\n        \"codigo\": proceso.returncode,\n        \"salida\": salida,\n    }\n\n\ndef tipo_de_fallo(salida):\n    \"\"\"Devuelve de que tipo fue el fallo, mirando el texto de salida.\"\"\"\n    if not isinstance(salida, str):\n        return \"otro\"\n    if salida.startswith(\"COLGADA:\"):\n        return \"colgada\"\n    if salida.startswith(\"TOPE DE TIEMPO\"):\n        return \"tiempo\"",
+  "vigia": "Una prueba que lance una tarea que corre pruebas (tarda mas de 212 s sin escribir en registros) y compruebe que no se corta por SIN_AVANCE, que la salida queda en el archivo .salida_tarea_<id>.txt, y que si el proceso se cuelga el resultado empieza por 'COLGADA:' y tipo_de_fallo devuelve 'colgada'.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "cuerpo/vigilante.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "ingeniero.py",
+   "vigilante.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El ramo COLGADA no cumple lo que pide el material: 'la salida leida va ENTERA detras del aviso COLGADA, para que el forense vea lo que dijo el revisor'. El codigo lee el archivo en la variable 'salida' pero en ese ramo concatena salida_normal + salida_errores de proceso.communicate(), que estaran vacios porque stdout va a archivo y stderr a subprocess.STDOUT; el forense no ve nada de lo que dijo el revisor por mas que la salida ya estaba leida."
+  ],
+  "riesgo_vecinos": [
+   "codex.py (perito) consume lanzar_al_equipo y tipo_de_fallo: ahora puede llegar el valor nuevo 'colgada' y salidas que empiezan por 'COLGADA:'; si no lo contempla, malinterpreta el fallo. Ya figura en puede_danar, pero se confirma como riesgo real.",
+   "Cada tarea abre memoria/.salida_tarea_<id>.txt; si la orden no trae id, todas comparten '.salida_tarea_.txt' y se pisan; el archivo no se limpia al terminar."
+  ],
+  "que_falta": [
+   "El material se contradice solo: por un lado dice que la salida leida del archivo va ENTERA detras del aviso COLGADA y por otro fija la formula literal 'salida': 'COLGADA: ' + estado + '...\\n' + salida_normal + salida_errores. Hay que decidir cual gana; si gana la primera, el ramo COLGADA debe usar la salida leida del archivo (o ambas)."
+  ],
+  "resumen_para_el_jefe": "El grueso del arreglo (constantes, Popen con salida a archivo, avance por CPU+archivos y tipo_de_fallo con 'colgada') esta correcto y no inventa nada, pero hay que decidir una contradiccion del material: el aviso COLGADA deberia llevar la salida leida del archivo y hoy lleva la de communicate(), que saldra vacia."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20859 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'sys'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'os'. No se importa, no se define y no es de Python. En c",
+  "GPT-OSS 120B (Groq) no le cabe (23982 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'sys'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'os'. No se importa, no se define y no es de Python. En c",
+  "GPT-OSS 120B (Groq) no le cabe (24327 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'comando'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'avance'. No se importa, no se define y no es de Pyth",
+  "GPT-OSS 120B (Groq) no le cabe (25377 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

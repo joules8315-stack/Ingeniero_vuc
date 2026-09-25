@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la prueba que comprueba que si el guardia frena, se vuelve atras solo y lo rechazado queda apartado en memoria/trabajos_sin_revisar.",
+  "archivo": "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py",
+  "funcion": "test_sin_archivos_no_guarda_nada",
+  "texto_viejo": "def test_sin_archivos_no_guarda_nada(tmp_path):\n    \"\"\"Sin archivos aprobados no hay nada que guardar: se dice que no.\"\"\"\n    _repo(tmp_path)\n\n    ok, msg = candado_equipo.guardar_en_la_historia(str(tmp_path), [], \"nada\")\n\n    assert ok is False, \"sin archivos aprobados no se puede decir que se guardo\"",
+  "texto_nuevo": "def test_sin_archivos_no_guarda_nada(tmp_path):\n    \"\"\"Sin archivos aprobados no hay nada que guardar: se dice que no.\"\"\"\n    _repo(tmp_path)\n\n    ok, msg = candado_equipo.guardar_en_la_historia(str(tmp_path), [], \"nada\")\n\n    assert ok is False, \"sin archivos aprobados no se puede decir que se guardo\"\n\n\ndef test_si_el_guardia_frena_se_vuelve_atras_y_se_aparta(tmp_path, monkeypatch):\n    \"\"\"Si el guardia frena, se vuelve atras solo y lo rechazado queda apartado.\"\"\"\n    monkeypatch.setenv(\n        \"INGENIERO_FALLOS_TEST\", str(tmp_path / \"fallos_prueba.json\")\n    )\n    _repo(tmp_path)\n    (tmp_path / \"base.txt\").write_text(\"cambio rechazado\\n\", encoding=\"utf-8\")\n\n    hook = tmp_path / \".git\" / \"hooks\" / \"pre-commit\"\n    hook.write_text(\"#!/bin/sh\\nexit 1\\n\", encoding=\"utf-8\")\n    try:\n        os.chmod(str(hook), 0o755)\n    except OSError:\n        pass\n\n    ok, msg = candado_equipo.guardar_en_la_historia(\n        str(tmp_path), [\"base.txt\"], \"equipo aprobado\"\n    )\n\n    assert ok is False, \"con el guardia frenando no se puede decir que se guardo\"\n    assert (tmp_path / \"base.txt\").read_text(encoding=\"utf-8\") == \"base\\n\", (\n        \"no se volvio atras: el archivo rechazado quedo escrito\"\n    )\n    apartado = (\n        tmp_path / \"memoria\" / \"trabajos_sin_revisar\" / \"base.txt.FRENADO_POR_EL_GUARDIA\"\n    )\n    assert apartado.exists(), \"lo rechazado no se aparto: se perdio el trabajo\"\n    assert \"cambio rechazado\" in apartado.read_text(encoding=\"utf-8\"), (\n        \"lo apartado no guarda el cambio rechazado\"\n    )\n    assert \"SE VOLVIO ATRAS\" in msg, \"el mensaje no avisa de que se volvio atras\"",
+  "cambio": "Anadir al final del archivo, despues de test_sin_archivos_no_guarda_nada, la prueba nueva test_si_el_guardia_frena_se_vuelve_atras_y_se_aparta; no se toca nada mas.",
+  "codigo": "def test_si_el_guardia_frena_se_vuelve_atras_y_se_aparta(tmp_path, monkeypatch):\n    \"\"\"Si el guardia frena, se vuelve atras solo y lo rechazado queda apartado.\"\"\"\n    monkeypatch.setenv(\n        \"INGENIERO_FALLOS_TEST\", str(tmp_path / \"fallos_prueba.json\")\n    )\n    _repo(tmp_path)\n    (tmp_path / \"base.txt\").write_text(\"cambio rechazado\\n\", encoding=\"utf-8\")\n\n    hook = tmp_path / \".git\" / \"hooks\" / \"pre-commit\"\n    hook.write_text(\"#!/bin/sh\\nexit 1\\n\", encoding=\"utf-8\")\n    try:\n        os.chmod(str(hook), 0o755)\n    except OSError:\n        pass\n\n    ok, msg = candado_equipo.guardar_en_la_historia(\n        str(tmp_path), [\"base.txt\"], \"equipo aprobado\"\n    )\n\n    assert ok is False, \"con el guardia frenando no se puede decir que se guardo\"\n    assert (tmp_path / \"base.txt\").read_text(encoding=\"utf-8\") == \"base\\n\", (\n        \"no se volvio atras: el archivo rechazado quedo escrito\"\n    )\n    apartado = (\n        tmp_path / \"memoria\" / \"trabajos_sin_revisar\" / \"base.txt.FRENADO_POR_EL_GUARDIA\"\n    )\n    assert apartado.exists(), \"lo rechazado no se aparto: se perdio el trabajo\"\n    assert \"cambio rechazado\" in apartado.read_text(encoding=\"utf-8\"), (\n        \"lo apartado no guarda el cambio rechazado\"\n    )\n    assert \"SE VOLVIO ATRAS\" in msg, \"el mensaje no avisa de que se volvio atras\"",
+  "vigia": "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py::test_si_el_guardia_frena_se_vuelve_atras_y_se_aparta",
+  "puede_danar": [
+   "arnes/candado_equipo.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No rompe el vecino declarado arnes/candado_equipo.py: solo anade una prueba al archivo de vigias que lo protege, y este ya importaba os y candado_equipo y ya tenia _repo() segun el paquete.",
+   "Si candado_equipo.guardar_en_la_historia no implementar aun el comportamiento P2-1, la prueba nueva podria fallar al correr; pero eso era el encargo y el material no entrega candado_equipo.py"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta copia punto por punto la prueba que pidio el encargo (vuelve atras a 'base\\n', aparta en memoria/trabajos_sin_revisar con 'FRENADO_POR_EL_GUARDIA', avisa 'SE VOLVIO ATRAS'), no inventa nada, no toca nada mas y no rompe vecinos; se puede sellar."
+ },
+ "avisos": [
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "vueltas_dadas: 1"
+ ]
+}

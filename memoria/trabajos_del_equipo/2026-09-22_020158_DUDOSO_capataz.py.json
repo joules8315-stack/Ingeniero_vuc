@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "sabotear_la_orden devuelve ok None cuando la orden no trae lista de sabotaje y nunca intenta armarla, y ademas armar_sabotaje falla si la orden no trae destino, asi que el sabotaje no se corre nunca.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "sabotear_la_orden",
+  "texto_viejo": "        vigia = orden.get('vigia') if isinstance(orden, dict) else None\n        sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None\n        if not vigia or not sabotaje:\n            return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}\n        palabras = [sys.executable, 'arnes/sabotaje.py', vigia, sabotaje]",
+  "texto_nuevo": "        vigia = orden.get('vigia') if isinstance(orden, dict) else None\n        sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None\n        if not vigia or not sabotaje:\n            return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}\n        if not os.path.exists(sabotaje):\n            raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n            if not os.path.exists(os.path.join(raiz, sabotaje)):\n                armado = armar_sabotaje(orden)\n                if not armado:\n                    return {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}\n        palabras = [sys.executable, 'arnes/sabotaje.py', vigia, sabotaje]",
+  "cambio": "En sabotear_la_orden, justo despues del return del if not vigia or not sabotaje, comprobar si el archivo de sabotaje no existe (probando tambien la ruta relativa a la carpeta del proyecto); si no existe, llamar a armar_sabotaje(orden); si devuelve False, devolver {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}; si devuelve True, seguir y correr el sabotaje como hoy.",
+  "codigo": "        if not os.path.exists(sabotaje):\n            raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n            if not os.path.exists(os.path.join(raiz, sabotaje)):\n                armado = armar_sabotaje(orden)\n                if not armado:\n                    return {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}",
+  "vigia": "Una vigia que llame a sabotear_la_orden con una orden que no trae lista de sabotaje pero si trae trabajo aprobado y destino, y compruebe que armar_sabotaje se llama, que el archivo de sabotaje se crea, y que el sabotaje se corre (ok True o False segun la vigia frene o no); y otra que con una orden sin trabajo aprobado compruebe que devuelve ok None con la razon nueva.",
+  "puede_danar": [
+   "cuerpo/capataz.py::bucle",
+   "arnes/sabotaje.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "sabotaje.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La vigia que el propio cambio propone es INCORRECTA contra su propio codigo: describe una orden que 'no trae lista de sabotaje pero si trabajo aprobado y destino' y espera que se llame armar_sabotaje, se cree el archivo y se corra el sabotaje; pero con una orden sin el campo 'sabotaje', sabotaje = None y el return anticipado 'if not vigia or not sabotaje' devuelve ok None ANTES de tocar el codigo nuevo, asi que armar_sabotaje nunca se llama y la vigia no puede pasar. Para ejercer la rama nueva la orden tiene que traer SI el campo 'sabotaje' (una ruta) cuyo archivo no exista en disco.",
+   "El cambio solo repara la mitad del diagnostico: para ordenes que traen la ruta de sabotaje pero sin archivo creado, arma y corre; para ordenes que no traen el campo 'sabotaje', el return anticipado sigue cortando y el sabotaje sigue sin correrse nunca. Puede ser el diseno que pide el encargo (que manda poner el codigo justo despues del return), pero con el diagnostico dicho no queda claro que el fallo real quede arreglado."
+  ],
+  "riesgo_vecinos": [
+   "arnes/sabotaje.py (fuera del paquete, no leido): si armar_sabotaje crea el archivo bajo la raiz del proyecto y el arnes resuelve la ruta que recibe contra otra base, el sabotaje podria seguir sin correrse aunque armar devuelva True. No comprobable con este material.",
+   "cuerpo/capataz.py::bucle: armar_sabotaje se llamara en cada vuelta en que la ruta falte; si armar no es idempotente o es caro, cambia el coste del bucle."
+  ],
+  "que_falta": [
+   "Decidir que haga la primera vigia en realidad: o una orden con el campo 'sabotaje' (ruta) cuyo archivo no exista, o mover la llamada a armar_sabotaje antes del guard si se quiere cubrir ordenes sin campo 'sabotaje' (eso cambia el encargo y hay que consultarlo).",
+   "Confirmar que armar_sabotaje(orden) acepta la orden tal como llega y que su valor de retorno se anda como 'not armado'."
+  ],
+  "resumen_para_el_jefe": "El codigo hace lo que el encargo pide y no inventa nada, pero la vigia que el mismo propone falla contra su propio codigo porque con una orden sin 'sabotaje' el return anticipado impide llegar a armar_sabotaje: hay que corregir la vigia (o la posicion del codigo, consultandolo) antes de correrla, porque tal como esta escrita frenaria en falso."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (29730 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (30556 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

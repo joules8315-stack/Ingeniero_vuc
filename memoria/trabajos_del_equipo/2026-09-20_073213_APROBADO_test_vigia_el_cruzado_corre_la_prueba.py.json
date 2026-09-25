@@ -1,0 +1,27 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigia que exige que cuerpo/cruzado.py corra la prueba (juzgar_con_vecinas) en vez de pagarle a una IA para adivinar si pasa; hoy cruzado.resolver llama a obrero._preguntar_con_relevo para el JUEZ sin ejecutar nada.",
+  "archivo": "vigias/test_vigia_el_cruzado_corre_la_prueba.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"vigias/test_vigia_el_cruzado_corre_la_prueba.py — VIGIA (nace ROJA a proposito).\n\nVigila DOS cosas de cuerpo/cruzado.py, que hoy no hace ninguna:\n\n  1) Que el cruzado CORRA la prueba de verdad, en vez de preguntarle a una IA si la\n     reparacion la pasaria.\n  2) Que el codigo 2 del juez del cruzado ('NO PASA LA PRUEBA') sea CUENTA, no JUICIO.\n\nMOTIVO (plan v4 P2-5, orden A-39 de Julio):\n\n  El codigo 2 del juez del cruzado ('NO PASA LA PRUEBA') es CUENTA, no JUICIO. Correr la\n  prueba es una cuenta que el programa puede hacer solo. Adivinarla con una IA cuesta\n  dinero y ademas se equivoca. Por eso el cruzado tiene que EJECUTAR la prueba\n  (arnes.juez_de_la_prueba.juzgar_con_vecinas) y no pedirle a un cerebro que adivine si\n  la reparacion pasaria.\n\nEste archivo nace ROJO: hoy cuerpo/cruzado.py no menciona juzgar_con_vecinas y le paga\nuna IA (obrero._preguntar_con_relevo) para que adivine el veredicto del JUEZ.\n\"\"\"\nimport os\nimport sys\nimport json\n\n# Raiz del proyecto: dos dirname sobre el abspath de este mismo archivo.\nAQUI = os.path.dirname(os.path.abspath(__file__))\nRAIZ = os.path.dirname(AQUI)\nARNES = os.path.join(RAIZ, \"arnes\")\nfor _p in (RAIZ, ARNES):\n    if _p not in sys.path:\n        sys.path.insert(0, _p)\n\nfrom cuerpo import cruzado, obrero   # noqa: E402\n\n\nRUTA_CRUZADO = os.path.join(RAIZ, \"cuerpo\", \"cruzado.py\")\n\n\ndef test_el_cruzado_menciona_juzgar_con_vecinas():\n    \"\"\"PRIMERA prueba: solo texto, sin ejecutar nada.\n\n    Si cuerpo/cruzado.py no menciona juzgar_con_vecinas, es que el cruzado NO corre la\n    prueba: le paga a una IA para que adivine si la reparacion la pasaria.\n    \"\"\"\n    with open(RUTA_CRUZADO, \"r\", encoding=\"utf-8\") as f:\n        texto = f.read()\n    assert \"juzgar_con_vecinas\" in texto, (\n        \"El cruzado NO corre la prueba: no menciona juzgar_con_vecinas en cuerpo/cruzado.py. \"\n        \"Por eso le paga a una IA para que adivine si la reparacion pasa la prueba, \"\n        \"cuando correrla es una CUENTA que el programa puede hacer solo.\"\n    )\n\n\ndef test_el_cruzado_no_le_paga_a_una_ia_para_adivinar_el_veredicto(monkeypatch):\n    \"\"\"SEGUNDA prueba: el cruzado corre la prueba y NO le pregunta a una IA por el JUEZ.\n\n    Se falsea obrero.disponible, obrero._preguntar_con_relevo y\n    arnes.juez_de_la_prueba.juzgar_con_vecinas. Si el cruzado corre la prueba, la lista\n    de pedidos al JUEZ queda VACIA.\n    \"\"\"\n    pedidos_al_juez = []\n    pedidos_totales = []\n\n    def falso_disponible():\n        return (True, \"falso\")\n\n    def falso_preguntar_con_relevo(pedido, *args, **kwargs):\n        pedidos_totales.append(pedido)\n        texto = pedido if isinstance(pedido, str) else str(pedido)\n        if \"VIGILANTE\" in texto:\n            prueba = {\n                \"archivo_vigia\": \"vigias/test_falso.py\",\n                \"prueba\": \"assert True\",\n                \"no_vale_si\": \"nada\",\n            }\n            return (json.dumps(prueba, ensure_ascii=False), \"falso\", [])\n        if \"JUEZ\" in texto:\n            pedidos_al_juez.append(texto)\n            veredicto = {\"veredicto\": \"APROBADO\", \"fallos\": [], \"que_le_falta\": \"\"}\n            return (json.dumps(veredicto, ensure_ascii=False), \"falso\", [])\n        reparacion = {\n            \"archivo\": \"cuerpo/falso.py\",\n            \"texto_viejo\": \"viejo\",\n            \"texto_nuevo\": \"nuevo\",\n            \"diagnostico\": \"falso\",\n            \"cambio\": \"falso\",\n        }\n        return (json.dumps(reparacion, ensure_ascii=False), \"falso\", [])\n\n    def falso_juzgar_con_vecinas(*args, **kwargs):\n        return {\"ok\": True, \"razon\": \"la prueba corre y pasa\"}\n\n    monkeypatch.setattr(obrero, \"disponible\", falso_disponible)\n    monkeypatch.setattr(obrero, \"_preguntar_con_relevo\", falso_preguntar_con_relevo)\n\n    import arnes.juez_de_la_prueba as juez_de_la_prueba\n    monkeypatch.setattr(juez_de_la_prueba, \"juzgar_con_vecinas\", falso_juzgar_con_vecinas)\n\n    cruzado.resolver(\"paquete de prueba\", \"problema de prueba\", rondas=1)\n\n    assert pedidos_al_juez == [], (\n        \"Se le pago a una IA para adivinar si la prueba pasa, cuando el programa ya la \"\n        \"habia corrido. El veredicto del JUEZ es CUENTA, no JUICIO: el cruzado debe correr \"\n        \"la prueba con juzgar_con_vecinas y no preguntarle a un cerebro.\"\n    )\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el encargo creando el vigía solicitado sin inventar ni romper nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22053 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

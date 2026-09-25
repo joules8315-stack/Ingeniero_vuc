@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la prueba nueva que verifique que el sabotaje apunta la ruta entera de la pieza cuando la orden pide 'carpeta/pieza.py', y el rechazo previo vino de que armar_sabotaje recorta con basename, cosa que este encargo no autoriza tocar.",
+  "archivo": "vigias/test_vigia_el_sabotaje_se_arma_solo.py",
+  "funcion": "test_sin_texto_viejo_no_arma_nada",
+  "texto_viejo": "    assert resultado is False\n    assert not _ruta_sabotaje(tmp_path, orden).exists()\n",
+  "texto_nuevo": "    assert resultado is False\n    assert not _ruta_sabotaje(tmp_path, orden).exists()\n\n\ndef test_el_sabotaje_apunta_la_ruta_entera_de_la_pieza(tmp_path):\n    _escribir_trabajo_aprobado(\n        tmp_path,\n        '2026-09-21_100000_APROBADO_pieza.py.json',\n        {\n            'archivo': 'carpeta/pieza.py',\n            'texto_viejo': 'def pieza():\\n    return 1\\n',\n            'texto_nuevo': 'def pieza():\\n    return 2\\n',\n        },\n    )\n    orden = _orden()\n    orden['pieza'] = 'carpeta/pieza.py'\n\n    resultado = capataz.armar_sabotaje(orden, raiz=str(tmp_path))\n\n    assert resultado is True\n    datos = json.loads(_ruta_sabotaje(tmp_path, orden).read_text(encoding='utf-8'))\n    assert datos\n    for objeto in datos:\n        assert objeto['archivo'] == 'carpeta/pieza.py'\n",
+  "cambios": "",
+  "cambio": "Agregar al final del archivo la prueba test_el_sabotaje_apunta_la_ruta_entera_de_la_pieza, que monta un trabajo APROBADO con archivo 'carpeta/pieza.py', llama a capataz.armar_sabotaje(orden, raiz=str(tmp_path)) y comprueba que devuelve True y que cada objeto de la lista JSON escrita en el archivo de orden['sabotaje'] tiene archivo == 'carpeta/pieza.py'.",
+  "codigo": "def test_el_sabotaje_apunta_la_ruta_entera_de_la_pieza(tmp_path):\n    _escribir_trabajo_aprobado(\n        tmp_path,\n        '2026-09-21_100000_APROBADO_pieza.py.json',\n        {\n            'archivo': 'carpeta/pieza.py',\n            'texto_viejo': 'def pieza():\\n    return 1\\n',\n            'texto_nuevo': 'def pieza():\\n    return 2\\n',\n        },\n    )\n    orden = _orden()\n    orden['pieza'] = 'carpeta/pieza.py'\n\n    resultado = capataz.armar_sabotaje(orden, raiz=str(tmp_path))\n\n    assert resultado is True\n    datos = json.loads(_ruta_sabotaje(tmp_path, orden).read_text(encoding='utf-8'))\n    assert datos\n    for objeto in datos:\n        assert objeto['archivo'] == 'carpeta/pieza.py'\n",
+  "vigia": "La propia prueba nueva test_el_sabotaje_apunta_la_ruta_entera_de_la_pieza comprueba que armar_sabotaje devuelve True y que la lista JSON escrita en el archivo de orden['sabotaje'] lleva archivo == 'carpeta/pieza.py' en cada objeto.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "vigias/test_vigia_el_sabotaje_se_arma_solo.py"
+  ],
+  "preguntas": [
+   "El material no muestra el cuerpo de _orden() ni el de _ruta_sabotaje(); se asume que _orden() devuelve un dict con la clave 'pieza' y que _ruta_sabotaje(tmp_path, orden) devuelve la ruta del archivo de sabotaje. Si _orden() no acepta la clave 'pieza' o _ruta_sabotaje usa otra clave, la prueba fallara. ¿Se confirma que _orden() devuelve un dict con 'pieza' y que _ruta_sabotaje(tmp_path, orden) es la ruta correcta?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "21_100000_APROBADO_pieza.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Anade solo la prueba pedida, con los mismos helpers que ya usan las pruebas vecinas y el texto de cierre que si esta en el material; no toca capataz ni ningun otro archivo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (26177 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (27145 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

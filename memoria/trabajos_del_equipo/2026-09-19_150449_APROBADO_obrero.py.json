@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "En _material_del_revisor, cuando el trozo se toma del disco y la funcion es muy larga, el trozo se corta al tope y el revisor pierde la parte que cambia; hay que cambiar solo la condicion que elige el trozo para usar una ventana de 40 lineas antes y 40 despues cuando trozo is None o len(trozo) > tope // 2.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_material_del_revisor",
+  "texto_viejo": "                    if trozo is None:\n                        lineas_disco = contenido.splitlines()\n                        ini = max(0, linea - 1 - 15)\n                        fin = min(len(lineas_disco), linea - 1 + 15)\n                        trozo = \"\\n\".join(lineas_disco[ini:fin])",
+  "texto_nuevo": "                    if trozo is None or len(trozo) > tope // 2:\n                        lineas_disco = contenido.splitlines()\n                        ini = max(0, linea - 1 - 40)\n                        fin = min(len(lineas_disco), linea - 1 + 40)\n                        trozo = \"\\n\".join(lineas_disco[ini:fin])",
+  "cambio": "Sustituir la condicion 'if trozo is None:' por 'if trozo is None or len(trozo) > tope // 2:' y cambiar las 15 lineas de ventana por 40 lineas antes y 40 despues, manteniendo el recorte a los limites del archivo con max(0, ...) y min(len(lineas_disco), ...).",
+  "codigo": "                    if trozo is None or len(trozo) > tope // 2:\n                        lineas_disco = contenido.splitlines()\n                        ini = max(0, linea - 1 - 40)\n                        fin = min(len(lineas_disco), linea - 1 + 40)\n                        trozo = \"\\n\".join(lineas_disco[ini:fin])",
+  "vigia": "Un test que llame a _material_del_revisor con una propuesta cuyo texto_viejo caiga dentro de una funcion muy larga (mas de tope//2 caracteres) y compruebe que el trozo devuelto incluye 40 lineas antes y 40 despues de la linea del cambio, sin salirse del archivo.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno. El cambio mejora la precisión del material enviado al revisor al evitar que funciones excesivamente largas causen un truncamiento ciego del resultado final."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación implementa correctamente la ventana de seguridad de 40 líneas cuando la función extraída por AST supera la mitad del tope permitido, cumpliendo estrictamente con el encargo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40053 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso gemini2",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,28 @@
+{
+  "orden": {
+    "repara": "el obrero de creacion solo puede entregar UN archivo nuevo por ronda; no admite la lista cambios que la orden pedia",
+    "pieza": "cuerpo/obrero.py",
+    "razon": "para que un encargo de crear varios archivos nuevos los entregue todos en una sola ronda, como ya hace la reparacion, y no muera en DUDOSO por 'falta el segundo'",
+    "encargo": "En _prompt_obrero, en las dos subramas de creacion (la de codigo .py y la de documento), anade al JSON de respuesta un campo OPCIONAL \"cambios\": lista de objetos {\"archivo\", \"texto_nuevo\"}, cada archivo ENTERO, para cuando el encargo pida crear VARIOS archivos nuevos; si se usa, deja vacios \"archivo\" y \"texto_nuevo\" de arriba. Que el flujo que aplica la propuesta cree todos los archivos de esa lista, igual que ya recorre la lista cambios en la rama de reparar. No toques la rama de reparar ni el guardia de llaves.",
+    "modo": "IA",
+    "id": "173-F064924",
+    "origen": "forense:173",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0
+  },
+  "huella": "89f772d54b219127",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_122737_SIN_VEREDICTO_NO_ENCONTRADO.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).\n  diagnostico : El material no contiene el archivo _prompt_obrero ni sus subramas de creacion, por lo que no se puede localizar el JSON de respuesta ni el flujo que aplica la propuesta.\n  toca        : NO_ENCONTRADO funcion NO_ENCONTRADO\n  confianza   : baja\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T12:27:37",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: You've hit your weekly limit · resets Sep 25, 11am (America/Bogota)\n",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\173-F064924_20260922_122737.json"
+  }
+}

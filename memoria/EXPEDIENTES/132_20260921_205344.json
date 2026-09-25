@@ -1,0 +1,74 @@
+{
+  "orden": {
+    "id": "132",
+    "titulo": "El revisor no llama a Big Pickle mientras descansa y cuenta sus fallos",
+    "origen": "orden de Julio A-46 (2026-09-21)",
+    "repara": "Big Pickle caido sigue costando 300 s por tarea",
+    "pieza": "cuerpo/obrero.py",
+    "depende": [
+      "131"
+    ],
+    "modo": "IA",
+    "razon": "Julio: siempre Big Pickle primero, salvo mientras descansa; entonces Grok 4.7",
+    "encargo": "En cuerpo/obrero.py, en la funcion auditar, en el bloque que empieza con la linea if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False): cambia esa linea por la misma con una condicion mas al final: and cuotas.desperto('bigpickle'):. Y dentro del mismo bloque: justo despues de quien_aud = 'bigpickle' agrega cuotas.bigpickle_acierto(), y en el else: (el que pone auditar._bp_caido = True) agrega cuotas.bigpickle_fallo(). Todo esta en el mismo bloque seguido: entregalo como UN solo cambio con el bloque entero. cuotas ya esta importado arriba del archivo (from cuerpo import cuotas). No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_revisor_respeta_el_descanso_de_big_pickle.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "25210eb735905db0",
+  "tipo": "tiempo",
+  "codigo": null,
+  "salida": "TOPE DE TIEMPO: 900 s",
+  "apartados": [],
+  "fecha": "2026-09-21T20:53:44",
+  "analisis": {
+    "que_paso": "La orden 132 (modo IA) se aplico al codigo pero la tarea murio por reloj: 'TOPE DE TIEMPO: 900 s'. Durante el propio ciclo de equipo que revisaba el cambio, obrero.auditar llamo a Big Pickle, que estaba caido, y cada llamada espera el timeout completo de 300 s; eso mas el trabajo del equipo paso los 900 s. La tarea que buscaba abaratar 'Big Pickle caido cuesta 300 s' murio pagando ese mismo costo.",
+    "causa_raiz": "El diseno audita las reparaciones con Big Pickle de forma sincrona y paga 300 s por llamada cuando esta caido. El guardia que se agrego (cuotas.desperto('bigpickle')) solo evita el gasto cuando Big Pickle YA DUERME; pero un Big Pickle caido-pero-despierto sigue entrando al bloque y esperando 300 s, y ademas debe fallar DOS veces (300 s cada una) antes de que bigpickle_fallo lo mande a dormir. Detectar la caida cuesta 300 s (TIMEOUT_POR_DEFECTO), demasiado para el tope de 900 s de la tarea.",
+    "donde": "cuerpo/obrero.py, funcion auditar, bloque bigpickle (lineas ~1023-1037, la llamada bigpickle.preguntar en 1027); cuerpo/cuotas.py (desperto 151-164 y bigpickle_fallo 167-183); cuerpo/bigpickle.py:40 (TIMEOUT_POR_DEFECTO = 300).",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False) and cuotas.desperto('bigpickle'):"
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "        _texto_bp, _avisos_bp = bigpickle.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))"
+      },
+      {
+        "archivo": "cuerpo/bigpickle.py",
+        "texto": "TIMEOUT_POR_DEFECTO = 300"
+      },
+      {
+        "archivo": "cuerpo/bigpickle.py",
+        "texto": "            return \"\", [f\"Big Pickle no contesto en {timeout}s (timeout)\"]"
+      },
+      {
+        "archivo": "cuerpo/cuotas.py",
+        "texto": "def desperto(quien):\n    \"\"\"True si ya paso su siesta. Si desperto, se le quita la marca (vuelve a la fila).\"\"\""
+      },
+      {
+        "archivo": "cuerpo/cuotas.py",
+        "texto": "    if seguidos[\"bigpickle\"] >= 2:"
+      }
+    ],
+    "no_volver_a": "No cobrar 300 s por descubrir que Big Pickle esta caido: se detecta la caida en segundos ANTES de comprometer la espera larga, ya en el primer intento.",
+    "tarea_nueva": {
+      "repara": "Que un Big Pickle caido cueste segundos, no 300 s, desde el primer intento, para que no se coma el tope de 900 s de la tarea.",
+      "pieza": "cuerpo/obrero.py",
+      "razon": "El guardia cuotas.desperto solo evita el costo cuando Big Pickle ya duerme; un Big Pickle caido pero despierto sigue costando 300 s y debe fallar dos veces antes de dormir. La orden 132 no ataca la espera de 300 s, solo el caso ya-dormido.",
+      "encargo": "En cuerpo/obrero.py, en auditar, la llamada bigpickle.preguntar(...) de deteccion recibe un timeout corto (por ejemplo 15) en vez del TIMEOUT_POR_DEFECTO de 300, o se antepone un sondeo rapido de salud de Big Pickle; asi un Big Pickle caido se detecta en segundos y bigpickle_fallo lo cuenta sin consumir el reloj. No tocar otros archivos.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "citas",
+    "motivo": "citas que no existen: [{\"archivo\": \"cuerpo/obrero.py\", \"texto\": \"if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False) and cuotas.desperto('bigpickle'):\", \"por_que\": \"no aparece literal\"}]",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\132_20260921_205344.json"
+  }
+}

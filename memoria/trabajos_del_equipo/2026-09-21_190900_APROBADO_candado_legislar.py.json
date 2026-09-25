@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_legislar.py, en main, el camino 'desde-julio' apunta como dicho por Julio cualquier texto del turno, incluido el que escribe el propio programa (p. ej. el pedido al perito con INGENIERO_OFF=1), sin distinguir quien habla.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "main",
+  "texto_viejo": "    if args and args[0] == \"desde-julio\":\n        # LA PUERTA POR DONDE ENTRA LO QUE JULIO ESCRIBE. Aqui se apunta SOLO, sin que nadie\n        # tenga que acordarse. Si algo falla, se calla y deja pasar: este modo NO puede\n        # estorbarle a Julio al escribir; el que frena es el candado de cierre, no este.\n        try:\n            crudo = sys.stdin.read()",
+  "texto_nuevo": "    if args and args[0] == \"desde-julio\":\n        # LA PUERTA POR DONDE ENTRA LO QUE JULIO ESCRIBE. Aqui se apunta SOLO, sin que nadie\n        # tenga que acordarse. Si algo falla, se calla y deja pasar: este modo NO puede\n        # estorbarle a Julio al escribir; el que frena es el candado de cierre, no este.\n        # Si el mensaje lo escribio el programa (no Julio), se lee y se descarta: no se apunta.\n        if os.environ.get(\"INGENIERO_OFF\") == \"1\" or os.environ.get(\"INGENIERO_LLAMADA_DEL_PROGRAMA\") == \"1\":\n            try:\n                sys.stdin.read()\n            except Exception:\n                pass\n            return 0\n        try:\n            crudo = sys.stdin.read()",
+  "cambio": "Al principio del camino 'desde-julio', antes de leer la entrada, comprobar si en el entorno INGENIERO_OFF vale 1 o INGENIERO_LLAMADA_DEL_PROGRAMA vale 1; si es asi, leer y descartar la entrada y salir con return 0 sin apuntar nada. Sin esas marcas, todo sigue exactamente igual.",
+  "codigo": "        if os.environ.get(\"INGENIERO_OFF\") == \"1\" or os.environ.get(\"INGENIERO_LLAMADA_DEL_PROGRAMA\") == \"1\":\n            try:\n                sys.stdin.read()\n            except Exception:\n                pass\n            return 0",
+  "vigia": "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py (y las demas vigias del candado de legislar): con INGENIERO_OFF=1 o INGENIERO_LLAMADA_DEL_PROGRAMA=1 no debe quedar ninguna instruccion apuntada; sin esas marcas, el texto de Julio se sigue apuntando igual.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que el encargo pide (con INGENIERO_OFF=1 o INGENIERO_LLAMADA_DEL_PROGRAMA=1 se lee y descarta la entrada del camino desde-julio y se sale sin apuntar), no inventa nada, no toca vecinos y deja verde la vigia que hoy nace roja."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

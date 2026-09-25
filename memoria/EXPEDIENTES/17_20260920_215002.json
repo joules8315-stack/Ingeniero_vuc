@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "17",
+    "titulo": "El registro del candado dice la verdad",
+    "origen": "punto 4 del plan v4, medido el 2026-09-20 sobre el registro de decisiones",
+    "repara": "el candado apunta como FRENO decisiones que en realidad dejan pasar, asi que el recuento de frenos esta inflado y nadie puede clasificar cual freno es falso",
+    "pieza": "arnes/candado_equipo.py",
+    "depende": [
+      "16"
+    ],
+    "modo": "IA",
+    "razon": "antes de reparar un freno falso hay que poder verlo; hoy los datos mienten",
+    "encargo": "En arnes/candado_equipo.py, en la funcion _apuntar_frenada, el registro de decisiones escribe siempre la palabra FRENO salvo cuando el motivo ya empieza por DEJO PASAR. Hay dos motivos que son decisiones de DEJAR PASAR y hoy se apuntan como frenos: documento libre, y veredicto del equipo cubre el archivo. Cambia _apuntar_frenada para que, cuando el motivo sea uno de esos dos, la linea del registro diga DEJO PASAR en lugar de FRENO. No se quita ningun freno ni se cambia ninguna decision del candado: solo se apunta la verdad de lo que se decidio. Motivo medido: en tres dias, 714 lineas de documento libre y 263 de veredicto cubre el archivo estan apuntadas como frenos siendo pases, y con esos numeros no se puede saber que candado frena en falso.",
+    "vigia": "vigias/test_vigia_el_registro_del_candado_no_miente.py",
+    "sabotaje": "memoria/sabotajes/el_registro_del_candado_no_miente.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "primer intento: el arreglo toco los sitios que LLAMAN a la funcion y la prueba mide la funcion misma; miraban a distinto nivel. Encargo reescrito para que el arreglo este donde la prueba mide."
+  },
+  "huella": "856106b63f0ad8b4",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_214934_APROBADO_candado_equipo.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (25361 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : En _apuntar_frenada, la linea del registro de decisiones escribe FRENO salvo que el motivo empiece por DEJO PASAR, asi que los motivos 'documento libre' y 'veredicto del equipo cubre el archivo' (que son pases) quedan apuntados como frenos.\n  toca        : arnes/candado_equipo.py funcion _apuntar_frenada\n  confianza   : media\n  VEREDICTO   : APROBADO\n  resumen     : El cambio toca una sola linea que si aparece en el material, usa nombres que existen (_texto, _que), hace exactamente lo que pide el paquete (apuntar como DEJO PASAR los pases de 'documento libre' y 'veredicto del equipo cubre el archivo') y no modifica ninguna decision del candado.\n\nAPLICADO en disco (lo escribio el equipo): arnes/candado_equipo.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   2 failed, 101 passed in 25.18s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): arnes/candado_equipo.py\nLLAVE GUARDADA: se puede escribir en 82 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T21:50:02",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no contesto en 600 s",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\17_20260920_215002.json"
+  }
+}

@@ -1,0 +1,26 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la vigia que prueba que recoger_lo_frenado devuelve la pieza a lo guardado y no deja una copia roja cuando pytest falla, y que respeta entrega_la_prueba.",
+  "archivo": "vigias/test_vigia_recoger_no_deja_una_copia_roja.py",
+  "texto_nuevo": "import subprocess\n\nfrom cuerpo import capataz\nfrom arnes import recoger_los_pedazos\n\n\nclass _ResultadoFalso:\n    \"\"\"Objeto minimo que imita lo que devuelve subprocess.run.\"\"\"\n\n    def __init__(self, returncode=0, stdout='', stderr=''):\n        self.returncode = returncode\n        self.stdout = stdout\n        self.stderr = stderr\n\n\ndef _preparar(tmp_path, monkeypatch, orden, returncode_pytest):\n    \"\"\"Deja la pieza en tmp_path, cambia recoger y subprocess.run por dobles.\n\n    Devuelve (raiz, ordenes_guardadas). Cada llamada falsa a subprocess.run\n    apunta la orden en la lista para poder mirarla despues.\n    \"\"\"\n    pieza = tmp_path / 'pieza.py'\n    pieza.write_text('NUEVO\\n', encoding='utf-8')\n    raiz = str(tmp_path)\n\n    def recoger_falso(raiz_recibida, nombre):\n        return {'ok': True, 'destino': 'pieza.py', 'razon': 'x'}\n\n    monkeypatch.setattr(recoger_los_pedazos, 'recoger', recoger_falso)\n\n    ordenes_guardadas = []\n\n    def run_falso(comando, *args, **kwargs):\n        ordenes_guardadas.append(comando)\n        texto = ' '.join(str(trozo) for trozo in comando) if isinstance(comando, (list, tuple)) else str(comando)\n        if 'pytest' in texto:\n            return _ResultadoFalso(returncode=returncode_pytest, stdout='', stderr='')\n        return _ResultadoFalso(returncode=0, stdout='', stderr='')\n\n    monkeypatch.setattr(subprocess, 'run', run_falso)\n    return raiz, ordenes_guardadas\n\n\ndef _contiene(ordenes, *trozos):\n    \"\"\"True si alguna orden guardada contiene todos los trozos pedidos.\"\"\"\n    for orden in ordenes:\n        texto = ' '.join(str(trozo) for trozo in orden) if isinstance(orden, (list, tuple)) else str(orden)\n        if all(trozo in texto for trozo in trozos):\n            return True\n    return False\n\n\ndef test_pytest_rojo_devuelve_ok_false_y_guarda_la_orden(tmp_path, monkeypatch):\n    orden = {'id': '1', 'pieza': 'pieza.py', 'vigia': 'vigias/test_x.py'}\n    raiz, ordenes_guardadas = _preparar(tmp_path, monkeypatch, orden, returncode_pytest=1)\n\n    resultado = capataz.recoger_lo_frenado(orden, raiz)\n\n    assert isinstance(resultado, dict)\n    assert resultado.get('ok') is False\n    assert _contiene(ordenes_guardadas, 'pytest', 'vigias/test_x.py')\n\n\ndef test_pytest_rojo_devuelve_la_pieza_a_lo_guardado(tmp_path, monkeypatch):\n    orden = {'id': '1', 'pieza': 'pieza.py', 'vigia': 'vigias/test_x.py'}\n    raiz, ordenes_guardadas = _preparar(tmp_path, monkeypatch, orden, returncode_pytest=1)\n\n    capataz.recoger_lo_frenado(orden, raiz)\n\n    assert _contiene(ordenes_guardadas, 'git', 'pieza.py')\n\n\ndef test_pytest_verde_devuelve_ok_true(tmp_path, monkeypatch):\n    orden = {'id': '1', 'pieza': 'pieza.py', 'vigia': 'vigias/test_x.py'}\n    raiz, ordenes_guardadas = _preparar(tmp_path, monkeypatch, orden, returncode_pytest=0)\n\n    resultado = capataz.recoger_lo_frenado(orden, raiz)\n\n    assert isinstance(resultado, dict)\n    assert resultado.get('ok') is True\n\n\ndef test_entrega_la_prueba_no_llama_a_pytest(tmp_path, monkeypatch):\n    orden = {'id': '1', 'pieza': 'pieza.py', 'vigia': 'vigias/test_x.py', 'entrega_la_prueba': 'si'}\n    raiz, ordenes_guardadas = _preparar(tmp_path, monkeypatch, orden, returncode_pytest=1)\n\n    resultado = capataz.recoger_lo_frenado(orden, raiz)\n\n    assert not _contiene(ordenes_guardadas, 'pytest')\n    assert isinstance(resultado, dict)\n    assert resultado.get('ok') is True\n",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada y no rompe vecinos; aprobado."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (33430 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

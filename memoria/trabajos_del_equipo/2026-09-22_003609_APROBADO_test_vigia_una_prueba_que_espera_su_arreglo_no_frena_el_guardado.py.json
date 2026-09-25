@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion test_roja_que_la_propia_tarea_declara_que_queda_roja_deja_pasar, copia de test_roja_guardada_que_la_propia_tarea_edita_frena pero con 'queda_roja': True en la orden y assert paso is True, justo despues de test_roja_de_otra_tarea_que_la_corrige_deja_pasar.",
+  "archivo": "vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+  "funcion": "test_roja_de_otra_tarea_que_la_corrige_deja_pasar",
+  "texto_viejo": "    paso, mensaje = modulo._vigias(raiz)\n    assert paso is True, (\n        \"una roja guardada que la propia tarea edita debe FRENAR; \"\n        \"mensaje: %r\" % mensaje)",
+  "texto_nuevo": "    paso, mensaje = modulo._vigias(raiz)\n    assert paso is True, (\n        \"una roja guardada que la propia tarea edita debe FRENAR; \"\n        \"mensaje: %r\" % mensaje)\n\n\ndef test_roja_que_la_propia_tarea_declara_que_queda_roja_deja_pasar(tmp_path, monkeypatch):\n    monkeypatch.setenv('INGENIERO_ETIQUETA', 'tarea-1')\n    modulo = _cargar_guardia()\n    ordenes = [\n        {\n            \"id\": \"tarea-1\",\n            \"estado\": \"en_curso\",\n            \"vigia\": \"vigias/test_roja.py\",\n            \"pieza\": \"vigias/test_roja.py\",\n            \"queda_roja\": True,\n        }\n    ]\n    raiz = _preparar_raiz(tmp_path, ordenes)\n\n    salida = (\n        \"F                                                                        [100%]\\n\"\n        \"FAILED vigias/test_roja.py::test_roja - AssertionError: assert False\\n\"\n        \"1 failed in 0.01s\\n\"\n    )\n    _parchear(monkeypatch, modulo,\n              salida_pytest=salida, returncode_pytest=1,\n              guardados_en_head={\"vigias/test_roja.py\"})\n\n    paso, mensaje = modulo._vigias(raiz)\n    assert paso is True, (\n        \"una roja que la propia tarea declara que queda roja debe DEJAR PASAR; \"\n        \"mensaje: %r\" % mensaje)",
+  "cambio": "Agregar la funcion test_roja_que_la_propia_tarea_declara_que_queda_roja_deja_pasar justo despues de test_roja_de_otra_tarea_que_la_corrige_deja_pasar, copiando test_roja_guardada_que_la_propia_tarea_edita_frena con monkeypatch.setenv('INGENIERO_ETIQUETA', 'tarea-1'), anadiendo 'queda_roja': True a la orden y cambiando el assert a paso is True.",
+  "codigo": "def test_roja_que_la_propia_tarea_declara_que_queda_roja_deja_pasar(tmp_path, monkeypatch):\n    monkeypatch.setenv('INGENIERO_ETIQUETA', 'tarea-1')\n    modulo = _cargar_guardia()\n    ordenes = [\n        {\n            \"id\": \"tarea-1\",\n            \"estado\": \"en_curso\",\n            \"vigia\": \"vigias/test_roja.py\",\n            \"pieza\": \"vigias/test_roja.py\",\n            \"queda_roja\": True,\n        }\n    ]\n    raiz = _preparar_raiz(tmp_path, ordenes)\n\n    salida = (\n        \"F                                                                        [100%]\\n\"\n        \"FAILED vigias/test_roja.py::test_roja - AssertionError: assert False\\n\"\n        \"1 failed in 0.01s\\n\"\n    )\n    _parchear(monkeypatch, modulo,\n              salida_pytest=salida, returncode_pytest=1,\n              guardados_en_head={\"vigias/test_roja.py\"})\n\n    paso, mensaje = modulo._vigias(raiz)\n    assert paso is True, (\n        \"una roja que la propia tarea declara que queda roja debe DEJAR PASAR; \"\n        \"mensaje: %r\" % mensaje)",
+  "vigia": "vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py::test_roja_que_la_propia_tarea_declara_que_queda_roja_deja_pasar",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "arnes/portero.py",
+   "cuerpo/cruzado.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_roja.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio agrega exactamente la funcion pedida, justo despues de la indicada, con tarea-1, 'queda_roja': True y assert paso is True; el texto viejo coincide con el material y no usa nada que no exista."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'test_roja_guardada_que_la_propia_tarea_edita_frena' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "vueltas_dadas: 2"
+ ]
+}

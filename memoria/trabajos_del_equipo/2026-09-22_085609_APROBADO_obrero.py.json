@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En el camino donde Big Pickle no devolvio revision valida, tras el intento con Grok 4.7 se pasa directo al relevo de las gratis sin preguntarle antes a Codex, y ademas el aviso de Codex debe salir justo cuando Grok falla y no despues.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "        if _texto_g:\n            aud_g = _json_de(_texto_g)\n            if isinstance(aud_g, dict) and '_error' not in aud_g and evitar != 'grok47':\n                avisos.append('bigpickle no contesto: revisa Grok 4.7 (A-45)')\n                return aud_g, 'grok47', avisos\n        crudo_r, quien_r, av_r = _preguntar_con_relevo(",
+  "texto_nuevo": "        if _texto_g:\n            aud_g = _json_de(_texto_g)\n            if isinstance(aud_g, dict) and '_error' not in aud_g and evitar != 'grok47':\n                avisos.append('bigpickle no contesto: revisa Grok 4.7 (A-45)')\n                return aud_g, 'grok47', avisos\n        # A-45: si Grok 4.7 no contesto, se le pregunta a Codex con la misma revision, antes del relevo de las gratis.\n        # A Codex no se le pregunta si el que escribio fue codex.\n        if evitar != 'codex':\n            from cuerpo import codex as _codex\n            _texto_c, _avisos_c = _codex.preguntar(\n                _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n            avisos.extend(_avisos_c or [])\n            if _texto_c:\n                aud_c = _json_de(_texto_c)\n                if isinstance(aud_c, dict) and '_error' not in aud_c:\n                    avisos.append('bigpickle fallo y reviso Codex (A-45)')\n                    return aud_c, 'codex', avisos\n        crudo_r, quien_r, av_r = _preguntar_con_relevo(",
+  "cambio": "Insertar, justo despues del bloque de Grok 4.7 y antes del relevo de las gratis, la revision con Codex mediante cuerpo/codex.py::preguntar; si Codex devuelve JSON valido se devuelve con revisor 'codex' y aviso de que Big Pickle fallo y reviso Codex; si no, se sigue igual que hoy. No se le pregunta a Codex si evitar == 'codex'.",
+  "codigo": "        # A-45: si Grok 4.7 no contesto, se le pregunta a Codex con la misma revision, antes del relevo de las gratis.\n        # A Codex no se le pregunta si el que escribio fue codex.\n        if evitar != 'codex':\n            from cuerpo import codex as _codex\n            _texto_c, _avisos_c = _codex.preguntar(\n                _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n            avisos.extend(_avisos_c or [])\n            if _texto_c:\n                aud_c = _json_de(_texto_c)\n                if isinstance(aud_c, dict) and '_error' not in aud_c:\n                    avisos.append('bigpickle fallo y reviso Codex (A-45)')\n                    return aud_c, 'codex', avisos",
+  "vigia": "Una prueba que simule Big Pickle caido y Grok 4.7 sin contestar, y compruebe que se llama a Codex, que si devuelve JSON valido el revisor es 'codex' con el aviso 'bigpickle fallo y reviso Codex (A-45)', y que si Codex no contesta se sigue con el relevo de las gratis como hoy.",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "cuerpo/codex.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, inserta la consulta a Codex en el punto correcto y no rompe nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39384 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 470.40000000000003s (timeout)",
+  "bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "GPT-OSS 120B (Groq) no le cabe (40211 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "GPT-OSS 120B (Groq) no le cabe (40399 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 3"
+ ]
+}

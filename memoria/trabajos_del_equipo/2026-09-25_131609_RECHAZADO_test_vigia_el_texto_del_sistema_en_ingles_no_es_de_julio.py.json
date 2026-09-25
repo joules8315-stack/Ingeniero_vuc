@@ -1,0 +1,71 @@
+{
+ "obrero": "gemini4",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "Falta importar la función 'parece_una_orden' y añadir un docstring explicativo en el archivo de prueba.",
+  "archivo": "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+  "funcion": null,
+  "texto_viejo": null,
+  "texto_nuevo": null,
+  "cambios": [
+   {
+    "texto_viejo": null,
+    "texto_nuevo": "import sys\nsys.path.append('C:\\Ingeniero_VUC\\arnes')\n\nfrom candado_legislar import parece_una_orden\n\ndef test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio():\n    \"\"\"Vigia que comprueba el texto del sistema en ingles.\n\n    Fallo real del 2026-09-25, habia 127 pendientes falsos y el cierre quedaba bloqueado siempre.\n    \"\"\"\n",
+    "cambio": "Añadir importaciones y docstring al inicio del archivo.",
+    "codigo": "import sys\nsys.path.append('C:\\Ingeniero_VUC\\arnes')\n\nfrom candado_legislar import parece_una_orden\n\ndef test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio():\n    \"\"\"Vigia que comprueba el texto del sistema en ingles.\n\n    Fallo real del 2026-09-25, habia 127 pendientes falsos y el cierre quedaba bloqueado siempre.\n    \"\"\"\n"
+   }
+  ],
+  "cambio": "Añadir importaciones y docstring al inicio del archivo.",
+  "codigo": "import sys\nsys.path.append('C:\\Ingeniero_VUC\\arnes')\n\nfrom candado_legislar import parece_una_orden\n\ndef test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio():\n    \"\"\"Vigia que comprueba el texto del sistema en ingles.\n\n    Fallo real del 2026-09-25, habia 127 pendientes falsos y el cierre quedaba bloqueado siempre.\n    \"\"\"\n",
+  "vigia": "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Elimina los asserts originales del archivo. El encargo prohibía expresamente tocar los tres asserts existentes y el código propuesto termina justo después del docstring, dejando la función vacía.",
+   "Al usar 'texto_viejo': null para insertar una cabecera que incluye la definición de la función 'def test_vigia...', genera una duplicidad de la firma de la función si el archivo original ya la tenía, o simplemente borra el contenido anterior si se interpreta como reemplazo total."
+  ],
+  "riesgo_vecinos": [
+   "La vigia dejará de probar nada porque se han borrado los asserts."
+  ],
+  "que_falta": [
+   "Incluir los tres asserts originales dentro del cuerpo de la función en el 'texto_nuevo' para que la prueba sea válida."
+  ],
+  "resumen_para_el_jefe": "El obrero ha borrado los asserts del test (la lógica de comprobación) a pesar de que se le ordenó explícitamente no tocarlos."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19216 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 20148 a 11607 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 20186 a 11627 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "vueltas_dadas: 4"
+ ]
+}

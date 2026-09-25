@@ -1,0 +1,33 @@
+{
+ "obrero": "groq",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "El archivo contiene solo la función de prueba y falla por NameError porque no importa ni configura el entorno necesario",
+  "archivo": "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+  "funcion": "test_el_texto_del_sistema_en_ingles_no_es_de_julio",
+  "texto_viejo": "def test_el_texto_del_sistema_en_ingles_no_es_de_julio():\n    assert not parece_una_orden('Generate a concise, single-line task title of at most 36 characters and under five words where possible')\n    assert not parece_una_orden('Write a brief catch-up for a user returning to this Codex task')\n    assert parece_una_orden('Busca donde esta toda la informacion que necesitas para reparar el equipo')",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py\n\nVIGIA: comprueba que un texto interno del sistema escrito en inglés NO se apunta como orden de Julio, que el fallo real fue el 2026-09-25 cuando había 127 pendientes falsos y el cierre quedaba bloqueado para siempre, y que la vigia NACE ROJA a propósito porque la reparación aún no está.\n\"\"\"\n\nimport os\nimport sys\n\n# Añadir la carpeta 'arnes' al path (está al mismo nivel que 'vigias')\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.append(os.path.join(AQUI, \"arnes\"))\n\nfrom candado_legislar import parece_una_orden\n\n\ndef test_el_texto_del_sistema_en_ingles_no_es_de_julio():\n    assert not parece_una_orden('Generate a concise, single-line task title of at most 36 characters and under five words where possible')\n    assert not parece_una_orden('Write a brief catch-up for a user returning to this Codex task')\n    assert parece_una_orden('Busca donde esta toda la informacion que necesitas para reparar el equipo')\n",
+  "cambio": "Reescribir el archivo completo añadiendo docstring, imports, ajuste de sys.path y la importación de parece_una_orden, manteniendo la función de prueba existente.",
+  "codigo": "# -*- coding: utf-8 -*-\n\"\"\"vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py\n\nVIGIA: comprueba que un texto interno del sistema escrito en inglés NO se apunta como orden de Julio, que el fallo real fue el 2026-09-25 cuando había 127 pendientes falsos y el cierre quedaba bloqueado para siempre, y que la vigia NACE ROJA a propósito porque la reparación aún no está.\n\"\"\"\n\nimport os\nimport sys\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.append(os.path.join(AQUI, \"arnes\"))\n\nfrom candado_legislar import parece_una_orden\n\n\ndef test_el_texto_del_sistema_en_ingles_no_es_de_julio():\n    assert not parece_una_orden('Generate a concise, single-line task title of at most 36 characters and under five words where possible')\n    assert not parece_una_orden('Write a brief catch-up for a user returning to this Codex task')\n    assert parece_una_orden('Busca donde esta toda la informacion que necesitas para reparar el equipo')",
+  "vigia": "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py::test_el_texto_del_sistema_en_ingles_no_es_de_julio",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio reescribe el archivo tal como pide el encargo: docstring, imports os/sys, sys.path a arnes, import de parece_una_orden y las tres comprobaciones intactas; no usa nada inexistente y no rompe vecinos."
+ },
+ "avisos": [
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 1"
+ ]
+}

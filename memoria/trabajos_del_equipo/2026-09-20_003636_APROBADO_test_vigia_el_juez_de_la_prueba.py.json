@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La cuarta prueba no puede llamar a juzgar con dejar_el_cambio porque ese parametro no existe en arnes/juez_de_la_prueba.py, y el material no trae ese archivo para arreglarlo.",
+  "archivo": "vigias/test_vigia_el_juez_de_la_prueba.py",
+  "funcion": "final del archivo (tras test_juzgar_arregla_de_verdad)",
+  "texto_viejo": "    texto_final = ruta_pieza.read_text(encoding=\"utf-8\")",
+  "texto_nuevo": "    texto_final = ruta_pieza.read_text(encoding=\"utf-8\")\n\n\ndef test_juzgar_puede_dejar_el_archivo_como_estaba(tmp_path):\n    \"\"\"Antes de aprobar el trabajo, el juez no puede dejar el cambio metido en el archivo.\"\"\"\n    raiz = _armar_raiz(tmp_path)\n    ruta_prueba = raiz / \"vigias\" / \"test_vigia_suma.py\"\n    ruta_pieza = raiz / \"pieza.py\"\n\n    resultado = juzgar(\n        str(raiz),\n        str(ruta_prueba),\n        str(ruta_pieza),\n        PIEZA_ROTA,\n        PIEZA_BUENA,\n        dejar_el_cambio=False,\n    )\n\n    assert resultado[\"ok\"] is True, (\n        \"el juez no dio por bueno el arreglo aunque solo estaba comprobando: si esto \"\n        \"falla, el juez no hace su trabajo cuando se le pide no tocar el archivo\"\n    )\n\n    texto_final = ruta_pieza.read_text(encoding=\"utf-8\")\n    assert texto_final == PIEZA_ROTA, (\n        \"el juez dejo el cambio metido en pieza.py sin que el trabajo este aprobado: \"\n        \"asi se cuela codigo que nadie aprobo\"\n    )",
+  "cambio": "Agregar al final del archivo una cuarta prueba que llama a juzgar con dejar_el_cambio=False y comprueba que ok sigue siendo True y que pieza.py quedo exactamente con PIEZA_ROTA. Pero juzgar no acepta ese parametro en el material dado, asi que antes hay que decidir quien lo arregla.",
+  "codigo": "def test_juzgar_puede_dejar_el_archivo_como_estaba(tmp_path):\n    \"\"\"Antes de aprobar el trabajo, el juez no puede dejar el cambio metido en el archivo.\"\"\"\n    raiz = _armar_raiz(tmp_path)\n    ruta_prueba = raiz / \"vigias\" / \"test_vigia_suma.py\"\n    ruta_pieza = raiz / \"pieza.py\"\n\n    resultado = juzgar(\n        str(raiz),\n        str(ruta_prueba),\n        str(ruta_pieza),\n        PIEZA_ROTA,\n        PIEZA_BUENA,\n        dejar_el_cambio=False,\n    )\n\n    assert resultado[\"ok\"] is True, (\n        \"el juez no dio por bueno el arreglo aunque solo estaba comprobando: si esto \"\n        \"falla, el juez no hace su trabajo cuando se le pide no tocar el archivo\"\n    )\n\n    texto_final = ruta_pieza.read_text(encoding=\"utf-8\")\n    assert texto_final == PIEZA_ROTA, (\n        \"el juez dejo el cambio metido en pieza.py sin que el trabajo este aprobado: \"\n        \"asi se cuela codigo que nadie aprobo\"\n    )",
+  "vigia": "vigias/test_vigia_el_juez_de_la_prueba.py (la propia cuarta prueba)",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "arnes/revisor_de_programa.py",
+   "arnes/candado_equipo.py",
+   "arnes/candados_medicion.py",
+   "cuerpo/obrero.py"
+  ],
+  "preguntas": [
+   "Quien arregla arnes/juez_de_la_prueba.py para que juzgar acepte el parametro dejar_el_cambio y no deje el cambio metido cuando vale falso? El material no trae ese archivo, asi que no puedo escribir ese arreglo sin verlo."
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "candados_medicion.py",
+   "juez_de_la_prueba.py",
+   "test_vigia_suma.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El diagnostico afirma como HECHO que 'juzgar no acepta dejar_el_cambio', pero arnes/juez_de_la_prueba.py NO viene en el material: eso no se puede afirmar ni desmentir desde aqui y debio plantearse solo como PREGUNTA_REQUERIDA, no como certeza.",
+   "La dependencia (quien arregla juez_de_la_prueba.py y con que material) se entrega como pregunta libre en vez del formato NECESITO_LEER del paquete (archivo/motivo/decide/riesgo), asi el repartidor no puede resolverla por via formal."
+  ],
+  "riesgo_vecinos": [
+   "La prueba solo se anade al final: no toca las 3 anteriores, no importa nada nuevo y no altera ningun archivo de la lista puede_danar. El unico riesgo NO es de vecino: si juez_de_la_prueba.py no admite dejar_el_cambio, la propia cuarta prueba revienta con TypeError al llamar a juzgar, dejando la vigia en rojo sin que se pueda sellar."
+  ],
+  "que_falta": [
+   "Conseguir el paquete/material de arnes/juez_de_la_prueba.py para confirmar si juzgar ya acepta dejar_el_cambio o para que cualquier modelo con ese material lo implemente: sin ese paso la vigia no puede probarse REALMENTE en verde y la ley de probar de verdad impide pedirle a Julio que la mire.",
+   "Confirmar en equipo (segunda ley del 2026-08-24) que la cuarta prueba pasa antes de presentarla, porque el propio autor dice que la entrada ok depende de un parametro que cree que no existe."
+  ],
+  "resumen_para_el_jefe": "La cuarta prueba esta escrita exactamente como pide el encargo, con la raiz de mentira, los 5 argumentos y dejar_el_cambio=False, en el lugar correcto y usando solo simbolos que existen en el material; no inventa nada, pero la vigia solo podra darse en verde cuando se consiga el material de arnes/juez_de_la_prueba.py para asegurar que ese parametro existe o implementarlo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19523 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (19801 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (20028 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

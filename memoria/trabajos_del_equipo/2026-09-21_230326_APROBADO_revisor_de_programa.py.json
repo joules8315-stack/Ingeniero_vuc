@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En la funcion revisar, el bloque que detecta piezas perdidas no descuenta las piezas que el propio encargo nombra como que se van, asi que un renombrado legitimo se frena como borrado silencioso.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "                quedan = _piezas(arbol)\n                perdidas = [n for n in _piezas(arbol_viejo) if n not in quedan]\n                if perdidas:",
+  "texto_nuevo": "                quedan = _piezas(arbol)\n                perdidas = [n for n in _piezas(arbol_viejo) if n not in quedan]\n                # decirlo por escrito es que el propio encargo nombre la pieza que se va\n                perdidas = [n for n in perdidas if n not in (tarea or '')]\n                if perdidas:",
+  "cambio": "Justo despues de la linea que calcula perdidas, anadir una linea que descarte de perdidas los nombres que aparecen en la tarea, con un comentario corto encima.",
+  "codigo": "                # decirlo por escrito es que el propio encargo nombre la pieza que se va\n                perdidas = [n for n in perdidas if n not in (tarea or '')]",
+  "vigia": "vigias/test_vigia_un_borrado_que_el_encargo_nombra_no_se_frena.py",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_un_borrado_que_el_encargo_nombra_no_se_frena.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_un_cambio_que_solo_borra_vale.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_un_borrado_que_el_encargo_nombra_no_se_frena.py",
+   "test_vigia_un_cambio_que_solo_borra_vale.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El filtro usa n not in (tarea or '') como busqueda de substring: si una tarea menciona de pasada el nombre de una pieza que de verdad se pierde en silencio, el freno quedaria suprimido sin que nadie lo pidiera; es el diseno que manda el encargo, pero es laxa.",
+   "los vigias test_vigia_revisor_de_programa.py y test_vigia_un_cambio_que_solo_borra_vale.py estan fuera del paquete: si alguno llama a revisar('', tarea=...) con una tarea que contenga el nombre de la pieza que espera ver caer en perdidas, puede cambiar de comportamiento; hay que correrlos para confirmar que siguen verdes."
+  ],
+  "que_falta": [
+   "correr los vigias fuera del paquete para confirmar que ninguno se descuadra con el nuevo filtro"
+  ],
+  "resumen_para_el_jefe": "La reparacion es exactamente la linea que pidio el encargo, en el sitio correcto y sin tocar otros archivos; solo hay que confirmar con la prueba de siempre que los vigias viejos sigan pasando."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (33930 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,32 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _montar la llamada a _falsa_popen se parte en dos lineas y le pasa excepcion, cuando debe ser una sola linea sin excepcion con un comentario encima",
+  "archivo": "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+  "funcion": "_montar",
+  "texto_viejo": "    falsa_popen = _falsa_popen(returncode=returncode, stdout=stdout, stderr=stderr,\n                               excepcion=excepcion)",
+  "texto_nuevo": "    # el Popen falso no lanza el tiempo agotado; con el vigilante eso lo dice esperar (medido 2026-09-22)\n    falsa_popen = _falsa_popen(returncode=returncode, stdout=stdout, stderr=stderr)",
+  "cambio": "Sustituir las dos lineas de la llamada a _falsa_popen dentro de _montar por una sola linea sin el parametro excepcion, con un comentario corto encima",
+  "codigo": "    # el Popen falso no lanza el tiempo agotado; con el vigilante eso lo dice esperar (medido 2026-09-22)\n    falsa_popen = _falsa_popen(returncode=returncode, stdout=stdout, stderr=stderr)",
+  "vigia": "vigias/test_vigia_el_capataz_lanza_al_equipo.py debe seguir pasando: _montar monta el Popen falso sin excepcion y el vigilante falso decide el resultado",
+  "puede_danar": [
+   "vigias/test_vigia_el_capataz_lanza_al_equipo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que pedia el encargo: une la llamada de _falsa_popen en una sola linea sin excepcion y pone el comentario pedido arriba, sobre el texto literal del material y sin tocar nada mas."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

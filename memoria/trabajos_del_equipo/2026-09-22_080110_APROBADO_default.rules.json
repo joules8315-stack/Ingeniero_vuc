@@ -1,0 +1,29 @@
+{
+ "obrero": "deepseek",
+ "auditor": "grok47",
+ "propuesta": {
+  "diagnostico": "No existe config/codex/default.rules; hay que crearlo entero con un comentario de cabecera, cinco prefix_rule de allow para python ingeniero.py y quince prefix_rule de forbidden para git, tal como pide la tarea A-40/A-48.",
+  "archivo": "config/codex/default.rules",
+  "texto_nuevo": "# Reglas de Codex, guardadas en el proyecto (A-40 y A-48, 2026-09-22). Codex no escribe codigo ni guarda trabajo: solo da ordenes al equipo y al director del Ingeniero, y el programa escribe. Se instalan con python arnes/instalar_reglas_codex.py.\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"arranca\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"trabaja\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"equipo\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"pit\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"director\"], decision=\"allow\")\nprefix_rule(pattern=[\"git\", \"add\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"commit\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"push\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"reset\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"restore\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"checkout\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"switch\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"rm\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"mv\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"stash\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"rebase\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"merge\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"cherry-pick\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"clean\"], decision=\"forbidden\")\n",
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "default.rules"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El archivo nuevo trae el comentario pedido, las cinco ordenes permitidas y las catorce prohibidas de git, en el orden exacto de la tarea."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27356 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "vueltas_dadas: 1"
+ ]
+}

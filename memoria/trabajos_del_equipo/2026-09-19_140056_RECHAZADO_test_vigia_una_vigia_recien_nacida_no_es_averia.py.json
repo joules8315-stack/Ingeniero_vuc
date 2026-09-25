@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Las dos pruebas de vigias/test_vigia_una_vigia_recien_nacida_no_es_averia.py comprueban 'ls-files' en el codigo de los que deciden, pero el guardia ahora pregunta con 'git cat-file -e HEAD:<archivo>', asi que la senal ya no se detecta y las pruebas no cubren el metodo nuevo.",
+  "archivo": "vigias/test_vigia_una_vigia_recien_nacida_no_es_averia.py",
+  "funcion": "test_todos_los_que_deciden_distinguen_una_vigia_recien_nacida",
+  "texto_viejo": "def test_todos_los_que_deciden_distinguen_una_vigia_recien_nacida():\n    \"\"\"El que corre vigias y decide TIENE que preguntarle al guardado si son nuevas.\"\"\"\n    fallan = [rel for rel in LOS_QUE_DECIDEN if \"ls-files\" not in _vivo(rel)]",
+  "texto_nuevo": "def _pregunta_si_es_nueva(vivo):\n    \"\"\"True si el codigo le pregunta al guardado si una vigia es nueva.\n\n    Vale cualquiera de las dos formas: 'ls-files' (miraba el indice) o 'cat-file'\n    (mira la ultima version guardada, que es lo correcto: nuevo = no esta en HEAD).\n    \"\"\"\n    return \"ls-files\" in vivo or \"cat-file\" in vivo\n\n\ndef test_todos_los_que_deciden_distinguen_una_vigia_recien_nacida():\n    \"\"\"El que corre vigias y decide TIENE que preguntarle al guardado si son nuevas.\"\"\"\n    fallan = [rel for rel in LOS_QUE_DECIDEN if not _pregunta_si_es_nueva(_vivo(rel))]",
+  "cambio": "Anadir arriba la funcion _pregunta_si_es_nueva(vivo) que devuelve True si 'ls-files' o 'cat-file' aparece en vivo, y sustituir en las DOS pruebas la comprobacion directa de 'ls-files' in / not in por una llamada a _pregunta_si_es_nueva(_vivo(rel)).",
+  "codigo": "def _pregunta_si_es_nueva(vivo):\n    \"\"\"True si el codigo le pregunta al guardado si una vigia es nueva.\n\n    Vale cualquiera de las dos formas: 'ls-files' (miraba el indice) o 'cat-file'\n    (mira la ultima version guardada, que es lo correcto: nuevo = no esta en HEAD).\n    \"\"\"\n    return \"ls-files\" in vivo or \"cat-file\" in vivo\n\n\ndef test_todos_los_que_deciden_distinguen_una_vigia_recien_nacida():\n    \"\"\"El que corre vigias y decide TIENE que preguntarle al guardado si son nuevas.\"\"\"\n    fallan = [rel for rel in LOS_QUE_DECIDEN if not _pregunta_si_es_nueva(_vivo(rel))]\n    assert not fallan, (\n        \"ESTOS CUENTAN UNA VIGIA RECIEN NACIDA COMO SI FUERA UNA AVERIA: %s. El metodo manda \"\n        \"que la vigia nazca ROJA, y estos la castigan por hacerlo. El metodo se castiga a si \"\n        \"mismo, y un candado que no se puede satisfacer honradamente empuja a saltarselo.\"\n        % \", \".join(fallan))",
+  "vigia": "vigias/test_vigia_una_vigia_recien_nacida_no_es_averia.py (las dos pruebas: la de los que deciden y la segunda que tambien busca 'ls-files')",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [
+   "El material solo trae el texto literal de la PRIMERA prueba (test_todos_los_que_deciden_distinguen_una_vigia_recien_nacida). La SEGUNDA prueba que tambien busca 'ls-files' no aparece en el material: NECESITO_LEER: vigias/test_vigia_una_vigia_recien_nacida_no_es_averia.py / motivo: falta el texto literal de la segunda prueba para sustituir su comprobacion de 'ls-files' / que decide: el texto_viejo y texto_nuevo exactos de esa segunda prueba / riesgo: si no se copia literal, el trabajo se descarta."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vecinas.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El material original solo proporciona el texto literal de la primera prueba ('test_todos_los_que_deciden_distinguen_una_vigia_recien_nacida'). La segunda prueba, que también busca 'ls-files' y es mencionada en el diagnóstico y en la propuesta, no aparece en el material. Por lo tanto, no se puede verificar ni modificar la segunda prueba de forma segura según las reglas del contrato ('CONTRATO_CREAR_PIEZA_NUEVA' y 'CONTRATO_RUTA_DE_ACCESO'). La propuesta asume que el texto de la segunda prueba está disponible para ser modificado, lo cual no es cierto según el material proporcionado."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Texto literal de la segunda prueba en 'vigias/test_vigia_una_vigia_recien_nacida_no_es_averia.py' para poder aplicar el cambio."
+  ],
+  "resumen_para_el_jefe": "La reparación no puede ser aprobada porque el material original no incluye el texto completo de las pruebas a modificar, impidiendo la aplicación correcta del cambio solicitado."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19067 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (19829 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (19935 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (20036 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 4"
+ ]
+}

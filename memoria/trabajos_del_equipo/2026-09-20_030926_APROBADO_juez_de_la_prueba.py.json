@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La llamada a juzgar dentro de juzgar_con_vecinas no le pasa dejar_el_cambio=False, asi que cada vecina deja el archivo cambiado y la siguiente lo toma como original.",
+  "archivo": "arnes/juez_de_la_prueba.py",
+  "funcion": "juzgar_con_vecinas",
+  "texto_viejo": "                resultado = juzgar(\n                    raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo\n                )",
+  "texto_nuevo": "                resultado = juzgar(\n                    raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo,\n                    dejar_el_cambio=False,\n                )",
+  "cambio": "Anadir el argumento dejar_el_cambio=False a la llamada de juzgar dentro del bucle de candidatas, para que cada vecina devuelva el archivo a su contenido original antes de pasar a la siguiente.",
+  "codigo": "                resultado = juzgar(\n                    raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo,\n                    dejar_el_cambio=False,\n                )",
+  "vigia": "Una prueba que llame a juzgar_con_vecinas con dos vecinas candidatas y compruebe que el archivo queda con su contenido original entre vecina y vecina, y que el mismo trozo no se aplica dos veces.",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "arnes/vecinas.py",
+   "arnes/sabotaje.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El unico comportamiento que cambia es el interno del bucle: con dejar_el_cambio=False en cada llamada a juzgar, el archivo vuelve a su contenido original entre vecina y vecina. Los flujos que llaman a juzgar_con_vecinas (verificacion antes de aprobar) leen el dict resultado, no el archivo dejado cambiado, asi que no se ven afectados. La firma de juzgar (arnes/juez_de_la_prueba.py:70) acepta dejar_el_cambio, y el finally de juzgar_con_vecinas (lineas 249-255) ya resuelve la peticion de afuera, tal como pide el encargo."
+  ],
+  "que_falta": [
+   "Nada en el codigo: el cambio hace exactamente lo que se pidio. Falta implementar la vigia propuesta y que Julio la vea funcionar con sus ojos para sellar."
+  ],
+  "resumen_para_el_jefe": "El cambio le pasa dejar_el_cambio=False a juzgar dentro del bucle de candidatas, tal como pide el encargo, la funcion juzgar existe y acepta ese argumento, y el archivo vuelve a su sitio entre vecina y vecina sin romper vecinos: se aprueba."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

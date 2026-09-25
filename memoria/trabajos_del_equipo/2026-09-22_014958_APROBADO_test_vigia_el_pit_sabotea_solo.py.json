@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "A las dos pruebas de sabotaje les falta declarar que el sabotaje de mentira esta armado, porque el armado lo vigila la orden 106 y sin eso la prueba puede estar verde por la razon equivocada.",
+  "archivo": "vigias/test_vigia_el_pit_sabotea_solo.py",
+  "funcion": "test_con_sabotaje_que_sale_bien_la_orden_se_aprueba",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "        return 0\n\n    monkeypatch.setattr(\n        capataz,\n        'correr_orden_del_sistema',\n        correr_orden_del_sistema_falso,\n        raising=False,\n    )",
+    "texto_nuevo": "        return 0\n\n    monkeypatch.setattr(\n        capataz,\n        'correr_orden_del_sistema',\n        correr_orden_del_sistema_falso,\n        raising=False,\n    )\n    # el sabotaje de mentira no existe en disco; se da por armado (el armado lo vigila la orden 106)\n    monkeypatch.setattr(capataz, 'armar_sabotaje', lambda orden: True, raising=False)"
+   },
+   {
+    "texto_viejo": "        return 1\n\n    monkeypatch.setattr(\n        capataz,\n        'correr_orden_del_sistema',\n        correr_orden_del_sistema_falso,\n        raising=False,\n    )",
+    "texto_nuevo": "        return 1\n\n    monkeypatch.setattr(\n        capataz,\n        'correr_orden_del_sistema',\n        correr_orden_del_sistema_falso,\n        raising=False,\n    )\n    # el sabotaje de mentira no existe en disco; se da por armado (el armado lo vigila la orden 106)\n    monkeypatch.setattr(capataz, 'armar_sabotaje', lambda orden: True, raising=False)"
+   }
+  ],
+  "cambio": "Anadir en cada una de las dos pruebas, justo despues del monkeypatch.setattr de correr_orden_del_sistema, una linea que da por armado el sabotaje de mentira con monkeypatch.setattr(capataz, 'armar_sabotaje', lambda orden: True, raising=False), precedida de un comentario corto.",
+  "codigo": "    # el sabotaje de mentira no existe en disco; se da por armado (el armado lo vigila la orden 106)\n    monkeypatch.setattr(capataz, 'armar_sabotaje', lambda orden: True, raising=False)",
+  "vigia": "vigias/test_vigia_el_pit_sabotea_solo.py, que comprueba que con el sabotaje armado la orden se aprueba o no segun el codigo devuelto.",
+  "puede_danar": [
+   "capataz",
+   "vigias/test_vigia_el_pit_sabotea_solo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "monkeypatch de capataz.armar_sabotaje es por-funcion (pytest lo restaura al terminar cada prueba): no se filtra a las otras pruebas ni a las vigias vecinas; tambien esa misma funcion capataz.armar_sabotaje la parchea la vigia de la orden 106, pero cada prueba tiene su monkeypatch, asi que no chocan. Hoy, sin la orden 107 aplicada, sabotear_la_orden ya no llama a armar_sabotaje, asi que la linea queda inerte y sin efecto hasta que la 107 entre, que es justo lo que se busca"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que pide la orden 162 (dar por armado el sabotaje de mentira en las dos pruebas, con su comentario, sin tocar otro archivo); no inventa nada, la linea usa la funcion real capataz.armar_sabotaje que existe, y prepara la vigia para que la orden 107 no la ponga roja."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

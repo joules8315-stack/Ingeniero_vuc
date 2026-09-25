@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta en cuerpo/capataz.py la funcion la_tarea_esta_terminada, que mira si la prueba de cada paso esta verde antes de dar una tarea por terminada, y debe ir justo antes de correr_orden_del_sistema.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "correr_orden_del_sistema",
+  "texto_viejo": "def correr_orden_del_sistema(palabras):",
+  "texto_nuevo": "def la_tarea_esta_terminada(orden):\n    \"\"\"Mira si la tarea esta de verdad terminada, no solo guardada.\n\n    El 2026-09-20 el pit dio por terminadas tres tareas solo porque se\n    guardaron, sin mirar ni una vez si la prueba de cada tarea estaba verde,\n    y una de ellas dejo en la historia una prueba que no podia estar verde\n    nunca. Esta funcion es la que mira.\n\n    Recibe la orden y devuelve un diccionario con las claves ok, paso y razon.\n    \"\"\"\n    try:\n        paso = comprobar_pasos(orden)\n        if paso == \"\":\n            return {\n                \"ok\": True,\n                \"paso\": \"\",\n                \"razon\": \"Todos los pasos estan comprobados.\",\n            }\n        return {\n            \"ok\": False,\n            \"paso\": paso,\n            \"razon\": \"La tarea no esta terminada porque fallo el paso \" + str(paso) + \", por mucho que se haya guardado.\",\n        }\n    except Exception as e:\n        return {\n            \"ok\": False,\n            \"paso\": \"error\",\n            \"razon\": \"Fallo al comprobar la tarea: \" + str(e),\n        }\n\n\ndef correr_orden_del_sistema(palabras):",
+  "cambio": "Insertar la funcion nueva la_tarea_esta_terminada justo antes de la linea que empieza la funcion correr_orden_del_sistema, sin tocar nada mas del archivo.",
+  "codigo": "def la_tarea_esta_terminada(orden):\n    \"\"\"Mira si la tarea esta de verdad terminada, no solo guardada.\n\n    El 2026-09-20 el pit dio por terminadas tres tareas solo porque se\n    guardaron, sin mirar ni una vez si la prueba de cada tarea estaba verde,\n    y una de ellas dejo en la historia una prueba que no podia estar verde\n    nunca. Esta funcion es la que mira.\n\n    Recibe la orden y devuelve un diccionario con las claves ok, paso y razon.\n    \"\"\"\n    try:\n        paso = comprobar_pasos(orden)\n        if paso == \"\":\n            return {\n                \"ok\": True,\n                \"paso\": \"\",\n                \"razon\": \"Todos los pasos estan comprobados.\",\n            }\n        return {\n            \"ok\": False,\n            \"paso\": paso,\n            \"razon\": \"La tarea no esta terminada porque fallo el paso \" + str(paso) + \", por mucho que se haya guardado.\",\n        }\n    except Exception as e:\n        return {\n            \"ok\": False,\n            \"paso\": \"error\",\n            \"razon\": \"Fallo al comprobar la tarea: \" + str(e),\n        }\n",
+  "vigia": "Una prueba que llame a la_tarea_esta_terminada con una orden cuyo comprobar_pasos devuelva texto vacio y compruebe ok verdadero, y con una orden cuyo comprobar_pasos devuelva un paso y compruebe ok falso con ese paso en el diccionario.",
+  "puede_danar": [
+   "cuerpo/capataz.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, inserta la función requerida sin inventar ni romper código vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22819 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

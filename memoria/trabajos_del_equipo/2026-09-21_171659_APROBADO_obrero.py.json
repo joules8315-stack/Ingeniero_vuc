@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py, en la funcion auditar, el bloque de bigpickle no marca el fallo cuando bigpickle no contesta, asi que en la misma tarea se le vuelve a esperar aunque ya haya fallado.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    if auditor == 'bigpickle':\n        # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de\n        # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.\n        from cuerpo import bigpickle\n        _texto_bp, _avisos_bp = bigpickle.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_bp or [])\n        if _texto_bp:\n            quien_aud = 'bigpickle'\n            auditoria = _json_de(_texto_bp)",
+  "texto_nuevo": "    if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False):\n        # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de\n        # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.\n        from cuerpo import bigpickle\n        _texto_bp, _avisos_bp = bigpickle.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_bp or [])\n        if _texto_bp:\n            quien_aud = 'bigpickle'\n            auditoria = _json_de(_texto_bp)\n        else:\n            auditar._bp_caido = True\n            avisos.append('bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)')",
+  "cambio": "En la funcion auditar, cambiar la linea if auditor == 'bigpickle': por if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False): y, dentro del bloque, despues de if _texto_bp: y sus dos lineas, agregar un else: que pone auditar._bp_caido = True y anade el aviso 'bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)'.",
+  "codigo": "    if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False):\n        # Big Pickle es la revisora (plan v4 paso 1). Se llama aqui, antes del bucle de\n        # reintentos, y el bucle se deja en 0 vueltas para que ningun otro cerebro la sustituya.\n        from cuerpo import bigpickle\n        _texto_bp, _avisos_bp = bigpickle.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_bp or [])\n        if _texto_bp:\n            quien_aud = 'bigpickle'\n            auditoria = _json_de(_texto_bp)\n        else:\n            auditar._bp_caido = True\n            avisos.append('bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)')",
+  "vigia": "Un test que llame a auditar con auditor='bigpickle' dos veces en el mismo proceso, con bigpickle.preguntar devolviendo vacio la primera vez, y compruebe que la segunda vez ya no se llama a bigpickle.preguntar y que aparece el aviso A-43.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (31587 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

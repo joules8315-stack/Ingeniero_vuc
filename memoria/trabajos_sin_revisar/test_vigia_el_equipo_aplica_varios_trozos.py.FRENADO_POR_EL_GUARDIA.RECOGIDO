@@ -1,0 +1,102 @@
+# -*- coding: utf-8 -*-
+"""Vigia de texto: el comando equipo aplica VARIOS trozos de un mismo arreglo.
+
+QUE PROTEGE
+------------
+El comando `equipo` de ingeniero.py, cuando el veredicto es APROBADO, tiene que
+poder escribir en disco TODOS los trozos que trae la propuesta de un mismo
+arreglo (varios archivos, o varios trozos del mismo archivo) en UNA sola ronda.
+
+POR QUE
+-------
+`aplicador.aplicar_cambio(prop, raiz=...)` solo sabe aplicar UN trozo: se le da
+una propuesta con un unico cambio y escribe ese. Si el arreglo de verdad trae
+varios trozos, hay que llamar a `aplicador.aplicar_propuesta(prop, raiz=...)`,
+que recorre la propuesta entera y aplica cada trozo.
+
+Si el comando `equipo` se queda con `aplicar_cambio`, el equipo paga una ronda
+COMPLETA (obrero + auditor) por cada trozo de un mismo arreglo: se aprueba el
+trozo 1, se aplica, se vuelve a llamar al equipo para el trozo 2, se aprueba, se
+aplica... y asi hasta el ultimo. Eso es pagar N rondas por un solo arreglo.
+
+COMO
+----
+Es una vigia de TEXTO: abre ingeniero.py y comprueba, con assert, dos cosas
+del comando equipo:
+
+  1) que YA NO aparece la llamada vieja:
+         _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)
+
+  2) que SI aparece la llamada nueva:
+         _ok, _msg = aplicador.aplicar_propuesta(prop, raiz=_raiz)
+
+No toca ningun otro archivo. Solo lee ingeniero.py.
+"""
+
+import os
+
+
+AQUI = os.path.dirname(os.path.abspath(__file__))
+RAIZ = os.path.dirname(AQUI)
+INGENIERO = os.path.join(RAIZ, "ingeniero.py")
+
+# El texto viejo: aplicar_cambio solo sabe aplicar UN trozo.
+TEXTO_VIEJO = "_ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)"
+
+# El texto nuevo: aplicar_propuesta recorre la propuesta entera y aplica cada trozo.
+TEXTO_NUEVO = "_ok, _msg = aplicador.aplicar_propuesta(prop, raiz=_raiz)"
+
+
+def _leer_ingeniero():
+    """Devuelve el contenido de ingeniero.py como texto.
+
+    Si el archivo no existe, la vigia tiene que ponerse ROJA con un mensaje claro:
+    no se puede comprobar nada sobre un archivo que no esta.
+    """
+    assert os.path.exists(INGENIERO), (
+        "No encuentro ingeniero.py en %s. Sin ese archivo no puedo comprobar "
+        "que el comando equipo aplique varios trozos de un mismo arreglo." % INGENIERO
+    )
+    with open(INGENIERO, encoding="utf-8") as f:
+        return f.read()
+
+
+def test_el_equipo_ya_no_usa_aplicar_cambio():
+    """El comando equipo YA NO llama a aplicar_cambio.
+
+    aplicar_cambio solo sabe aplicar UN trozo. Si el comando equipo sigue
+    llamandolo, un arreglo con varios trozos se queda a medias: el equipo paga
+    una ronda por cada trozo de un mismo arreglo.
+    """
+    texto = _leer_ingeniero()
+    assert TEXTO_VIEJO not in texto, (
+        "El comando equipo todavia llama a aplicar_cambio: "
+        "'%s'.\n"
+        "aplicar_cambio solo sabe aplicar UN trozo, asi que un arreglo con varios "
+        "trozos se queda a medias y el equipo paga una ronda por cada trozo de un "
+        "mismo arreglo. Tiene que llamar a aplicar_propuesta, que recorre la "
+        "propuesta entera y aplica cada trozo en la misma ronda." % TEXTO_VIEJO
+    )
+
+
+def test_el_equipo_si_usa_aplicar_propuesta():
+    """El comando equipo SI llama a aplicar_propuesta.
+
+    aplicar_propuesta recorre la propuesta entera y aplica cada trozo. Sin esto,
+    el equipo paga una ronda por cada trozo de un mismo arreglo.
+    """
+    texto = _leer_ingeniero()
+    assert TEXTO_NUEVO in texto, (
+        "El comando equipo NO llama a aplicar_propuesta: falta el texto "
+        "'%s'.\n"
+        "Sin esto, el equipo solo aplica un trozo por ronda y paga una ronda "
+        "completa (obrero + auditor) por cada trozo de un mismo arreglo. "
+        "aplicar_propuesta aplica todos los trozos en la misma ronda." % TEXTO_NUEVO
+    )
+
+
+if __name__ == "__main__":
+    # Permite correr la vigia a mano: python vigias/test_vigia_el_equipo_aplica_varios_trozos.py
+    test_el_equipo_ya_no_usa_aplicar_cambio()
+    test_el_equipo_si_usa_aplicar_propuesta()
+    print("VIGIA VERDE: el comando equipo aplica varios trozos de un mismo arreglo en una ronda.")

@@ -1,0 +1,62 @@
+{
+  "orden": {
+    "id": "65",
+    "titulo": "La vigia de que lo que el programa le pide a una IA no entra como orden de Julio",
+    "origen": "medido el 2026-09-21: el gancho de Codex recogio como ordenes de Julio los pedidos que le hizo el programa, incluida la hoja entera de la revision",
+    "repara": "cuando el programa le manda un pedido a Codex, el gancho de legislar de Codex lo toma por un mensaje de Julio; el interruptor INGENIERO_OFF no lo para porque ese candado no lo mira. Cada llamada del programa a Codex llenaria la lista de ordenes de Julio de ruido",
+    "pieza": "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py. Vigila arnes/candado_legislar.py cuando se corre con el argumento desde-julio. Aisla la lista de ordenes de Julio en una carpeta temporal para no ensuciar la de verdad (mira como lo hacen las otras vigias de ese candado). Pruebas, corriendolo con subprocess y sys.executable, con un JSON de entrada de mentira cuyo prompt trae frases que parecen ordenes, cada una con assert: (1) con INGENIERO_OFF puesta a 1 en el entorno NO apunta nada; (2) con INGENIERO_LLAMADA_DEL_PROGRAMA puesta a 1 NO apunta nada; (3) sin ninguna de las dos marcas, SI apunta, como hoy. Quita las dos marcas del entorno copiado en la prueba (3). No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "c92aac6a127e6c4f",
+  "tipo": "no_aplico",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_150159_APROBADO_test_vigia_lo_que_pide_el_programa_no_es_de_julio.py.json\nOBRERO deepseek -> AUDITOR groq\n  aviso       : GPT-OSS 120B (Groq) no le cabe (19935 letras, aguanta 19042) -> se le salta\n  aviso       : Big Pickle no contesto en 300s (timeout)\n  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None\n  diagnostico : Falta la vigia que comprueba que el modo desde-julio del candado no apunta frases que parecen ordenes cuando vienen del programa (INGENIERO_OFF o INGENIERO_LLAMADA_DEL_PROGRAMA), aislando la lista con INGENIERO_LEGISLAR_TEST.\n  toca        : vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py funcion ?\n  confianza   : media\n  VEREDICTO   : APROBADO\n  resumen     : Cumple con el diagnóstico, crea la vigía solicitada sin tocar otros archivos ni usar recursos inexistentes.\n\nEL EQUIPO APROBO, pero no se pudo aplicar: La propuesta no trae 'texto_viejo'.\nLLAVE GUARDADA: se puede escribir en 128 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T15:01:59",
+  "analisis": {
+    "que_paso": "El equipo aprobo la vigia nueva de la orden 65 (VEREDICTO APROBADO), pero al aplicarla el aplicador la rechazo con \"La propuesta no trae 'texto_viejo'\" y no escribio ni creo nada (tipo \"no_aplico\", codigo 0). La orden era de crear (crear:true), asi que la propuesta del obrero traia el contenido en texto_nuevo y el texto_viejo vacio; como el archivo ya existia en disco, el aplicador la mando por el camino de edicion en vez del de creacion y murio pidiendo un texto_viejo que una creacion nunca trae.",
+    "causa_raiz": "cuerpo/aplicador.py decide \"crear vs modificar\" mirando SOLO os.path.exists(archivo), no la intencion de la orden (crear). Solo escribe un archivo nuevo cuando NO existe; si el archivo ya esta en disco (por un intento previo o porque la pieza ya existia), una propuesta de creacion (texto_viejo vacio, contenido en texto_nuevo/codigo) cae en la rama de edicion que exige texto_viejo y devuelve \"La propuesta no trae 'texto_viejo'\". Un mismo trabajo aprobado se pierde por eso (fallo recurrente: se repite en los expedientes 20, 28 y 65).",
+    "donde": "cuerpo/aplicador.py, funcion aplicar_cambio: la rama del archivo que YA existe (lineas 207-209), que exige texto_viejo aunque la orden sea de crear. El unico camino que crea archivo (lineas 146-154) solo entra cuando \"not os.path.exists(archivo)\".",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "    if not texto_viejo:\n        _apuntar_log(False, archivo, funcion, \"texto_viejo vacio\")\n        return False, \"La propuesta no trae 'texto_viejo'.\""
+      },
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "    # El bloque que CREA el archivo nuevo pertenece al caso \"el archivo no existe\" y estaba\n    # quedando dentro de la comprobacion de humo: asi no se podia crear ni un archivo nuevo.\n    # Se devuelve a su sitio (Julio, 2026-09-05: la reparacion no puede romper al vecino).\n    if not os.path.exists(archivo):"
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "    if clase == \"crear\":\n        # Crear una pieza entera: si no trae el contenido nuevo, no existe lo que se crea.\n        if not str(propuesta.get(\"texto_nuevo\") or \"\").strip():\n            return False, \"la propuesta NO trae texto_nuevo (el pedido llego incompleto)\""
+      }
+    ],
+    "no_volver_a": "Una orden de crear no se aplica mirando solo si el archivo existe: si existe y la propuesta es de creacion, hay que reescribirlo con el contenido nuevo, no exigir un texto_viejo que la creacion nunca trae.",
+    "tarea_nueva": {
+      "repara": "que el aplicador cree/reescriba la pieza cuando la orden es de crear aunque el archivo ya exista, en vez de exigir texto_viejo y morir",
+      "pieza": "cuerpo/aplicador.py",
+      "razon": "la orden 65 quedo APROBADA por el equipo pero no se pudo aplicar porque el archivo ya existia y el aplicador la mando por el camino de edicion que pide texto_viejo; es un fallo recurrente (20, 28, 65)",
+      "encargo": "En cuerpo/aplicador.py, funcion aplicar_cambio: cuando la propuesta es una creacion (texto_viejo vacio tras limpiar NO_ENCONTRADO) y trae contenido nuevo en codigo o texto_nuevo, escribir/reescribir el archivo con ese contenido en un temporal al lado con validacion de sintaxis, AUNQUE os.path.exists(archivo) sea True, en vez de caer en la rama que devuelve 'La propuesta no trae texto_viejo'. No tocar el camino de edicion (cuando SI hay texto_viejo). La vigia roja nace antes que el cambio y prueba: (1) crear con archivo inexistente lo crea, (2) crear con archivo ya existente lo reescribe con texto_nuevo, (3) editar (con texto_viejo) sigue funcionando igual. No tocar otros archivos.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 300s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\65_20260921_150159.json"
+  }
+}

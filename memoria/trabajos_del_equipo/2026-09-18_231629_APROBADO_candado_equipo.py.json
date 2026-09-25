@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_equipo.py, dentro de guardar_en_la_historia, el segundo bloque 'if r.returncode != 0:' (el que va tras el git commit) devuelve False sin llamar a volver_atras, dejando el trabajo a medias sin deshacer.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "guardar_en_la_historia",
+  "texto_viejo": "        if r.returncode != 0:\n            return False, \"EL GUARDIA NO DEJO GUARDAR: \" + ((r.stderr or \"\") + (r.stdout or \"\"))[-600:]",
+  "texto_nuevo": "        if r.returncode != 0:\n            motivo = ((r.stderr or \"\") + (r.stdout or \"\"))[-600:]\n            hechos = volver_atras(raiz, rutas, motivo)\n            return False, \"EL GUARDIA NO DEJO GUARDAR: \" + motivo + \"\\nSE VOLVIO ATRAS: \" + \"; \".join(hechos)",
+  "cambio": "Sustituir el segundo bloque 'if r.returncode != 0:' (el que va despues del git commit) para que guarde el motivo en una variable, llame a volver_atras(raiz, rutas, motivo) y devuelva False con el motivo y los hechos del retroceso. No tocar nada mas.",
+  "codigo": "        if r.returncode != 0:\n            motivo = ((r.stderr or \"\") + (r.stdout or \"\"))[-600:]\n            hechos = volver_atras(raiz, rutas, motivo)\n            return False, \"EL GUARDIA NO DEJO GUARDAR: \" + motivo + \"\\nSE VOLVIO ATRAS: \" + \"; \".join(hechos)",
+  "vigia": "Una prueba que fuerce el fallo del git commit en guardar_en_la_historia y compruebe que la respuesta incluye 'SE VOLVIO ATRAS:' y que volver_atras fue llamada con (raiz, rutas, motivo).",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "guardar_en_la_historia",
+   "volver_atras",
+   "el flujo que llama a guardar_en_la_historia"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El texto viejo es IDENTICO en las dos apariciones de 'if r.returncode != 0:' dentro de guardar_en_la_historia; si la aplicacion reemplaza la primera instancia (la que va antes del git commit) en vez de la segunda, se rompe el git add. La propuesta identifica bien cual tocar ('la que va tras el git commit'), pero la aplicacion debe apuntar a esa segunda, no a un find-and-replace ciego."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio copia palabra por palabra lo que pide el paquete: guarda el motivo, llama a volver_atras(raiz, rutas, motivo) (funcion que el material confirma que ya existe justo debajo) y devuelve False con 'SE VOLVIO ATRAS', sin tocar nada mas; solo se debe cuidar al aplicar que es la SEGUNDA aparicion del bloque."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19048 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

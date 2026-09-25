@@ -1,0 +1,22 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta ver el codigo de cuerpo/cuaderno.py para saber como apuntar() lee INGENIERO_ETIQUETA y la recorta a 80, pero la tarea describe el comportamiento exacto y capataz.py ya esta en el material.",
+  "archivo": "vigias/test_vigia_la_etiqueta_llega_al_cuaderno.py",
+  "texto_nuevo": "\"\"\"Vigia: la etiqueta de la tarea llega al cuaderno.\n\nComprueba que cada llamada a una IA queda anotada con la tarea del pit\nque la pidio (plan v4 P3-7).\n\"\"\"\n\nimport json\nimport types\n\nfrom cuerpo import capataz, cuaderno\n\n\ndef _leer_lineas(ruta):\n    \"\"\"Lee el archivo jsonl y devuelve las lineas no vacias ya parseadas.\"\"\"\n    with open(ruta, \"r\", encoding=\"utf-8\") as f:\n        crudas = f.readlines()\n    salida = []\n    for linea in crudas:\n        if not linea.strip():\n            continue\n        salida.append(json.loads(linea))\n    return salida\n\n\ndef test_etiqueta_llega_al_cuaderno(monkeypatch, tmp_path):\n    \"\"\"Con INGENIERO_ETIQUETA puesta, la linea trae la etiqueta limpia.\"\"\"\n    ruta = tmp_path / \"c.jsonl\"\n    monkeypatch.setenv(\"INGENIERO_CUADERNO_TEST\", str(ruta))\n    monkeypatch.setenv(\"INGENIERO_ETIQUETA\", \" P3-7 \")\n\n    cuaderno.apuntar(\"deepseek\", resultado=cuaderno.OK)\n\n    lineas = _leer_lineas(ruta)\n    assert len(lineas) == 1\n    assert lineas[0][\"etiqueta\"] == \"P3-7\"\n\n\ndef test_sin_etiqueta_no_hay_campo(monkeypatch, tmp_path):\n    \"\"\"Sin INGENIERO_ETIQUETA, la linea no trae el campo etiqueta.\"\"\"\n    ruta = tmp_path / \"c.jsonl\"\n    monkeypatch.setenv(\"INGENIERO_CUADERNO_TEST\", str(ruta))\n    monkeypatch.delenv(\"INGENIERO_ETIQUETA\", raising=False)\n\n    cuaderno.apuntar(\"deepseek\", resultado=cuaderno.OK)\n\n    lineas = _leer_lineas(ruta)\n    assert len(lineas) == 1\n    assert \"etiqueta\" not in lineas[0]\n\n\ndef test_etiqueta_larga_se_corta_a_80(monkeypatch, tmp_path):\n    \"\"\"Una etiqueta de 200 letras se guarda cortada a 80.\"\"\"\n    ruta = tmp_path / \"c.jsonl\"\n    monkeypatch.setenv(\"INGENIERO_CUADERNO_TEST\", str(ruta))\n    monkeypatch.setenv(\"INGENIERO_ETIQUETA\", \"a\" * 200)\n\n    cuaderno.apuntar(\"deepseek\", resultado=cuaderno.OK)\n\n    lineas = _leer_lineas(ruta)\n    assert len(lineas) == 1\n    assert lineas[0][\"etiqueta\"] == \"a\" * 80\n\n\ndef test_capataz_pasa_la_etiqueta_al_equipo(monkeypatch):\n    \"\"\"lanzar_al_equipo pasa INGENIERO_ETIQUETA con el id de la orden.\"\"\"\n    guardado = {}\n\n    def falso_run(*args, **kwargs):\n        guardado[\"env\"] = kwargs.get(\"env\")\n        return types.SimpleNamespace(returncode=0, stdout=\"\", stderr=\"\")\n\n    monkeypatch.setattr(capataz.subprocess, \"run\", falso_run)\n\n    capataz.lanzar_al_equipo(\n        \"ingeniero\", {\"id\": \"P9\", \"encargo\": \"x\", \"pieza\": \"y\"}\n    )\n\n    assert guardado[\"env\"][\"INGENIERO_ETIQUETA\"] == \"P9\"\n",
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigia nueva reproduce al pie de la letra las 4 pruebas del encargo (etiqueta, ausencia, corte a 80 y paso por lanzar_al_equipo), usa solo funciones y datos que estan en el material (cuaderno.apuntar, cuaderno.OK, capataz.lanzar_al_equipo, capataz.subprocess.run, INGENIERO_ETIQUETA, INGENIERO_CUADERNO_TEST), no inventa nada y no toca a los vecinos declarados."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

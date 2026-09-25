@@ -1,0 +1,15 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-22_102010_APROBADO_obrero.py.json
+OBRERO deepseek -> AUDITOR groq
+  aviso       : GPT-OSS 120B (Groq) no le cabe (39384 letras, aguanta 19042) -> se le salta
+  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None
+  aviso       : Grok no contesto en 240s (timeout)
+  diagnostico : En cuerpo/obrero.py::auditar, cuando Big Pickle no devolvio revision valida y tras el intento con Grok 4.7, se pasa directo al relevo de las gratis sin intentar antes a Codex con cuerpo/codex.py::preguntar.
+  toca        : cuerpo/obrero.py funcion auditar
+  confianza   : media
+  VEREDICTO   : APROBADO
+  resumen     : El cambio añade la llamada a Codex antes del relevo, cumpliendo el diagnóstico sin introducir elementos inexistentes ni romper vecinos.
+
+APLICADO en disco (lo escribio el equipo): cuerpo/obrero.py
+GUARDADO AL MOMENTO: guardado en la historia: cuerpo/obrero.py
+LLAVE GUARDADA: se puede escribir en 138 archivo(s) durante 90 min.

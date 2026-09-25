@@ -1,0 +1,27 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la vigia que prueba que una vigia vieja que ni carga (ERROR NameError) o que falla (FAILED) hace frenar al guardia en vez de tomarla por nueva.",
+  "archivo": "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+  "texto_nuevo": "import os\nimport sys\nimport types\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, 'arnes'))\n\nimport guardia_de_guardado\nimport vecinas\n\n\ndef _falso_run(comandos_vistos, stdout_pytest):\n    \"\"\"Devuelve una funcion que imita a subprocess.run.\n\n    Si el comando trae 'pytest', devuelve returncode 1 y el stdout que se le pase.\n    Si el comando trae 'ls-files', apunta el ultimo elemento del comando y devuelve\n    returncode 0 solo si ese elemento es exactamente 'vigias/test_viejo.py'.\n    \"\"\"\n    def _run(cmd, *args, **kwargs):\n        cmd = list(cmd)\n        if 'pytest' in cmd:\n            return types.SimpleNamespace(returncode=1, stdout=stdout_pytest, stderr='')\n        if 'ls-files' in cmd:\n            comandos_vistos.append(cmd[-1])\n            if cmd[-1] == 'vigias/test_viejo.py':\n                return types.SimpleNamespace(returncode=0, stdout='vigias/test_viejo.py\\n', stderr='')\n            return types.SimpleNamespace(returncode=1, stdout='', stderr='')\n        return types.SimpleNamespace(returncode=0, stdout='', stderr='')\n    return _run\n\n\ndef test_vigia_vieja_que_no_carga_frena(tmp_path, monkeypatch):\n    \"\"\"Una vigia vieja que ni carga (ERROR NameError) tiene que hacer frenar al guardia.\"\"\"\n    (tmp_path / 'vigias').mkdir()\n    monkeypatch.setattr(vecinas, 'elegir', lambda raiz: None)\n    comandos_vistos = []\n    stdout = (\"ERROR vigias/test_viejo.py - NameError: name 'contextlib' is not defined\\n\"\n              \"1 error in 0.10s\")\n    monkeypatch.setattr(guardia_de_guardado.subprocess, 'run',\n                        _falso_run(comandos_vistos, stdout))\n\n    paso, mensaje = guardia_de_guardado._vigias(str(tmp_path))\n\n    assert paso is False, 'una vigia vieja que no carga tiene que frenar: %r' % (mensaje,)\n    assert 'vigias/test_viejo.py' in comandos_vistos, \\\n        'a git se le tiene que preguntar por la vigia roja: %r' % (comandos_vistos,)\n\n\ndef test_vigia_vieja_que_falla_frena(tmp_path, monkeypatch):\n    \"\"\"Una vigia vieja que falla (FAILED) tambien tiene que hacer frenar al guardia.\"\"\"\n    (tmp_path / 'vigias').mkdir()\n    monkeypatch.setattr(vecinas, 'elegir', lambda raiz: None)\n    comandos_vistos = []\n    stdout = 'FAILED vigias/test_viejo.py::test_algo - assert 1 == 2\\n'\n    monkeypatch.setattr(guardia_de_guardado.subprocess, 'run',\n                        _falso_run(comandos_vistos, stdout))\n\n    paso, mensaje = guardia_de_guardado._vigias(str(tmp_path))\n\n    assert paso is False, 'una vigia vieja que falla tiene que frenar: %r' % (mensaje,)\n    assert 'vigias/test_viejo.py' in comandos_vistos, \\\n        'a git se le tiene que preguntar por la vigia roja: %r' % (comandos_vistos,)\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno: solo crea un archivo nuevo; importa guardia_de_guardado y vecinas en modo lectura y los parchea con monkeypatch que se restaura solo. No toca las vigias de la seccion 5 (test_vigia_el_guardia_no_se_cuelga.py, test_vigia_el_guardia_se_acuerda_y_frena.py)."
+  ],
+  "que_falta": [
+   "Ejecutar las dos pruebas con pytest por el equipo (ley: enchufado se prueba ejecutando, ninguna opinion es prueba) y correr las dos vigias vecinas de la seccion 5 antes de sellar."
+  ],
+  "resumen_para_el_jefe": "El obrero hizo exactamente lo que pedia el paquete: la vigia nueva con las dos pruebas (la vieja que no carga con ERROR frena, y la que falla con FAILED tambien frena), falsificando subprocess.run como se le indico y preguntandole a git por 'vigias/test_viejo.py', sin inventar nada y sin tocar vecinos; solo falta que alguien la corra de verdad antes de sellar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (35050 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,67 @@
+{
+  "orden": {
+    "id": "112",
+    "titulo": "La vigia de que recoger aparta un archivo nuevo rojo en vez de dejarlo suelto",
+    "origen": "medido el 2026-09-21 16:03 (A-43): la vigia recogida de la orden 55 era un archivo nuevo; git checkout HEAD no la quita porque no esta en lo guardado, y quedo suelta en el disco",
+    "repara": "una pieza nueva rechazada queda suelta sin guardar y contamina las pruebas siguientes",
+    "pieza": "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py. Vigila la funcion recoger_lo_frenado de cuerpo/capataz.py. Arriba: import subprocess, from cuerpo import capataz, from arnes import recoger_los_pedazos, from arnes import guardia_de_guardado. raiz es tmp_path; crea tmp_path/pieza.py con el texto NUEVO y tmp_path/memoria/trabajos_sin_revisar. La orden es {'id': '1', 'pieza': 'pieza.py', 'vigia': 'vigias/test_x.py'}. Con monkeypatch: recoger_los_pedazos.recoger devuelve {'ok': True, 'destino': 'pieza.py', 'razon': 'x'}; subprocess.run es una funcion falsa que NUNCA corre nada y devuelve returncode 1 para las ordenes que contienen pytest, returncode 1 para git cat-file (la pieza no esta guardada) y 0 para las demas; guardia_de_guardado._vigias devuelve (True, 'x'). Pruebas, cada una con assert: (1) tras recoger_lo_frenado(orden, str(tmp_path)), tmp_path/pieza.py ya no existe; (2) en tmp_path/memoria/trabajos_sin_revisar hay un archivo cuyo nombre empieza por pieza.py y termina en .ROJO, con el texto NUEVO dentro (no se borra nada). No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "88199bbdf2f60489",
+  "tipo": "no_aplico",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_060650_APROBADO_test_vigia_recoger_aparta_la_pieza_nueva_roja.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (34381 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : Falta la vigia nueva que comprueba que recoger_lo_frenado aparta la pieza nueva como .ROJO cuando su prueba queda roja; el material solo trae un fragmento parcial de esa vigia sin los imports ni el _run_falso.\n  toca        : vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py funcion ?\n  confianza   : media\n  VEREDICTO   : APROBADO\n  resumen     : La vigia nueva cumple el encargo al pie de la letra: imports, textos, orden, dobles falsos y las dos pruebas con assert; no inventa nada ni toca otro archivo.\n\nEL EQUIPO APROBO, pero no se pudo aplicar: La propuesta no trae 'texto_viejo'.\nLLAVE GUARDADA: se puede escribir en 128 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T06:06:53",
+  "analisis": {
+    "que_paso": "El equipo (deepseek escribe, bigpickle revisa) APROBO la vigia nueva del encargo 112, pero al aplicarla el aplicador la rechazo con \"La propuesta no trae 'texto_viejo'.\" (tipo no_aplico, codigo 0). El encargo era CREAR (crear=true), no editar, pero el archivo destino vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py YA EXISTIA en disco (ya se habia aplicado y sellado antes, commit aed3048). Al existir el archivo, el aplicador dejo de tratarlo como creacion y lo trato como edicion, exigiendo un texto_viejo que una pieza nueva completa nunca trae.",
+    "causa_raiz": "La funcion aplicar_cambio de cuerpo/aplicador.py decide \"crear vs editar\" UNICAMENTE por si el archivo existe en disco (os.path.exists), e IGNORA la marca crear del encargo: solo lee archivo, funcion, texto_viejo, texto_nuevo y codigo. Cuando un encargo marcado crear apunta a un archivo que ya existe, el flujo salta la rama de creacion (que solo actua cuando el archivo NO existe) y cae en la rama de edicion, donde el primer requisito es texto_viejo. Como una creacion completa no lleva texto_viejo, devuelve \"La propuesta no trae 'texto_viejo'.\" y el trabajo aprobado se pierde sin aplicar.",
+    "donde": "cuerpo/aplicador.py, funcion aplicar_cambio: lectura de campos (lineas 94-98, no lee 'crear'), rama de creacion solo-si-no-existe (lineas 111-119 y 138-146) y rama de edicion que exige texto_viejo (lineas 199-201).",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "    archivo = propuesta[\"archivo\"]\n    funcion = propuesta.get(\"funcion\", \"?\")\n    texto_viejo = propuesta.get(\"texto_viejo\", \"\")\n    texto_nuevo = propuesta.get(\"texto_nuevo\", \"\")\n    codigo = propuesta.get(\"codigo\", \"\")"
+      },
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "    # Si el archivo NO existe y la propuesta trae texto_viejo, es un cambio sobre algo que deberia existir: no se crea nada.\n    if not os.path.exists(archivo):"
+      },
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "    if not texto_viejo:\n        _apuntar_log(False, archivo, funcion, \"texto_viejo vacio\")\n        return False, \"La propuesta no trae 'texto_viejo'.\""
+      },
+      {
+        "archivo": "memoria/.salida_tarea_112.txt",
+        "texto": "EL EQUIPO APROBO, pero no se pudo aplicar: La propuesta no trae 'texto_viejo'."
+      }
+    ],
+    "no_volver_a": "Un encargo marcado crear no puede morir pidiendo texto_viejo: el aplicador debe honrar la marca crear (sobreescribir o reconocer que el archivo ya esta identico) en vez de decidir crear-vs-editar solo por si el archivo existe en disco.",
+    "tarea_nueva": {
+      "repara": "el aplicador rechaza un encargo marcado crear cuando el archivo destino ya existe, exigiendo un texto_viejo que una creacion completa nunca trae, y pierde el trabajo aprobado",
+      "pieza": "cuerpo/aplicador.py",
+      "razon": "aplicar_cambio decide crear-vs-editar solo por os.path.exists e ignora la marca crear del encargo; un crear sobre archivo ya existente cae en la rama de edicion y muere en 'La propuesta no trae texto_viejo'",
+      "encargo": "En cuerpo/aplicador.py, funcion aplicar_cambio: leer propuesta.get('crear'). Cuando crear es verdadero y viene contenido (codigo o texto_nuevo) SIN texto_viejo: si el archivo NO existe, crearlo como ya se hace; si el archivo YA existe, comparar su contenido con el contenido propuesto: si es identico, devolver (True, 'El archivo ya existe identico; nada que aplicar.'); si difiere, sobreescribirlo entero con el contenido propuesto (validando sintaxis .py con ast.parse igual que en el resto) y devolver (True, 'Archivo recreado.'), sin exigir texto_viejo. No cambiar el comportamiento cuando crear no viene o viene texto_viejo. Anadir/actualizar la vigia vigias/test_vigia_aplicador.py con dos casos: (a) crear=true, archivo ya existente y contenido distinto -> se sobreescribe y devuelve ok; (b) crear=true, archivo ya existente con el MISMO contenido -> devuelve ok sin tocar el disco. No tocar ningun otro archivo.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": true,
+    "paso": "tarea",
+    "motivo": "agregada 112-F061113",
+    "tarea": "112-F061113",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\112_20260922_060653.json"
+  }
+}

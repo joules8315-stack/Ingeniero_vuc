@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La segunda prueba llama a _material_del_revisor, pero el aviso del juez se pone en auditar, asi que mira el sitio equivocado.",
+  "archivo": "vigias/test_vigia_el_revisor_sabe_lo_que_dijo_el_juez.py",
+  "funcion": "test_el_material_del_revisor_lleva_la_razon_del_juez",
+  "texto_viejo": "def test_el_material_del_revisor_lleva_la_razon_del_juez():\n    \"\"\"El material del revisor tiene que decir lo que ya decidio el juez.\n\n    Si el revisor no sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar\n    a ciegas lo que ya esta demostrado.\n    \"\"\"\n    material = obrero._material_del_revisor(PAQUETE, PROPUESTA, TOPE)\n    assert isinstance(material, str), (\n        '_material_del_revisor no devolvio texto: ' + repr(material)[:200])\n    assert RAZON_DEL_JUEZ in material, (\n        'el material del revisor NO dice lo que ya decidio el juez: si el revisor no '\n        'sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar a ciegas lo '\n        'que ya esta demostrado. Material: ' + material[:400])",
+  "texto_nuevo": "def test_el_material_del_revisor_lleva_la_razon_del_juez(monkeypatch):\n    \"\"\"El material del revisor tiene que decir lo que ya decidio el juez.\n\n    Si el revisor no sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar\n    a ciegas lo que ya esta demostrado.\n    \"\"\"\n    prompts = []\n\n    def _falso_preguntar_con_relevo(prompt, *resto):\n        prompts.append(prompt)\n        return (\n            '{\"veredicto\": \"APROBADO\", \"fallos\": []}',\n            'groq',\n            [],\n        )\n\n    monkeypatch.setattr(obrero, '_preguntar_con_relevo', _falso_preguntar_con_relevo)\n    obrero.auditar(\n        PAQUETE,\n        {'archivo': 'x.py', '_juez_de_la_prueba': RAZON_DEL_JUEZ, 'evitar': 'deepseek'},\n    )\n    assert prompts, (\n        'el revisor no llego a preguntar nada: si el revisor no sabe que la prueba ya '\n        'se corrio y quedo verde, vuelve a juzgar a ciegas lo que ya esta demostrado')\n    assert 'YA SE CORRIO LA PRUEBA' in prompts[0], (\n        'el material del revisor NO dice que la prueba ya se corrio: si el revisor no '\n        'sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar a ciegas lo '\n        'que ya esta demostrado. Material: ' + prompts[0][:400])\n    assert RAZON_DEL_JUEZ in prompts[0], (\n        'el material del revisor NO dice lo que ya decidio el juez: si el revisor no '\n        'sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar a ciegas lo '\n        'que ya esta demostrado. Material: ' + prompts[0][:400])",
+  "cambio": "Sustituir la funcion entera test_el_material_del_revisor_lleva_la_razon_del_juez por una version que recibe monkeypatch, crea la lista prompts, define _falso_preguntar_con_relevo que la rellena y devuelve la tupla literal, la enchufa con monkeypatch.setattr en obrero._preguntar_con_relevo, llama a obrero.auditar con PAQUETE y el diccionario con archivo x.py, _juez_de_la_prueba = RAZON_DEL_JUEZ y evitar deepseek, y comprueba prompts no vacia, 'YA SE CORRIO LA PRUEBA' en prompts[0] y RAZON_DEL_JUEZ en prompts[0].",
+  "codigo": "def test_el_material_del_revisor_lleva_la_razon_del_juez(monkeypatch):\n    \"\"\"El material del revisor tiene que decir lo que ya decidio el juez.\n\n    Si el revisor no sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar\n    a ciegas lo que ya esta demostrado.\n    \"\"\"\n    prompts = []\n\n    def _falso_preguntar_con_relevo(prompt, *resto):\n        prompts.append(prompt)\n        return (\n            '{\"veredicto\": \"APROBADO\", \"fallos\": []}',\n            'groq',\n            [],\n        )\n\n    monkeypatch.setattr(obrero, '_preguntar_con_relevo', _falso_preguntar_con_relevo)\n    obrero.auditar(\n        PAQUETE,\n        {'archivo': 'x.py', '_juez_de_la_prueba': RAZON_DEL_JUEZ, 'evitar': 'deepseek'},\n    )\n    assert prompts, (\n        'el revisor no llego a preguntar nada: si el revisor no sabe que la prueba ya '\n        'se corrio y quedo verde, vuelve a juzgar a ciegas lo que ya esta demostrado')\n    assert 'YA SE CORRIO LA PRUEBA' in prompts[0], (\n        'el material del revisor NO dice que la prueba ya se corrio: si el revisor no '\n        'sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar a ciegas lo '\n        'que ya esta demostrado. Material: ' + prompts[0][:400])\n    assert RAZON_DEL_JUEZ in prompts[0], (\n        'el material del revisor NO dice lo que ya decidio el juez: si el revisor no '\n        'sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar a ciegas lo '\n        'que ya esta demostrado. Material: ' + prompts[0][:400])",
+  "vigia": "vigias/test_vigia_el_revisor_sabe_lo_que_dijo_el_juez.py, prueba test_el_material_del_revisor_lleva_la_razon_del_juez: se corre y tiene que quedar verde solo si auditar mete en el prompt la marca YA SE CORRIO LA PRUEBA y la razon del juez.",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no usa código inexistente, no afecta a los vecinos y respeta todas las cláusulas del contrato."
+ },
+ "avisos": [
+  "OpenCode termino con codigo 1",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

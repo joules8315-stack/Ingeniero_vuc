@@ -1,0 +1,27 @@
+{
+  "orden": {
+    "id": "20",
+    "titulo": "La vigia de que al perito no le ponen los candados de Julio",
+    "origen": "medido el 2026-09-20 en los tres expedientes guardados",
+    "repara": "de tres expedientes, en dos el perito no contesto en 600 segundos y en el tercero contesto en espanol llano en vez del formato de datos que se le pidio. La causa del tercero es que al perito le corren encima los candados que existen para hablar con Julio, y esos le prohiben justo lo que la maquina le pide",
+    "pieza": "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py. Prueba que cuando el pit llama al perito, la llamada lleva el interruptor INGENIERO_OFF puesto a 1 en su entorno, para que los candados pensados para hablar con Julio no le prohiban al perito contestar en formato de datos. Usa monkeypatch sobre subprocess.run dentro de cuerpo/capataz.py para espiar con que entorno se llama, y sobre shutil.which para que crea que el programa existe. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py",
+    "entrega_la_prueba": "si",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "c16a2edcb92819e4",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_211556_DUDOSO_test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (20221 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (20811 letras, aguanta 19042) -> se le salta\n  diagnostico : La vigia anterior se rechazo por traer NO_ENCONTRADO y por inventarse la funcion llamar_al_perito en vez de usar el nombre real pedir_al_perito; hay que crear la vigia nueva usando el nombre real y sin marcas NO_ENCONTRADO.\n  toca        : vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py funcion archivo nuevo (no existe en el material)\n  confianza   : baja\n  PREGUNTA_REQUERIDA: PREGNTA_REQUERIDA: ¿cuales son los argumentos exactos que recibe pedir_al_perito y que devuelve, para invocarla correctamente en la vigia?; PREGUNTA_REQUERIDA: ¿como se llama exactamente la variable de entorno del interruptor (INGENIERO_OFF) y con que valor se pone (1 o '1') en la llamada real al perito?\n  VEREDICTO   : DUDOSO\n  fallo       : La vigia invoca capataz.pedir_al_perito(\"prueba\") con un argumento de relleno sin conocer la firma real de la funcion; si la firma no acepta un argumento posicional, la vigia falla en la recoleccion/ejecucion.\n  fallo       : El espia lee solo llamadas[0][\"kwargs\"][\"env\"]; si pedir_al_perito hace migas mas de una llamada a subprocess o pasa el entorno por otra via (Popen, env de os.environ, o sin env), la vigia no espia lo que dice espiar.\n  fallo       : Assert INGENIERO_OFF == \"1\": el valor real podria ser int 1 u otra forma; el obrero mismo lo deja como PREGUNTA_REQUERIDA abierta y declara confianza 'baja', asi que la vigia no esta certificada para pasar ni para reflejar la implementacion real.\n  fallo       : Ningun fallo de invento: todos los nombres (cuerpo.capataz, pedir_al_perito, capataz.subprocess, shutil.which, INGENIERO_OFF) existen o los pide el encargo, y el archivo nuevo lo pide expresamente el encargo con su ruta.\n  resumen     : No inventa nada y respeta el encargo punto por punto, pero asume la firma de pedir_al_perito y la forma exacta del entorno; hay que confirmar el trozo real de capataz.py (o probarla de verdad) antes de sellarla.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T21:15:56"
+}

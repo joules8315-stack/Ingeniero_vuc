@@ -1,0 +1,28 @@
+{
+  "orden": {
+    "id": "100",
+    "titulo": "La vigia de que Big Pickle caido no se espera en cada vuelta de la misma tarea",
+    "origen": "medido el 2026-09-21 14:12 (ley A-43): la orden 92 murio por tope de tiempo; en cada una de sus 3 vueltas se espero a Big Pickle 300 s y fallo, y el relevo contestaba en 5 s. 3 x 300 = 900 s, el tope",
+    "repara": "auditar vuelve a llamar a Big Pickle en cada vuelta aunque ya fallo en esa misma tarea",
+    "pieza": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py. Vigila la funcion auditar de cuerpo/obrero.py con auditor='bigpickle'. Arriba: from cuerpo import obrero, from cuerpo import bigpickle. Llama a obrero.auditar exactamente asi: auditoria, quien, avisos = obrero.auditar('', {'archivo': 'x.py'}, auditor='bigpickle', evitar='deepseek'). Con monkeypatch pon tambien obrero._claude_directo en una funcion que lanza AssertionError, para que nunca se llame a Claude. Con monkeypatch: pon el atributo _bp_caido de obrero.auditar en False (monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False)); bigpickle.preguntar cuenta sus llamadas y devuelve ('', ['Big Pickle no contesto en 300s (timeout)']); obrero._preguntar_con_relevo devuelve ('{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}', 'groq', []). Pruebas, cada una con assert: (1) llamando dos veces seguidas a obrero.auditar, bigpickle.preguntar se llamo UNA sola vez; (2) si bigpickle.preguntar devuelve ('{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}', []), dos llamadas seguidas llaman a bigpickle.preguntar DOS veces, porque no fallo. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "130472d2065c64ca",
+  "tipo": "tiempo",
+  "codigo": null,
+  "salida": "TOPE DE TIEMPO: 900 s",
+  "apartados": [],
+  "fecha": "2026-09-21T17:12:21"
+}

@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion apuntar ya tiene el parametro segundos y el redondeo, pero falta la linea del docstring del modulo que describe la clave segundos.",
+  "archivo": "cuerpo/cuaderno.py",
+  "funcion": "docstring del modulo (cabecera del archivo)",
+  "texto_viejo": "  crudo    - las primeras letras de lo que devolvio (para ver con los ojos que paso)\n\"\"\"",
+  "texto_nuevo": "  crudo    - las primeras letras de lo que devolvio (para ver con los ojos que paso)\n  segundos - cuanto tardo la llamada (redondeado a 1 decimal)\n\"\"\"",
+  "cambio": "Agregar en la lista del docstring del modulo, justo despues de la linea de crudo, una linea que documente la clave segundos: cuanto tardo la llamada.",
+  "codigo": "  segundos - cuanto tardo la llamada (redondeado a 1 decimal)",
+  "vigia": "Una prueba que lea el docstring del modulo cuerpo/cuaderno.py y compruebe que contiene la palabra segundos con su descripcion de tiempo de llamada.",
+  "puede_danar": [
+   "Nadie depende de estas piezas. Reparacion aislada."
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El diagnostico afirma que apuntar ya tiene el parametro segundos y el redondeo, pero el trozo exacto del material (cuerpo/cuaderno.py:39-62) muestra la firma 'def apuntar(quien, tamano=0, vuelta=0, clase=\"\", resultado=ERROR, crudo=\"\")' sin segundos y la fila sin la clave 'segundos'. Per el material esa premisa no se sostiene: frente a una afirmacion que el material contradice, la ley es PREGUNTA_REQUERIDA, no darla por hecha.",
+   "La propuesta solo cubre el docstring. Si el parametro no se agrego en una propuesta hermana, el encargo (paso 1 del RELOJ) queda a medio hacer: el docstring documentaria una clave que apuntar nunca escribe.",
+   "La vigia pedida solo lee el docstring y comprueba que contenga 'segundos'; no prueba que apuntar escriba la clave con round(float(segundos), 1), asi que puede quedar verde aun sin el parametro en la funcion."
+  ],
+  "riesgo_vecinos": [
+   "Documentar en el docstring una clave que apuntar no escribe deja el cuaderno describiendo algo que no guarda: quien lea el docstring esperara la clave segundos y ninguna fila la traera."
+  ],
+  "que_falta": [
+   "Confirmar que apuntar YA tiene segundos=None en la firma y escribe la clave 'segundos' con round(float(segundos), 1). Si no es asi, esa parte del encargo sigue pendiente.",
+   "Si el parametro ya existe (propuesta hermana), este cambio del docstring es correcto, esta bien ubicado (el texto 'crudo    - las primeras letras...' aparece en el material) y basta con aprobar la vigia del docstring.",
+   "Mejorar la vigia: que compruebe ademas que apuntar guarda la clave 'segundos' (parametro + valor redondeado), no solo que el docstring la mencione."
+  ],
+  "resumen_para_el_jefe": "La linea del docstring esta bien redactada y en su sitio exacto, pero da por hecho que apuntar ya tiene el parametro segundos cuando el material muestra que NO lo tiene: hay que confirmarlo antes de sellar, o el reloj quedaria documentado en el texto pero sin funcionar en el codigo."
+ },
+ "avisos": [
+  "vueltas_dadas: 3"
+ ]
+}

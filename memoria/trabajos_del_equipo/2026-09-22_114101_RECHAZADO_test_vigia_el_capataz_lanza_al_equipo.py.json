@@ -1,0 +1,52 @@
+{
+ "obrero": "deepseek",
+ "auditor": "grok47",
+ "propuesta": {
+  "diagnostico": "El material trae la funcion lanzar_al_equipo ya con Popen y COLGADA:, pero la vigia solo tiene el encabezado y no el cuerpo completo, y falta el resto de la vigia para adaptarla.",
+  "archivo": "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "cuerpo/vigilante.py",
+   "vigias/test_vigia_el_capataz_lanza_al_equipo.py"
+  ],
+  "preguntas": [
+   "El material solo trae las primeras 40 lineas de la vigia; necesito el archivo completo para adaptar el monkeypatch, la lectura de salida y la prueba de timeout."
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El parche no reescribe la vigia: solo cambia el helper _falsa_run por _FalsoPopen/_falsa_popen y un comentario. No hay monkeypatch de cuerpo.vigilante.esperar, no se lee .salida_tarea_*.txt y la prueba de timeout no pasa a esperar 'COLGADA:'.",
+   "El falso promete apuntar args/kwargs en la lista de llamadas y acepta stdout/stderr, pero no anota ninguna llamada ni escribe el archivo de salida; wait ignora el timeout. Quitar _falsa_run sin tocar el resto de las pruebas deja la vigia rota."
+  ],
+  "riesgo_vecinos": [
+   "Si se aplica solo esto, las pruebas que siguen llamando a _falsa_run o a subprocess.run quedan rotas y lanzar_al_equipo no puede sellarse: el encargo exige la vigia en verde antes de tocar el capataz."
+  ],
+  "que_falta": [
+   "El cuerpo de las pruebas: falsear vigilante.esperar ('termino' / 'tope_duro'), escribir y leer .salida_tarea_*.txt, y el assert 'COLGADA:' en vez de 'TOPE DE TIEMPO'.",
+   "El resto de vigias/test_vigia_el_capataz_lanza_al_equipo.py; con las lineas 1-40 el cambio queda a medias."
+  ],
+  "resumen_para_el_jefe": "No aplica: solo cambia el muñeco y un comentario, y deja la vigia a medias, sin la salida por archivo ni el aviso COLGADA:."
+ },
+ "avisos": [
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "GPT-OSS 120B (Groq) no le cabe (19941 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "GPT-OSS 120B (Groq) no le cabe (20951 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (21009 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

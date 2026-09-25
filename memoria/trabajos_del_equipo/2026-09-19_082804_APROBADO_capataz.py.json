@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "lanzar_al_equipo(encargo) tiene el proyecto 'ingeniero' y la ruta C:\\Ingeniero_VUC quemados, no elige quien escribe ni quien revisa, no tiene tope de tiempo y devuelve una tupla en vez del dict pedido",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "lanzar_al_equipo",
+  "texto_viejo": "def lanzar_al_equipo(encargo):\n    raiz = r\"C:\\Ingeniero_VUC\"\n    resultado = subprocess.run(\n        [\"python\", \"ingeniero.py\", \"equipo\", \"ingeniero\", encargo],\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n    )\n    return (resultado.returncode, resultado.stdout)",
+  "texto_nuevo": "def lanzar_al_equipo(proyecto, orden, tope_segundos=900):\n    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    comando = [\n        sys.executable,\n        \"ingeniero.py\",\n        \"equipo\",\n        proyecto,\n        orden[\"encargo\"],\n        \"--escribe\",\n        \"deepseek\",\n        \"--revisa\",\n        \"bigpickle\",\n    ]\n    if orden.get(\"crear\"):\n        comando.append(\"--crear\")\n    entorno = dict(os.environ)\n    entorno[\"PYTHONIOENCODING\"] = \"utf-8\"\n    try:\n        resultado = subprocess.run(\n            comando,\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            encoding=\"utf-8\",\n            errors=\"replace\",\n            timeout=tope_segundos,\n            env=entorno,\n        )\n    except subprocess.TimeoutExpired:\n        return {\n            \"guardado\": False,\n            \"codigo\": None,\n            \"salida\": \"TOPE DE TIEMPO: \" + str(tope_segundos) + \" s\",\n        }\n    salida = resultado.stdout + resultado.stderr\n    return {\n        \"guardado\": \"GUARDADO AL MOMENTO\" in salida,\n        \"codigo\": resultado.returncode,\n        \"salida\": salida,\n    }",
+  "cambio": "Sustituir la funcion lanzar_al_equipo entera por la version que recibe (proyecto, orden, tope_segundos=900), arma el comando con sys.executable e ingeniero.py equipo <proyecto> <orden['encargo']> --escribe deepseek --revisa bigpickle, anade --crear si orden.get('crear'), usa cwd derivado de __file__, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=tope_segundos y env con PYTHONIOENCODING='utf-8'; devuelve dict con guardado/codigo/salida y trata TimeoutExpired con el mensaje de tope.",
+  "codigo": "def lanzar_al_equipo(proyecto, orden, tope_segundos=900):\n    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    comando = [\n        sys.executable,\n        \"ingeniero.py\",\n        \"equipo\",\n        proyecto,\n        orden[\"encargo\"],\n        \"--escribe\",\n        \"deepseek\",\n        \"--revisa\",\n        \"bigpickle\",\n    ]\n    if orden.get(\"crear\"):\n        comando.append(\"--crear\")\n    entorno = dict(os.environ)\n    entorno[\"PYTHONIOENCODING\"] = \"utf-8\"\n    try:\n        resultado = subprocess.run(\n            comando,\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            encoding=\"utf-8\",\n            errors=\"replace\",\n            timeout=tope_segundos,\n            env=entorno,\n        )\n    except subprocess.TimeoutExpired:\n        return {\n            \"guardado\": False,\n            \"codigo\": None,\n            \"salida\": \"TOPE DE TIEMPO: \" + str(tope_segundos) + \" s\",\n        }\n    salida = resultado.stdout + resultado.stderr\n    return {\n        \"guardado\": \"GUARDADO AL MOMENTO\" in salida,\n        \"codigo\": resultado.returncode,\n        \"salida\": salida,\n    }",
+  "vigia": "Una vigia que llame a lanzar_al_equipo con un orden de mentira y compruebe que el comando lleva --escribe deepseek --revisa bigpickle, que anade --crear cuando orden['crear'] es verdadero, que devuelve dict con guardado/codigo/salida, que guardado es True solo si la salida trae 'GUARDADO AL MOMENTO', y que con un tope muy bajo devuelve codigo None y salida 'TOPE DE TIEMPO: <n> s'",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "ingeniero.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_terminal.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py"
+  ],
+  "preguntas": [
+   "Quien llama a lanzar_al_equipo y con que argumentos, para actualizar esas llamadas al nuevo contrato (proyecto, orden, tope_segundos)"
+  ],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "candado_terminal.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "via_canonica.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El cambio de firma rompe a quien llame a lanzar_al_equipo con el contrato viejo (un solo argumento). El paquete no trae quien llama, asi que no se puede verificar; el obrero lo dejo anotado en 'preguntas', que es lo correcto y no se le puede pedir mas de lo que el material contiene."
+  ],
+  "que_falta": [
+   "Confirmar quienes llaman a lanzar_al_equipo y actualizarlos al nuevo contrato (proyecto, orden, tope_segundos) antes de sellar."
+  ],
+  "resumen_para_el_jefe": "La reescritura cumple punto por punto con el encargo: usa sys.executable, parametros proyecto/orden/tope, banderas --escribe deepseek --revisa bigpickle, --crear condicional, cwd por __file__, encoding utf-8, timeout, env PYTHONIOENCODING, dict guardado/codigo/salida y el manejo de TimeoutExpired tal cual se pidio; lo unico abierto es quien llama a la funcion con la firma vieja, y eso solo se sabra a la hora de probar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27716 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

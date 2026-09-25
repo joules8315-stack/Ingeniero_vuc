@@ -1,0 +1,29 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Faltan dos archivos nuevos: las reglas de Codex (config/codex/default.rules) y su instalador (arnes/instalar_reglas_codex.py), sin tocar nada mas.",
+  "archivo": "config/codex/default.rules",
+  "texto_nuevo": "# Reglas de Codex, guardadas en el proyecto (A-40 y A-48, 2026-09-22). Codex no escribe codigo ni guarda trabajo: solo da ordenes al equipo y al director del Ingeniero, y el programa escribe. Se instalan con python arnes/instalar_reglas_codex.py.\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"arranca\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"trabaja\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"equipo\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"pit\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"director\"], decision=\"allow\")\nprefix_rule(pattern=[\"git\", \"add\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"commit\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"push\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"reset\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"restore\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"checkout\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"switch\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"rm\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"mv\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"stash\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"rebase\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"merge\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"cherry-pick\"], decision=\"forbidden\")\nprefix_rule(pattern=[\"git\", \"clean\"], decision=\"forbidden\")\n",
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "default.rules"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "La propuesta solo entrega config/codex/default.rules. El encargo pide DOS archivos nuevos y el segundo, arnes/instalar_reglas_codex.py, no viene aqui: falta su texto de ayuda, la funcion instalar(origen, destino) (lee los dos, si son iguales devuelve False; si no, crea la carpeta, guarda destino+'.antes' si existia, escribe en destino en utf-8 y devuelve True) y el bloque if __name__ == '__main__' con origen=config/codex/default.rules y destino=os.path.join(os.path.expanduser('~'), '.codex', 'rules', 'default.rules'), mas el print correspondiente. Si ese archivo llega en otra propuesta aparte, no hay nada que rechazar en esta."
+  ],
+  "resumen_para_el_jefe": "default.rules vino letra por letra como lo manda el encargo (comentario exacto, 5 allow de ingeniero.py para arranca/trabaja/equipo/pit/director, 14 forbidden de git en el orden pedido), no inventa nada y no toca vecinos; la unica duda es que la propuesta trae SOLO 1 de los 2 archivos que pedia el diagnostico: falta el instalador."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (24395 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

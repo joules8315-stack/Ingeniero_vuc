@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "En _quitar_ruido (dentro de aplicar_cambio) hay manejo de textos de ayuda (docstrings) que debe quitarse, dejando solo saltar vacias, saltar almohadilla y juntar el resto, y el comentario de arriba debe decir que solo se quitan comentarios con almohadilla y lineas en blanco.",
+  "archivo": "cuerpo/aplicador.py",
+  "funcion": "_quitar_ruido (dentro de aplicar_cambio)",
+  "texto_viejo": "    # Comprobacion de humo: si el texto nuevo solo se diferencia del viejo en comentarios,\n    # cadenas de documentacion o lineas en blanco, no se aplica nada.\n    def _quitar_ruido(texto):\n        lineas = []\n        dentro_docstring = False\n        for linea in texto.splitlines():\n            tira = linea.strip()\n            if not tira:\n                continue\n            if dentro_docstring:\n                if '\"\"\"' in tira:\n                    dentro_docstring = False\n                continue\n            if tira.startswith('\"\"\"'):\n                if tira.count('\"\"\"') < 2:\n                    dentro_docstring = True\n                continue\n            if tira.startswith('#'):\n                continue\n            lineas.append(tira)\n        return \"\\n\".join(lineas)",
+  "texto_nuevo": "    # Comprobacion de humo: si el texto nuevo solo se diferencia del viejo en comentarios\n    # con almohadilla o lineas en blanco, no se aplica nada. Un trozo suelto no dice si\n    # empieza dentro de un texto de ayuda, asi que aqui no se manejan textos de ayuda.\n    def _quitar_ruido(texto):\n        lineas = []\n        for linea in texto.splitlines():\n            tira = linea.strip()\n            if not tira:\n                continue\n            if tira.startswith('#'):\n                continue\n            lineas.append(tira)\n        return \"\\n\".join(lineas)",
+  "cambio": "Quitar dentro_docstring = False y los dos bloques if dentro_docstring: y if tira.startswith('\"\"\"'): de _quitar_ruido, y cambiar el comentario de arriba para que diga que solo se quitan comentarios con almohadilla y lineas en blanco.",
+  "codigo": "    # Comprobacion de humo: si el texto nuevo solo se diferencia del viejo en comentarios\n    # con almohadilla o lineas en blanco, no se aplica nada. Un trozo suelto no dice si\n    # empieza dentro de un texto de ayuda, asi que aqui no se manejan textos de ayuda.\n    def _quitar_ruido(texto):\n        lineas = []\n        for linea in texto.splitlines():\n            tira = linea.strip()\n            if not tira:\n                continue\n            if tira.startswith('#'):\n                continue\n            lineas.append(tira)\n        return \"\\n\".join(lineas)",
+  "vigia": "vigias/test_vigia_aplicador.py",
+  "puede_danar": [
+   "arnes/copista.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_aplicador.py",
+   "vigias/test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "copista.py",
+   "test_vigia_aplicador.py",
+   "test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (24387 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

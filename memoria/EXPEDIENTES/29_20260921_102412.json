@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "29",
+    "titulo": "Un archivo pequeno se entrega entero",
+    "origen": "ronda perdida medida el 2026-09-20",
+    "repara": "el material se corta en trozos de 40 renglones elegidos por parecido de palabras; en archivos cortos llega la portada o un trozo suelto y el obrero no puede trabajar. Medido: tres rondas pagadas perdidas el mismo dia por esta causa",
+    "pieza": "cerebro/router.py",
+    "depende": [
+      "28"
+    ],
+    "modo": "IA",
+    "razon": "es la fuga de dinero mas barata de cerrar de todas las medidas",
+    "encargo": "En cerebro/router.py, justo despues de la llamada a completar_funciones, agregar una regla: si el archivo del que sale un pedazo tiene 600 renglones o menos, ese archivo se entrega ENTERO en lugar de por pedazos. Los archivos mas largos siguen exactamente igual que hoy. Motivo medido el 2026-09-20: tres rondas pagadas se perdieron porque al obrero le llegaron trozos sueltos de archivos cortos y contesto que no encontraba lo que tenia que cambiar; un archivo de 255 renglones ocupa muy poco y cabe de sobra. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py",
+    "sabotaje": "memoria/sabotajes/un_archivo_pequeno_se_entrega_entero.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "2a79b0b725450541",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_102412_DUDOSO_router.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (38364 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : En cerebro/router.py, tras la llamada a completar_funciones, falta la regla que entrega ENTERO el archivo cuando tiene 600 renglones o menos.\n  toca        : cerebro/router.py funcion armar\n  confianza   : media\n  PREGUNTA_REQUERIDA: El tope de 600 renglones, se cuenta sobre el archivo completo o sobre el archivo sin comentarios ni lineas vacias?; Si un archivo corto ya venia entero por completar_funciones, se deja como esta o se vuelve a sustituir por el archivo completo?\n  VEREDICTO   : DUDOSO\n  fallo       : La regla solo alcanza los pedazos que YA existen al salir de completar_funciones. Los dos bloques siguientes anaden pedazos DESPUES de la llamada nueva: 'LO QUE EL PROBLEMA NOMBRA COMO FUNCION' (router.py:293-323) y 'LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO' (router.py:325-345). Un archivo corto que entra SOLO por el bloque de nombrados (no lo trajo el fragmentador) sigue llegando al obrero como trozo parcial 1-80 (router.py:335-343), que es exactamente el fallo medido del diagnostico ('trozos sueltos de archivos cortos'). La regla no arregla de verdad ese camino.\n  fallo       : Restriccion a .py que el diagnostico no pide: el encargo dice que se entregue ENTERO 'el archivo cuando tiene 600 renglones o menos', sin excepción de extension, y la funcion nueva se salta cualquier .html/.js corto (if not str(abs_path).lower().endswith('.py')). La pantalla, donde Julio mira, queda fuera de la regla.\n  fallo       : La vigia propuesta no mide el hueco del fallo 1: 'un problema que toque un archivo de 255 renglones' entra por el camino del fragmentador (el trozo ya estaba en pedazos) y quedaria verde aunque el camino del archivo nombrado siga entregando trozos sueltos. Es la trampa de 'prueba verde no es la prueba'.\n  fallo       : El tope de 600 choca con la ley ya escrita del archivo: un archivo de 600 renglones es el 75% del TOPE_LINEAS=800 (router.py:24), y si un pedido junta varias fichas cortas el paquete pasa del tope y se activa el AVISO (router.py:566-567) sin que la regla lo impida.\n  resumen     : La reparacion es sincera y usa solo cosas que existen (no inventa nada), esta puesta en el sitio exacto que pedido el diagnostico y funciona para el camino normal del fragmentador, pero deja sin curar el caso de archivo corto que solo entra cuando se nombra (sigue llegando el trozo suelto de 1-80 con el que Julio perdio las rondas) y se reduce sola a archivos .py; conviene correr la regla al final del repartidor antes de darla por terminada.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T10:24:12",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no contesto en 600 s",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\29_20260921_102412.json"
+  }
+}

@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/guardia_de_guardado.py, en _vigias, una orden que declara queda_roja no se distingue de una que rompe sin decirlo, asi que su vigia roja ya guardada frena el guardado en vez de esperar su arreglo.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "                if vigia and not (actual and str(orden.get('id', '')) == actual and vigia == pieza):",
+  "texto_nuevo": "                # una orden que declara queda_roja arregla una prueba que tiene que seguir roja hasta que llegue su codigo; romper sin decirlo sigue frenando (medido 2026-09-22)\n                if vigia and not (actual and str(orden.get('id', '')) == actual and vigia == pieza and not orden.get('queda_roja')):",
+  "cambio": "Anadir al final del parentesis del not la condicion 'and not orden.get('queda_roja')' y poner encima un comentario corto que explique que una orden que declara queda_roja espera su arreglo y romper sin decirlo sigue frenando.",
+  "codigo": "                # una orden que declara queda_roja arregla una prueba que tiene que seguir roja hasta que llegue su codigo; romper sin decirlo sigue frenando (medido 2026-09-22)\n                if vigia and not (actual and str(orden.get('id', '')) == actual and vigia == pieza and not orden.get('queda_roja')):",
+  "vigia": "Una prueba que ponga una orden con queda_roja=True y su vigia roja ya guardada, y compruebe que el guardado deja pasar con aviso; y otra con la misma orden sin queda_roja que compruebe que frena.",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "el guardado de trabajo aprobado",
+   "las ordenes con vigia roja ya guardada"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo pedido y lo verifique de punta a punta: queda_roja es un campo real (esta en ORDENES.json y en la prueba ya aprobada), la condicion nueva esta en el texto literal de la linea 361, y comprobado contra las pruebas reales una orden con queda_roja=True que es la tarea actual ya no frena pero una que rompe sin decirlo sigue frenando."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (33300 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

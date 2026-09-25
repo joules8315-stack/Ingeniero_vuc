@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "grok47",
+ "propuesta": {
+  "diagnostico": "El material entregado no contiene el bloque de la lista 'cambios' de revisar() (donde se arma 'juntos' y se filtra 'todos'), ni el archivo que lo contiene, ni la funcion revisar() completa con ese bloque; solo aparece la funcion revisar() de skills/lista_blanca.py, que es otra cuenta distinta.",
+  "archivo": "NO_ENCONTRADO",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO",
+  "puede_danar": [],
+  "preguntas": [
+   "¿En qué archivo y en qué función está el bloque de la lista 'cambios' de revisar() donde se arma 'juntos' y se filtra 'todos'? El material solo trae skills/lista_blanca.py::revisar, que no tiene ese bloque."
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "Afirma que el bloque que arma 'juntos' y filtra 'todos' esta en skills/lista_blanca.py::revisar. Esa funcion no tiene lista 'cambios', ni 'juntos', ni 'NO HACE LO QUE SE PIDIO'. El bloque real es arnes/revisor_de_programa.py::revisar, linea 261: todos = [f for f in todos if not (f.startswith('NO HACE LO QUE SE PIDIO') and f.split(chr(39))[1] in juntos)]"
+  ],
+  "fallos": [
+   "El arreglo no toca el filtro. En el cambio, texto_viejo y texto_nuevo de revisar() son el mismo texto: el cuerpo no cambia.",
+   "Los tres helpers se cuelgan de skills/lista_blanca.py y nadie los llama, asi que ninguna palabra queda perdonada.",
+   "Archivo equivocado: la frenada vive en arnes/revisor_de_programa.py, no en la lista blanca. El propio obrero pregunto si ese bloque estaba ahi y aun asi lo dio por hecho.",
+   "No trae la vigia que el encargo pide."
+  ],
+  "riesgo_vecinos": [
+   "No rompe skills/lista_blanca.py::revisar (el cuerpo queda igual) ni toca cuerpo/codex.py. arnes/revisor_de_programa.py::revisar sigue frenando igual."
+  ],
+  "que_falta": [
+   "Ampliar el descarte de la linea 261 de arnes/revisor_de_programa.py: perdonar la palabra si nombra una funcion o clase del archivo y algun texto_viejo cae en su rango lineno-end_lineno.",
+   "Usar esa cuenta dentro del filtro; sin la llamada, el codigo nuevo no hace nada.",
+   "La vigia: editar el cuerpo de una funcion sin repetir su nombre, ver que el revisor ya no frena, y sabotear quitando el arreglo para verla roja."
+  ],
+  "resumen_para_el_jefe": "Rechazado: el arreglo se puso en la lista blanca, que no tiene ese filtro, y el revisor que de verdad frena quedo igual."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "GPT-OSS 120B (Groq) no le cabe (19877 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "GPT-OSS 120B (Groq) no le cabe (19998 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.; HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio",
+  "GPT-OSS 120B (Groq) no le cabe (20214 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

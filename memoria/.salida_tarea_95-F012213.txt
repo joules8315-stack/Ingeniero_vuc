@@ -1,0 +1,16 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-22_120808_RECHAZADO_test_vigia_el_pit_vigila_la_tarea_que_se_demora.py.json
+OBRERO deepseek -> AUDITOR grok47
+  aviso       : el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer
+  aviso       : el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer
+  aviso       : el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer
+  diagnostico : Las dos vigias leen el limite y el env de la forma equivocada (kw en vez de args posicionales, y solo subprocess.run), por lo que hay que ajustarlas al contrato de la orden 95.
+  toca        : vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py funcion test_si_el_equipo_termina_la_salida_se_recoge
+  confianza   : alta
+  VEREDICTO   : RECHAZADO
+  fallo       : El primer trozo lee apuntes[0]['args'][1], pero lanzar_al_equipo llama a vigilante.esperar solo por nombre (proceso=, limite=, sin_avance=, tope_duro=, avance=). args queda vacio y args[1] revienta; el limite esta en kw['limite']. La vigia que hoy pasa se pone roja y deja de medir la llamada real.
+  fallo       : El segundo trozo tiene texto_viejo igual a texto_nuevo: no cambia nada. Ese texto ya esta en vigias/test_vigia_la_etiqueta_llega_al_cuaderno.py (ya falsifica run, Popen y vigilante.esperar). La propuesta no le pone archivo propio, asi que el aplicador lo busca en vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py, no aparece una vez y no aplica ningun trozo.
+  fallo       : El diagnostico es falso: la segunda vigia no lee el limite ni se queda solo en subprocess.run.
+  resumen     : No apruebes: el arreglo del limite mira un sitio que la llamada real no usa, y el segundo trozo no cambia nada y va al archivo equivocado, asi que no se aplica nada.
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.

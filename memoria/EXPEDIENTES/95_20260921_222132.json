@@ -1,0 +1,71 @@
+{
+  "orden": {
+    "id": "95",
+    "titulo": "El pit vigila la tarea que se demora",
+    "origen": "directriz de Julio A-44 (2026-09-21)",
+    "repara": "lanzar_al_equipo corta a ciegas a los 900 s",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "94"
+    ],
+    "modo": "IA",
+    "razon": "los limites salen de los datos medidos del cuaderno de llamadas, no de una suposicion",
+    "encargo": "En cuerpo/capataz.py hay que hacer tres cambios, entregalos en la lista cambios. (1) Arriba de def lanzar_al_equipo agrega las constantes con su comentario: LIMITE_TAREA_SEGUNDOS = 420 y SIN_AVANCE_SEGUNDOS = 660 y TOPE_DURO_SEGUNDOS = 3000 (medido el 2026-09-21 en el cuaderno de llamadas: DeepSeek tarda 4 a 11 s, Big Pickle hasta 328 s y con A-47 se le espera hasta 600 s, el guardia corre la bateria en 262 s, y una tarea puede dar 4 vueltas de revision: 4 por (11 + 600) + 262 = 2706 s, y el tope de fuera tiene que ser mayor que la suma de los de dentro; SIN_AVANCE tiene que ser MAYOR que la llamada callada mas larga, la espera de Big Pickle de hasta 600 s, o se cortaria a una IA que esta contestando). (2) En lanzar_al_equipo cambia el subprocess.run por subprocess.Popen con los mismos cwd y env. La salida NO va por tuberia (una tuberia que nadie vacia se llena y cuelga al equipo): abre archivo = open(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'), 'w', encoding='utf-8', errors='replace') y pasa stdout=archivo, stderr=subprocess.STDOUT. El avance es una funcion que devuelve el tiempo de procesador gastado por el proceso y todos sus hijos (import psutil dentro de la funcion; pp = psutil.Process(proceso.pid); suma de cpu_times().user + cpu_times().system de pp y de cada pp.children(recursive=True), ignorando los que ya terminaron con psutil.Error), redondeado a 1 decimal, mas el tamano de ese archivo de salida, mas la suma de os.path.getmtime de memoria/CUADERNO_DE_LLAMADAS.jsonl y memoria/APLICACIONES.log que existan; si psutil falla, sin el tiempo de procesador. Despues de esperar: cierra el archivo y lee todo su texto como salida (encoding utf-8, errors replace); si el estado no es 'termino', la salida leida va ENTERA detras del aviso COLGADA, para que el forense vea lo que dijo el revisor. Motivo medido el 2026-09-21: las pruebas vecinas del candado de cierre tardan 212 s sin escribir en ningun registro, y una tarea que corre pruebas SI esta trabajando (from cuerpo import vigilante dentro de la funcion); llama estado = vigilante.esperar(proceso, LIMITE_TAREA_SEGUNDOS, SIN_AVANCE_SEGUNDOS, TOPE_DURO_SEGUNDOS, avance); despues salida_normal, salida_errores = proceso.communicate(); si estado no es 'termino' devuelve {'guardado': False, 'codigo': None, 'salida': 'COLGADA: ' + estado + ' (sin avance pasado el limite; se busca la causa raiz)\\n' + salida_normal + salida_errores}; si es 'termino' devuelve lo mismo que hoy con proceso.returncode. El parametro tope_segundos se queda en la firma sin usarse, para no romper a quien lo pasa. (3) En tipo_de_fallo, como primera comprobacion, si la salida empieza por 'COLGADA:' devuelve 'colgada'. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "una tarea 'colgada' va al forense como cualquier fallo (causa raiz) y, por A-43, su arreglo pasa al frente."
+  },
+  "huella": "25eddfc88f54678f",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_222132_RECHAZADO_capataz.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (20649 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'tipo_de_fallo' y esa palabra no aparece ni en el texto viejo ni en el nuevo.\n  aviso       : GPT-OSS 120B (Groq) no le cabe (23550 letras, aguanta 19042) -> se le salta\n  diagnostico : En cuerpo/capataz.py hay que crear las constantes de tiempo, cambiar subprocess.run por subprocess.Popen con salida a archivo y vigilante.esperar, y anadir la comprobacion de 'COLGADA:' en tipo_de_fallo.\n  toca        : cuerpo/capataz.py funcion lanzar_al_equipo\n  confianza   : media\n  VEREDICTO   : RECHAZADO\n  fallo       : El codigo entregado no cubre el punto (3) del encargo: en tipo_de_fallo falta la primera comprobacion que devuelva 'colgada' si la salida empieza por 'COLGADA:'. El diagnostico lo anuncia, el vigia da por hecha una prueba que debiera fallar con este codigo, pero ni el texto del cambio ni el codigo tocan tipo_de_fallo. La reparacion llega incompleta: hace (1) constantes y (2) Popen/vigilante, pero no (3).\n  resumen     : Los puntos (1) y (2) del encargo estan bien hechos y se ciñen al material, pero falta el punto (3): tipo_de_fallo todavia no devuelve 'colgada' al ver 'COLGADA:', asi que la reparacion no esta completa y debe volver.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T22:21:32",
+  "analisis": {
+    "que_paso": "El equipo RECHAZO la orden 95. El obrero (deepseek) solo entrego los puntos (1) y (2) del encargo —las tres constantes de tiempo y el cambio de subprocess.run a Popen con vigilante.esperar dentro de lanzar_al_equipo— y dejo fuera el punto (3): en tipo_de_fallo faltaba la primera comprobacion que devuelve 'colgada' cuando la salida empieza por 'COLGADA:'. El revisor de programa freno antes de pagar ('el encargo habla de tipo_de_fallo y esa palabra no aparece ni en el texto viejo ni en el nuevo') y el auditor (bigpickle) confirmo el RECHAZADO. No se guardo llave; no se toco codigo.",
+    "causa_raiz": "El encargo pedia tres cambios en DOS funciones separadas de cuerpo/capataz.py —lanzar_al_equipo (linea 10) y tipo_de_fallo (linea 248), a 238 lineas de distancia— y ordenaba 'entregalos en la lista cambios'. Pero el prompt con el que trabaja el obrero (_prompt_obrero, rama reparar, en cuerpo/obrero.py) solo le ofrece en su esquema de respuesta UN unico texto_viejo/texto_nuevo; no existe el campo 'cambios'. Con un solo diff contiguo el obrero empaqueto (1)+(2), que quedan juntas alrededor de lanzar_al_equipo, y no pudo alcanzar tipo_de_fallo, que vive muy abajo. La capacidad SI existe rio abajo: cuerpo/aplicador.py (aplicar_propuesta) ya sabe repartir la clave 'cambios' con una lista. El obrero fallo porque su herramienta no le da forma de entregar varios cambios separados, no por descuido del modelo. Por eso el encargo pedia algo que el interfaz del obrero no puede producir: ese desajuste es la causa de fondo.",
+    "donde": "cuerpo/obrero.py — funcion _prompt_obrero, esquema JSON de respuesta de la rama 'reparar' (aprox. lineas 159-170), que solo ofrece texto_viejo/texto_nuevo. El desajuste se ve contra cuerpo/aplicador.py (aplicar_propuesta, que ya soporta 'cambios') y contra cuerpo/capataz.py (lanzar_al_equipo en la linea 10 frente a tipo_de_fallo en la 248).",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "  \"texto_viejo\": \"el texto literal que hay AHORA y que se sustituye, copiado tal cual del material\","
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "  \"texto_nuevo\": \"el texto literal que debe quedar, copiado tal cual del material\","
+      },
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "    if isinstance(propuesta, dict) and propuesta.get('cambios'):"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "def lanzar_al_equipo(proyecto, orden, tope_segundos=900):"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "def tipo_de_fallo(salida):"
+      }
+    ],
+    "no_volver_a": "Un encargo que toca dos funciones separadas no se puede cumplir mientras el prompt del obrero solo ofrezca un texto_viejo/texto_nuevo: el interfaz del obrero tiene que exponer la lista 'cambios' que el aplicador ya sabe repartir.",
+    "tarea_nueva": {
+      "repara": "El obrero no puede entregar varios cambios en funciones separadas porque su prompt (_prompt_obrero) solo ofrece un unico texto_viejo/texto_nuevo, aunque cuerpo/aplicador.py (aplicar_propuesta) ya reparte por la clave 'cambios' y el encargo 95 la pedia.",
+      "pieza": "cuerpo/obrero.py",
+      "razon": "Para que un encargo que toca dos funciones separadas se pueda cumplir de una vez, sin que un punto quede fuera ni haya que partir la orden a mano.",
+      "encargo": "En cuerpo/obrero.py, dentro de _prompt_obrero (rama 'reparar'), anade al esquema JSON de respuesta un campo opcional \"cambios\": una lista donde cada elemento es {\"texto_viejo\": ..., \"texto_nuevo\": ...}, y una REGLA DURA nueva: cuando el encargo pida tocar varios sitios separados o pida expresamente la lista 'cambios', se entrega cada cambio como un elemento de \"cambios\" en lugar de un unico texto_viejo/texto_nuevo. No toques el resto del prompt ni ninguna otra funcion. El aplicador ya sabe repartir 'cambios': aplicador.aplicar_propuesta lo dirige a aplicar_cambios.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": true,
+    "paso": "tarea",
+    "motivo": "agregada 95-F222455",
+    "tarea": "95-F222455",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\95_20260921_222132.json"
+  }
+}

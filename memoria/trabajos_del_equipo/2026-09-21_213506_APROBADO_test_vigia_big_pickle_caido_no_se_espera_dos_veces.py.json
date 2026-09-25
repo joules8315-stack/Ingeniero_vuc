@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta el monkeypatch de grok.preguntar tras el de bigpickle.preguntar y falta el import de grok junto al de bigpickle.",
+  "archivo": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+  "funcion": "_preparar",
+  "texto_viejo": "    monkeypatch.setattr(bigpickle, 'preguntar', _preguntar_falso)\n    monkeypatch.setattr(obrero, '_claude_directo', _claude_prohibido)",
+  "texto_nuevo": "    monkeypatch.setattr(bigpickle, 'preguntar', _preguntar_falso)\n    monkeypatch.setattr(grok, 'preguntar', lambda *a, **k: ('', ['grok falso en la vigia']))\n    monkeypatch.setattr(obrero, '_claude_directo', _claude_prohibido)",
+  "cambio": "En _preparar, justo despues de monkeypatch.setattr(bigpickle, 'preguntar', _preguntar_falso), agregar monkeypatch.setattr(grok, 'preguntar', lambda *a, **k: ('', ['grok falso en la vigia'])). Y arriba, junto a from cuerpo import bigpickle, agregar from cuerpo import grok.",
+  "codigo": "from cuerpo import obrero\nfrom cuerpo import bigpickle\nfrom cuerpo import grok\n\n...\n\n    monkeypatch.setattr(bigpickle, 'preguntar', _preguntar_falso)\n    monkeypatch.setattr(grok, 'preguntar', lambda *a, **k: ('', ['grok falso en la vigia']))\n    monkeypatch.setattr(obrero, '_claude_directo', _claude_prohibido)",
+  "vigia": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "cuerpo/bigpickle.py",
+   "cuerpo/grok.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "obrero.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que pidio el encargo, en el sitio senalado, sin inventar nada ni tocar vecinos."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de '_preguntar_falso' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de '_preguntar_falso' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "vueltas_dadas: 3"
+ ]
+}

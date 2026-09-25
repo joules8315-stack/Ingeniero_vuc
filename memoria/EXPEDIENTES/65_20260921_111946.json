@@ -1,0 +1,30 @@
+{
+  "orden": {
+    "id": "65",
+    "titulo": "La vigia de que lo que el programa le pide a una IA no entra como orden de Julio",
+    "origen": "medido el 2026-09-21: el gancho de Codex recogio como ordenes de Julio los pedidos que le hizo el programa, incluida la hoja entera de la revision",
+    "repara": "cuando el programa le manda un pedido a Codex, el gancho de legislar de Codex lo toma por un mensaje de Julio; el interruptor INGENIERO_OFF no lo para porque ese candado no lo mira. Cada llamada del programa a Codex llenaria la lista de ordenes de Julio de ruido",
+    "pieza": "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py. Vigila arnes/candado_legislar.py cuando se corre con el argumento desde-julio. Aisla la lista de ordenes de Julio en una carpeta temporal para no ensuciar la de verdad (mira como lo hacen las otras vigias de ese candado). Pruebas, corriendolo con subprocess y sys.executable, con un JSON de entrada de mentira cuyo prompt trae frases que parecen ordenes, cada una con assert: (1) con INGENIERO_OFF puesta a 1 en el entorno NO apunta nada; (2) con INGENIERO_LLAMADA_DEL_PROGRAMA puesta a 1 NO apunta nada; (3) sin ninguna de las dos marcas, SI apunta, como hoy. Quita las dos marcas del entorno copiado en la prueba (3). No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "c92aac6a127e6c4f",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_111942_APROBADO_test_vigia_lo_que_pide_el_programa_no_es_de_julio.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : vueltas_dadas: 1\n  diagnostico : Falta la vigia que prueba el modo desde-julio de arnes/candado_legislar.py aislando el ledger con INGENIERO_LEGISLAR_TEST y comprobando que INGENIERO_OFF e INGENIERO_LLAMADA_DEL_PROGRAMA silencian el apunte mientras que sin marcas si apunta.\n  toca        : vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py funcion ?\n  confianza   : media\n  VEREDICTO   : APROBADO\n  resumen     : Crea exactamente la vigia que pedia el encargo — aisla el ledger con INGENIERO_LEGISLAR_TEST en carpeta temporal y comprueba con subprocess/sys.executable y JSON falso que INGENIERO_OFF e INGENIERO_LLAMADA_DEL_PROGRAMA silencian el apunte y que sin marcas sigue apuntando, sin tocar ningun otro archivo.\n\nAPLICADO en disco (lo escribio el equipo): vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   6 failed, 5 passed in 2.38s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: apartada (nueva): vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py\nLLAVE GUARDADA: se puede escribir en 122 archivo(s) durante 90 min.\n",
+  "apartados": [
+    "test_vigia_lo_que_pide_el_programa_no_es_de_julio.py.FRENADO_POR_EL_GUARDIA"
+  ],
+  "fecha": "2026-09-21T11:19:46"
+}

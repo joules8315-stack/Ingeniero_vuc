@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En vigias/conftest.py, la funcion _nada_toca_lo_real no desvia el registro de descansos de los revisores (memoria/CUOTAS.json), asi que las vigias del revisor pueden llamar a cerebros reales en vez de al Big Pickle que descansa.",
+  "archivo": "vigias/conftest.py",
+  "funcion": "_nada_toca_lo_real",
+  "texto_viejo": "    monkeypatch.setattr(_cpr, \"PRUEBAS\", str(tmp_path / \"pruebas_real\"))\n    yield",
+  "texto_nuevo": "    monkeypatch.setattr(_cpr, \"PRUEBAS\", str(tmp_path / \"pruebas_real\"))\n    # El registro de descansos de los revisores (memoria/CUOTAS.json) tambien es estado real;\n    # medido 2026-09-21 (orden 132): con Big Pickle descansando de verdad, las vigias del\n    # revisor no lo llamaban y llamaban a cerebros reales.\n    from cuerpo import cuotas as _cuo\n    monkeypatch.setattr(_cuo, \"RUTA\", str(tmp_path / \"CUOTAS.json\"))\n    yield",
+  "cambio": "Justo antes del yield, anadir la importacion de cuerpo.cuotas como _cuo y desviar su RUTA a tmp_path / 'CUOTAS.json', con un comentario corto encima explicando que el registro de descansos de los revisores tambien es estado real.",
+  "codigo": "    # El registro de descansos de los revisores (memoria/CUOTAS.json) tambien es estado real;\n    # medido 2026-09-21 (orden 132): con Big Pickle descansando de verdad, las vigias del\n    # revisor no lo llamaban y llamaban a cerebros reales.\n    from cuerpo import cuotas as _cuo\n    monkeypatch.setattr(_cuo, \"RUTA\", str(tmp_path / \"CUOTAS.json\"))",
+  "vigia": "Una vigia del revisor que, con Big Pickle descansando de verdad, compruebe que no se llama a cerebros reales sino que se respeta el descanso (por ejemplo, vigias/test_vigia_el_cerebro_es_el_que_pido.py o una vigia del revisor que verifique que CUOTAS.json apunta a la copia temporal).",
+  "puede_danar": [
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_memoria.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candados_medicion.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_memoria.py",
+   "candado_prueba_real.py",
+   "candados_medicion.py",
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio es exactamente el encargo (desviar CUOTAS.json a la copia temporal en conftest.py), el modulo cuerpo/cuotas.py y su RUTA existen de verdad, la ubicacion coincide con el texto literal del material, y como _leer tolera que el archivo no exista, ningun vecino se rompe."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

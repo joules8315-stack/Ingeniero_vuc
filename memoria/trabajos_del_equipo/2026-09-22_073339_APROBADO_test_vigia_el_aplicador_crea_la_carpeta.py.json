@@ -1,0 +1,28 @@
+{
+ "obrero": "deepseek",
+ "auditor": "grok47",
+ "propuesta": {
+  "diagnostico": "Falta la vigia nueva que comprueba que aplicador.aplicar_cambio crea archivos nuevos en carpetas que aun no existen, siguiendo el patron de vigias/test_vigia_aplicador.py con raiz=str(tmp_path).",
+  "archivo": "vigias/test_vigia_el_aplicador_crea_la_carpeta.py",
+  "texto_nuevo": "\"\"\"Vigia: el aplicador crea la carpeta cuando el archivo nuevo va dentro de una carpeta que no existe.\n\nFallo real: al crear un archivo nuevo cuya carpeta padre no existe, open() falla con\nFileNotFoundError y el aplicador devuelve False. La creacion de archivos nuevos debe\nfuncionar tanto si la carpeta ya existe como si hay que crearla.\n\nSe prueba la funcion de cuerpo/aplicador.py que contiene el mensaje \"Archivo creado.\",\nigual que lo hace vigias/test_vigia_aplicador.py, con raiz=str(tmp_path).\n\"\"\"\n\nimport os\n\nfrom cuerpo import aplicador\n\n\ndef test_crea_archivo_nuevo_en_carpeta_que_no_existe(tmp_path):\n    \"\"\"Un archivo nuevo dentro de carpetas que no existen se crea, y las carpetas tambien.\"\"\"\n    relativo = os.path.join(\"carpeta_nueva\", \"sub\", \"x.txt\")\n    propuesta = {\"archivo\": relativo, \"codigo\": \"hola\"}\n    ok, msg = aplicador.aplicar_cambio(propuesta, raiz=str(tmp_path))\n    assert ok, \"no creo el archivo nuevo en carpeta que no existe: \" + str(msg)\n    destino = tmp_path / \"carpeta_nueva\" / \"sub\" / \"x.txt\"\n    assert destino.exists(), \"no quedo el archivo en disco\"\n    assert destino.read_text(encoding=\"utf-8\") == \"hola\", \"el contenido no es hola\"\n\n\ndef test_crea_archivo_nuevo_en_carpeta_que_ya_existe(tmp_path):\n    \"\"\"Un archivo nuevo dentro de una carpeta que ya existe sigue funcionando igual.\"\"\"\n    (tmp_path / \"carpeta_existente\").mkdir()\n    relativo = os.path.join(\"carpeta_existente\", \"y.txt\")\n    propuesta = {\"archivo\": relativo, \"codigo\": \"hola\"}\n    ok, msg = aplicador.aplicar_cambio(propuesta, raiz=str(tmp_path))\n    assert ok, \"no creo el archivo nuevo en carpeta existente: \" + str(msg)\n    destino = tmp_path / \"carpeta_existente\" / \"y.txt\"\n    assert destino.exists(), \"no quedo el archivo en disco\"\n    assert destino.read_text(encoding=\"utf-8\") == \"hola\", \"el contenido no es hola\"\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigia nueva llama a aplicar_cambio como las otras, con raiz y las dos pruebas pedidas, y no toca ningun otro archivo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (31754 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 470.40000000000003s (timeout)",
+  "bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "vueltas_dadas: 1"
+ ]
+}

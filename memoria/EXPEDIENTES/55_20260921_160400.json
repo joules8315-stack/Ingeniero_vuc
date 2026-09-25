@@ -1,0 +1,66 @@
+{
+  "orden": {
+    "id": "55",
+    "titulo": "La vigia de que el equipo aplica varios trozos en una ronda",
+    "origen": "medido el 2026-09-20 y 21: decenas de rondas pagadas perdidas porque el equipo solo cambia un trozo por ronda (fallo C6 del forense del 14-09)",
+    "repara": "la pieza que aplica varios trozos de una vez (aplicar_cambios) existia y nadie la llamaba; ahora existe aplicar_propuesta, probada con sabotaje 3 de 3, pero tampoco la llama nadie todavia: es una pieza suelta",
+    "pieza": "vigias/test_vigia_el_equipo_aplica_varios_trozos.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_equipo_aplica_varios_trozos.py. Es una vigia de texto: abre ingeniero.py y, con assert, comprueba dos cosas del comando equipo: que ya NO aparece el texto _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz) y que SI aparece el texto _ok, _msg = aplicador.aplicar_propuesta(prop, raiz=_raiz). Mensajes en espanol que expliquen que aplicar_cambio solo sabe aplicar un trozo y que sin esto el equipo paga una ronda por cada trozo de un mismo arreglo. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_equipo_aplica_varios_trozos.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "09c0de5742f400f0",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_160356_APROBADO_test_vigia_el_equipo_aplica_varios_trozos.py.json\nOBRERO deepseek -> AUDITOR groq\n  aviso       : GPT-OSS 120B (Groq) no le cabe (29348 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (29524 letras, aguanta 19042) -> se le salta\n  diagnostico : Falta la vigia de texto que comprueba que el comando equipo usa aplicar_propuesta (varios trozos) y ya no aplicar_cambio (un solo trozo).\n  toca        : vigias/test_vigia_el_equipo_aplica_varios_trozos.py funcion ?\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : Cumple exactamente el diagnóstico, crea la vigia requerida sin inventar ni romper contratos.\n\nAPLICADO en disco (lo escribio el equipo): vigias/test_vigia_el_equipo_aplica_varios_trozos.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: _args, **self._kwargs)\n  File \"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python310\\lib\\subprocess.py\", line 1515, in _readerthread\n    buffer.append(fh.read())\n  File \"C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python310\\lib\\encodings\\cp1252.py\", line 23, in decode\n    return codecs.charmap_decode(input,self.errors,decoding_table)[0]\nUnicodeDecodeError: 'charmap' codec can't decode byte 0x9d in position 3617: character maps to <undefined>\n\nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   \n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: apartada (nueva): vigias/test_vigia_el_equipo_aplica_varios_trozos.py\nLLAVE GUARDADA: se puede escribir en 187 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T16:04:00",
+  "analisis": {
+    "que_paso": "El equipo creo la vigia nueva pedida por la orden 55 (deepseek escribio, groq/bigpickle reviso: VEREDICTO APROBADO) y se escribio en disco, pero al momento de guardar el guardia de guardado la volvio atras diciendo 'NO SE GUARDA. Hay pruebas ROJAS', y en el detalle aparece un traceback UnicodeDecodeError de cp1252. La vigia nace roja A PROPOSITO (la orden dice 'la vigia nace antes que el cambio, y nace roja'), asi que deberia haber pasado por ser nueva; en cambio se frena y el trabajo aprobado se pierde/aparta.",
+    "causa_raiz": "El guardia corre pytest capturando la salida con text=True pero SIN encoding='utf-8'. En Windows text=True decodifica con cp1252, y la salida de pytest trae el byte 0x9d (viene de los mensajes en espanol de la vigia, escritos en UTF-8). El hilo lector de subprocess muere con UnicodeDecodeError y deja la salida VACIA (no lanza excepcion que se atrape en el except, solo imprime el traceback). Con la salida vacia, el guardia no encuentra ninguna linea FAILED/ERROR, no puede identificar cual vigia esta roja, y por eso NO puede aplicar su propia regla de 'vigia nueva roja = se deja pasar': cae en el camino de respaldo 'No se pudo identificar el archivo rojo: se frena como antes' y frena. Es decir: un bug de codificacion inutiliza la logica que perdona a las vigias que nacen rojas.",
+    "donde": "arnes/guardia_de_guardado.py, funcion _vigias, la llamada subprocess.run de pytest (lineas 291-293) y el camino de respaldo que frena en las lineas 324-326.",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\"] + objetivo,\n                           cwd=raiz, capture_output=True, text=True, timeout=900,\n                           stdin=subprocess.DEVNULL, env=_entorno_limpio)"
+      },
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "    if not archivos_rojos:\n        # No se pudo identificar el archivo rojo: se frena como antes.\n        return False, ultima[0].strip()"
+      },
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "    # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.\n    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando])\n    return True, \"vigias recien escritas sin su pieza aun o esperando su arreglo (se deja pasar): \" + detalle"
+      },
+      {
+        "archivo": "ingeniero.py",
+        "texto": "                _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)"
+      }
+    ],
+    "no_volver_a": "Toda lectura de salida de un subproceso en Windows debe fijar encoding='utf-8' con errors='replace'; si no, un solo byte que cp1252 no entiende vacia la salida y el guardia frena trabajo aprobado por no poder ver cual vigia esta roja.",
+    "tarea_nueva": {
+      "repara": "El guardia corre pytest con text=True sin encoding y en Windows revienta con cp1252 al leer la salida, dejandola vacia; entonces no identifica la vigia roja nueva y frena en vez de dejarla pasar.",
+      "pieza": "arnes/guardia_de_guardado.py (funcion _vigias)",
+      "razon": "Sin encoding utf-8 el hilo lector de subprocess muere con UnicodeDecodeError en el byte 0x9d, la salida de pytest queda vacia, la logica de 'vigia nueva roja se deja pasar' no encuentra el archivo rojo y cae en el respaldo que frena, perdiendo trabajo aprobado.",
+      "encargo": "En arnes/guardia_de_guardado.py, en la llamada subprocess.run de _vigias (linea ~291-293), anadir encoding='utf-8' y errors='replace' para que la salida de pytest se lea siempre sin reventar en Windows. No tocar la logica de decision (nuevos/guardados/esperando). Luego sabotear a proposito con una vigia nueva cuyos mensajes traigan un caracter fuera de cp1252 y comprobar que el guardia la identifica como nueva y DEJA PASAR (no frena). Esta tarea es distinta de la orden 55: aquella creaba la vigia; esta repara el candado que impide guardarla.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 300s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\55_20260921_160400.json"
+  }
+}

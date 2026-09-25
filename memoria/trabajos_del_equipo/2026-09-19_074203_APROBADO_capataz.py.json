@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion marcar_estado solo lee la lista y termina; el bucle que busca la orden, actualiza los tres campos, escribe el JSON y devuelve True/False esta pegado al final de comprobar_pasos, despues de un return, asi que nunca se ejecuta.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "marcar_estado",
+  "texto_viejo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    lista = leer_lista()",
+  "texto_nuevo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    lista = leer_lista()\n    encontrada = False\n    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            orden[\"paso_fallido\"] = paso_fallido\n            orden[\"fallos_seguidos\"] = fallos_seguidos\n            encontrada = True\n            break\n    if not encontrada:\n        return False\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2, ensure_ascii=False)\n    return True",
+  "cambio": "Mover el bloque que hoy esta pegado al final de comprobar_pasos (tras el return \"\") dentro de marcar_estado, justo despues de 'lista = leer_lista()', y anadir ensure_ascii=False al json.dump. En comprobar_pasos se elimina ese bloque muerto.",
+  "codigo": "    encontrada = False\n    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            orden[\"paso_fallido\"] = paso_fallido\n            orden[\"fallos_seguidos\"] = fallos_seguidos\n            encontrada = True\n            break\n    if not encontrada:\n        return False\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2, ensure_ascii=False)\n    return True",
+  "vigia": "Una prueba que llame a marcar_estado con un id existente y compruebe que devuelve True y que ORDENES.json quedo con los tres campos escritos (incluidos vacios/0), y con un id inexistente que devuelve False y el archivo no cambia.",
+  "puede_danar": [
+   "cuerpo/capataz.py::comprobar_pasos",
+   "memoria/ORDENES.json"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "ORDENES.js"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "comprobar_pasos queda igual en comportamiento: solo se elimina el bloque inalcanzable que vive despues de `return ''`; las variables que usaba (lista, orden_id, ruta) ni siquiera existen en ese ambito, asi que era codigo muerto. No se rompe nada."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El obrero toma el bloque que estaba muerto al final de comprobar_pasos (lo delata el propio paquete), lo deja dentro de marcar_estado tal como pide el encargo — busca por id, escribe los tres campos siempre, graba con indent=2 y ensure_ascii=False, devuelve True y False sin escribir si no la encuentra — y de paso quita el codigo inalcanzable de comprobar_pasos sin tocar su comportamiento; nada inventado, nada roto, se puede sellar."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

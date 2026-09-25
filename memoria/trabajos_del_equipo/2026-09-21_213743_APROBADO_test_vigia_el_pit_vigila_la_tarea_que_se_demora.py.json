@@ -1,0 +1,24 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El material muestra que capataz.lanzar_al_equipo usa subprocess.run (no Popen) y no llama a vigilante.esperar, pero la tarea pide crear la vigia con monkeypatch de subprocess.Popen y vigilante.esperar, asi que la vigia se escribe segun lo pedido y fallara si el codigo real no expone esos puntos.",
+  "archivo": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+  "texto_nuevo": "import subprocess\n\nfrom cuerpo import capataz\nfrom cuerpo import vigilante\n\n\nclass _PopenFalso:\n    \"\"\"Popen de mentira: no lanza nada, devuelve salida fija y codigo 0.\"\"\"\n\n    def __init__(self, *args, **kwargs):\n        self.args = args\n        self.kwargs = kwargs\n        self.returncode = 0\n\n    def communicate(self, *args, **kwargs):\n        return ('salida', '')\n\n    def wait(self, *args, **kwargs):\n        return self.returncode\n\n    def poll(self):\n        return self.returncode\n\n    def kill(self):\n        return None\n\n    def terminate(self):\n        return None\n\n\ndef _montar(monkeypatch, respuesta):\n    \"\"\"Deja Popen y vigilante.esperar de mentira y apunta las llamadas a esperar.\"\"\"\n    llamadas = []\n\n    def esperar_falso(*args, **kwargs):\n        llamadas.append({'args': args, 'kwargs': kwargs})\n        return respuesta\n\n    monkeypatch.setattr(subprocess, 'Popen', _PopenFalso)\n    monkeypatch.setattr(vigilante, 'esperar', esperar_falso)\n    return llamadas\n\n\ndef test_si_termina_devuelve_la_salida_y_espero_con_el_limite(monkeypatch):\n    llamadas = _montar(monkeypatch, 'termino')\n\n    resultado = capataz.lanzar_al_equipo('ingeniero', {'id': '1', 'encargo': 'x'})\n\n    assert isinstance(resultado, dict)\n    assert 'salida' in resultado\n    assert 'salida' in resultado['salida']\n    assert len(llamadas) == 1\n    limite = llamadas[0]['kwargs'].get('limite', llamadas[0]['args'][-1] if llamadas[0]['args'] else None)\n    assert limite == capataz.LIMITE_TAREA_SEGUNDOS\n\n\ndef test_si_se_cuelga_la_salida_empieza_por_colgada(monkeypatch):\n    _montar(monkeypatch, 'colgada')\n\n    resultado = capataz.lanzar_al_equipo('ingeniero', {'id': '1', 'encargo': 'x'})\n\n    assert isinstance(resultado, dict)\n    assert resultado['salida'].startswith('COLGADA:')\n\n\ndef test_tipo_de_fallo_reconoce_la_colgada():\n    assert capataz.tipo_de_fallo('COLGADA: sin avance') == 'colgada'\n",
+  "confianza": "baja",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigia hace exactamente lo que pedia el encargo: clase Popen falsa con communicate('salida','') y returncode 0, esperar falsa que apunta argumentos, y las tres pruebas con assert, sin tocar ningun otro archivo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (23582 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,33 @@
+{
+  "orden": {
+    "id": "194",
+    "titulo": "Ninguna prueba llama de verdad a Big Pickle, Grok ni Codex",
+    "repara": "cada cerebro nuevo del relevo hace que las pruebas viejas del revisor lo llamen de verdad: lentas (370 s) y rojas en falso",
+    "origen": "medido 2026-09-22: la orden 53 (Codex revisa si Big Pickle y Grok fallan) la freno el guardia: 16 rojas en 370 s; las vigias del revisor falsifican Big Pickle y Grok pero no Codex, asi que lo llaman de verdad. Mismo mal que la orden 136 con Grok (ley 23)",
+    "pieza": "vigias/conftest.py",
+    "modo": "IA",
+    "razon": "se cura en un sitio para todas las pruebas y para los cerebros que vengan",
+    "vigia": "vigias/test_vigia_el_revisor_respeta_el_descanso_de_big_pickle.py",
+    "encargo": "En vigias/conftest.py, en la funcion _nada_toca_lo_real, justo antes de la linea yield, agrega: por cada modulo de cerebro con salida de pago o externa (cuerpo.bigpickle, cuerpo.grok y cuerpo.codex, importados dentro de un try por si alguno no existe), monkeypatch.setattr(modulo, \"preguntar\", una funcion que devuelve (\"\", [\"en las pruebas no se llama a un cerebro de verdad\"])), SALVO si el nombre del archivo de la prueba que corre (request.node.fspath.basename; agrega request a los parametros del fixture) esta en una lista _PRUEBAN_EL_ENCHUFE con estos nombres: test_vigia_bigpickle_enchufe.py, test_vigia_la_pieza_que_le_pregunta_a_codex.py, test_vigia_grok_enchufe.py (esas prueban el enchufe mismo y falsifican por dentro). Las pruebas que falsifican preguntar a su manera siguen igual, porque su monkeypatch va despues. Comentario corto: ninguna prueba llama a un cerebro de verdad (ley 23; medido 2026-09-22, orden 53: 16 rojas en 370 s). Es UN solo cambio. No toques ningun otro archivo.",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "8263244d66c38605",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_095500_RECHAZADO_conftest.py.json\nOBRERO deepseek -> AUDITOR grok47\n  aviso       : GPT-OSS 120B (Groq) no le cabe (26350 letras, aguanta 19042) -> se le salta\n  aviso       : PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).\n  aviso       : Big Pickle no contesto en 470.40000000000003s (timeout)\n  diagnostico : El parche anterior usaba request sin anadirlo a la firma del fixture, y excluia un archivo de grok inexistente en vez del nombre real de la prueba de la espera medida, dejando rotas las vigias del enchufe de grok y de la espera medida.\n  toca        : vigias/conftest.py funcion _nada_toca_lo_real\n  confianza   : media\n  VEREDICTO   : RECHAZADO\n  *** INVENTO: test_vigia_grok_enchufe.py -> SE DESCARTA\n  fallo       : _PRUEBAN_EL_ENCHUFE nombra test_vigia_grok_enchufe.py, que no existe. El enchufe real es test_vigia_el_enchufe_de_grok.py: llama grok.preguntar y solo falsifica Popen, asi que el fixture tapa preguntar y esa vigia queda rota.\n  fallo       : No excluye test_vigia_big_pickle_usa_su_espera_medida.py. Esa prueba llama bigpickle.preguntar y exige tiempos == [777.0]. El falso devuelve vacio y no llama a espera_de_bigpickle, asi que la espera medida sigue rota.\n  fallo       : El diagnostico decia justo eso (archivo de grok inexistente en vez del nombre real de la espera medida) y el parche lo repite.\n  resumen     : Rechazado: sigue excluyendo un archivo de grok que no existe y no salva la prueba de la espera medida, que es lo que el diagnostico pedia arreglar.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T09:55:01",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: You've hit your weekly limit · resets Sep 25, 11am (America/Bogota)\n",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\194_20260922_095501.json"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "orden": {
+    "id": "111",
+    "titulo": "El candado de cierre lee la salida de las pruebas en utf-8",
+    "origen": "medido el 2026-09-21 16:03 (A-43)",
+    "repara": "el cierre puede frenar a ciegas por una prueba con acentos",
+    "pieza": "arnes/candado_cierre.py",
+    "depende": [
+      "110"
+    ],
+    "modo": "IA",
+    "razon": "misma regla que el guardia",
+    "encargo": "En arnes/candado_cierre.py, en la funcion _vigias_verdes, en la linea cwd=raiz, capture_output=True, text=True, timeout=300) que sigue a r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\", \"vigias/\"],, cambia text=True por text=True, encoding=\"utf-8\", errors=\"replace\". No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_cierre_lee_en_utf8.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "f7691725781aec95",
+  "tipo": "tiempo",
+  "codigo": null,
+  "salida": "TOPE DE TIEMPO: 900 s",
+  "apartados": [],
+  "fecha": "2026-09-21T16:45:30",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no contesto en 600 s",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\111_20260921_164530.json"
+  }
+}

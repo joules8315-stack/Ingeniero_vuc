@@ -1,0 +1,59 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "lanzar_al_equipo(encargo) tiene el proyecto 'ingeniero' y la ruta C:\\Ingeniero_VUC quemados, no elige quien escribe ni quien revisa y no tiene tope de tiempo.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "lanzar_al_equipo",
+  "texto_viejo": "def lanzar_al_equipo(encargo):\n    raiz = r\"C:\\Ingeniero_VUC\"\n    resultado = subprocess.run(\n        [\"python\", \"ingeniero.py\", \"equipo\", \"ingeniero\", encargo],\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n    )\n    return (resultado.returncode, resultado.stdout)",
+  "texto_nuevo": "def lanzar_al_equipo(proyecto, orden, tope_segundos=900):\n    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    comando = [\n        sys.executable,\n        \"ingeniero.py\",\n        \"equipo\",\n        proyecto,\n        orden[\"encargo\"],\n        \"--escribe\",\n        \"deepseek\",\n        \"--revisa\",\n        \"bigpickle\",\n    ]\n    if orden.get(\"crear\"):\n        comando.append(\"--crear\")\n    entorno = dict(os.environ)\n    entorno[\"PYTHONIOENCODING\"] = \"utf-8\"\n    try:\n        resultado = subprocess.run(\n            comando,\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            encoding=\"utf-8\",\n            errors=\"replace\",\n            timeout=tope_segundos,\n            env=entorno,\n        )\n    except subprocess.TimeoutExpired:\n        return {\n            \"guardado\": False,\n            \"codigo\": None,\n            \"salida\": \"TOPE DE TIEMPO: \" + str(tope_segundos) + \" s\",\n        }\n    salida = resultado.stdout + resultado.stderr\n    return {\n        \"guardado\": \"GUARDADO AL MOMENTO\" in salida,\n        \"codigo\": resultado.returncode,\n        \"salida\": salida,\n    }",
+  "cambio": "Sustituir la funcion lanzar_al_equipo entera por la version que recibe (proyecto, orden, tope_segundos=900), calcula la raiz con os.path.dirname(os.path.dirname(os.path.abspath(__file__))), arma el comando con sys.executable y las marcas --escribe deepseek --revisa bigpickle, anade --crear si orden.get('crear') es verdadero, pasa encoding='utf-8', errors='replace', timeout=tope_segundos y env con PYTHONIOENCODING='utf-8', y devuelve el dict con guardado/codigo/salida o el dict de tope de tiempo. Ademas anadir 'import sys' arriba si falta.",
+  "codigo": "import sys\n\n\ndef lanzar_al_equipo(proyecto, orden, tope_segundos=900):\n    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    comando = [\n        sys.executable,\n        \"ingeniero.py\",\n        \"equipo\",\n        proyecto,\n        orden[\"encargo\"],\n        \"--escribe\",\n        \"deepseek\",\n        \"--revisa\",\n        \"bigpickle\",\n    ]\n    if orden.get(\"crear\"):\n        comando.append(\"--crear\")\n    entorno = dict(os.environ)\n    entorno[\"PYTHONIOENCODING\"] = \"utf-8\"\n    try:\n        resultado = subprocess.run(\n            comando,\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            encoding=\"utf-8\",\n            errors=\"replace\",\n            timeout=tope_segundos,\n            env=entorno,\n        )\n    except subprocess.TimeoutExpired:\n        return {\n            \"guardado\": False,\n            \"codigo\": None,\n            \"salida\": \"TOPE DE TIEMPO: \" + str(tope_segundos) + \" s\",\n        }\n    salida = resultado.stdout + resultado.stderr\n    return {\n        \"guardado\": \"GUARDADO AL MOMENTO\" in salida,\n        \"codigo\": resultado.returncode,\n        \"salida\": salida,\n    }",
+  "vigia": "Una vigia que llame a lanzar_al_equipo con un proyecto y una orden de mentira y compruebe que el comando lleva sys.executable, 'ingeniero.py', 'equipo', el proyecto, orden['encargo'], '--escribe', 'deepseek', '--revisa', 'bigpickle' y '--crear' solo si orden.get('crear'); que cwd es la carpeta que contiene la carpeta de cuerpo/capataz.py; que env trae PYTHONIOENCODING='utf-8'; que devuelve dict con guardado True solo si la salida trae 'GUARDADO AL MOMENTO'; y que con un tope muy bajo devuelve {'guardado': False, 'codigo': None, 'salida': 'TOPE DE TIEMPO: <tope> s'}.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "via_canonica.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Cambia la firma a (proyecto, orden, tope_segundos=900) y sustituye la salida tupla por un dict {guardado, codigo, salida}; cualquier llamador de lanzar_al_equipo que desempacara la tupla vieja se rompe. El encargo ordena ese contrato nuevo, asi que NO es un fallo del reparo, pero ese llamador no aparece en el paquete y queda sin comprobar."
+  ],
+  "que_falta": [
+   "Solo eso: confirmar en el codigo real (fuera del paquete) que ningun llamador de lanzar_al_equipo siga esperando la tupla (returncode, stdout); el paquete no trae a quien la llama."
+  ],
+  "resumen_para_el_jefe": "El reparo replica el encargo al pie de la letra — firma (proyecto, orden, tope_segundos=900), comando con sys.executable y las marcas --escribe deepseek --revisa bigpickle, '--crear' solo si orden.get('crear'), cwd calculado con os.path.dirname dos veces, capture_output/text/encoding utf-8/errors replace/timeout/env con PYTHONIOENCODING, el dict con 'GUARDADO AL MOMENTO' y el dict de 'TOPE DE TIEMPO' exacto — y anade 'import sys' que el propio encargo pide; no toca nada fuera de la funcion y el import, no inventa archivos ni funciones y el texto viejo que senala aparece tal cual en el material: nada que objetar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27840 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

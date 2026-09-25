@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En la rama de volver_atras donde la ruta ya estaba en HEAD, se hace git restore sin apartar antes una copia de lo que hay ahora en el disco, de modo que si el guardia frena se pierde el trabajo no guardado.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "volver_atras",
+  "texto_viejo": "                if r.returncode == 0:\n                    subprocess.run([\"git\", \"restore\", \"--staged\", \"--worktree\", \"--source=HEAD\", \"--\", str(ruta)], timeout=60, **comun)\n                    anotaciones.append(\"devuelta a lo guardado: \" + str(ruta))",
+  "texto_nuevo": "                if r.returncode == 0:\n                    import shutil\n                    destino_dir = os.path.join(str(raiz), 'memoria', 'trabajos_sin_revisar')\n                    os.makedirs(destino_dir, exist_ok=True)\n                    shutil.copy2(os.path.join(str(raiz), str(ruta)), os.path.join(destino_dir, os.path.basename(str(ruta)) + '.FRENADO_POR_EL_GUARDIA'))\n                    subprocess.run([\"git\", \"restore\", \"--staged\", \"--worktree\", \"--source=HEAD\", \"--\", str(ruta)], timeout=60, **comun)\n                    anotaciones.append(\"devuelta a lo guardado (copia apartada): \" + str(ruta))",
+  "cambio": "Antes del git restore de la rama 'ya estaba en HEAD', copiar el archivo actual del disco a memoria/trabajos_sin_revisar/<nombre>.FRENADO_POR_EL_GUARDIA con shutil.copy2, y cambiar el texto anotado a 'devuelta a lo guardado (copia apartada): '. Si la copia falla, no se hace el restore: la excepcion cae en el except de esa ruta que ya existe.",
+  "codigo": "                if r.returncode == 0:\n                    import shutil\n                    destino_dir = os.path.join(str(raiz), 'memoria', 'trabajos_sin_revisar')\n                    os.makedirs(destino_dir, exist_ok=True)\n                    shutil.copy2(os.path.join(str(raiz), str(ruta)), os.path.join(destino_dir, os.path.basename(str(ruta)) + '.FRENADO_POR_EL_GUARDIA'))\n                    subprocess.run([\"git\", \"restore\", \"--staged\", \"--worktree\", \"--source=HEAD\", \"--\", str(ruta)], timeout=60, **comun)\n                    anotaciones.append(\"devuelta a lo guardado (copia apartada): \" + str(ruta))",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py y vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py: comprobar que tras un freno del guardia existe el archivo .FRENADO_POR_EL_GUARDIA con el contenido previo al restore y que la anotacion dice 'copia apartada'.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "arnes/autorizacion.py",
+   "ingeniero.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El cambio solo agrega lineas ANTES de un git restore ya existente en la rama, sin tocar flujo ni firmas; los dependientes que importan candado_equipo.py (candado_supervisor, candado_terminal, candados_medicion, revisor_de_programa, autorizacion, ingeniero.py) no ven cambiada ninguna interfaz",
+   "Se crea la carpeta nueva memoria/trabajos_sin_revisar dentro de memoria/: no colisiona con paquetes/, grafos/ ni rescate/ porque usa nombre propio",
+   "El obrero declaro honestamente en _fuera_del_paquete que no leyo los dos vigias; el riesgo real es que alguno afirme el texto viejo de la anotacion, pero eso se cubre corriendolos antes de sellar"
+  ],
+  "que_falta": [
+   "Correr vigias/test_vigia_el_guardia_se_acuerda_y_frena.py y vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py (y el resto de vigias propias, 'python -m pytest -q vigias/') ANTES y DESPUES del cambio antes de pedirle a Julio que pruebe",
+   "Que Julio pruebe con sus ojos que el freno del guardia deja el archivo .FRENADO_POR_EL_GUARDIA con el contenido previo"
+  ],
+  "resumen_para_el_jefe": "El obrero hizo literalmente lo unico que pedia el encargo: copiar el archivo a memoria/trabajos_sin_revisar antes del git restore para que el freno del guardia no pierda nada; no invento nada, no toca vecinos y el texto que anuncia tocar aparece tal cual en el material."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

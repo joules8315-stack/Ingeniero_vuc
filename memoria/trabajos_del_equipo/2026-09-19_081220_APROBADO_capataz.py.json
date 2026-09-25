@@ -1,0 +1,33 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py faltan las tres funciones huella_de, anotar_huella_fallida y ya_fallo, y las importaciones de hashlib y datetime, para que un encargo que ya fallo no se vuelva a mandar igual.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "validar_etiqueta",
+  "texto_viejo": "    if 'modo' in orden and orden['modo'] not in ('PROGRAMA', 'IA'):\n        problemas.append('modo debe ser PROGRAMA o IA')\n    return problemas",
+  "texto_nuevo": "    if 'modo' in orden and orden['modo'] not in ('PROGRAMA', 'IA'):\n        problemas.append('modo debe ser PROGRAMA o IA')\n    return problemas\n\n\ndef huella_de(orden):\n    \"\"\"Devuelve los primeros 16 caracteres hex del sha256 de encargo + '\\n' + pieza.\"\"\"\n    encargo = orden.get('encargo', '') if isinstance(orden, dict) else ''\n    pieza = orden.get('pieza', '') if isinstance(orden, dict) else ''\n    if not isinstance(encargo, str):\n        encargo = ''\n    if not isinstance(pieza, str):\n        pieza = ''\n    texto = encargo + '\\n' + pieza\n    return hashlib.sha256(texto.encode('utf-8')).hexdigest()[:16]\n\n\ndef anotar_huella_fallida(orden, motivo):\n    \"\"\"Agrega una linea json con la huella, el id, el motivo y la fecha ISO de hoy.\"\"\"\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, 'memoria', 'HUELLAS_QUE_FALLARON.jsonl')\n    linea = {\n        'huella': huella_de(orden),\n        'id': orden.get('id', '') if isinstance(orden, dict) else '',\n        'motivo': motivo,\n        'fecha': datetime.date.today().isoformat(),\n    }\n    with open(ruta, 'a', encoding='utf-8') as f:\n        f.write(json.dumps(linea, ensure_ascii=False) + '\\n')\n\n\ndef ya_fallo(orden):\n    \"\"\"True si la huella_de(orden) aparece en el archivo; nunca lanza.\"\"\"\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, 'memoria', 'HUELLAS_QUE_FALLARON.jsonl')\n    huella = huella_de(orden)\n    try:\n        with open(ruta, encoding='utf-8') as f:\n            for linea in f:\n                try:\n                    dato = json.loads(linea)\n                except json.JSONDecodeError:\n                    continue\n                if isinstance(dato, dict) and dato.get('huella') == huella:\n                    return True\n    except (FileNotFoundError, OSError):\n        return False\n    return False",
+  "cambio": "Anadir al final de cuerpo/capataz.py, despues de validar_etiqueta, las tres funciones nuevas (huella_de, anotar_huella_fallida, ya_fallo) y anadir arriba las importaciones de hashlib y datetime.",
+  "codigo": "import hashlib\nimport datetime\n\n\ndef huella_de(orden):\n    \"\"\"Devuelve los primeros 16 caracteres hex del sha256 de encargo + '\\n' + pieza.\"\"\"\n    encargo = orden.get('encargo', '') if isinstance(orden, dict) else ''\n    pieza = orden.get('pieza', '') if isinstance(orden, dict) else ''\n    if not isinstance(encargo, str):\n        encargo = ''\n    if not isinstance(pieza, str):\n        pieza = ''\n    texto = encargo + '\\n' + pieza\n    return hashlib.sha256(texto.encode('utf-8')).hexdigest()[:16]\n\n\ndef anotar_huella_fallida(orden, motivo):\n    \"\"\"Agrega una linea json con la huella, el id, el motivo y la fecha ISO de hoy.\"\"\"\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, 'memoria', 'HUELLAS_QUE_FALLARON.jsonl')\n    linea = {\n        'huella': huella_de(orden),\n        'id': orden.get('id', '') if isinstance(orden, dict) else '',\n        'motivo': motivo,\n        'fecha': datetime.date.today().isoformat(),\n    }\n    with open(ruta, 'a', encoding='utf-8') as f:\n        f.write(json.dumps(linea, ensure_ascii=False) + '\\n')\n\n\ndef ya_fallo(orden):\n    \"\"\"True si la huella_de(orden) aparece en el archivo; nunca lanza.\"\"\"\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, 'memoria', 'HUELLAS_QUE_FALLARON.jsonl')\n    huella = huella_de(orden)\n    try:\n        with open(ruta, encoding='utf-8') as f:\n            for linea in f:\n                try:\n                    dato = json.loads(linea)\n                except json.JSONDecodeError:\n                    continue\n                if isinstance(dato, dict) and dato.get('huella') == huella:\n                    return True\n    except (FileNotFoundError, OSError):\n        return False\n    return False",
+  "vigia": "Una prueba que llame huella_de con dos ordenes distintas y compruebe que da huellas distintas y de 16 caracteres hex; que anotar_huella_fallida cree el archivo y escriba una linea json con las cuatro claves; y que ya_fallo devuelva True para esa orden, False para otra, y False (sin lanzar) si el archivo no existe o tiene una linea rota.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "memoria/HUELLAS_QUE_FALLARON.jsonl"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Coincide con el encargo al pie: crea las tres funciones pedidas (huella_de, anotar_huella_fallida, ya_fallo) despues de validar_etiqueta y agrega hashlib y datetime arriba, que en el material no estan, sin tocar otras funciones ni romper a nadie."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (26113 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El bloque de la Ley de Julio 2026-09-14 en auditar llama a Claude cuando todas las gratis duermen, pero el Acuerdo A-32 (2026-09-18) manda que revise Big Pickle, nunca Claude.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    # Ley de Julio 2026-09-14: si todas las gratis duermen, revisa Claude; nunca quien escribio.\n    # SOLO si el encargo NO pidio un revisor fijo (ley de Julio 2026-09-15).\n    if auditoria is None or auditoria.get('veredicto') == 'SIN_AUDITAR':\n        dormidos = {q for q in cuotas.ORDEN if not cuotas.desperto(q)}\n        if cuotas.puede_revisar_claude(evitar or '', dormidos):\n            try:\n                crudo = _claude_directo(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n                auditoria = _json_de(crudo)\n                quien_aud = 'claude'\n                avisos.append('todas las gratis duermen: revisa claude (ley de Julio)')\n            except Exception as e:\n                avisos.append('claude no pudo revisar: ' + str(e)[:120])",
+  "texto_nuevo": "    # A-32 (Julio 2026-09-18, reemplaza la ley del 2026-09-14): si todas las gratis duermen, revisa Big Pickle, nunca Claude ni quien escribio.\n    # SOLO si el encargo NO pidio un revisor fijo (ley de Julio 2026-09-15).\n    if auditoria is None or auditoria.get('veredicto') == 'SIN_AUDITAR':\n        dormidos = {q for q in cuotas.ORDEN if not cuotas.desperto(q)}\n        if cuotas.puede_revisar_bigpickle(evitar or '', dormidos):\n            try:\n                _texto_bp2, _avisos_bp2 = bigpickle.preguntar(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n                auditoria = _json_de(_texto_bp2)\n                quien_aud = 'bigpickle'\n                avisos.extend(_avisos_bp2)\n                avisos.append('todas las gratis duermen: revisa bigpickle (A-32)')\n            except Exception as e:\n                avisos.append('bigpickle no pudo revisar: ' + str(e)[:120])",
+  "cambio": "En la funcion auditar, sustituir el bloque que empieza con el comentario de la Ley de Julio 2026-09-14: cambiar el comentario al de A-32, cambiar la condicion a cuotas.puede_revisar_bigpickle(evitar or '', dormidos), y dentro del try llamar a bigpickle.preguntar con _prompt_auditor, guardar en _texto_bp2/_avisos_bp2, poner quien_aud='bigpickle', extender avisos con _avisos_bp2 y anadir el aviso de A-32; el except anota 'bigpickle no pudo revisar: '. La segunda linea de comentario (revisor fijo) y todo lo demas no se tocan.",
+  "codigo": "    # A-32 (Julio 2026-09-18, reemplaza la ley del 2026-09-14): si todas las gratis duermen, revisa Big Pickle, nunca Claude ni quien escribio.\n    # SOLO si el encargo NO pidio un revisor fijo (ley de Julio 2026-09-15).\n    if auditoria is None or auditoria.get('veredicto') == 'SIN_AUDITAR':\n        dormidos = {q for q in cuotas.ORDEN if not cuotas.desperto(q)}\n        if cuotas.puede_revisar_bigpickle(evitar or '', dormidos):\n            try:\n                _texto_bp2, _avisos_bp2 = bigpickle.preguntar(_prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n                auditoria = _json_de(_texto_bp2)\n                quien_aud = 'bigpickle'\n                avisos.extend(_avisos_bp2)\n                avisos.append('todas las gratis duermen: revisa bigpickle (A-32)')\n            except Exception as e:\n                avisos.append('bigpickle no pudo revisar: ' + str(e)[:120])",
+  "vigia": "vigias/test_vigia_claude_audita_si_gratis_duermen.py (se actualiza en un encargo aparte y se guardan juntos): debe comprobar que con todas las gratis dormidas revisa bigpickle y no claude, y que no revisa lo que escribio bigpickle.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "arnes/asignador.py y vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py: el cambio no los toca ni altera lo que esperan de auditar",
+   "vigias/test_vigia_claude_audita_si_gratis_duermen.py quedara roja hasta su actualizacion; el material la ordena actualizar en el mismo encargo y guardar juntos (no es fallo del obrero, es parte del cierre)",
+   "unica comprobacion de disco al sellar: el import de bigpickle visible en el material es local a la rama if auditor=='bigpickle'; si no hay import a nivel de modulo, la ruta auditor=None caeria en NameError y el except lo camuflaria como 'no pudo revisar'. La vigia actualizada (que corre esta misma ruta) es la prueba real, y el material ya afirma que bigpickle esta importado en ese archivo"
+  ],
+  "que_falta": [
+   "nada del encargo: los 4 puntos de A-32 (comentario, condicion, cuerpo del try, except) quedan identicos a lo pedido",
+   "al sellar debe entrarse la vigia test_vigia_claude_audita_si_gratis_duermen.py actualizada a la vez, como exige el material"
+  ],
+  "resumen_para_el_jefe": "La propuesta reemplaza el revisor de emergencia de Claude por Big Pickle identico al A-32 (comentario, condicion, bigpickle.preguntar, quien_aud, avisos y except), mantiene intacto el revisor fijo y los vecinos, sin inventar nada; solo asegurar que la vigia vieja se actualice junto (lo ordena el material) y que el import de bigpickle quede en alcance en la ruta de relevo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40062 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

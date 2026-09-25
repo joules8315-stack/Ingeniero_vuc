@@ -1,0 +1,23 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_el_archivo_carga.py: lo creo entero con 6 pruebas pytest sobre no_carga(contenido) de arnes/revisor_de_programa.py, incluido el caso real del decorador @contextlib.contextmanager.",
+  "archivo": "vigias/test_vigia_el_archivo_carga.py",
+  "texto_nuevo": "\"\"\"Vigia: antes de pagar una revision, el archivo cambiado tiene que CARGAR.\n\nCaso real 2026-09-19: un decorador @contextlib.contextmanager a nivel de modulo con\n'import contextlib' solo DENTRO de la funcion dejo arnes/candado_equipo.py sin cargar\ny se guardo igual. Esta vigia nace roja: prueba no_carga(contenido) de\narnes/revisor_de_programa.py, que devuelve la lista de lo que impide cargar el modulo\n(vacia = carga).\n\"\"\"\nimport os\nimport sys\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, 'arnes'))\nimport revisor_de_programa as r\n\n\n# (1) EL CASO REAL: el decorador usa contextlib a nivel de modulo, pero el import\n# esta solo DENTRO de la funcion. Al cargar el modulo, el decorador revienta.\nCASO_REAL = (\n    'import os\\n'\n    '\\n'\n    '@contextlib.contextmanager\\n'\n    'def f():\\n'\n    '    import contextlib\\n'\n    '    yield\\n'\n)\n\n\ndef test_el_caso_real_del_decorador_sin_import_frena():\n    fallos = r.no_carga(CASO_REAL)\n    assert isinstance(fallos, list)\n    assert fallos, 'el decorador sin import arriba tiene que frenar'\n    assert any('contextlib' in str(f) for f in fallos), \\\n        'algun texto tiene que mencionar contextlib'\n\n\ndef test_con_el_import_arriba_carga():\n    contenido = (\n        'import contextlib\\n'\n        '\\n'\n        '@contextlib.contextmanager\\n'\n        'def f():\\n'\n        '    yield\\n'\n    )\n    assert r.no_carga(contenido) == []\n\n\ndef test_un_error_de_sintaxis_frena():\n    assert r.no_carga('def f(:\\n    pass\\n')\n\n\ndef test_un_nombre_usado_dentro_de_una_funcion_no_cuenta():\n    # zzz no esta definido, pero solo se usa al LLAMAR a f, no al cargar el modulo.\n    assert r.no_carga('def f():\\n    return zzz\\n') == []\n\n\ndef test_los_nombres_del_modulo_y_de_python_cuentan():\n    contenido = (\n        'X = 1\\n'\n        'Y = X + len([])\\n'\n        'class A(Exception):\\n'\n        '    pass\\n'\n    )\n    assert r.no_carga(contenido) == []\n\n\ndef test_los_importados_y_los_del_for_cuentan():\n    contenido = (\n        'from m import a, b as c\\n'\n        'for i in []:\\n'\n        '    pass\\n'\n    )\n    assert r.no_carga(contenido) == []\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple con crear la vigia solicitada y los seis tests requeridos, sin inventar ni romper nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (28721 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En la tercera prueba, la linea que guarda el resultado llama a recoger_lo_frenado a secas, pero esa funcion vive dentro de capataz, no en este archivo.",
+  "archivo": "vigias/test_vigia_el_pit_recoge_los_pedazos.py",
+  "funcion": "test_sin_pieza_no_se_toca_nada",
+  "texto_viejo": "    resultado = recoger_lo_frenado({}, str(casa))",
+  "texto_nuevo": "    resultado = capataz.recoger_lo_frenado({}, str(casa))",
+  "cambio": "Poner delante el nombre capataz y un punto en la unica linea que llama a recoger_lo_frenado, dejando los mismos dos datos que ya le pasa.",
+  "codigo": "    resultado = capataz.recoger_lo_frenado({}, str(casa))",
+  "vigia": "vigias/test_vigia_el_pit_recoge_los_pedazos.py, prueba test_sin_pieza_no_se_toca_nada: al ejecutarla debe encontrar la funcion dentro de capataz y no fallar por nombre no definido.",
+  "puede_danar": [
+   "Nadie depende de estas piezas. Reparacion aislada."
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El ajuste a capataz.recoger_lo_frenado soluciona el diagnóstico sin introducir elementos inexistentes ni afectar a otros módulos."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

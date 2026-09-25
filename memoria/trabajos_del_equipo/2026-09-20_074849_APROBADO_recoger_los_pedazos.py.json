@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "El destino que devuelve donde_iba es una ruta relativa al proyecto, pero se usa tal cual para crear la carpeta y copiar, asi que la copia buena se escribe fuera del proyecto y el archivo de verdad queda sin tocar.",
+  "archivo": "arnes/recoger_los_pedazos.py",
+  "funcion": "recoger",
+  "texto_viejo": "        carpeta_destino = os.path.dirname(destino)\n        if carpeta_destino:\n            os.makedirs(carpeta_destino, exist_ok=True)\n        shutil.copyfile(origen, destino)",
+  "texto_nuevo": "        destino_entero = destino if os.path.isabs(destino) else os.path.join(raiz, destino)\n        carpeta_destino = os.path.dirname(destino_entero)\n        if carpeta_destino:\n            os.makedirs(carpeta_destino, exist_ok=True)\n        shutil.copyfile(origen, destino_entero)",
+  "cambio": "Dentro del try de recoger, calcular la ruta entera del destino (el propio destino si ya es absoluta, si no la union de la raiz con el destino) y usar esa ruta entera para sacar la carpeta, crearla y copiar. El valor devuelto en la clave destino sigue siendo la ruta relativa tal como venia.",
+  "codigo": "        destino_entero = destino if os.path.isabs(destino) else os.path.join(raiz, destino)\n        carpeta_destino = os.path.dirname(destino_entero)\n        if carpeta_destino:\n            os.makedirs(carpeta_destino, exist_ok=True)\n        shutil.copyfile(origen, destino_entero)",
+  "vigia": "vigias/test_vigia_recoger_los_pedazos.py: comprobar que tras recoger, la copia buena aparece en la ruta del proyecto (raiz + destino relativo) y que el archivo de destino queda con el contenido de la copia apartada.",
+  "puede_danar": [
+   "arnes/recoger_los_pedazos.py",
+   "vigias/test_vigia_recoger_los_pedazos.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_recoger_los_pedazos.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

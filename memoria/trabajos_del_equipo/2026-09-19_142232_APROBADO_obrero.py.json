@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En auditar, el material del revisor se arma con _filtrar_paquete, que recorta desde el final y deja al revisor sin el trozo tocado; ya existe _material_del_revisor que pone arriba el trozo tocado entero.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,\n                                        tope=TOPE_REVISOR - 3344 - 47 -\n                                             len(json.dumps(propuesta, ensure_ascii=False)))",
+  "texto_nuevo": "    material_auditor = _material_del_revisor(paquete, propuesta,\n                                            TOPE_REVISOR - 3344 - 47 -\n                                            len(json.dumps(propuesta, ensure_ascii=False)))",
+  "cambio": "Sustituir la llamada a _filtrar_paquete por _material_del_revisor en la asignacion de material_auditor dentro de auditar, pasando paquete, propuesta y el mismo tope calculado. Nada mas cambia.",
+  "codigo": "    material_auditor = _material_del_revisor(paquete, propuesta,\n                                            TOPE_REVISOR - 3344 - 47 -\n                                            len(json.dumps(propuesta, ensure_ascii=False)))",
+  "vigia": "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py (ya vigila cuerpo/obrero.py desde el material); comprobar que el material que recibe el revisor incluye el trozo tocado entero arriba.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Reemplaza correctamente la llamada, corrige el diagnóstico sin introducir inventos ni romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39607 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

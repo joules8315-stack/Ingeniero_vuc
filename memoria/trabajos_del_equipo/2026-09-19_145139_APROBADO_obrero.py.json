@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "En auditar, tras calcular material_auditor con _material_del_revisor, no se avisa al auditor de que el revisor de programa ya comprobo que los nombres existen y el archivo carga, por lo que la IA puede rechazar en falso por no aparecer en el material.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    material_auditor = _material_del_revisor(paquete, propuesta,\n                                            TOPE_REVISOR - 3344 - 47 -\n                                            len(json.dumps(propuesta, ensure_ascii=False)))\n    if auditor == 'bigpickle':",
+  "texto_nuevo": "    material_auditor = _material_del_revisor(paquete, propuesta,\n                                            TOPE_REVISOR - 3344 - 47 -\n                                            len(json.dumps(propuesta, ensure_ascii=False)))\n    # A-38: a la IA solo le queda el juicio.\n    if isinstance(propuesta, dict) and propuesta.get('_comprobado_por_programa'):\n        material_auditor = ('COMPROBADO POR PROGRAMA (gratis, antes de ti): los nombres que usa el cambio existen en el archivo o estan importados y el archivo sigue cargando. NO rechaces por no aparecer en el material: juzga solo si el cambio hace lo pedido y si rompe algo.\\n') + material_auditor\n    if auditor == 'bigpickle':",
+  "cambio": "Anadir, justo despues de la asignacion de material_auditor y antes del bloque 'if auditor == bigpickle', un comentario corto (A-38: a la IA solo le queda el juicio) y un if que, cuando la propuesta sea dict y traiga _comprobado_por_programa, anteponga al material_auditor el aviso de que el programa ya comprobo los nombres y que no se rechace por no aparecer en el material.",
+  "codigo": "    # A-38: a la IA solo le queda el juicio.\n    if isinstance(propuesta, dict) and propuesta.get('_comprobado_por_programa'):\n        material_auditor = ('COMPROBADO POR PROGRAMA (gratis, antes de ti): los nombres que usa el cambio existen en el archivo o estan importados y el archivo sigue cargando. NO rechaces por no aparecer en el material: juzga solo si el cambio hace lo pedido y si rompe algo.\\n') + material_auditor",
+  "vigia": "Una prueba que llame a auditar con una propuesta que traiga _comprobado_por_programa=True y compruebe que el prompt enviado al auditor empieza por el aviso 'COMPROBADO POR PROGRAMA (gratis, antes de ti)' y que sin esa marca no aparece.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Los tests de integración que validen el contenido exacto del prompt enviado al auditor (como los vigias mencionados) podrían fallar al encontrar el nuevo encabezado."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Se añade un aviso al material del auditor para evitar rechazos en falso cuando el código ya ha sido validado por el revisor de programa."
+ },
+ "avisos": [
+  "se pidio auditar a groq y no esta disponible: reviso gemini2",
+  "vueltas_dadas: 1"
+ ]
+}

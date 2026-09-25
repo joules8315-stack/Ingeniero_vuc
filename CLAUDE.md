@@ -3,6 +3,13 @@
 Herramienta de Julio para **crear y reparar cualquier proyecto sin gastar tokens de mas**.
 Vive en `C:\Ingeniero_VUC`, no pertenece a ningun proyecto, atiende a los de `proyectos.config`.
 
+## PRIORIDAD UNO EN CURSO (aprobada por Julio el 2026-09-25)
+**Lo primero que se lee al empezar: [`PLAN_PRIORIDAD_UNO.md`](PLAN_PRIORIDAD_UNO.md).**
+No se pasa a ninguna otra prioridad hasta terminarlo. Orden: R0 el cierre atascado → R1 el trabajo
+aprobado llega al disco + R2 el material completo → recoger los 14 trabajos frenados → R3/R4/R5
+velocidad → R6 paralelo + R7 la llave por partes → R8 el comando `plan`.
+El estado vive en `memoria/ORDENES.json`, no en el chat.
+
 ## LA REGLA QUE MANDA SOBRE TODAS
 **No se lee el proyecto. Se lee el PAQUETE MINIMO.**
 

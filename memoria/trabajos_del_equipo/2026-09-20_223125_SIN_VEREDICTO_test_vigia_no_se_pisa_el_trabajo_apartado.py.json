@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "Las dos pruebas de vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py hacen monkeypatch.setattr sobre candado.subprocess, pero arnes/candado_equipo.py importa subprocess DENTRO de volver_atras, asi que el modulo no tiene ese atributo y las pruebas se caen con AttributeError.",
+  "archivo": "vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py",
+  "funcion": "las dos pruebas de la vigia (las que monkeypatchean subprocess dentro de arnes.candado_equipo)",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "En cada una de las dos pruebas: importar subprocess arriba de la vigia y sustituir el monkeypatch.setattr sobre candado.subprocess por monkeypatch.setattr sobre subprocess.run (el modulo subprocess de verdad). El resto de cada prueba se queda igual: siguen comprobando que dos llamadas seguidas a volver_atras sobre la misma pieza dejan las DOS copias apartadas. No se toca arnes/candado_equipo.py ni ningun otro archivo.",
+  "codigo": "import subprocess\n\n# en cada prueba, en lugar de monkeypatch.setattr(candado, \"subprocess\", falso):\nmonkeypatch.setattr(subprocess, \"run\", falso_run)",
+  "vigia": "vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py (las dos pruebas que comprueban que dos llamadas seguidas a volver_atras dejan las DOS copias apartadas)",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/fallos.py",
+   "vigias/conftest.py"
+  ],
+  "preguntas": [
+   "El material solo trae las primeras 40 lineas de la vigia (docstring y helper _raiz_proyecto); no trae el cuerpo de las dos pruebas ni el texto exacto de sus monkeypatch.setattr. Para copiar el texto_viejo literal y unico de cada prueba hace falta ver las dos pruebas completas. NECESITO_LEER: vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py / motivo: no tengo el cuerpo de las dos pruebas ni el texto literal de sus monkeypatch.setattr / que decide: el texto_viejo y texto_nuevo exactos de cada prueba / riesgo: sin el cuerpo completo no puedo copiar el texto literal y el trabajo se descarta."
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {},
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40017 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (41004 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (41062 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (41120 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

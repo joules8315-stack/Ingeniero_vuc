@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En armar_sabotaje las dos lineas que agregan el sabotaje usan 'archivo': pieza (solo el nombre), y el sabotaje necesita la ruta entera de la pieza.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "armar_sabotaje",
+  "texto_viejo": "        lista = []\n        cambios = propuesta.get('cambios')\n        if isinstance(cambios, list):\n            for trozo in cambios:\n                if not isinstance(trozo, dict):\n                    continue\n                viejo = trozo.get('texto_viejo')\n                nuevo = trozo.get('texto_nuevo')\n                if viejo and nuevo:\n                    lista.append({'archivo': pieza, 'viejo': nuevo, 'nuevo': viejo})\n        else:\n            viejo = propuesta.get('texto_viejo')\n            nuevo = propuesta.get('texto_nuevo')\n            if viejo and nuevo:\n                lista.append({'archivo': pieza, 'viejo': nuevo, 'nuevo': viejo})\n        if not lista:\n            return False",
+  "texto_nuevo": "        # el nombre de la pieza sirve para buscar su trabajo aprobado; el sabotaje necesita la ruta entera (medido 2026-09-22, orden 70)\n        lista = []\n        cambios = propuesta.get('cambios')\n        if isinstance(cambios, list):\n            for trozo in cambios:\n                if not isinstance(trozo, dict):\n                    continue\n                viejo = trozo.get('texto_viejo')\n                nuevo = trozo.get('texto_nuevo')\n                if viejo and nuevo:\n                    lista.append({'archivo': str(orden.get('pieza', '')).replace(chr(92), '/'), 'viejo': nuevo, 'nuevo': viejo})\n        else:\n            viejo = propuesta.get('texto_viejo')\n            nuevo = propuesta.get('texto_nuevo')\n            if viejo and nuevo:\n                lista.append({'archivo': str(orden.get('pieza', '')).replace(chr(92), '/'), 'viejo': nuevo, 'nuevo': viejo})\n        if not lista:\n            return False",
+  "cambio": "En armar_sabotaje, sustituir las dos lineas lista.append({'archivo': pieza, ...}) por lista.append({'archivo': str(orden.get('pieza', '')).replace(chr(92), '/'), ...}) y poner el comentario corto encima de lista = [].",
+  "codigo": "        # el nombre de la pieza sirve para buscar su trabajo aprobado; el sabotaje necesita la ruta entera (medido 2026-09-22, orden 70)\n        lista = []\n        cambios = propuesta.get('cambios')\n        if isinstance(cambios, list):\n            for trozo in cambios:\n                if not isinstance(trozo, dict):\n                    continue\n                viejo = trozo.get('texto_viejo')\n                nuevo = trozo.get('texto_nuevo')\n                if viejo and nuevo:\n                    lista.append({'archivo': str(orden.get('pieza', '')).replace(chr(92), '/'), 'viejo': nuevo, 'nuevo': viejo})\n        else:\n            viejo = propuesta.get('texto_viejo')\n            nuevo = propuesta.get('texto_nuevo')\n            if viejo and nuevo:\n                lista.append({'archivo': str(orden.get('pieza', '')).replace(chr(92), '/'), 'viejo': nuevo, 'nuevo': viejo})\n        if not lista:\n            return False",
+  "vigia": "Una prueba que llame a armar_sabotaje con una orden cuya pieza traiga ruta completa y compruebe que el JSON escrito lleva 'archivo' con la ruta entera (barras normales), no solo el nombre.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "cuerpo/capataz.py: el docstring de armar_sabotaje sigue describiendo 'archivo': pieza, pero el paquete prohibio tocar mas lineas, asi que esta correcto no haberlo tocado",
+   "El consumidor del JSON de sabotaje (posiblemente codex.py, marcado fuera del paquete) recibira ahora ruta completa en vez de nombre; no esta en el material, no se puede juzgar, y el encargo pedia exactamente ese cambio"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cambia exactamente las dos lineas que pidio el paquete, con orden (parametro existente) y la ruta entera normalizada, anade el comentario pedido con su texto literal, toca un solo archivo y no inventa nada; aprobado."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (33602 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

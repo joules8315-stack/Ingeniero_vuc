@@ -1,0 +1,73 @@
+{
+  "orden": {
+    "id": "89",
+    "titulo": "La vigia vieja del loop sigue la orden nueva de Julio: sin tope en dolares",
+    "origen": "orden de Julio 2026-09-21 (A-42) y medido 13:02: la vigia vieja exige parar a los 5 USD y por eso el guardia frena siempre la orden 68",
+    "repara": "una vigia vieja que contradice una ley nueva frena para siempre el arreglo que la cumple",
+    "pieza": "vigias/test_vigia_el_loop_del_pit.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "A-42 reemplaza a A-27: la vigia tiene que medir la ley vigente, no la reemplazada",
+    "encargo": "En vigias/test_vigia_el_loop_del_pit.py, en la funcion test_tope_de_gasto_para_antes_de_llamar, cambia el texto de ayuda por: Orden de Julio A-42 (2026-09-21): no hay tope en dolares; aunque el gasto del mes sea grande, el loop no para por eso y llama al equipo. Y cambia las dos lineas assert texto.startswith('PARADO: TOPE DE GASTO') y assert llamadas == [] por assert not texto.startswith('PARADO: TOPE DE GASTO') y assert llamadas == ['o1']. No cambies nada mas ni toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_loop_del_pit.py",
+    "entrega_la_prueba": "si",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "la prueba nace roja con el loop de hoy (para en el tope) y se pone verde con la orden 68."
+  },
+  "huella": "7da5219dc78337a7",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_134829_APROBADO_test_vigia_el_loop_del_pit.py.json\nOBRERO deepseek -> AUDITOR groq\n  aviso       : el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.\n  aviso       : el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.\n  aviso       : el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.\n  diagnostico : El texto de ayuda y las dos lineas assert de test_tope_de_gasto_para_antes_de_llamar dicen lo contrario de lo que ahora manda la orden A-42: hay que invertir el assert del texto y esperar que si se llame al equipo.\n  toca        : vigias/test_vigia_el_loop_del_pit.py funcion test_tope_de_gasto_para_antes_de_llamar\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : La propuesta cumple exactamente con el diagnóstico, no inventa nada, no rompe vecinos ni contratos, y modifica sólo lo solicitado.\n\nEL EQUIPO NO APROBO (RECHAZADO_POR_EL_PROGRAMA): NO se guardo llave, no se puede tocar codigo.\n\nEL REVISOR DE PROGRAMA FRENA (gratis, sin ninguna IA):\n   - HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.\nNO se abre la puerta de escribir. El trabajo queda guardado.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T13:48:29",
+  "analisis": {
+    "que_paso": "La orden 89 pedia que la vigia del tope de gasto (test_tope_de_gasto_para_antes_de_llamar) midiera la ley nueva A-42 (sin tope): invertir el assert del texto y esperar que SI se llame al equipo. El obrero deepseek escribio la funcion entera correcta en el campo 'codigo' (con los dos assert ya cambiados) y el auditor groq la aprobo. Pero en los campos que de verdad se aplican, 'texto_viejo' y 'texto_nuevo', puso SOLO la linea del docstring. El revisor de programa comparo ese parche, vio que quitando comentarios/lineas en blanco el viejo y el nuevo quedan iguales (ambos son solo docstring) y freno con HUMO antes de pagar la revision. No se guardo llave y no se toco codigo.",
+    "causa_raiz": "Propuesta incoherente del equipo: lo que el auditor revisa ('codigo', la funcion completa con los assert cambiados) NO es lo que se aplica. El aplicador y el revisor solo miran 'texto_viejo'->'texto_nuevo', y ese parche cubre unicamente el docstring; los dos cambios de assert quedaron solo en 'codigo' y 'cambio'. Como texto_nuevo viene lleno, el revisor usa texto_nuevo e ignora 'codigo' (nuevo = texto_nuevo or codigo). Al aplicarse, solo cambiaria el texto de ayuda y los assert seguirian midiendo la ley vieja A-27. Por eso el freno HUMO es CORRECTO: el cambio que de verdad se aplicaria no repara nada. El programa hizo su trabajo; fallo el obrero al recortar el parche.",
+    "donde": "vigias/test_vigia_el_loop_del_pit.py::test_tope_de_gasto_para_antes_de_llamar (la reparacion). El freno vive en arnes/revisor_de_programa.py (cuenta HUMO, funcion revisar) alimentado por texto_viejo/texto_nuevo; el mismo criterio esta en cuerpo/aplicador.py (aplicar_cambio). La propuesta rota esta en memoria/trabajos_del_equipo/2026-09-21_134829_APROBADO_test_vigia_el_loop_del_pit.py.json (campos texto_viejo/texto_nuevo solo-docstring frente a codigo completo).",
+    "quien_fallo": "equipo",
+    "citas": [
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_134829_APROBADO_test_vigia_el_loop_del_pit.py.json",
+        "texto": "\"texto_nuevo\": \"    \\\"\\\"\\\"Orden de Julio A-42 (2026-09-21): no hay tope en dolares; aunque el gasto del mes sea grande, el loop no para por eso y llama al equipo.\\\"\\\"\\\"\","
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_134829_APROBADO_test_vigia_el_loop_del_pit.py.json",
+        "texto": "assert not texto.startswith('PARADO: TOPE DE GASTO')\\n    assert llamadas == ['o1']"
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_134829_APROBADO_test_vigia_el_loop_del_pit.py.json",
+        "texto": "\"resumen_para_el_jefe\": \"La propuesta cumple exactamente con el diagnóstico, no inventa nada, no rompe vecinos ni contratos, y modifica sólo lo solicitado.\""
+      },
+      {
+        "archivo": "arnes/revisor_de_programa.py",
+        "texto": "nuevo = str(p.get(\"texto_nuevo\") or p.get(\"codigo\") or \"\")"
+      },
+      {
+        "archivo": "arnes/revisor_de_programa.py",
+        "texto": "if viejo.strip() and sin_ruido(viejo) == sin_ruido(nuevo):\n            fallos.append(\"HUMO: quitando comentarios y lineas en blanco, el texto nuevo es \"\n                          \"IGUAL al viejo. Ese cambio no repara nada.\")"
+      },
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "if texto_viejo and texto_nuevo:\n        if _quitar_ruido(texto_viejo) == _quitar_ruido(texto_nuevo):\n            _apuntar_log(False, archivo, funcion, \"cambio humo: solo toca comentarios\")"
+      }
+    ],
+    "no_volver_a": "El parche que se aplica (texto_viejo->texto_nuevo) tiene que incluir TODAS las lineas que cambian; no vale dejar el cambio real solo en 'codigo' mientras el parche toca unicamente el docstring, porque el auditor aprueba una cosa y se aplica otra.",
+    "tarea_nueva": {
+      "repara": "el auditor aprueba la funcion entera ('codigo') pero solo se aplica el parche texto_viejo->texto_nuevo; cuando el parche cubre menos que 'codigo' se aplica un cambio incompleto y el revisor lo confunde con HUMO, frenando para siempre una reparacion valida",
+      "pieza": "arnes/revisor_de_programa.py",
+      "razon": "lo que se aprueba y lo que se aplica tienen que ser lo mismo: cerrar la clase de fallo 'codigo completo + parche parcial'",
+      "encargo": "En arnes/revisor_de_programa.py, funcion revisar, agrega una cuenta nueva (sin tocar ningun otro archivo): si la propuesta trae 'codigo' no vacio Y trae 'texto_viejo'/'texto_nuevo', reconstruye el texto que DE VERDAD se aplicaria (el contenido del archivo con texto_viejo reemplazado por texto_nuevo) y compara la funcion resultante contra 'codigo'; si el parche cambia MENOS que 'codigo' (p.ej. solo el docstring y no los assert), agrega el fallo: 'EL PARCHE APLICA MENOS QUE EL CODIGO REVISADO: el auditor aprueba la funcion entera pero solo se aplicaria el docstring; pon en texto_viejo/texto_nuevo todas las lineas que cambian'. Antes escribe la vigia que nace ROJA con este mismo caso (parche solo-docstring + codigo con los assert ya invertidos).",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 300s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\89_20260921_134829.json"
+  }
+}

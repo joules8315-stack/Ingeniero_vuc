@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "En cuerpo/cruzado.py, dentro de resolver, el juez que CORRE la prueba no existe: se le pregunta a una IA antes de correr la prueba, y el for del juez siempre da 2 vueltas aunque ya haya veredicto.",
+  "archivo": "cuerpo/cruzado.py",
+  "funcion": "resolver",
+  "texto_viejo": "        juez = None\n        txt_juez, quien_juez, av_juez = \"\", \"\", []\n        for intento_juez in range(2):   # el juez puede devolver JSON roto: se le pide de nuevo",
+  "texto_nuevo": "        juez = None\n        txt_juez, quien_juez, av_juez = \"\", \"\", []\n        try:\n            from arnes import juez_de_la_prueba as jp\n            archivo_prop = propuesta.get(\"archivo\")\n            texto_viejo_prop = propuesta.get(\"texto_viejo\")\n            texto_nuevo_prop = propuesta.get(\"texto_nuevo\")\n            raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n            ruta_rel = str(archivo_prop).replace(\"\\\\\", \"/\")\n            if ruta_rel.startswith(raiz.replace(\"\\\\\", \"/\")):\n                ruta_rel = ruta_rel[len(raiz.replace(\"\\\\\", \"/\")):].lstrip(\"/\")\n            if archivo_prop and texto_viejo_prop:\n                res = jp.juzgar_con_vecinas(raiz, ruta_rel, texto_viejo_prop, texto_nuevo_prop, dejar_el_cambio=False)\n                if isinstance(res, dict) and res.get(\"ok\") is True:\n                    juez = {\"veredicto\": \"APROBADO\", \"invento_algo\": False, \"fallos\": [],\n                            \"que_le_falta\": \"\",\n                            \"resumen_para_el_jefe\": \"La prueba se corrio de verdad y quedo verde.\"}\n                    quien_juez = \"juez de la prueba (programa)\"\n                elif isinstance(res, dict) and res.get(\"ok\") is False:\n                    juez = {\"veredicto\": \"RECHAZADO\", \"invento_algo\": False, \"fallos\": [2],\n                            \"que_le_falta\": res.get(\"razon\", \"\"),\n                            \"resumen_para_el_jefe\": \"La prueba se corrio de verdad y NO paso.\"}\n                    quien_juez = \"juez de la prueba (programa)\"\n        except Exception:\n            pass\n        for intento_juez in range(0 if juez is not None else 2):   # el juez puede devolver JSON roto: se le pide de nuevo",
+  "cambio": "Sustituir las tres lineas (juez=None, txt_juez/quien_juez/av_juez vacios, y el for con range(2)) por: las dos primeras igual, un bloque try/except que corre el juez de la prueba con juez_de_la_prueba.juzgar_con_vecinas y deja juez con APROBADO o RECHAZADO segun ok, y el for cambiado a range(0 if juez is not None else 2) con el mismo comentario.",
+  "codigo": "        juez = None\n        txt_juez, quien_juez, av_juez = \"\", \"\", []\n        try:\n            from arnes import juez_de_la_prueba as jp\n            archivo_prop = propuesta.get(\"archivo\")\n            texto_viejo_prop = propuesta.get(\"texto_viejo\")\n            texto_nuevo_prop = propuesta.get(\"texto_nuevo\")\n            raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n            ruta_rel = str(archivo_prop).replace(\"\\\\\", \"/\")\n            if ruta_rel.startswith(raiz.replace(\"\\\\\", \"/\")):\n                ruta_rel = ruta_rel[len(raiz.replace(\"\\\\\", \"/\")):].lstrip(\"/\")\n            if archivo_prop and texto_viejo_prop:\n                res = jp.juzgar_con_vecinas(raiz, ruta_rel, texto_viejo_prop, texto_nuevo_prop, dejar_el_cambio=False)\n                if isinstance(res, dict) and res.get(\"ok\") is True:\n                    juez = {\"veredicto\": \"APROBADO\", \"invento_algo\": False, \"fallos\": [],\n                            \"que_le_falta\": \"\",\n                            \"resumen_para_el_jefe\": \"La prueba se corrio de verdad y quedo verde.\"}\n                    quien_juez = \"juez de la prueba (programa)\"\n                elif isinstance(res, dict) and res.get(\"ok\") is False:\n                    juez = {\"veredicto\": \"RECHAZADO\", \"invento_algo\": False, \"fallos\": [2],\n                            \"que_le_falta\": res.get(\"razon\", \"\"),\n                            \"resumen_para_el_jefe\": \"La prueba se corrio de verdad y NO paso.\"}\n                    quien_juez = \"juez de la prueba (programa)\"\n        except Exception:\n            pass\n        for intento_juez in range(0 if juez is not None else 2):   # el juez puede devolver JSON roto: se le pide de nuevo",
+  "vigia": "vigias/test_vigia_memoria_completa.py (lo vigila desde cuerpo/cruzado.py); comprobar que con juez ya puesto por el programa el for no da vueltas y no se llama a ninguna IA.",
+  "puede_danar": [
+   "cuerpo/cruzado.py::resolver",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [
+   "El modulo arnes.juez_de_la_prueba y su funcion juzgar_con_vecinas no aparecen en el material: se asume que existen tal como los nombra el encargo. Si no existen, hay que crearlos, pero el encargo no da su contenido."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21246 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

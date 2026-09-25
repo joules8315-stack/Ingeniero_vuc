@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cerebro/router.py, tras la llamada a completar_funciones, falta la regla que entrega ENTERO el archivo cuando tiene 600 renglones o menos.",
+  "archivo": "cerebro/router.py",
+  "funcion": "armar",
+  "texto_viejo": "    # GENERALIZAR LA REPARACION A CUALQUIER FUNCION (Julio, 2026-09-05).\n    # El bloque de arriba solo arregla el caso de `armar`. El mismo problema ocurre con cualquier\n    # otra funcion: el fragmentador entrega pedazos huerfanos. Esta funcion generaliza esa cura.\n    pedazos = completar_funciones(pedazos, codigo)\n    # (la funcion vive al final de este archivo, junto a las demas ayudas)",
+  "texto_nuevo": "    # GENERALIZAR LA REPARACION A CUALQUIER FUNCION (Julio, 2026-09-05).\n    # El bloque de arriba solo arregla el caso de `armar`. El mismo problema ocurre con cualquier\n    # otra funcion: el fragmentador entrega pedazos huerfanos. Esta funcion generaliza esa cura.\n    pedazos = completar_funciones(pedazos, codigo)\n    # (la funcion vive al final de este archivo, junto a las demas ayudas)\n\n    # ARCHIVO CORTO, ENTERO (Julio, 2026-09-21).\n    # Si el archivo del que sale un pedazo tiene 600 renglones o menos, se entrega ENTERO en\n    # lugar de por pedazos. Los archivos mas largos siguen exactamente igual que hoy.\n    # Motivo medido el 2026-09-20: tres rondas pagadas se perdieron porque al obrero le llegaron\n    # trozos sueltos de archivos cortos y contesto que no encontraba lo que tenia que cambiar;\n    # un archivo de 255 renglones ocupa muy poco y cabe de sobra.\n    pedazos = _archivos_cortos_enteros(pedazos, codigo)",
+  "cambio": "Anadir, justo despues de la llamada a completar_funciones dentro de armar, una llamada a una funcion nueva _archivos_cortos_enteros que sustituye cada pedazo cuyo archivo tenga 600 renglones o menos por el archivo entero; los archivos mas largos no se tocan.",
+  "codigo": "def _archivos_cortos_enteros(pedazos, codigo):\n    \"\"\"Si el archivo de un pedazo tiene 600 renglones o menos, se entrega ENTERO.\n\n    Julio, 2026-09-21. Motivo medido el 2026-09-20: tres rondas pagadas se perdieron porque al\n    obrero le llegaron trozos sueltos de archivos cortos y contesto que no encontraba lo que\n    tenia que cambiar; un archivo de 255 renglones ocupa muy poco y cabe de sobra.\n    Los archivos mas largos siguen exactamente igual que hoy.\n    \"\"\"\n    if not pedazos:\n        return pedazos\n    por_id = {}\n    for p in (codigo or []):\n        por_id[p.get(\"id\")] = p\n    salida, ya_entero = [], set()\n    for t in pedazos:\n        pieza = por_id.get(t.get(\"pieza\"))\n        abs_path = (pieza or {}).get(\"abs\") or t.get(\"abs\")\n        if not abs_path or not str(abs_path).lower().endswith(\".py\"):\n            salida.append(t)\n            continue\n        lineas = (pieza or {}).get(\"lineas\") or 0\n        if not lineas:\n            try:\n                lineas = len(_lineas_de(abs_path, 1, 10 ** 9))\n            except Exception:\n                lineas = 0\n        if lineas <= 0 or lineas > 600:\n            salida.append(t)\n            continue\n        marca = t.get(\"pieza\")\n        if marca in ya_entero:\n            continue\n        ya_entero.add(marca)\n        try:\n            texto = \"\\n\".join(_lineas_de(abs_path, 1, lineas))\n        except Exception:\n            salida.append(t)\n            continue\n        nuevo = dict(t)\n        nuevo.update({\"desde\": 1, \"hasta\": lineas, \"texto\": texto,\n                      \"direccion\": \"%s:1-%s\" % (t.get(\"pieza\"), lineas),\n                      \"_completo\": \"archivo_corto\"})\n        salida.append(nuevo)\n    return salida",
+  "vigia": "Una vigia que arme un paquete con un problema que toque un archivo de 255 renglones y compruebe que el trozo entregado cubre el archivo entero (desde 1 hasta 255); y otra que use un archivo de mas de 600 renglones y compruebe que el trozo sigue siendo el pedazo de siempre, sin cambio.",
+  "puede_danar": [
+   "cerebro/router.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [
+   "El tope de 600 renglones, se cuenta sobre el archivo completo o sobre el archivo sin comentarios ni lineas vacias?",
+   "Si un archivo corto ya venia entero por completar_funciones, se deja como esta o se vuelve a sustituir por el archivo completo?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La regla solo alcanza los pedazos que YA existen al salir de completar_funciones. Los dos bloques siguientes anaden pedazos DESPUES de la llamada nueva: 'LO QUE EL PROBLEMA NOMBRA COMO FUNCION' (router.py:293-323) y 'LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO' (router.py:325-345). Un archivo corto que entra SOLO por el bloque de nombrados (no lo trajo el fragmentador) sigue llegando al obrero como trozo parcial 1-80 (router.py:335-343), que es exactamente el fallo medido del diagnostico ('trozos sueltos de archivos cortos'). La regla no arregla de verdad ese camino.",
+   "Restriccion a .py que el diagnostico no pide: el encargo dice que se entregue ENTERO 'el archivo cuando tiene 600 renglones o menos', sin excepción de extension, y la funcion nueva se salta cualquier .html/.js corto (if not str(abs_path).lower().endswith('.py')). La pantalla, donde Julio mira, queda fuera de la regla.",
+   "La vigia propuesta no mide el hueco del fallo 1: 'un problema que toque un archivo de 255 renglones' entra por el camino del fragmentador (el trozo ya estaba en pedazos) y quedaria verde aunque el camino del archivo nombrado siga entregando trozos sueltos. Es la trampa de 'prueba verde no es la prueba'.",
+   "El tope de 600 choca con la ley ya escrita del archivo: un archivo de 600 renglones es el 75% del TOPE_LINEAS=800 (router.py:24), y si un pedido junta varias fichas cortas el paquete pasa del tope y se activa el AVISO (router.py:566-567) sin que la regla lo impida."
+  ],
+  "riesgo_vecinos": [
+   "cerebro/dudas.py y cerebro/respuestas.py consumen pk['trozos']: con varios archivos .py cortos en un mismo pedido el texto se multiplica (varias piezas de ~600 renglones) y el paquete crece de golpe; no rompe el formato de pedazo pero infla lo que se envia.",
+   "test_vigia_el_paquete_trae_la_funcion_entera.py llama a completar_funciones DIRECTAMENTE (router.py:571 invocada sin pasar por la regla nueva), asi que no se rompe; pero su principio 'se trae la funcion, no el archivo entero: eso es gastar de mas' convive ahora con una regla que trae archivos enteros de hasta 600 renglones.",
+   "test_vigia_memoria_completa.py (router.py:107 y 112 invocan armar) solo pide que exista un trozo de router.py; router.py hoy tiene 635 renglones (>600), no llega entero, y los .py cortos que entren eligen la via del fragmentador: la vigia sobrevive."
+  ],
+  "que_falta": [
+   "Pasar los pedazos por _archivos_cortos_enteros tambien DESPUES de los bloques que anaden pedazos (o al final, antes del return, router.py:416), para que un archivo corto que entra solo por nombre tambien llegue entero.",
+   "Una vigia con un archivo de 255 renglones que entre por el bloque de nombrados (no por el fragmentador) y compruebe que llega entero de 1 a 255.",
+   "Responder si el tope de 600 se cuenta sobre el archivo completo o sin comentarios ni vacias, y si la regla aplica a todo archivo o solo a .py (limitando el alcance sin que el encargo lo pida)."
+  ],
+  "resumen_para_el_jefe": "La reparacion es sincera y usa solo cosas que existen (no inventa nada), esta puesta en el sitio exacto que pedido el diagnostico y funciona para el camino normal del fragmentador, pero deja sin curar el caso de archivo corto que solo entra cuando se nombra (sigue llegando el trozo suelto de 1-80 con el que Julio perdio las rondas) y se reduce sola a archivos .py; conviene correr la regla al final del repartidor antes de darla por terminada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38364 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

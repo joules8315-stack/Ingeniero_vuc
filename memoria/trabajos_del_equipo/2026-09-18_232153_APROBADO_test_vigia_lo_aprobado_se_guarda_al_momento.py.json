@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba test_si_el_guardia_frena_no_se_pierde_nada llama a guardar_en_la_historia, que anota en el libro de fallos REAL (memoria/FALLOS.json) porque no se aisla con INGENIERO_FALLOS_TEST, ensuciando la memoria real en cada corrida.",
+  "archivo": "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py",
+  "funcion": "test_si_el_guardia_frena_no_se_pierde_nada",
+  "texto_viejo": "def test_si_el_guardia_frena_no_se_pierde_nada(tmp_path):\n    \"\"\"Si el guardia de guardado frena, el trabajo no se pierde: sigue en el disco o queda apartado.\"\"\"\n    _repo(tmp_path)",
+  "texto_nuevo": "def test_si_el_guardia_frena_no_se_pierde_nada(tmp_path, monkeypatch):\n    \"\"\"Si el guardia de guardado frena, el trabajo no se pierde: sigue en el disco o queda apartado.\"\"\"\n    monkeypatch.setenv('INGENIERO_FALLOS_TEST', str(tmp_path / 'fallos_prueba.json'))\n    _repo(tmp_path)",
+  "cambio": "Anadir el parametro monkeypatch a la firma de la prueba y, como primera linea tras el docstring, poner monkeypatch.setenv('INGENIERO_FALLOS_TEST', str(tmp_path / 'fallos_prueba.json')) para que el libro de fallos que toca guardar_en_la_historia sea una copia en tmp_path y no memoria/FALLOS.json. No tocar nada mas.",
+  "codigo": "def test_si_el_guardia_frena_no_se_pierde_nada(tmp_path, monkeypatch):\n    \"\"\"Si el guardia de guardado frena, el trabajo no se pierde: sigue en el disco o queda apartado.\"\"\"\n    monkeypatch.setenv('INGENIERO_FALLOS_TEST', str(tmp_path / 'fallos_prueba.json'))\n    _repo(tmp_path)",
+  "vigia": "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py::test_si_el_guardia_frena_no_se_pierde_nada debe seguir pasando y, tras la corrida, memoria/FALLOS.json no debe haber cambiado (mismo contenido antes y despues).",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "memoria/FALLOS.json"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No toca arnes/candado_equipo.py ni memoria/FALLOS.json: solo cambia la firma y agrega una linea en la prueba. monkeypatch es un fixture estandar de pytest y INGENIERO_FALLOS_TEST aparece en el material del paquete, asi que no hay nada inventado."
+  ],
+  "que_falta": [
+   "Nada: el texto viejo coincide literal con el trozo del paquete, la linea nueva replica exactamente lo ordenado, y el cambio es minimo (firma + una linea tras el docstring)."
+  ],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo que manda el paquete (aislar el libro de fallos con INGENIERO_FALLOS_TEST apuntando a tmp_path via monkeypatch), no inventa ni un archivo ni una funcion ni un dato, no toca ningun vecino y no cambia mas de lo pedido; se puede aprobar."
+ },
+ "avisos": [
+  "PRIVACIDAD: se taparon 2 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "vueltas_dadas: 1"
+ ]
+}

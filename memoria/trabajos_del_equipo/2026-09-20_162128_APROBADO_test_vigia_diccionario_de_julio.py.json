@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La prueba test_solo_guarda_lo_PROBADO se quedo sin cuerpo: solo tiene su docstring, asi que pasa siempre sin comprobar nada.",
+  "archivo": "vigias/test_vigia_diccionario_de_julio.py",
+  "funcion": "test_solo_guarda_lo_PROBADO",
+  "texto_viejo": "def test_solo_guarda_lo_PROBADO(tmp_path, monkeypatch):\n    \"\"\"Sin archivo o sin sitio no hay pareja: no se guarda una suposicion.\"\"\"",
+  "texto_nuevo": "def test_solo_guarda_lo_PROBADO(tmp_path, monkeypatch):\n    \"\"\"Sin archivo o sin sitio no hay pareja: no se guarda una suposicion.\"\"\"\n    _aparte(tmp_path, monkeypatch)\n    for archivo, funcion in ((\"\", \"enterApp\"), (\"app_web.html\", \"\"), (\"\", \"\")):\n        diccionario.aprender(\"algo que paso\", archivo, funcion, 1, \"foto_informe\")\n    assert diccionario.todo() == {}, (\n        \"guardo una pareja sin sitio probado: el diccionario solo vale si cada pareja \"\n        \"salio de una causa demostrada, y si acepta suposiciones envenena al repartidor\")",
+  "cambio": "Anadir el cuerpo que falta a test_solo_guarda_lo_PROBADO: llamar a _aparte, recorrer las tres parejas (texto vacio/enterApp, app_web.html/texto vacio, texto vacio/texto vacio) llamando a diccionario.aprender con el problema algo que paso, el numero 1 y el proyecto foto_informe, y al salir exigir con un assert que diccionario.todo() este vacio, con mensaje de fallo en espanol partido en dos renglones.",
+  "codigo": "    _aparte(tmp_path, monkeypatch)\n    for archivo, funcion in ((\"\", \"enterApp\"), (\"app_web.html\", \"\"), (\"\", \"\")):\n        diccionario.aprender(\"algo que paso\", archivo, funcion, 1, \"foto_informe\")\n    assert diccionario.todo() == {}, (\n        \"guardo una pareja sin sitio probado: el diccionario solo vale si cada pareja \"\n        \"salio de una causa demostrada, y si acepta suposiciones envenena al repartidor\")",
+  "vigia": "vigias/test_vigia_diccionario_de_julio.py::test_solo_guarda_lo_PROBADO",
+  "puede_danar": [
+   "arnes/diccionario.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "diccionario.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cuerpo añadido cumple el diagnóstico y no rompe nada, por lo que la prueba queda válida."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 4"
+ ]
+}

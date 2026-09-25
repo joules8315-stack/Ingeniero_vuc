@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "En el segundo camino de volver_atras (pieza nueva), os.replace mueve el archivo al destino .FRENADO_POR_EL_GUARDIA sin numerar, asi que una segunda frenada de la misma pieza pisa la copia anterior.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "volver_atras",
+  "texto_viejo": "                    destino = os.path.join(destino_dir, os.path.basename(str(ruta)) + \".FRENADO_POR_EL_GUARDIA\")\n                    if os.path.exists(destino):\n                        n = 2\n                        while os.path.exists(destino + \".\" + str(n)):\n                            n += 1\n                        destino = destino + \".\" + str(n)\n                    os.replace(os.path.join(str(raiz), str(ruta)), destino)",
+  "texto_nuevo": "                    destino = os.path.join(destino_dir, os.path.basename(str(ruta)) + \".FRENADO_POR_EL_GUARDIA\")\n                    if os.path.exists(destino):\n                        n = 2\n                        while os.path.exists(destino + \".\" + str(n)):\n                            n += 1\n                        destino = destino + \".\" + str(n)\n                    os.replace(os.path.join(str(raiz), str(ruta)), destino)",
+  "cambio": "NO_ENCONTRADO: el material ya trae el segundo camino con la numeracion puesta (if os.path.exists(destino): n=2; while os.path.exists(destino + '.' + str(n)): n+=1; destino = destino + '.' + str(n)) antes del os.replace. No hay nada que cambiar sin inventar.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_equipo_siempre.py"
+  ],
+  "preguntas": [
+   "El material ya muestra el segundo camino (pieza nueva) con la numeracion puesta antes de os.replace. ¿Se confirma que el material entregado es el estado actual del archivo, o hay una version distinta donde el segundo camino aun no tiene la numeracion?"
+  ],
+  "confianza": "alta"
+ },
+ "auditoria": {},
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (30362 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (31158 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (31266 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (31374 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py falta el import de router y la funcion de ayuda entregar_enteros_los_cortos, por lo que la prueba no puede llamar a la funcion vigilada.",
+  "archivo": "vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py",
+  "funcion": "cabecera del archivo (imports y ayudas, tras el bloque if RAIZ not in sys.path)",
+  "texto_viejo": "RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif RAIZ not in sys.path:\n    sys.path.insert(0, RAIZ)\n\n\n\n\nLIMITE = 600",
+  "texto_nuevo": "RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif RAIZ not in sys.path:\n    sys.path.insert(0, RAIZ)\n\nfrom cerebro import router\n\n\ndef entregar_enteros_los_cortos(pedazos, codigo):\n    \"\"\"La funcion vigilada vive en cerebro/router.py; mientras no exista, cada prueba falla con AttributeError, que es lo correcto (medido 2026-09-22).\"\"\"\n    return router.entregar_enteros_los_cortos(pedazos, codigo)\n\n\nLIMITE = 600",
+  "cambio": "Agregar, justo despues del bloque if RAIZ not in sys.path: / sys.path.insert(0, RAIZ), el import 'from cerebro import router' y la funcion de ayuda 'entregar_enteros_los_cortos(pedazos, codigo)' que devuelve router.entregar_enteros_los_cortos(pedazos, codigo), con el texto de ayuda indicado. Es UN solo cambio y no se toca ningun otro archivo.",
+  "codigo": "from cerebro import router\n\n\ndef entregar_enteros_los_cortos(pedazos, codigo):\n    \"\"\"La funcion vigilada vive en cerebro/router.py; mientras no exista, cada prueba falla con AttributeError, que es lo correcto (medido 2026-09-22).\"\"\"\n    return router.entregar_enteros_los_cortos(pedazos, codigo)",
+  "vigia": "vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py: al ejecutarse, la funcion de ayuda entregar_enteros_los_cortos llama a router.entregar_enteros_los_cortos; mientras esa funcion no exista en cerebro/router.py, cada prueba falla con AttributeError, que es lo correcto (medido 2026-09-22).",
+  "puede_danar": [
+   "vigias/test_vigia_memoria_completa.py",
+   "cerebro/router.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion agrega justo lo que pedia el encargo (el import de router y la funcion de ayuda) en el lugar correcto, con la ubicacion confirmada por programa, sin tocar vecinos ni inventar nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39652 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

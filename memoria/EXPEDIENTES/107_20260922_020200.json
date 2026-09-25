@@ -1,0 +1,63 @@
+{
+  "orden": {
+    "id": "107",
+    "titulo": "El pit arma el sabotaje que falta y no miente al informar",
+    "origen": "medido el 2026-09-21 (A-43)",
+    "repara": "un sabotaje inexistente se informaba como vigia que no protege",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "106",
+      "162"
+    ],
+    "modo": "IA",
+    "razon": "si el archivo no existe no se puede decir que la vigia fallo: el informe no miente",
+    "encargo": "En cuerpo/capataz.py, en la funcion sabotear_la_orden, justo despues de las dos lineas if not vigia or not sabotaje: y su return, agrega: si not os.path.exists(sabotaje) (probando tambien la ruta relativa a la carpeta del proyecto), llama armar_sabotaje(orden); si devuelve False, return {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}. Si devuelve True, sigue como hoy y corre el sabotaje. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_pit_arma_el_sabotaje_que_falta.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "cuando entre, se corre sabotear_la_orden sobre la orden 43 y las demas con sabotaje que falta, por programa."
+  },
+  "huella": "e1cd9e66975558f9",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_020158_DUDOSO_capataz.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (29730 letras, aguanta 19042) -> se le salta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (30556 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 2\n  diagnostico : sabotear_la_orden devuelve ok None cuando la orden no trae lista de sabotaje y nunca intenta armarla, y ademas armar_sabotaje falla si la orden no trae destino, asi que el sabotaje no se corre nunca.\n  toca        : cuerpo/capataz.py funcion sabotear_la_orden\n  confianza   : alta\n  VEREDICTO   : DUDOSO\n  fallo       : La vigia que el propio cambio propone es INCORRECTA contra su propio codigo: describe una orden que 'no trae lista de sabotaje pero si trabajo aprobado y destino' y espera que se llame armar_sabotaje, se cree el archivo y se corra el sabotaje; pero con una orden sin el campo 'sabotaje', sabotaje = None y el return anticipado 'if not vigia or not sabotaje' devuelve ok None ANTES de tocar el codigo nuevo, asi que armar_sabotaje nunca se llama y la vigia no puede pasar. Para ejercer la rama nueva la orden tiene que traer SI el campo 'sabotaje' (una ruta) cuyo archivo no exista en disco.\n  fallo       : El cambio solo repara la mitad del diagnostico: para ordenes que traen la ruta de sabotaje pero sin archivo creado, arma y corre; para ordenes que no traen el campo 'sabotaje', el return anticipado sigue cortando y el sabotaje sigue sin correrse nunca. Puede ser el diseno que pide el encargo (que manda poner el codigo justo despues del return), pero con el diagnostico dicho no queda claro que el fallo real quede arreglado.\n  resumen     : El codigo hace lo que el encargo pide y no inventa nada, pero la vigia que el mismo propone falla contra su propio codigo porque con una orden sin 'sabotaje' el return anticipado impide llegar a armar_sabotaje: hay que corregir la vigia (o la posicion del codigo, consultandolo) antes de correrla, porque tal como esta escrita frenaria en falso.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T02:02:00",
+  "analisis": {
+    "que_paso": "La orden 107 quedo archivada como DUDOSO (no se aprobo, no se guardo llave). deepseek escribio el codigo que pedia el encargo y bigpickle lo reviso: el codigo hace lo que el encargo manda y no inventa, PERO la vigia que la propia orden propone no puede pasar contra ese codigo. La vigia describe una orden que NO trae el campo 'sabotaje' y espera que se llame armar_sabotaje; pero con sabotaje=None el return anticipado 'if not vigia or not sabotaje' corta ANTES de llegar al codigo nuevo, asi que armar_sabotaje nunca se llama y la vigia frenaria en falso.",
+    "causa_raiz": "El encargo se contradice a si mismo: manda poner el codigo nuevo (llamar a armar_sabotaje) JUSTO DESPUES del return anticipado 'if not vigia or not sabotaje: return', pero para una orden sin ruta de sabotaje ese return devuelve ok None antes de tocar la rama nueva. La vigia exigida (test_vigia_el_pit_arma_el_sabotaje_que_falta.py) apunta a ese caso imposible en vez de a una orden que SI trae la ruta 'sabotaje' cuyo archivo no existe en disco (que es el unico caso que la rama nueva puede ejercer). Es un fallo de diseno del encargo, no del codigo escrito.",
+    "donde": "cuerpo/capataz.py: funcion sabotear_la_orden (return anticipado, lineas 503-504) y funcion armar_sabotaje (rama que exige destino, lineas 479-481).",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "        if not vigia or not sabotaje:\n            return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "        sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "        destino = orden.get('sabotaje') if isinstance(orden, dict) else None\n        if not destino:\n            return False"
+      }
+    ],
+    "no_volver_a": "No ordenar poner codigo nuevo detras de un return que lo bloquea ni exigir una vigia cuyo caso la propia posicion del codigo impide alcanzar.",
+    "tarea_nueva": {
+      "repara": "la vigia exige un caso imposible: usa una orden sin campo 'sabotaje' pero espera que se ejerza la rama nueva que el return anticipado bloquea",
+      "pieza": "vigias/test_vigia_el_pit_arma_el_sabotaje_que_falta.py",
+      "razon": "la rama nueva de sabotear_la_orden solo se alcanza con una orden que SI trae ruta 'sabotaje' cuyo archivo no existe; la vigia debe probar ese caso para no frenar en falso",
+      "encargo": "Reescribe la vigia para que arme una orden con vigia y con 'sabotaje' apuntando a una ruta que NO exista en disco (mas trabajo aprobado en trabajos_del_equipo), y compruebe que sabotear_la_orden llama a armar_sabotaje, crea el archivo y corre el sabotaje; y un segundo caso donde armar_sabotaje devuelve False y se recibe ok None con la razon nueva. No toques cuerpo/capataz.py.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Las citas muestran el return anticipado y que 'sabotaje' sale de la orden, pero no prueban que el encargo manda colocar la rama nueva despues de ese return ni que la vigia apunta al caso imposible: eso exige citar el encargo y el archivo de la prueba, que no estan aqui.",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\107_20260922_020200.json"
+  }
+}

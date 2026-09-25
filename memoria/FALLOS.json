@@ -1096,7 +1096,7 @@
  },
  {
   "id": 69,
-  "fecha": "2026-09-21",
+  "fecha": "2026-09-22",
   "proyecto": "test_si_el_guardia_frena_no_se0",
   "que_paso": "el guardia no dejo guardar lo que el equipo aplico",
   "causa_raiz": "",
@@ -1107,7 +1107,135 @@
   ],
   "quien_lo_caza": "guardia_de_guardado",
   "disparador": "git\\s+commit[^\\n]*--no-verify|INGENIERO_OFF\\s*=\\s*1[^\\n]{0,120}git\\s+commit",
-  "veces": 70,
+  "veces": 82,
   "disparador_anterior": "git\\s+commit[^\\n]*--no-verify|INGENIERO_OFF\\s*=\\s*1"
+ },
+ {
+  "id": 70,
+  "fecha": "2026-09-21",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "El equipo RECHAZO la orden 95. El obrero (deepseek) solo entrego los puntos (1) y (2) del encargo —las tres constantes de tiempo y el cambio de subprocess.run a Popen con vigilante.esperar dentro de l",
+  "causa_raiz": "El encargo pedia tres cambios en DOS funciones separadas de cuerpo/capataz.py —lanzar_al_equipo (linea 10) y tipo_de_fallo (linea 248), a 238 lineas de distancia— y ordenaba 'entregalos en la lista cambios'. Pero el prompt con el que trabaja el obrero (_prompt_obrero, rama reparar, en cuerpo/obrero.",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "Un encargo que toca dos funciones separadas no se puede cumplir mientras el prompt del obrero solo ofrezca un texto_viejo/texto_nuevo: el interfaz del obrero tiene que exponer la lista 'cambios' que e",
+  "piezas": [
+   "cuerpo/capataz.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "solo (ofrece|admite) un texto_viejo",
+  "veces": 1,
+  "disparador_anterior": "cuerpo/capataz\\.py",
+  "nota_afinado": "2026-09-22: el disparador era la ruta del archivo y saltaba en cualquier orden que la nombrara; se acota al caso (A-43)"
+ },
+ {
+  "id": 71,
+  "fecha": "2026-09-22",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "El equipo RECHAZO la orden 95 (huella 527b80dd0bf293c8, tipo no_aprobo). deepseek entrego los tres cambios pedidos sobre cuerpo/capataz.py (constantes, subprocess.run -> subprocess.Popen con salida a ",
+  "causa_raiz": "El encargo de la orden 95 esta mal disenado: exige convertir subprocess.run en subprocess.Popen y a la vez ordena 'No toques ningun otro archivo'. Esas dos exigencias son incompatibles porque la vigia vecina vigias/test_vigia_el_capataz_lanza_al_equipo.py monkeypatchea capataz.subprocess.run y compr",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "Una orden que cambia una llamada que una vigia vecina falsea (subprocess.run) NO puede a la vez prohibir tocar esa vigia: la prueba vecina se coordina en la misma tarea.",
+  "piezas": [
+   "cuerpo/capataz.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "subprocess\\.Popen[^\\n]{0,300}No toques ningun otro archivo",
+  "veces": 1,
+  "disparador_anterior": "cuerpo/capataz\\.py",
+  "nota_afinado": "2026-09-22: el disparador era la ruta del archivo y saltaba en cualquier orden que la nombrara; se acota al caso (A-43)"
+ },
+ {
+  "id": 72,
+  "fecha": "2026-09-22",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "La orden 29 (agregar la funcion entregar_enteros_los_cortos y su llamada en cerebro/router.py) no aprobo. El obrero deepseek dejo el pedido a mitad y devolvio la marca NO_ENCONTRADO, porque el paquete",
+  "causa_raiz": "El repartidor entrega el archivo NOMBRADO recortado a sus primeros 80 renglones (min(80, lineas)), no entero. router.py tiene 636 renglones y los dos sitios que la orden manda editar estan muy por debajo de ese recorte (la llamada va tras la linea ~355 'pedazos = _pedazos_filtrados' y la funcion nue",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "Si una orden manda copiar el texto literal de un archivo, el paquete debe traer ese archivo ENTERO (no un recorte de 80 renglones), o el obrero no puede trabajar y devuelve NO_ENCONTRADO con razon.",
+  "piezas": [
+   "cerebro/router.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "cerebro/router\\.py",
+  "veces": 1
+ },
+ {
+  "id": 73,
+  "fecha": "2026-09-22",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "El equipo de la orden 95 (deepseek escribe, bigpickle revisa) entrego los tres cambios en cuerpo/capataz.py y bigpickle los APROBO, pero el revisor de programa (gratis, sin IA) freno antes de pagar la",
+  "causa_raiz": "El tercer cambio edita el CUERPO de la funcion tipo_de_fallo: su texto_viejo son las lineas internas ('if not isinstance(salida, str)... TOPE DE TIEMPO'), y para editar un cuerpo no hace falta repetir la linea 'def tipo_de_fallo'. Por eso la palabra 'tipo_de_fallo' no aparece literal en ningun trozo",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "El revisor de programa no debe exigir que el nombre de una funcion aparezca en el trozo cuando el trozo edita el CUERPO de esa funcion: editar un cuerpo no repite el nombre, y frenar eso es frenar lo ",
+  "piezas": [
+   "cuerpo/capataz.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "NO HACE LO QUE SE PIDIO[^\\n]{0,80}tipo_de_fallo",
+  "veces": 1,
+  "disparador_anterior": "cuerpo/capataz\\.py",
+  "nota_afinado": "2026-09-22: el disparador era la ruta del archivo y saltaba en cualquier orden que la nombrara; se acota al caso (A-43)"
+ },
+ {
+  "id": 74,
+  "fecha": "2026-09-22",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "El equipo (deepseek escribe, bigpickle revisa) hizo el cambio de la orden 95 en cuerpo/capataz.py y bigpickle lo APROBO; al aplicarlo, el guardia lo freno porque la bateria de vigias dio rojo (16 fail",
+  "causa_raiz": "La orden 95 cambia subprocess.run por subprocess.Popen y manda llamar a vigilante.esperar POR POSICION, pero deja dos choques que ella misma no resuelve: (a) su PROPIA vigia exige que el limite llegue POR NOMBRE (kw.get('limite')/kw.get('tope_segundos')), asi que aun hecho tal cual se pidio, esa vig",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "Al cambiar como una pieza lanza procesos, la orden debe alinear su PROPIA vigia con el encargo y actualizar TODAS las vigias vecinas que falsifican la forma vieja, no solo una.",
+  "piezas": [
+   "cuerpo/capataz.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "vigilante\\.esperar\\(proceso,\\s*LIMITE",
+  "veces": 1,
+  "disparador_anterior": "cuerpo/capataz\\.py",
+  "nota_afinado": "2026-09-22: el disparador era la ruta del archivo y saltaba en cualquier orden que la nombrara; se acota al caso (A-43)"
+ },
+ {
+  "id": 75,
+  "fecha": "2026-09-22",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "El equipo (deepseek escribe, bigpickle revisa) APROBO la vigia nueva del encargo 112, pero al aplicarla el aplicador la rechazo con \"La propuesta no trae 'texto_viejo'.\" (tipo no_aplico, codigo 0). El",
+  "causa_raiz": "La funcion aplicar_cambio de cuerpo/aplicador.py decide \"crear vs editar\" UNICAMENTE por si el archivo existe en disco (os.path.exists), e IGNORA la marca crear del encargo: solo lee archivo, funcion, texto_viejo, texto_nuevo y codigo. Cuando un encargo marcado crear apunta a un archivo que ya exist",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "Un encargo marcado crear no puede morir pidiendo texto_viejo: el aplicador debe honrar la marca crear (sobreescribir o reconocer que el archivo ya esta identico) en vez de decidir crear-vs-editar solo",
+  "piezas": [
+   "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja\\.py",
+  "veces": 1
+ },
+ {
+  "id": 76,
+  "fecha": "2026-09-22",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "El equipo aprobo la vigia nueva de la orden 46 (deepseek escribe, bigpickle revisa: VEREDICTO APROBADO), pero al ir a escribirla el Ingeniero devolvio \"no se pudo aplicar: La propuesta no trae 'texto_",
+  "causa_raiz": "La orden 46 es de CREAR (crear:true, encargo de analista que escribe el documento entero, sin texto_viejo). Pero el archivo destino vigias/test_vigia_el_puente_pone_los_candados_a_codex.py YA EXISTIA de una ronda anterior (creado el 2026-09-21, ver memoria/trabajos_del_equipo/2026-09-21_091918_APROB",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "Una orden de CREAR debe re-escribir su archivo cuando ya existe (traiga solo el documento entero, sin texto_viejo), en vez de caer en el camino de modificar y frenarse por falta de texto_viejo.",
+  "piezas": [
+   "vigias/test_vigia_el_puente_pone_los_candados_a_codex.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "vigias/test_vigia_el_puente_pone_los_candados_a_codex\\.py",
+  "veces": 1
+ },
+ {
+  "id": 77,
+  "fecha": "2026-09-22",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "La orden 173 (modo IA, crear=true) pidio DOS archivos nuevos entregados en una lista \"cambios\": config/codex/default.rules y arnes/instalar_reglas_codex.py. El obrero deepseek entrego solo el primero ",
+  "causa_raiz": "El prompt de CREAR del obrero solo permite un archivo por respuesta: su JSON de salida ofrece \"archivo\" (singular) + \"texto_nuevo\", sin ninguna lista \"cambios\". Esa lista para varios sitios SOLO existe en el prompt de REPARAR. Como la orden 173 pedia crear dos archivos \"en la lista cambios\", el esqu",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "Un encargo de CREAR no debe pedir mas de un archivo mientras el prompt de creacion del obrero solo sepa entregar uno; primero se le ensena a entregar varios (lista cambios), o se parte la orden en una",
+  "piezas": [
+   "arnes/instalar_reglas_codex.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "arnes/instalar_reglas_codex\\.py",
+  "veces": 1
  }
 ]

@@ -1,0 +1,57 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Las dos pruebas de vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py revientan con AttributeError porque apartan subprocess.run sobre el modulo arnes.candado_equipo, que importa subprocess dentro de volver_atras y no lo tiene como atributo.",
+  "archivo": "vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py",
+  "funcion": "las dos pruebas que llaman a monkeypatch.setattr(candado.subprocess, \"run\", _hacer_run_falso(registro_git), raising=True)",
+  "texto_viejo": "monkeypatch.setattr(candado.subprocess, \"run\", _hacer_run_falso(registro_git), raising=True)",
+  "texto_nuevo": "monkeypatch.setattr(subprocess, \"run\", _hacer_run_falso(registro_git), raising=True)",
+  "cambio": "Agregar import subprocess arriba del archivo, junto a los otros import, y en las DOS lineas que hoy dicen monkeypatch.setattr(candado.subprocess, \"run\", _hacer_run_falso(registro_git), raising=True) sustituir candado.subprocess por subprocess, para que aparten subprocess.run en su propio modulo. Lo que comprueba cada prueba no cambia.",
+  "codigo": "import subprocess\n\nmonkeypatch.setattr(subprocess, \"run\", _hacer_run_falso(registro_git), raising=True)",
+  "vigia": "Ejecutar vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py: las dos pruebas deben quedar VERDES (ya no debe salir AttributeError: module arnes.candado_equipo has no attribute subprocess).",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/fallos.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_fila_de_commits.py",
+   "vigias/test_vigia_fuera_de_casa.py",
+   "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py",
+   "vigias/test_vigia_no_se_aplica_lo_frenado.py",
+   "vigias/test_vigia_nunca_sin_revisar.py",
+   "vigias/test_vigia_siempre_con_equipo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "conftest.py",
+   "fallos.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "test_vigia_equipo_siempre.py",
+   "test_vigia_fila_de_commits.py",
+   "test_vigia_fuera_de_casa.py",
+   "test_vigia_lo_aprobado_se_guarda_al_momento.py",
+   "test_vigia_no_se_aplica_lo_frenado.py",
+   "test_vigia_nunca_sin_revisar.py",
+   "test_vigia_siempre_con_equipo.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion es correcta: arnes/candado_equipo.py importa subprocess dentro de la funcion (linea 374) y no tiene el atributo subprocess en el modulo, el diagnostico es exacto, y el cambio de las dos lineas a monkeypatch.setattr(subprocess, \"run\", ...) con su import arriba aparta subprocess.run en el propio modulo de subprocess, que es el modulo que volver_atras importa por dentro, asi que arregla el AttributeError sin tocar otra cosa."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21726 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

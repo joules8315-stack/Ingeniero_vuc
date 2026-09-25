@@ -1,0 +1,22 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_fotocopia_solo_con_marcas.py que comprueba que es_una_fotocopia solo da True cuando las marcas van al inicio de linea, no cuando solo se mencionan en una frase.",
+  "archivo": "vigias/test_vigia_fotocopia_solo_con_marcas.py",
+  "texto_nuevo": "import os\nimport sys\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, 'arnes'))\nimport candado_terminal as c\n\n\n# Las marcas se arman por partes para no escribirlas enteras en el archivo.\nVIEJO = 'TEXTO' + ' VIEJO'\nNUEVO = 'TEXTO' + ' NUEVO'\nCAMPO_V = 'texto' + '_viejo'\nCAMPO_N = 'texto' + '_nuevo'\n\n\ndef test_fotocopia_de_verdad_con_marcas_al_inicio_de_linea():\n    \"\"\"Un encargo con las dos marcas al inicio de linea SI es fotocopia.\"\"\"\n    texto = '\\n'.join([\n        'en cuerpo/x.py cambia una linea.',\n        VIEJO + ' EXACTO:',\n        '    a = 1',\n        NUEVO + ' EXACTO:',\n        '    a = 2',\n    ])\n    assert c.es_una_fotocopia(texto) is True\n\n\ndef test_marcas_al_inicio_de_linea_con_espacios_delante_tambien_es_fotocopia():\n    \"\"\"Si las marcas van al inicio de linea con espacios delante, tambien es fotocopia.\"\"\"\n    texto = '\\n'.join([\n        'en cuerpo/x.py cambia una linea.',\n        '    ' + VIEJO + ' EXACTO:',\n        '    a = 1',\n        '    ' + NUEVO + ' EXACTO:',\n        '    a = 2',\n    ])\n    assert c.es_una_fotocopia(texto) is True\n\n\ndef test_mencionar_los_campos_en_una_frase_no_es_fotocopia():\n    \"\"\"Una sola linea que solo menciona los campos dentro de una frase NO es fotocopia.\"\"\"\n    texto = 'la falsa devuelve un json con ' + CAMPO_V + ' y ' + CAMPO_N + ' y se revisa'\n    assert c.es_una_fotocopia(texto) is False\n\n\ndef test_mencionar_las_marcas_en_una_frase_no_es_fotocopia():\n    \"\"\"Una frase que solo dice que el viejo y el nuevo van en el json NO es fotocopia.\"\"\"\n    texto = ' el ' + VIEJO + ' y el ' + NUEVO + ' van en el json'\n    assert c.es_una_fotocopia(texto) is False\n\n\ndef test_texto_sin_marcas_no_es_fotocopia():\n    \"\"\"Un texto sin ninguna marca no es fotocopia.\"\"\"\n    assert c.es_una_fotocopia('en cuerpo/x.py cambia una linea y ya esta') is False\n\n\ndef test_none_no_es_fotocopia():\n    \"\"\"None no es fotocopia y no revienta.\"\"\"\n    assert c.es_una_fotocopia(None) is False\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa, no rompe nada y respeta los contratos."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

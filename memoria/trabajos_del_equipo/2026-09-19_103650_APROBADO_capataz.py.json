@@ -1,0 +1,30 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En bucle, cuando una orden falla, se marca y se avisa pero nunca se llama al forense, así que el fallo no genera expediente, ni perito, ni citas, ni juez, ni tarea nueva.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "                aviso('FALLIDA ' + orden_id + ' (' + tipo + ')')\n                pieza = orden.get('pieza')",
+  "texto_nuevo": "                aviso('FALLIDA ' + orden_id + ' (' + tipo + ')')\n                try:\n                    informe = forense(orden, resultado)\n                    aviso('FORENSE ' + orden_id + ': ' + str(informe.get('paso')) + ' - ' + str(informe.get('motivo')))\n                except Exception as e:\n                    aviso('FORENSE ' + orden_id + ' no pudo: ' + str(e)[:200])\n                pieza = orden.get('pieza')",
+  "cambio": "Justo después de la línea que avisa 'FALLIDA ...', añadir el bloque try/except que llama a forense(orden, resultado) y avisa del paso y motivo del informe, o de que el forense no pudo. Nada más cambia.",
+  "codigo": "                try:\n                    informe = forense(orden, resultado)\n                    aviso('FORENSE ' + orden_id + ': ' + str(informe.get('paso')) + ' - ' + str(informe.get('motivo')))\n                except Exception as e:\n                    aviso('FORENSE ' + orden_id + ' no pudo: ' + str(e)[:200])",
+  "vigia": "Una prueba que meta una orden que falla en bucle y compruebe que aparece un aviso 'FORENSE <id>:' con el paso y el motivo, y que se creó el expediente correspondiente.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El obrero hace exactamente lo que el paquete manda: llama a forense(orden, resultado) justo despues del aviso 'FALLIDA...' con el try/except obligado, y forense, armar_expediente, paso y motivo existen todos en el material; no inventa nada, no toca otra linea y el paquete dice que no danara a nadie."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22596 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

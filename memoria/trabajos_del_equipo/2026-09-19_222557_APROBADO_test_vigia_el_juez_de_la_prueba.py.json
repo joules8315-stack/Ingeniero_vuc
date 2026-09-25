@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El texto de ejemplo VIGIA arma una prueba de mentira que se llama test_suma_da_cuatro y comprueba suma(2,2)==4, lo que hace que pase por casualidad con la multiplicacion; hay que renombrarla a suma da cinco y comprobar suma(2,3)==5.",
+  "archivo": "vigias/test_vigia_el_juez_de_la_prueba.py",
+  "funcion": "VIGIA (constante de texto de ejemplo)",
+  "texto_viejo": "def test_suma_da_cuatro():\n    assert pieza.suma(2, 2) == 4",
+  "texto_nuevo": "def test_suma_da_cinco():\n    assert pieza.suma(2, 3) == 5",
+  "cambio": "Dentro de la constante VIGIA, sustituir el nombre de la prueba de mentira y la comprobacion: de test_suma_da_cuatro con suma(2,2)==4 a test_suma_da_cinco con suma(2,3)==5. No tocar nada mas del archivo.",
+  "codigo": "def test_suma_da_cinco():\n    assert pieza.suma(2, 3) == 5",
+  "vigia": "vigias/test_vigia_el_juez_de_la_prueba.py (la propia prueba del juez: con la pieza mala de multiplicacion, suma(2,3)==5 debe fallar; con la pieza buena de suma, debe pasar)",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py (juzgar)",
+   "vigias/test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "juez_de_la_prueba.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio sustituye exactamente los dos renglones del texto VIGIA que el paquete muestra (test_suma_da_cuatro / suma(2,2)==4 por test_suma_da_cinco / suma(2,3)==5), tal cual pide el encargo: con dos y tres, la resta da -1, la multiplicacion da 6 y solo la suma de verdad da 5, asi que la prueba de mentira ya no puede pasar por casualidad con la multiplicacion, no toca nada mas y no dania a juzgar ni a la propia vigia."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'pieza'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 pieza(s) que si e",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'pieza'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 pieza(s) que si e",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'pieza'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 pieza(s) que si e",
+  "vueltas_dadas: 4"
+ ]
+}

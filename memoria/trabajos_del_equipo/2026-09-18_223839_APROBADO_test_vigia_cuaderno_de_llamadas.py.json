@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la prueba del reloj que compruebe que cuaderno.apuntar redondea los segundos a 2.3 y omite la clave segundos cuando no se pasa.",
+  "archivo": "vigias/test_vigia_cuaderno_de_llamadas.py",
+  "funcion": "test_el_cuaderno_no_rompe_si_falla_el_disco",
+  "texto_viejo": "def test_el_cuaderno_no_rompe_si_falla_el_disco():\n    \"\"\"Apuntar es complemento del trabajo, jamas su verdugo: si el disco falla, calla.\"\"\"\n    os.environ[\"INGENIERO_CUADERNO_TEST\"] = r\"Z:\\carpeta_que_no_existe\\cuaderno.jsonl\"\n    try:\n        from cuerpo import cuaderno\n        assert cuaderno.apuntar(\"x\", tamano=1, resultado=cuaderno.OK) is None\n    finally:\n        os.environ.pop(\"INGENIERO_CUADERNO_TEST\", None)",
+  "texto_nuevo": "def test_el_cuaderno_no_rompe_si_falla_el_disco():\n    \"\"\"Apuntar es complemento del trabajo, jamas su verdugo: si el disco falla, calla.\"\"\"\n    os.environ[\"INGENIERO_CUADERNO_TEST\"] = r\"Z:\\carpeta_que_no_existe\\cuaderno.jsonl\"\n    try:\n        from cuerpo import cuaderno\n        assert cuaderno.apuntar(\"x\", tamano=1, resultado=cuaderno.OK) is None\n    finally:\n        os.environ.pop(\"INGENIERO_CUADERNO_TEST\", None)\n\n\ndef test_el_reloj_anota_los_segundos(tmp_path, monkeypatch):\n    \"\"\"El reloj del cuaderno guarda los segundos redondeados, y solo si se midieron.\"\"\"\n    monkeypatch.setenv(\"INGENIERO_CUADERNO_TEST\", str(tmp_path / \"c.jsonl\"))\n    from cuerpo import cuaderno\n    cuaderno.apuntar(\"deepseek\", resultado=cuaderno.OK, segundos=2.345)\n    cuaderno.apuntar(\"groq\")\n    lineas = [json.loads(l) for l in (tmp_path / \"c.jsonl\").read_text(encoding=\"utf-8\").splitlines() if l.strip()]\n    assert lineas[0][\"segundos\"] == 2.3\n    assert \"segundos\" not in lineas[1]",
+  "cambio": "Anadir despues de la funcion test_el_cuaderno_no_rompe_si_falla_el_disco la nueva prueba test_el_reloj_anota_los_segundos, sin tocar el resto del archivo.",
+  "codigo": "def test_el_reloj_anota_los_segundos(tmp_path, monkeypatch):\n    \"\"\"El reloj del cuaderno guarda los segundos redondeados, y solo si se midieron.\"\"\"\n    monkeypatch.setenv(\"INGENIERO_CUADERNO_TEST\", str(tmp_path / \"c.jsonl\"))\n    from cuerpo import cuaderno\n    cuaderno.apuntar(\"deepseek\", resultado=cuaderno.OK, segundos=2.345)\n    cuaderno.apuntar(\"groq\")\n    lineas = [json.loads(l) for l in (tmp_path / \"c.jsonl\").read_text(encoding=\"utf-8\").splitlines() if l.strip()]\n    assert lineas[0][\"segundos\"] == 2.3\n    assert \"segundos\" not in lineas[1]",
+  "vigia": "test_el_reloj_anota_los_segundos comprueba que la primera linea trae segundos == 2.3 y que la segunda no trae la clave segundos.",
+  "puede_danar": [
+   "cuerpo/cuaderno.py",
+   "vigias/test_vigia_cuaderno_de_llamadas.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno: se anade una prueba nueva despues de la ultima funcion sin tocar el resto del archivo; el env var INGENIERO_CUADERNO_TEST se aisla con monkeypatch y el test viejo ya lo limpia en su finally, asi que no hay contaminacion entre pruebas."
+  ],
+  "que_falta": [
+   "Nada para este encargo. Solo aviso, no es fallo: si cuaderno.apuntar todavia no redondea ni omite segundos, esta vigia nace roja y sera el paso siguiente del plan, no un error del obrero."
+  ],
+  "resumen_para_el_jefe": "La prueba nueva se copia literal del encargo (mismos nombres, mismas llamadas, mismas aserciones 2.3 y sin clave segundos), se coloca en el sitio correcto tras la ultima funcion sin tocar el resto; no inventa nada y no rompe ningun vecino."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

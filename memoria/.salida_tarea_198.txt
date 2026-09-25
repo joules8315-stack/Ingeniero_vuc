@@ -1,0 +1,15 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-22_092711_RECHAZADO_test_vigia_el_puente_arregla_el_formato_para_codex.py.json
+OBRERO deepseek -> AUDITOR groq
+  aviso       : GPT-OSS 120B (Groq) no le cabe (25688 letras, aguanta 19042) -> se le salta
+  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta
+  aviso       : GPT-OSS 120B (Groq) no le cabe (26318 letras, aguanta 19042) -> se le salta
+  diagnostico : Falta al final del archivo una prueba nueva que use un candado de mentira con evento SessionStart y compruebe que el puente quita additionalContext de arriba y lo mete en hookSpecificOutput.
+  toca        : vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py funcion final del archivo (tras _correr_puente)
+  confianza   : media
+  VEREDICTO   : RECHAZADO
+  fallo       : Se inserta la nueva prueba dentro del cuerpo de la función _correr_puente, interrumpiendo la llamada a subprocess.run y eliminando el resto del código de la función.
+  fallo       : El cambio modifica más de lo solicitado: no solo se agrega una prueba al final del archivo, sino que se altera la implementación existente de _correr_puente.
+  resumen     : El parche corta la función _correr_puente y altera código existente, por lo que rompe la vigia y debe rechazarse.
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.

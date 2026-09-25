@@ -1,0 +1,32 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En lanzar_al_equipo el entorno del equipo solo lleva PYTHONIOENCODING, sin decirle al cuaderno de llamadas para que tarea trabaja.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "lanzar_al_equipo",
+  "texto_viejo": "    entorno = dict(os.environ)\n    entorno[\"PYTHONIOENCODING\"] = \"utf-8\"",
+  "texto_nuevo": "    entorno = dict(os.environ)\n    entorno[\"PYTHONIOENCODING\"] = \"utf-8\"\n    entorno[\"INGENIERO_ETIQUETA\"] = str(orden.get(\"id\", \"\"))",
+  "cambio": "Agregar al entorno del proceso del equipo la variable INGENIERO_ETIQUETA con el id de la orden, para que el cuaderno de llamadas sepa para que tarea trabaja.",
+  "codigo": "    entorno = dict(os.environ)\n    entorno[\"PYTHONIOENCODING\"] = \"utf-8\"\n    entorno[\"INGENIERO_ETIQUETA\"] = str(orden.get(\"id\", \"\"))",
+  "vigia": "Una prueba que lance lanzar_al_equipo con una orden con id y compruebe que el subproceso recibe INGENIERO_ETIQUETA igual a ese id.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "cuaderno de llamadas"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo que pide el paquete: anade la variable INGENIERO_ETIQUETA con el id de la orden al entorno del subproceso, usando _orden_ que es parametro de la funcion y cuyo .get('id') ya aparece en el material, en una linea que el paquete pide textualmente, sin tocar nada mas ni romper vecinos."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

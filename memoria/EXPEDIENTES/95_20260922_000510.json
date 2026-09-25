@@ -1,0 +1,78 @@
+{
+  "orden": {
+    "id": "95",
+    "titulo": "El pit vigila la tarea que se demora",
+    "origen": "directriz de Julio A-44 (2026-09-21)",
+    "repara": "lanzar_al_equipo corta a ciegas a los 900 s",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "94",
+      "60",
+      "57",
+      "152"
+    ],
+    "modo": "IA",
+    "razon": "los limites salen de los datos medidos del cuaderno de llamadas, no de una suposicion",
+    "encargo": "En cuerpo/capataz.py hay que hacer tres cambios, entregalos en la lista cambios. (1) Arriba de def lanzar_al_equipo agrega las constantes con su comentario: LIMITE_TAREA_SEGUNDOS = 420 y SIN_AVANCE_SEGUNDOS = 660 y TOPE_DURO_SEGUNDOS = 3000 (medido el 2026-09-21 en el cuaderno de llamadas: DeepSeek tarda 4 a 11 s, Big Pickle hasta 328 s y con A-47 se le espera hasta 600 s, el guardia corre la bateria en 262 s, y una tarea puede dar 4 vueltas de revision: 4 por (11 + 600) + 262 = 2706 s, y el tope de fuera tiene que ser mayor que la suma de los de dentro; SIN_AVANCE tiene que ser MAYOR que la llamada callada mas larga, la espera de Big Pickle de hasta 600 s, o se cortaria a una IA que esta contestando). (2) En lanzar_al_equipo cambia el subprocess.run por subprocess.Popen con los mismos cwd y env. La salida NO va por tuberia (una tuberia que nadie vacia se llena y cuelga al equipo): abre archivo = open(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'), 'w', encoding='utf-8', errors='replace') y pasa stdout=archivo, stderr=subprocess.STDOUT. El avance es una funcion que devuelve el tiempo de procesador gastado por el proceso y todos sus hijos (import psutil dentro de la funcion; pp = psutil.Process(proceso.pid); suma de cpu_times().user + cpu_times().system de pp y de cada pp.children(recursive=True), ignorando los que ya terminaron con psutil.Error), redondeado a 1 decimal, mas el tamano de ese archivo de salida, mas la suma de os.path.getmtime de memoria/CUADERNO_DE_LLAMADAS.jsonl y memoria/APLICACIONES.log que existan; si psutil falla, sin el tiempo de procesador. (Motivo medido el 2026-09-21 para medir tiempo de procesador: las pruebas vecinas del candado de cierre tardan 212 s sin escribir en ningun registro, y una tarea que corre pruebas SI esta trabajando.) Los pasos, en este orden: from cuerpo import vigilante dentro de la funcion; estado = vigilante.esperar(proceso, LIMITE_TAREA_SEGUNDOS, SIN_AVANCE_SEGUNDOS, TOPE_DURO_SEGUNDOS, avance); archivo.close(); salida = el texto entero del archivo de salida, leido con open(..., encoding='utf-8', errors='replace'). NO se usa proceso.communicate() (no hay tuberia: saldria vacio). Si estado no es 'termino' devuelve {'guardado': False, 'codigo': None, 'salida': 'COLGADA: ' + estado + ' (sin avance pasado el limite; se busca la causa raiz)\\n' + salida}, para que el forense vea lo que dijo el revisor; si es 'termino' devuelve {'guardado': 'GUARDADO AL MOMENTO' in salida, 'codigo': proceso.returncode, 'salida': salida}. El parametro tope_segundos se queda en la firma sin usarse, para no romper a quien lo pasa. (3) En tipo_de_fallo, como primera comprobacion, si la salida empieza por 'COLGADA:' devuelve 'colgada'. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "una tarea 'colgada' va al forense como cualquier fallo (causa raiz) y, por A-43, su arreglo pasa al frente."
+  },
+  "huella": "527b80dd0bf293c8",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_000510_RECHAZADO_capataz.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (20605 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'tipo_de_fallo' y esa palabra no aparece ni en el texto viejo ni en el nuevo.\n  aviso       : GPT-OSS 120B (Groq) no le cabe (23527 letras, aguanta 19042) -> se le salta\n  diagnostico : En cuerpo/capataz.py hay que agregar tres constantes con su comentario arriba de lanzar_al_equipo, cambiar subprocess.run por subprocess.Popen con salida a archivo y avance por tiempo de procesador, y agregar la comprobacion de 'COLGADA:' en tipo_de_fallo.\n  toca        : cuerpo/capataz.py funcion lanzar_al_equipo\n  confianza   : alta\n  VEREDICTO   : RECHAZADO\n  fallo       : Rompe al vecino que nadie menciono: vigias/test_vigia_el_capataz_lanza_al_equipo.py mira a lanzar_al_equipo reemplazando capataz.subprocess.run por una funcion falsa y afirmando que fue llamada. Con Popen ya no se llama a run: 3 pruebas (test_el_comando_lleva..., test_con_crear..., test_pasa_timeout...) caen por 'subprocess.run no fue llamado', y las otras 3 son peores: como solo se falsifica run, el Popen real ejecuta de verdad 'ingeniero.py equipo dmm ...' (llamada real a DeepSeek, gastando dinero) y vigilar con vigilante.esperar real tiene tope_duro 3000 s, asi que las pruebas se cuelgan hasta 3000 s; ademas test_si_se_agota_el_tiempo... espera 'TOPE DE TIEMPO' y ahora recibe 'COLGADA:'\n  fallo       : El encargo dice 'No toques ningun otro archivo' y la propuesta trae preguntas: [] y una lista puede_danar que no incluye a esa vigia; no se actualizo la vigia existente ni se aviso del conflicto, que es exactamente lo que exige el metodo (la prueba vecina roja se coordina en la misma tarea, no se deja colgando ni lanzando al equipo de verdad)\n  resumen     : Los tres cambios piden estan bien hechos y nada se invento, pero la propuesta deja rota (y ademas colgada hasta 3000 s y gastando dinero) a la vigia que ya miraba a lanzar_al_equipo, y ni la toco ni aviso; hay que decidir con Julio que hacer con esa prueba antes de aplicar.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T00:05:10",
+  "analisis": {
+    "que_paso": "El equipo RECHAZO la orden 95 (huella 527b80dd0bf293c8, tipo no_aprobo). deepseek entrego los tres cambios pedidos sobre cuerpo/capataz.py (constantes, subprocess.run -> subprocess.Popen con salida a archivo y avance por tiempo de CPU, y la comprobacion 'COLGADA:' en tipo_de_fallo), pero bigpickle lo freno antes de guardar llave: al cambiar subprocess.run por Popen se rompe la vigia vecina vigias/test_vigia_el_capataz_lanza_al_equipo.py, que falsea subprocess.run y afirma que fue llamado. 3 pruebas caen por 'subprocess.run no fue llamado' y las otras 3 lanzarian el equipo de verdad (llamada real a DeepSeek, gasto) colgandose hasta 3000 s con el vigilante real; ademas test_si_se_agota_el_tiempo espera 'TOPE DE TIEMPO' y recibiria 'COLGADA:'. Como el encargo decia 'No toques ningun otro archivo' y la propuesta no toco ni aviso de esa vigia, se rechazo.",
+    "causa_raiz": "El encargo de la orden 95 esta mal disenado: exige convertir subprocess.run en subprocess.Popen y a la vez ordena 'No toques ningun otro archivo'. Esas dos exigencias son incompatibles porque la vigia vecina vigias/test_vigia_el_capataz_lanza_al_equipo.py monkeypatchea capataz.subprocess.run y comprueba que fue llamado; al desaparecer la llamada a run la vigia queda rota y, peor, ejecuta el Popen real contra DeepSeek. La orden viola la Ley 4 (no romper vecinos): manda un cambio que rompe una prueba vecina y en la misma frase prohibe coordinar (reparar/avisar) esa prueba en la misma tarea. No es fallo del obrero ni del revisor: la contradiccion estaba en la propia orden. (Secundario: el trozo del paquete solo traia lanzar_al_equipo, sin la funcion tipo_de_fallo de la linea 248, por eso el revisor de programa aviso que 'tipo_de_fallo' no aparecia en el trozo viejo ni nuevo.)",
+    "donde": "cuerpo/capataz.py (funcion lanzar_al_equipo, subprocess.run linea 29) y su prueba vecina vigias/test_vigia_el_capataz_lanza_al_equipo.py; la contradiccion vive en el campo 'encargo' de la orden 95.",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "        resultado = subprocess.run("
+      },
+      {
+        "archivo": "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+        "texto": "Nunca llama al equipo de verdad: se reemplaza subprocess.run por una funcion\nfalsa que apunta lo que recibe y devuelve lo que le digamos."
+      },
+      {
+        "archivo": "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+        "texto": "    monkeypatch.setattr(capataz.subprocess, \"run\", falsa)"
+      },
+      {
+        "archivo": "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+        "texto": "    assert falsa.llamadas, \"subprocess.run no fue llamado\""
+      },
+      {
+        "archivo": "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+        "texto": "    assert resultado[\"salida\"].startswith(\"TOPE DE TIEMPO\")"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "def tipo_de_fallo(salida):"
+      }
+    ],
+    "no_volver_a": "Una orden que cambia una llamada que una vigia vecina falsea (subprocess.run) NO puede a la vez prohibir tocar esa vigia: la prueba vecina se coordina en la misma tarea.",
+    "tarea_nueva": {
+      "repara": "la contradiccion del encargo de la orden 95: exigir Popen y a la vez 'no tocar otro archivo' rompe la vigia vecina",
+      "pieza": "vigias/test_vigia_el_capataz_lanza_al_equipo.py (junto con cuerpo/capataz.py)",
+      "razon": "la vigia vecina falsea subprocess.run y comprueba que fue llamado; con Popen queda roja y ademas lanza al equipo real gastando dinero y colgandose hasta 3000 s",
+      "encargo": "Reescribir la orden 95 quitando la restriccion 'No toques ningun otro archivo' e incluyendo en el MISMO trabajo la vigia vigias/test_vigia_el_capataz_lanza_al_equipo.py: cambiar el monkeypatch de capataz.subprocess.run por capataz.subprocess.Popen (falso que apunte args/kwargs y devuelva un objeto con pid, returncode y wait), falsear cuerpo.vigilante.esperar para que devuelva 'termino' o el estado de corte sin correr el proceso real, adaptar la lectura de salida al archivo .salida_tarea_*.txt en vez de communicate, y cambiar la prueba de timeout para que espere 'COLGADA:' en vez de 'TOPE DE TIEMPO'. Ademas el paquete del obrero debe traer en el trozo la funcion tipo_de_fallo (capataz.py:248) para poder anadir la comprobacion 'COLGADA:'. Recien con la vigia adaptada en verde se aplica el cambio de lanzar_al_equipo.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": true,
+    "paso": "tarea",
+    "motivo": "agregada 95-F001329",
+    "tarea": "95-F001329",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\95_20260922_000510.json"
+  }
+}

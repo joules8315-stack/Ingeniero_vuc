@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py, la funcion recoger_lo_frenado devuelve la copia recogida sin comprobar antes si esa copia pone rojas a sus vecinas, por lo que puede dejar en el disco una pieza que rompe a las demas.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "recoger_lo_frenado",
+  "texto_viejo": "            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida deja su prueba roja: no se deja en el disco'}\n        return resultado\n    except Exception as e:\n        return {'ok': False, 'razon': str(e)}",
+  "texto_nuevo": "            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida deja su prueba roja: no se deja en el disco'}\n        from arnes import guardia_de_guardado\n        paso, _mensaje = guardia_de_guardado._vigias(raiz)\n        if paso is not True:\n            subprocess.run(\n                ['git', 'checkout', 'HEAD', '--', pieza],\n                cwd=raiz,\n                capture_output=True,\n                text=True,\n                timeout=60,\n            )\n            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida pone rojas a sus vecinas: no se deja en el disco'}\n        return resultado\n    except Exception as e:\n        return {'ok': False, 'razon': str(e)}",
+  "cambio": "Justo antes de la ultima linea 'return resultado' de recoger_lo_frenado (la que va despues del bloque if prueba.returncode != 0), anadir la llamada a arnes.guardia_de_guardado._vigias(raiz); si el paso no es True, correr el mismo git checkout que ya usa la funcion y devolver el dict con razon 'la copia recogida pone rojas a sus vecinas: no se deja en el disco'.",
+  "codigo": "        from arnes import guardia_de_guardado\n        paso, _mensaje = guardia_de_guardado._vigias(raiz)\n        if paso is not True:\n            subprocess.run(\n                ['git', 'checkout', 'HEAD', '--', pieza],\n                cwd=raiz,\n                capture_output=True,\n                text=True,\n                timeout=60,\n            )\n            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida pone rojas a sus vecinas: no se deja en el disco'}",
+  "vigia": "Un test que llame a recoger_lo_frenado con una copia recogida que deja rojas a las vecinas y compruebe que devuelve ok False con la razon nueva y que la pieza quedo restaurada con git checkout HEAD.",
+  "puede_danar": [
+   "cuerpo/capataz.py::recoger_lo_frenado",
+   "arnes/guardia_de_guardado.py::_vigias"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "guardia_de_guardado.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada y no rompe vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25076 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

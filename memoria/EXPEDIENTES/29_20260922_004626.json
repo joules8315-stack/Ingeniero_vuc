@@ -1,0 +1,69 @@
+{
+  "orden": {
+    "id": "29",
+    "titulo": "Un archivo pequeno se entrega entero",
+    "origen": "ronda perdida medida el 2026-09-20",
+    "repara": "el material se corta en trozos de 40 renglones elegidos por parecido de palabras; en archivos cortos llega la portada o un trozo suelto y el obrero no puede trabajar. Medido: tres rondas pagadas perdidas el mismo dia por esta causa",
+    "pieza": "cerebro/router.py",
+    "depende": [
+      "28",
+      "157"
+    ],
+    "modo": "IA",
+    "razon": "es la fuga de dinero mas barata de cerrar de todas las medidas",
+    "encargo": "En cerebro/router.py hay que hacer dos cambios, entregalos en la lista cambios. (1) Al final del archivo, junto a las demas ayudas (despues de la funcion completar_funciones), agrega la funcion nueva entregar_enteros_los_cortos(pedazos, codigo): por cada archivo distinto (clave abs) que aparece en pedazos, si el archivo se puede leer y tiene 600 renglones o menos, TODOS sus pedazos se sustituyen por UNO solo, en el sitio del primero, con el archivo ENTERO: mismas claves del primer pedazo, y desde = 1, hasta = numero de renglones, texto = el archivo entero, direccion = pieza + ':1-' + hasta. Vale para cualquier archivo (.py, .html, .js...), no solo .py: la pantalla que mira Julio tambien. Si no se puede leer, o tiene mas de 600 renglones, sus pedazos se dejan igual. Si la suma de renglones de todos los pedazos pasaria de TOPE_LINEAS con ese archivo entero, ese archivo se deja igual (no se rompe el tope de siempre). Devuelve la lista nueva. (2) Llamala al FINAL del repartidor, cuando ya entraron todos los pedazos (tambien los de LO QUE EL PROBLEMA NOMBRA COMO FUNCION y LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO): justo despues del bloque FILTRAR POR ARCHIVOS NOMBRADOS, cuya ultima linea es (12 espacios) pedazos = _pedazos_filtrados, agrega (4 espacios) pedazos = entregar_enteros_los_cortos(pedazos, codigo), con el comentario: UN ARCHIVO CORTO SE ENTREGA ENTERO (medido 2026-09-20: tres rondas pagadas perdidas porque al obrero le llegaron trozos sueltos de archivos cortos); va al final para que valga tambien para los archivos nombrados. La vigia es vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py",
+    "sabotaje": "memoria/sabotajes/un_archivo_pequeno_se_entrega_entero.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "fe80234775debd38",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_004626_SIN_VEREDICTO_router.py.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : GPT-OSS 120B (Groq) no le cabe (25087 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (26835 letras, aguanta 19042) -> se le salta\n  diagnostico : Faltan los dos cambios en cerebro/router.py: la funcion nueva entregar_enteros_los_cortos y su llamada al final del repartidor, y el material no trae el texto literal de router.py para copiarlo.\n  toca        : cerebro/router.py funcion entregar_enteros_los_cortos y repartidor\n  confianza   : baja\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T00:46:26",
+  "analisis": {
+    "que_paso": "La orden 29 (agregar la funcion entregar_enteros_los_cortos y su llamada en cerebro/router.py) no aprobo. El obrero deepseek dejo el pedido a mitad y devolvio la marca NO_ENCONTRADO, porque el paquete que le llego NO contenia el texto literal de router.py en los sitios que la orden exige tocar (el final del archivo, tras completar_funciones, y la linea 'pedazos = _pedazos_filtrados'). Sin ese texto literal para copiar, el obrero no invento (cumplio la ley) y no hubo veredicto, asi que no se guardo llave.",
+    "causa_raiz": "El repartidor entrega el archivo NOMBRADO recortado a sus primeros 80 renglones (min(80, lineas)), no entero. router.py tiene 636 renglones y los dos sitios que la orden manda editar estan muy por debajo de ese recorte (la llamada va tras la linea ~355 'pedazos = _pedazos_filtrados' y la funcion nueva va tras completar_funciones en ~571). Por eso el material nunca trajo el texto literal de esas zonas y el obrero, obligado a no inventar, escribio NO_ENCONTRADO. Es un fallo de fragmentacion de la propia herramienta: pide reparar un archivo pero no entrega el archivo completo para copiarlo.",
+    "donde": "cerebro/router.py, en la insercion del trozo del archivo nombrado (linea 341: \"hasta\": min(80, ...)) y en el armado de \"LOS TROZOS EXACTOS\" (lineas 482-488). Ademas el candado de lectura confirma que router.py tiene 636 lineas.",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "cerebro/router.py",
+        "texto": "\"desde\": 1, \"hasta\": min(80, ficha.get(\"lineas\", 80) or 80),"
+      },
+      {
+        "archivo": "cerebro/router.py",
+        "texto": "Regla dura: aqui NO se inventa. Si algo no esta en el disco, se escribe NO_ENCONTRADO."
+      },
+      {
+        "archivo": "cerebro/router.py",
+        "texto": "            pedazos = _pedazos_filtrados"
+      },
+      {
+        "archivo": "cerebro/router.py",
+        "texto": "    w(\"## 3. LOS TROZOS EXACTOS (aqui esta el problema, ve directo)\")"
+      }
+    ],
+    "no_volver_a": "Si una orden manda copiar el texto literal de un archivo, el paquete debe traer ese archivo ENTERO (no un recorte de 80 renglones), o el obrero no puede trabajar y devuelve NO_ENCONTRADO con razon.",
+    "tarea_nueva": {
+      "repara": "El archivo NOMBRADO a reparar se entrega completo (hasta TOPE_LINEAS), no recortado a 80 renglones, para que el obrero pueda copiar el texto literal de los sitios que la orden manda tocar.",
+      "pieza": "cerebro/router.py",
+      "razon": "El obrero pidio el texto literal de router.py y no le llego porque la insercion del nombrado se corta en 80 renglones; asi ninguna orden que edite mas alla del renglon 80 de un archivo nombrado puede aprobar.",
+      "encargo": "En cerebro/router.py, en el bloque que inserta el pedazo del archivo NOMBRADO (linea 341), reemplaza 'hasta': min(80, ficha.get('lineas', 80) or 80) por 'hasta': ficha.get('lineas') o el total real de renglones del archivo, y usa el texto ENTERO del archivo como 'texto', ajustando 'direccion' a fid + ':1-' + hasta. Si al meterlo entero la suma de renglones pasaria de TOPE_LINEAS, deja el recorte de 80 como estaba (no rompas el tope). No toques ningun otro archivo.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": true,
+    "paso": "tarea",
+    "motivo": "agregada 29-F005530",
+    "tarea": "29-F005530",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\29_20260922_004626.json"
+  }
+}

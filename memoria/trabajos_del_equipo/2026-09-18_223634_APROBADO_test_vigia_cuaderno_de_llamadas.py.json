@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta agregar al final del archivo la prueba test_el_reloj_anota_los_segundos que verifique que cuaderno.apuntar registra segundos redondeados y omite la clave cuando no se pasan.",
+  "archivo": "vigias/test_vigia_cuaderno_de_llamadas.py",
+  "funcion": "final del archivo (despues de las pruebas existentes)",
+  "texto_viejo": "def _vivo(src):\n    \"\"\"El codigo sin comentarios ni textos de documentacion: solo lo que se ejecuta.\"\"\"\n    src = re.sub(r'\"\"\"(?:.|\\n)*?\"\"\"', \" \", src)",
+  "texto_nuevo": "def _vivo(src):\n    \"\"\"El codigo sin comentarios ni textos de documentacion: solo lo que se ejecuta.\"\"\"\n    src = re.sub(r'\"\"\"(?:.|\\n)*?\"\"\"', \" \", src)\n\n\ndef test_el_reloj_anota_los_segundos(tmp_path, monkeypatch):\n    \"\"\"El reloj anota los segundos: con segundos los guarda redondeados, sin segundos no pone la clave.\"\"\"\n    import cuaderno\n\n    archivo = tmp_path / \"cuaderno_test.json\"\n    monkeypatch.setenv(\"INGENIERO_CUADERNO_TEST\", str(archivo))\n\n    cuaderno.apuntar('deepseek', resultado=cuaderno.OK, segundos=2.345)\n    cuaderno.apuntar('groq')\n\n    with open(archivo, encoding=\"utf-8\") as f:\n        lineas = [json.loads(l) for l in f if l.strip()]\n\n    assert lineas[0][\"segundos\"] == 2.3\n    assert \"segundos\" not in lineas[1]",
+  "cambio": "Agregar al final del archivo la prueba test_el_reloj_anota_los_segundos(tmp_path, monkeypatch) que fija INGENIERO_CUADERNO_TEST a un archivo en tmp_path, llama a cuaderno.apuntar con y sin segundos, y comprueba que la primera linea JSON trae segundos == 2.3 y la segunda no trae la clave segundos.",
+  "codigo": "def test_el_reloj_anota_los_segundos(tmp_path, monkeypatch):\n    \"\"\"El reloj anota los segundos: con segundos los guarda redondeados, sin segundos no pone la clave.\"\"\"\n    import cuaderno\n\n    archivo = tmp_path / \"cuaderno_test.json\"\n    monkeypatch.setenv(\"INGENIERO_CUADERNO_TEST\", str(archivo))\n\n    cuaderno.apuntar('deepseek', resultado=cuaderno.OK, segundos=2.345)\n    cuaderno.apuntar('groq')\n\n    with open(archivo, encoding=\"utf-8\") as f:\n        lineas = [json.loads(l) for l in f if l.strip()]\n\n    assert lineas[0][\"segundos\"] == 2.3\n    assert \"segundos\" not in lineas[1]",
+  "vigia": "La propia prueba test_el_reloj_anota_los_segundos: se pone roja si cuaderno.apuntar no guarda segundos redondeados a un decimal o si guarda la clave segundos cuando no se le pasa.",
+  "puede_danar": [
+   "cuerpo/cuaderno.py (si su firma de apuntar no acepta segundos o no usa INGENIERO_CUADERNO_TEST)",
+   "vigias/test_vigia_cuaderno_de_llamadas.py (pruebas existentes si se tocan)"
+  ],
+  "preguntas": [
+   "¿El nombre exacto de la variable de entorno es INGENIERO_CUADERNO_TEST y cuaderno.apuntar acepta el parametro segundos con redondeo a un decimal?",
+   "¿cuaderno.OK es el nombre correcto del resultado OK en cuerpo/cuaderno.py?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "cuaderno_test.js"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Ninguno de fondo. Observacion menor: el texto_nuevo ancla la prueba pegada a _vivo (linea ~40 del trozo 1-40), y ese trozo corta en medio de _vivo, no es el final del archivo; el contrato pide 'AL FINAL, despues de las pruebas existentes'. Como el texto ancla SI aparece en el material y no rompe nada (pytest ejecuta igual todas las test_*), las leyes 6 y 7 prohiben rechazar por esto, pero hay que confirmar que en el archivo real la prueba quede al final absoluto y no entre las pruebas viejas."
+  ],
+  "riesgo_vecinos": [
+   "vigias/test_vigia_cuaderno_de_llamadas.py: las pruebas existentes no se tocan; solo se anade una funcion nueva despues del ancla",
+   "cuerpo/cuaderno.py: no se modifica. Si apuntar no respeta INGENIERO_CUADERNO_TEST, no acepta segundos o no redondea, la vigia nace roja/rota, y eso es justo lo que una vigia debe hacer: senalar el hueco, no es un dano"
+  ],
+  "que_falta": [
+   "Al aplicarla en el archivo real, asegurarse de que quede al final de verdad del archivo (y no pegada a _vivo)",
+   "Nada mas: la prueba pedida esta completa y escrita literalmente como ordena el contrato"
+  ],
+  "resumen_para_el_jefe": "La prueba test_el_reloj_anota_los_segundos esta escrita exactamente como la ordena el contrato (misma llamada, mismo segundos=2.3, misma omision de la clave) y no usa nada que no exista ni toca las pruebas ya hechas; aprobar."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

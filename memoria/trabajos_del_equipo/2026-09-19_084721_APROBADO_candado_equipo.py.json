@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta el import contextlib en las importaciones de arriba de arnes/candado_equipo.py, antes de import json y en orden alfabetico.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "imports del modulo (cabecera del archivo, tras el docstring)",
+  "texto_viejo": "import json\nimport os",
+  "texto_nuevo": "import contextlib\nimport json\nimport os",
+  "cambio": "Agregar 'import contextlib' antes de 'import json' en las importaciones de arriba del archivo, para que quede en orden alfabetico y disponible a nivel de modulo para el decorador.",
+  "codigo": "import contextlib\nimport json\nimport os",
+  "vigia": "Un test que cargue arnes/candado_equipo.py y compruebe que contextlib esta importado a nivel de modulo (por ejemplo, que el modulo tenga el atributo contextlib o que el decorador a nivel de modulo se evalue sin error al importar).",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno real: agregar un import estandar (contextlib) al tope del archivo no cambia nombres ni comportamiento en los modulos que lo importan."
+  ],
+  "que_falta": [
+   "Cumplir la Ley 7: correr la vigia interna de verdad antes de pedirle a Julio la prueba con sus ojos."
+  ],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo que pide el encargo: agrega la linea 'import contextlib' arriba del archivo, antes de 'import json', en orden alfabetico, usando el texto que aparece en el material (arnes/candado_equipo.py:36-37); no inventa nada, no toca vecinos y no cambia mas de lo pedido."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,26 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigia que comprueba que candado_legislar sigue recogiendo las ordenes reales de Julio y no el ruido de la maquina; el rechazo previo fue por inventar un nombre de test inexistente, ahora se define explicitamente.",
+  "archivo": "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+  "texto_nuevo": "\"\"\"Vigia: el candado de legislar NO debe recoger a la maquina, pero SI debe seguir recogiendo a Julio.\n\nHecho del 2026-09-20:\n    Tras la primera vuelta de la maquina trabajando sola, el candado que recoge las\n    ordenes de Julio bloqueo el cierre con 23 lineas que Julio nunca dijo. Eran el\n    pedido que la propia maquina le hace a su perito y el informe que ella misma\n    escribio. Ahora que la maquina trabaja sola escribe mucho, asi que esa lista\n    crecera cada noche. Entonces el que cierra marcara todo como no aplica sin\n    leerlo, y el dia que ahi dentro haya una orden de verdad se entierra con el\n    resto.\n\nLo importante de esta vigia NO es que deje fuera a la maquina.\nLo importante es que SIGA recogiendo lo que dice Julio.\n\nSi esta vigia se pone roja porque una frase de Julio dejo de recogerse, es peor\nque si se pone roja porque un texto de la maquina se colo: dejar de recoger una\norden de Julio es enterrar su voluntad.\n\"\"\"\n\nimport os\nimport sys\n\n# Raiz del proyecto: dos dirname sobre el abspath de este propio archivo.\n_raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n_arnes = os.path.join(_raiz, \"arnes\")\n\nfor _p in (_raiz, _arnes):\n    if _p not in sys.path:\n        sys.path.insert(0, _p)\n\nimport candado_legislar  # noqa: E402\n\n\n# ---------------------------------------------------------------------------\n# PRIMERA PRUEBA (la importante): frases de verdad de Julio, tal como el las\n# escribe. Todas deben ser recogidas por parece_una_orden.\n# ---------------------------------------------------------------------------\nFRASES_DE_JULIO = [\n    \"Repara el candado de legislar que se esta tragando lo que no es mio.\",\n    \"Nunca dejes que la maquina escriba ordenes en mi nombre.\",\n    \"Siempre guarda lo aprobado antes de cerrar la vuelta.\",\n    \"Que el equipo revise antes de guardar nada.\",\n    \"No quites ningun candado sin avisarme.\",\n]\n\n\ndef test_el_candado_sigue_recogiendo_lo_que_dice_julio():\n    \"\"\"Si una frase de Julio deja de recogerse, esto es peor que recoger ruido.\"\"\"\n    for frase in FRASES_DE_JULIO:\n        recogida = candado_legislar.parece_una_orden(frase)\n        assert recogida is True, (\n            \"El candado de legislar dejo de recoger una orden de Julio: \"\n            \"%r. Dejar de recoger una orden de Julio es peor que recoger \"\n            \"ruido de la maquina: la orden se entierra con el resto.\" % (frase,)\n        )\n\n\n# ---------------------------------------------------------------------------\n# SEGUNDA PRUEBA: textos que escribe la propia maquina, tal como salieron ese\n# dia. Ninguno debe ser recogido por parece_una_orden.\n# ---------------------------------------------------------------------------\nTEXTOS_DE_LA_MAQUINA = [\n    \"Soy el perito del PIT y voy a revisar el encargo que me llego.\",\n    \"Responde solo un objeto JSON con los campos pedidos.\",\n    '\"resultado\": \"la vuelta se cerro sin incidencias\",',\n    '\"observaciones\": \"el obrero termino su tarea a tiempo\",',\n    \"VEREDICTO: APROBADO\",\n    \"OBRERO deepseek -> AUDITOR groq\",\n]\n\n\ndef test_el_ruido_de_la_maquina_no_se_cola_como_orden():\n    \"\"\"La maquina no le da ordenes a Julio: su ruido no debe pasar el candado.\"\"\"\n    for texto in TEXTOS_DE_LA_MAQUINA:\n        recogida = candado_legislar.parece_una_orden(texto)\n        assert recogida is False, (\n            \"Se colo como orden de Julio un texto que escribe la maquina: \"\n            \"%r. La maquina no le da ordenes a Julio.\" % (texto,)\n        )\n",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico creando el vigía solicitado sin inventar ni romper nada."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'test_el_ruido_de_la_maquina_no_se_cola_como_orden'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 2"
+ ]
+}

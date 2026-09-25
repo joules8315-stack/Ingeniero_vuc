@@ -1,0 +1,32 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Las dos cabeceras de trozo en _paquete_de_prueba quedaron sin el nombre del archivo entre comillas invertidas, por lo que el filtro del obrero no las reconoce como trozos.",
+  "archivo": "vigias/test_vigia_el_revisor_ve_la_funcion_tocada.py",
+  "funcion": "_paquete_de_prueba",
+  "texto_viejo": "    lineas.append('###  relevancia 0.9')\n    for _ in range(60):\n        lineas.append('relleno = 0')\n    lineas.append('###  relevancia 0.1')",
+  "texto_nuevo": "    lineas.append('### ' + chr(96) + 'x.py' + chr(96) + ' relevancia 0.9')\n    for _ in range(60):\n        lineas.append('relleno = 0')\n    lineas.append('### ' + chr(96) + 'x.py' + chr(96) + ' relevancia 0.1')",
+  "cambio": "Sustituir las dos lineas que arman las cabeceras de trozo para que incluyan el nombre del archivo entre comillas invertidas usando chr(96), quedando '### ' + chr(96) + 'x.py' + chr(96) + ' relevancia 0.9' y lo mismo con 0.1. Nada mas cambia.",
+  "codigo": "    lineas.append('### ' + chr(96) + 'x.py' + chr(96) + ' relevancia 0.9')\n    for _ in range(60):\n        lineas.append('relleno = 0')\n    lineas.append('### ' + chr(96) + 'x.py' + chr(96) + ' relevancia 0.1')",
+  "vigia": "vigias/test_vigia_el_revisor_ve_la_funcion_tocada.py, que comprueba que el revisor ve la funcion tocada al armar el paquete con las cabeceras correctas",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_revisor_ve_la_funcion_tocada.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no rompe nada y no inventa recursos."
+ },
+ "avisos": [
+  "vueltas_dadas: 2"
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "En la lista TEXTOS_DE_LA_MAQUINA del archivo vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py, el primer texto empieza con 'Soy el perito' cuando la maquina escribe de verdad 'Eres el perito del pit'.",
+  "archivo": "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+  "funcion": "TEXTOS_DE_LA_MAQUINA",
+  "texto_viejo": "    \"Soy el perito",
+  "texto_nuevo": "    \"Eres el perito del pit",
+  "cambio": "Sustituir la primera linea de la lista TEXTOS_DE_LA_MAQUINA: cambiar el texto inventado que empieza con 'Soy el perito' por el texto real que empieza con 'Eres el perito del pit', entre comillas y con su coma al final, con la misma sangria. El resto de la lista y del archivo no se tocan.",
+  "codigo": "    \"Eres el perito del pit",
+  "vigia": "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py comprueba que el candado de legislar no recoge los textos de la maquina y si sigue recogiendo las frases de Julio.",
+  "puede_danar": [
+   "arnes/candado_legislar.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_legislar.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación corrige el texto de la prueba para que coincida con la realidad, sin introducir inventos ni romper el código existente."
+ },
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 4"
+ ]
+}

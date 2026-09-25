@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _apuntar_frenada, la linea del registro de decisiones escribe FRENO salvo que el motivo empiece por DEJO PASAR, asi que los motivos 'documento libre' y 'veredicto del equipo cubre el archivo' (que son pases) quedan apuntados como frenos.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "_apuntar_frenada",
+  "texto_viejo": "        _que = \"DEJO PASAR\" if _texto.upper().startswith(\"DEJO PASAR\") else \"FRENO\"",
+  "texto_nuevo": "        _que = \"DEJO PASAR\" if (_texto.upper().startswith(\"DEJO PASAR\") or\n                               _texto.strip().lower().startswith(\"documento libre\") or\n                               _texto.strip().lower().startswith(\"veredicto del equipo cubre el archivo\")) else \"FRENO\"",
+  "cambio": "En _apuntar_frenada, al calcular _que, ademas de los motivos que ya empiezan por DEJO PASAR, tratar como DEJO PASAR los motivos que empiezan por 'documento libre' y por 'veredicto del equipo cubre el archivo'. No se toca ninguna decision del candado ni se quita ningun freno: solo se apunta la verdad.",
+  "codigo": "        _que = \"DEJO PASAR\" if (_texto.upper().startswith(\"DEJO PASAR\") or\n                               _texto.strip().lower().startswith(\"documento libre\") or\n                               _texto.strip().lower().startswith(\"veredicto del equipo cubre el archivo\")) else \"FRENO\"",
+  "vigia": "Una prueba que llame a _apuntar_frenada con motivo 'documento libre' y con motivo 'veredicto del equipo cubre el archivo' y compruebe que la linea escrita en memoria/DECISIONES_CANDADO.log lleva DEJO PASAR en el tercer campo, y que un motivo de freno real sigue llevando FRENO.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio toca una sola linea que si aparece en el material, usa nombres que existen (_texto, _que), hace exactamente lo que pide el paquete (apuntar como DEJO PASAR los pases de 'documento libre' y 'veredicto del equipo cubre el archivo') y no modifica ninguna decision del candado."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25361 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

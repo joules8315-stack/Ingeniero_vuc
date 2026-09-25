@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "En la prueba test_solo_guarda_lo_PROBADO el assert compara diccionario.todo() (que devuelve una lista) con un diccionario vacio {}, por lo que nunca cuadra y la prueba sale roja aunque el programa este bien.",
+  "archivo": "vigias/test_vigia_diccionario_de_julio.py",
+  "funcion": "test_solo_guarda_lo_PROBADO",
+  "texto_viejo": "    assert diccionario.todo() == {}, (",
+  "texto_nuevo": "    assert not diccionario.todo(), (",
+  "cambio": "Sustituir la comparacion diccionario.todo() == {} por not diccionario.todo(), sin comparar con nada. El mensaje de fallo de las dos lineas siguientes se queda igual.",
+  "codigo": "    assert not diccionario.todo(), (",
+  "vigia": "vigias/test_vigia_diccionario_de_julio.py::test_solo_guarda_lo_PROBADO debe pasar en verde: sin archivo o sin sitio no se guarda nada y diccionario.todo() queda vacio.",
+  "puede_danar": [
+   "arnes/diccionario.py",
+   "vigias/test_vigia_diccionario_de_julio.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "diccionario.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación corrige un error de comparación en una prueba unitaria, sustituyendo una comparación directa por una verificación de ausencia de elementos, lo cual es correcto y no introduce nuevos problemas."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

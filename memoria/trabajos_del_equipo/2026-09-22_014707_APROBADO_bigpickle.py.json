@@ -1,0 +1,80 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El vigia prometido pedia comprobar tamano en las lineas de BIGPICKLE.log, que el cambio no toca; hay que corregir el vigia para que compruebe lo que el cambio si toca (el parametro tamano que se pasa a cuaderno.apuntar).",
+  "archivo": "cuerpo/bigpickle.py",
+  "funcion": "",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "TIMEOUT_POR_DEFECTO = 300",
+    "texto_nuevo": "# Solo si no se puede medir; su record medido es 328 s (A-47, 2026-09-21).\nTIMEOUT_POR_DEFECTO = 600"
+   },
+   {
+    "texto_viejo": "def _anotar(segundos: float, costo: float, ok: bool, nota: str = \"\") -> None:\n    \"\"\"Anota una llamada en memoria/BIGPICKLE.log. Nunca lanza excepcion.\"\"\"",
+    "texto_nuevo": "def _anotar(segundos: float, costo: float, ok: bool, nota: str = \"\", tamano: int = 0) -> None:\n    \"\"\"Anota una llamada en memoria/BIGPICKLE.log. Nunca lanza excepcion.\"\"\""
+   },
+   {
+    "texto_viejo": "        cuaderno.apuntar(\n            \"bigpickle\",\n            clase=\"auditar\",\n            resultado=(cuaderno.OK if ok else cuaderno.ERROR),\n            crudo=nota,\n            segundos=segundos,\n        )",
+    "texto_nuevo": "        cuaderno.apuntar(\n            \"bigpickle\",\n            clase=\"auditar\",\n            resultado=(cuaderno.OK if ok else cuaderno.ERROR),\n            crudo=nota,\n            segundos=segundos,\n            tamano=tamano,\n        )"
+   },
+   {
+    "texto_viejo": "def preguntar(prompt: str, timeout: int = TIMEOUT_POR_DEFECTO) -> tuple[str, list[str]]:\n    \"\"\"Manda el encargo a Big Pickle por OpenCode y devuelve (texto, avisos).\n\n    - El encargo va por stdin, nunca como argumento ni con -f.\n    - Se corre en una carpeta temporal vacia.\n    - Si el prompt trae una llave, no se manda.\n    - Si hay timeout, error o texto vacio: ('', [aviso]) y NUNCA excepcion.\n    \"\"\"\n    # 1) Filtro de llaves: no se manda nada que parezca una llave.\n    if _trae_llave(prompt):\n        _anotar(0.0, 0.0, False, nota=\"llave_detectada\")\n        return \"\", [\"NO se manda: trae una llave\"]\n\n    if not isinstance(prompt, str) or not prompt.strip():\n        _anotar(0.0, 0.0, False, nota=\"prompt_vacio\")\n        return \"\", [\"NO se manda: el encargo esta vacio\"]",
+    "texto_nuevo": "def preguntar(prompt: str, timeout: int = None) -> tuple[str, list[str]]:\n    \"\"\"Manda el encargo a Big Pickle por OpenCode y devuelve (texto, avisos).\n\n    - El encargo va por stdin, nunca como argumento ni con -f.\n    - Se corre en una carpeta temporal vacia.\n    - Si el prompt trae una llave, no se manda.\n    - Si hay timeout, error o texto vacio: ('', [aviso]) y NUNCA excepcion.\n    \"\"\"\n    # 0) Si no me dan timeout, lo mido con cuotas; si no se puede, el de por defecto.\n    if timeout is None:\n        try:\n            from cuerpo import cuotas\n            timeout = cuotas.espera_de_bigpickle(len(prompt))\n        except Exception:\n            timeout = TIMEOUT_POR_DEFECTO\n\n    # 1) Filtro de llaves: no se manda nada que parezca una llave.\n    if _trae_llave(prompt):\n        _anotar(0.0, 0.0, False, nota=\"llave_detectada\", tamano=len(prompt))\n        return \"\", [\"NO se manda: trae una llave\"]\n\n    if not isinstance(prompt, str) or not prompt.strip():\n        _anotar(0.0, 0.0, False, nota=\"prompt_vacio\", tamano=len(prompt))\n        return \"\", [\"NO se manda: el encargo esta vacio\"]"
+   },
+   {
+    "texto_viejo": "            segundos = time.monotonic() - inicio\n            _anotar(segundos, 0.0, False, nota=\"opencode_no_encontrado\")\n            return \"\", [\"opencode no instalado\"]\n\n        comando = [ejecutable] + COMANDO[1:]",
+    "texto_nuevo": "            segundos = time.monotonic() - inicio\n            _anotar(segundos, 0.0, False, nota=\"opencode_no_encontrado\", tamano=len(prompt))\n            return \"\", [\"opencode no instalado\"]\n\n        comando = [ejecutable] + COMANDO[1:]"
+   },
+   {
+    "texto_viejo": "        except FileNotFoundError:\n            segundos = time.monotonic() - inicio\n            _anotar(segundos, 0.0, False, nota=\"opencode_no_encontrado\")\n            return \"\", [\"opencode no instalado\"]\n        except OSError as exc:\n            segundos = time.monotonic() - inicio\n            _anotar(segundos, 0.0, False, nota=f\"oserror:{exc}\")\n            return \"\", [f\"Error al lanzar OpenCode: {exc}\"]",
+    "texto_nuevo": "        except FileNotFoundError:\n            segundos = time.monotonic() - inicio\n            _anotar(segundos, 0.0, False, nota=\"opencode_no_encontrado\", tamano=len(prompt))\n            return \"\", [\"opencode no instalado\"]\n        except OSError as exc:\n            segundos = time.monotonic() - inicio\n            _anotar(segundos, 0.0, False, nota=f\"oserror:{exc}\", tamano=len(prompt))\n            return \"\", [f\"Error al lanzar OpenCode: {exc}\"]"
+   },
+   {
+    "texto_viejo": "            segundos = time.monotonic() - inicio\n            _anotar(segundos, 0.0, False, nota=\"timeout\")\n            return \"\", [f\"Big Pickle no contesto en {timeout}s (timeout)\"]",
+    "texto_nuevo": "            segundos = time.monotonic() - inicio\n            _anotar(segundos, 0.0, False, nota=\"timeout\", tamano=len(prompt))\n            return \"\", [f\"Big Pickle no contesto en {timeout}s (timeout)\"]"
+   },
+   {
+    "texto_viejo": "            _, costo = _parsear_salida(stdout or \"\")\n            _anotar(segundos, costo, False, nota=f\"returncode={proc.returncode}\")",
+    "texto_nuevo": "            _, costo = _parsear_salida(stdout or \"\")\n            _anotar(segundos, costo, False, nota=f\"returncode={proc.returncode}\", tamano=len(prompt))"
+   },
+   {
+    "texto_viejo": "        if not texto.strip():\n            _anotar(segundos, costo, False, nota=\"texto_vacio\")\n            return \"\", [\"Big Pickle no devolvio texto\"]\n\n        _anotar(segundos, costo, True, nota=\"ok\")",
+    "texto_nuevo": "        if not texto.strip():\n            _anotar(segundos, costo, False, nota=\"texto_vacio\", tamano=len(prompt))\n            return \"\", [\"Big Pickle no devolvio texto\"]\n\n        _anotar(segundos, costo, True, nota=\"ok\", tamano=len(prompt))"
+   },
+   {
+    "texto_viejo": "        segundos = time.monotonic() - inicio\n        _anotar(segundos, 0.0, False, nota=f\"excepcion:{exc}\")\n        return \"\", [f\"Error inesperado en el enchufe: {exc}\"]",
+    "texto_nuevo": "        segundos = time.monotonic() - inicio\n        _anotar(segundos, 0.0, False, nota=f\"excepcion:{exc}\", tamano=len(prompt))\n        return \"\", [f\"Error inesperado en el enchufe: {exc}\"]"
+   }
+  ],
+  "cambio": "En cuerpo/bigpickle.py: (1) TIMEOUT_POR_DEFECTO pasa de 300 a 600 con comentario; (2) _anotar recibe tamano=0 y lo pasa a cuaderno.apuntar; (3) preguntar pasa a timeout=None y calcula con cuotas.espera_de_bigpickle(len(prompt)) con respaldo TIMEOUT_POR_DEFECTO; (4) todas las llamadas a _anotar dentro de preguntar pasan tamano=len(prompt).",
+  "codigo": "TIMEOUT_POR_DEFECTO = 600  # Solo si no se puede medir; su record medido es 328 s (A-47, 2026-09-21).\n\ndef _anotar(segundos: float, costo: float, ok: bool, nota: str = \"\", tamano: int = 0) -> None:\n    ...\n    cuaderno.apuntar(\"bigpickle\", clase=\"auditar\", resultado=(cuaderno.OK if ok else cuaderno.ERROR), crudo=nota, segundos=segundos, tamano=tamano)\n\ndef preguntar(prompt: str, timeout: int = None) -> tuple[str, list[str]]:\n    if timeout is None:\n        try:\n            from cuerpo import cuotas\n            timeout = cuotas.espera_de_bigpickle(len(prompt))\n        except Exception:\n            timeout = TIMEOUT_POR_DEFECTO\n    ... _anotar(..., tamano=len(prompt)) en cada llamada posterior a conocer el prompt ...",
+  "vigia": "Un test que llame a preguntar con un prompt conocido y compruebe que la llamada a cuaderno.apuntar recibe tamano=len(prompt) (por ejemplo espiando cuaderno.apuntar), y que con timeout=None se usa cuotas.espera_de_bigpickle y con fallo cae a TIMEOUT_POR_DEFECTO=600. NO debe comprobar tamano en las lineas de BIGPICKLE.log, porque el cambio no toca ese formato.",
+  "puede_danar": [
+   "cuerpo/codex.py",
+   "cuerpo/cuotas.py",
+   "cuerpo/cuaderno.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que el encargo pedia (timeout medido por cuotas con respaldo 600, tamano pasado a cuaderno.apuntar en las 10 anotaciones), verificado contra el archivo real, no inventa nada y no rompe a cuaderno ni a cuotas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19063 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El guardia usa 'git ls-files --error-unmatch' para decidir si un archivo rojo es NUEVO, pero al guardar el archivo nuevo ya esta en el indice, asi que ls-files lo da por guardado y frena vigias nuevas que solo esperan su pieza.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "            rr = subprocess.run([\"git\", \"ls-files\", \"--error-unmatch\", \"--\", archivo],\n                                cwd=raiz, capture_output=True, text=True, timeout=30)",
+  "texto_nuevo": "            rr = subprocess.run([\"git\", \"cat-file\", \"-e\", \"HEAD:\" + archivo],\n                                cwd=raiz, capture_output=True, text=True, timeout=30)",
+  "cambio": "Sustituir la lista del comando git dentro del bucle que clasifica archivos rojos en _vigias: en vez de preguntar a ls-files si el archivo esta en el indice, preguntar a cat-file -e HEAD:<archivo> si existe en la ultima version guardada. returncode distinto de 0 = nuevo; 0 = ya guardado. Nada mas cambia.",
+  "codigo": "            rr = subprocess.run([\"git\", \"cat-file\", \"-e\", \"HEAD:\" + archivo],\n                                cwd=raiz, capture_output=True, text=True, timeout=30)",
+  "vigia": "Una vigia que escriba una vigia nueva roja (sin su pieza) y compruebe que el guardia la deja pasar con aviso, y otra que modifique una vigia ya guardada y compruebe que el guardia frena.",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vecinas.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cambio aprobado: sustituye ls‑files por cat‑file para detectar archivos nuevos sin romper vecinos ni contratos."
+ },
+ "avisos": [
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "GPT-OSS 120B (Groq) no le cabe (23981 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

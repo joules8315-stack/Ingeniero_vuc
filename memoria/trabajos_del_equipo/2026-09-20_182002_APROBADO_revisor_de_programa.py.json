@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En arnes/revisor_de_programa.py, dentro de revisar, la cuenta que frena cuando un cambio deja una prueba sin cuerpo llama a _pruebas_sin_cuerpo, que no existe donde se la busca, asi que nunca dispara.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "                    _mirar = globals()[\"_pruebas_sin_cuerpo\"]\n                    _sin_antes = _mirar(_arbol_antes_c)\n                    _sin_despues = _mirar(_arbol_despues_c)",
+  "texto_nuevo": "                    # Se escribe entero aqui a proposito, sin llamar a ninguna funcion de\n                    # fuera, porque mas abajo hay otra con el mismo nombre dentro de esta\n                    # misma funcion y eso la taparia.\n                    def _vacia_aqui(nodo):\n                        cuerpo = list(nodo.body)\n                        if (cuerpo and isinstance(cuerpo[0], ast.Expr)\n                                and isinstance(cuerpo[0].value, ast.Constant)\n                                and isinstance(cuerpo[0].value.value, str)):\n                            cuerpo = cuerpo[1:]\n                        if not cuerpo:\n                            return True\n                        if len(cuerpo) == 1 and isinstance(cuerpo[0], ast.Pass):\n                            return True\n                        return False\n                    _sin_antes = {n.name for n in ast.walk(_arbol_antes_c)\n                                  if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))\n                                  and n.name.startswith(\"test_\") and _vacia_aqui(n)}\n                    _sin_despues = {n.name for n in ast.walk(_arbol_despues_c)\n                                    if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))\n                                    and n.name.startswith(\"test_\") and _vacia_aqui(n)}",
+  "cambio": "Sustituir las tres lineas que guardan en _mirar lo que devuelve globals() con el nombre _pruebas_sin_cuerpo y las dos que guardan en _sin_antes y _sin_despues el resultado de llamar a _mirar, por un comentario, la funcion _vacia_aqui escrita ahi mismo y dos conjuntos por comprension que usan _vacia_aqui sobre ast.walk de cada arbol.",
+  "codigo": "                    # Se escribe entero aqui a proposito, sin llamar a ninguna funcion de\n                    # fuera, porque mas abajo hay otra con el mismo nombre dentro de esta\n                    # misma funcion y eso la taparia.\n                    def _vacia_aqui(nodo):\n                        cuerpo = list(nodo.body)\n                        if (cuerpo and isinstance(cuerpo[0], ast.Expr)\n                                and isinstance(cuerpo[0].value, ast.Constant)\n                                and isinstance(cuerpo[0].value.value, str)):\n                            cuerpo = cuerpo[1:]\n                        if not cuerpo:\n                            return True\n                        if len(cuerpo) == 1 and isinstance(cuerpo[0], ast.Pass):\n                            return True\n                        return False\n                    _sin_antes = {n.name for n in ast.walk(_arbol_antes_c)\n                                  if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))\n                                  and n.name.startswith(\"test_\") and _vacia_aqui(n)}\n                    _sin_despues = {n.name for n in ast.walk(_arbol_despues_c)\n                                    if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))\n                                    and n.name.startswith(\"test_\") and _vacia_aqui(n)}",
+  "vigia": "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+   "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_un_cambio_no_puede_vaciar_una_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Repara la cuenta sin cuerpo definiendo la lógica localmente, sin introducir elementos inexistentes y sin afectar a otros módulos."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

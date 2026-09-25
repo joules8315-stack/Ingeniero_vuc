@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "grok47",
+ "propuesta": {
+  "diagnostico": "En recoger_lo_frenado hay dos sitios que devuelven la pieza a HEAD con git checkout sin comprobar antes si la pieza es nueva (no guardada en HEAD), lo que falla o deja la pieza nueva sin apartar.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "recoger_lo_frenado",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "        if prueba.returncode != 0:\n            subprocess.run(\n                ['git', 'checkout', 'HEAD', '--', pieza],\n                cwd=raiz,\n                capture_output=True,\n                text=True,\n                timeout=60,\n            )\n            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida deja su prueba roja: no se deja en el disco'}",
+    "texto_nuevo": "        if prueba.returncode != 0:\n            guardada = subprocess.run(\n                ['git', 'cat-file', '-e', 'HEAD:' + pieza],\n                cwd=raiz,\n                capture_output=True,\n                text=True,\n                timeout=30,\n            )\n            if guardada.returncode != 0:\n                os.replace(pieza, os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.ROJO'))\n            else:\n                subprocess.run(\n                    ['git', 'checkout', 'HEAD', '--', pieza],\n                    cwd=raiz,\n                    capture_output=True,\n                    text=True,\n                    timeout=60,\n                )\n            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida deja su prueba roja: no se deja en el disco'}"
+   },
+   {
+    "texto_viejo": "        if paso is not True:\n            subprocess.run(\n                ['git', 'checkout', 'HEAD', '--', pieza],\n                cwd=raiz,\n                capture_output=True,\n                text=True,\n                timeout=60,\n            )\n            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida pone rojas a sus vecinas: no se deja en el disco'}",
+    "texto_nuevo": "        if paso is not True:\n            guardada = subprocess.run(\n                ['git', 'cat-file', '-e', 'HEAD:' + pieza],\n                cwd=raiz,\n                capture_output=True,\n                text=True,\n                timeout=30,\n            )\n            if guardada.returncode != 0:\n                os.replace(pieza, os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.ROJO'))\n            else:\n                subprocess.run(\n                    ['git', 'checkout', 'HEAD', '--', pieza],\n                    cwd=raiz,\n                    capture_output=True,\n                    text=True,\n                    timeout=60,\n                )\n            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida pone rojas a sus vecinas: no se deja en el disco'}"
+   }
+  ],
+  "cambio": "En los dos sitios de recoger_lo_frenado que hoy llaman a git checkout HEAD -- pieza, preguntar antes con git cat-file -e HEAD:pieza si la pieza esta guardada; si no lo esta (returncode != 0), mover el archivo con os.replace a memoria/trabajos_sin_revisar/<basename>.ROJO en vez de llamar a git checkout.",
+  "codigo": "guardada = subprocess.run(\n    ['git', 'cat-file', '-e', 'HEAD:' + pieza],\n    cwd=raiz,\n    capture_output=True,\n    text=True,\n    timeout=30,\n)\nif guardada.returncode != 0:\n    os.replace(pieza, os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.ROJO'))\nelse:\n    subprocess.run(\n        ['git', 'checkout', 'HEAD', '--', pieza],\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n        timeout=60,\n    )",
+  "vigia": "Una prueba que llame a recoger_lo_frenado con una pieza nueva (no en HEAD) y con la prueba roja o las vecinas rojas, y compruebe que el archivo acaba en memoria/trabajos_sin_revisar/<basename>.ROJO y que no se ejecuto git checkout; y otra con una pieza ya en HEAD que compruebe que si se restaura con git checkout.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Los dos sitios de recoger_lo_frenado hacen exactamente lo pedido: si la pieza no esta en HEAD, la apartan a trabajos_sin_revisar; si ya esta, siguen con git checkout."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22376 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "vueltas_dadas: 1"
+ ]
+}

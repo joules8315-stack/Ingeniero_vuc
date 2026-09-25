@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "En arnes/puente_codex.py falta la funcion _escribir_salida_arreglada, que main ya llama cuando el candado deja pasar (codigo == 0), asi que el puente revienta en silencio y Codex no recibe nada.",
+  "archivo": "arnes/puente_codex.py",
+  "funcion": "_escribir_salida_arreglada (funcion nueva, justo antes de main)",
+  "texto_viejo": "def main(argv=None):\n    \"\"\"Punto de entrada. Sale siempre con 0 y nunca lanza.\"\"\"",
+  "texto_nuevo": "def _escribir_salida_arreglada(salida_normal, evento):\n    \"\"\"Ajusta la salida del candado al formato que Codex entiende. Nunca lanza.\n\n    Codex descarta el contexto que no va dentro de hookSpecificOutput con su\n    evento; sin esto no le llega la informacion del repartidor (medido 2026-09-22).\n    \"\"\"\n    try:\n        if not salida_normal:\n            return\n        try:\n            datos = json.loads(salida_normal)\n        except Exception:\n            _escribir_texto(salida_normal)\n            return\n        if not isinstance(datos, dict) or not evento:\n            _escribir_texto(salida_normal)\n            return\n        if isinstance(datos.get(\"hookSpecificOutput\"), dict):\n            if not datos[\"hookSpecificOutput\"].get(\"hookEventName\"):\n                datos[\"hookSpecificOutput\"][\"hookEventName\"] = evento\n        elif \"additionalContext\" in datos:\n            contexto = datos.pop(\"additionalContext\")\n            datos[\"hookSpecificOutput\"] = {\n                \"hookEventName\": evento,\n                \"additionalContext\": contexto,\n            }\n        _escribir_json(datos)\n    except Exception:\n        _escribir_texto(salida_normal)\n\n\ndef main(argv=None):\n    \"\"\"Punto de entrada. Sale siempre con 0 y nunca lanza.\"\"\"",
+  "cambio": "Agregar la funcion nueva _escribir_salida_arreglada(salida_normal, evento) justo antes de def main(argv=None):, con dos lineas en blanco de separacion. La funcion: si salida_normal esta vacia no escribe nada; intenta json.loads; si es dict y evento no esta vacio, si trae hookSpecificOutput dict y su hookEventName esta vacio o falta le pone hookEventName = evento, y si no trae hookSpecificOutput pero trae additionalContext arriba lo quita de arriba y lo mete en un hookSpecificOutput nuevo {hookEventName: evento, additionalContext: ese texto}, y escribe con _escribir_json(datos); en cualquier otro caso copia la salida tal cual con _escribir_texto(salida_normal). Todo dentro de try y, si algo falla, _escribir_texto(salida_normal).",
+  "codigo": "def _escribir_salida_arreglada(salida_normal, evento):\n    \"\"\"Ajusta la salida del candado al formato que Codex entiende. Nunca lanza.\n\n    Codex descarta el contexto que no va dentro de hookSpecificOutput con su\n    evento; sin esto no le llega la informacion del repartidor (medido 2026-09-22).\n    \"\"\"\n    try:\n        if not salida_normal:\n            return\n        try:\n            datos = json.loads(salida_normal)\n        except Exception:\n            _escribir_texto(salida_normal)\n            return\n        if not isinstance(datos, dict) or not evento:\n            _escribir_texto(salida_normal)\n            return\n        if isinstance(datos.get(\"hookSpecificOutput\"), dict):\n            if not datos[\"hookSpecificOutput\"].get(\"hookEventName\"):\n                datos[\"hookSpecificOutput\"][\"hookEventName\"] = evento\n        elif \"additionalContext\" in datos:\n            contexto = datos.pop(\"additionalContext\")\n            datos[\"hookSpecificOutput\"] = {\n                \"hookEventName\": evento,\n                \"additionalContext\": contexto,\n            }\n        _escribir_json(datos)\n    except Exception:\n        _escribir_texto(salida_normal)",
+  "vigia": "Un test que llame a _escribir_salida_arreglada con (a) salida vacia, (b) JSON no parseable, (c) dict sin hookSpecificOutput pero con additionalContext, (d) dict con hookSpecificOutput sin hookEventName, (e) dict con hookSpecificOutput con hookEventName ya puesto, (f) evento vacio, y compruebe que en cada caso la salida escrita es la esperada y que nunca lanza.",
+  "puede_danar": [
+   "arnes/puente_codex.py",
+   "cuerpo/codex.py",
+   "cuerpo/privacidad.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "portero.py",
+   "via_canonica.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20227 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

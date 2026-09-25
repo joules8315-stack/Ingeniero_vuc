@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta la constante TOPE_REVISOR = 12000 justo debajo de TOPE_GRATIS en cuerpo/obrero.py, con su comentario A-38.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "modulo (constantes de tope, junto a TOPE_GRATIS)",
+  "texto_viejo": "TOPE_GRATIS = 19000   # MEDIDO 2026-09-09: el mas pequeno de los cerebros gratis aguanta ~19.000.",
+  "texto_nuevo": "TOPE_GRATIS = 19000   # MEDIDO 2026-09-09: el mas pequeno de los cerebros gratis aguanta ~19.000.\nTOPE_REVISOR = 12000   # A-38 (Julio 2026-09-19): el revisor recibe solo el cambio y lo que toca, nunca el archivo entero.",
+  "cambio": "Agregar debajo de la linea de TOPE_GRATIS la constante TOPE_REVISOR = 12000 con el comentario A-38. Nada mas cambia.",
+  "codigo": "TOPE_REVISOR = 12000   # A-38 (Julio 2026-09-19): el revisor recibe solo el cambio y lo que toca, nunca el archivo entero.",
+  "vigia": "Un test que compruebe que cuerpo/obrero.py define TOPE_REVISOR con valor 12000 y que el comentario menciona A-38; y que el paquete que se le manda al revisor no supera ese tope.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación es correcta y cumple con el diagnóstico sin introducir inventos ni romper nada."
+ },
+ "avisos": [
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 1"
+ ]
+}

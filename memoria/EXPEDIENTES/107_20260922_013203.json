@@ -1,0 +1,28 @@
+{
+  "orden": {
+    "id": "107",
+    "titulo": "El pit arma el sabotaje que falta y no miente al informar",
+    "origen": "medido el 2026-09-21 (A-43)",
+    "repara": "un sabotaje inexistente se informaba como vigia que no protege",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "106"
+    ],
+    "modo": "IA",
+    "razon": "si el archivo no existe no se puede decir que la vigia fallo: el informe no miente",
+    "encargo": "En cuerpo/capataz.py, en la funcion sabotear_la_orden, justo despues de las dos lineas if not vigia or not sabotaje: y su return, agrega: si not os.path.exists(sabotaje) (probando tambien la ruta relativa a la carpeta del proyecto), llama armar_sabotaje(orden); si devuelve False, return {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}. Si devuelve True, sigue como hoy y corre el sabotaje. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_pit_arma_el_sabotaje_que_falta.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "cuando entre, se corre sabotear_la_orden sobre la orden 43 y las demas con sabotaje que falta, por programa."
+  },
+  "huella": "e1cd9e66975558f9",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_013136_APROBADO_capataz.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (29730 letras, aguanta 19042) -> se le salta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (30455 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 2\n  diagnostico : En sabotear_la_orden, cuando no hay sabotaje escrito la funcion devuelve None sin intentar armar_sabotaje, y el encargo pide que si no existe el archivo de sabotaje se llame a armar_sabotaje(orden) y, si devuelve False, se devuelva el motivo indicado; si devuelve True, siga como hoy y corra el sabotaje.\n  toca        : cuerpo/capataz.py funcion sabotear_la_orden\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : Cambio aprobado: arma el sabotaje desde el trabajo aprobado cuando el archivo de sabotaje no existe, exactamente como lo pide el encargo, usando solo armar_sabotaje (capataz.py:422) y os/sys ya importados; no rompe a sus vecinos porque el bucle ya maneja el return {ok: None} y codex.py ni siquiera usa esa funcion.\n\nAPLICADO en disco (lo escribio el equipo): cuerpo/capataz.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   14 failed, 120 passed in 11.70s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): cuerpo/capataz.py\nLLAVE GUARDADA: se puede escribir en 130 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T01:32:03"
+}

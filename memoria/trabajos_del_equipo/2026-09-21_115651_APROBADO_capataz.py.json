@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El valor por defecto de en_paralelo en la funcion bucle es 2 y debe ser 1.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):",
+  "texto_nuevo": "def bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):",
+  "cambio": "Cambiar el valor por defecto del parametro en_paralelo de 2 a 1 en la firma de la funcion bucle.",
+  "codigo": "def bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):",
+  "vigia": "Una prueba que llame a bucle sin pasar en_paralelo y compruebe que la tanda que se corre tiene como maximo 1 orden (listas_para_correr()[:1]).",
+  "puede_danar": [
+   "cuerpo/capataz.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cambio correcto del valor por defecto a 1, sin inventos ni rupturas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22322 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

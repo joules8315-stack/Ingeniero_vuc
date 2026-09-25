@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "Al crear un archivo nuevo en una carpeta que no existe, el open() falla porque no se crea antes la carpeta contenedora.",
+  "archivo": "cuerpo/aplicador.py",
+  "funcion": "aplicar_cambio",
+  "texto_viejo": "    if not os.path.exists(archivo):\n        try:\n            with open(archivo, \"w\", encoding=\"utf-8\") as f:\n                f.write(contenido)",
+  "texto_nuevo": "    if not os.path.exists(archivo):\n        try:\n            # la carpeta de un archivo nuevo se crea si falta (medido 2026-09-22, orden 176)\n            os.makedirs(os.path.dirname(archivo) or \".\", exist_ok=True)\n            with open(archivo, \"w\", encoding=\"utf-8\") as f:\n                f.write(contenido)",
+  "cambio": "Dentro del bloque 'if not os.path.exists(archivo):', justo despues de 'try:' y antes del 'with open(...)', anadir la linea os.makedirs(os.path.dirname(archivo) or \".\", exist_ok=True) precedida de un comentario corto, para que la carpeta contenedora se cree si falta antes de escribir el archivo nuevo.",
+  "codigo": "            # la carpeta de un archivo nuevo se crea si falta (medido 2026-09-22, orden 176)\n            os.makedirs(os.path.dirname(archivo) or \".\", exist_ok=True)",
+  "vigia": "vigias/test_vigia_aplicador.py: comprobar que aplicar_cambio crea un archivo nuevo cuya carpeta contenedora no existia, sin lanzar excepcion y devolviendo True con 'Archivo creado.'.",
+  "puede_danar": [
+   "arnes/copista.py",
+   "vigias/test_vigia_aplicador.py",
+   "vigias/test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "copista.py",
+   "test_vigia_aplicador.py",
+   "test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22564 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

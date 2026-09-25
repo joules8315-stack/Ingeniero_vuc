@@ -1,0 +1,67 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "El candado apunta como instruccion de Julio cualquier texto del turno, incluido lo que escribe la maquina (pedidos a cerebros, expedientes, JSON), y hay que filtrarlo antes de apuntar.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "apuntar",
+  "texto_viejo": "def pendientes():\n    \"\"\"Instrucciones que aun no estan legisladas (ni marcadas).\"\"\"\n    return [e for e in _leer().values() if e.get(\"estado\") == \"pendiente\"]",
+  "texto_nuevo": "def _es_de_la_maquina(texto):\n    \"\"\"True si el texto lo escribio la maquina, no Julio.\n\n    Se descarta lo que venga de un pedido a un cerebro o de un expediente:\n    lo que empiece por 'Eres el', lo que pida contestar en JSON, lo que sea\n    una linea de un JSON (empieza por comillas y lleva dos puntos), y lo que\n    traiga dentro las palabras OBRERO, AUDITOR, VEREDICTO o GUARDIA.\n    \"\"\"\n    t = (texto or \"\").strip()\n    if not t:\n        return True\n    if t.startswith(\"Eres el\"):\n        return True\n    if \"JSON\" in t or \"json\" in t:\n        return True\n    if t.startswith('\"') and \":\" in t:\n        return True\n    for marca in (\"OBRERO\", \"AUDITOR\", \"VEREDICTO\", \"GUARDIA\"):\n        if marca in t:\n            return True\n    return False\n\n\ndef pendientes():\n    \"\"\"Instrucciones que aun no estan legisladas (ni marcadas).\"\"\"\n    return [e for e in _leer().values() if e.get(\"estado\") == \"pendiente\"]",
+  "cambio": "Anadir la funcion _es_de_la_maquina y usarla dentro de apuntar para no apuntar texto que venga de un pedido a un cerebro o de un expediente. El material solo trae la cabecera y pendientes(); no trae el cuerpo de apuntar, asi que no se puede copiar su texto literal.",
+  "codigo": "def _es_de_la_maquina(texto):\n    \"\"\"True si el texto lo escribio la maquina, no Julio.\"\"\"\n    t = (texto or \"\").strip()\n    if not t:\n        return True\n    if t.startswith(\"Eres el\"):\n        return True\n    if \"JSON\" in t or \"json\" in t:\n        return True\n    if t.startswith('\"') and \":\" in t:\n        return True\n    for marca in (\"OBRERO\", \"AUDITOR\", \"VEREDICTO\", \"GUARDIA\"):\n        if marca in t:\n            return True\n    return False",
+  "vigia": "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py debe comprobar que un texto que empiece por 'Eres el', que pida JSON, que sea linea de JSON o que traiga OBRERO/AUDITOR/VEREDICTO/GUARDIA NO queda apuntado como pendiente, y que una instruccion normal de Julio SI queda apuntada.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [
+   "Falta el cuerpo completo de la funcion apuntar para insertar la llamada a _es_de_la_maquina en el sitio exacto. NECESITO_LEER: arnes/candado_legislar.py / ver el cuerpo de apuntar / decide donde se filtra el texto antes de guardarlo / riesgo de apuntar texto de la maquina como si fuera de Julio."
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "La función `_es_de_la_maquina` no existe en el material original proporcionado. Aunque el `cambio` y el `codigo` la definen, no hay rastro de ella en el `MATERIAL ORIGINAL`."
+  ],
+  "fallos": [
+   "La función `_es_de_la_maquina` es inventada, ya que no aparece en el material original. El `MATERIAL ORIGINAL` solo muestra la cabecera y la función `pendientes()`, pero no el cuerpo de `apuntar` donde se supone que se usaría la nueva función.",
+   "El `cambio` indica que se debe usar la función `_es_de_la_maquina` dentro de `apuntar`, pero el `MATERIAL ORIGINAL` no proporciona el cuerpo de `apuntar`, lo que impide verificar la ubicación exacta y la correcta implementación del filtrado. La `pregunta` del proponente también señala esta falta de material."
+  ],
+  "riesgo_vecinos": [
+   "El `vigia` `vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py` se menciona como que debe comprobar el comportamiento de la nueva función, pero no se proporciona su código para verificar si la implementación de `_es_de_la_maquina` se alinea con lo que se espera que este vigía compruebe. Esto podría llevar a que el vigía no detecte fallos si la lógica de `_es_de_la_maquina` no es la correcta.",
+   "La lista `puede_danar` incluye varios archivos que podrían verse afectados por este cambio, pero sin el cuerpo completo de `apuntar` y sin la definición de `_es_de_la_maquina` en el material original, es imposible evaluar el impacto real en estos vecinos."
+  ],
+  "que_falta": [
+   "El cuerpo completo de la función `apuntar` en `arnes/candado_legislar.py` para poder insertar la llamada a `_es_de_la_maquina` en el sitio exacto y verificar su funcionamiento.",
+   "La definición de la función `_es_de_la_maquina` en el `MATERIAL ORIGINAL` para poder juzgar si se ha inventado o si es una adición correcta según el encargo."
+  ],
+  "resumen_para_el_jefe": "La reparación inventa una función clave y no proporciona el material necesario para verificar su correcta integración, lo que impide evaluar su impacto y seguridad."
+ },
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 4"
+ ]
+}

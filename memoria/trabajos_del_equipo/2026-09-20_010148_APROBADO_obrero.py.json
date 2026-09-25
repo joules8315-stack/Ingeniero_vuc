@@ -1,0 +1,52 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El bloque del juez de la prueba no existe todavia en trabajar; hay que anadirlo justo debajo de la marca _comprobado_por_programa, resolviendo la raiz de verdad (no una constante RAIZ inventada) y respetando dejar_el_cambio=False para no tocar el archivo antes de aprobar.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "        if _prog_corrio and not _fallos_prog and isinstance(propuesta, dict):\n            propuesta['_comprobado_por_programa'] = True\n        # La revision se delega entera a auditar(): asi arnes/copista.py puede pedir SOLO una",
+  "texto_nuevo": "        if _prog_corrio and not _fallos_prog and isinstance(propuesta, dict):\n            propuesta['_comprobado_por_programa'] = True\n        # Correr la prueba es CUENTA, no juicio: lo decide un programa gratis. Por eso no se paga\n        # una IA para saberlo. El juez solo mira, no deja el cambio puesto (dejar_el_cambio=False).\n        try:\n            from arnes import juez_de_la_prueba as _juez\n            _ruta_prop = propuesta.get('archivo') if isinstance(propuesta, dict) else None\n            _viejo_prop = propuesta.get('texto_viejo') if isinstance(propuesta, dict) else None\n            _nuevo_prop = propuesta.get('texto_nuevo') if isinstance(propuesta, dict) else None\n            if isinstance(propuesta, dict) and _ruta_prop and _viejo_prop:\n                _raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n                _ruta_rel = str(_ruta_prop).replace('\\\\', '/')\n                _raiz_norm = _raiz.replace('\\\\', '/')\n                if _ruta_rel.startswith(_raiz_norm):\n                    _ruta_rel = _ruta_rel[len(_raiz_norm):].lstrip('/')\n                _veredicto_juez = _juez.juzgar_con_vecinas(_raiz, _ruta_rel, _viejo_prop, _nuevo_prop, dejar_el_cambio=False)\n                if isinstance(_veredicto_juez, dict) and _veredicto_juez.get('ok') is False and _vuelta < 3:\n                    _razon_juez = str(_veredicto_juez.get('razon', ''))\n                    motivos_rechazo.append(_razon_juez)\n                    avisos_totales.append('el juez de la prueba lo freno antes de pagar la revision: ' + _razon_juez[:200])\n                    continue\n                if isinstance(_veredicto_juez, dict) and _veredicto_juez.get('ok') is True:\n                    propuesta['_juez_de_la_prueba'] = _veredicto_juez.get('razon', '')\n        except Exception:\n            pass\n        # La revision se delega entera a auditar(): asi arnes/copista.py puede pedir SOLO una",
+  "cambio": "Anadir, justo debajo de la marca _comprobado_por_programa dentro de trabajar, un bloque try/except que importe arnes.juez_de_la_prueba, calcule la raiz del proyecto con os.path.dirname(os.path.dirname(os.path.abspath(__file__))) (sin inventar ninguna constante RAIZ), normalice la ruta relativa, llame a juzgar_con_vecinas con dejar_el_cambio=False, y actue segun ok False (motivo + aviso + continue si _vuelta<3) u ok True (guardar _juez_de_la_prueba). El except queda vacio para no romper la vuelta.",
+  "codigo": "        # Correr la prueba es CUENTA, no juicio: lo decide un programa gratis. Por eso no se paga\n        # una IA para saberlo. El juez solo mira, no deja el cambio puesto (dejar_el_cambio=False).\n        try:\n            from arnes import juez_de_la_prueba as _juez\n            _ruta_prop = propuesta.get('archivo') if isinstance(propuesta, dict) else None\n            _viejo_prop = propuesta.get('texto_viejo') if isinstance(propuesta, dict) else None\n            _nuevo_prop = propuesta.get('texto_nuevo') if isinstance(propuesta, dict) else None\n            if isinstance(propuesta, dict) and _ruta_prop and _viejo_prop:\n                _raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n                _ruta_rel = str(_ruta_prop).replace('\\\\', '/')\n                _raiz_norm = _raiz.replace('\\\\', '/')\n                if _ruta_rel.startswith(_raiz_norm):\n                    _ruta_rel = _ruta_rel[len(_raiz_norm):].lstrip('/')\n                _veredicto_juez = _juez.juzgar_con_vecinas(_raiz, _ruta_rel, _viejo_prop, _nuevo_prop, dejar_el_cambio=False)\n                if isinstance(_veredicto_juez, dict) and _veredicto_juez.get('ok') is False and _vuelta < 3:\n                    _razon_juez = str(_veredicto_juez.get('razon', ''))\n                    motivos_rechazo.append(_razon_juez)\n                    avisos_totales.append('el juez de la prueba lo freno antes de pagar la revision: ' + _razon_juez[:200])\n                    continue\n                if isinstance(_veredicto_juez, dict) and _veredicto_juez.get('ok') is True:\n                    propuesta['_juez_de_la_prueba'] = _veredicto_juez.get('razon', '')\n        except Exception:\n            pass",
+  "vigia": "Un vigia que llame a trabajar con una propuesta cuyo texto_viejo no encaje y compruebe que (a) el archivo en disco queda intacto (dejar_el_cambio=False), (b) se anade el motivo y el aviso 'el juez de la prueba lo freno antes de pagar la revision', y (c) no se llama a auditar en esa vuelta. Y otro que con texto_viejo correcto compruebe que aparece propuesta['_juez_de_la_prueba'].",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "El modulo arnes/juez_de_la_prueba.py y su funcion juzgar_con_vecinas no aparecen en el material: se asume que existen y que aceptan (raiz, ruta_relativa, texto_viejo, texto_nuevo, dejar_el_cambio). Si no existen o su firma es otra, hay que confirmarlo antes de sellar.",
+   "Se asume que os ya esta importado en cuerpo/obrero.py (no se ve en el material recortado). Si no lo esta, hay que anadirlo."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Sin fallos bloqueantes. Notas no bloqueantes: (1) cuando juzgar_con_vecinas devuelve ok=None (ninguna prueba cubre el archivo) el bloque pasa en silencio a auditar: es aceptable por diseno, pero conviene anotarlo como aviso para no confundir 'sin evidencia' con 'aprobado'. (2) en _vuelta==3 con ok=False no hay continue y se cae en auditar igual: coherente con la convencion existente de _fallos_prog and _vuelta<3 (linea 1193), donde el cerebro de pago entra al final, asi que no es un descuido."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno detectado: el bloque esta dentro de try/except Exception: pass (mismo patron que lineas 1186-1192 del revisor de programa), no escribe en disco (dejar_el_cambio=False), no toca asignador.py ni revisor_de_programa.py ni la vigia nominada, y ninguna variable nueva (_juez, _raiz, _veredicto_juez, etc.) colisiona con nombres existentes en obrero.py."
+  ],
+  "que_falta": [
+   "Nada del codigo: verifique en disco que arnes/juez_de_la_prueba.py existe, que juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo, dejar_el_cambio=True) tiene exactamente esa firma (linea 182), que usa arnes/vecinas (funciones _vigias_existentes y _vecinas_por_stem, ambas existen) y que os ya esta importado en obrero.py (linea 14). Lo pendiente es la prueba real interna (ley 7) que demuestre la integracion del bloque en trabajar antes de pedirselo a Julio."
+  ],
+  "resumen_para_el_jefe": "No invento nada: el modulo arnes/juez_de_la_prueba.py, la funcion juzgar_con_vecinas con su firma y el import os existen todos en disco; el bloque cumple exactamente el diagnostico (juez justo debajo de _comprobado_por_programa, raiz resuelta desde __file__ sin constante inventada, dejar_el_cambio=False, rechazo con continue mientras queden vueltas y marca _juez_de_la_prueba al acertar), no rompe vecinos y repite el patron ya probado del revisor de programa."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39060 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (41200 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (41545 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (41889 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

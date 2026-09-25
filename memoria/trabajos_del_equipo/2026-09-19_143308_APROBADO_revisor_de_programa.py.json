@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la funcion no_carga(contenido) en arnes/revisor_de_programa.py; el intento anterior no importaba ast dentro de la funcion y por eso fallaba.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "no_carga (nueva, se inserta justo antes de 'def sin_ruido(texto):')",
+  "texto_viejo": "def sin_ruido(texto):",
+  "texto_nuevo": "def no_carga(contenido):\n    \"\"\"Devuelve la lista de textos con lo que impide cargar el modulo. Vacia = carga.\n\n    Es CUENTA con ast, sin ejecutar nada. Mira, en orden, cada nodo del cuerpo del modulo:\n    primero los nombres que se LEEN al cargar y despues los que DEFINE. Un nombre leido que\n    no este definido ni importado arriba impide cargar el modulo.\n    \"\"\"\n    import ast\n    import builtins\n    try:\n        try:\n            arbol = ast.parse(contenido)\n        except SyntaxError as e:\n            return ['EL ARCHIVO NO CARGA: error de sintaxis en la linea %s' % e.lineno]\n        definidos = set(dir(builtins)) | {'__file__', '__name__', '__doc__'}\n        fallos = []\n        ya_dicho = set()\n        for nodo in arbol.body:\n            if isinstance(nodo, (ast.FunctionDef, ast.AsyncFunctionDef)):\n                partes = list(nodo.decorator_list)\n                partes.extend(nodo.args.defaults)\n                partes.extend(d for d in nodo.args.kw_defaults if d is not None)\n            elif isinstance(nodo, ast.ClassDef):\n                partes = list(nodo.decorator_list)\n                partes.extend(nodo.bases)\n                partes.extend(nodo.keywords)\n            else:\n                partes = [nodo]\n            for parte in partes:\n                for n in ast.walk(parte):\n                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load):\n                        if n.id not in definidos and n.id not in ya_dicho:\n                            ya_dicho.add(n.id)\n                            fallos.append('EL ARCHIVO NO CARGA: ' + n.id +\n                                          ' se usa al cargar el modulo y no esta definido ni importado arriba')\n            if isinstance(nodo, ast.Import):\n                for a in nodo.names:\n                    definidos.add((a.asname or a.name).split('.')[0])\n            elif isinstance(nodo, ast.ImportFrom):\n                for a in nodo.names:\n                    definidos.add(a.asname or a.name.split('.')[0])\n            elif isinstance(nodo, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):\n                definidos.add(nodo.name)\n            else:\n                for n in ast.walk(nodo):\n                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store):\n                        definidos.add(n.id)\n        return fallos\n    except Exception:\n        return []\n\n\ndef sin_ruido(texto):",
+  "cambio": "Insertar la funcion no_carga(contenido) justo antes de 'def sin_ruido(texto):'. La funcion importa ast y builtins DENTRO de si misma (ese era el fallo del intento anterior), parsea el contenido, devuelve el error de sintaxis si lo hay, y recorre arbol.body en orden mirando primero lo que se lee al cargar y despues lo que se define. Nunca lanza: ante cualquier otro error devuelve [].",
+  "codigo": "def no_carga(contenido):\n    \"\"\"Devuelve la lista de textos con lo que impide cargar el modulo. Vacia = carga.\n\n    Es CUENTA con ast, sin ejecutar nada. Mira, en orden, cada nodo del cuerpo del modulo:\n    primero los nombres que se LEEN al cargar y despues los que DEFINE. Un nombre leido que\n    no este definido ni importado arriba impide cargar el modulo.\n    \"\"\"\n    import ast\n    import builtins\n    try:\n        try:\n            arbol = ast.parse(contenido)\n        except SyntaxError as e:\n            return ['EL ARCHIVO NO CARGA: error de sintaxis en la linea %s' % e.lineno]\n        definidos = set(dir(builtins)) | {'__file__', '__name__', '__doc__'}\n        fallos = []\n        ya_dicho = set()\n        for nodo in arbol.body:\n            if isinstance(nodo, (ast.FunctionDef, ast.AsyncFunctionDef)):\n                partes = list(nodo.decorator_list)\n                partes.extend(nodo.args.defaults)\n                partes.extend(d for d in nodo.args.kw_defaults if d is not None)\n            elif isinstance(nodo, ast.ClassDef):\n                partes = list(nodo.decorator_list)\n                partes.extend(nodo.bases)\n                partes.extend(nodo.keywords)\n            else:\n                partes = [nodo]\n            for parte in partes:\n                for n in ast.walk(parte):\n                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load):\n                        if n.id not in definidos and n.id not in ya_dicho:\n                            ya_dicho.add(n.id)\n                            fallos.append('EL ARCHIVO NO CARGA: ' + n.id +\n                                          ' se usa al cargar el modulo y no esta definido ni importado arriba')\n            if isinstance(nodo, ast.Import):\n                for a in nodo.names:\n                    definidos.add((a.asname or a.name).split('.')[0])\n            elif isinstance(nodo, ast.ImportFrom):\n                for a in nodo.names:\n                    definidos.add(a.asname or a.name.split('.')[0])\n            elif isinstance(nodo, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):\n                definidos.add(nodo.name)\n            else:\n                for n in ast.walk(nodo):\n                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store):\n                        definidos.add(n.id)\n        return fallos\n    except Exception:\n        return []",
+  "vigia": "vigias/test_vigia_el_archivo_carga.py (ya existe): prueba el caso real del decorador @contextlib.contextmanager sin import arriba, el caso con import arriba que debe cargar, el error de sintaxis, el nombre usado solo dentro de una funcion que no cuenta, los nombres del modulo y de Python, y los importados y los del for.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "arnes/asignador.py",
+   "vigias/test_vigia_el_archivo_carga.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "candado_equipo.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La función no_carga se inserta correctamente antes de sin_ruido, cumple el diagnóstico y no rompe ningún vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21074 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (22806 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

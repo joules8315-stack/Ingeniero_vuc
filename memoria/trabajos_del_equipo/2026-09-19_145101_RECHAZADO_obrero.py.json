@@ -1,0 +1,57 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "El bloque A-38 llama al revisor de programa pero no deja constancia de que reviso y no encontro nada, asi que la IA revisora rechaza por 'no aparece en el material' nombres que el programa ya comprobo.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "        # A-38: el programa revisa primero, gratis; si frena no se paga la revision y el obrero recibe los motivos.\n        try:\n            import revisor_de_programa as _rp_antes\n            _fallos_prog = _rp_antes.revisar(propuesta, tarea) or []\n        except Exception:\n            _fallos_prog = []\n        if _fallos_prog and _vuelta < 3:\n            motivos_rechazo.extend(str(x) for x in _fallos_prog)\n            avisos_totales.append('el revisor de programa freno antes de pagar la revision: ' + '; '.join(str(x) for x in _fallos_prog)[:200])\n            continue",
+  "texto_nuevo": "        # A-38: el programa revisa primero, gratis; si frena no se paga la revision y el obrero recibe los motivos.\n        _prog_corrio = False\n        try:\n            import revisor_de_programa as _rp_antes\n            _fallos_prog = _rp_antes.revisar(propuesta, tarea) or []\n            _prog_corrio = True\n        except Exception:\n            _fallos_prog = []\n        if _fallos_prog and _vuelta < 3:\n            motivos_rechazo.extend(str(x) for x in _fallos_prog)\n            avisos_totales.append('el revisor de programa freno antes de pagar la revision: ' + '; '.join(str(x) for x in _fallos_prog)[:200])\n            continue\n        if _prog_corrio and not _fallos_prog and isinstance(propuesta, dict):\n            propuesta['_comprobado_por_programa'] = True",
+  "cambio": "Anadir _prog_corrio = False antes del try; poner _prog_corrio = True dentro del try tras calcular _fallos_prog; y tras el if _fallos_prog and _vuelta < 3 (con su continue) agregar el if que marca propuesta['_comprobado_por_programa'] = True cuando el programa corrio, no encontro fallos y propuesta es dict.",
+  "codigo": "        # A-38: el programa revisa primero, gratis; si frena no se paga la revision y el obrero recibe los motivos.\n        _prog_corrio = False\n        try:\n            import revisor_de_programa as _rp_antes\n            _fallos_prog = _rp_antes.revisar(propuesta, tarea) or []\n            _prog_corrio = True\n        except Exception:\n            _fallos_prog = []\n        if _fallos_prog and _vuelta < 3:\n            motivos_rechazo.extend(str(x) for x in _fallos_prog)\n            avisos_totales.append('el revisor de programa freno antes de pagar la revision: ' + '; '.join(str(x) for x in _fallos_prog)[:200])\n            continue\n        if _prog_corrio and not _fallos_prog and isinstance(propuesta, dict):\n            propuesta['_comprobado_por_programa'] = True",
+  "vigia": "Un test que llame a trabajar con una propuesta que el revisor de programa aprueba (sin fallos) y compruebe que la propuesta devuelta trae '_comprobado_por_programa' a True; y que si el revisor de programa lanza excepcion o devuelve fallos, esa marca no aparece.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "El bloque de código identificado como '# A-38' y toda su lógica asociada (importación y llamada a revisor_de_programa)"
+  ],
+  "fallos": [
+   "El 'texto_viejo' que la propuesta pretende sustituir no aparece en ninguna parte del material original proporcionado.",
+   "Se está intentando aplicar una lógica sobre variables y flujos que no existen en el recorte de 'cuerpo/obrero.py' enviado."
+  ],
+  "riesgo_vecinos": [
+   "Imposible de determinar al no existir el código base en el material."
+  ],
+  "que_falta": [
+   "Que el obrero trabaje sobre el material real o que se le proporcione el recorte de código que contiene el bloque A-38."
+  ],
+  "resumen_para_el_jefe": "La reparación intenta modificar un bloque de código (A-38) que no existe en el material proporcionado."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (36727 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso gemini2",
+  "se pidio auditar a groq y no esta disponible: reviso gemini2",
+  "se pidio auditar a groq y no esta disponible: reviso gemini2",
+  "GPT-OSS 120B (Groq) no le cabe (37671 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso gemini2",
+  "vueltas_dadas: 4"
+ ]
+}

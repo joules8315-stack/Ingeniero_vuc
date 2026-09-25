@@ -1,0 +1,68 @@
+{
+  "orden": {
+    "id": "29",
+    "titulo": "Un archivo pequeno se entrega entero",
+    "origen": "ronda perdida medida el 2026-09-20",
+    "repara": "el material se corta en trozos de 40 renglones elegidos por parecido de palabras; en archivos cortos llega la portada o un trozo suelto y el obrero no puede trabajar. Medido: tres rondas pagadas perdidas el mismo dia por esta causa",
+    "pieza": "cerebro/router.py",
+    "depende": [
+      "28",
+      "157"
+    ],
+    "modo": "IA",
+    "razon": "es la fuga de dinero mas barata de cerrar de todas las medidas",
+    "encargo": "En cerebro/router.py hay que hacer dos cambios, entregalos en la lista cambios. El archivo tiene 635 renglones; pide los tramos que te falten (lineas 351 a 356 y 630 a 635). (1) Al final del archivo, justo ANTES de la linea 634, que es if __name__ == \"__main__\": (sin espacios delante) seguida de la 635, (4 espacios) sys.exit(main()): usa esas dos lineas tal cual como texto_viejo, y como texto_nuevo la funcion nueva, dos lineas en blanco y esas dos lineas otra vez. La funcion nueva es entregar_enteros_los_cortos(pedazos, codigo): por cada archivo distinto (clave abs) que aparece en pedazos, si el archivo se puede leer y tiene 600 renglones o menos, TODOS sus pedazos se sustituyen por UNO solo, en el sitio del primero, con el archivo ENTERO: mismas claves del primer pedazo, y desde = 1, hasta = numero de renglones, texto = el archivo entero, direccion = pieza + ':1-' + hasta. Vale para cualquier archivo (.py, .html, .js...), no solo .py: la pantalla que mira Julio tambien. Si no se puede leer, o tiene mas de 600 renglones, sus pedazos se dejan igual. Si la suma de renglones de todos los pedazos pasaria de TOPE_LINEAS con ese archivo entero, ese archivo se deja igual (no se rompe el tope de siempre). Devuelve la lista nueva. (2) Llamala al FINAL del repartidor, cuando ya entraron todos los pedazos (tambien los de LO QUE EL PROBLEMA NOMBRA COMO FUNCION y LO QUE EL PROBLEMA NOMBRA, ENTRA SU PEDAZO): justo despues del bloque FILTRAR POR ARCHIVOS NOMBRADOS: sus lineas 354 y 355 son (8 espacios) if len(_pedazos_filtrados) >= 2: y (12 espacios) pedazos = _pedazos_filtrados; usa esas dos lineas tal cual como texto_viejo, y como texto_nuevo esas dos lineas, una linea en blanco y luego (4 espacios) pedazos = entregar_enteros_los_cortos(pedazos, codigo), con el comentario: UN ARCHIVO CORTO SE ENTREGA ENTERO (medido 2026-09-20: tres rondas pagadas perdidas porque al obrero le llegaron trozos sueltos de archivos cortos); va al final para que valga tambien para los archivos nombrados. La vigia es vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py",
+    "sabotaje": "memoria/sabotajes/un_archivo_pequeno_se_entrega_entero.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "5cf61169fb5fb88d",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_005631_SIN_VEREDICTO_router.py.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : GPT-OSS 120B (Groq) no le cabe (26299 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (28492 letras, aguanta 19042) -> se le salta\n  diagnostico : El material no trae el texto literal de las lineas 351-356 ni 630-635 de cerebro/router.py, que son los dos sitios exactos a sustituir.\n  toca        : cerebro/router.py funcion repartidor (bloque FILTRAR POR ARCHIVOS NOMBRADOS) y final del archivo (if __name__ == \"__main__\")\n  confianza   : baja\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T00:56:31",
+  "analisis": {
+    "que_paso": "La orden 29 mandaba editar dos sitios exactos de cerebro/router.py (lineas 351-356 y 630-635) para que un archivo corto se entregue entero. El equipo NO aprobo (veredicto \"?\"): DeepSeek dejo el pedido a medias porque su propuesta traia la marca NO_ENCONTRADO, y GPT-OSS (Groq) no cupo dos veces (26299 y 28492 letras contra un tope de 19042). No se guardo llave y no se toco codigo. El obrero mismo diagnostico: \"El material no trae el texto literal de las lineas 351-356 ni 630-635 de cerebro/router.py, que son los dos sitios exactos a sustituir\".",
+    "causa_raiz": "El paquete que arma el repartidor para editar router.py NO incluye el texto literal de las lineas que hay que sustituir. La capa 3 (cerebro/trozos.py) corta cada pieza en trozos de 40 renglones y elige los que mas se parecen EN PALABRAS al problema; los dos sitios de edicion (bloque FILTRAR y el if __name__ del final) no se parecen a las palabras del problema, asi que quedaron fuera del material. Sin ese texto_viejo el obrero no puede escribir el cambio y, por la Ley 2 (nunca inventar), marca NO_ENCONTRADO, que el auditor rechaza. Es EXACTAMENTE la fuga que la orden 29 intenta cerrar, pero se muerde la cola: el propio router.py tiene 635 renglones, supera el tope de entrega entera y por eso su edicion depende de trozos por parecido, que no cayeron sobre las lineas a tocar. La instruccion \"pide los tramos que te falten\" no funciona en una sola ronda: el obrero no tiene canal de NECESITO_LEER que le devuelva esas lineas antes de responder, y termina inventando/marcando NO_ENCONTRADO.",
+    "donde": "cerebro/trozos.py (TAM=40 y seleccion por parecido de palabras) y cerebro/router.py, funcion repartidor que arma el paquete; el fallo se manifiesta al editar por lineas cerebro/router.py.",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "cerebro/trozos.py",
+        "texto": "TAM = 40          # lineas por trozo"
+      },
+      {
+        "archivo": "cerebro/trozos.py",
+        "texto": "Nadie necesita esas 10.818: necesita 40. Esta capa corta la pieza en trozos y sabe cual trozo\nresponde al problema, con su LINEA EXACTA."
+      },
+      {
+        "archivo": "cerebro/router.py",
+        "texto": "        if len(_pedazos_filtrados) >= 2:\n            pedazos = _pedazos_filtrados"
+      },
+      {
+        "archivo": "cerebro/router.py",
+        "texto": "if __name__ == \"__main__\":\n    sys.exit(main())"
+      }
+    ],
+    "no_volver_a": "Una orden que manda sustituir lineas exactas debe traer esas lineas dentro del paquete: no se le puede pedir al obrero un texto_viejo de renglones que nunca se le entregaron.",
+    "tarea_nueva": {
+      "repara": "cuando una orden nombra tramos exactos a sustituir (formato 'lineas N a M'), el paquete no incluye esos renglones y el obrero se queda sin texto_viejo, marca NO_ENCONTRADO y se pierde la ronda",
+      "pieza": "cerebro/router.py",
+      "razon": "sin el texto literal de las lineas a tocar ninguna IA puede escribir texto_viejo; hoy toda edicion por lineas de un archivo largo (como el propio router.py) se paga y se pierde",
+      "encargo": "En el repartidor de cerebro/router.py, detectar en el texto de la orden/encargo los rangos de linea escritos como 'lineas N a M' referidos al archivo nombrado, leer esos renglones del archivo y meterlos SIEMPRE como trozo en el paquete con su direccion real archivo:N-M, aunque no se parezcan a las palabras del problema, respetando el TOPE_LINEAS. Es una deteccion deterministica de numeros, distinta de la orden 29 (que entrega enteros solo los archivos de 600 renglones o menos): esta cubre los sitios de edicion exactos en archivos de cualquier tamano.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Las citas prueban que la capa corta en trozos de 40 por parecido de palabras, pero ninguna prueba el resultado de esa seleccion (que los dos sitios de edicion quedaron fuera del material entregado, ni el texto_viejo que recibio el obrero), y las citas 3 y 4 muestran el texto literal de los sitios a tocar sin demostrar que el paquete lo omitio.",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\29_20260922_005631.json"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "orden": {
+    "id": "116",
+    "titulo": "El turno de guardado se libera si su dueno ya murio",
+    "origen": "medido el 2026-09-21 17:50 (A-43): la orden 111 murio por tope de tiempo a mitad de su guardado (16:44) y dejo tomado el turno de guardado; fila_de_commits solo lo libera a las 2 horas y todo guardado del pit quedo esperando (101 y 114 se colgaron)",
+    "repara": "un turno de guardado de un proceso muerto para todos los guardados durante 2 horas",
+    "pieza": "arnes/candado_equipo.py",
+    "depende": [
+      "115"
+    ],
+    "modo": "IA",
+    "razon": "saber si un proceso vive es un dato del sistema: programa",
+    "encargo": "En arnes/candado_equipo.py, en la funcion fila_de_commits, dentro del bloque except FileExistsError:, la linea viejo = time.time() - os.path.getmtime(ruta) > 7200 se cambia por estas lineas, con la misma sangria: primero un bloque try: que hace import psutil, lee el numero del dueno con int(open(ruta, encoding='utf-8').read().strip()) y pone muerto = not psutil.pid_exists(ese numero); except Exception: pone muerto = False (ante la duda no se libera). Despues: viejo = time.time() - os.path.getmtime(ruta) > 7200 or muerto. Es UN solo cambio en ese sitio y no se crea ninguna funcion nueva. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "hoy se libero a mano: el dueno 16004 llevaba muerto desde las 16:44; copia en memoria/rescate/fila_de_commits_trabada_16004.lock."
+  },
+  "huella": "c8a2395bd9c2499c",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_182131_RECHAZADO_candado_equipo.py.json\nOBRERO deepseek -> AUDITOR gemini4\n  aviso       : GPT-OSS 120B (Groq) no le cabe (22089 letras, aguanta 19042) -> se le salta\n  aviso       : Big Pickle no contesto en 300s (timeout)\n  aviso       : bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)\n  diagnostico : La reparación anterior introducía la librería externa psutil no declarada en el material; hay que sustituirla por una comprobación del proceso dueño sin dependencias externas, manteniendo el mismo comportamiento (ante la duda no se libera).\n  toca        : arnes/candado_equipo.py funcion fila_de_commits\n  confianza   : media\n  PREGUNTA_REQUERIDA: El material no incluye ninguna función auxiliar _proceso_vivo ni autoriza crear funciones nuevas; el encargo dice 'no se crea ninguna funcion nueva'. ¿Se permite definir _proceso_vivo dentro del mismo archivo, o debe hacerse la comprobación del PID inline sin función auxiliar?\n  VEREDICTO   : RECHAZADO\n  *** INVENTO: La función auxiliar `_proceso_vivo` no existe en el material original ni se autoriza su creación explícitamente en el encargo. El encargo especifica 'no se crea ninguna funcion nueva'. -> SE DESCARTA\n  fallo       : Se inventa la función `_proceso_vivo` que no está definida en el material ni se autoriza su creación. El encargo prohíbe explícitamente la creación de nuevas funciones.\n  fallo       : La propuesta utiliza `os.kill(pid, 0)` para comprobar si un proceso está vivo. Si bien `os.kill` es parte de la stdlib, la forma en que se implementa la comprobación a través de una función auxiliar inventada es el problema principal.\n  resumen     : La reparación inventa una función auxiliar no permitida por el encargo, lo que invalida la propuesta.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T18:21:31",
+  "analisis": {
+    "que_paso": "El equipo (deepseek escribe, gemini4 revisa) intento la orden 116 y salio RECHAZADO: no se guardo llave y no se pudo tocar codigo. Como la version anterior con psutil no cabia/estaba no declarada, deepseek propuso comprobar si el dueno del turno vive con os.kill(pid, 0) apoyandose en una funcion auxiliar nueva _proceso_vivo. gemini4 lo tumbo como INVENTO porque el propio encargo dice 'no se crea ninguna funcion nueva'. El turno de guardado muerto (dueno 16004, muerto desde 16:44) sigue sin liberarse por programa.",
+    "causa_raiz": "El encargo de la orden 116 es imposible de cumplir tal como esta escrito. Manda meter una comprobacion de si el proceso dueno sigue vivo, pero primero exige 'import psutil' (libreria que no esta en el material) y al mismo tiempo prohibe expresamente 'no se crea ninguna funcion nueva'. Sin psutil, la via stdlib limpia pide una funcion auxiliar; el obrero la creo y el auditor la rechazo por inventar. No hay ningun camino legal entre 'usa psutil (no existe)' y 'no crees funciones', asi que el rechazo estaba garantizado antes de empezar. El equipo cumplio la ley 'nunca inventar'; el que fallo fue el diseno del encargo.",
+    "donde": "arnes/candado_equipo.py, funcion fila_de_commits, bloque except FileExistsError (lineas 315-319), y el propio encargo de la orden 116.",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "arnes/candado_equipo.py",
+        "texto": "                viejo = time.time() - os.path.getmtime(ruta) > 7200"
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_182131_RECHAZADO_candado_equipo.py.json",
+        "texto": "La reparación anterior introducía la librería externa psutil no declarada en el material; hay que sustituirla por una comprobación del proceso dueño sin dependencias externas, manteniendo el mismo comportamiento (ante la duda no se libera)."
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_182131_RECHAZADO_candado_equipo.py.json",
+        "texto": "La función auxiliar `_proceso_vivo` no existe en el material original ni se autoriza su creación explícitamente en el encargo. El encargo especifica 'no se crea ninguna funcion nueva'."
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_182131_RECHAZADO_candado_equipo.py.json",
+        "texto": "El material no incluye ninguna función auxiliar _proceso_vivo ni autoriza crear funciones nuevas; el encargo dice 'no se crea ninguna funcion nueva'. ¿Se permite definir _proceso_vivo dentro del mismo archivo, o debe hacerse la comprobación del PID inline sin función auxiliar?"
+      }
+    ],
+    "no_volver_a": "Un encargo no puede pedir una comprobacion nueva y a la vez prohibir toda funcion nueva ni mandar una libreria (psutil) que no esta en el material: hay que dar el codigo inline exacto y sin dependencias externas.",
+    "tarea_nueva": {
+      "repara": "El encargo de la orden 116 se contradice: manda psutil (que no esta en el material) y prohibe crear funciones nuevas, dejando sin camino legal la comprobacion de si el dueno del turno vive.",
+      "pieza": "memoria/ORDENES.json (encargo de la orden 116)",
+      "razon": "Reescribir el encargo para que sea cumplible: comprobacion inline del PID, sin psutil, sin funcion nueva y valida en Windows (os.kill(pid,0) no sirve en win32).",
+      "encargo": "Reescribir el texto del encargo de la orden 116 para que dentro del except FileExistsError, sin crear ninguna funcion y sin importar psutil, se lea el numero del dueno con int(open(ruta, encoding='utf-8').read().strip()) y se marque 'muerto' comprobando el PID de forma compatible con Windows y con la stdlib (por ejemplo ctypes.windll.kernel32.OpenProcess), quedando: viejo = time.time() - os.path.getmtime(ruta) > 7200 or muerto; y 'ante la duda no se libera' (except -> muerto=False). Entregarlo con el texto_viejo/texto_nuevo exactos.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 300s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\116_20260921_182131.json"
+  }
+}

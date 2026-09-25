@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En comprobar_pasos, el paso 3 vigia_verde siempre exige pytest en verde, sin mirar el campo entrega_la_prueba, asi que una tarea cuyo trabajo es escribir la prueba se marca fallida aunque la prueba exista y este roja como debe.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "comprobar_pasos",
+  "texto_viejo": "    # Paso 3 vigia_verde: pytest sobre la vigia\n    vigia = orden.get(\"vigia\")\n    if not vigia:\n        return \"vigia_verde\"\n    ruta_vigia = os.path.join(carpeta_proyecto, vigia)\n    if not os.path.isfile(ruta_vigia):\n        return \"vigia_verde\"\n    resultado_vigia = subprocess.run(\n        [\"python\", \"-m\", \"pytest\", vigia],\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )\n    if resultado_vigia.returncode != 0:\n        resultado_git = subprocess.run(\n            [\"git\", \"ls-files\", vigia],\n            cwd=carpeta_proyecto,\n            capture_output=True,\n            text=True,\n        )\n        if resultado_git.stdout.strip() == \"\":\n            return \"\"\n        return \"vigia_verde\"",
+  "texto_nuevo": "    # Paso 3 vigia_verde: pytest sobre la vigia\n    vigia = orden.get(\"vigia\")\n    if not vigia:\n        return \"vigia_verde\"\n    ruta_vigia = os.path.join(carpeta_proyecto, vigia)\n    if not os.path.isfile(ruta_vigia):\n        return \"vigia_verde\"\n    resultado_vigia = subprocess.run(\n        [\"python\", \"-m\", \"pytest\", vigia],\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )\n    if orden.get(\"entrega_la_prueba\") == \"si\":\n        # La tarea ENTREGA la prueba: se comprueba al reves. La prueba tiene\n        # que existir y estar ROJA. Si ya esta verde, este paso falla, porque\n        # una prueba que pasa antes del cambio no demuestra nada.\n        if resultado_vigia.returncode == 0:\n            return \"vigia_verde\"\n        return \"\"\n    if resultado_vigia.returncode != 0:\n        resultado_git = subprocess.run(\n            [\"git\", \"ls-files\", vigia],\n            cwd=carpeta_proyecto,\n            capture_output=True,\n            text=True,\n        )\n        if resultado_git.stdout.strip() == \"\":\n            return \"\"\n        return \"vigia_verde\"",
+  "cambio": "En el paso 3 vigia_verde de comprobar_pasos, anadir justo despues de correr pytest y antes de la comprobacion de returncode != 0 un bloque que mire orden.get(\"entrega_la_prueba\") == \"si\": en ese caso, si pytest devuelve 0 (prueba verde) se devuelve \"vigia_verde\" (el paso falla), y si pytest devuelve distinto de 0 (prueba roja) se devuelve \"\" (el paso esta bien). Si la orden no trae ese campo, se sigue con la logica de hoy sin tocar nada.",
+  "codigo": "    if orden.get(\"entrega_la_prueba\") == \"si\":\n        # La tarea ENTREGA la prueba: se comprueba al reves. La prueba tiene\n        # que existir y estar ROJA. Si ya esta verde, este paso falla, porque\n        # una prueba que pasa antes del cambio no demuestra nada.\n        if resultado_vigia.returncode == 0:\n            return \"vigia_verde\"\n        return \"\"",
+  "vigia": "vigias/test_vigia_una_tarea_que_entrega_la_prueba_se_comprueba_al_reves.py (las tres pruebas rojas deben quedar verdes y las otras cuatro seguir verdes)",
+  "puede_danar": [
+   "cuerpo/capataz.py::comprobar_pasos",
+   "cuerpo/capataz.py::la_tarea_esta_terminada",
+   "cuerpo/capataz.py::bucle"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio anade el chequeo de entrega_la_prueba=si que pide el paquete, exige la prueba roja en ese caso y deja intacta la logica de hoy para las ordenes sin ese campo, sin inventar nada ni tocar vecinos: se aprueba."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (26501 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

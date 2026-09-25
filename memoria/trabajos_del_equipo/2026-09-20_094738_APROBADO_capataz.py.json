@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py, dentro de la funcion bucle, la linea que decide si el sabotaje suspendio la orden pregunta si la clave ok NO vale, y eso tambien se cumple cuando ok vale None (orden buena sin lista de sabotaje), marcandola fallida sin motivo.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "                if isinstance(sabotaje, dict) and not sabotaje.get('ok'):",
+  "texto_nuevo": "                if isinstance(sabotaje, dict) and sabotaje.get('ok') is False:",
+  "cambio": "En la unica linea que decide si el sabotaje suspendio la orden, sustituir la comprobacion de que la clave ok NO vale por la comprobacion de que la clave ok es exactamente False. La linea de mas abajo que avisa cuando salio bien se queda tal cual.",
+  "codigo": "                if isinstance(sabotaje, dict) and sabotaje.get('ok') is False:",
+  "vigia": "Las tres vigias del pit que ahora estan rojas: una orden buena sin lista de sabotaje (ok None) debe marcarse 'hecha' y no 'fallida' por sabotaje.",
+  "puede_danar": [
+   "cuerpo/capataz.py::bucle (logica de marcado de estado de las ordenes)",
+   "vigias del pit que comprueban el sabotaje de la orden"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El ajuste de la condición a `is False` corrige el diagnóstico sin romper lógica ni contratos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19988 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

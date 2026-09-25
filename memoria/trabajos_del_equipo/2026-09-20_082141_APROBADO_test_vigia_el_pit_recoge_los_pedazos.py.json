@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la tercera prueba test_sin_pieza_no_se_toca_nada en el vigia, que compruebe que una orden sin la clave pieza no devuelve nada ni toca el archivo de la casa.",
+  "archivo": "vigias/test_vigia_el_pit_recoge_los_pedazos.py",
+  "funcion": "test_el_pit_sabe_recoger_lo_frenado (al final del archivo, despues de esta prueba)",
+  "texto_viejo": "    assert 'recoger_los_pedazos' in texto, (\n        'El pit no recoge lo que el guardia aparto: cuerpo/capataz.py no nombra '\n        'recoger_los_pedazos, asi que el trabajo aprobado se queda tirado.'\n    )",
+  "texto_nuevo": "    assert 'recoger_los_pedazos' in texto, (\n        'El pit no recoge lo que el guardia aparto: cuerpo/capataz.py no nombra '\n        'recoger_los_pedazos, asi que el trabajo aprobado se queda tirado.'\n    )\n\n\ndef test_sin_pieza_no_se_toca_nada(tmp_path):\n    \"\"\"Sin saber que pieza toca la orden, no se devuelve nada a su sitio.\"\"\"\n    casa = tmp_path\n    sin_revisar = casa / 'memoria' / 'trabajos_sin_revisar'\n    sin_revisar.mkdir(parents=True)\n    (sin_revisar / 'pieza.py.FRENADO_POR_EL_GUARDIA').write_text('nuevo', encoding='utf-8')\n\n    del_equipo = casa / 'memoria' / 'trabajos_del_equipo'\n    del_equipo.mkdir(parents=True)\n    (del_equipo / 'APROBADO').write_text(\n        '{\"pieza\": \"cuerpo/pieza.py\"}', encoding='utf-8'\n    )\n\n    cuerpo = casa / 'cuerpo'\n    cuerpo.mkdir(parents=True)\n    (cuerpo / 'pieza.py').write_text('viejo', encoding='utf-8')\n\n    resultado = recoger_lo_frenado({}, str(casa))\n\n    assert isinstance(resultado, dict), (\n        'Sin saber que pieza toca la orden no se puede devolver nada a su sitio: '\n        'recoger_lo_frenado tiene que devolver un diccionario.'\n    )\n    assert resultado.get('ok') is False, (\n        'Sin saber que pieza toca la orden no se puede devolver nada a su sitio: '\n        'la clave ok tiene que valer falso.'\n    )\n    assert (cuerpo / 'pieza.py').read_text(encoding='utf-8') == 'viejo', (\n        'Sin saber que pieza toca la orden no se puede devolver nada a su sitio: '\n        'tocar algo a ciegas seria peor que no hacer nada, y cuerpo/pieza.py '\n        'tiene que seguir diciendo viejo.'\n    )",
+  "cambio": "Anadir al final del archivo, despues de la prueba test_el_pit_sabe_recoger_lo_frenado, la tercera prueba test_sin_pieza_no_se_toca_nada(tmp_path) que arma la casa de mentira (memoria/trabajos_sin_revisar con pieza.py.FRENADO_POR_EL_GUARDIA que dice nuevo, memoria/trabajos_del_equipo con APROBADO en JSON que apunta a cuerpo/pieza.py, y cuerpo/pieza.py que dice viejo), llama a recoger_lo_frenado con un diccionario de orden vacio y la ruta de la casa, y afirma que devuelve un diccionario, que ok es falso y que cuerpo/pieza.py sigue diciendo viejo.",
+  "codigo": "def test_sin_pieza_no_se_toca_nada(tmp_path):\n    \"\"\"Sin saber que pieza toca la orden, no se devuelve nada a su sitio.\"\"\"\n    casa = tmp_path\n    sin_revisar = casa / 'memoria' / 'trabajos_sin_revisar'\n    sin_revisar.mkdir(parents=True)\n    (sin_revisar / 'pieza.py.FRENADO_POR_EL_GUARDIA').write_text('nuevo', encoding='utf-8')\n\n    del_equipo = casa / 'memoria' / 'trabajos_del_equipo'\n    del_equipo.mkdir(parents=True)\n    (del_equipo / 'APROBADO').write_text(\n        '{\"pieza\": \"cuerpo/pieza.py\"}', encoding='utf-8'\n    )\n\n    cuerpo = casa / 'cuerpo'\n    cuerpo.mkdir(parents=True)\n    (cuerpo / 'pieza.py').write_text('viejo', encoding='utf-8')\n\n    resultado = recoger_lo_frenado({}, str(casa))\n\n    assert isinstance(resultado, dict), (\n        'Sin saber que pieza toca la orden no se puede devolver nada a su sitio: '\n        'recoger_lo_frenado tiene que devolver un diccionario.'\n    )\n    assert resultado.get('ok') is False, (\n        'Sin saber que pieza toca la orden no se puede devolver nada a su sitio: '\n        'la clave ok tiene que valer falso.'\n    )\n    assert (cuerpo / 'pieza.py').read_text(encoding='utf-8') == 'viejo', (\n        'Sin saber que pieza toca la orden no se puede devolver nada a su sitio: '\n        'tocar algo a ciegas seria peor que no hacer nada, y cuerpo/pieza.py '\n        'tiene que seguir diciendo viejo.'\n    )",
+  "vigia": "La propia prueba test_sin_pieza_no_se_toca_nada: al ejecutarse comprueba que recoger_lo_frenado devuelve diccionario, que ok es falso y que cuerpo/pieza.py sigue diciendo viejo cuando la orden no trae la clave pieza.",
+  "puede_danar": [
+   "cuerpo/capataz.py (recoger_lo_frenado)",
+   "vigias/test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "vigias/test_vigia_el_juez_busca_su_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: el nombre exacto del archivo JSON aprobado dentro de memoria/trabajos_del_equipo no viene en el material; se asume 'APROBADO' tal como lo describe el encargo, pero conviene confirmar el nombre real que usa recoger_lo_frenado.",
+   "PREGUUNTA_REQUERIDA: el nombre exacto de la clave del diccionario de orden que recoger_lo_frenado espera (el encargo dice 'sin la clave pieza'), y si el segundo parametro es la ruta como str o como Path, no vienen en el material."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "test_vigia_el_juez_busca_su_prueba.py",
+   "test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La prueba añadida cumple el diagnóstico, no introduce código inexistente ni rompe contratos ni vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (26032 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

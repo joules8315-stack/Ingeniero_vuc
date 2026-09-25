@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Faltan al final del archivo de vigia las dos pruebas nuevas que pide el encargo, copiando el estilo de test_si_armar_sabotaje_devuelve_true_se_corre_la_orden_una_vez.",
+  "archivo": "vigias/test_vigia_el_pit_arma_el_sabotaje_que_falta.py",
+  "funcion": "final del archivo (tras test_si_armar_sabotaje_devuelve_true_se_corre_la_orden_una_vez)",
+  "texto_viejo": "    assert len(llamadas) == 1\n    assert isinstance(resultado, dict)\n    assert resultado.get('ok') is True",
+  "texto_nuevo": "    assert len(llamadas) == 1\n    assert isinstance(resultado, dict)\n    assert resultado.get('ok') is True\n\n\ndef test_una_orden_sin_ruta_de_sabotaje_recibe_una_y_se_sabotea(tmp_path, monkeypatch):\n    llamadas = []\n    ordenes = []\n\n    def correr_falso(palabras):\n        llamadas.append(palabras)\n        return 0\n\n    def armar_falso(orden, raiz=None):\n        ordenes.append(orden)\n        return True\n\n    monkeypatch.setattr(capataz, 'correr_orden_del_sistema', correr_falso)\n    monkeypatch.setattr(capataz, 'armar_sabotaje', armar_falso)\n\n    orden = {'id': '9', 'pieza': 'pieza.py', 'vigia': 'vigias/test_x.py'}\n    resultado = capataz.sabotear_la_orden(orden)\n\n    assert len(ordenes) == 1\n    assert ordenes[0].get('sabotaje') == 'memoria/sabotajes/orden_9.json'\n    assert len(llamadas) == 1\n    assert resultado.get('ok') is True\n\n\ndef test_una_orden_que_cambia_su_propia_prueba_no_se_sabotea(tmp_path, monkeypatch):\n    llamadas = []\n    ordenes = []\n\n    def correr_falso(palabras):\n        llamadas.append(palabras)\n        return 0\n\n    def armar_falso(orden, raiz=None):\n        ordenes.append(orden)\n        return True\n\n    monkeypatch.setattr(capataz, 'correr_orden_del_sistema', correr_falso)\n    monkeypatch.setattr(capataz, 'armar_sabotaje', armar_falso)\n\n    orden = {'id': '9', 'pieza': 'vigias/test_x.py', 'vigia': 'vigias/test_x.py'}\n    resultado = capataz.sabotear_la_orden(orden)\n\n    assert ordenes == []\n    assert llamadas == []\n    assert resultado.get('ok') is None",
+  "cambio": "Agregar al final del archivo dos funciones de prueba nuevas: test_una_orden_sin_ruta_de_sabotaje_recibe_una_y_se_sabotea y test_una_orden_que_cambia_su_propia_prueba_no_se_sabotea, copiando el estilo de test_si_armar_sabotaje_devuelve_true_se_corre_la_orden_una_vez, con armar_falso guardando la orden recibida en una lista.",
+  "codigo": "def test_una_orden_sin_ruta_de_sabotaje_recibe_una_y_se_sabotea(tmp_path, monkeypatch):\n    llamadas = []\n    ordenes = []\n\n    def correr_falso(palabras):\n        llamadas.append(palabras)\n        return 0\n\n    def armar_falso(orden, raiz=None):\n        ordenes.append(orden)\n        return True\n\n    monkeypatch.setattr(capataz, 'correr_orden_del_sistema', correr_falso)\n    monkeypatch.setattr(capataz, 'armar_sabotaje', armar_falso)\n\n    orden = {'id': '9', 'pieza': 'pieza.py', 'vigia': 'vigias/test_x.py'}\n    resultado = capataz.sabotear_la_orden(orden)\n\n    assert len(ordenes) == 1\n    assert ordenes[0].get('sabotaje') == 'memoria/sabotajes/orden_9.json'\n    assert len(llamadas) == 1\n    assert resultado.get('ok') is True\n\n\ndef test_una_orden_que_cambia_su_propia_prueba_no_se_sabotea(tmp_path, monkeypatch):\n    llamadas = []\n    ordenes = []\n\n    def correr_falso(palabras):\n        llamadas.append(palabras)\n        return 0\n\n    def armar_falso(orden, raiz=None):\n        ordenes.append(orden)\n        return True\n\n    monkeypatch.setattr(capataz, 'correr_orden_del_sistema', correr_falso)\n    monkeypatch.setattr(capataz, 'armar_sabotaje', armar_falso)\n\n    orden = {'id': '9', 'pieza': 'vigias/test_x.py', 'vigia': 'vigias/test_x.py'}\n    resultado = capataz.sabotear_la_orden(orden)\n\n    assert ordenes == []\n    assert llamadas == []\n    assert resultado.get('ok') is None",
+  "vigia": "Correr pytest sobre vigias/test_vigia_el_pit_arma_el_sabotaje_que_falta.py y comprobar que las dos pruebas nuevas pasan: la primera verifica que armar_falso recibe sabotaje == 'memoria/sabotajes/orden_9.json', se corre una vez y ok es True; la segunda verifica que armar_falso no se llama, no se corre nada y ok es None.",
+  "puede_danar": [
+   "cuerpo/capataz.py (sabotear_la_orden, armar_sabotaje, correr_orden_del_sistema)",
+   "cuerpo/codex.py (importado desde cuerpo/privacidad.py)"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "capataz.py",
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Las dos pruebas nuevas son exactamente las que pide el encargo (mismas funciones falsas, armar_falso guardando la orden en una lista, asserts calcados al pie de la letra), se agregan al final sin tocar nada existente, así que el cambio cumple lo pedido y no rompe vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (26501 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

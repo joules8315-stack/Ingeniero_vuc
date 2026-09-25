@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "sin_ruido borra con re.sub(r\"#.*$\", \"\", linea) tambien los numerales que estan DENTRO de cadenas entre comillas, y un cambio real dentro de esa cadena se rechaza como HUMO (freno en falso nº12, orden de Julio A-38 punto 3).",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "sin_ruido",
+  "texto_viejo": "def sin_ruido(texto):\n    \"\"\"Quita comentarios, textos entre triples comillas y lineas en blanco.\n\n    La misma idea que ya usan skills/cazar_el_humo.py y cuerpo/aplicador.py: no se duplica el\n    criterio, se reusa. Sirve para comparar dos textos por lo que de verdad hacen.\n    \"\"\"\n    t = str(texto or \"\")\n    t = re.sub(r'(?m)^\\s*[rRbBuUfF]*\"\"\"(?:.|\\n)*?\"\"\"', \" \", t)\n    t = re.sub(r\"(?m)^\\s*[rRbBuUfF]*'''(?:.|\\n)*?'''\", \" \", t)\n    fuera = []\n    for linea in t.splitlines():\n        linea = re.sub(r\"#.*$\", \"\", linea).strip()\n        if linea:\n            fuera.append(linea)\n    return \"\\n\".join(fuera)",
+  "texto_nuevo": "def _quitar_comentario(linea):\n    \"\"\"Corta la linea en el primer numeral que este FUERA de comillas.\n\n    Recorre caracter por caracter llevando si esta dentro de comillas simples o dobles,\n    respetando la barra invertida que escapa la siguiente letra. Un numeral dentro de una\n    cadena NO es un comentario y no se toca (freno en falso nº12, orden de Julio A-38 punto 3).\n    \"\"\"\n    dentro = None\n    i = 0\n    while i < len(linea):\n        c = linea[i]\n        if c == \"\\\\\" and dentro is not None:\n            i += 2\n            continue\n        if dentro is None:\n            if c == \"#\":\n                return linea[:i]\n            if c == \"'\" or c == '\"':\n                dentro = c\n        elif c == dentro:\n            dentro = None\n        i += 1\n    return linea\n\n\ndef sin_ruido(texto):\n    \"\"\"Quita comentarios, textos entre triples comillas y lineas en blanco.\n\n    La misma idea que ya usan skills/cazar_el_humo.py y cuerpo/aplicador.py: no se duplica el\n    criterio, se reusa. Sirve para comparar dos textos por lo que de verdad hacen.\n    \"\"\"\n    t = str(texto or \"\")\n    t = re.sub(r'(?m)^\\s*[rRbBuUfF]*\"\"\"(?:.|\\n)*?\"\"\"', \" \", t)\n    t = re.sub(r\"(?m)^\\s*[rRbBuUfF]*'''(?:.|\\n)*?'''\", \" \", t)\n    fuera = []\n    for linea in t.splitlines():\n        linea = _quitar_comentario(linea).strip()\n        if linea:\n            fuera.append(linea)\n    return \"\\n\".join(fuera)",
+  "cambio": "Agregar la funcion nueva _quitar_comentario(linea) justo antes de sin_ruido, y en el bucle de sin_ruido sustituir la linea que hace re.sub(r\"#.*$\", \"\", linea).strip() por _quitar_comentario(linea).strip(). Nada mas cambia.",
+  "codigo": "def _quitar_comentario(linea):\n    \"\"\"Corta la linea en el primer numeral que este FUERA de comillas.\n\n    Recorre caracter por caracter llevando si esta dentro de comillas simples o dobles,\n    respetando la barra invertida que escapa la siguiente letra. Un numeral dentro de una\n    cadena NO es un comentario y no se toca (freno en falso nº12, orden de Julio A-38 punto 3).\n    \"\"\"\n    dentro = None\n    i = 0\n    while i < len(linea):\n        c = linea[i]\n        if c == \"\\\\\" and dentro is not None:\n            i += 2\n            continue\n        if dentro is None:\n            if c == \"#\":\n                return linea[:i]\n            if c == \"'\" or c == '\"':\n                dentro = c\n        elif c == dentro:\n            dentro = None\n        i += 1\n    return linea",
+  "vigia": "vigias/test_vigia_el_humo_no_confunde_cadenas.py debe pasar: un cambio real dentro de una cadena con numeral ya no se rechaza como HUMO, y un comentario de verdad sigue quitandose.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el requerimiento sin inventar, corrige el problema y no afecta a otros módulos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22878 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

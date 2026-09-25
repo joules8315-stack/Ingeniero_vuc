@@ -1,0 +1,68 @@
+{
+  "orden": {
+    "id": "94",
+    "titulo": "La vigia de que el pit usa el vigilante al lanzar cada tarea",
+    "origen": "directriz de Julio A-44 (2026-09-21)",
+    "repara": "sin conectar, el vigilante existe y nadie lo usa",
+    "pieza": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+    "depende": [
+      "93"
+    ],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py. Vigila la funcion lanzar_al_equipo de cuerpo/capataz.py. Arriba: import subprocess, from cuerpo import capataz, from cuerpo import vigilante. Con monkeypatch cambia subprocess.Popen por una clase falsa cuyo communicate devuelve ('salida', '') y cuyo returncode es 0, y cambia vigilante.esperar por una funcion falsa que apunta sus argumentos y devuelve lo que le digas. Pruebas, cada una con assert: (1) si esperar devuelve 'termino', lanzar_al_equipo('ingeniero', {'id': '1', 'encargo': 'x'}) devuelve un dict cuya salida contiene salida, y esperar se llamo una vez con limite igual a capataz.LIMITE_TAREA_SEGUNDOS; (2) si esperar devuelve 'colgada', la salida empieza por 'COLGADA:'; (3) capataz.tipo_de_fallo('COLGADA: sin avance') devuelve 'colgada'. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "d95500d9db4de60d",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_213743_APROBADO_test_vigia_el_pit_vigila_la_tarea_que_se_demora.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (23582 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : El material muestra que capataz.lanzar_al_equipo usa subprocess.run (no Popen) y no llama a vigilante.esperar, pero la tarea pide crear la vigia con monkeypatch de subprocess.Popen y vigilante.esperar, asi que la vigia se escribe segun lo pedido y fallara si el codigo real no expone esos puntos.\n  toca        : vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py funcion ?\n  confianza   : baja\n  VEREDICTO   : APROBADO\n  resumen     : La vigia hace exactamente lo que pedia el encargo: clase Popen falsa con communicate('salida','') y returncode 0, esperar falsa que apunta argumentos, y las tres pruebas con assert, sin tocar ningun otro archivo.\n\nAPLICADO en disco (lo escribio el equipo): vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   16 failed, 266 passed, 1 skipped in 75.37s (0:01:15)\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: apartada (nueva): vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py\nLLAVE GUARDADA: se puede escribir en 268 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T21:39:01",
+  "analisis": {
+    "que_paso": "El equipo (deepseek escribe, bigpickle revisa) creo la vigia nueva vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py exactamente como pedia el encargo y la aprobo (VEREDICTO APROBADO, confianza baja). Al ir a guardar, el guardia corrio las pruebas y encontro 16 rojas (16 failed, 266 passed), asi que NO dejo guardar y se volvio atras: la vigia quedo apartada en memoria/trabajos_sin_revisar y archivada. Nada se guardo.",
+    "causa_raiz": "La orden 94 pide una vigia que \"nace roja\": prueba que lanzar_al_equipo use subprocess.Popen y llame a vigilante.esperar con limite=capataz.LIMITE_TAREA_SEGUNDOS, y que tipo_de_fallo reconozca 'COLGADA:'. Pero el codigo real todavia NO tiene esos enganches: lanzar_al_equipo usa subprocess.run (no Popen), nunca llama a vigilante.esperar, no existe capataz.LIMITE_TAREA_SEGUNDOS, y tipo_de_fallo no maneja 'COLGADA:'. Ese cambio es tarea de la orden 93 (de la que 94 depende) y aun no esta hecho. A la vez, arnes/guardia_de_guardado.py prohibe guardar con cualquier prueba roja. El metodo de \"vigia primero, roja a proposito\" choca de frente con el candado que exige verde para guardar: la vigia nunca podra entrar al disco mientras nazca roja. Es una contradiccion de diseno entre el orden de los encargos (93 antes que 94) y la regla del guardia.",
+    "donde": "cuerpo/capataz.py (funcion lanzar_al_equipo, linea 10-50, y tipo_de_fallo, linea 248-260) frente a cuerpo/vigilante.py (funcion esperar, linea 15) y arnes/guardia_de_guardado.py (bloqueo por pruebas rojas, linea 395).",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "        resultado = subprocess.run("
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "def tipo_de_fallo(salida):\n    \"\"\"Devuelve de que tipo fue el fallo, mirando el texto de salida.\"\"\"\n    if not isinstance(salida, str):\n        return \"otro\""
+      },
+      {
+        "archivo": "cuerpo/vigilante.py",
+        "texto": "def esperar(proceso, limite, sin_avance, tope_duro, avance,"
+      },
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "\nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n"
+      }
+    ],
+    "no_volver_a": "No legislar una vigia que \"nace roja\" mientras el guardia prohiba guardar en rojo: primero se hace verde el codigo (o se entrega junto), y recien despues entra la vigia.",
+    "tarea_nueva": {
+      "repara": "la contradiccion: la orden 93 (el cambio de codigo) no esta hecha, pero la orden 94 exige una vigia que solo pasa si 93 ya existe, y el guardia no deja guardar rojo",
+      "pieza": "cuerpo/capataz.py",
+      "razon": "hacer el enganche real ANTES o JUNTO con la vigia, para que la vigia nazca verde en una sola guardada y el guardia la deje entrar",
+      "encargo": "En cuerpo/capataz.py conectar lanzar_al_equipo con el vigilante: lanzar la tarea con subprocess.Popen, esperarla con vigilante.esperar usando el nuevo capataz.LIMITE_TAREA_SEGUNDOS, y si esperar devuelve 'colgada' marcar la salida con prefijo 'COLGADA:'; ademas hacer que tipo_de_fallo reconozca 'COLGADA:' y devuelva 'colgada'. Entregar este cambio de codigo JUNTO con la vigia vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py en una sola guardada verde, de modo que las 3 pruebas pasen y el guardia deje guardar. No dejar la vigia roja en disco.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "citas",
+    "motivo": "citas que no existen: [{\"archivo\": \"arnes/guardia_de_guardado.py\", \"texto\": \"\\nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\\n\", \"por_que\": \"no aparece literal\"}]",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\94_20260921_213901.json"
+  }
+}

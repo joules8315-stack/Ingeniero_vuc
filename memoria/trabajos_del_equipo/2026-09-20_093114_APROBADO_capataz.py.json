@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Faltan en cuerpo/capataz.py las dos funciones nuevas correr_orden_del_sistema y sabotear_la_orden, que deben ir justo antes de recoger_lo_frenado.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "recoger_lo_frenado",
+  "texto_viejo": "def recoger_lo_frenado(orden, raiz):",
+  "texto_nuevo": "def correr_orden_del_sistema(palabras):\n    \"\"\"Corre una orden del sistema y devuelve el numero con el que termino.\n\n    Existe aparte para que una prueba pueda ponerla en su sitio sin correr\n    nada de verdad.\n    \"\"\"\n    import subprocess\n    carpeta = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    resultado = subprocess.run(palabras, cwd=carpeta, capture_output=True, text=True)\n    return resultado.returncode\n\n\ndef sabotear_la_orden(orden):\n    \"\"\"Corre el sabotaje de una orden y comprueba por programa que la vigia de verdad protege.\n\n    Despues de cada cambio hay que comprobar por programa que la vigia de\n    verdad protege. Eso lo hacia alguien a mano (orden A-39 punto 2 de Julio,\n    del 2026-09-20).\n    \"\"\"\n    try:\n        vigia = orden.get('vigia') if isinstance(orden, dict) else None\n        sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None\n        if not vigia or not sabotaje:\n            return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}\n        palabras = [sys.executable, 'arnes/sabotaje.py', vigia, sabotaje]\n        codigo = correr_orden_del_sistema(palabras)\n        if codigo == 0:\n            return {'ok': True, 'razon': 'el sabotaje se corrio y la vigia freno'}\n        return {'ok': False, 'razon': 'el sabotaje se corrio y la vigia NO freno, o sea que esa vigia no protege de verdad'}\n    except Exception as e:\n        return {'ok': False, 'razon': str(e)}\n\n\ndef recoger_lo_frenado(orden, raiz):",
+  "cambio": "Insertar las dos funciones nuevas correr_orden_del_sistema y sabotear_la_orden justo antes de la funcion recoger_lo_frenado, sin tocar nada mas.",
+  "codigo": "def correr_orden_del_sistema(palabras):\n    \"\"\"Corre una orden del sistema y devuelve el numero con el que termino.\n\n    Existe aparte para que una prueba pueda ponerla en su sitio sin correr\n    nada de verdad.\n    \"\"\"\n    import subprocess\n    carpeta = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    resultado = subprocess.run(palabras, cwd=carpeta, capture_output=True, text=True)\n    return resultado.returncode\n\n\ndef sabotear_la_orden(orden):\n    \"\"\"Corre el sabotaje de una orden y comprueba por programa que la vigia de verdad protege.\n\n    Despues de cada cambio hay que comprobar por programa que la vigia de\n    verdad protege. Eso lo hacia alguien a mano (orden A-39 punto 2 de Julio,\n    del 2026-09-20).\n    \"\"\"\n    try:\n        vigia = orden.get('vigia') if isinstance(orden, dict) else None\n        sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None\n        if not vigia or not sabotaje:\n            return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}\n        palabras = [sys.executable, 'arnes/sabotaje.py', vigia, sabotaje]\n        codigo = correr_orden_del_sistema(palabras)\n        if codigo == 0:\n            return {'ok': True, 'razon': 'el sabotaje se corrio y la vigia freno'}\n        return {'ok': False, 'razon': 'el sabotaje se corrio y la vigia NO freno, o sea que esa vigia no protege de verdad'}\n    except Exception as e:\n        return {'ok': False, 'razon': str(e)}",
+  "vigia": "vigias/test_vigia_el_sabotaje_es_programa.py, que comprueba que el sabotaje lo corre un programa y no una mano.",
+  "puede_danar": [
+   "arnes/sabotaje.py",
+   "vigias/test_vigia_el_sabotaje_es_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_el_sabotaje_es_programa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, inserta las dos funciones solicitadas sin inventar ni romper a los vecinos."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,62 @@
+{
+  "orden": {
+    "id": "100",
+    "titulo": "La vigia de que Big Pickle caido no se espera en cada vuelta de la misma tarea",
+    "origen": "medido el 2026-09-21 14:12 (ley A-43): la orden 92 murio por tope de tiempo; en cada una de sus 3 vueltas se espero a Big Pickle 300 s y fallo, y el relevo contestaba en 5 s. 3 x 300 = 900 s, el tope",
+    "repara": "auditar vuelve a llamar a Big Pickle en cada vuelta aunque ya fallo en esa misma tarea",
+    "pieza": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py. Vigila la funcion auditar de cuerpo/obrero.py con auditor='bigpickle'. Arriba: from cuerpo import obrero, from cuerpo import bigpickle. Mira en vigias/ como llaman a obrero.auditar las vigias que tienen bigpickle en el nombre y copia esa forma de llamarla. Con monkeypatch: pon el atributo _bp_caido de obrero.auditar en False (monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False)); bigpickle.preguntar cuenta sus llamadas y devuelve ('', ['Big Pickle no contesto en 300s (timeout)']); obrero._preguntar_con_relevo devuelve ('{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}', 'groq', []). Pruebas, cada una con assert: (1) llamando dos veces seguidas a obrero.auditar, bigpickle.preguntar se llamo UNA sola vez; (2) si bigpickle.preguntar devuelve ('{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}', []), dos llamadas seguidas llaman a bigpickle.preguntar DOS veces, porque no fallo. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "aec1b1029bfb5294",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_144834_RECHAZADO_test_vigia_big_pickle_caido_no_se_espera_dos_veces.py.json\nOBRERO deepseek -> AUDITOR groq\n  aviso       : GPT-OSS 120B (Groq) no le cabe (38565 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (38745 letras, aguanta 19042) -> se le salta\n  diagnostico : Falta ver como llaman a obrero.auditar las vigias existentes con bigpickle en el nombre para copiar esa forma exacta de llamarla.\n  toca        : vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py funcion ?\n  confianza   : baja\n  VEREDICTO   : RECHAZADO\n  *** INVENTO: Se solicita leer el archivo vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py que no existe en el material -> SE DESCARTA\n  fallo       : No se entrega código que implemente la llamada a obrero.auditar según el diagnóstico\n  fallo       : Se inventa un recurso (archivo inexistente) para “copiar” la forma de llamada\n  fallo       : Se viola la regla del paquete que prohíbe abrir o crear archivos no especificados sin petición formal\n  resumen     : Rechazado: inventa un archivo inexistente y no entrega la implementación requerida.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T14:48:34",
+  "analisis": {
+    "que_paso": "La orden 100 pidio CREAR por IA la vigia nueva vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py. El obrero (deepseek) no entrego codigo y el equipo la marco RECHAZADO. En su diagnostico dijo que le faltaba ver como llaman a obrero.auditar las vigias existentes con bigpickle en el nombre para copiar esa forma exacta; DeepSeek dejo el pedido a mitad (sin texto_nuevo) y al final se le marco INVENTO por pedir leer un archivo que no existe en el material.",
+    "causa_raiz": "El encargo mandaba al obrero \"Mira en vigias/ como llaman a obrero.auditar las vigias que tienen bigpickle en el nombre y copia esa forma de llamarla\", pero esos archivos de ejemplo (p.ej. vigias/test_vigia_si_bigpickle_cae_revisa_otro.py, que trae la forma exacta obrero.auditar('', {'archivo':'x.py'}, auditor='bigpickle', evitar='deepseek')) NUNCA viajaron dentro del material del paquete de creacion, y por ley el obrero no puede abrirlos por su cuenta. Sin la forma de llamada delante, no pudo escribir la vigia; el equipo, correctamente, se nego a inventar. Es un fallo de fragmentacion: el paquete no trajo la pieza completa que el propio encargo exigia leer.",
+    "donde": "Encargo de la orden 100 (memoria/ORDENES.json), material del paquete en modo --crear (ANALISTA). El trozo que faltaba y que el encargo referenciaba existe en vigias/test_vigia_si_bigpickle_cae_revisa_otro.py:16-17 y :39-41.",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "vigias/test_vigia_si_bigpickle_cae_revisa_otro.py",
+        "texto": "from cuerpo import obrero, cuotas  # noqa: E402\nfrom cuerpo import bigpickle as _bp  # noqa: E402"
+      },
+      {
+        "archivo": "vigias/test_vigia_si_bigpickle_cae_revisa_otro.py",
+        "texto": "    auditoria, quien, avisos = obrero.auditar(\n        '', {'archivo': 'x.py'}, auditor='bigpickle', evitar='deepseek'\n    )"
+      },
+      {
+        "archivo": "CLAUDE.md",
+        "texto": "Si falta algo, se PIDE (formato `NECESITO_LEER` al final del paquete). No se abre por cuenta propia."
+      }
+    ],
+    "no_volver_a": "Un encargo de crear por IA nunca manda al obrero a \"mirar\" otro archivo: trae LITERAL, dentro del propio encargo, el trozo a copiar, porque el obrero solo puede usar el material del paquete.",
+    "tarea_nueva": {
+      "repara": "reescribir el encargo de la orden 100 para que traiga LITERAL el ejemplo de como se llama a obrero.auditar con auditor='bigpickle', quitando la instruccion 'Mira en vigias/... y copia esa forma de llamarla' que obliga a leer un archivo que no viaja en el material",
+      "pieza": "memoria/ORDENES.json (encargo de la orden 100)",
+      "razon": "el obrero solo puede usar el material del paquete; si el ejemplo no viaja dentro del encargo, nunca lo tendra y volvera a quedar sin la forma de llamada, sin escribir codigo",
+      "encargo": "En el encargo de la orden 100 sustituir la frase 'Mira en vigias/ como llaman a obrero.auditar las vigias que tienen bigpickle en el nombre y copia esa forma de llamarla' por el bloque LITERAL copiado de vigias/test_vigia_si_bigpickle_cae_revisa_otro.py: importes 'from cuerpo import obrero, cuotas' y 'from cuerpo import bigpickle as _bp', y la llamada 'auditoria, quien, avisos = obrero.auditar(\"\", {\"archivo\": \"x.py\"}, auditor=\"bigpickle\", evitar=\"deepseek\")'. No cambiar el objetivo ni las pruebas de la vigia, solo hacer el encargo autosuficiente.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 300s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\100_20260921_144834.json"
+  }
+}

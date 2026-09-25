@@ -1,0 +1,28 @@
+{
+  "orden": {
+    "id": "30",
+    "titulo": "La vigia de que las palabras de maquina no entran como orden de Julio",
+    "origen": "26 renglones de maquina recogidos como ordenes de Julio la noche del 2026-09-20",
+    "repara": "el vigilante de legislar sigue recogiendo frases de los encargos y de los informes del revisor. Esta noche fueron 26, y hubo que resolverlas a mano una por una antes de poder cerrar. Diez de ellas traen palabras que SOLO usa la maquina y que Julio no escribe nunca, porque no es tecnico y tiene prohibido que se le hable asi",
+    "pieza": "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py. Vigila la funcion parece_una_orden de arnes/candado_legislar.py. Prueba con textos de verdad recogidos el 2026-09-20 que un renglon que trae palabras de programador (monkeypatch, subprocess, TypeError, assert, tmp_path, un nombre seguido de parentesis vacios, o una ruta acabada en punto py) NO se toma por una orden de Julio. Y prueba, con frases de verdad de Julio, que esas SI siguen entrando: esa mitad es la que de verdad importa, porque recoger de mas se limpia y perder una orden suya no. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+    "entrega_la_prueba": "si",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "la vigia entro VERDE sin que existiera su arreglo: sus cuatro pruebas hacian return False en vez de assert, y en pytest eso pasa siempre. Se esta corrigiendo. De aqui salen las ordenes 44 y 45.",
+    "crear": true
+  },
+  "huella": "f20ab37816432009",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_102407_DUDOSO_test_vigia_las_palabras_de_maquina_no_son_ordenes.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (19274 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 3\n  diagnostico : La vigia nueva debe probar que `parece_una_orden` rechaza renglones con palabras de programador y acepta frases reales de Julio; el material solo trae el encabezado del archivo a crear, asi que lo escribo entero apoyandome en la firma y el comportamiento documentado de `parece_una_orden`.\n  toca        : vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py funcion ?\n  confianza   : media\n  VEREDICTO   : DUDOSO\n  fallo       : El test extra `test_texto_vacio_o_none_no_es_orden` afirma que `parece_una_orden('')`, `parece_una_orden(None)` y `parece_una_orden('   ')` devuelven `False`. El encargo no pide nada de eso y el 'comprobado por programa' solo confirma que los nombres existen y el archivo carga, NO que esas tres afirmaciones pasen. Si la funcion lanza con None o devuelve otra cosa, la vigia queda roja y el candado frena por nada, justo lo que esta vigia quiere impedir.\n  fallo       : El encargo exige 'textos de verdad recogidos el 2026-09-20', pero el material no trae esos textos; se afirma 'Textos recogidos el 2026-09-20' y 'vienen de material real del 2026-09-20' sin respaldo. No se puede confirmar que las frases (ni las de maquina ni las de Julio) sean las reales recogidas, y esa mitad es la que 'de verdad importa'.\n  fallo       : Cambia mas de lo necesario: anade cobertura de vacio/None/espacios que el encargo no pidio, sin estar probada ejecutando.\n  resumen     : La vigia nueva hace lo pedido y no rompe a nadie, pero mete tres afirmaciones sobre None y vacio que nadie ejecuto y que podrian dejar la vigia roja en falso, y sus frases 'reales' no estan respaldadas por el material: falta correrla y confirmar los textos antes de darla por buena.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T10:43:51"
+}

@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El bloque de la orden 152 en revisar() no filtra los fallos 'NO HACE LO QUE SE PIDIO' cuando la palabra del encargo aparece en alguno de los trozos, por lo que se rechazan propuestas validas.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        for palabra in set(re.findall(r\"\\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\\b\", limpia)):\n            if _creando_archivo_nuevo:\n                break\n            if contenido_archivo is not None and palabra not in contenido_archivo:\n                continue\n            if palabra not in viejo and palabra not in nuevo:\n                fallos.append(\"NO HACE LO QUE SE PIDIO: el encargo habla de '%s' y esa palabra \"\n                              \"no aparece ni en el texto viejo ni en el nuevo.\" % palabra)",
+  "texto_nuevo": "        for palabra in set(re.findall(r\"\\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\\b\", limpia)):\n            if _creando_archivo_nuevo:\n                break\n            if contenido_archivo is not None and palabra not in contenido_archivo:\n                continue\n            if palabra not in viejo and palabra not in nuevo:\n                fallos.append(\"NO HACE LO QUE SE PIDIO: el encargo habla de '%s' y esa palabra \"\n                              \"no aparece ni en el texto viejo ni en el nuevo.\" % palabra)\n\n        # la palabra del encargo basta con que este en alguno de los trozos (medido 2026-09-22, orden 95)\n        juntos = \" \".join([str(t.get(\"texto_viejo\") or \"\") + \" \" + str(t.get(\"texto_nuevo\") or \"\") for t in trozos])\n        todos = [f for f in todos if not (f.startswith('NO HACE LO QUE SE PIDIO') and f.split(chr(39))[1] in juntos)]",
+  "cambio": "Agregar, justo antes del return todos del bloque de la orden 152, el calculo de 'juntos' (union de texto_viejo y texto_nuevo de todos los trozos) y el filtrado de fallos 'NO HACE LO QUE SE PIDIO' cuya palabra citada aparezca en juntos, con el comentario indicado.",
+  "codigo": "        # la palabra del encargo basta con que este en alguno de los trozos (medido 2026-09-22, orden 95)\n        juntos = \" \".join([str(t.get(\"texto_viejo\") or \"\") + \" \" + str(t.get(\"texto_nuevo\") or \"\") for t in trozos])\n        todos = [f for f in todos if not (f.startswith('NO HACE LO QUE SE PIDIO') and f.split(chr(39))[1] in juntos)]",
+  "vigia": "vigias/test_vigia_el_revisor_de_programa_revisa_cada_trozo.py debe seguir verde: una propuesta con varios trozos donde la palabra del encargo aparece en alguno de ellos no debe generar el fallo 'NO HACE LO QUE SE PIDIO'.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_revisor_de_programa_revisa_cada_trozo.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_el_texto_viejo_tiene_que_existir.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_el_revisor_de_programa_revisa_cada_trozo.py",
+   "test_vigia_el_texto_viejo_tiene_que_existir.py",
+   "test_vigia_revisor_de_programa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "test_vigia_el_revisor_de_programa_revisa_cada_trozo.py (fuera del paquete) vigila exactamente este camino: hay que confirmarlo verde al aplicar, aunque el filtro solo retira fallos 'NO HACE LO QUE SE PIDIO' y ningun trozo que ya este sano produce ese mensaje",
+   "el filtro usa f.split(chr(39))[1]: es seguro hoy porque el unico productor de ese mensaje en el material es el formato con comilla simple, pero si manana otro productor emitiera 'NO HACE LO QUE SE PIDIO' sin apostrofe la linea reventaria con IndexError"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo que se pidio: filtra los fallos 'NO HACE LO QUE SE PIDIO' cuando la palabra del encargo ya aparece en algun trozo, usa solo nombres que existen en el archivo, no toca vecinos y no inventa nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (23288 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (24030 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La segunda prueba usa RUTA_RELATIVA_ESTE_ARCHIVO como vigia, apuntandose a si misma y colgando al guardia por tiempo.",
+  "archivo": "vigias/test_vigia_una_prueba_que_no_existe_no_vale.py",
+  "funcion": "test_una_prueba_que_existe_y_pasa_no_se_cuenta_como_fallo",
+  "texto_viejo": "        'vigia': RUTA_RELATIVA_ESTE_ARCHIVO,",
+  "texto_nuevo": "        'vigia': 'vigias/test_vigia_el_pit_recoge_los_pedazos.py',",
+  "cambio": "En la segunda prueba, sustituir la clave vigia que apunta a RUTA_RELATIVA_ESTE_ARCHIVO por el texto fijo 'vigias/test_vigia_el_pit_recoge_los_pedazos.py'. El resto de la segunda prueba y la primera prueba no se tocan.",
+  "codigo": "        'vigia': 'vigias/test_vigia_el_pit_recoge_los_pedazos.py',",
+  "vigia": "vigias/test_vigia_el_pit_recoge_los_pedazos.py (existe, verde, menos de un segundo)",
+  "puede_danar": [
+   "vigias/test_vigia_una_prueba_que_no_existe_no_vale.py",
+   "cuerpo/capataz.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "capataz.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El reemplazo de RUTA_RELATIVA_ESTE_ARCHIVO por la ruta fija elimina el bucle infinito, respeta la ubicación indicada y no viola contratos ni afecta a otros archivos."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 2"
+ ]
+}

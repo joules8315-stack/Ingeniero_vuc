@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El filtro del material del obrero corta siempre con el tope de los gratis (TOPE_GRATIS - 2690) aunque quien escribe sea DeepSeek, que aguanta mucho mas; hay que usar la capacidad real del generador elegido con techo de 40.000 letras.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_preguntar_con_relevo",
+  "texto_viejo": "tope=TOPE_GRATIS - 2690)",
+  "texto_nuevo": "tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)",
+  "cambio": "Sustituir el argumento literal 'tope=TOPE_GRATIS - 2690)' por 'tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)'. Un solo cambio, no tocar nada mas.",
+  "codigo": "tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)",
+  "vigia": "Una prueba que llame a _preguntar_con_relevo con generador='deepseek' y compruebe que el tope usado es min(max(cuotas._capacidad('deepseek'), TOPE_GRATIS), 40000) - 2690, y que sin generador sigue siendo TOPE_GRATIS - 2690.",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "cuerpo/cuotas.py",
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El nombre de función '_preguntar_con_relevo' no aparece explícito en el material visible (el trozo cuerpo/obrero.py:705-744 llega solo como '===== FIN ====.' en este recorte); la ubicación se sostiene únicamente por el texto 'tope=TOPE_GRATIS - 2690)', que sí aparece en el paquete y en la descripción del problema — por regla 6 no es motivo de rechazo, pero conviene confirmarlo contra el trozo completo antes de sellar.",
+   "La vigía propuesta llama a _preguntar_con_relevo con generador='deepseek' sin aislar la llamada; si esa función hace una llamada real, la prueba tocará credenciales y gas, y choca con CONTRATO_CREDENCIALES_PARA_PRUEBAS del paquete."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno real: el cambio solo sustituye el valor del argumento tope que se pasa a _filtrar_paquete; no cambia firmas ni el orden de la fila en cuerpo/obrero.py.",
+   "cuerpo/cuotas.py solo se lee (llamada a _capacidad), no se modifica.",
+   "arnes/asignador.py y vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py quedan intactos; el obrero los declaró como no revisados en '_fuera_del_paquete', igual que manda el paquete, y el cambio no altera el flujo del revisor."
+  ],
+  "que_falta": [
+   "Confirmar en el trozo 705-744 completo del paquete que la línea 'tope=TOPE_GRATIS - 2690)' vive en _preguntar_con_relevo y que 'generador' está en alcance ahí.",
+   "Diseñar la vigía con la llamada aislada (mock) o pedir credenciales por CONTRATO_CREDENCIALES_PARA_PRUEBAS, para no gastar una llamada real por cada corrida.",
+   "Revisar arnes/asignador.py y vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py antes de sellar, como pide el cross-flow."
+  ],
+  "resumen_para_el_jefe": "El obrero aplicó tal cual el único cambio que el paquete manda (tope según capacidad real del generador elegido, con techo de 40.000 y sin bajar nunca del tope actual), no inventó nada — todo lo que usa (cuotas._capacidad, TOPE_GRATIS, generador, 40000) está en el material y el código nuevo es literalmente el que prescribe el paquete — y no toca vecinos; se aprueba con la única cuenta pendiente de dejar la vigía aislada (mock/credenciales) y revisar los dos archivos declarados como no leídos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19069 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (20306 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

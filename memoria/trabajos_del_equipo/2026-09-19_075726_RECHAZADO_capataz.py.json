@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Al final de cuerpo/capataz.py hay codigo inalcanzable despues del ultimo return de marcar_estado que repite lo que ya hace la funcion y hay que eliminarlo dejando solo ese return.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "marcar_estado",
+  "texto_viejo": "    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2, ensure_ascii=False)\n    return True",
+  "texto_nuevo": "    return True",
+  "cambio": "Sustituir el bloque final de marcar_estado (el with que escribe ORDENES.json mas el return True) por unicamente la linea return True, eliminando asi el codigo inalcanzable posterior.",
+  "codigo": "    return True",
+  "vigia": "Importar cuerpo/capataz.py y comprobar que no hay codigo tras el return de marcar_estado; ademas llamar a marcar_estado con una orden existente y verificar que ORDENES.json se escribe y devuelve True.",
+  "puede_danar": [
+   "marcar_estado",
+   "ORDENES.json"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "ORDENES.js"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El texto_viejo apunta al bloque que NO hay que tocar: las lineas 37-53 del trozo muestran que ese 'with' (escribir ORDENES.json) mas 'return True' es el INTERIOR de marcar_estado. Dejarlo solo en 'return True' rompe la funcion: ya no escribe ORDENES.json.",
+   "El codigo inalcanzable que hay DESPUES del ultimo return quedaria intacto: el texto_viejo termina en el return, no cubre nada posterior, asi que el bloque duplicado del final del archivo sigue ahi. El problema del paquete no se elimina.",
+   "Incumple la instruccion explicita del paquete: 'lo que reemplazas tiene que empezar en la linea de ese ultimo return'. El texto_viejo empieza en la linea del 'with', no en la del return.",
+   "Se contradice con su propia vigia: la vigia dice que hay que verificar que ORDENES.json SE ESCRIBE al llamar a marcar_estado, pero el cambio borra justo la linea que lo escribe. Esa vigia quedaria roja.",
+   "El diagnostico dice 'eliminar lo que esta despues del return' y el cambio elimina lo que esta DENTRO de la funcion: diagnostico y cambio no coinciden."
+  ],
+  "riesgo_vecinos": [
+   "marcar_estado: deja de escribir ORDENES.json, con lo que ningun cambio de estado de orden vuelve al disco.",
+   "Quienes lean memoria/ORDENES.json (flujos del capataz, estado de ordenes) recibirian datos viejos congelados."
+  ],
+  "que_falta": [
+   "Hacer la cirugia correcta: texto_viejo debe EMPEZAR en la linea del ultimo 'return True' de marcar_estado (linea 53 del trozo 37-53) y cubrir el bloque duplicado inalcanzable que viene despues; texto_nuevo es esa sola linea '    return True'.",
+   "Las lineas inalcanzables del final no vienen en el trozo 37-53: si el obrero no sabe su texto exacto, debe pedirlas con NECESITO_LEER en vez de tocar el interior de la funcion."
+  ],
+  "resumen_para_el_jefe": "La propuesta borra el codigo BUENO (la escritura de ORDENES.json dentro de marcar_estado, segun el trozo 37-53), deja intacto el codigo inalcanzable que era lo que habia que eliminar y ni siquiera arranca el reemplazo en la linea del return como exige el paquete: se rechaza."
+ },
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

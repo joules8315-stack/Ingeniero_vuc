@@ -1,0 +1,30 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba solo comprueba que el veredicto no sea APROBADO, pero no exige que quien reviso no sea deepseek, por lo que quitar esa mitad del arreglo deja la prueba verde.",
+  "archivo": "vigias/test_vigia_ni_con_revisor_fijo_se_revisa_solo.py",
+  "funcion": "test_ni_con_revisor_fijo_se_aprueba_a_si_mismo",
+  "texto_viejo": "    veredicto = _veredicto(auditoria)\n    assert veredicto != \"APROBADO\", (\n        \"quien escribio no puede aprobar su propio trabajo aunque el encargo \"\n        \"pidiera ese revisor fijo; salio veredicto=%r con quien=%r\"\n        % (veredicto, quien)\n    )",
+  "texto_nuevo": "    veredicto = _veredicto(auditoria)\n    assert veredicto != \"APROBADO\", (\n        \"quien escribio no puede aprobar su propio trabajo aunque el encargo \"\n        \"pidiera ese revisor fijo; salio veredicto=%r con quien=%r\"\n        % (veredicto, quien)\n    )\n    assert quien != \"deepseek\", (\n        \"si se deja el nombre del que escribio como revisor, el registro del \"\n        \"trabajo seguira diciendo que lo reviso otro; salio quien=%r\"\n        % (quien,)\n    )",
+  "cambio": "Anadir, justo despues del assert existente, un assert nuevo que exija que quien no sea deepseek, con el mensaje indicado.",
+  "codigo": "    assert quien != \"deepseek\", (\n        \"si se deja el nombre del que escribio como revisor, el registro del \"\n        \"trabajo seguira diciendo que lo reviso otro; salio quien=%r\"\n        % (quien,)\n    )",
+  "vigia": "vigias/test_vigia_ni_con_revisor_fijo_se_revisa_solo.py::test_ni_con_revisor_fijo_se_aprueba_a_si_mismo",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio agrega exactamente el assert que pidio el paquete (quien no sea deepseek, justo despues del assert existente, mismo mensaje pedido), usa solo variables que ya estan en el trozo (quien, deepseek), no toca nada mas del archivo ni a ningun vecino, y la ubicacion se confirma por el texto literal que aparece en el material."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,58 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En el comando aplicar-guardado de ingeniero.py se llama a aplicador.aplicar_cambio en vez de aplicador.aplicar_propuesta.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "        _ok2, _msg2 = _ap.aplicar_cambio(_prop, raiz=_raiz2)",
+  "texto_nuevo": "        _ok2, _msg2 = _ap.aplicar_propuesta(_prop, raiz=_raiz2)",
+  "cambio": "Sustituir la llamada a _ap.aplicar_cambio por _ap.aplicar_propuesta en el comando aplicar-guardado, sin tocar nada mas.",
+  "codigo": "        _ok2, _msg2 = _ap.aplicar_propuesta(_prop, raiz=_raiz2)",
+  "vigia": "Una vigia que ejecute 'python ingeniero.py aplicar-guardado <proyecto>' sobre un trabajo guardado y aprobado y compruebe que se aplica en disco correctamente (que el archivo cambia y el .py no queda roto).",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "codex.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "via_canonica.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El obrero hizo exactamente lo que el encargo pedía: cambió una sola llamada dentro de aplicar-guardado, la línea vieja aparece literal en el material, el programa ya comprobó que aplicar_propuesta existe y el archivo carga, y no toca ningún vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (30572 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

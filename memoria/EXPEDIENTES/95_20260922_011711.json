@@ -1,0 +1,76 @@
+{
+  "orden": {
+    "id": "95",
+    "titulo": "El pit vigila la tarea que se demora",
+    "origen": "directriz de Julio A-44 (2026-09-21)",
+    "repara": "lanzar_al_equipo corta a ciegas a los 900 s",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "94",
+      "60",
+      "57",
+      "152",
+      "154",
+      "155"
+    ],
+    "modo": "IA",
+    "razon": "los limites salen de los datos medidos del cuaderno de llamadas, no de una suposicion",
+    "encargo": "En cuerpo/capataz.py hay que hacer tres cambios, entregalos en la lista cambios. (1) Arriba de def lanzar_al_equipo agrega las constantes con su comentario: LIMITE_TAREA_SEGUNDOS = 420 y SIN_AVANCE_SEGUNDOS = 660 y TOPE_DURO_SEGUNDOS = 3000 (medido el 2026-09-21 en el cuaderno de llamadas: DeepSeek tarda 4 a 11 s, Big Pickle hasta 328 s y con A-47 se le espera hasta 600 s, el guardia corre la bateria en 262 s, y una tarea puede dar 4 vueltas de revision: 4 por (11 + 600) + 262 = 2706 s, y el tope de fuera tiene que ser mayor que la suma de los de dentro; SIN_AVANCE tiene que ser MAYOR que la llamada callada mas larga, la espera de Big Pickle de hasta 600 s, o se cortaria a una IA que esta contestando). (2) En lanzar_al_equipo cambia el subprocess.run por subprocess.Popen con los mismos cwd y env. La salida NO va por tuberia (una tuberia que nadie vacia se llena y cuelga al equipo): abre archivo = open(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'), 'w', encoding='utf-8', errors='replace') y pasa stdout=archivo, stderr=subprocess.STDOUT. El avance es una funcion que devuelve el tiempo de procesador gastado por el proceso y todos sus hijos (import psutil dentro de la funcion; pp = psutil.Process(proceso.pid); suma de cpu_times().user + cpu_times().system de pp y de cada pp.children(recursive=True), ignorando los que ya terminaron con psutil.Error), redondeado a 1 decimal, mas el tamano de ese archivo de salida, mas la suma de os.path.getmtime de memoria/CUADERNO_DE_LLAMADAS.jsonl y memoria/APLICACIONES.log que existan; si psutil falla, sin el tiempo de procesador. (Motivo medido el 2026-09-21 para medir tiempo de procesador: las pruebas vecinas del candado de cierre tardan 212 s sin escribir en ningun registro, y una tarea que corre pruebas SI esta trabajando.) Los pasos, en este orden: from cuerpo import vigilante dentro de la funcion; estado = vigilante.esperar(proceso, LIMITE_TAREA_SEGUNDOS, SIN_AVANCE_SEGUNDOS, TOPE_DURO_SEGUNDOS, avance); archivo.close(); salida = el texto entero del archivo de salida, leido con open(..., encoding='utf-8', errors='replace'). NO se usa proceso.communicate() (no hay tuberia: saldria vacio). Si estado no es 'termino' devuelve {'guardado': False, 'codigo': None, 'salida': 'COLGADA: ' + estado + ' (sin avance pasado el limite; se busca la causa raiz)\\n' + salida}, para que el forense vea lo que dijo el revisor; si es 'termino' devuelve {'guardado': 'GUARDADO AL MOMENTO' in salida, 'codigo': proceso.returncode, 'salida': salida}. El parametro tope_segundos se queda en la firma sin usarse, para no romper a quien lo pasa. (3) En tipo_de_fallo, como primera comprobacion, si la salida empieza por 'COLGADA:' devuelve 'colgada'. El trozo de este tercer cambio tiene que EMPEZAR por la linea def tipo_de_fallo( entera (texto_viejo = esa linea y la siguiente; texto_nuevo = esa linea, la comprobacion nueva y la siguiente), para que se vea en que funcion va. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "una tarea 'colgada' va al forense como cualquier fallo (causa raiz) y, por A-43, su arreglo pasa al frente. | despues de la 95: orden 156, quitar la forma vieja (subprocess.run) de vigias/test_vigia_el_capataz_lanza_al_equipo.py"
+  },
+  "huella": "9f6bb5eab2e37a36",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_011623_APROBADO_capataz.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (20832 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : En cuerpo/capataz.py hay que hacer tres cambios: agregar constantes de tiempo arriba de lanzar_al_equipo, cambiar subprocess.run por subprocess.Popen con salida a archivo y avance por CPU+archivos, y agregar la comprobacion de 'COLGADA:' al inicio de tipo_de_fallo.\n  toca        : cuerpo/capataz.py funcion lanzar_al_equipo\n  confianza   : media\n  VEREDICTO   : APROBADO\n  resumen     : El cambio hace exactamente lo que pidio el encargo en los tres puntos (constantes con su comentario, Popen con salida a archivo y avance por CPU+tamano+mtime, y 'COLGADA:' como primera comprobacion de tipo_de_fallo), sin tocar vecinos ni inventar nada.\n\nAPLICADO en disco (lo escribio el equipo): cuerpo/capataz.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   16 failed, 118 passed in 44.79s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): cuerpo/capataz.py\nLLAVE GUARDADA: se puede escribir en 113 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T01:17:11",
+  "analisis": {
+    "que_paso": "El equipo (deepseek escribe, bigpickle revisa) hizo el cambio de la orden 95 en cuerpo/capataz.py y bigpickle lo APROBO; al aplicarlo, el guardia lo freno porque la bateria de vigias dio rojo (16 failed, 118 passed) y se volvio atras: nada se guardo. El cambio en si (constantes, Popen con salida a archivo, avance por CPU+tamano+mtime, 'COLGADA:' en tipo_de_fallo) es el pedido; lo que reventaron fueron las vigias.",
+    "causa_raiz": "La orden 95 cambia subprocess.run por subprocess.Popen y manda llamar a vigilante.esperar POR POSICION, pero deja dos choques que ella misma no resuelve: (a) su PROPIA vigia exige que el limite llegue POR NOMBRE (kw.get('limite')/kw.get('tope_segundos')), asi que aun hecho tal cual se pidio, esa vigia nace roja; y (b) hay vigias VECINAS que todavia falsifican capataz.subprocess.run alrededor de una llamada real a lanzar_al_equipo (p.ej. test_vigia_la_etiqueta_llega_al_cuaderno.py) y, como el codigo ya no llama a run, quedan sin datos y fallan. El plan solo previo actualizar UNA vecina (la orden 156 nombra solo test_vigia_el_capataz_lanza_al_equipo.py) y olvido las demas, y la vigia de la propia 95 contradice a su encargo. Es fallo de DISENO de la orden: el equipo hizo lo pedido y el guardia freno bien (no se guarda con rojas).",
+    "donde": "cuerpo/capataz.py (lanzar_al_equipo) y sus vigias: vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py y vigias/test_vigia_la_etiqueta_llega_al_cuaderno.py; el contrato de la llamada esta en cuerpo/vigilante.py.",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "memoria/trabajos_sin_revisar/capataz.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+        "texto": "    estado = vigilante.esperar(proceso, LIMITE_TAREA_SEGUNDOS, SIN_AVANCE_SEGUNDOS, TOPE_DURO_SEGUNDOS, avance)"
+      },
+      {
+        "archivo": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+        "texto": "    limite = apuntes[0]['kw'].get('limite', apuntes[0]['kw'].get('tope_segundos'))\n    assert limite == capataz.LIMITE_TAREA_SEGUNDOS"
+      },
+      {
+        "archivo": "memoria/trabajos_sin_revisar/capataz.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+        "texto": "    proceso = subprocess.Popen(\n        comando,\n        cwd=raiz,\n        stdout=archivo,\n        stderr=subprocess.STDOUT,\n        env=entorno,\n    )"
+      },
+      {
+        "archivo": "vigias/test_vigia_la_etiqueta_llega_al_cuaderno.py",
+        "texto": "    monkeypatch.setattr(capataz.subprocess, \"run\", falso_run)\n\n    capataz.lanzar_al_equipo(\n        \"ingeniero\", {\"id\": \"P9\", \"encargo\": \"x\", \"pieza\": \"y\"}\n    )\n\n    assert guardado[\"env\"][\"INGENIERO_ETIQUETA\"] == \"P9\""
+      },
+      {
+        "archivo": "cuerpo/vigilante.py",
+        "texto": "def esperar(proceso, limite, sin_avance, tope_duro, avance,\n            dormir=time.sleep, reloj=time.monotonic):"
+      }
+    ],
+    "no_volver_a": "Al cambiar como una pieza lanza procesos, la orden debe alinear su PROPIA vigia con el encargo y actualizar TODAS las vigias vecinas que falsifican la forma vieja, no solo una.",
+    "tarea_nueva": {
+      "repara": "las vigias chocan con el encargo de la 95: su propia vigia exige la llamada por nombre y test_vigia_la_etiqueta_llega_al_cuaderno.py aun falsifica capataz.subprocess.run, asi que el paso a Popen con esperar por posicion las deja rojas",
+      "pieza": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py y vigias/test_vigia_la_etiqueta_llega_al_cuaderno.py",
+      "razon": "para que, cuando entre el cambio de la 95 (Popen + esperar por posicion), ni la propia vigia de la 95 ni las vigias vecinas queden en rojo (Ley 4: no romper vecinos)",
+      "encargo": "Sin tocar cuerpo/capataz.py. (1) En vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py, en test_si_el_equipo_termina_la_salida_se_recoge, cambia la comprobacion del limite para que acepte la llamada POR POSICION (como manda el encargo de la 95): en vez de leer apuntes[0]['kw'], toma el limite de los argumentos posicionales pasados a esperar (apuntes[0]['args'], el argumento que sigue al proceso) y compara con capataz.LIMITE_TAREA_SEGUNDOS. (2) En vigias/test_vigia_la_etiqueta_llega_al_cuaderno.py, en test_capataz_pasa_la_etiqueta_al_equipo, falsifica LAS DOS formas (capataz.subprocess.run Y capataz.subprocess.Popen) y ademas vigilante.esperar, igual que ya hace vigias/test_vigia_el_capataz_lanza_al_equipo.py, guardando el env de la llamada que se use, para que la asercion INGENIERO_ETIQUETA == 'P9' valga con Popen.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": true,
+    "paso": "tarea",
+    "motivo": "agregada 95-F012213",
+    "tarea": "95-F012213",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\95_20260922_011711.json"
+  }
+}

@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py, dentro de comprobar_pasos, falta la comprobacion nueva despues del paso 2: si el campo pieza apunta a un .py que existe, verificar que algun otro .py del proyecto lo nombre por su nombre de modulo; si nadie lo nombra, devolver 'aplicada'.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "comprobar_pasos",
+  "texto_viejo": "    # Paso 2 aplicada: la ruta del campo pieza existe en disco\n    if not os.path.exists(pieza):\n        return \"aplicada\"\n\n    # Paso 3 vigia_verde: pytest sobre la vigia",
+  "texto_nuevo": "    # Paso 2 aplicada: la ruta del campo pieza existe en disco\n    if not os.path.exists(pieza):\n        return \"aplicada\"\n\n    # Paso 2b pieza_suelta: si la pieza es un .py que existe, algun otro .py\n    # del proyecto debe nombrarla por su nombre de modulo; si nadie la nombra,\n    # la pieza quedo suelta y se devuelve \"aplicada\".\n    if pieza.endswith(\".py\") and os.path.exists(pieza):\n        modulo = os.path.splitext(os.path.basename(pieza))[0]\n        ruta_pieza_abs = os.path.abspath(pieza)\n        nombrada = False\n        for raiz, _dirs, archivos in os.walk(carpeta_proyecto):\n            for nombre_archivo in archivos:\n                if not nombre_archivo.endswith(\".py\"):\n                    continue\n                ruta_otro = os.path.join(raiz, nombre_archivo)\n                if os.path.abspath(ruta_otro) == ruta_pieza_abs:\n                    continue\n                try:\n                    with open(ruta_otro, encoding=\"utf-8\") as f:\n                        contenido = f.read()\n                except OSError:\n                    continue\n                if modulo in contenido:\n                    nombrada = True\n                    break\n            if nombrada:\n                break\n        if not nombrada:\n            return \"aplicada\"\n\n    # Paso 3 vigia_verde: pytest sobre la vigia",
+  "cambio": "Insertar, justo despues del bloque del paso 2 (el que devuelve \"aplicada\" si la ruta de pieza no existe) y antes del comentario del paso 3, un bloque nuevo que: si pieza termina en .py y existe, saca su nombre de modulo, recorre todos los .py del proyecto (excepto la propia pieza) y comprueba si alguno contiene ese nombre de modulo; si ninguno lo contiene, devuelve \"aplicada\".",
+  "codigo": "    # Paso 2b pieza_suelta: si la pieza es un .py que existe, algun otro .py\n    # del proyecto debe nombrarla por su nombre de modulo; si nadie la nombra,\n    # la pieza quedo suelta y se devuelve \"aplicada\".\n    if pieza.endswith(\".py\") and os.path.exists(pieza):\n        modulo = os.path.splitext(os.path.basename(pieza))[0]\n        ruta_pieza_abs = os.path.abspath(pieza)\n        nombrada = False\n        for raiz, _dirs, archivos in os.walk(carpeta_proyecto):\n            for nombre_archivo in archivos:\n                if not nombre_archivo.endswith(\".py\"):\n                    continue\n                ruta_otro = os.path.join(raiz, nombre_archivo)\n                if os.path.abspath(ruta_otro) == ruta_pieza_abs:\n                    continue\n                try:\n                    with open(ruta_otro, encoding=\"utf-8\") as f:\n                        contenido = f.read()\n                except OSError:\n                    continue\n                if modulo in contenido:\n                    nombrada = True\n                    break\n            if nombrada:\n                break\n        if not nombrada:\n            return \"aplicada\"",
+  "vigia": "Una vigia que cree un proyecto de mentira con una pieza .py que existe pero que ningun otro .py nombra, llame a comprobar_pasos con esa pieza y compruebe que devuelve \"aplicada\"; y otra que anada un .py que la nombre por su modulo y compruebe que ya no devuelve \"aplicada\" por ese motivo.",
+  "puede_danar": [
+   "cuerpo/capataz.py::comprobar_pasos",
+   "vigias/test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "vigias/test_vigia_el_juez_busca_su_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "preguntas": [
+   "PREGNTA_REQUERIDA: cuando se dice 'algun otro archivo .py del proyecto lo nombra por su nombre de modulo', se refiere a que el texto del otro archivo contenga el nombre del modulo como palabra suelta (por ejemplo 'import capataz' o 'from capataz import x'), o basta con que el nombre del modulo aparezca como subcadena en cualquier parte del texto?",
+   "PREGNTA_REQUERIDA: la busqueda de 'algun otro archivo .py del proyecto' debe recorrer todo el arbol del proyecto (incluyendo subcarpetas como vigias/, cuerpo/, cerebro/, etc.) o solo una carpeta concreta?",
+   "PREGNTA_REQUERIDA: si la pieza .py existe pero esta fuera del arbol del proyecto (por ejemplo en otra ruta absoluta), se considera que nadie la nombra y se devuelve 'aplicada', o se debe tratar de otro modo?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "test_vigia_el_juez_busca_su_prueba.py",
+   "test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada y no rompe nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27410 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

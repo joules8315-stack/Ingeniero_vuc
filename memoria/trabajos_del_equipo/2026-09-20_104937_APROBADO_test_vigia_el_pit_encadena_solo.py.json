@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En test_el_pit_no_llama_a_ninguna_ia_de_verdad las dos lineas que guardan los originales se ejecutan despues de _montar_mundo, asi que guardan las funciones de mentira y luego se comparan consigo mismas: la prueba nunca puede estar verde.",
+  "archivo": "vigias/test_vigia_el_pit_encadena_solo.py",
+  "funcion": "test_el_pit_no_llama_a_ninguna_ia_de_verdad",
+  "texto_viejo": "    ordenes = [_orden_de_mentira('solo-una', 'pieza-sola')]\n    registro = _montar_mundo(monkeypatch, ordenes)\n\n    # Se guarda el original para comprobar que NO se uso.\n    original_lanzar = capataz.lanzar_al_equipo\n    original_sabotear = capataz.sabotear_la_orden\n\n",
+  "texto_nuevo": "    ordenes = [_orden_de_mentira('solo-una', 'pieza-sola')]\n\n    # Se guarda el original para comprobar que NO se uso.\n    original_lanzar = capataz.lanzar_al_equipo\n    original_sabotear = capataz.sabotear_la_orden\n    registro = _montar_mundo(monkeypatch, ordenes)\n\n",
+  "cambio": "Reordenar las seis lineas: primero la lista de ordenes de mentira; despues el comentario y las dos lineas que guardan los originales; y solo entonces la linea que monta el mundo de mentira; al final la linea en blanco. Nada mas se toca.",
+  "codigo": "    ordenes = [_orden_de_mentira('solo-una', 'pieza-sola')]\n\n    # Se guarda el original para comprobar que NO se uso.\n    original_lanzar = capataz.lanzar_al_equipo\n    original_sabotear = capataz.sabotear_la_orden\n    registro = _montar_mundo(monkeypatch, ordenes)\n\n",
+  "vigia": "vigias/test_vigia_el_pit_encadena_solo.py::test_el_pit_no_llama_a_ninguna_ia_de_verdad debe quedar en verde: los originales guardados son los de verdad y las dos aserciones finales (capataz.lanzar_al_equipo is not original_lanzar y capataz.sabotear_la_orden is not original_sabotear) se cumplen.",
+  "puede_danar": [
+   "vigias/test_vigia_el_pit_encadena_solo.py::test_el_pit_no_llama_a_ninguna_ia_de_verdad"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Reordenó correctamente la captura de los originales antes de montar el mundo, cumpliendo el diagnóstico sin introducir errores."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

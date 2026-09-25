@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El bloque que agrega los archivos nombrados siempre entrega los primeros 80 renglones, ignorando los tramos de lineas que el encargo nombra (N a M, N-M, N hasta M, numeros sueltos, separados por y o comas).",
+  "archivo": "cerebro/router.py",
+  "funcion": "armar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def completar_funciones(pedazos, codigo):",
+    "texto_nuevo": "def tramos_nombrados(problema):\n    \"\"\"Saca los tramos de lineas que el encargo nombra en palabras.\n\n    Julio, 2026-09-22 (A-48, ordenes 29, 152, 154 y 170): si el encargo nombra lineas, se\n    entregan esas lineas y no los primeros 80 renglones.\n\n    Reconoce, sin distinguir mayusculas ni tildes:\n      · \"linea 5 a 10\" / \"lineas 5-10\" / \"linea 5 hasta 10\"  -> (5, 10)\n      · \"linea 7\"                                             -> (7, 7)\n      · \"lineas 3 y 8\" / \"lineas 3, 8\"                        -> (3, 3), (8, 8)\n    Devuelve la lista sin repetidos, en orden. Con texto vacio o sin numeros, [].\n    \"\"\"\n    import re\n    if not problema:\n        return []\n    texto = problema.lower()\n    texto = texto.replace(\"á\", \"a\").replace(\"é\", \"e\").replace(\"í\", \"i\")\n    texto = texto.replace(\"ó\", \"o\").replace(\"ú\", \"u\")\n    tramos = []\n    for m in re.finditer(r\"lineas?\\s+(\\d+)\\s*(?:a|hasta|-)\\s*(\\d+)\", texto):\n        tramos.append((int(m.group(1)), int(m.group(2))))\n    for m in re.finditer(r\"lineas?\\s+(\\d+(?:\\s*(?:,|y)\\s*\\d+)+)\", texto):\n        for n in re.findall(r\"\\d+\", m.group(1)):\n            tramos.append((int(n), int(n)))\n    for m in re.finditer(r\"lineas?\\s+(\\d+)(?!\\s*(?:a|hasta|-|,|y)\\s*\\d)\", texto):\n        tramos.append((int(m.group(1)), int(m.group(1))))\n    vistos, salida = set(), []\n    for t in tramos:\n        if t not in vistos:\n            vistos.add(t)\n            salida.append(t)\n    return salida\n\n\ndef completar_funciones(pedazos, codigo):"
+   },
+   {
+    "texto_viejo": "    try:\n        for fid in list(_nombrados):\n            ficha = next((p for p in codigo if p[\"id\"] == fid), None)\n            if not ficha or not ficha.get(\"abs\"):\n                continue\n            texto = \"\\n\".join(_lineas_de(ficha[\"abs\"], 1, min(80, ficha.get(\"lineas\", 80) or 80)))\n            if not texto.strip():\n                continue\n            ya = any(t[\"pieza\"] == fid for t in pedazos)\n            if not ya:\n                pedazos.insert(0, {\"pieza\": fid, \"abs\": ficha[\"abs\"], \"rol\": ficha[\"rol\"],\n                                   \"desde\": 1, \"hasta\": min(80, ficha.get(\"lineas\", 80) or 80),\n                                   \"direccion\": \"%s:1-%s\" % (fid, min(80, ficha.get(\"lineas\", 80) or 80)),\n                                   \"texto\": texto, \"puntaje\": 99.0, \"_nombrado\": fid})\n    except Exception:\n        pass",
+    "texto_nuevo": "    # Si el encargo nombra lineas, se entregan esas lineas y no los primeros 80 renglones\n    # (A-48, medido 2026-09-22: ordenes 29, 152, 154 y 170).\n    tramos = tramos_nombrados(problema)\n    try:\n        for fid in list(_nombrados):\n            ficha = next((p for p in codigo if p[\"id\"] == fid), None)\n            if not ficha or not ficha.get(\"abs\"):\n                continue\n            renglones = ficha.get(\"lineas\", 80) or 80\n            if tramos:\n                for (desde, hasta) in tramos:\n                    if desde > renglones:\n                        continue\n                    d = max(1, desde - 5)\n                    h = min(renglones, hasta + 5)\n                    texto = \"\\n\".join(_lineas_de(ficha[\"abs\"], d, h))\n                    if not texto.strip():\n                        continue\n                    ya = any(t[\"pieza\"] == fid and t.get(\"desde\") == d and t.get(\"hasta\") == h\n                             for t in pedazos)\n                    if not ya:\n                        pedazos.insert(0, {\"pieza\": fid, \"abs\": ficha[\"abs\"], \"rol\": ficha[\"rol\"],\n                                           \"desde\": d, \"hasta\": h,\n                                           \"direccion\": \"%s:%s-%s\" % (fid, d, h),\n                                           \"texto\": texto, \"puntaje\": 99.0, \"_nombrado\": fid})\n            else:\n                texto = \"\\n\".join(_lineas_de(ficha[\"abs\"], 1, min(80, renglones)))\n                if not texto.strip():\n                    continue\n                ya = any(t[\"pieza\"] == fid for t in pedazos)\n                if not ya:\n                    pedazos.insert(0, {\"pieza\": fid, \"abs\": ficha[\"abs\"], \"rol\": ficha[\"rol\"],\n                                       \"desde\": 1, \"hasta\": min(80, renglones),\n                                       \"direccion\": \"%s:1-%s\" % (fid, min(80, renglones)),\n                                       \"texto\": texto, \"puntaje\": 99.0, \"_nombrado\": fid})\n    except Exception:\n        pass"
+   }
+  ],
+  "cambio": "Agregar la funcion tramos_nombrados(problema) justo antes de def completar_funciones(pedazos, codigo):, y reemplazar el bloque que agrega los archivos nombrados para que, si hay tramos, entregue por cada (desde, hasta) un pedazo con desde=max(1, desde-5) y hasta=min(renglones, hasta+5) sacado con _lineas_de, y si no hay tramos quede exactamente como hoy (1 a 80).",
+  "codigo": "def tramos_nombrados(problema):\n    \"\"\"Saca los tramos de lineas que el encargo nombra en palabras.\n\n    Julio, 2026-09-22 (A-48, ordenes 29, 152, 154 y 170): si el encargo nombra lineas, se\n    entregan esas lineas y no los primeros 80 renglones.\n\n    Reconoce, sin distinguir mayusculas ni tildes:\n      · \"linea 5 a 10\" / \"lineas 5-10\" / \"linea 5 hasta 10\"  -> (5, 10)\n      · \"linea 7\"                                             -> (7, 7)\n      · \"lineas 3 y 8\" / \"lineas 3, 8\"                        -> (3, 3), (8, 8)\n    Devuelve la lista sin repetidos, en orden. Con texto vacio o sin numeros, [].\n    \"\"\"\n    import re\n    if not problema:\n        return []\n    texto = problema.lower()\n    texto = texto.replace(\"á\", \"a\").replace(\"é\", \"e\").replace(\"í\", \"i\")\n    texto = texto.replace(\"ó\", \"o\").replace(\"ú\", \"u\")\n    tramos = []\n    for m in re.finditer(r\"lineas?\\s+(\\d+)\\s*(?:a|hasta|-)\\s*(\\d+)\", texto):\n        tramos.append((int(m.group(1)), int(m.group(2))))\n    for m in re.finditer(r\"lineas?\\s+(\\d+(?:\\s*(?:,|y)\\s*\\d+)+)\", texto):\n        for n in re.findall(r\"\\d+\", m.group(1)):\n            tramos.append((int(n), int(n)))\n    for m in re.finditer(r\"lineas?\\s+(\\d+)(?!\\s*(?:a|hasta|-|,|y)\\s*\\d)\", texto):\n        tramos.append((int(m.group(1)), int(m.group(1))))\n    vistos, salida = set(), []\n    for t in tramos:\n        if t not in vistos:\n            vistos.add(t)\n            salida.append(t)\n    return salida",
+  "vigia": "Un test que llame a tramos_nombrados con 'linea 5 a 10', 'lineas 5-10', 'linea 5 hasta 10', 'linea 7', 'lineas 3 y 8', 'lineas 3, 8', texto vacio y texto sin numeros, y compruebe que devuelve los tramos esperados sin repetidos y en orden; y otro que verifique que el bloque de _nombrados entrega los tramos con margen de 5 y no los primeros 80 renglones cuando el problema los nombra.",
+  "puede_danar": [
+   "cuerpo/codex.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Cuando hay tramos, la comprobacion de duplicados paso a ser por pieza+rango, asi que un archivo nombrado puede aparecer varias veces en pedazos (uno por tramo); es lo que pide el encargo, pero si algun consumidor abajo asumia pieza unica, conviene mirarlo.",
+   "Si un archivo nombrado tiene todos los tramos fuera de su numero de renglones, ya no recibe el pedazo 1-80 de antes; el encargo solo pide volver a 1-80 cuando no hay tramos, asi que es literal, pero cambia el comportamiento respecto a hoy en ese caso raro."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Los dos cambios estan donde el encargo dice, usan solo lo que ya existe, cubren todos los formatos de lineas pedidos y dejan el caso sin tramos identico a hoy; solo apunten los dos riesgos vecinos de arriba por si algo abajo asumia un pedazo por archivo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38934 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

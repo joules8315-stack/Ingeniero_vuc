@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Las cuatro pruebas de la vigía usan _fallo(...) + return False en vez de assert, así que en pytest nunca pueden ponerse rojas aunque el candado esté roto.",
+  "archivo": "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+  "funcion": "test_ninguna_frase_de_julio_lleva_palabra_de_maquina",
+  "texto_viejo": "    if malas:\n        _fallo(\"frases de Julio contaminadas con marcas de maquina (elige otras):\\n  - \"\n               + \"\\n  - \".join(\"%r por %r\" % (t, m) for t, m in malas))\n        return False\n    return True",
+  "texto_nuevo": "    assert not malas, (\"frases de Julio contaminadas con marcas de maquina (elige otras):\\n  - \"\n               + \"\\n  - \".join(\"%r por %r\" % (t, m) for t, m in malas))",
+  "cambio": "Sustituir el bloque if malas: _fallo(...) + return False + return True por un solo assert que falle con el mismo mensaje, y quitar el return True final.",
+  "codigo": "    assert not malas, (\"frases de Julio contaminadas con marcas de maquina (elige otras):\\n  - \"\n               + \"\\n  - \".join(\"%r por %r\" % (t, m) for t, m in malas))",
+  "vigia": "Ejecutar pytest sobre vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py: la primera prueba debe quedar ROJA (la regla que vigila aún no está hecha) y las otras tres deben pasar o fallar de verdad, nunca quedar verdes por devolver False.",
+  "puede_danar": [
+   "arnes/candado_legislar.py",
+   "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py"
+  ],
+  "preguntas": [
+   "El material solo trae el cuerpo completo de test_ninguna_frase_de_julio_lleva_palabra_de_maquina; para las otras tres pruebas (la primera que debe quedar ROJA y las dos restantes) no tengo el texto literal de sus bloques _fallo/return False/return True. ¿Me pasas el archivo entero o los cuerpos completos de esas tres pruebas para poder sustituir sus textos exactos?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_legislar.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El cambio toca solo 1 de las 4 pruebas que el encargo pide arreglar: las otras tres siguen con `_fallo(...) + return False + return True`, asi que la vigia sigue sin poder ponerse roja para la regla.",
+   "La seccion 'vigia' promete que 'la primera prueba debe quedar ROJA', pero la prueba editada es la de CONTROL (su propio docstring dice 'el test de arriba pasaria por el motivo equivocado'), o sea la primera de la regla NO se toca: esa meta no la entrega este toque."
+  ],
+  "riesgo_vecinos": [
+   "ninguno detectado: solo cambia el modo de fallo de una prueba; `_fallo` sigue existiendo para las otras tres y no se toca candado_legislar.py ni otro archivo"
+  ],
+  "que_falta": [
+   "cuerpos completos de las otras tres pruebas (faltan en el material) para sustituir sus `_fallo + return False + return True` por assert, como el propio obrero pide en preguntas",
+   "confirmar cual es la primera prueba (la de la regla) y que con los cuatro cambios quede ROJA"
+  ],
+  "resumen_para_el_jefe": "El trozo es correcto y no inventa nada, pero entrega solo 1 de las 4 pruebas y no cumple lo de la primera en rojo: falta el material de las otras tres para completar el encargo."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

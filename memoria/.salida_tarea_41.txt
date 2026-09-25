@@ -1,0 +1,15 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-22_105031_APROBADO_revisor_de_programa.py.json
+OBRERO deepseek -> AUDITOR groq
+  aviso       : GPT-OSS 120B (Groq) no le cabe (31495 letras, aguanta 19042) -> se le salta
+  aviso       : el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.
+  aviso       : GPT-OSS 120B (Groq) no le cabe (32297 letras, aguanta 19042) -> se le salta
+  diagnostico : El revisor no tiene regla que cace un monkeypatch.setattr sobre un modulo del proyecto pidiendo un nombre que ese modulo no importa arriba, y por eso el mismo fallo (AttributeError en la prueba) paso dos veces el 2026-09-20 en las ordenes 18 y 20.
+  toca        : arnes/revisor_de_programa.py funcion revisar
+  confianza   : media
+  VEREDICTO   : APROBADO
+  resumen     : Se añadió el bloque 3c que detecta monkeypatch.setattr a nombres no importados, corrige el diagnóstico y no afecta a otros componentes.
+
+APLICADO en disco (lo escribio el equipo): arnes/revisor_de_programa.py
+GUARDADO AL MOMENTO: guardado en la historia: arnes/revisor_de_programa.py
+LLAVE GUARDADA: se puede escribir en 126 archivo(s) durante 90 min.

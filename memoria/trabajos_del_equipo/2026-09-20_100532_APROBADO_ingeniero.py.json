@@ -1,0 +1,62 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En ingeniero.py no existe el subcomando 'pit' que debe llamar a cuerpo/capataz.py::bucle pasandole el proyecto e imprimir lo que el bucle va diciendo.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "    if cmd == \"resolver\" and len(sys.argv) >= 4:\n        return resolver(sys.argv[2], \" \".join(sys.argv[3:]))",
+  "texto_nuevo": "    if cmd == \"pit\" and len(sys.argv) >= 3:\n        from cuerpo import capataz as _cap\n        return _cap.bucle(sys.argv[2])\n    if cmd == \"resolver\" and len(sys.argv) >= 4:\n        return resolver(sys.argv[2], \" \".join(sys.argv[3:]))",
+  "cambio": "Anadir en main, justo antes del bloque de 'resolver', un bloque para el subcomando 'pit' que importe cuerpo.capataz y devuelva el resultado de bucle(sys.argv[2]); bucle ya imprime con aviso=print por defecto, asi que lo que va diciendo sale por pantalla.",
+  "codigo": "    if cmd == \"pit\" and len(sys.argv) >= 3:\n        from cuerpo import capataz as _cap\n        return _cap.bucle(sys.argv[2])",
+  "vigia": "Correr 'python ingeniero.py pit <proyecto>' y comprobar que se ve la salida del bucle (HECHA/FALLIDA/PARADO...) y que no se toca ningun otro subcomando.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "arnes/asignador.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py"
+  ],
+  "preguntas": [
+   "El encargo dice 'imprimir lo que el bucle va diciendo': se asume que basta con el aviso=print por defecto de bucle, o hay que pasarle un aviso propio que ademas imprima?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "via_canonica.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa, no rompe nada y respeta la ubicación."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (30944 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

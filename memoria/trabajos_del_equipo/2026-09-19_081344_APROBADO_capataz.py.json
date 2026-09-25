@@ -1,0 +1,30 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "cuerpo/capataz.py usa hashlib y datetime en huella_de y anotar_huella_fallida pero no los importa, por lo que huella_de lanza NameError: name 'hashlib' is not defined.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "importaciones de arriba del archivo",
+  "texto_viejo": "import json\nimport os\nimport subprocess",
+  "texto_nuevo": "import datetime\nimport hashlib\nimport json\nimport os\nimport subprocess",
+  "cambio": "Agregar 'import datetime' e 'import hashlib' a las importaciones de arriba del archivo, en orden alfabetico con json, os, subprocess.",
+  "codigo": "import datetime\nimport hashlib\nimport json\nimport os\nimport subprocess",
+  "vigia": "Importar cuerpo/capataz.py y llamar a huella_de({'encargo':'x','pieza':'y'}) comprobando que devuelve 16 caracteres hex sin NameError, y llamar a anotar_huella_fallida sin NameError de datetime.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Agrega solo los dos imports pedidos (datetime y hashlib, en orden alfabetico) al inicio de capataz.py, usando exactamente el texto que el propio encargo ordena, sin inventar archivos ni funciones, sin tocar nada mas y sin poner en riesgo a nadie; el cambio cura de raiz el NameError de hashlib que diagnostica."
+ },
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 2"
+ ]
+}

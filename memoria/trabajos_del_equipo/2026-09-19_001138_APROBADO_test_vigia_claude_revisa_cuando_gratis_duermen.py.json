@@ -1,0 +1,32 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Faltan en el vigía las tres pruebas nuevas de A-32 que comprueban que Big Pickle revisa cuando todas las gratis duermen, que no revisa si una gratis está despierta y que no revisa lo que escribió Big Pickle.",
+  "archivo": "vigias/test_vigia_claude_revisa_cuando_gratis_duermen.py",
+  "funcion": "test_claude_no_revisa_lo_que_escribio_claude",
+  "texto_viejo": "def test_claude_no_revisa_lo_que_escribio_claude():\n    dormidos = set(_gratis())\n    assert cuotas.puede_revisar_claude(\"claude\", dormidos) is False",
+  "texto_nuevo": "def test_claude_no_revisa_lo_que_escribio_claude():\n    dormidos = set(_gratis())\n    assert cuotas.puede_revisar_claude(\"claude\", dormidos) is False\n\n\ndef test_a32_si_todas_las_gratis_duermen_revisa_bigpickle():\n    dormidos = set(_gratis())\n    assert cuotas.puede_revisar_bigpickle('deepseek', dormidos) is True\n\n\ndef test_a32_si_una_gratis_esta_despierta_bigpickle_no_revisa():\n    dormidos = set(_gratis()) - {'gemini4'}\n    assert cuotas.puede_revisar_bigpickle('deepseek', dormidos) is False\n\n\ndef test_a32_bigpickle_no_revisa_lo_que_escribio_bigpickle():\n    dormidos = set(_gratis())\n    assert cuotas.puede_revisar_bigpickle('bigpickle', dormidos) is False",
+  "cambio": "Añadir al final del archivo, después de la última función existente, las tres pruebas nuevas de A-32 tal como las describe el encargo, dejando intacta la función test_claude_no_revisa_lo_que_escribio_claude.",
+  "codigo": "def test_a32_si_todas_las_gratis_duermen_revisa_bigpickle():\n    dormidos = set(_gratis())\n    assert cuotas.puede_revisar_bigpickle('deepseek', dormidos) is True\n\n\ndef test_a32_si_una_gratis_esta_despierta_bigpickle_no_revisa():\n    dormidos = set(_gratis()) - {'gemini4'}\n    assert cuotas.puede_revisar_bigpickle('deepseek', dormidos) is False\n\n\ndef test_a32_bigpickle_no_revisa_lo_que_escribio_bigpickle():\n    dormidos = set(_gratis())\n    assert cuotas.puede_revisar_bigpickle('bigpickle', dormidos) is False",
+  "vigia": "vigias/test_vigia_claude_revisa_cuando_gratis_duermen.py ejecutado con pytest: las tres pruebas nuevas deben pasar contra cuerpo/cuotas.py::puede_revisar_bigpickle.",
+  "puede_danar": [
+   "vigias/test_vigia_claude_revisa_cuando_gratis_duermen.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Toma la ultima funcion del archivo tal cual aparece en el material, la deja intacta y le anade exactamente las tres pruebas que pedió el encargo (mismos nombres, mismos dormidos, mismas llamadas a puede_revisar_bigpickle), sin tocar nada mas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19401 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

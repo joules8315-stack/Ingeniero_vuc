@@ -1,0 +1,26 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_el_sabotaje_es_programa.py que prueba la pieza arnes/sabotaje.py con tres casos (roja, no_encontrado, verde) y restauracion byte a byte.",
+  "archivo": "vigias/test_vigia_el_sabotaje_es_programa.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"VIGIA — EL SABOTAJE ES UN PROGRAMA, NO UNA PROMESA.\n\nSe prueba que sabotaje.sabotear() corre la vigia pedida, mira si se pone roja,\nsi se queda verde o si el texto viejo no aparece, y que SIEMPRE deja los\narchivos como estaban.\n\"\"\"\nimport os\nimport sys\n\nimport pytest\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, 'arnes'))\nimport sabotaje  # noqa: E402\n\n\nPIEZA = 'def doble(x):\\n    return x * 2\\n'\nVIGIA = (\n    'import sys, os\\n'\n    'sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))\\n'\n    'import pieza\\n'\n    '\\n'\n    'def test_doble():\\n'\n    '    assert pieza.doble(2) == 4\\n'\n)\n\n\ndef _montar(tmp_path):\n    \"\"\"Escribe pieza.py y test_p.py en la raiz temporal.\"\"\"\n    (tmp_path / 'pieza.py').write_text(PIEZA, encoding='utf-8')\n    (tmp_path / 'test_p.py').write_text(VIGIA, encoding='utf-8')\n\n\ndef test_sabotaje_rojo_y_restaura(tmp_path):\n    \"\"\"Un sabotaje que rompe la pieza deja la vigia roja y el archivo igual.\"\"\"\n    _montar(tmp_path)\n    antes = (tmp_path / 'pieza.py').read_bytes()\n\n    salida = sabotaje.sabotear(\n        str(tmp_path),\n        'test_p.py',\n        [{'archivo': 'pieza.py', 'viejo': 'x * 2', 'nuevo': 'x * 3'}],\n    )\n\n    assert salida['ok'] is True\n    assert salida['resultados'][0]['estado'] == 'roja'\n    assert (tmp_path / 'pieza.py').read_bytes() == antes\n\n\ndef test_sabotaje_no_encontrado(tmp_path):\n    \"\"\"Si el texto viejo no aparece, el estado es no_encontrado y ok False.\"\"\"\n    _montar(tmp_path)\n    antes = (tmp_path / 'pieza.py').read_bytes()\n\n    salida = sabotaje.sabotear(\n        str(tmp_path),\n        'test_p.py',\n        [{'archivo': 'pieza.py', 'viejo': 'no existe', 'nuevo': 'x * 3'}],\n    )\n\n    assert salida['ok'] is False\n    assert salida['resultados'][0]['estado'] == 'no_encontrado'\n    assert (tmp_path / 'pieza.py').read_bytes() == antes\n\n\ndef test_sabotaje_verde(tmp_path):\n    \"\"\"Si el cambio no rompe nada, el estado es verde y ok False.\"\"\"\n    _montar(tmp_path)\n    antes = (tmp_path / 'pieza.py').read_bytes()\n\n    salida = sabotaje.sabotear(\n        str(tmp_path),\n        'test_p.py',\n        [{'archivo': 'pieza.py', 'viejo': 'def doble', 'nuevo': 'def doble'}],\n    )\n\n    assert salida['ok'] is False\n    assert salida['resultados'][0]['estado'] == 'verde'\n    assert (tmp_path / 'pieza.py').read_bytes() == antes\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada y no rompe ninguna regla."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25260 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (25503 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (25565 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 3"
+ ]
+}

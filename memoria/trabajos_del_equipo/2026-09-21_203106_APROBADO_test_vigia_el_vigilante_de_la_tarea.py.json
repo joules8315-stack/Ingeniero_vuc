@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En vigias/test_vigia_el_vigilante_de_la_tarea.py, la funcion _reloj_falso devuelve una lista simple, y se necesita que ademas sea llamable como reloj() sin dejar de ser lista.",
+  "archivo": "vigias/test_vigia_el_vigilante_de_la_tarea.py",
+  "funcion": "_reloj_falso",
+  "texto_viejo": "    return [float(inicio)]",
+  "texto_nuevo": "    class _Reloj(list):\n        def __call__(self):\n            return self[0]\n\n    return _Reloj([float(inicio)])",
+  "cambio": "Sustituir el return de _reloj_falso: en lugar de devolver una lista normal, definir dentro una clase _Reloj(list) con metodo __call__(self) que devuelve self[0], y devolver _Reloj([float(inicio)]).",
+  "codigo": "    class _Reloj(list):\n        def __call__(self):\n            return self[0]\n\n    return _Reloj([float(inicio)])",
+  "vigia": "vigias/test_vigia_el_vigilante_de_la_tarea.py (la propia prueba que usa _reloj_falso y _dormir_falso)",
+  "puede_danar": [
+   "vigias/test_vigia_el_vigilante_de_la_tarea.py",
+   "cuerpo/vigilante.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "vigilante.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo pedido: _reloj_falso sigue devolviendo una lista (asi _dormir_falso y poll() siguen usando reloj[0]) y ahora ademas se puede llamar como reloj(); usa solo lo que ya existia en el archivo, toca lo minimo y no rompe vecinos."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

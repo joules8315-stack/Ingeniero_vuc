@@ -1,0 +1,24 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la vigia que comprueba que _propuesta_cumple acepta propuestas de reparar con lista 'cambios' y que _prompt_obrero nombra la clave 'cambios' para varios sitios del mismo archivo.",
+  "archivo": "vigias/test_vigia_el_obrero_puede_entregar_varios_trozos.py",
+  "texto_nuevo": "\"\"\"Vigia: el obrero puede entregar varios trozos del MISMO archivo.\n\nDos comprobaciones, cada una importa lo suyo dentro de la prueba:\n\n1) La comprobacion de la respuesta del obrero en modo reparar ACEPTA una propuesta que trae\n   'archivo' y una lista 'cambios' con 'texto_viejo' y 'texto_nuevo' en cada trozo, aunque no\n   traiga 'texto_viejo' ni 'texto_nuevo' sueltos arriba. Se llama a obrero._propuesta_cumple con\n   esa propuesta y la clase 'reparar'.\n\n2) obrero._prompt_obrero(\"material\", \"tarea\", \"reparar\") devuelve un texto que nombra la clave\n   'cambios' y explica que sirve para varios sitios del MISMO archivo.\n\nNo toca ningun otro archivo: solo lee cuerpo/obrero.py a traves de sus funciones.\n\"\"\"\n\nimport os\nimport sys\n\n\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif RAIZ not in sys.path:\n    sys.path.insert(0, RAIZ)\n\n\ndef test_propuesta_cumple_acepta_varios_trozos_en_cambios():\n    \"\"\"Una propuesta de reparar con 'archivo' + lista 'cambios' (cada trozo con texto_viejo y\n    texto_nuevo) tiene que ser ACEPTADA, aunque no traiga texto_viejo ni texto_nuevo sueltos.\"\"\"\n    from cuerpo import obrero\n\n    propuesta = {\n        \"diagnostico\": \"hay que tocar dos sitios del mismo archivo\",\n        \"archivo\": \"cuerpo/obrero.py\",\n        \"cambios\": [\n            {\n                \"funcion\": \"_propuesta_cumple\",\n                \"texto_viejo\": \"if not str(propuesta.get(\\\"archivo\\\") or \\\"\\\").strip():\",\n                \"texto_nuevo\": \"if not str(propuesta.get(\\\"archivo\\\") or \\\"\\\").strip() and not propuesta.get(\\\"cambios\\\"):\",\n            },\n            {\n                \"funcion\": \"_prompt_obrero\",\n                \"texto_viejo\": \"TAREA: {tarea}\",\n                \"texto_nuevo\": \"TAREA: {tarea} (puede traer varios trozos en 'cambios')\",\n            },\n        ],\n        \"confianza\": \"alta\",\n    }\n\n    ok, falta = obrero._propuesta_cumple(propuesta, \"reparar\")\n    assert ok is True, \"la propuesta con varios trozos en 'cambios' fue rechazada: %r\" % (falta,)\n    assert falta == \"\", \"cuando cumple, 'falta' tiene que venir vacio, vino: %r\" % (falta,)\n\n\ndef test_prompt_obrero_reparar_nombra_cambios_para_varios_sitios():\n    \"\"\"El encargo de reparar tiene que nombrar la clave 'cambios' y explicar que sirve para\n    varios sitios del MISMO archivo.\"\"\"\n    from cuerpo import obrero\n\n    texto = obrero._prompt_obrero(\"material\", \"tarea\", \"reparar\")\n    assert isinstance(texto, str) and texto.strip(), \"_prompt_obrero devolvio un texto vacio\"\n\n    bajo = texto.lower()\n    assert \"cambios\" in bajo, \"el encargo de reparar NO nombra la clave 'cambios'\"\n\n    # Tiene que explicar que sirve para varios sitios del MISMO archivo.\n    assert \"varios\" in bajo, \"el encargo NO dice que 'cambios' sirve para varios trozos\"\n    assert \"mismo archivo\" in bajo, \"el encargo NO dice que los trozos son del MISMO archivo\"\n\n    # Y tiene que dejar claro que cada trozo lleva su texto_viejo y su texto_nuevo.\n    assert \"texto_viejo\" in bajo, \"el encargo NO menciona texto_viejo dentro de los trozos\"\n    assert \"texto_nuevo\" in bajo, \"el encargo NO menciona texto_nuevo dentro de los trozos\"\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigia crea exactamente el archivo que pedia el encargo, con sus dos comprobaciones sobre obrero._propuesta_cumple y obrero._prompt_obrero (funciones que el propio encargo nombra y que el programa verifico que existen), importando dentro de cada prueba y sin tocar ningun otro archivo; nadie se invento nada y no hay riesgo para los vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (26785 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

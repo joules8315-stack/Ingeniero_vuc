@@ -1,0 +1,68 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "El bloque except FileExistsError: solo mira la antiguedad del lock, asi que si el proceso dueno murio el lock queda vivo hasta 7200 s y bloquea la fila; ademas hay que evitar el fallo anterior de dejar el archivo abierto y no inventar dependencias.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "fila_de_commits",
+  "texto_viejo": "        except FileExistsError:\n            try:\n                viejo = time.time() - os.path.getmtime(ruta) > 7200\n            except OSError:\n                viejo = False",
+  "texto_nuevo": "        except FileExistsError:\n            try:\n                import psutil\n                with open(ruta, encoding='utf-8') as f:\n                    dueno = int(f.read().strip())\n                muerto = not psutil.pid_exists(dueno)\n            except Exception:\n                muerto = False\n            try:\n                viejo = time.time() - os.path.getmtime(ruta) > 7200 or muerto\n            except OSError:\n                viejo = False",
+  "cambio": "En arnes/candado_equipo.py, dentro de fila_de_commits, en el bloque except FileExistsError:, sustituir la linea viejo = time.time() - os.path.getmtime(ruta) > 7200 por un bloque try que importa psutil, lee el pid del dueno con open(ruta, encoding='utf-8') (cerrado con with, para no dejar el archivo abierto) y calcula muerto = not psutil.pid_exists(dueno); except Exception: muerto = False. Despues, dentro del try/except OSError que ya existe, calcular viejo = time.time() - os.path.getmtime(ruta) > 7200 or muerto. No se toca nada mas.",
+  "codigo": "        except FileExistsError:\n            try:\n                import psutil\n                with open(ruta, encoding='utf-8') as f:\n                    dueno = int(f.read().strip())\n                muerto = not psutil.pid_exists(dueno)\n            except Exception:\n                muerto = False\n            try:\n                viejo = time.time() - os.path.getmtime(ruta) > 7200 or muerto\n            except OSError:\n                viejo = False",
+  "vigia": "Una prueba que cree el archivo de lock con el pid de un proceso ya terminado y compruebe que fila_de_commits lo elimina y entra sin esperar 7200 s; y otra que cree el lock con el pid del propio proceso vivo y compruebe que NO lo elimina y sigue esperando.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/portero.py",
+   "arnes/autorizacion.py",
+   "arnes/asignador.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/via_canonica.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "via_canonica.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación implementa la lógica para verificar si el proceso dueño de un archivo de lock está vivo, evitando bloqueos innecesarios y cumpliendo con el diagnóstico."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (23288 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "GPT-OSS 120B (Groq) no le cabe (24350 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 4"
+ ]
+}

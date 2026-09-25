@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _vigias, una roja ya guardada que es la vigia de una orden pendiente (estado != 'hecha') debe tratarse como roja nueva y dejar pasar con aviso, pero el aviso actual no lo dice y la vigia de prueba queda roja.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "    if guardados:\n        # Al menos uno ya estaba guardado: es romper algo que estaba verde. Frenar.\n        return False, ultima[0].strip()\n    # Todos los rojos son nuevos: dejar pasar con aviso.\n    detalle = \"; \".join(nuevos)\n    return True, \"vigias recien escritas sin su pieza aun (se deja pasar): \" + detalle",
+  "texto_nuevo": "    # Una roja ya guardada que la maquina declaro como vigia de una orden suya\n    # todavia sin terminar (estado != 'hecha') nacio roja a proposito y espera su\n    # arreglo: se trata igual que una roja nueva y deja pasar con aviso.\n    # Cualquier otra roja ya guardada sigue frenando. Si las ordenes no se pueden\n    # leer, se frena como hoy.\n    esperando = set()\n    if guardados:\n        try:\n            ruta_ordenes = os.path.join(raiz, \"memoria\", \"ORDENES.json\")\n            with open(ruta_ordenes, encoding=\"utf-8\") as f:\n                ordenes = json.load(f)\n            for orden in ordenes:\n                if str(orden.get(\"estado\", \"\")).strip().lower() == \"hecha\":\n                    continue\n                vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                if vigia:\n                    esperando.add(vigia)\n        except Exception:\n            esperando = set()\n    guardados_que_frenan = [a for a in guardados if a not in esperando]\n    if guardados_que_frenan:\n        # Al menos uno ya estaba guardado y no espera arreglo: es romper algo que estaba verde. Frenar.\n        return False, ultima[0].strip()\n    # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.\n    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando])\n    return True, \"vigias recien escritas sin su pieza aun o esperando su arreglo (se deja pasar): \" + detalle",
+  "cambio": "En _vigias, al separar rojas nuevas de rojas ya guardadas, leer memoria/ORDENES.json y recoger el campo 'vigia' de toda orden cuyo 'estado' no sea 'hecha'. Una roja ya guardada que aparezca en ese conjunto se trata como roja nueva (deja pasar con aviso). Las demas rojas guardadas siguen frenando. Si ORDENES.json no se puede leer, se frena como hoy. Ademas, el mensaje de aviso cambia para decir que la prueba espera su arreglo.",
+  "codigo": "    esperando = set()\n    if guardados:\n        try:\n            ruta_ordenes = os.path.join(raiz, \"memoria\", \"ORDENES.json\")\n            with open(ruta_ordenes, encoding=\"utf-8\") as f:\n                ordenes = json.load(f)\n            for orden in ordenes:\n                if str(orden.get(\"estado\", \"\")).strip().lower() == \"hecha\":\n                    continue\n                vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                if vigia:\n                    esperando.add(vigia)\n        except Exception:\n            esperando = set()\n    guardados_que_frenan = [a for a in guardados if a not in esperando]\n    if guardados_que_frenan:\n        return False, ultima[0].strip()\n    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando])\n    return True, \"vigias recien escritas sin su pieza aun o esperando su arreglo (se deja pasar): \" + detalle",
+  "vigia": "vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py (caso 2: roja guardada que es vigia de una orden pendiente deja pasar con aviso; caso 1: roja guardada sin tarea pendiente frena; caso 3: todo verde deja pasar)",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No hay riesgo: los vecinos (test_vigia_el_guardia_se_acuerda_y_frena, test_vigia_el_guardia_no_se_cuelga, test_vigia_una_vigia_vieja_que_no_carga_frena) llaman a _vigias con una raiz de mentira que solo tiene vigias/, sin memoria/ORDENES.json, asi que el try falla, esperando queda vacio y se comporta igual que hoy. vecinas.py no se toca."
+  ],
+  "que_falta": [
+   "Nada que impida el cambio. Pulido opcional: cuando NO hay rojas nuevas y solo hay rojas guardadas esperando su arreglo, el mensaje arranca con 'vigias recien escritas sin su pieza aun', que no aplica a ese caso; es forma, no fondo."
+  ],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo pedido: una roja ya guardada que es la vigia declarada de una orden pendiente (estado != 'hecha') deja pasar con aviso que dice que espera su arreglo, sin tocar vecinos ni inventar nada (os/json estan importados y memoria/ORDENES.json existe con los campos vigia/estado), asi que se puede aprobar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21937 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (23340 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (23625 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 3"
+ ]
+}

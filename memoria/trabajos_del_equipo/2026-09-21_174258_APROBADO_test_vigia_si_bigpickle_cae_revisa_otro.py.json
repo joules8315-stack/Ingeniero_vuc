@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El archivo de vigia no aisla el estado global de la marca '_bp_caido' de obrero.auditar, por lo que una prueba puede dejar la marca puesta y romper pruebas vecinas.",
+  "archivo": "vigias/test_vigia_si_bigpickle_cae_revisa_otro.py",
+  "funcion": "cabecera del archivo (imports y bloque previo a test_si_bigpickle_cae_revisa_otro_y_avisa_a38)",
+  "texto_viejo": "from cuerpo import obrero, cuotas  # noqa: E402\nfrom cuerpo import bigpickle as _bp  # noqa: E402\n\n\ndef test_si_bigpickle_cae_revisa_otro_y_avisa_a38(monkeypatch):",
+  "texto_nuevo": "from cuerpo import obrero, cuotas  # noqa: E402\nfrom cuerpo import bigpickle as _bp  # noqa: E402\n\nimport pytest  # noqa: E402\n\n\n@pytest.fixture(autouse=True)\ndef _big_pickle_sin_marca(monkeypatch):\n    # cada prueba empieza sin la marca de Big Pickle caido (orden 101, 2026-09-21)\n    monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False)\n\n\ndef test_si_bigpickle_cae_revisa_otro_y_avisa_a38(monkeypatch):",
+  "cambio": "Insertar, justo despues de la linea 'from cuerpo import bigpickle as _bp  # noqa: E402' y con dos lineas en blanco antes del fixture, el import de pytest y un fixture autouse que resetea obrero.auditar._bp_caido a False en cada prueba del archivo.",
+  "codigo": "import pytest  # noqa: E402\n\n\n@pytest.fixture(autouse=True)\ndef _big_pickle_sin_marca(monkeypatch):\n    # cada prueba empieza sin la marca de Big Pickle caido (orden 101, 2026-09-21)\n    monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False)",
+  "vigia": "vigias/test_vigia_si_bigpickle_cae_revisa_otro.py (el propio archivo, al correr sus pruebas en tanda con las vecinas)",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa, no rompe vecinos y respeta contrato."
+ },
+ "avisos": [
+  "vueltas_dadas: 2"
+ ]
+}

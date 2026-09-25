@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "grok47",
+ "propuesta": {
+  "diagnostico": "El trabajo anterior no marcaba crear=True cuando la pieza no existe, que es lo que pide el encargo.",
+  "archivo": "cuerpo/director.py",
+  "funcion": "orden_nueva",
+  "texto_viejo": "    return (True, 'orden %s creada y puesta la primera' % nueva['id'])",
+  "texto_nuevo": "    return (True, 'orden %s creada y puesta la primera' % nueva['id'])\n\n\ndef orden_corta(raiz, id, pieza, vigia, que_hacer):\n    \"\"\"Crea una orden corta a partir de que_hacer.\n\n    El encargo es que_hacer. Detras, por cada palabra de que_hacer que sea\n    el nombre de una funcion o clase definida en raiz/pieza (si existe), el\n    texto 'def NOMBRE(...): (linea N)' con la linea exacta copiada del\n    archivo y su numero. Detras, 'No toques ningun otro archivo.'.\n\n    Si la pieza no existe, crear es True.\n\n    Luego da de alta la orden con orden_nueva(raiz, json.dumps({...})) con\n    titulo = que_hacer cortado a 90 letras, y devuelve lo mismo que\n    orden_nueva.\n    \"\"\"\n    crear = not os.path.isfile(os.path.join(raiz, pieza))\n\n    lineas = [que_hacer]\n\n    if not crear:\n        try:\n            with open(os.path.join(raiz, pieza), 'r', encoding='utf-8', errors='replace') as f:\n                contenido = f.read()\n        except Exception:\n            contenido = ''\n\n        if contenido:\n            palabras = que_hacer.split()\n            for numero, linea in enumerate(contenido.splitlines(), 1):\n                limpia = linea.strip()\n                if limpia.startswith('def ') or limpia.startswith('class '):\n                    resto = limpia[4:] if limpia.startswith('def ') else limpia[6:]\n                    nombre = ''\n                    for c in resto:\n                        if c.isalnum() or c == '_':\n                            nombre += c\n                        else:\n                            break\n                    if nombre and nombre in palabras:\n                        lineas.append('def %s(...): (linea %d) %s' % (nombre, numero, linea))\n\n    lineas.append('No toques ningun otro archivo.')\n    encargo = '\\n'.join(lineas)\n\n    datos = {\n        'id': id,\n        'titulo': que_hacer[:90],\n        'pieza': pieza,\n        'encargo': encargo,\n        'vigia': vigia,\n        'crear': crear,\n    }\n\n    return orden_nueva(raiz, json.dumps(datos))",
+  "cambio": "Anadir al final de cuerpo/director.py la funcion nueva orden_corta(raiz, id, pieza, vigia, que_hacer) que arma el encargo con que_hacer, las lineas 'def NOMBRE(...): (linea N)' de las funciones o clases de raiz/pieza cuyo nombre aparezca en que_hacer, y 'No toques ningun otro archivo.'; marca crear=True si la pieza no existe; da de alta con orden_nueva(raiz, json.dumps({...})) con titulo = que_hacer cortado a 90 letras; y devuelve lo mismo que orden_nueva.",
+  "codigo": "def orden_corta(raiz, id, pieza, vigia, que_hacer):\n    \"\"\"Crea una orden corta a partir de que_hacer.\n\n    El encargo es que_hacer. Detras, por cada palabra de que_hacer que sea\n    el nombre de una funcion o clase definida en raiz/pieza (si existe), el\n    texto 'def NOMBRE(...): (linea N)' con la linea exacta copiada del\n    archivo y su numero. Detras, 'No toques ningun otro archivo.'.\n\n    Si la pieza no existe, crear es True.\n\n    Luego da de alta la orden con orden_nueva(raiz, json.dumps({...})) con\n    titulo = que_hacer cortado a 90 letras, y devuelve lo mismo que\n    orden_nueva.\n    \"\"\"\n    crear = not os.path.isfile(os.path.join(raiz, pieza))\n\n    lineas = [que_hacer]\n\n    if not crear:\n        try:\n            with open(os.path.join(raiz, pieza), 'r', encoding='utf-8', errors='replace') as f:\n                contenido = f.read()\n        except Exception:\n            contenido = ''\n\n        if contenido:\n            palabras = que_hacer.split()\n            for numero, linea in enumerate(contenido.splitlines(), 1):\n                limpia = linea.strip()\n                if limpia.startswith('def ') or limpia.startswith('class '):\n                    resto = limpia[4:] if limpia.startswith('def ') else limpia[6:]\n                    nombre = ''\n                    for c in resto:\n                        if c.isalnum() or c == '_':\n                            nombre += c\n                        else:\n                            break\n                    if nombre and nombre in palabras:\n                        lineas.append('def %s(...): (linea %d) %s' % (nombre, numero, linea))\n\n    lineas.append('No toques ningun otro archivo.')\n    encargo = '\\n'.join(lineas)\n\n    datos = {\n        'id': id,\n        'titulo': que_hacer[:90],\n        'pieza': pieza,\n        'encargo': encargo,\n        'vigia': vigia,\n        'crear': crear,\n    }\n\n    return orden_nueva(raiz, json.dumps(datos))",
+  "vigia": "Llamar a orden_corta con una pieza que no existe y comprobar que la orden creada trae crear=True; llamarla con una pieza que existe y comprobar que el encargo lleva las lineas 'def NOMBRE(...): (linea N)' de las funciones cuyo nombre aparece en que_hacer, y que termina en 'No toques ningun otro archivo.'; y comprobar que el titulo queda cortado a 90 letras.",
+  "puede_danar": [
+   "cuerpo/codex.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_director.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "test_vigia_director.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "orden_corta hace lo pedido: crear=True si la pieza no existe, arma el encargo con las citas def y el cierre, y da de alta por orden_nueva."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (29610 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "GPT-OSS 120B (Groq) no le cabe (30368 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "vueltas_dadas: 2"
+ ]
+}

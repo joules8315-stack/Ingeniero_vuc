@@ -1,0 +1,74 @@
+{
+  "orden": {
+    "id": "152",
+    "titulo": "El revisor de programa revisa cada trozo de un cambio de varios sitios",
+    "origen": "medido el 2026-09-21 (A-43), orden 95",
+    "repara": "todo cambio de varios trozos se frena en falso, y a la vez ninguno de sus trozos se revisa",
+    "pieza": "arnes/revisor_de_programa.py",
+    "depende": [
+      "151"
+    ],
+    "modo": "IA",
+    "razon": "cada trozo es un cambio normal: se le aplican las mismas cuentas de siempre, uno por uno",
+    "encargo": "En arnes/revisor_de_programa.py, en la funcion revisar, justo despues de la linea tarea = str(tarea or ''), agrega: si p.get('cambios') es una lista no vacia, se revisa cada trozo por separado y se devuelve la suma: todos = []; para cada c de esa lista que sea dict: sub = dict(p); sub.pop('cambios', None); sub.pop('codigo', None); sub['archivo'] = c.get('archivo') or p.get('archivo'); sub['texto_viejo'] = c.get('texto_viejo', ''); sub['texto_nuevo'] = c.get('texto_nuevo', ''); todos.extend(revisar(sub, tarea)); al final return todos. Comentario corto encima: un cambio de varios trozos (lista cambios, ordenes 55-60) se revisa trozo a trozo con las mismas cuentas; sin esto se miraban texto_viejo y texto_nuevo de arriba, vacios, y se acusaba en falso (medido 2026-09-21, orden 95). Es UN solo cambio. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_revisor_de_programa_revisa_cada_trozo.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "despues, la 95 se reintenta"
+  },
+  "huella": "a6df18c20d94b6c1",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_234929_SIN_VEREDICTO_revisor_de_programa.py.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  diagnostico : El material solo trae un trozo parcial de la funcion revisar (no aparece la linea tarea = str(tarea or '') ni el inicio completo), asi que no se puede copiar el texto_viejo literal ni ubicar el punto exacto de insercion sin adivinar.\n  toca        : arnes/revisor_de_programa.py funcion revisar\n  confianza   : baja\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T23:49:29",
+  "analisis": {
+    "que_paso": "La orden 152 (modo IA) pidio a deepseek insertar codigo justo despues de la linea `tarea = str(tarea or \"\")` dentro de la funcion `revisar`. El material que se le entrego era solo un PEDAZO SUELTO de esa funcion, que NO contenia ni esa linea ancla ni el inicio de la funcion. Como el obrero no podia copiar un texto_viejo literal sin adivinar, cumplio la ley de nunca inventar y contesto NO_ENCONTRADO; entonces el revisor de programa se freno con 'EL TEXTO VIEJO NO ESTA EN EL ARCHIVO' y el equipo se quedo SIN VEREDICTO. No se guardo llave y la orden 152 quedo congelada, sin siquiera intentar el cambio.",
+    "causa_raiz": "cerebro/trozos.py corta las piezas por CONTEO FIJO de lineas (TAM=40, SOLAPE=8) de forma mecanica, sin respetar los limites de las funciones. `revisar` es una funcion muy larga (empieza en la linea 230 y sigue mas alla de la 630), asi que queda partida en varios trozos de 40 lineas; el trozo que la busqueda entrego por relevancia era una rebanada del medio que no incluia las lineas 230-241 (la linea ancla que nombra la orden). Resultado: el obrero recibio 'un pedazo suelto' en vez de 'la funcion entera' que el propio prompt le promete, no pudo copiar el texto_viejo literal y se freno con razon. Ninguna orden modo IA que ancle en una linea concreta puede cumplirse mientras el cortador no garantice que el trozo trae esa linea y el inicio de su funcion. Es un fallo de fragmentacion de la herramienta, exactamente el que la LEY del 2026-08-27 manda reparar antes de pedir llaves.",
+    "donde": "cerebro/trozos.py — funcion `cortar` (lineas 54-67) y las constantes TAM/SOLAPE (lineas 17-18). Se manifiesta al chocar contra el candado de arnes/revisor_de_programa.py:254-257 y contra la promesa del prompt en cuerpo/obrero.py:149-151.",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "cerebro/trozos.py",
+        "texto": "TAM = 40          # lineas por trozo"
+      },
+      {
+        "archivo": "cerebro/trozos.py",
+        "texto": "SOLAPE = 8        # lineas repetidas entre trozo y trozo (para no cortar una funcion en seco)"
+      },
+      {
+        "archivo": "cerebro/trozos.py",
+        "texto": "bloque = lineas[i:i + tam]"
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "Trabaja con el material COMPLETO que te dan (la funcion entera), nunca con un pedazo suelto: si"
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "el material no trae la funcion completa que necesitas, pidela con NECESITO_LEER en vez de"
+      },
+      {
+        "archivo": "arnes/revisor_de_programa.py",
+        "texto": "return [\"EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe \"\n                            \"tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se \"\n                            \"mando. Hay que pedir el archivo completo antes de proponer.\"]"
+      }
+    ],
+    "no_volver_a": "Nunca entregar al obrero un trozo cortado a media funcion cuando la orden le pide anclar en una linea concreta: el corte por lineas fijas rompe la promesa de 'la funcion entera' y frena la orden en falso.",
+    "tarea_nueva": {
+      "repara": "el cortador de trozos parte por conteo fijo de lineas y entrega un pedazo suelto que no contiene ni la linea ancla ni el inicio de la funcion, con lo que el obrero no puede copiar el texto_viejo literal y toda orden modo IA que ancle en una linea concreta se congela con NO_ENCONTRADO",
+      "pieza": "cerebro/trozos.py",
+      "razon": "el prompt del obrero (cuerpo/obrero.py:149-151) promete 'la funcion entera', pero cortar() corta por lineas sin respetar el limite de cada def; hay que cortar respetando los limites de funcion",
+      "encargo": "En cerebro/trozos.py, para archivos .py, hacer que el corte de trozos respete los limites de funcion: usar ast para hallar el inicio (linea del def) y el fin de cada funcion/clase, y NO partir una funcion en seco. Como minimo: cuando un trozo caiga dentro de una funcion, extender ese trozo hacia arriba hasta incluir la linea del 'def' que lo abre, para que el obrero reciba la funcion completa (o al menos su ancla). Que la vigia sabotee a proposito un archivo con una funcion larga y compruebe que el trozo entregado contiene la linea del def. No tocar la logica de busqueda TF-IDF ni otras piezas.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Las citas prueban que el cortador trocea por conteo fijo (TAM=40, SOLAPE=8) y que el obrero promete 'la funcion entera', pero ninguna prueba el dato medido de la causa: que `revisar` empiece en la linea 230, pase de la 630 y que el trozo entregado fuera la rebanada del medio sin las lineas 230-241; eso hay que medirlo en el archivo de la funcion, no se prueba con estas citas.",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\152_20260921_234929.json"
+  }
+}

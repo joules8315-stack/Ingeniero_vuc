@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_legislar.py falta el import de re, que la funcion parece_una_orden usa en re.match y re.search, provocando NameError.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "parece_una_orden",
+  "texto_viejo": "import os\nimport sys",
+  "texto_nuevo": "import os\nimport re\nimport sys",
+  "cambio": "Anadir la linea 'import re' entre 'import os' e 'import sys' en la cabecera de imports del archivo, para que quede en orden alfabetico y la funcion parece_una_orden pueda usar re.match y re.search sin NameError.",
+  "codigo": "import os\nimport re\nimport sys",
+  "vigia": "Un test que importe arnes/candado_legislar.py y llame a parece_una_orden con un texto que empiece por 'py' o 'json' (por ejemplo 'py foo'), comprobando que devuelve False sin lanzar NameError.",
+  "puede_danar": [
+   "arnes/candado_cierre.py",
+   "arnes/candado_legislar.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'parece_una_orden' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'parece_una_orden' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'parece_una_orden' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "vueltas_dadas: 4"
+ ]
+}

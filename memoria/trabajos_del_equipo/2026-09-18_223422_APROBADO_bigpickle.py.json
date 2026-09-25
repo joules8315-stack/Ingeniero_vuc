@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/bigpickle.py::_anotar, la llamada a Big Pickle solo se anota en BIGPICKLE.log y no queda en el cuaderno comun de llamadas (memoria/CUADERNO_DE_LLAMADAS.jsonl), asi que no se puede medir ni comparar con las demas IA.",
+  "archivo": "cuerpo/bigpickle.py",
+  "funcion": "_anotar",
+  "texto_viejo": "        with open(RUTA_LOG, \"a\", encoding=\"utf-8\") as fh:\n            fh.write(linea)\n    except Exception:\n        # El log no puede tumbar la llamada.\n        pass",
+  "texto_nuevo": "        with open(RUTA_LOG, \"a\", encoding=\"utf-8\") as fh:\n            fh.write(linea)\n    except Exception:\n        # El log no puede tumbar la llamada.\n        pass\n    try:\n        from cuerpo import cuaderno\n        cuaderno.apuntar(\n            \"bigpickle\",\n            clase=\"auditar\",\n            resultado=(cuaderno.OK if ok else cuaderno.ERROR),\n            crudo=nota,\n            segundos=segundos,\n        )\n    except Exception:\n        # El cuaderno no puede tumbar la llamada.\n        pass",
+  "cambio": "Al final de _anotar, despues del bloque with que escribe en BIGPICKLE.log y de su except, agregar un segundo try/except propio que importe cuerpo.cuaderno y llame a cuaderno.apuntar('bigpickle', clase='auditar', resultado=(cuaderno.OK if ok else cuaderno.ERROR), crudo=nota, segundos=segundos); si falla, pass. No tocar nada mas.",
+  "codigo": "    try:\n        from cuerpo import cuaderno\n        cuaderno.apuntar(\n            \"bigpickle\",\n            clase=\"auditar\",\n            resultado=(cuaderno.OK if ok else cuaderno.ERROR),\n            crudo=nota,\n            segundos=segundos,\n        )\n    except Exception:\n        # El cuaderno no puede tumbar la llamada.\n        pass",
+  "vigia": "Una prueba que llame a _anotar con ok=True y ok=False y compruebe que en el cuaderno de prueba (INGENIERO_CUADERNO_TEST) aparece una linea con quien='bigpickle', clase='auditar', resultado='ok'/'error', crudo=nota y segundos=segundos; y que si cuaderno.apuntar falla, _anotar no lanza excepcion.",
+  "puede_danar": [
+   "cuerpo/bigpickle.py::_anotar",
+   "memoria/CUADERNO_DE_LLAMADAS.jsonl"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno: _anotar solo escribe, nadie la consume; el nuevo try/except propio es aislado y pasa ante cualquier error de cuaderno, asi que el registro nunca puede tumbar la llamada. El cuaderno comun recibe una fila mas (intencion del encargo). La vigia queda aislada de la memoria real por el gancho INGENIERO_CUADERNO_TEST, ya enchufado en vigias/conftest.py."
+  ],
+  "que_falta": [
+   "Nada del codigo: la llamada a cuaderno.apuntar reproduce exactamente la firma real (quien, clase, resultado, crudo, segundos) y los valores OK/ERROR corresponden a 'ok'/'error'. Solo falta correr 'ingeniero.py vigias bigpickle antes' y 'despues' y que Julio lo vea funcionar con sus ojos para sellar."
+  ],
+  "resumen_para_el_jefe": "La reparacion es exactamente la que pide el encargo: anade el segundo try/except en _anotar que apunta 'bigpickle' al cuaderno comun y no puede tumbar la llamada; todo lo que usa (cuaderno.apuntar, cuaderno.OK/ERROR, INGENIERO_CUADERNO_TEST) existe verificado en el codigo, no toca nada mas y no tiene vecinos en riesgo."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

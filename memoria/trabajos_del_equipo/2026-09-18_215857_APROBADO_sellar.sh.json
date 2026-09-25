@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En sellar.sh la linea SEL=$(python \"C:/Ingeniero_VUC/arnes/vecinas.py\" .) guarda la salida de vecinas.py con \\r de Windows pegado a cada ruta, y bash/pytest fallan con 'file or directory not found' y la comparacion con TODAS nunca coincide.",
+  "archivo": "sellar.sh",
+  "funcion": "sellar.sh (linea de asignacion de SEL)",
+  "texto_viejo": "SEL=$(python \"C:/Ingeniero_VUC/arnes/vecinas.py\" .)",
+  "texto_nuevo": "SEL=$(python \"C:/Ingeniero_VUC/arnes/vecinas.py\" . | tr -d '\\r')",
+  "cambio": "Anadir un pipe a tr -d '\\r' dentro de la sustitucion de comandos para eliminar los retornos de carro que Windows mete al final de cada linea de la salida de vecinas.py antes de guardarla en SEL.",
+  "codigo": "SEL=$(python \"C:/Ingeniero_VUC/arnes/vecinas.py\" . | tr -d '\\r')",
+  "vigia": "Ejecutar sellar.sh en Windows y comprobar que SEL contiene rutas sin \\r (por ejemplo que pytest encuentre vigias/test_vigia_anti_humo.py y que la comparacion con TODAS coincida).",
+  "puede_danar": [
+   "cuerpo/config.py",
+   "vigias/test_vigia_director.py",
+   "vigias/test_vigia_ingeniero_autonomo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "config.py",
+   "sellar.sh",
+   "test_vigia_director.py",
+   "test_vigia_ingeniero_autonomo.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cambia solo la linea SEL=$(python ... vecinas.py .) anadiendo el pipe a tr -d '\\r' — exactamente el cambio que el paquete pedia — no toca ningun vecino, no usa nada que no exista y arregla la causa del fallo de \\r en Windows."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

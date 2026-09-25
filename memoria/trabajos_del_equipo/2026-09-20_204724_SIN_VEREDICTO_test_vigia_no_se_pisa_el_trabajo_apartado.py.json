@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "Falta crear la vigia nueva vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py que pruebe que apartar dos veces la misma pieza no borra la copia anterior.",
+  "archivo": "vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py",
+  "funcion": "archivo nuevo completo (no existe en el material)",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "Crear el archivo vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py. La vigia monta una carpeta temporal, llama dos veces a la funcion de arnes/candado_equipo.py que devuelve el trabajo atras y aparta la copia (volver_atras), y comprueba que quedan dos archivos apartados con contenidos distintos. No toca ningun otro archivo.",
+  "codigo": "# -*- coding: utf-8 -*-\n\"\"\"vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py\n\nVIGIA: apartar dos veces la misma pieza NO borra la copia anterior.\n\nJulio, 2026-09-14: \"el trabajo aprobado se pisaba sin dejar rastro\".\n\nQUE PRUEBA: si el guardia aparta dos veces seguidas la misma pieza, las dos copias\nsiguen existiendo: la segunda no borra a la primera. Se llama dos veces a la funcion\nde arnes/candado_equipo.py que devuelve el trabajo atras y aparta la copia\n(volver_atras), y se comprueba que quedan dos archivos apartados con contenidos\ndistintos.\n\nNO toca ningun otro archivo. Trabaja en carpeta temporal.\n\"\"\"\nimport os\nimport sys\nimport tempfile\nimport shutil\nimport subprocess\n\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif RAIZ not in sys.path:\n    sys.path.insert(0, RAIZ)\n\nfrom arnes import candado_equipo\n\n\ndef _git(cwd, *args):\n    return subprocess.run(\n        [\"git\"] + list(args),\n        cwd=cwd,\n        capture_output=True,\n        text=True,\n        stdin=subprocess.DEVNULL,\n    )\n\n\ndef _repo_de_mentira(carpeta):\n    \"\"\"Monta un repositorio git de mentira con un archivo versionado.\"\"\"\n    _git(carpeta, \"init\", \"-q\")\n    _git(carpeta, \"config\", \"user.email\", \"vigia@test\")\n    _git(carpeta, \"config\", \"user.name\", \"vigia\")\n    pieza = os.path.join(carpeta, \"pieza.py\")\n    with open(pieza, \"w\", encoding=\"utf-8\") as f:\n        f.write(\"# version 1\\n\")\n    _git(carpeta, \"add\", \"--\", \"pieza.py\")\n    _git(carpeta, \"commit\", \"-q\", \"-m\", \"version 1\")\n    return pieza\n\n\ndef _apartados(carpeta):\n    \"\"\"Devuelve la lista de archivos apartados (fuera del arbol de trabajo).\"\"\"\n    encontrados = []\n    for raiz, _dirs, ficheros in os.walk(carpeta):\n        for nombre in ficheros:\n            ruta = os.path.join(raiz, nombre)\n            if \"apart\" in ruta.lower() or \"atras\" in ruta.lower():\n                encontrados.append(ruta)\n    return encontrados\n\n\ndef prueba():\n    carpeta = tempfile.mkdtemp(prefix=\"vigia_apartado_\")\n    try:\n        pieza = _repo_de_mentira(carpeta)\n\n        # Primera version: se cambia el contenido y se aparta.\n        with open(pieza, \"w\", encoding=\"utf-8\") as f:\n            f.write(\"# version 2\\n\")\n        hechos1 = candado_equipo.volver_atras(carpeta, [\"pieza.py\"], \"motivo uno\")\n        assert hechos1, \"la primera vuelta atras no aparto nada\"\n        copias1 = _apartados(carpeta)\n        assert copias1, \"no quedo ninguna copia apartada tras la primera vuelta\"\n\n        # Segunda version: se cambia otra vez y se aparta de nuevo.\n        with open(pieza, \"w\", encoding=\"utf-8\") as f:\n            f.write(\"# version 3\\n\")\n        hechos2 = candado_equipo.volver_atras(carpeta, [\"pieza.py\"], \"motivo dos\")\n        assert hechos2, \"la segunda vuelta atras no aparto nada\"\n        copias2 = _apartados(carpeta)\n\n        # LA PRUEBA: la segunda no borro a la primera.\n        assert len(copias2) >= 2, (\n            \"la segunda vuelta atras piso a la primera: solo hay %d copia(s)\" % len(copias2)\n        )\n\n        contenidos = set()\n        for ruta in copias2:\n            with open(ruta, \"r\", encoding=\"utf-8\", errors=\"replace\") as f:\n                contenidos.add(f.read())\n        assert len(contenidos) >= 2, (\n            \"las copias apartadas tienen el mismo contenido: la segunda piso a la primera\"\n        )\n\n        print(\"VIGIA VERDE: apartar dos veces no pisa la copia anterior\")\n        return True\n    finally:\n        shutil.rmtree(carpeta, ignore_errors=True)\n\n\nif __name__ == \"__main__\":\n    prueba()\n",
+  "vigia": "La propia vigia nueva: monta un repo de mentira en carpeta temporal, llama dos veces a candado_equipo.volver_atras sobre la misma pieza, y comprueba que quedan al menos dos archivos apartados con contenidos distintos.",
+  "puede_danar": [
+   "arnes/candado_equipo.py (volver_atras)",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_recoger_los_pedazos.py"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: el material no trae el cuerpo de volver_atras ni el nombre exacto de la carpeta donde aparta las copias; la vigia busca por subcadena 'apart'/'atras' en la ruta. Se confirma que ese es el criterio correcto o se da el nombre exacto de la carpeta de apartados?"
+  ],
+  "confianza": "media"
+ },
+ "auditoria": {},
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (28204 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (28784 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (28842 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (28900 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

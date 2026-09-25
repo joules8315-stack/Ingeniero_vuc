@@ -1,0 +1,70 @@
+{
+  "orden": {
+    "id": "154",
+    "titulo": "En un cambio de varios trozos basta con que la palabra este en alguno",
+    "origen": "medido el 2026-09-22 (A-43), orden 95",
+    "repara": "todo cambio de varios trozos se frena en falso por palabras que estan en otro trozo",
+    "pieza": "arnes/revisor_de_programa.py",
+    "depende": [
+      "153"
+    ],
+    "modo": "IA",
+    "razon": "la cuenta de NO HACE LO QUE SE PIDIO es sobre el cambio entero, no sobre cada pedazo",
+    "encargo": "En arnes/revisor_de_programa.py, en la funcion revisar, en el bloque que agrego la orden 152 (el que empieza con el comentario de un cambio de varios trozos y revisa cada trozo con todos.extend(revisar(sub, tarea))), justo antes de su return todos, agrega: juntos = el texto_viejo y el texto_nuevo de todos los trozos, unidos; y todos = [f for f in todos if not (f.startswith('NO HACE LO QUE SE PIDIO') and f.split(chr(39))[1] in juntos)], con un comentario corto: la palabra del encargo basta con que este en alguno de los trozos (medido 2026-09-22, orden 95). Entrega el bloque de la orden 152 entero como UN solo cambio. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_revisor_de_programa_suma_los_trozos.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "11d652c3c7433c54",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_002004_APROBADO_revisor_de_programa.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (23288 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (24030 letras, aguanta 19042) -> se le salta\n  diagnostico : El bloque de la orden 152 en revisar() no filtra los fallos 'NO HACE LO QUE SE PIDIO' cuando la palabra del encargo aparece en alguno de los trozos, por lo que se rechazan propuestas validas.\n  toca        : arnes/revisor_de_programa.py funcion revisar\n  confianza   : media\n  VEREDICTO   : APROBADO\n  resumen     : La reparacion hace exactamente lo que se pidio: filtra los fallos 'NO HACE LO QUE SE PIDIO' cuando la palabra del encargo ya aparece en algun trozo, usa solo nombres que existen en el archivo, no toca vecinos y no inventa nada.\n\nAPLICADO en disco (lo escribio el equipo): arnes/revisor_de_programa.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   8 failed, 54 passed in 13.36s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): arnes/revisor_de_programa.py\nLLAVE GUARDADA: se puede escribir en 47 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T00:20:24",
+  "analisis": {
+    "que_paso": "El equipo (deepseek escribe, bigpickle revisa) propuso y APROBO el cambio de la orden 154 y se aplico en disco, pero al guardar el guardia corrio las vigias y salieron 8 ROJAS (8 failed, 54 passed), asi que NO se guardo y se volvio atras. La orden quedo sin sellar.",
+    "causa_raiz": "El codigo nuevo se pego en el LUGAR EQUIVOCADO. El encargo pedia agregarlo justo antes del return todos del bloque de la orden 152 (donde la lista se llama todos y los trozos se recorren con for c in p.get('cambios')). En cambio deepseek lo anclo DESPUES del bucle de la cuenta 4 'NO HACE LO QUE SE PIDIO' (el que empieza con for palabra in set(re.findall(...))), es decir en el camino de UN SOLO trozo, donde NO existen ni trozos ni todos. Su texto_nuevo usa 'for t in trozos': trozos no esta definido en ese punto. Por eso, en cuanto se corre una revision de un solo trozo se dispara NameError, que el try/except final de revisar convierte en el fallo 'El revisor no pudo terminar la revision...', ensuciando la salida de decenas de vigias -> 8 rojas. El auditor bigpickle lo aprobo afirmando en falso que 'usa solo nombres que existen en el archivo' sin correr las vigias; el guardia funciono y freno el guardado.",
+    "donde": "arnes/revisor_de_programa.py, funcion revisar. El bloque nuevo quedo pegado tras el bucle de la cuenta 4 (NO HACE LO QUE SE PIDIO, ~lineas 634-641), dentro del camino de un solo trozo, en vez de justo antes del return todos del bloque de la orden 152 (linea 256).",
+    "quien_fallo": "equipo",
+    "citas": [
+      {
+        "archivo": "arnes/revisor_de_programa.py",
+        "texto": "        if isinstance(p.get(\"cambios\"), list) and p.get(\"cambios\"):\n            todos = []\n            for c in p.get(\"cambios\"):"
+      },
+      {
+        "archivo": "arnes/revisor_de_programa.py",
+        "texto": "                todos.extend(revisar(sub, tarea))\n            return todos"
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-22_002004_APROBADO_revisor_de_programa.py.json",
+        "texto": "juntos = \" \".join([str(t.get(\"texto_viejo\") or \"\") + \" \" + str(t.get(\"texto_nuevo\") or \"\") for t in trozos])"
+      },
+      {
+        "archivo": "arnes/revisor_de_programa.py",
+        "texto": "    except Exception as e:      # un revisor que revienta deja pasar todo\n        fallos.append(\"El revisor no pudo terminar la revision: %s\" % str(e)[:140])"
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-22_002004_APROBADO_revisor_de_programa.py.json",
+        "texto": "\"resumen_para_el_jefe\": \"La reparacion hace exactamente lo que se pidio: filtra los fallos 'NO HACE LO QUE SE PIDIO' cuando la palabra del encargo ya aparece en algun trozo, usa solo nombres que existen en el archivo, no toca vecinos y no inventa nada.\""
+      }
+    ],
+    "no_volver_a": "Nunca aprobar un trozo sin correr sus vigias y sin comprobar que las variables que usa (aqui trozos y todos) existen EXACTAMENTE en el punto del archivo donde se va a pegar.",
+    "tarea_nueva": {
+      "repara": "el revisor mecanico da por bueno (_comprobado_por_programa: true) un trozo que usa una variable inexistente en el punto donde se pega (aqui trozos y todos), porque juzga el pedazo suelto y no el archivo ya con el cambio dentro; solo lo caza el guardia despues de aplicar y volver atras",
+      "pieza": "arnes/revisor_de_programa.py",
+      "razon": "cazar el error donde nace, antes de aplicar, en vez de revisar el trozo aislado, cerrando el hueco de diseno que dejo pasar un NameError",
+      "encargo": "En arnes/revisor_de_programa.py, cuando el trozo trae un texto_viejo que SI existe en el archivo, construir el archivo resultante (reemplazando viejo por nuevo), pasarlo por ast.parse y por la comprobacion de nombres que ya existe, de modo que un nombre usado y no definido en ese contexto (como trozos) salga como fallo ANTES de aprobar. No tocar ningun otro archivo. Escribir primero la vigia que se pone ROJA con este caso.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "citas",
+    "motivo": "citas que no existen: [{\"archivo\": \"memoria/trabajos_del_equipo/2026-09-22_002004_APROBADO_revisor_de_programa.py.json\", \"texto\": \"juntos = \\\" \\\".join([str(t.get(\\\"texto_viejo\\\") or \\\"\\\") + \\\" \\\" + str(t.get(\\\"texto_nuevo\\\") or \\\"\\\") for t in trozos])\", \"por_que\": \"no aparece literal\"}]",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\154_20260922_002024.json"
+  }
+}

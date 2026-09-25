@@ -1,0 +1,26 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El candado arnes/candado_terminal.py solo bloquea la lectura de variables de entorno (ENV_READER) pero no la apertura directa del archivo de llaves .env, por lo que cat/type/Get-Content .env devuelven 0; la vigia nueva debe exigir 2 en esas cuatro ordenes y 0 en las normales.",
+  "archivo": "vigias/test_vigia_el_archivo_de_llaves_no_se_abre_por_la_terminal.py",
+  "texto_nuevo": "\"\"\"VIGIA: el archivo de llaves NO se abre por la terminal.\n\nLEY (Julio): las llaves viven SOLO en el archivo de llaves y NUNCA se leen por la\nterminal. Ni con cat, ni con type, ni con Get-Content, ni con la ruta completa.\n\nLO MEDIDO EL 2026-09-21: el candado arnes/candado_terminal.py dejaba pasar las cuatro\nordenes de abajo devolviendo 0. Esta vigia nace ROJA y exige que TODAS devuelvan 2.\n\nCOMO SE COMPRUEBA: se ejecuta el candado DE VERDAD con subprocess, pasandole por la\nentrada el JSON del gancho (hook_event_name=PreToolUse, tool_name=Bash, tool_input.command).\nSe pone INGENIERO_OFF vacio en el entorno para que el interruptor no altere la prueba.\n\nY ademas se comprueba que ordenes normales (dir, git status, python -m pytest vigias)\nsiguen devolviendo 0, para no frenar en falso.\n\"\"\"\n\nimport json\nimport os\nimport subprocess\nimport sys\n\n\n# Raiz del proyecto: este archivo vive en <raiz>/vigias/, asi que la raiz es su abuelo.\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nCANDADO = os.path.join(RAIZ, \"arnes\", \"candado_terminal.py\")\n\n\n# Las cuatro ordenes que HOY se cuelan y que la ley prohibe.\nORDENES_PROHIBIDAS = [\n    \"cat .env\",\n    \"type .env\",\n    \"Get-Content .env\",\n    \"Get-Content C:/Ingeniero_VUC/.env\",\n]\n\n# Ordenes normales que NO se deben frenar.\nORDENES_PERMITIDAS = [\n    \"dir\",\n    \"git status\",\n    \"python -m pytest vigias\",\n]\n\n\ndef _entorno_limpio():\n    \"\"\"Entorno con INGENIERO_OFF vacio para que el interruptor no altere la prueba.\"\"\"\n    env = dict(os.environ)\n    env[\"INGENIERO_OFF\"] = \"\"\n    return env\n\n\ndef _correr_candado(command):\n    \"\"\"Ejecuta el candado de verdad con la orden dada y devuelve su codigo de salida.\"\"\"\n    payload = {\n        \"hook_event_name\": \"PreToolUse\",\n        \"tool_name\": \"Bash\",\n        \"tool_input\": {\"command\": command},\n    }\n    entrada = json.dumps(payload).encode(\"utf-8\")\n    proc = subprocess.run(\n        [sys.executable, CANDADO],\n        input=entrada,\n        stdout=subprocess.PIPE,\n        stderr=subprocess.PIPE,\n        cwd=RAIZ,\n        env=_entorno_limpio(),\n    )\n    return proc.returncode\n\n\ndef test_el_candado_existe():\n    \"\"\"Sin el candado no hay nada que vigilar: si falta, la vigia avisa claro.\"\"\"\n    assert os.path.isfile(CANDADO), (\n        \"No existe el candado que hay que vigilar: %s\" % CANDADO\n    )\n\n\ndef test_las_cuatro_ordenes_de_llaves_devuelven_2():\n    \"\"\"cat/type/Get-Content sobre el archivo de llaves: TODAS deben devolver 2.\"\"\"\n    fallos = []\n    for orden in ORDENES_PROHIBIDAS:\n        codigo = _correr_candado(orden)\n        if codigo != 2:\n            fallos.append(\"%r devolvio %s (se esperaba 2)\" % (orden, codigo))\n    assert not fallos, (\n        \"El archivo de llaves se abre por la terminal. La ley dice que NUNCA. \"\n        \"Ordenes que se colaron: \" + \"; \".join(fallos)\n    )\n\n\ndef test_las_ordenes_normales_devuelven_0():\n    \"\"\"dir, git status y pytest vigias NO se deben frenar: devuelven 0.\"\"\"\n    fallos = []\n    for orden in ORDENES_PERMITIDAS:\n        codigo = _correr_candado(orden)\n        if codigo != 0:\n            fallos.append(\"%r devolvio %s (se esperaba 0)\" % (orden, codigo))\n    assert not fallos, (\n        \"El candado frena en falso ordenes normales: \" + \"; \".join(fallos)\n    )\n\n\nif __name__ == \"__main__\":\n    # Permite correrlo a mano: python vigias/test_vigia_el_archivo_de_llaves_no_se_abre_por_la_terminal.py\n    test_el_candado_existe()\n    test_las_cuatro_ordenes_de_llaves_devuelven_2()\n    test_las_ordenes_normales_devuelven_0()\n    print(\"OK: el archivo de llaves no se abre por la terminal y lo normal pasa.\")\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "corrida a mano (python vigias/test_vigia_el_archivo_de_llaves_no_se_abre_por_la_terminal.py) cuando el candado ya mida 2: cada ejecucion anota 4 cazadas en el CANDADOS_MEDICION.json real, porque _entorno_limpio() no fuerza INGENIERO_CANDADOS_MEDICION_TEST y el desvio de conftest.py:78 no viaja a un programa aparte; bajo pytest no hay problema. Poner ese desvio en _entorno_limpio() lo cierra"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigía nueva hace exactamente lo pedido, nace roja midiendo un fallo real y comprobado del candado, no inventa nada y no rompe vecinos; solo conviene que su corrida a mano no ensucie la medición real de los candados, nota menor sin rechazo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20241 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

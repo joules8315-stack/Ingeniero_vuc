@@ -1,0 +1,32 @@
+{
+  "orden": {
+    "id": "13",
+    "titulo": "Vigia INESTABLE: el diccionario de Julio se pone rojo a veces",
+    "origen": "bateria completa del 2026-09-20, 11:30",
+    "repara": "vigias/test_vigia_diccionario_de_julio.py::test_lo_mas_reciente_manda salio ROJA en una tanda completa y VERDE en la siguiente, sin que cambiara nada del codigo. Sola siempre pasa",
+    "pieza": "vigias/test_vigia_diccionario_de_julio.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "una vigia inestable no vale para nada: o frena siempre por lo mismo o no frena. Es ley de la casa y esta en el libro de fallos",
+    "encargo": "Averiguar por que vigias/test_vigia_diccionario_de_julio.py, en la prueba test_lo_mas_reciente_manda, sale roja solo a veces cuando corre la bateria entera, y verde siempre cuando corre sola. La sospecha es que otra prueba le deja algo puesto: el ayudante que la aparta solo cambia la ruta del diccionario, pero la funcion aprender comprueba ademas que el sitio exista en el disco, y eso depende de desde donde se corra. La reparacion tiene que dejar la prueba aislada del todo. Un solo archivo y ninguno mas.",
+    "vigia": "vigias/test_vigia_diccionario_de_julio.py",
+    "prueba_real": "correr la bateria entera tres veces seguidas y que salga verde las tres",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0
+  },
+  "huella": "9dd7206dca7af8ec",
+  "tipo": "tiempo",
+  "codigo": null,
+  "salida": "TOPE DE TIEMPO: 900 s",
+  "apartados": [],
+  "fecha": "2026-09-20T14:42:53",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: Ya te dejé el informe del peritaje. Te lo cuento en simple, sin palabras raras:\n\nLa prueba que a veces sale mal no se echa a perder por lo que decía la tarea. La tarea mandaba retocar solo la prueba, ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\13_20260920_144253.json"
+  }
+}

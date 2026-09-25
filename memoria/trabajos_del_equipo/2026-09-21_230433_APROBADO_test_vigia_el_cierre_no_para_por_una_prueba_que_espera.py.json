@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare debe renombrarse y cambiar su texto de ayuda y su assert final.",
+  "archivo": "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py",
+  "funcion": "test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare",
+  "texto_viejo": "def test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare(monkeypatch, tmp_path):\n    \"\"\"Si hay una orden pendiente sobre la propia prueba, el primer valor es False:\n    el cierre para por una prueba que se edita a si misma.\"\"\"\n    ordenes = {\n        \"ordenes\": [\n            {\"estado\": \"pendiente\", \"vigia\": \"vigias/test_a.py\", \"pieza\": \"vigias/test_a.py\"},\n        ]\n    }\n    raiz = _preparar(monkeypatch, tmp_path, ordenes)\n    verde, detalle = candado_cierre._vigias_verdes(raiz)\n    assert verde is False, detalle",
+  "texto_nuevo": "def test_orden_que_corrige_su_propia_prueba_tambien_espera(monkeypatch, tmp_path):\n    \"\"\"Una orden pendiente que corrige su propia prueba tambien espera: el cierre no sabe que tarea se guarda ahora, eso lo mira el guardia (medido 2026-09-21)\"\"\"\n    ordenes = {\n        \"ordenes\": [\n            {\"estado\": \"pendiente\", \"vigia\": \"vigias/test_a.py\", \"pieza\": \"vigias/test_a.py\"},\n        ]\n    }\n    raiz = _preparar(monkeypatch, tmp_path, ordenes)\n    verde, detalle = candado_cierre._vigias_verdes(raiz)\n    assert verde is True, detalle",
+  "cambio": "Renombrar la funcion a test_orden_que_corrige_su_propia_prueba_tambien_espera, sustituir el texto de ayuda por el indicado y cambiar el assert final de 'assert verde is False, detalle' a 'assert verde is True, detalle'.",
+  "codigo": "def test_orden_que_corrige_su_propia_prueba_tambien_espera(monkeypatch, tmp_path):\n    \"\"\"Una orden pendiente que corrige su propia prueba tambien espera: el cierre no sabe que tarea se guarda ahora, eso lo mira el guardia (medido 2026-09-21)\"\"\"\n    ordenes = {\n        \"ordenes\": [\n            {\"estado\": \"pendiente\", \"vigia\": \"vigias/test_a.py\", \"pieza\": \"vigias/test_a.py\"},\n        ]\n    }\n    raiz = _preparar(monkeypatch, tmp_path, ordenes)\n    verde, detalle = candado_cierre._vigias_verdes(raiz)\n    assert verde is True, detalle",
+  "vigia": "Ejecutar la prueba renombrada y comprobar que pasa en verde con el nuevo assert.",
+  "puede_danar": [
+   "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_a.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que pide el encargo: renombra la funcion, pone el texto de ayuda indicado y cambia el assert a True sobre el mismo cuerpo, sin tocar nada mas."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

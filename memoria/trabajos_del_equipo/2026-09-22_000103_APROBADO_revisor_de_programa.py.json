@@ -1,0 +1,60 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/revisor_de_programa.py, la funcion revisar no contempla la lista 'cambios' del contrato VARIOS_CAMBIOS_EN_UNA_RONDA: cuando llega una propuesta con varios trozos, mira texto_viejo y texto_nuevo de arriba (vacios) y acusa en falso.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        viejo = str(p.get(\"texto_viejo\") or \"\")\n        nuevo = str(p.get(\"texto_nuevo\") or p.get(\"codigo\") or \"\")\n        tarea = str(tarea or \"\")",
+  "texto_nuevo": "        viejo = str(p.get(\"texto_viejo\") or \"\")\n        nuevo = str(p.get(\"texto_nuevo\") or p.get(\"codigo\") or \"\")\n        tarea = str(tarea or \"\")\n        # un cambio de varios trozos (lista cambios, ordenes 55-60) se revisa trozo a trozo con las mismas cuentas;\n        # sin esto se miraban texto_viejo y texto_nuevo de arriba, vacios, y se acusaba en falso (medido 2026-09-21, orden 95).\n        if isinstance(p.get(\"cambios\"), list) and p.get(\"cambios\"):\n            todos = []\n            for c in p.get(\"cambios\"):\n                if not isinstance(c, dict):\n                    continue\n                sub = dict(p)\n                sub.pop(\"cambios\", None)\n                sub.pop(\"codigo\", None)\n                sub[\"archivo\"] = c.get(\"archivo\") or p.get(\"archivo\")\n                sub[\"texto_viejo\"] = c.get(\"texto_viejo\", \"\")\n                sub[\"texto_nuevo\"] = c.get(\"texto_nuevo\", \"\")\n                todos.extend(revisar(sub, tarea))\n            return todos",
+  "cambio": "Justo despues de la linea 'tarea = str(tarea or \"\")' dentro de la funcion revisar, anadir el bloque que recorre la lista 'cambios' y revisa cada trozo por separado con las mismas cuentas, devolviendo la suma; con un comentario corto encima explicando el porque.",
+  "codigo": "        if isinstance(p.get(\"cambios\"), list) and p.get(\"cambios\"):\n            todos = []\n            for c in p.get(\"cambios\"):\n                if not isinstance(c, dict):\n                    continue\n                sub = dict(p)\n                sub.pop(\"cambios\", None)\n                sub.pop(\"codigo\", None)\n                sub[\"archivo\"] = c.get(\"archivo\") or p.get(\"archivo\")\n                sub[\"texto_viejo\"] = c.get(\"texto_viejo\", \"\")\n                sub[\"texto_nuevo\"] = c.get(\"texto_nuevo\", \"\")\n                todos.extend(revisar(sub, tarea))\n            return todos",
+  "vigia": "vigias/test_vigia_el_revisor_de_programa_revisa_cada_trozo.py — que una propuesta con lista 'cambios' no vacia se revise trozo a trozo y no acuse en falso por mirar texto_viejo/texto_nuevo vacios de arriba.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_revisor_de_programa_revisa_cada_trozo.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_el_texto_viejo_tiene_que_existir.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+   "vigias/test_vigia_un_borrado_que_el_encargo_nombra_no_se_frena.py",
+   "vigias/test_vigia_el_archivo_carga.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "test_vigia_el_archivo_carga.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_el_revisor_de_programa_revisa_cada_trozo.py",
+   "test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "test_vigia_el_texto_viejo_tiene_que_existir.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_borrado_que_el_encargo_nombra_no_se_frena.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio recorre la lista 'cambios' trozo a trozo con las mismas cuentas y devuelve la suma, arregla la acusacion en falso que describia el diagnostico y no toca a ningun vecino porque solo se activa cuando llega esa lista."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

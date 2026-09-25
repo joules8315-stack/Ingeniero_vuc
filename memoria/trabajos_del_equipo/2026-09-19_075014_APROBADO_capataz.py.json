@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Al final de cuerpo/capataz.py quedó una copia muerta de código (desde 'encontrada = False' hasta 'return True') después del último 'return \"\"', que nunca se ejecuta porque va tras un return y que ya vive dentro de marcar_estado.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "final del archivo, después del último 'return \"\"' (copia muerta fuera de marcar_estado)",
+  "texto_viejo": "encontrada = False\n    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            orden[\"paso_fallido\"] = paso_fallido\n            orden[\"fallos_seguidos\"] = fallos_seguidos\n            encontrada = True\n            break\n    if not encontrada:\n        return False\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2, ensure_ascii=False)\n    return True",
+  "texto_nuevo": "",
+  "cambio": "Borrar únicamente la copia muerta del final del archivo (el bloque que empieza en 'encontrada = False' y termina en 'return True'); el 'return \"\"' que va justo antes se queda tal cual.",
+  "codigo": "",
+  "vigia": "Importar cuerpo/capataz.py (el intérprete no debe fallar) y comprobar que marcar_estado sigue funcionando igual: con un id existente devuelve True y actualiza estado/paso_fallido/fallos_seguidos; con un id inexistente devuelve False.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "texto_viejo NO es único: el bloque 'encontrada = False ... return True' que la propuesta da como 'copia muerta' es TEXUALMENTE el mismo del trozo vivo dentro de marcar_estado (cuerpo/capataz.py:37-53). Si el borrado se ancla solo en ese texto (primer match) se arranca el cuerpo de marcar_estado y el archivo queda roto; el cambio DEBE anclarse en el 'return \"\"' final que lo precede y borrar el bloque que queda DESPUÉS.",
+   "La copia muerta del final no se ve en ningún trozo del material: solo la afirma el 'problema' del encargo. Si al abrir el archivo real no aparece un segundo bloque tras el último 'return \"\"', no hay que borrar NADA del bloque vivo.",
+   "La vigia que propone (comprobar marcar_estado con id existente y que actualiza) toca memoria/ORDENES.json REAL a través de la ruta interna de marcar_estado; probarlo directamente puede corromper datos de verdad. Hay que probarlo sobre una copia temporal."
+  ],
+  "riesgo_vecinos": [
+   "marcar_estado: un borrado mal anclado se lleva el bloque VIVO que ese mismo texto identifica, y es justo lo que la vigia protege.",
+   "memoria/ORDENES.json: la vigia propuesta lo escribe; si se corre sobre el archivo real puede dañar órdenes vigentes."
+  ],
+  "que_falta": [
+   "Anclar el borrado al final (después del último 'return \"\"') y verificar que quede UNA sola copia del bloque en todo el archivo.",
+   "Antes de borrar, confirmar que la copia muerta existe en el archivo real; si no existe, abstenerse.",
+   "Correr la vigia con ORDENES.json en sandbox, no el real, y verificar que el intérprete importa capataz.py sin fallar."
+  ],
+  "resumen_para_el_jefe": "Hace exactamente lo que el encargo pide (borrar la copia muerta tras el último 'return \"\"', dejando ese return y a marcar_estado intactos) y no inventa nada, pero el texto a borrar es idéntico al del bloque VIVO: debe borrarse la ocurrencia posterior al último return, jamás la primera que encuentre, y la vigia debe probarse sin pisar el ORDENES.json real."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

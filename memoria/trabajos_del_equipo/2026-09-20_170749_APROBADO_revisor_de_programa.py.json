@@ -1,0 +1,71 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "La comprobacion 2c (SE QUEDA SIN CUERPO) esta puesta despues del atajo que devuelve fallos cuando solo se borra, asi que nunca dispara en el caso que mas importa: un cambio que solo borra y se come el cuerpo de una prueba.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        if not nuevo.strip():\n            # Solo se borra: las demas cuentas suponen que hay codigo nuevo que leer, asi que\n            # se devuelve la lista de fallos tal como va, sin mirar mas cuentas.\n            return fallos",
+  "texto_nuevo": "        # 2c — SE QUEDA SIN CUERPO: una prueba que se queda con su docstring y nada mas\n        # PASA SIEMPRE. El candado sigue en su sitio pero ya no vigila nada y nadie se entera.\n        # Medido el 2026-09-20: un cambio del equipo se comio el cuerpo entero de una prueba\n        # ya guardada. Es CUENTA: se comparan los cuerpos de las funciones test_ antes y\n        # despues. Si algo falla aqui, no se agrega nada y se sigue como siempre.\n        try:\n            _ruta_c = str(p.get(\"archivo\") or \"\")\n            if (_ruta_c.lower().endswith(\".py\") and os.path.isfile(_ruta_c)\n                    and viejo.strip()):\n                with open(_ruta_c, encoding=\"utf-8-sig\", errors=\"replace\") as _fc:\n                    _antes_c = _fc.read()\n                if viejo in _antes_c:\n                    _despues_c = _antes_c.replace(viejo, nuevo, 1)\n                    _arbol_antes_c = ast.parse(_antes_c)\n                    _arbol_despues_c = ast.parse(_despues_c)\n                    _sin_antes = _pruebas_sin_cuerpo(_arbol_antes_c)\n                    _sin_despues = _pruebas_sin_cuerpo(_arbol_despues_c)\n                    for _nombre in sorted(_sin_despues - _sin_antes):\n                        fallos.append(\n                            \"SE QUEDA SIN CUERPO: la prueba '%s' tenia cuerpo antes y ahora \"\n                            \"no tiene nada o solo pass. Una prueba sin cuerpo PASA SIEMPRE: \"\n                            \"el candado sigue en su sitio pero deja de vigilar y nadie lo nota.\"\n                            % _nombre)\n        except Exception:\n            pass\n\n        if not nuevo.strip():\n            # Solo se borra: las demas cuentas suponen que hay codigo nuevo que leer, asi que\n            # se devuelve la lista de fallos tal como va, sin mirar mas cuentas.\n            return fallos",
+  "cambio": "Subir el bloque 2c (comentario y try/except con pass) para que quede ANTES del atajo que devuelve fallos cuando solo se borra, dejando las tres lineas del atajo igual que estaban. El bloque se copia entero y sin cambiar nada de su contenido; en otro encargo se quitara el de abajo, que quedara repetido.",
+  "codigo": "        # 2c — SE QUEDA SIN CUERPO: una prueba que se queda con su docstring y nada mas\n        # PASA SIEMPRE. El candado sigue en su sitio pero ya no vigila nada y nadie se entera.\n        # Medido el 2026-09-20: un cambio del equipo se comio el cuerpo entero de una prueba\n        # ya guardada. Es CUENTA: se comparan los cuerpos de las funciones test_ antes y\n        # despues. Si algo falla aqui, no se agrega nada y se sigue como siempre.\n        try:\n            _ruta_c = str(p.get(\"archivo\") or \"\")\n            if (_ruta_c.lower().endswith(\".py\") and os.path.isfile(_ruta_c)\n                    and viejo.strip()):\n                with open(_ruta_c, encoding=\"utf-8-sig\", errors=\"replace\") as _fc:\n                    _antes_c = _fc.read()\n                if viejo in _antes_c:\n                    _despues_c = _antes_c.replace(viejo, nuevo, 1)\n                    _arbol_antes_c = ast.parse(_antes_c)\n                    _arbol_despues_c = ast.parse(_despues_c)\n                    _sin_antes = _pruebas_sin_cuerpo(_arbol_antes_c)\n                    _sin_despues = _pruebas_sin_cuerpo(_arbol_despues_c)\n                    for _nombre in sorted(_sin_despues - _sin_antes):\n                        fallos.append(\n                            \"SE QUEDA SIN CUERPO: la prueba '%s' tenia cuerpo antes y ahora \"\n                            \"no tiene nada o solo pass. Una prueba sin cuerpo PASA SIEMPRE: \"\n                            \"el candado sigue en su sitio pero deja de vigilar y nadie lo nota.\"\n                            % _nombre)\n        except Exception:\n            pass",
+  "vigia": "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py y vigias/test_vigia_un_cambio_que_solo_borra_vale.py: comprueban que un cambio que solo borra y deja una prueba sin cuerpo dispara el fallo SE QUEDA SIN CUERPO, y que un cambio que solo borra sin tocar pruebas sigue devolviendo la lista tal como va.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "arnes/asignador.py",
+   "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+   "vigias/test_vigia_un_cambio_que_solo_borra_vale.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_el_texto_viejo_tiene_que_existir.py",
+   "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "vigias/test_vigia_el_archivo_carga.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+   "vigias/test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "candado_equipo.py",
+   "test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "test_vigia_el_archivo_carga.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "test_vigia_el_texto_viejo_tiene_que_existir.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+   "test_vigia_un_cambio_que_solo_borra_vale.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Duplicidad temporal del bloque de comprobación 2c: hasta que se elimine la versión original (ubicada más abajo), los cambios que NO sean solo borrado verán sus errores de 'SE QUEDA SIN CUERPO' duplicados en la lista de fallos."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio corrige el flujo lógico moviendo la comprobación 2c antes del atajo de salida para borrados, permitiendo detectar pruebas vaciadas; la duplicidad es un paso intermedio aceptable."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (28124 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini2 con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

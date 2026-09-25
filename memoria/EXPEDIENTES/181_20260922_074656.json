@@ -1,0 +1,68 @@
+{
+  "orden": {
+    "id": "181",
+    "titulo": "La vigia de que Codex sigue sin manos acepta tambien la orden del director",
+    "origen": "orden de Julio A-48 (2026-09-22): Codex dirige el loop con python ingeniero.py director. La vigia de la orden 54 solo acepta arranca, trabaja, equipo y pit, y se pondria roja al instalar las reglas nuevas (ordenes 176-177)",
+    "repara": "la vigia de Codex frenaria en falso el permiso del director",
+    "pieza": "vigias/test_vigia_codex_sigue_sin_manos.py",
+    "modo": "IA",
+    "razon": "el director es una orden del Ingeniero que escribe por programa, igual que pit",
+    "encargo": "En vigias/test_vigia_codex_sigue_sin_manos.py, las lineas 148 a 154 son: (sin espacios) # Son las ordenes al equipo, igual que Claude: arranca, trabaja, equipo, pit. / _PREFIJOS_ALLOW = ( / (4 espacios) \"python ingeniero.py arranca\", / (4 espacios) \"python ingeniero.py trabaja\", / (4 espacios) \"python ingeniero.py equipo\", / (4 espacios) \"python ingeniero.py pit\", / ). Usa esas lineas tal cual como texto_viejo. En el texto_nuevo, el comentario pasa a decir: Son las ordenes al equipo y al director, igual que Claude: arranca, trabaja, equipo, pit y director (A-48, 2026-09-22), y se agrega (4 espacios) \"python ingeniero.py director\", despues de la de pit. En la linea 203 el mensaje 'Solo se permite ...arranca|trabaja|equipo|pit' pasa a arranca|trabaja|equipo|pit|director: entregalo como segundo cambio en la lista cambios. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_codex_sigue_sin_manos.py",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "7c35f6bf2116f203",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_074646_APROBADO_test_vigia_codex_sigue_sin_manos.py.json\nOBRERO deepseek -> AUDITOR grok47\n  aviso       : GPT-OSS 120B (Groq) no le cabe (36857 letras, aguanta 19042) -> se le salta\n  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None\n  aviso       : bigpickle no contesto: revisa Grok 4.7 (A-45)\n  diagnostico : En vigias/test_vigia_codex_sigue_sin_manos.py falta el prefijo 'python ingeniero.py director' en _PREFIJOS_ALLOW y el mensaje de error de la prueba 3 no lo menciona.\n  toca        : vigias/test_vigia_codex_sigue_sin_manos.py funcion _PREFIJOS_ALLOW y test de reglas allow (Prueba 3)\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : El cambio hace exactamente lo pedido: mete el prefijo director en la lista permitida y lo nombra en el mensaje de la prueba 3, sin tocar otro archivo.\n\nAPLICADO en disco (lo escribio el equipo): vigias/test_vigia_codex_sigue_sin_manos.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   2 failed, 3 passed in 0.81s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): vigias/test_vigia_codex_sigue_sin_manos.py\nLLAVE GUARDADA: se puede escribir en 250 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T07:46:56",
+  "analisis": {
+    "que_paso": "El equipo hizo EXACTAMENTE lo pedido en la orden 181: deepseek agrego 'python ingeniero.py director' a la tupla _PREFIJOS_ALLOW y al mensaje de error de la Prueba 3, sin tocar otro archivo, y grok47 (que reemplazo a bigpickle no disponible) lo APROBO. Pero al aplicarlo el guardia corrio pytest sobre la vigia y encontro '2 failed, 3 passed', se nego a guardar ('No se guarda dejando algo roto') y se volvio todo atras. La orden quedo sin sellar.",
+    "causa_raiz": "La vigia test_vigia_codex_sigue_sin_manos.py no valida un texto fijo: sus 5 pruebas LEEN la configuracion REAL del usuario en ~/.codex (config.toml, rules/default.rules, hooks.json) via _leer_config/_leer_rules/_leer_hooks, y el guardia exige que TODO el archivo quede verde. La orden 181 solo modificaba la lista de prefijos aceptados de la Prueba 3; ese cambio no toca las otras dos pruebas que caen contra el estado real del .codex (Pruebas 1/2/4/5 sobre sandbox_mode, approval_policy, hooks o confianza del disco C). Por eso, por correcto que fuera el cambio, era imposible que pusiera verde la vigia: las 2 rojas viven en el estado real que la vigia cuida, fuera del alcance de una edicion a la expectativa de una sola prueba. La orden fue mal dimensionada: se ataco la boca de una prueba en vez de medir primero que rojas hay y de donde vienen.",
+    "donde": "vigias/test_vigia_codex_sigue_sin_manos.py — la orden solo tocaba la tupla _PREFIJOS_ALLOW (Prueba 3, lineas 149-154) y su mensaje (linea 203), pero las 5 pruebas del archivo leen la config REAL de ~/.codex y el guardia gatea sobre el archivo completo.",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "vigias/test_vigia_codex_sigue_sin_manos.py",
+        "texto": "CODEX_DIR = os.path.join(HOME, \".codex\")\nCONFIG = os.path.join(CODEX_DIR, \"config.toml\")\nRULES = os.path.join(CODEX_DIR, \"rules\", \"default.rules\")\nHOOKS = os.path.join(CODEX_DIR, \"hooks.json\")"
+      },
+      {
+        "archivo": "vigias/test_vigia_codex_sigue_sin_manos.py",
+        "texto": "def test_config_sandbox_mode_read_only():\n    \"\"\"Codex debe estar en modo solo lectura; si no, queda con manos.\"\"\"\n    texto = _leer_config()"
+      },
+      {
+        "archivo": "vigias/test_vigia_codex_sigue_sin_manos.py",
+        "texto": "def _leer_config():\n    \"\"\"Devuelve el texto de config.toml o salta si no existe.\"\"\"\n    _exigir_carpeta()\n    if not os.path.isfile(CONFIG):\n        pytest.skip(\"no existe config.toml en la carpeta .codex\")\n    with open(CONFIG, \"r\", encoding=\"utf-8\", errors=\"replace\") as f:\n        return f.read()"
+      },
+      {
+        "archivo": "vigias/test_vigia_codex_sigue_sin_manos.py",
+        "texto": "_PREFIJOS_ALLOW = (\n    \"python ingeniero.py arranca\",\n    \"python ingeniero.py trabaja\",\n    \"python ingeniero.py equipo\",\n    \"python ingeniero.py pit\",\n)"
+      },
+      {
+        "archivo": "vigias/test_vigia_codex_sigue_sin_manos.py",
+        "texto": "    for linea in allow:\n        orden = _texto_regla(linea)\n        assert orden.startswith(_PREFIJOS_ALLOW), ("
+      }
+    ],
+    "no_volver_a": "Antes de 'arreglar' una vigia ampliando lo que acepta, correr pytest -v para ver que pruebas estan rojas y de donde vienen: si el rojo nace del estado real que la vigia cuida, se repara ese estado (no la expectativa), porque el guardia gatea el archivo entero y un solo cambio de boca no limpia rojas ajenas.",
+    "tarea_nueva": {
+      "repara": "Saber cuales 2 pruebas de la vigia estan rojas contra el ~/.codex real y por que, antes de volver a tocar la lista de prefijos",
+      "pieza": "vigias/test_vigia_codex_sigue_sin_manos.py (medicion) y la config real en ~/.codex (config.toml / rules/default.rules / hooks.json)",
+      "razon": "El guardia frena por TODO el archivo; la orden 181 solo tocaba la Prueba 3, asi que las 2 rojas quedan fuera de su alcance y ningun cambio a _PREFIJOS_ALLOW puede sellar",
+      "encargo": "Correr 'cd C:\\Ingeniero_VUC; python -m pytest -q -v vigias/test_vigia_codex_sigue_sin_manos.py' y anotar exactamente cuales 2 pruebas fallan y contra que clave del config real (sandbox_mode, approval_policy, hooks o confianza de C:). Con eso a la vista, legislar la reparacion verdadera (del .codex real y/o de la vigia) y recien entonces reintentar el cambio del prefijo director. Distinta de la orden 181: esta MIDE y ataca el estado real, no la boca de una prueba",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 470.40000000000003s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\181_20260922_074656.json"
+  }
+}

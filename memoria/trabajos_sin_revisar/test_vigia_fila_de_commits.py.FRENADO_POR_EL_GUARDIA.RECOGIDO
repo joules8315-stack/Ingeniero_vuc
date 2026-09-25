@@ -1,0 +1,115 @@
+# -*- coding: utf-8 -*-
+"""vigias/test_vigia_fila_de_commits.py — Vigia de la fila de commits y del guardado.
+
+Comprueba que candado_equipo.fila_de_commits hace de verdad de turno unico
+(uno entra, el otro espera y si no llega a tiempo se le lanza TimeoutError),
+que el candado se libera al salir aunque haya un error dentro, que un candado
+abandonado (viejo) no bloquea para siempre, y que guardar_en_la_historia
+guarda DENTRO de la fila (nadie mas puede entrar mientras guarda).
+
+Cada prueba usa su propio tmp_path como raiz, asi el candado es propio de la
+prueba y no se pisan unas con otras.
+"""
+import glob
+import os
+import sys
+import tempfile
+import time
+import types
+
+import pytest
+
+# Arranque pedido por la tarea: meter 'arnes' en sys.path ANTES de importar candado_equipo.
+AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(AQUI, 'arnes'))
+import candado_equipo  # noqa: E402
+
+
+PATRON_LOCK = 'ingeniero_fila_*.lock'
+
+
+def _locks_actuales():
+    """Devuelve el conjunto de rutas de candados de la fila que hay ahora mismo."""
+    return set(glob.glob(os.path.join(tempfile.gettempdir(), PATRON_LOCK)))
+
+
+def test_dentro_del_with_otro_entra_y_le_lanza_timeout(tmp_path):
+    """Con la fila tomada, otro intento con espera=1 tiene que rendirse con TimeoutError."""
+    raiz = str(tmp_path)
+    with candado_equipo.fila_de_commits(raiz):
+        with pytest.raises(TimeoutError):
+            with candado_equipo.fila_de_commits(raiz, espera=1):
+                pass
+
+
+def test_al_salir_del_with_se_puede_volver_a_entrar(tmp_path):
+    """Al salir del with el candado se suelta y se puede entrar otra vez."""
+    raiz = str(tmp_path)
+    with candado_equipo.fila_de_commits(raiz):
+        pass
+    # Si no se hubiera liberado, esto lanzaria TimeoutError.
+    with candado_equipo.fila_de_commits(raiz, espera=1):
+        pass
+
+
+def test_si_dentro_lanza_valueerror_el_candado_se_libera(tmp_path):
+    """Aunque dentro del with salte un ValueError, al salir el candado queda libre."""
+    raiz = str(tmp_path)
+    with pytest.raises(ValueError):
+        with candado_equipo.fila_de_commits(raiz):
+            raise ValueError('fallo a proposito dentro de la fila')
+    # El candado tiene que haberse liberado pese al error.
+    with candado_equipo.fila_de_commits(raiz, espera=1):
+        pass
+
+
+def test_candado_abandonado_no_bloquea(tmp_path):
+    """Un candado viejo (3 horas) se considera abandonado y deja entrar con espera=1."""
+    raiz = str(tmp_path)
+    antes = _locks_actuales()
+    with candado_equipo.fila_de_commits(raiz):
+        despues = _locks_actuales()
+    nuevos = despues - antes
+    assert len(nuevos) == 1, 'se esperaba un unico candado nuevo, habia: %r' % (nuevos,)
+    ruta_lock = nuevos.pop()
+    # El candado ya se borro al salir del with; lo recreamos a mano y lo envejecemos.
+    with open(ruta_lock, 'w', encoding='utf-8') as f:
+        f.write('abandonado')
+    hace_3_horas = time.time() - 3 * 3600
+    os.utime(ruta_lock, (hace_3_horas, hace_3_horas))
+    try:
+        # Con el candado viejo, entrar con espera=1 tiene que funcionar (se considera abandonado).
+        with candado_equipo.fila_de_commits(raiz, espera=1):
+            pass
+    finally:
+        try:
+            os.remove(ruta_lock)
+        except OSError:
+            pass
+
+
+def test_guardar_en_la_historia_guarda_dentro_de_la_fila(tmp_path, monkeypatch):
+    """guardar_en_la_historia tiene que hacer el 'add' con la fila tomada."""
+    raiz = str(tmp_path)
+    visto = {'add_intento_timeout': False, 'add_llamado': False}
+
+    def run_falso(cmd, *args, **kwargs):
+        # Solo nos interesa el comando 'add': ahi se comprueba que la fila esta tomada.
+        if isinstance(cmd, (list, tuple)) and 'add' in cmd:
+            visto['add_llamado'] = True
+            try:
+                with candado_equipo.fila_de_commits(raiz, espera=0.2):
+                    pass
+            except TimeoutError:
+                visto['add_intento_timeout'] = True
+        return types.SimpleNamespace(returncode=0, stdout='', stderr='')
+
+    monkeypatch.setattr(candado_equipo.subprocess, 'run', run_falso)
+
+    ok, motivo = candado_equipo.guardar_en_la_historia(raiz, ['a.py'], 'msg')
+    assert ok is True, 'guardar_en_la_historia devolvio: %r' % (motivo,)
+    assert visto['add_llamado'] is True, 'no se llego a llamar al git add'
+    assert visto['add_intento_timeout'] is True, (
+        'el intento de entrar a la fila durante el add NO lanzo TimeoutError: '
+        'guardar_en_la_historia no estaba guardando DENTRO de la fila'
+    )

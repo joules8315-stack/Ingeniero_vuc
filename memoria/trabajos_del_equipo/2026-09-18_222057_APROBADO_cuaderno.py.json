@@ -1,0 +1,29 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion apuntar no acepta ni guarda los segundos que se quieren medir, asi que el reloj del plan v4 no queda registrado en el cuaderno.",
+  "archivo": "cuerpo/cuaderno.py",
+  "funcion": "apuntar",
+  "texto_viejo": "def apuntar(quien, tamano=0, vuelta=0, clase=\"\", resultado=ERROR, crudo=\"\"):\n    \"\"\"Escribe una linea en el cuaderno. Nunca rompe el trabajo: si el disco falla, calla.\"\"\"\n    try:\n        fila = {\n            \"cuando\": datetime.datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\"),\n            \"quien\": str(quien or \"?\"),\n            \"tamano\": int(tamano or 0),\n            \"vuelta\": int(vuelta or 0),\n            \"clase\": str(clase or \"\"),\n            \"resultado\": str(resultado or ERROR),\n            \"crudo\": str(crudo or \"\")[:300],\n        }",
+  "texto_nuevo": "def apuntar(quien, tamano=0, vuelta=0, clase=\"\", resultado=ERROR, crudo=\"\", segundos=None):\n    \"\"\"Escribe una linea en el cuaderno. Nunca rompe el trabajo: si el disco falla, calla.\"\"\"\n    try:\n        fila = {\n            \"cuando\": datetime.datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\"),\n            \"quien\": str(quien or \"?\"),\n            \"tamano\": int(tamano or 0),\n            \"vuelta\": int(vuelta or 0),\n            \"clase\": str(clase or \"\"),\n            \"resultado\": str(resultado or ERROR),\n            \"crudo\": str(crudo or \"\")[:300],\n        }\n        if segundos is not None:\n            fila[\"segundos\"] = round(float(segundos), 1)",
+  "cambio": "Agregar el parametro opcional segundos=None al final de la firma de apuntar, y justo despues de armar el diccionario fila, si segundos no es None, agregar fila[\"segundos\"] = round(float(segundos), 1). Si es None la fila queda exactamente como hoy.",
+  "codigo": "def apuntar(quien, tamano=0, vuelta=0, clase=\"\", resultado=ERROR, crudo=\"\", segundos=None):\n    \"\"\"Escribe una linea en el cuaderno. Nunca rompe el trabajo: si el disco falla, calla.\"\"\"\n    try:\n        fila = {\n            \"cuando\": datetime.datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\"),\n            \"quien\": str(quien or \"?\"),\n            \"tamano\": int(tamano or 0),\n            \"vuelta\": int(vuelta or 0),\n            \"clase\": str(clase or \"\"),\n            \"resultado\": str(resultado or ERROR),\n            \"crudo\": str(crudo or \"\")[:300],\n        }\n        if segundos is not None:\n            fila[\"segundos\"] = round(float(segundos), 1)",
+  "vigia": "Una prueba que llame a apuntar con segundos=1.234 y compruebe que la linea escrita en el cuaderno trae \"segundos\": 1.2; y otra que llame sin segundos y compruebe que la linea NO trae la clave segundos.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo que pide el paquete: agrega segundos=None al final de la firma de apuntar y guarda round(float(segundos), 1) solo cuando segundos viene, dejando la fila igual cuando es None, sin tocar el docstring ni nada mas."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

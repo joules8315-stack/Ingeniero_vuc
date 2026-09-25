@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "En _vigias, la llamada a pytest usa text=True sin encoding, y en cp1252 revienta con los acentos de la salida.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\"] + objetivo,\n                           cwd=raiz, capture_output=True, text=True, timeout=900,\n                           stdin=subprocess.DEVNULL, env=_entorno_limpio)",
+  "texto_nuevo": "        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\"] + objetivo,\n                           cwd=raiz, capture_output=True, text=True, encoding=\"utf-8\", errors=\"replace\", timeout=900,\n                           stdin=subprocess.DEVNULL, env=_entorno_limpio)  # lee en utf-8, en cp1252 revienta con los acentos (2026-09-21)",
+  "cambio": "Anadir encoding=\"utf-8\", errors=\"replace\" a la llamada de subprocess.run de pytest y un comentario corto al final de esa linea.",
+  "codigo": "        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\"] + objetivo,\n                           cwd=raiz, capture_output=True, text=True, encoding=\"utf-8\", errors=\"replace\", timeout=900,\n                           stdin=subprocess.DEVNULL, env=_entorno_limpio)  # lee en utf-8, en cp1252 revienta con los acentos (2026-09-21)",
+  "vigia": "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20785 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

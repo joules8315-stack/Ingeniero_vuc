@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "Faltan en cuerpo/cuotas.py las dos funciones bigpickle_fallo() y bigpickle_acierto() que llevan la cuenta de fallos seguidos de bigpickle y lo duermen 30 min al segundo fallo.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "desperto",
+  "texto_viejo": "def desperto(quien):\n    \"\"\"True si ya paso su siesta. Si desperto, se le quita la marca (vuelve a la fila).\"\"\"\n    d = _leer()\n    info = d[\"dormidos\"].get(quien)\n    if not info:\n        return True\n    if time.time() >= info[\"hasta\"]:\n        d[\"dormidos\"].pop(quien, None)\n        d[\"historial\"] = (d.get(\"historial\", []) + [\n            {\"cuando\": datetime.datetime.now().strftime(\"%Y-%m-%d %H:%M\"),\n             \"quien\": quien, \"que\": \"desperto, vuelve a la fila\"}])[-80:]\n        _guardar(d)\n        return True\n    return False",
+  "texto_nuevo": "def desperto(quien):\n    \"\"\"True si ya paso su siesta. Si desperto, se le quita la marca (vuelve a la fila).\"\"\"\n    d = _leer()\n    info = d[\"dormidos\"].get(quien)\n    if not info:\n        return True\n    if time.time() >= info[\"hasta\"]:\n        d[\"dormidos\"].pop(quien, None)\n        d[\"historial\"] = (d.get(\"historial\", []) + [\n            {\"cuando\": datetime.datetime.now().strftime(\"%Y-%m-%d %H:%M\"),\n             \"quien\": quien, \"que\": \"desperto, vuelve a la fila\"}])[-80:]\n        _guardar(d)\n        return True\n    return False\n\n\ndef bigpickle_fallo():\n    \"\"\"Orden de Julio A-46 del 2026-09-21: cuenta los fallos seguidos de bigpickle.\n    Al segundo fallo seguido, lo duerme 30 min y pide revisar Grok 4.7.\"\"\"\n    d = _leer()\n    seguidos = d.setdefault(\"seguidos\", {})\n    seguidos[\"bigpickle\"] = seguidos.get(\"bigpickle\", 0) + 1\n    if seguidos[\"bigpickle\"] >= 2:\n        d[\"dormidos\"][\"bigpickle\"] = {\n            \"hasta\": time.time() + 1800,\n            \"tipo\": \"dos_fallos\",\n            \"desde\": datetime.datetime.now().strftime(\"%Y-%m-%d %H:%M\"),\n            \"motivo\": \"fallo dos veces seguidas: descansa 30 min y revisa Grok 4.7 (A-46)\"}\n        seguidos[\"bigpickle\"] = 0\n        d[\"historial\"] = (d.get(\"historial\", []) + [\n            {\"cuando\": d[\"dormidos\"][\"bigpickle\"][\"desde\"], \"quien\": \"bigpickle\",\n             \"que\": \"agotado (dos_fallos)\"}])[-80:]\n    _guardar(d)\n\n\ndef bigpickle_acierto():\n    \"\"\"Orden de Julio A-46 del 2026-09-21: un acierto de bigpickle borra la cuenta de fallos seguidos.\"\"\"\n    d = _leer()\n    d.setdefault(\"seguidos\", {})[\"bigpickle\"] = 0\n    _guardar(d)",
+  "cambio": "Anadir, justo despues de la funcion desperto, las dos funciones nuevas bigpickle_fallo() y bigpickle_acierto() tal como las describe el encargo, sin tocar nada mas del archivo.",
+  "codigo": "def bigpickle_fallo():\n    \"\"\"Orden de Julio A-46 del 2026-09-21: cuenta los fallos seguidos de bigpickle.\n    Al segundo fallo seguido, lo duerme 30 min y pide revisar Grok 4.7.\"\"\"\n    d = _leer()\n    seguidos = d.setdefault(\"seguidos\", {})\n    seguidos[\"bigpickle\"] = seguidos.get(\"bigpickle\", 0) + 1\n    if seguidos[\"bigpickle\"] >= 2:\n        d[\"dormidos\"][\"bigpickle\"] = {\n            \"hasta\": time.time() + 1800,\n            \"tipo\": \"dos_fallos\",\n            \"desde\": datetime.datetime.now().strftime(\"%Y-%m-%d %H:%M\"),\n            \"motivo\": \"fallo dos veces seguidas: descansa 30 min y revisa Grok 4.7 (A-46)\"}\n        seguidos[\"bigpickle\"] = 0\n        d[\"historial\"] = (d.get(\"historial\", []) + [\n            {\"cuando\": d[\"dormidos\"][\"bigpickle\"][\"desde\"], \"quien\": \"bigpickle\",\n             \"que\": \"agotado (dos_fallos)\"}])[-80:]\n    _guardar(d)\n\n\ndef bigpickle_acierto():\n    \"\"\"Orden de Julio A-46 del 2026-09-21: un acierto de bigpickle borra la cuenta de fallos seguidos.\"\"\"\n    d = _leer()\n    d.setdefault(\"seguidos\", {})[\"bigpickle\"] = 0\n    _guardar(d)",
+  "vigia": "Una prueba que llame dos veces seguidas a bigpickle_fallo() y compruebe que en memoria/CUOTAS.json queda d['dormidos']['bigpickle'] con tipo 'dos_fallos' y hasta ~30 min despues, que la cuenta de seguidos vuelve a 0, y que bigpickle_acierto() deja seguidos['bigpickle'] en 0.",
+  "puede_danar": [
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

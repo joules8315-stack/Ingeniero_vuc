@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En la plantilla del JSON de reparar de _prompt_obrero falta la linea de \"cambios\" que permite varios cambios en el mismo archivo.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_prompt_obrero",
+  "texto_viejo": "  \"texto_nuevo\": \"el texto literal que debe quedar, copiado tal cual del material\",\n  \"cambio\": \"que hay que cambiar, concreto\",",
+  "texto_nuevo": "  \"texto_nuevo\": \"el texto literal que debe quedar, copiado tal cual del material\",\n  \"cambios\": \"OPCIONAL, SOLO si hay que cambiar VARIOS sitios del MISMO archivo: una lista de objetos con texto_viejo y texto_nuevo, uno por sitio; si la usas, deja vacios texto_viejo y texto_nuevo de arriba\",\n  \"cambio\": \"que hay que cambiar, concreto\",",
+  "cambio": "Agregar una linea nueva con la clave \"cambios\" justo despues de la linea de \"texto_nuevo\" y antes de \"cambio\", con la misma sangria, sin llaves nuevas (las llaves de la plantilla van dobladas).",
+  "codigo": "  \"cambios\": \"OPCIONAL, SOLO si hay que cambiar VARIOS sitios del MISMO archivo: una lista de objetos con texto_viejo y texto_nuevo, uno por sitio; si la usas, deja vacios texto_viejo y texto_nuevo de arriba\",",
+  "vigia": "Una prueba que revise que la plantilla del JSON de reparar en _prompt_obrero contiene la clave \"cambios\" con su descripcion, y que _propuesta_cumple acepta propuestas con cambios como lista.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Las cuatro piezas declaradas en puede_danar (asignador.py, revisor_de_programa.py, codex.py, test_vigia) estan fuera del paquete y no se pudieron comprobar aqui; el cambio en si es una sola linea de texto en una plantilla y no toca codigo ejecutable"
+  ],
+  "que_falta": [
+   "Que la prueba del vigia se haga realidad: verificar que _propuesta_cumple y el que aplica los cambios acepten la lista 'cambios' y toleren texto_viejo/texto_nuevo vacios cuando se usa la lista"
+  ],
+  "resumen_para_el_jefe": "El obrero agrega la clave 'cambios' a la plantilla de reparar exactamente donde dice el diagnostico, con el texto literal que si aparece en el material, sin tocar llaves del f-string ni romper vecinos; solo falta que la prueba del vigia confirme que el resto del equipo acepta la lista."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20818 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

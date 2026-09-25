@@ -1,0 +1,23 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_los_avisos_no_hacen_repetir.py: una vigia pytest que comprueba que los avisos de fallos ya dados no hacen repetir la accion (A-38), con pruebas de revisar, sin_ruido y del ciclo de avisos de main.",
+  "archivo": "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+  "texto_nuevo": "\"\"\"Vigia: los avisos de fallos ya dados no hacen repetir la accion (Julio A-38).\n\nComprueba tres cosas:\n  1. Con los fallos REALES, los comandos normales no disparan ningun aviso.\n  2. 'git commit --no-verify' SI dispara el aviso.\n  3. sin_ruido conserva lo que es codigo y quita los docstrings sueltos.\n  4. Por leccion: la primera vez frena (2), la segunda deja pasar (0);\n     una leccion nueva vuelve a frenar una vez y luego deja pasar.\n\"\"\"\nimport io\nimport json\nimport os\nimport sys\n\nimport pytest\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, AQUI)\nsys.path.insert(0, os.path.join(AQUI, 'arnes'))\n\nimport candado_memoria\nimport revisor_de_programa\n\n\nCOMANDOS_NORMALES = [\n    'python ingeniero.py equipo ingeniero \"En cuerpo/obrero.py el revisor auditor '\n    'SIN_AUDITAR vigia\" --escribe deepseek --revisa groq',\n    'python -m pytest vigias/test_x.py -q',\n    'git status --short',\n    'git log --oneline -3',\n    'grep -n auditar cuerpo/obrero.py',\n]\n\n\ndef test_comandos_normales_no_disparan_avisos():\n    \"\"\"Con los fallos reales, ningun comando normal debe hacer saltar revisar.\"\"\"\n    for comando in COMANDOS_NORMALES:\n        fallos = candado_memoria.revisar(comando)\n        if fallos:\n            ids = [str(f.get('id', '?')) for f in fallos]\n            pytest.fail(\n                'el comando normal %r disparo el aviso de los fallos %s'\n                % (comando, ids)\n            )\n\n\ndef test_commit_no_verify_si_dispara():\n    \"\"\"'git commit --no-verify' SI tiene que hacer saltar revisar.\"\"\"\n    fallos = candado_memoria.revisar('git commit --no-verify -m x')\n    assert fallos, 'git commit --no-verify deberia disparar al menos un fallo'\n\n\ndef test_sin_ruido_conserva_cadena_valor():\n    \"\"\"sin_ruido no debe comerse una cadena que es un valor de verdad.\"\"\"\n    resultado = revisor_de_programa.sin_ruido(\"x = r'''git\\s+commit'''\")\n    assert 'git' in resultado\n\n\ndef test_sin_ruido_quita_docstring_suelto():\n    \"\"\"sin_ruido debe quitar un docstring suelto dentro de una funcion.\"\"\"\n    resultado = revisor_de_programa.sin_ruido('def f():\\n    \"\"\"hola\"\"\"\\n    return 1')\n    assert 'hola' not in resultado\n\n\ndef _fallo(id_fallo):\n    \"\"\"Un fallo de mentira con las llaves que main necesita.\"\"\"\n    return {\n        'id': id_fallo,\n        'que_paso': 'paso %s' % id_fallo,\n        'causa_raiz': 'causa %s' % id_fallo,\n        'cura': 'cura %s' % id_fallo,\n        'no_volver_a': 'no volver a %s' % id_fallo,\n    }\n\n\ndef _accion():\n    \"\"\"El json de la accion que main lee por stdin.\"\"\"\n    return json.dumps({'tool_name': 'Bash', 'tool_input': {'command': 'x'}})\n\n\ndef test_por_leccion_avisa_una_vez_y_luego_deja_pasar(monkeypatch, tmp_path):\n    \"\"\"La primera vez frena; la segunda, con la misma leccion, deja pasar.\"\"\"\n    import autorizacion\n\n    monkeypatch.setattr(candado_memoria, 'AVISADOS', str(tmp_path / 'avisos.json'))\n    monkeypatch.setattr(autorizacion, 'autorizada', lambda: False)\n\n    A = _fallo('A')\n    B = _fallo('B')\n    cola = [[A], [A], [A, B], [A, B], [A]]\n\n    def revisar_falso(texto):\n        return cola.pop(0)\n\n    monkeypatch.setattr(candado_memoria, 'revisar', revisar_falso)\n\n    def correr():\n        monkeypatch.setattr(sys, 'stdin', io.StringIO(_accion()))\n        return candado_memoria.main()\n\n    assert correr() == 2, 'con [A] la primera vez debe frenar (2)'\n    assert correr() == 0, 'con [A] la segunda vez debe dejar pasar (0)'\n    assert correr() == 2, 'con [A, B] debe frenar porque B es nueva (2)'\n    assert correr() == 0, 'con [A, B] otra vez debe dejar pasar (0)'\n    assert correr() == 0, 'con [A] despues debe dejar pasar (0)'\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, añade el archivo de prueba requerido sin inventar nada ni romper dependencias."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (41040 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

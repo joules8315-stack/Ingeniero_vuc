@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py::auditar, cuando Big Pickle no devolvio revision valida y tras el intento con Grok 4.7, se pasa directo al relevo de las gratis sin intentar antes a Codex con cuerpo/codex.py::preguntar.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "        crudo_r, quien_r, av_r = _preguntar_con_relevo(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,\n            evitar=evitar, clase='auditar', vuelta=1)\n        avisos += av_r\n        aud_r = _json_de(crudo_r) if crudo_r else None\n        if isinstance(aud_r, dict) and '_error' not in aud_r and quien_r != 'claude':\n            auditoria = aud_r\n            quien_aud = quien_r\n            avisos.append('bigpickle no estaba: revisa %s con solo lo necesario (A-38)' % quien_r)\n        else:\n            auditoria = {'veredicto': 'SIN_AUDITAR',\n                         'resumen_para_el_jefe': 'bigpickle no estaba y ninguna otra IA pudo revisar'}\n            avisos.append('bigpickle no estaba y el relevo no contesto: SIN_AUDITAR (A-38)')\n        return auditoria, quien_aud, avisos",
+  "texto_nuevo": "        if evitar != 'codex':\n            from cuerpo import codex as _codex_a45\n            _texto_c, _avisos_c = _codex_a45.preguntar(\n                _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n            avisos.extend(_avisos_c or [])\n            if _texto_c:\n                aud_c = _json_de(_texto_c)\n                if isinstance(aud_c, dict) and '_error' not in aud_c:\n                    avisos.append('Big Pickle fallo y reviso Codex')\n                    return aud_c, 'codex', avisos\n        crudo_r, quien_r, av_r = _preguntar_con_relevo(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,\n            evitar=evitar, clase='auditar', vuelta=1)\n        avisos += av_r\n        aud_r = _json_de(crudo_r) if crudo_r else None\n        if isinstance(aud_r, dict) and '_error' not in aud_r and quien_r != 'claude':\n            auditoria = aud_r\n            quien_aud = quien_r\n            avisos.append('bigpickle no estaba: revisa %s con solo lo necesario (A-38)' % quien_r)\n        else:\n            auditoria = {'veredicto': 'SIN_AUDITAR',\n                         'resumen_para_el_jefe': 'bigpickle no estaba y ninguna otra IA pudo revisar'}\n            avisos.append('bigpickle no estaba y el relevo no contesto: SIN_AUDITAR (A-38)')\n        return auditoria, quien_aud, avisos",
+  "cambio": "En el bloque de auditar donde, tras fallar Big Pickle y Grok 4.7, hoy se llama directamente a _preguntar_con_relevo (relevo de las gratis), insertar antes un intento con cuerpo/codex.py::preguntar usando _prompt_auditor; si Codex devuelve un JSON de revision valido, devolverlo con quien_aud='codex' y aviso 'Big Pickle fallo y reviso Codex'; si no, seguir exactamente como hoy. No se pregunta a Codex si evitar=='codex'.",
+  "codigo": "        if evitar != 'codex':\n            from cuerpo import codex as _codex_a45\n            _texto_c, _avisos_c = _codex_a45.preguntar(\n                _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n            avisos.extend(_avisos_c or [])\n            if _texto_c:\n                aud_c = _json_de(_texto_c)\n                if isinstance(aud_c, dict) and '_error' not in aud_c:\n                    avisos.append('Big Pickle fallo y reviso Codex')\n                    return aud_c, 'codex', avisos",
+  "vigia": "Una prueba que, con Big Pickle caido y Grok 4.7 sin contestar, compruebe que auditar llama a cuerpo/codex.py::preguntar y que si Codex devuelve un JSON valido el resultado es (auditoria, 'codex', avisos) con el aviso 'Big Pickle fallo y reviso Codex'; y que si evitar=='codex' no se le pregunta a Codex.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "cuerpo/privacidad.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio añade la llamada a Codex antes del relevo, cumpliendo el diagnóstico sin introducir elementos inexistentes ni romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39384 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

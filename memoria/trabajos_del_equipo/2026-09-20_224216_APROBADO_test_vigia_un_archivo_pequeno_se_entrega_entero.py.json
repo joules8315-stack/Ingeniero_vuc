@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La importacion de arriba `from cerebro.router import entregar_enteros_los_cortos` hace que pytest se pare al recoger y ninguna otra prueba corra, porque esa pieza todavia no existe.",
+  "archivo": "vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py",
+  "funcion": "imports del modulo (arriba del archivo, tras el bloque de sys.path)",
+  "texto_viejo": "from cerebro.router import entregar_enteros_los_cortos  # noqa: E402",
+  "texto_nuevo": "",
+  "cambio": "Quitar la importacion de arriba del archivo y, dentro de cada prueba, poner como primera linea de la prueba `from cerebro.router import entregar_enteros_los_cortos`. No cambiar lo que comprueba cada prueba ni tocar ningun otro archivo.",
+  "codigo": "def test_un_archivo_corto_se_entrega_entero():\n    from cerebro.router import entregar_enteros_los_cortos\n    \"\"\"Un archivo de ~100 renglones se sustituye por el archivo ENTERO.\"\"\"",
+  "vigia": "correr pytest sobre vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py: las pruebas de ese archivo salen rojas por la importacion que falta, y el resto de la bateria del proyecto sigue corriendo en vez de pararse al recoger.",
+  "puede_danar": [
+   "cerebro/router.py",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py"
+  ],
+  "preguntas": [
+   "El material solo trae la primera prueba completa (test_un_archivo_corto_se_entrega_entero); para poner la importacion como primera linea DENTRO de cada prueba hace falta ver el cuerpo entero de las demas pruebas del archivo (test_un_archivo_largo_se_deja_igual y las siguientes). NECESITO_LEER: vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py / motivo: el material solo muestra hasta la linea 80 y corta al empezar test_un_archivo_largo_se_deja_igual / que decide: donde insertar exactamente la importacion dentro de cada prueba / riesgo: tocar a ciegas pruebas que no se ven."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No toca cerebro/router.py ni test_vigia_memoria_completa.py: el único cambio es mover la importacion dentro del cuerpo de cada prueba del mismo archivo, asi que no puede romper a nadie de 'puede_danar'."
+  ],
+  "que_falta": [
+   "Nada que bloquee. El trabajador pidio NECESITO_LEER para ver el cuerpo de las pruebas 2 en adelante (el material corta en la linea 80), lo cual es correcto y honesto: la ubicacion 'primera linea de cada prueba' se juzga por su texto y el que el corte no cuadre no es rechazo."
+  ],
+  "resumen_para_el_jefe": "El trabajador hizo justo lo que el encargo pedia — quitar la importacion de arriba y ponerla como primera linea de cada prueba — y eso arregla el diagnostico real (pytest moria al recoger el modulo), sin tocar vecinos ni inventar nada; se aprueba."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

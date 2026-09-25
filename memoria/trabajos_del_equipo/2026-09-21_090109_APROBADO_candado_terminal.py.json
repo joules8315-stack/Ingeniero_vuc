@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El candado arnes/candado_terminal.py no frena las ordenes que nombran el archivo de llaves .env (cat .env, type .env, Get-Content .env, Get-Content C:/Ingeniero_VUC/.env), que hoy devuelven 0 y deben devolver 2.",
+  "archivo": "arnes/candado_terminal.py",
+  "funcion": "main",
+  "texto_viejo": "    # SEGURIDAD de claves: leer una variable de entorno desde la terminal se BLOQUEA siempre.\n    cmd_txt = str((data.get(\"tool_input\") or {}).get(\"command\") or \"\")\n    if ENV_READER.search(cmd_txt):\n        sys.stderr.write(AVISO_CLAVES)\n        _cazado_terminal()\n        return 2",
+  "texto_nuevo": "    # SEGURIDAD de claves: leer una variable de entorno desde la terminal se BLOQUEA siempre.\n    cmd_txt = str((data.get(\"tool_input\") or {}).get(\"command\") or \"\")\n    if ENV_READER.search(cmd_txt):\n        sys.stderr.write(AVISO_CLAVES)\n        _cazado_terminal()\n        return 2\n\n    # EL ARCHIVO DE LLAVES NO SE ABRE POR LA TERMINAL (Julio, 2026-09-21).\n    # Las llaves viven SOLO en el archivo de llaves y NUNCA se leen por la terminal: ni con\n    # cat, ni con type, ni con Get-Content, ni con la ruta completa. Se frena con el mismo\n    # mensaje de que las llaves no se leen por la terminal, devolviendo 2 como los demas.\n    # No frena un nombre que solo EMPIECE por .env y siga con letras (.envrc, .env.ejemplo).\n    if ENV_ARCHIVO.search(cmd_txt):\n        sys.stderr.write(AVISO_CLAVES)\n        _cazado_terminal()\n        return 2",
+  "cambio": "Anadir en main, justo despues del bloque que ya frena ENV_READER, un freno nuevo que use un patron ENV_ARCHIVO para cazar ordenes que nombren un archivo llamado .env (con o sin ruta, terminando en /.env o en barra invertida .env), devolviendo 2 con AVISO_CLAVES. Hay que definir el patron ENV_ARCHIVO junto a ENV_READER.",
+  "codigo": "# junto a ENV_READER (mismo bloque de SEGURIDAD de claves):\nENV_ARCHIVO = re.compile(\n    r\"(?i)(?:^|[\\s'\\\"=])(?:[A-Za-z]:)?[^\\s'\\\"]*[\\\\/]\\.env(?![\\w.])|(?:^|[\\s'\\\"=])\\.env(?![\\w.])\")\n\n# dentro de main, tras el bloque de ENV_READER:\n    if ENV_ARCHIVO.search(cmd_txt):\n        sys.stderr.write(AVISO_CLAVES)\n        _cazado_terminal()\n        return 2",
+  "vigia": "vigias/test_vigia_el_archivo_de_llaves_no_se_abre_por_la_terminal.py: las cuatro ordenes prohibidas (cat .env, type .env, Get-Content .env, Get-Content C:/Ingeniero_VUC/.env) deben devolver 2, y las permitidas (dir, git status, python -m pytest vigias) deben seguir devolviendo 0.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_equipo.py",
+   "arnes/candados_medicion.py",
+   "ingeniero.py",
+   "vigias/test_vigia_fotocopia_solo_con_marcas.py",
+   "vigias/test_vigia_la_fotocopia_no_se_paga.py",
+   "vigias/test_vigia_no_inventa.py",
+   "vigias/test_vigia_sin_rendijas.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_equipo.py",
+   "candados_medicion.py",
+   "test_vigia_fotocopia_solo_con_marcas.py",
+   "test_vigia_la_fotocopia_no_se_paga.py",
+   "test_vigia_no_inventa.py",
+   "test_vigia_sin_rendijas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El freno nuevo caza las cuatro ordenes prohibidas (.env devuelve 2) y deja pasar las tres permitidas con 0, sin tocar vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (24454 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,76 @@
+{
+  "orden": {
+    "id": "95",
+    "titulo": "El pit vigila la tarea que se demora",
+    "origen": "directriz de Julio A-44 (2026-09-21)",
+    "repara": "lanzar_al_equipo corta a ciegas a los 900 s",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "94",
+      "60",
+      "57",
+      "152",
+      "154",
+      "155"
+    ],
+    "modo": "IA",
+    "razon": "los limites salen de los datos medidos del cuaderno de llamadas, no de una suposicion",
+    "encargo": "En cuerpo/capataz.py hay que hacer tres cambios, entregalos en la lista cambios. (1) Arriba de def lanzar_al_equipo agrega las constantes con su comentario: LIMITE_TAREA_SEGUNDOS = 420 y SIN_AVANCE_SEGUNDOS = 660 y TOPE_DURO_SEGUNDOS = 3000 (medido el 2026-09-21 en el cuaderno de llamadas: DeepSeek tarda 4 a 11 s, Big Pickle hasta 328 s y con A-47 se le espera hasta 600 s, el guardia corre la bateria en 262 s, y una tarea puede dar 4 vueltas de revision: 4 por (11 + 600) + 262 = 2706 s, y el tope de fuera tiene que ser mayor que la suma de los de dentro; SIN_AVANCE tiene que ser MAYOR que la llamada callada mas larga, la espera de Big Pickle de hasta 600 s, o se cortaria a una IA que esta contestando). (2) En lanzar_al_equipo cambia el subprocess.run por subprocess.Popen con los mismos cwd y env. La salida NO va por tuberia (una tuberia que nadie vacia se llena y cuelga al equipo): abre archivo = open(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'), 'w', encoding='utf-8', errors='replace') y pasa stdout=archivo, stderr=subprocess.STDOUT. El avance es una funcion que devuelve el tiempo de procesador gastado por el proceso y todos sus hijos (import psutil dentro de la funcion; pp = psutil.Process(proceso.pid); suma de cpu_times().user + cpu_times().system de pp y de cada pp.children(recursive=True), ignorando los que ya terminaron con psutil.Error), redondeado a 1 decimal, mas el tamano de ese archivo de salida, mas la suma de os.path.getmtime de memoria/CUADERNO_DE_LLAMADAS.jsonl y memoria/APLICACIONES.log que existan; si psutil falla, sin el tiempo de procesador. (Motivo medido el 2026-09-21 para medir tiempo de procesador: las pruebas vecinas del candado de cierre tardan 212 s sin escribir en ningun registro, y una tarea que corre pruebas SI esta trabajando.) Los pasos, en este orden: from cuerpo import vigilante dentro de la funcion; estado = vigilante.esperar(proceso, LIMITE_TAREA_SEGUNDOS, SIN_AVANCE_SEGUNDOS, TOPE_DURO_SEGUNDOS, avance); archivo.close(); salida = el texto entero del archivo de salida, leido con open(..., encoding='utf-8', errors='replace'). NO se usa proceso.communicate() (no hay tuberia: saldria vacio). Si estado no es 'termino' devuelve {'guardado': False, 'codigo': None, 'salida': 'COLGADA: ' + estado + ' (sin avance pasado el limite; se busca la causa raiz)\\n' + salida}, para que el forense vea lo que dijo el revisor; si es 'termino' devuelve {'guardado': 'GUARDADO AL MOMENTO' in salida, 'codigo': proceso.returncode, 'salida': salida}. El parametro tope_segundos se queda en la firma sin usarse, para no romper a quien lo pasa. (3) En tipo_de_fallo, como primera comprobacion, si la salida empieza por 'COLGADA:' devuelve 'colgada'. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_pit_vigila_la_tarea_que_se_demora.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "una tarea 'colgada' va al forense como cualquier fallo (causa raiz) y, por A-43, su arreglo pasa al frente. | despues de la 95: orden 156, quitar la forma vieja (subprocess.run) de vigias/test_vigia_el_capataz_lanza_al_equipo.py"
+  },
+  "huella": "527b80dd0bf293c8",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_010955_APROBADO_capataz.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (20605 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'tipo_de_fallo' y esa palabra no aparece ni en el texto viejo ni en el nuevo.\n  aviso       : GPT-OSS 120B (Groq) no le cabe (23527 letras, aguanta 19042) -> se le salta\n  diagnostico : El encargo pide tres cambios en cuerpo/capataz.py: agregar constantes arriba de lanzar_al_equipo, cambiar subprocess.run por subprocess.Popen con archivo de salida y funcion de avance, y agregar la comprobacion de 'COLGADA:' en tipo_de_fallo; el rechazo anterior fue porque no se mencionaba 'tipo_de_fallo' en el texto viejo ni nuevo.\n  toca        : cuerpo/capataz.py funcion lanzar_al_equipo\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : La reparacion cumple los tres cambios del encargo al pie de la letra (constantes con su comentario arriba, subprocess.Popen con archivo de salida y funcion de avance con psutil, y 'COLGADA:' como primera comprobacion en tipo_de_fallo), no inventa nada y no toca otros archivos.\n\nEL EQUIPO NO APROBO (RECHAZADO_POR_EL_PROGRAMA): NO se guardo llave, no se puede tocar codigo.\n\nEL REVISOR DE PROGRAMA FRENA (gratis, sin ninguna IA):\n   - NO HACE LO QUE SE PIDIO: el encargo habla de 'tipo_de_fallo' y esa palabra no aparece ni en el texto viejo ni en el nuevo.\nNO se abre la puerta de escribir. El trabajo queda guardado.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T01:09:56",
+  "analisis": {
+    "que_paso": "El equipo de la orden 95 (deepseek escribe, bigpickle revisa) entrego los tres cambios en cuerpo/capataz.py y bigpickle los APROBO, pero el revisor de programa (gratis, sin IA) freno antes de pagar la revision con 'NO HACE LO QUE SE PIDIO: el encargo habla de tipo_de_fallo y esa palabra no aparece ni en el texto viejo ni en el nuevo'. El equipo quedo RECHAZADO_POR_EL_PROGRAMA: no se guardo llave y no se toco codigo. Se repitio 4 vueltas seguidas (vueltas_dadas: 4).",
+    "causa_raiz": "El tercer cambio edita el CUERPO de la funcion tipo_de_fallo: su texto_viejo son las lineas internas ('if not isinstance(salida, str)... TOPE DE TIEMPO'), y para editar un cuerpo no hace falta repetir la linea 'def tipo_de_fallo'. Por eso la palabra 'tipo_de_fallo' no aparece literal en ningun trozo. La cuenta 4 del revisor exige que toda palabra con guion bajo del encargo que exista en el archivo (y tipo_de_fallo existe: esta en capataz.py:248) aparezca en el texto viejo o nuevo de un trozo. El parche del 2026-09-22 (filtro 'juntos') solo mira si la palabra esta escrita en los textos de los trozos; no reconoce que un trozo edita el INTERIOR de esa funcion. Es un candado que frena lo legitimo: el trabajo estaba bien y aprobado por la IA, pero el programa lo mordio en falso.",
+    "donde": "arnes/revisor_de_programa.py — cuenta 4 'NO HACE LO QUE SE PIDIO' (lineas 640-647) y el filtro de la lista cambios que arma 'juntos' (lineas 256-261).",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "arnes/revisor_de_programa.py",
+        "texto": "if palabra not in viejo and palabra not in nuevo:\n                fallos.append(\"NO HACE LO QUE SE PIDIO: el encargo habla de '%s' y esa palabra \"\n                              \"no aparece ni en el texto viejo ni en el nuevo.\" % palabra)"
+      },
+      {
+        "archivo": "arnes/revisor_de_programa.py",
+        "texto": "# la palabra del encargo basta con que este en alguno de los trozos (medido 2026-09-22, orden 95)"
+      },
+      {
+        "archivo": "arnes/revisor_de_programa.py",
+        "texto": "todos = [f for f in todos if not (f.startswith('NO HACE LO QUE SE PIDIO') and f.split(chr(39))[1] in juntos)]"
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-22_010955_APROBADO_capataz.py.json",
+        "texto": "\"texto_viejo\": \"    if not isinstance(salida, str):\\n        return \\\"otro\\\"\\n    if salida.startswith(\\\"TOPE DE TIEMPO\\\"):\\n        return \\\"tiempo\\\"\","
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "def tipo_de_fallo(salida):"
+      }
+    ],
+    "no_volver_a": "El revisor de programa no debe exigir que el nombre de una funcion aparezca en el trozo cuando el trozo edita el CUERPO de esa funcion: editar un cuerpo no repite el nombre, y frenar eso es frenar lo legitimo.",
+    "tarea_nueva": {
+      "repara": "La cuenta 4 del revisor frena reparaciones que editan el cuerpo de una funcion nombrada en el encargo pero cuyo nombre no se repite en el trozo (falso 'NO HACE LO QUE SE PIDIO').",
+      "pieza": "arnes/revisor_de_programa.py",
+      "razon": "El equipo hizo el cambio bien y la IA lo aprobo, pero el programa lo mordio en falso 4 veces; un candado que frena lo legitimo ensena a ignorar todos los candados.",
+      "encargo": "En revisar(), en el bloque de la lista cambios (donde se arma 'juntos' y se filtra 'todos' en las lineas 256-261), ampliar el descarte de 'NO HACE LO QUE SE PIDIO': ademas de comprobar si la palabra esta en 'juntos', tratar la palabra como satisfecha cuando nombre una funcion o clase definida en el archivo que se cambia Y el texto_viejo de algun trozo este contenido dentro del rango de lineas de esa funcion/clase en el archivo original. Usar ast para parsear el archivo, ubicar el nodo FunctionDef/ClassDef por su nombre, tomar su lineno-end_lineno y ver si algun texto_viejo del cambio cae dentro de esas lineas. Si el parseo o la lectura falla, NO acusar (callar, como el resto de las cuentas). No tocar ninguna otra cuenta ni otro archivo. Sabotear a proposito para ver la vigia roja, y agregar una vigia que edite el cuerpo de una funcion sin repetir su nombre y compruebe que el revisor ya NO frena.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": true,
+    "paso": "tarea",
+    "motivo": "agregada 95-F011402",
+    "tarea": "95-F011402",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\95_20260922_010956.json"
+  }
+}

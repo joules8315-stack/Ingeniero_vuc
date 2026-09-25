@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion tipo_de_fallo(salida) en cuerpo/capataz.py, que clasifique el tipo de fallo a partir del texto de salida de lanzar_al_equipo.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "se_paso_del_tope",
+  "texto_viejo": "def se_paso_del_tope(hoy=None):\n    \"\"\"True si ya se gasto el tope del mes.\"\"\"\n    return gastado_del_mes(hoy) >= TOPE_MES_USD",
+  "texto_nuevo": "def se_paso_del_tope(hoy=None):\n    \"\"\"True si ya se gasto el tope del mes.\"\"\"\n    return gastado_del_mes(hoy) >= TOPE_MES_USD\n\n\ndef tipo_de_fallo(salida):\n    \"\"\"Devuelve de que tipo fue el fallo, mirando el texto de la salida.\"\"\"\n    if not isinstance(salida, str):\n        return \"otro\"\n    if salida.startswith(\"TOPE DE TIEMPO\"):\n        return \"tiempo\"\n    if \"EL GUARDIA NO DEJO GUARDAR\" in salida or \"NO SE GUARDO\" in salida:\n        return \"guardia\"\n    if \"EL EQUIPO NO APROBO\" in salida:\n        return \"no_aprobo\"\n    if \"no se pudo aplicar\" in salida:\n        return \"no_aplico\"\n    return \"otro\"",
+  "cambio": "Agregar despues de la funcion se_paso_del_tope la funcion tipo_de_fallo(salida) que clasifica el tipo de fallo segun el texto de salida, con prioridad: tiempo, guardia, no_aprobo, no_aplico, otro.",
+  "codigo": "def tipo_de_fallo(salida):\n    \"\"\"Devuelve de que tipo fue el fallo, mirando el texto de la salida.\"\"\"\n    if not isinstance(salida, str):\n        return \"otro\"\n    if salida.startswith(\"TOPE DE TIEMPO\"):\n        return \"tiempo\"\n    if \"EL GUARDIA NO DEJO GUARDAR\" in salida or \"NO SE GUARDO\" in salida:\n        return \"guardia\"\n    if \"EL EQUIPO NO APROBO\" in salida:\n        return \"no_aprobo\"\n    if \"no se pudo aplicar\" in salida:\n        return \"no_aplico\"\n    return \"otro\"",
+  "vigia": "Una prueba que llame a tipo_de_fallo con cada texto de ejemplo ('TOPE DE TIEMPO: 900 s', 'EL GUARDIA NO DEJO GUARDAR', 'NO SE GUARDO', 'EL EQUIPO NO APROBO', 'no se pudo aplicar', '', None, 123) y compruebe que devuelve 'tiempo', 'guardia', 'guardia', 'no_aprobo', 'no_aplico', 'otro', 'otro', 'otro' respectivamente.",
+  "puede_danar": [
+   "cuerpo/capataz.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno: el paquete dice que nadie depende de estas piezas; solo agrega una funcion nueva a cuerpo/capataz.py y no toca ninguna existente"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el encargo al pie de la letra: crea tipo_de_fallo(salida) tras se_paso_del_tope con la prioridad exacta (tiempo, guardia, no_aprobo, no_aplico, otro, y otro si no es texto), con el texto de ubicacion identico al material, sin tocar otras funciones y sin inventar nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19534 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

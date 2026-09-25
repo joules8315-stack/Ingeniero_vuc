@@ -1,0 +1,1188 @@
+[
+ {
+  "id": 1,
+  "fecha": "2026-08-20",
+  "proyecto": "dmm",
+  "que_paso": "El paquete traia el motor (cuerpo/perfil.py) pero NO la cara (web/), donde esta el formulario que de verdad guarda",
+  "causa_raiz": "el flujo se armaba solo por el NOMBRE del archivo, y web/servidor.py no se llama 'onboarding'",
+  "cura": "quien IMPORTA una pieza del flujo pertenece al flujo (llamadores por el grafo)",
+  "no_volver_a": "armar un flujo mirando solo nombres de archivo; hay que seguir los hilos",
+  "piezas": [
+   "cerebro/router.py",
+   "web/servidor.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_paquete_trae_la_cara.py",
+  "veces": 1,
+  "disparador": "router\\.armar|paquete minimo|flujos\\.detectar"
+ },
+ {
+  "id": 2,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "El candado de lectura dejaba abrir app.py entero (10.818 lineas)",
+  "causa_raiz": "bastaba que el nombre del archivo apareciera 'de pasada' en un comentario del paquete para darlo por declarado",
+  "cura": "solo vale lo declarado como cabecera `### `pieza`` en el paquete",
+  "no_volver_a": "comprobar pertenencia con 'esta el nombre en el texto'; hay que exigir la declaracion formal",
+  "piezas": [
+   "arnes/read_gate.py"
+  ],
+  "quien_lo_caza": "prueba manual de los 3 casos del candado",
+  "veces": 1,
+  "disparador": "read_gate|declarado_en"
+ },
+ {
+  "id": 3,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "El buscador de habilidades decia 'ya lo escribiste' sobre cosas que Julio nunca escribio (telegram, QR)",
+  "causa_raiz": "se exigia 'cualquiera' de las palabras y las cortas (qr) o comunes (canal) colaban cualquier trozo; ademas las no indexadas parecian rarisimas",
+  "cura": "exigir SOLO la palabra mas rara, y si no queda ninguna que distinga, devolver vacio",
+  "no_volver_a": "afirmar que algo existe sin una palabra que de verdad lo distinga",
+  "piezas": [
+   "cuerpo/skills.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_skills_no_miente.py",
+  "disparador": "buscar_estricto|skills\\.buscar|ya lo escribiste",
+  "veces": 1
+ },
+ {
+  "id": 4,
+  "fecha": "2026-08-21",
+  "proyecto": "foto_informe",
+  "que_paso": "Un trozo de un problema de PLANTILLA traia el codigo del LOGIN",
+  "causa_raiz": "la palabra 'sesion' aparecia en los dos asuntos",
+  "cura": "filtro `exigir`: el trozo debe hablar del asunto, no compartir una palabra suelta",
+  "no_volver_a": "buscar por palabras sueltas sin exigir el asunto",
+  "piezas": [
+   "cerebro/trozos.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_el_trozo_habla_del_asunto.py",
+  "disparador": "trozos\\.Buscador|exigir=",
+  "veces": 1
+ },
+ {
+  "id": 5,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Import del cerebro de DMM agarraba el paquete equivocado",
+  "causa_raiz": "el Ingeniero y DMM tienen los dos un paquete llamado `cuerpo`",
+  "cura": "cargar por RUTA con importlib y nombre propio (dmm_cerebro)",
+  "no_volver_a": "importar por nombre cuando dos proyectos comparten nombre de paquete",
+  "piezas": [
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "cuerpo/obrero.py::disponible",
+  "disparador": "from cuerpo import cerebro|prestar_cerebro",
+  "veces": 1
+ },
+ {
+  "id": 6,
+  "fecha": "2026-08-20",
+  "proyecto": "dmm",
+  "que_paso": "el onboarding no guarda el perfil de la empresa en la web",
+  "causa_raiz": "El servidor procesa el onboarding pero no persiste las respuestas crudas en perfil_datos.py",
+  "cura": "Importar guardar de perfil_datos y llamarlo en procesar_onboarding con la empresa y los campos",
+  "no_volver_a": "Si la prueba pasa porque se modifica `perfil_datos.cargar` para devolver datos falsos, o si se modifica `procesar_onboarding` para llamar a `guardar` pero se hace de forma incorrecta (ej. guardando datos vacios), la prueba no seria valida. La prueba debe verificar que los datos ESPECIFICOS enviados ",
+  "piezas": [
+   "web/servidor.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_web_procesa_onboarding.py",
+  "veces": 1,
+  "disparador": "perfil_datos|procesar_onboarding",
+  "leccion_disparo": "hacer pasar una prueba cambiando lo que devuelve la lectura en vez de arreglar el guardado"
+ },
+ {
+  "id": 7,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "El ciclo cruzado se quedaba sin cerebros y tardaba 10+ minutos",
+  "causa_raiz": "DOS cosas: (1) el cerebro de DMM esconde el tope de cuota detras del mensaje generico \"pon GEMINI_API_KEY\", asi que el relevo no lo veia como agote; (2) la latencia de los cerebros gratis es IMPREDECIBLE (18s a 300s) y NO depende del tamano del material: medido, un paquete de 14k tardo 123s y uno de 20k tardo 34s",
+  "cura": "reconocer ese mensaje generico como agote + tope por llamada (120s) que releva al otro cerebro + tope de ciclo (300s) + el trabajo corre en proceso APARTE para que Julio no espere",
+  "no_volver_a": "intentar acelerar recortando el material: no es el tamano, es el servidor. Y no fiarse del texto del error para saber que paso",
+  "piezas": [
+   "cuerpo/cuotas.py",
+   "cuerpo/cruzado.py",
+   "arnes/velocidad.config"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_nada_lento.py",
+  "veces": 1,
+  "disparador": "subagentes|lanzar_al_fondo",
+  "leccion_disparo": "recortar el material de un encargo para que vaya mas rapido"
+ },
+ {
+  "id": 8,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "LM Studio estaba encendido y el Ingeniero no lo veia; y forzar=local del cerebro de DMM se iba a Gemini",
+  "causa_raiz": "se exigia una variable de entorno en vez de comprobar el puerto; y el forzar=local del cerebro prestado no funciona",
+  "cura": "detectar LM Studio probando localhost:1234/models + via DIRECTA propia (obrero.preguntar_local)",
+  "no_volver_a": "dar por ausente un servicio sin comprobarlo, ni depender del cerebro prestado para la red de seguridad",
+  "piezas": [
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_nada_lento.py",
+  "veces": 1,
+  "disparador": "LM Studio|lmstudio|1234",
+  "leccion_disparo": "dar por caido un servicio local sin haberlo llamado"
+ },
+ {
+  "id": 9,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "El modelo local (qwen2.5-coder-1.5b) dijo que perfil.py no tiene guardar_perfil, y SI la tiene (linea 202)",
+  "causa_raiz": "es un modelo de 1.5B: rapido y gratis, pero alucina sobre material largo",
+  "cura": "el local va SIEMPRE el ultimo y nunca se acepta su palabra sin que otro cerebro la audite",
+  "no_volver_a": "fiarse del modelo local sin auditor; es red de seguridad, no juez",
+  "piezas": [
+   "cuerpo/obrero.py",
+   "cuerpo/cruzado.py"
+  ],
+  "quien_lo_caza": "cuerpo/cruzado.py (el juez)",
+  "veces": 1,
+  "disparador": "coder|modelo local",
+  "leccion_disparo": "dar por buena la respuesta de un solo cerebro sin que otro distinto la audite"
+ },
+ {
+  "id": 10,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "El subagente se cortaba a si mismo y soltaba un traceback de Python en la cara de Julio",
+  "causa_raiz": "topes incoherentes: 300s por llamada x2 llamadas por ronda = 600s, pero el subproceso solo esperaba 450s; y el TimeoutExpired no se capturaba",
+  "cura": "topes coherentes (700s) + capturar el timeout con mensaje en palabras simples + comando cruzado que NO bloquea (lanzar_al_fondo + ingeniero.py resultado)",
+  "no_volver_a": "poner topes sin comprobar que el de fuera sea mayor que la suma de los de dentro; ni dejar que un traceback llegue a Julio",
+  "piezas": [
+   "cuerpo/subagentes.py",
+   "ingeniero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_nada_lento.py",
+  "veces": 1,
+  "disparador": "timeout=|tope_segundos",
+  "leccion_disparo": "poner un tope de tiempo sin comprobar que el de fuera supera la suma de los de dentro"
+ },
+ {
+  "id": 11,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "El Ingeniero apuntaba a una copia de Foto Informe de MAYO habiendo una de JULIO con 253 archivos",
+  "causa_raiz": "proyectos.config se lleno a ojo, sin comprobar cual copia era la viva ni en que rama estaba",
+  "cura": "arnes/via_canonica.py: comprueba ruta+rama+gemelos ANTES de nada y BLOQUEA si la declarada es mas vieja",
+  "no_volver_a": "declarar una ruta sin comprobar si hay copias del mismo proyecto y cual tiene el commit mas nuevo",
+  "piezas": [
+   "proyectos.config",
+   "arnes/via_canonica.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_via_canonica.py",
+  "veces": 1,
+  "disparador": "via_canonica|proyectos.config",
+  "leccion_disparo": "declarar la ruta de un proyecto sin comprobar si hay copias mas nuevas en el disco"
+ },
+ {
+  "id": 12,
+  "fecha": "2026-08-20",
+  "proyecto": "foto_informe",
+  "que_paso": "Habia 3 copias de Foto Informe en el disco y se trabajaba en la de mayo",
+  "causa_raiz": "nunca se declaro una via canonica unica; las copias se fueron acumulando sin que nadie las mirara",
+  "cura": "Julio confirmo la buena (dev/Foto_info_repo, 23-jul); las otras dos se respaldaron y se borraron el 2026-08-20",
+  "no_volver_a": "dejar copias de un proyecto vivas en el disco: confunden y se acaba reparando la equivocada",
+  "piezas": [
+   "proyectos.config"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_via_canonica.py",
+  "veces": 1,
+  "disparador": "via_canonica|RESPALDO CONGELADO",
+  "leccion_disparo": "dejar copias vivas del mismo proyecto en el disco"
+ },
+ {
+  "id": 13,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "Los dos consejeros RECHAZARON una decision y el resumen decia que tenia buena pinta",
+  "causa_raiz": "se confundio COINCIDIR con APROBAR: coincidian, pero en decir que NO",
+  "cura": "veredicto explicito APRUEBAN/RECHAZAN/DISCREPAN en vez de un booleano de coincidencia",
+  "no_volver_a": "resumir un voto sin decir en que sentido voto; un resumen que dice lo contrario de lo que paso es peor que no tenerlo",
+  "piezas": [
+   "cuerpo/consejeros.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_consejeros.py",
+  "veces": 1,
+  "disparador": "veredicto_corto|buena pinta",
+  "leccion_disparo": "resumir un veredicto sin decir en que sentido voto cada uno"
+ },
+ {
+  "id": 14,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "La vigia de los candados duros se colgo 8 minutos",
+  "causa_raiz": "el candado de cierre corre las vigias, y al llamarlo DESDE una vigia arrancaba pytest dentro de pytest",
+  "cura": "si detecta PYTEST_CURRENT_TEST no corre vigias: dentro de una vigia se prueba la logica, no se relanza todo",
+  "no_volver_a": "escribir un candado que ejecute pytest sin comprobar si ya esta dentro de pytest",
+  "piezas": [
+   "arnes/candado_cierre.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_candados_duros.py",
+  "veces": 1,
+  "disparador": "subprocess[^\\n]{0,200}pytest|\\[sys\\.executable,\\s*.-m.,\\s*.pytest",
+  "leccion_disparo": "escribir un candado o una vigia que ejecute las pruebas por dentro"
+ },
+ {
+  "id": 15,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "Escribir codigo Python con \n dentro de un heredoc de bash corrompio el archivo TRES veces",
+  "causa_raiz": "el heredoc convierte \n en salto de linea real y parte los strings del codigo",
+  "cura": "para codigo con escapes se usa la herramienta Write o Edit, nunca heredoc de bash",
+  "no_volver_a": "meter codigo con \n o rutas con \u0007 dentro de un heredoc; se corrompe en silencio",
+  "piezas": [
+   "cuerpo/dudas.py",
+   "arnes/modo_ingeniero.py",
+   "arnes/settings_propuesto.json"
+  ],
+  "quien_lo_caza": "el propio interprete de Python al importar",
+  "veces": 1,
+  "disparador": "EOF|salto de linea dentro de una orden",
+  "leccion_disparo": "meter texto largo o codigo dentro de una orden de terminal"
+ },
+ {
+  "id": 16,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "El buscador decia NO_ENCONTRADO sobre medidor.py, cuyo titulo literal es MEDIDOR de tokens",
+  "causa_raiz": "el indice guarda las palabras CON tilde (economico) y las consultas van sin ella: nunca coinciden. Degradaba TODO el grafo en silencio",
+  "cura": "normalizar tildes en _palabras() y en el filtro exigir, con la misma funcion para indexar y para consultar",
+  "no_volver_a": "filtrar las palabras de la consulta con criterios distintos a los del indice",
+  "piezas": [
+   "cerebro/trozos.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_las_tildes_no_rompen_la_busqueda.py",
+  "veces": 1,
+  "disparador": "_palabras|buscar_estricto",
+  "leccion_disparo": "filtrar las palabras de una busqueda con reglas distintas a las del indice"
+ },
+ {
+  "id": 17,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "El candado de edicion impidio reparar el propio Ingeniero cuando estaba roto",
+  "causa_raiz": "exigia un paquete minimo, pero el generador de paquetes no arrancaba por el mismo archivo roto",
+  "cura": "si el generador de paquetes no importa, el candado deja pasar y avisa",
+  "no_volver_a": "escribir un candado que dependa del sistema que protege sin salida para repararlo",
+  "piezas": [
+   "arnes/edit_gate_universal.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_candados_duros.py",
+  "veces": 1,
+  "disparador": "edit_gate|read_gate",
+  "leccion_disparo": "escribir un candado que dependa del mismo sistema que protege"
+ },
+ {
+  "id": 18,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "El candado de cierre bloqueaba por preguntas YA respondidas y no habia forma de cerrarlas",
+  "causa_raiz": "probar el comando duda apuntaba preguntas de mentira en el estado, y no existia manera de marcarlas como contestadas",
+  "cura": "cuerpo/estado.respondida() + comando ingeniero.py respondida",
+  "no_volver_a": "hacer un candado sin una forma honrada de satisfacerlo: empuja a saltarselo, y eso es peor que no tenerlo",
+  "piezas": [
+   "cuerpo/estado.py",
+   "arnes/candado_cierre.py"
+  ],
+  "quien_lo_caza": "el propio candado de cierre",
+  "veces": 1,
+  "disparador": "candado_cierre|dudas.",
+  "leccion_disparo": "escribir un candado sin una forma honrada de satisfacerlo"
+ },
+ {
+  "id": 19,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "Se marco como NO_SIRVIO una explicacion cuyo contenido era CORRECTO: solo habia que argumentarla de otra manera",
+  "causa_raiz": "el sistema solo tenia dos estados (sirvio / no sirvio) y metia en el mismo saco un error de fondo y uno de forma",
+  "cura": "tercer estado ACLARAR, que NO baja el acierto de contenido y se mide aparte como me_explique_mal",
+  "no_volver_a": "confundir que la respuesta este mal con que este mal explicada: se arreglan de forma distinta",
+  "piezas": [
+   "cuerpo/respuestas.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_respuestas.py",
+  "veces": 1,
+  "disparador": "NO_SIRVIO|no sirvio",
+  "leccion_disparo": "marcar una respuesta como mala cuando lo que falla es como esta explicada"
+ },
+ {
+  "id": 20,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "Las vigias de dudas se ponian rojas sin que el codigo cambiara",
+  "causa_raiz": "dependian de una llamada real a un cerebro, y un cerebro no contesta siempre igual",
+  "cura": "se prueba el sistema COMPLETO pero con un juez de mentira que contesta siempre lo mismo",
+  "no_volver_a": "escribir una vigia que dependa de algo no determinista: una vigia inestable no vale para nada",
+  "piezas": [
+   "vigias/test_vigia_dudas.py"
+  ],
+  "quien_lo_caza": "ella misma",
+  "veces": 1,
+  "disparador": "random|time.time|shuffle",
+  "leccion_disparo": "escribir una vigia que dependa de algo que cambia solo"
+ },
+ {
+  "id": 21,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "Se creyo que el juez del cerebro era opcional y se intento quitar de las pruebas",
+  "causa_raiz": "sin el, contar palabras da falsos positivos: cuantos empleados tiene la empresa traia un fallo del onboarding",
+  "cura": "el juez es imprescindible; lo que se hace es volverlo predecible en las pruebas, no quitarlo",
+  "no_volver_a": "asumir que un filtro es adorno sin probar el sistema sin el",
+  "piezas": [
+   "cuerpo/dudas.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_dudas.py",
+  "veces": 1,
+  "disparador": "(quit|elimin|desactiv|apag|sac)\\w*\\s+(al?\\s+|el\\s+)?(juez|revisor)|palabra prohibida",
+  "leccion_disparo": "quitar un filtro de las pruebas por creer que es adorno"
+ },
+ {
+  "id": 22,
+  "fecha": "2026-08-20",
+  "proyecto": "foto_informe",
+  "que_paso": "Se iba a INDEXAR el MVP como si eso fuera la reparacion, sin saber DONDE esta lento",
+  "causa_raiz": "se salto el orden: actuar antes de buscar el origen del fallo y tener elementos de juicio",
+  "cura": "ORDEN OBLIGATORIO: 1 via canonica, 2 buscar el ORIGEN del fallo, 3 analizar, 4 recien entonces proponer como lograrlo",
+  "no_volver_a": "proponer una solucion antes de haber localizado y medido el fallo",
+  "piezas": [
+   "ingeniero.py"
+  ],
+  "quien_lo_caza": "PENDIENTE de vigia",
+  "veces": 1,
+  "disparador": "indexar|embeddings",
+  "leccion_disparo": "proponer una reparacion antes de haber localizado y medido el fallo"
+ },
+ {
+  "id": 23,
+  "fecha": "2026-08-20",
+  "proyecto": "foto_informe",
+  "que_paso": "Se dijo que la LENTITUD y el MODO OFFLINE eran el mismo problema",
+  "causa_raiz": "una nota de memoria decia que la cura de la latencia era el offline, y se salto de ahi a que eran lo mismo",
+  "cura": "son DOS objetivos distintos y se tratan por separado; el offline puede estar lento por su cuenta. Se corrigio la nota que inducia al error",
+  "no_volver_a": "juntar dos problemas porque una solucion toque a los dos; que A ayude a B no hace que A y B sean lo mismo",
+  "piezas": [
+   "memoria latencia-supabase-canal-lento"
+  ],
+  "quien_lo_caza": "PENDIENTE de vigia",
+  "veces": 1,
+  "disparador": "offline|sin internet",
+  "leccion_disparo": "tratar dos problemas como uno porque una misma solucion toca a los dos"
+ },
+ {
+  "id": 24,
+  "fecha": "2026-08-20",
+  "proyecto": "foto_informe",
+  "que_paso": "Julio entendio que se le iba a BORRAR el boton Organizador de tareas con IA, que el habia pedido",
+  "causa_raiz": "se uso la palabra DESCARTADO sin decir que se descartaba como CAUSA del fallo, no como funcionalidad",
+  "cura": "al investigar, decir siempre ESTOY LEYENDO, NO TOCANDO, y nombrar que se descarta exactamente",
+  "no_volver_a": "usar palabras como descartado, quitar o eliminar mientras se investiga: asustan y parecen acciones",
+  "piezas": [
+   "comunicacion"
+  ],
+  "quien_lo_caza": "PENDIENTE de vigia",
+  "veces": 1,
+  "disparador": "descartad|quitar el boton",
+  "leccion_disparo": "usar las palabras descartar, quitar o eliminar mientras solo se esta investigando"
+ },
+ {
+  "id": 25,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "Se incumplio el PROTOCOLO_DEL_CHAT de Julio durante todo el dia, estando escrito desde el 2026-07-28",
+  "causa_raiz": "el protocolo existia pero NADA obligaba a cumplirlo: era un documento, no un candado",
+  "cura": "tres disparadores: detectar que Julio repite, frenar la jerga prohibida antes de que le llegue, y exigir confirmar el objetivo antes de construir",
+  "no_volver_a": "dejar una ley escrita sin un disparador que la haga cumplir; lo que depende de acordarse, no se cumple",
+  "piezas": [
+   "arnes/candado_protocolo.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_protocolo.py",
+  "veces": 1,
+  "disparador": "PROTOCOLO_DEL_CHAT|MAPA_CANONICO",
+  "leccion_disparo": "dejar una ley escrita sin un disparador que la haga cumplir"
+ },
+ {
+  "id": 26,
+  "fecha": "2026-08-20",
+  "proyecto": "ingeniero",
+  "que_paso": "El contador de veces que Julio repite marcaba CERO habiendo repetido cuatro veces el mismo dia",
+  "causa_raiz": "solo subia si alguien lo apuntaba a mano; el termometro del sistema entero dependia de que el Ingeniero se acordara",
+  "cura": "se dispara solo en cada mensaje de Julio comparandolo con lo que ya habia dicho antes",
+  "no_volver_a": "medir algo importante con un contador que hay que subir a mano",
+  "piezas": [
+   "cuerpo/respuestas.py",
+   "arnes/candado_protocolo.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_protocolo.py",
+  "veces": 1,
+  "disparador": "repeticion|contador",
+  "leccion_disparo": "medir algo importante con un contador que hay que subir a mano"
+ },
+ {
+  "id": 27,
+  "fecha": "2026-08-20",
+  "proyecto": "foto_informe",
+  "que_paso": "LENTITUD DEL MVP: causa raiz localizada y medida",
+  "causa_raiz": "el servidor responde en 3 ms (no es lento). Cada viaje a la nube cuesta ~550 ms y cada accion hace varios SEGUIDOS: crear informe 4, anadir diario 3, subir foto 3, asignar 2, generar 2. Ademas la pantalla llama al servidor desde 50 sitios, 16 al mismo",
+  "cura": "PENDIENTE de reparar: agrupar los viajes por accion en vez de hacerlos uno detras de otro",
+  "no_volver_a": "culpar al codigo de la lentitud: el codigo es rapido, lo caro es el numero de idas y vueltas a la nube",
+  "piezas": [
+   "app.py:13616",
+   "app.py:14282",
+   "app.py:14705",
+   "app.py:14919",
+   "app.py:16427"
+  ],
+  "quien_lo_caza": "PENDIENTE de vigia",
+  "veces": 1,
+  "disparador": "(MVP|DMM|Supabase|nube)[^\\n]{0,60}(lento|lentitud|tarda|demora)|(lento|lentitud|tarda|demora)[^\\n]{0,60}(MVP|DMM|Supabase|nube)",
+  "leccion_disparo": "culpar al codigo de una lentitud sin haber contado las idas y vueltas a la nube",
+  "disparador_anterior": "lentitud|tarda mucho|se demora"
+ },
+ {
+  "id": 28,
+  "fecha": "2026-08-20",
+  "proyecto": "foto_informe",
+  "que_paso": "MODO SIN INTERNET: en la pantalla de inicio NO existe ningun boton para entrar sin internet",
+  "causa_raiz": "circulo vicioso: para entrar sin internet hace falta el complemento descargado; para descargarlo hay que entrar al MVP; para entrar hace falta login; para el login hace falta internet. Ademas el manifiesto no tiene campo id y la direccion de arranque apunta a la raiz (el MVP con login), lo que crea DOS aplicaciones instaladas",
+  "cura": "PENDIENTE: boton de modo sin internet EN LA PANTALLA DE INICIO + campo id en el manifiesto",
+  "no_volver_a": "dejar la entrada al modo sin internet detras del login",
+  "piezas": [
+   "app_web.html:376",
+   "app.py:10216 (manifiesto)",
+   "offline.html"
+  ],
+  "quien_lo_caza": "PENDIENTE de vigia",
+  "veces": 1,
+  "disparador": "offline|sin internet",
+  "leccion_disparo": "dejar la entrada a un modo de emergencia detras del login"
+ },
+ {
+  "id": 29,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "El candado de edicion ofrece la salida NECESITO_EDITAR y esa salida NO EXISTE en ningun sitio",
+  "causa_raiz": "se escribio el mensaje de ayuda antes que el mecanismo; un candado que ofrece una llave inexistente obliga a usar el apagon general",
+  "cura": "crear el comando para justificar una edicion puntual, que quede apuntado y permita ese archivo concreto",
+  "no_volver_a": "ofrecer en un mensaje de bloqueo una salida que no esta implementada: obliga a apagar el arnes entero",
+  "piezas": [
+   "arnes/edit_gate_universal.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_sin_rendijas.py",
+  "veces": 1,
+  "disparador": "NECESITO_EDITAR|permiso_editar",
+  "leccion_disparo": "ofrecer en un mensaje de bloqueo una salida que no esta implementada"
+ },
+ {
+  "id": 30,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Escribir codigo con saltos de linea dentro de una orden de terminal lo corrompe en silencio",
+  "causa_raiz": "los saltos de linea y las barras se convierten en caracteres reales y parten el codigo",
+  "cura": "usar SIEMPRE la herramienta de escribir archivos, nunca meter codigo dentro de una orden de terminal",
+  "no_volver_a": "meter codigo con saltos de linea o barras dentro de una orden de terminal",
+  "piezas": [
+   "todos los archivos escritos asi"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_memoria_avisa.py",
+  "disparador": "<<\\s*.?[A-Z]{2,}|cat\\s*>.*<<|python\\s+-\\s*<<",
+  "veces": 1
+ },
+ {
+  "id": 31,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Parchear codigo buscando texto suelto rompio el archivo: la busqueda del parentesis de cierre encontro uno que estaba DENTRO de un texto",
+  "causa_raiz": "se edita el codigo con find y replace sobre trozos de texto, sin entender la estructura; un parentesis dentro de una frase parece el final de la instruccion",
+  "cura": "para tocar codigo se usa la herramienta de edicion con el trozo exacto y unico, o se reescribe el archivo entero; nunca find de un caracter suelto",
+  "no_volver_a": "parchear codigo buscando un caracter suelto como parentesis o coma: rompe en silencio",
+  "piezas": [
+   "cuerpo/fallos.py"
+  ],
+  "quien_lo_caza": "el interprete al importar el archivo",
+  "disparador": "\\.(find|replace)\\(\\s*[\"\\x27][)\\](,;][\"\\x27]",
+  "veces": 1,
+  "disparador_anterior": "\\.find\\([\"\\x27][)\\](,;][\"\\x27]|s\\.replace\\(.{0,30}[)\\](,;]"
+ },
+ {
+  "id": 32,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Una comprobacion salio en rojo y a los segundos las mismas 144 salieron en verde tres veces seguidas",
+  "causa_raiz": "el guardia de cierre corrio las comprobaciones mientras todavia se estaban escribiendo archivos: las probo a medio escribir",
+  "cura": "antes de dar un rojo por bueno, repetirlo; un rojo que no se repite es ruido, no un fallo",
+  "no_volver_a": "dar por rota una comprobacion que solo fallo una vez mientras se escribia el archivo",
+  "piezas": [
+   "arnes/candado_cierre.py"
+  ],
+  "quien_lo_caza": "PENDIENTE",
+  "disparador": "1 failed|2 failed",
+  "veces": 1
+ },
+ {
+  "id": 33,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Comprobaciones en rojo solo cuando corren dos a la vez: solas salen siempre verdes",
+  "causa_raiz": "varias comprobaciones escriben en los MISMOS archivos de memoria (preguntas pendientes, errores) y se pisan entre ellas",
+  "cura": "cada comprobacion usa su propia copia desviando la ruta; nunca toca la memoria de verdad",
+  "no_volver_a": "escribir una comprobacion que toque los archivos de memoria reales: da rojos falsos y sustos",
+  "piezas": [
+   "vigias/test_vigia_candados_duros.py",
+   "vigias/test_vigia_paquete_trae_la_cara.py"
+  ],
+  "quien_lo_caza": "correrlas dos veces a la vez",
+  "disparador": "estado\\.apuntar\\(|fallos\\.apuntar\\(|fallos\\.sembrar\\(",
+  "veces": 1
+ },
+ {
+  "id": 34,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Comprobaciones en rojo solo al correr dos a la vez; reproducido: 2 y 3 rojas de 144",
+  "causa_raiz": "varias escribian en los MISMOS archivos de memoria y el guardia las lanzaba aunque el sellado ya las estuviera corriendo",
+  "cura": "cerrojo para no lanzar dos corridas a la vez, y cada comprobacion con SU copia de memoria, estado y contador",
+  "no_volver_a": "escribir una comprobacion que toque los archivos de memoria reales, ni lanzar dos corridas a la vez",
+  "piezas": [
+   "arnes/candado_cierre.py",
+   "cuerpo/estado.py",
+   "cuerpo/fallos.py"
+  ],
+  "quien_lo_caza": "lanzar dos corridas simultaneas a proposito",
+  "disparador": "estado\\.apuntar\\(|fallos\\.sembrar\\(|\\.cierres_bloqueados",
+  "veces": 1
+ },
+ {
+  "id": 35,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Se perdieron 27 de los 32 errores aprendidos mientras se aislaban las comprobaciones",
+  "causa_raiz": "una comprobacion escribio su copia vacia ENCIMA de la memoria real; el aislamiento se hizo a medias y la variable de desvio quedo puesta al guardar",
+  "cura": "se recuperaron del guardado anterior y se fusionaron; ninguna comprobacion escribe ya en la memoria real",
+  "no_volver_a": "dejar que una comprobacion escriba en la memoria de verdad, ni dar por buena una cifra que BAJA sin explicacion",
+  "piezas": [
+   "cuerpo/fallos.py",
+   "memoria/FALLOS.json"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_memoria_no_se_pierde.py",
+  "disparador": "INGENIERO_FALLOS_TEST|(open|dump)\\([^\\n]{0,80}FALLOS\\.json[^\\n]{0,40}[\"\\x27]w",
+  "veces": 1,
+  "disparador_anterior": "INGENIERO_FALLOS_TEST|FALLOS\\.json"
+ },
+ {
+  "id": 36,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Una prueba escribio una pregunta de mentira en el registro real y el guardia de cierre la tomo por una pregunta de verdad sin hacer",
+  "causa_raiz": "las pruebas escribian en el registro de trabajo real en vez de en una copia propia",
+  "cura": "cada prueba con su copia del registro; ademas hay un guardia que comprueba que ninguna escriba en los archivos de verdad",
+  "no_volver_a": "dejar que una prueba escriba en el registro o la memoria reales: ensucia el trabajo de verdad",
+  "piezas": [
+   "vigias/test_vigia_dudas.py",
+   "cuerpo/estado.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_memoria_no_se_pierde.py",
+  "disparador": "estado\\.apuntar\\(decision_pendiente",
+  "veces": 1
+ },
+ {
+  "id": 37,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Se saboteo a proposito una reparacion y su vigia siguio VERDE: 31 comprobaciones en verde con el arreglo de tildes ELIMINADO, y 6 en verde con el filtro de asunto anulado. La memoria decia 'protegido' y no lo estaba.",
+  "causa_raiz": "La vigia miraba a otro nivel que la reparacion: comprobaba QUE ARCHIVOS llegan cuando la reparacion era sobre QUE TROZOS llegan. Apuntar el nombre de una vigia en la memoria no demuestra que esa vigia proteja nada.",
+  "cura": "Una reparacion solo se da por protegida si su vigia NACE ROJA al sabotear la cura. Se creo vigia 22 (el trozo habla del asunto, 2 rojas al sabotear) y vigia 23 (las tildes, 7 rojas al sabotear), y se reengancharon las reparaciones a ellas.",
+  "no_volver_a": "dar por protegida una reparacion solo porque tiene un nombre de vigia apuntado, sin haber comprobado que esa vigia se pone roja al romper la cura",
+  "piezas": [
+   "cerebro/trozos.py",
+   "arnes/guard_pasado.py",
+   "cuerpo/fallos.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_lo_ya_reparado.py::test_cada_reparacion_declara_su_prueba",
+  "disparador": "quien_lo_caza|lo vigila|queda protegido|ya tiene vigia",
+  "veces": 1,
+  "leccion_disparo": "apuntar quien_lo_caza en una reparacion, o fiarse de que una vigia protege algo"
+ },
+ {
+  "id": 38,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Tercer sitio con el mismo fallo: la marca de 'hilo perdido' era un archivo COMPARTIDO. Una comprobacion la ponia y otra se la encontraba puesta, y el candado de edicion bloqueaba un CONTRATO, que debe poder escribirse siempre. Sola verde, en tanda roja.",
+  "causa_raiz": "Se curo el sitio, no el patron: se aislo la memoria de errores, luego el registro de apagones, pero cada comprobacion seguia pudiendo tocar el estado real por cualquier otra via. Ademas el candado miraba el hilo perdido ANTES de la regla 'los documentos son libres', contradiciendo lo escrito en su propio encabezado.",
+  "cura": "Un conftest que aisla el estado para TODAS las comprobaciones de una vez, no una por una. Y en el candado, los documentos van primero: escribir la ley y las notas es COMO se recupera el hilo; el codigo sigue bloqueado.",
+  "no_volver_a": "aislar el archivo compartido que dio guerra hoy en vez de impedir de una vez que cualquier comprobacion toque el estado real",
+  "piezas": [
+   "arnes/candado_contexto.py",
+   "arnes/edit_gate_universal.py",
+   "vigias/conftest.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_candados_duros.py::test_edicion_deja_los_documentos_y_las_vigias",
+  "disparador": "hilo_perdido|estado compartido",
+  "veces": 1,
+  "leccion_disparo": "crear un archivo de estado compartido, o aislar uno para las pruebas"
+ },
+ {
+  "id": 39,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "La comprobacion de velocidad se ponia roja con la maquina ocupada: medi segundos de reloj. Se cazo corriendo tres tandas a la vez.",
+  "causa_raiz": "Medir tiempo de reloj mezcla dos cosas distintas: que el programa sea lento y que la maquina este liada. El rojo no distinguia cual de las dos era.",
+  "cura": "El tope se estira con la carga real de la maquina, medida en el momento. Comprobado que sigue mordiendo: simulando 40s se pone roja igual.",
+  "no_volver_a": "dar por buena una comprobacion de tiempo sin preguntarse que pasa con la maquina ocupada",
+  "piezas": [
+   "vigias/test_vigia_nada_lento.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_nada_lento.py::test_armar_un_paquete_es_rapido",
+  "disparador": "perf_counter|medir segundos|tarda menos de",
+  "veces": 1,
+  "leccion_disparo": "escribir una comprobacion que mida segundos"
+ },
+ {
+  "id": 40,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "El Ingeniero creia elegir cerebro y SIEMPRE contestaba el mismo. Un modelo inventado, 'pepito-grillo-9000', contesto tan tranquilo (y en italiano). Kimi K2 y K3 'funcionaban' a 7 segundos: era mentira, era Gemini disfrazado. Julio pidio Kimi creyendo que hacia falta descargarlo, y ni siquiera esta en su llave.",
+  "causa_raiz": "La puerta comoda del cerebro prestado hacia DOS cosas a escondidas: a Gemini le quitaba el modelo pedido y usaba el suyo fijo; y si el modelo no existia, en vez de avisar caia CALLANDO en otro proveedor. Un error tapado es peor que un error: hace tomar decisiones sobre datos falsos. Encima los dos modelos fijos de Gemini (2.0-flash y respaldo 1.5-flash) llevaban MUERTOS: 404 los dos. Por eso Gemini fallaba 4 de 7 veces y el trabajo caia en la IA cara, o sea Julio pagando.",
+  "cura": "El Ingeniero llama a cada cerebro DIRECTO, con el modelo que el elige, y un modelo que no existe da error a la vista. Se comprobo uno por uno contra la llave real: en Groq solo viven gpt-oss-120b y gpt-oss-20b (0.9s); en Gemini el bueno es gemini-3.5-flash (3.3s). Kimi y los Llama dan 404: no estan en su llave.",
+  "no_volver_a": "fiarse de una medida de velocidad o de disponibilidad sin comprobar QUIEN contesto de verdad; y dejar que un fallo de modelo caiga callando en otro",
+  "piezas": [
+   "cuerpo/obrero.py",
+   "cuerpo/cuotas.py",
+   "arnes/velocidad.config"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+  "disparador": "velocidad.config|elegir cerebro",
+  "veces": 1,
+  "leccion_disparo": "medir velocidad de un modelo, elegir cerebro, o anadir un modelo nuevo"
+ },
+ {
+  "id": 41,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Julio tuvo que repetir TRES veces que se trabaja en equipo, y me dijo: 'por no trabajar en equipo ya has gastado 19'. Se escribio a solas un guardia entero, tres vigias y cuatro reparaciones, teniendo los cerebros gratis disponibles.",
+  "causa_raiz": "La regla estaba escrita en la memoria y en el protocolo, pero escrita no es cumplida: dependia de que la IA se acordara. Ademas el equipo estaba AVERIADO (modelos muertos), asi que cada vez que se intentaba fallaba y era mas comodo hacerlo a solas. Una herramienta rota empuja a saltarse la regla.",
+  "cura": "Candado arnes/candado_equipo.py: no se escribe codigo sin veredicto del equipo. Y se reparo el equipo, que era la mitad del problema.",
+  "no_volver_a": "escribir codigo a solas teniendo cerebros gratis, y dar por buena una regla solo porque este escrita",
+  "piezas": [
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_siempre_con_equipo.py",
+  "disparador": "^(Edit|Write|NotebookEdit)\\s*\\n[^\\n]*\\.py\\b",
+  "veces": 1,
+  "leccion_disparo": "ir a escribir o reparar codigo"
+ },
+ {
+  "id": 42,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Cuarto sitio con el MISMO patron: el contador de bloqueos del protocolo era un archivo compartido, y un bloqueo de verdad dejaba la valvula de escape ya abierta, asi que la comprobacion salia roja sin que nada estuviera roto.",
+  "causa_raiz": "El conftest aislaba lo que ya habia dado guerra, no TODO lo que una prueba puede tocar. Cada vez que se anade un archivo de estado nuevo, nace otro rojo falso.",
+  "cura": "Aislado tambien el contador. La regla: cualquier archivo de estado nuevo nace con su desvio de prueba y su linea en el conftest, el mismo dia que se crea.",
+  "no_volver_a": "crear un archivo de estado compartido sin darle a la vez su desvio de prueba",
+  "piezas": [
+   "arnes/candado_protocolo.py",
+   "vigias/conftest.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_protocolo.py::test_el_candado_de_salida_bloquea_de_verdad",
+  "disparador": "semaforo|objetivo_confirmado",
+  "veces": 1,
+  "leccion_disparo": "crear un archivo de estado, un contador o un semaforo nuevo"
+ },
+ {
+  "id": 43,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Julio tuvo que decir TRES veces que se trabaja en equipo, y me dijo 'por no trabajar en equipo ya has gastado 19'. El arnes solo guarda UN permiso de edicion a la vez, asi que pedir el segundo borra el primero y hay que repetir la peticion.",
+  "causa_raiz": "El permiso se guarda en un solo hueco. Con un trabajo que toca dos archivos, obliga a pedir permiso una y otra vez y empuja a apagar el arnes.",
+  "cura": "APUNTADO, no reparado aun: hace falta que el permiso guarde varios archivos a la vez.",
+  "no_volver_a": "pedir dos permisos seguidos creyendo que valen los dos",
+  "piezas": [
+   "arnes/permiso_editar.py"
+  ],
+  "quien_lo_caza": "",
+  "disparador": "permiso_editar|NECESITO_EDITAR",
+  "veces": 1,
+  "leccion_disparo": "pedir permiso para editar mas de un archivo"
+ },
+ {
+  "id": 44,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Se diagnostico Foto Informe A SOLAS, sin lanzar el equipo",
+  "causa_raiz": "Al cambiar de proyecto se empezo a leer y diagnosticar por cuenta propia. La regla estaba escrita, pero cambiar de tema borro el habito: escrito no es cumplido.",
+  "cura": "Julio apretio el candado del equipo y anadio la Ley 0 (nunca trabajar a solas). Se relanzo al equipo y confirmo los hallazgos.",
+  "no_volver_a": "Empezar a mirar el codigo de un proyecto nuevo sin haber lanzado antes el equipo. Cambiar de proyecto NO reinicia las reglas.",
+  "piezas": [
+   "arnes/candado_equipo.py",
+   "arnes/modo_ingeniero.py"
+  ],
+  "quien_lo_caza": "Julio, preguntando: sigues trabajando sin equipo?",
+  "disparador": "^(Edit|Write|NotebookEdit)\\s*\\n[^\\n]*\\.py\\b",
+  "veces": 1,
+  "leccion_disparo": "leer o diagnosticar codigo de un proyecto sin veredicto del equipo vigente"
+ },
+ {
+  "id": 45,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Se trabajo sobre el proyecto EQUIVOCADO durante media sesion",
+  "causa_raiz": "Julio dijo 'el proyecto MVP' y se ASUMIO que era el Asesor de Marketing. MVP no es el apodo de ningun proyecto en la libreta de direcciones; habia que preguntar.",
+  "cura": "Julio lo corrigio: el MVP es Foto Informe. Se pidio el paquete del proyecto correcto.",
+  "no_volver_a": "Dar por hecho de que proyecto habla Julio cuando la palabra que usa NO es un apodo de la libreta de direcciones. Se pregunta, cuesta una linea.",
+  "piezas": [
+   "proyectos.config"
+  ],
+  "quien_lo_caza": "Julio: 'primero vamos a ver fotoinforme MVP'",
+  "disparador": "py trabaja|py equipo",
+  "veces": 1,
+  "leccion_disparo": "empezar a trabajar sobre un proyecto cuyo nombre no salio literal de proyectos.config",
+  "mira_proyecto": true
+ },
+ {
+  "id": 46,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Se le mando al equipo un encargo SIN el pedazo de codigo, y el obrero se rindio",
+  "causa_raiz": "Se confio en que el paquete minimo traeria el archivo de la pantalla. No lo trajo (598.377 letras, no le cabe a nadie) y el encargo salio nombrando renglones que el cerebro no tenia delante.",
+  "cura": "Se extrajeron los 4 pedazos exactos (8.466 letras) y se mandaron DENTRO del encargo.",
+  "no_volver_a": "Mandar al equipo un encargo que nombra renglones de un archivo sin comprobar ANTES que ese trozo va adjunto. Si no cabe, se recorta; no se nombra y ya.",
+  "piezas": [
+   "cerebro/router.py",
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "el propio obrero: 'no puedo, no tengo el material'",
+  "disparador": "equipo_a_mano|prompt_obrero",
+  "veces": 1,
+  "leccion_disparo": "mandar al equipo un encargo que cita renglones de un archivo que no va adjunto"
+ },
+ {
+  "id": 47,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Se pego el encargo VIEJO delante del nuevo: el cerebro contesto las dos cosas",
+  "causa_raiz": "Se reutilizo un archivo de cabecera que ya llevaba un encargo dentro. El auditor acabo auditando una mezcla y su rechazo hablaba de otro proyecto.",
+  "cura": "Se separo la cabecera de LEYES del ENCARGO. Se rehizo la consulta limpia y se descarto la auditoria confusa en vez de darla por buena.",
+  "no_volver_a": "Reutilizar una cabecera de encargo sin comprobar que no lleva otro encargo pegado dentro. Y jamas dar por buena una auditoria que responde a otra cosa.",
+  "piezas": [],
+  "quien_lo_caza": "la propia respuesta, que contesto dos encargos distintos",
+  "disparador": "encargo_|cabeza_",
+  "veces": 1,
+  "leccion_disparo": "armar un encargo juntando archivos de texto ya usados antes"
+ },
+ {
+  "id": 48,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Se le dio a Julio una cifra A BULTO (13 mil letras) pudiendo medirla exacta (8.466)",
+  "causa_raiz": "Se midio un tramo redondeado en vez de los cuatro sitios exactos, y se dijo como si fuera medido.",
+  "cura": "Se midieron los cuatro sitios uno por uno delante de Julio y se corrigio la cifra.",
+  "no_volver_a": "Decirle un numero a Julio sin haberlo medido con una orden. Si se puede medir en un segundo, no se estima.",
+  "piezas": [],
+  "quien_lo_caza": "Julio: 'de que hablas cuando dices 598 mil letras?'",
+  "disparador": "aproximadamente|mas o menos|unas .. mil",
+  "veces": 1,
+  "leccion_disparo": "darle a Julio una cifra que no salio de una orden ejecutada en ese momento"
+ },
+ {
+  "id": 49,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Se le repitio a Julio lo que decia un archivo que ya habia CAMBIADO",
+  "causa_raiz": "Se cito de memoria la nota de un candado leida al principio de la sesion. Julio la edito en mitad de la conversacion y se siguio afirmando la version vieja.",
+  "cura": "Se miro el cambio de verdad y se corrigio delante de Julio.",
+  "no_volver_a": "Afirmar lo que dice un archivo sin haberlo leido en ESE momento. En una sesion larga los archivos cambian debajo.",
+  "piezas": [],
+  "quien_lo_caza": "el propio historial de cambios del proyecto",
+  "disparador": "el archivo dice|la nota dice|todavia dice",
+  "veces": 1,
+  "leccion_disparo": "afirmar el contenido de un archivo leido hace rato sin volver a mirarlo"
+ },
+ {
+  "id": 50,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Se dio por cerrado 'no hay quien audite' sin llamar al supervisor de pago",
+  "causa_raiz": "Los cerebros gratis fallaron y se acepto el SIN_AUDITAR. DeepSeek existia, estaba documentado justo para eso y traga 80.000 letras: el encargo eran 12.767.",
+  "cura": "Julio lo ordeno: el equipo que haga SIEMPRE lo pesado DeepSeek. Se hizo ley en el codigo (cuerpo/obrero.py, parametro pesado) con su vigia.",
+  "no_volver_a": "Reportar SIN_AUDITAR o propuesta vacia sin haber intentado con el supervisor de pago. Que sea el ultimo recurso no significa que no se use.",
+  "piezas": [
+   "cuerpo/obrero.py",
+   "arnes/supervisor.py"
+  ],
+  "quien_lo_caza": "Julio: 'lo confirmaste con ds?'",
+  "disparador": "veredicto.{0,5}[=:]\\s*.SIN_AUDITAR|se rindio",
+  "veces": 1,
+  "leccion_disparo": "reportar un veredicto SIN_AUDITAR o una propuesta vacia del equipo"
+ },
+ {
+  "id": 51,
+  "fecha": "2026-08-21",
+  "proyecto": "ingeniero",
+  "que_paso": "Dos cerebros avisaron de un peligro FALSO y casi se le repite a Julio como cierto",
+  "causa_raiz": "DeepSeek y el auditor gratis dijeron que si DeepSeek iba primero y fallaba, el trabajo se colgaria. Se fue a mirar el bucle y cualquier fallo cae en el except y PASA EL TURNO. Los dos se equivocaban.",
+  "cura": "Se comprobo en el codigo antes de repetirlo, y se dejo escrito en el propio codigo que los dos se equivocaron, para que nadie lo vuelva a 'arreglar'.",
+  "no_volver_a": "Repetirle a Julio un riesgo dicho por otro cerebro sin haberlo comprobado en el codigo. Un cerebro opinando sobre codigo que no ejecuto no es una fuente.",
+  "piezas": [
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_lo_pesado_a_deepseek.py",
+  "disparador": "el auditor|RECHAZADO|puede romper",
+  "veces": 1,
+  "leccion_disparo": "repetir a Julio lo que otro cerebro dice que hace un codigo, sin haberlo mirado"
+ },
+ {
+  "id": 52,
+  "fecha": "2026-08-25",
+  "proyecto": "dmm",
+  "que_paso": "crear el modulo de Ciencia Experimental (experimentos.py) que falta segun el contrato cientifico creativo: DMM define el test, recoge resultados y aprende. Usa SOLO la memoria del paquete.",
+  "causa_raiz": "El mÃ³dulo experimentos.py no existe y hay incompatibilidad de firmas entre lo que espera el contrato y lo que se puede implementar con el material disponible.",
+  "cura": "Crear el mÃ³dulo cuerpo/experimentos.py con las funciones definir_test, recoger_resultados y aprender, usando las firmas compatibles con el flujo detectado (memoria, resultados, crear) y el material disponible.",
+  "no_volver_a": "Escribir el cÃ³digo real del archivo cuerpo/experimentos.py. Debe implementar definir_test (que devuelva un dict con id), recoger_resultados y aprender (que debe llamar a cuerpo.memoria para persistir la lecciÃ³n).",
+  "piezas": [
+   "cuerpo/experimentos.py"
+  ],
+  "quien_lo_caza": "C:\\Users\\USER\\dev\\Asesor Marketing\\vigias\\test_vigia_experimentos.py",
+  "disparador": "experimentos|Ciencia Experimental|definir_test|recoger_resultados",
+  "veces": 5
+ },
+ {
+  "id": 53,
+  "fecha": "2026-08-24",
+  "proyecto": "foto_informe",
+  "que_paso": "La prueba de 10 vueltas escribe el texto manual poniendo el valor de la primera casilla por dentro, sin disparar el evento y sin esperar a que las 8 casillas se rehidraten, lo que hace que al guardar se borren los otros 7 textos; ademas nunca pulsa el boton de borrar la asignacion de filas aunque el encargo pide borrar y reasignar, y su comprobacion de fila busca un digito suelto en todo el texto del Word, por lo que no puede fallar nunca.",
+  "causa_raiz": "La prueba de 10 vueltas escribe el texto manual sin disparar el evento, sin esperar la rehidrataciÃ³n de las 8 casillas, nunca pulsa el botÃ³n de borrar asignaciÃ³n de filas, y su comprobaciÃ³n de fila busca un dÃ­gito suelto en todo el texto del Word.",
+  "cura": "Reescribir la prueba para que: 1) espere a que las 8 casillas se rehidraten antes de escribir, 2) dispare el evento de entrada en cada casilla, 3) pulse el botÃ³n de borrar asignaciÃ³n de filas y reasigne, 4) verifique en la base de datos que los 8 textos persisten tras cada vuelta, y 5) compruebe la ",
+  "no_volver_a": "Un atajo seria escribir los textos directamente en la base de datos sin pasar por la interfaz, o no esperar el tiempo de rehidratacion y luego afirmar que todo esta bien. Tampoco vale si la prueba solo busca un digito suelto en el texto del Word en lugar de verificar los textos en la base de datos.",
+  "piezas": [
+   "rv3_prueba_8_texto.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_10_vueltas_texto_manual.py",
+  "disparador": "page\\.evaluate.{0,120}\\.value\\s*=",
+  "veces": 1
+ },
+ {
+  "id": 54,
+  "fecha": "2026-08-24",
+  "proyecto": "foto_informe",
+  "que_paso": "EL ARCHIVO A REPARAR ES rv3_prueba_loop_final.py Y NINGUN OTRO. NO tocar rv3_prueba_8_texto.py, que esta sano y solo sirve de ejemplo de como se hace bien. En rv3_prueba_loop_final.py, linea 123, el texto manual se pone con page.evaluate asignando .value de la primera casilla: hay que cambiarlo por page.fill sobre [data-manual-row] de las 8 filas con su escritura_manual, esperando antes a que las 8 esten rehidratadas. Linea 110, cada vuelta debe pulsar el boton resetRowAssignmentsBtn antes de reasignar. Linea 131, la comprobacion de fila debe mirar celda por celda de la tabla del Word en vez de buscar un digito suelto en todo el texto.",
+  "causa_raiz": "En rv3_prueba_loop_final.py, la escritura manual se hace con page.evaluate asignando .value de la primera casilla sin esperar la rehidrataciÃ³n de las 8, no se pulsa resetRowAssignmentsBtn antes de reasignar, y la comprobaciÃ³n de fila busca un dÃ­gito suelto en todo el texto del Word.",
+  "cura": "1) En la lÃ­nea 110, pulsar el botÃ³n resetRowAssignmentsBtn antes de reasignar. 2) En la lÃ­nea 123, reemplazar el page.evaluate que asigna .value por un page.fill sobre cada [data-manual-row] de las 8 filas, esperando antes a que las 8 estÃ©n rehidratadas. 3) En la lÃ­nea 131, cambiar la comprobaciÃ³n d",
+  "no_volver_a": "Escribir los textos directamente en la base de datos sin pasar por la interfaz, o no esperar la rehidratacion y afirmar que todo esta bien. Tampoco vale si la comprobacion del Word busca un digito suelto en lugar de verificar cada celda exactamente.",
+  "piezas": [
+   "rv3_prueba_loop_final.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_loop_final.py",
+  "disparador": "page\\.evaluate.{0,120}\\.value\\s*=",
+  "veces": 1
+ },
+ {
+  "id": 55,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "Se perdio una ronda del equipo YA PAGADA porque el auditor devolvio una respuesta ilegible y el veredicto salio '?'",
+  "causa_raiz": "El comando `equipo` de ingeniero.py le pregunta al auditor UNA sola vez. Si su JSON viene roto o cortado, no se le vuelve a preguntar y la propuesta buena del obrero se tira entera. `cuerpo/cruzado.py` SI reintenta (2 intentos, desde el 2026-08-27), pero esa cura nunca llego a `cuerpo/obrero.py::trabajar`",
+  "cura": "reintentar al auditor en obrero.trabajar igual que ya hace cruzado.resolver",
+  "no_volver_a": "dar por perdida una ronda del equipo porque el auditor contesto roto: se le vuelve a preguntar antes de tirar el trabajo del obrero",
+  "piezas": [
+   "cuerpo/obrero.py",
+   "ingeniero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_equipo_sirve.py",
+  "disparador": "veredicto ilegible|sin reintento|ronda perdida|auditoria\\s*=\\s*_json_de\\(",
+  "veces": 1
+ },
+ {
+  "id": 56,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "El diccionario de Julio quedo envenenado: una entrada de PRUEBA (archivo 'a.py', funcion 'f', proyecto 'p') acumulo 535 apariciones y 27 formas de decirlo, y como basta UNA palabra en comun para casar, ganaba casi siempre y le mandaba al repartidor un archivo que no existe",
+  "causa_raiz": "Las vigias (test_vigia_causa_cambio.py y test_vigia_decision_reparar.py) llaman a candado_diagnostico.declarar('p','a.py','f','1',...), que a su vez llama a diccionario.aprender, y ESO escribe en la memoria DE VERDAD (memoria/DICCIONARIO.json). Ademas aprender() no comprueba que el archivo exista, aunque su propio texto promete que 'sin sitio probado no se guarda nada'",
+  "cura": "aprender() rechaza el sitio que no existe en el disco, y se pone tope a las formas de decirlo: un sitio que dice haberse aprendido de 500 maneras es un iman, no un sitio",
+  "no_volver_a": "dejar que una prueba escriba en la memoria de verdad, ni guardar un sitio sin comprobar que existe",
+  "piezas": [
+   "arnes/diccionario.py",
+   "arnes/candado_diagnostico.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_diccionario_de_julio.py",
+  "disparador": "diccionario|envenenado|sitio que no existe|aprender del sitio",
+  "veces": 1
+ },
+ {
+  "id": 57,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "Tres rondas del equipo rechazadas seguidas por pedirle un cambio que tocaba DOS archivos a la vez",
+  "causa_raiz": "El contrato del obrero tiene UN campo `archivo` y UN campo de codigo: no sabe expresar una reparacion repartida en dos archivos, asi que el auditor la ve incompleta y la rechaza con razon",
+  "cura": "partir el encargo en uno por archivo, y decirlo explicito en la tarea ('SOLO en tal archivo y en ningun otro')",
+  "no_volver_a": "mandarle al equipo un encargo que toca dos archivos a la vez",
+  "piezas": [
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_equipo_sirve.py",
+  "disparador": "dos archivos a la vez|encargo repartido|un solo archivo",
+  "veces": 1
+ },
+ {
+  "id": 58,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "El repartidor localizaba la funcion `armar` con los numeros 87 y 227 escritos a mano, asi que se rompia en cuanto el archivo cambiaba de tamano",
+  "causa_raiz": "No existia ninguna forma de pedir una funcion POR SU NOMBRE: todo el sistema sabia hablar de tramos de lineas, y un tramo se corre solo",
+  "cura": "se creo cerebro/piezas.py::funcion_completa(ruta, nombre), que devuelve la funcion entera con su sitio real buscandola POR SU NOMBRE. Queda pendiente que el repartidor la use en lugar de los numeros a mano",
+  "no_volver_a": "escribir un numero de linea a mano dentro del codigo para encontrar algo: se busca por nombre",
+  "piezas": [
+   "cerebro/router.py",
+   "cerebro/piezas.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_la_pieza_se_busca_por_nombre.py",
+  "disparador": "numero de linea|tramo de lineas|escrito a mano|buscar por nombre",
+  "veces": 1
+ },
+ {
+  "id": 59,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "Se pidio TRES veces que un cerebro concreto revisara, y las tres veces reviso otro (o ninguno): la peticion se ignora en silencio",
+  "causa_raiz": "cuerpo/obrero.py::trabajar acepta los parametros generador y auditor en su firma, pero NO los usa en ningun sitio del cuerpo: el unico filtro real es evitar que el revisor sea el mismo que genero. Quien trabaja lo decide siempre el relevo de cuotas. La firma promete algo que la funcion no hace",
+  "cura": "que trabajar respete generador y auditor cuando se los pasan, y que si no puede respetarlos lo DIGA en el aviso en vez de callarse",
+  "no_volver_a": "poner un parametro en una funcion sin usarlo: quien lo llama cree que mando algo y no mando nada, y se gastan vueltas creyendo que se esta probando otra cosa",
+  "piezas": [
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+  "disparador": "def\\s+trabajar\\s*\\(",
+  "veces": 1
+ },
+ {
+  "id": 60,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "Dos IA quedaron con la MISMA tarea porque cada una la tenia escrita con otras palabras: 'el guardian deja de ensuciarse solo' y 'el guardian deja de gritar por sus propios cuadernos'",
+  "causa_raiz": "arnes/reparto.py compara las tareas letra por letra. Dos formas de decir lo mismo no coinciden, asi que no las ve como la misma y deja que dos las cojan. Es justo lo que el reparto existe para impedir",
+  "cura": "comparar las tareas por las palabras que comparten, no letra por letra, y avisar cuando se parecen demasiado antes de asignarlas a dos",
+  "no_volver_a": "dar por distinta una tarea solo porque este escrita con otras palabras: Julio habla de la misma cosa de diez maneras y todas son la misma cosa",
+  "piezas": [
+   "arnes/reparto.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_reparto_con_cline.py",
+  "disparador": "misma tarea dos duenos|tarea repetida|comparar letra por letra",
+  "veces": 1
+ },
+ {
+  "id": 61,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "El candado del buzon bloquea a Claude ensenandole SUS PROPIOS mensajes como si fueran de otro, y no deja trabajar",
+  "causa_raiz": "arnes/candado_buzon.py sabe a quien esta bloqueando solo por una variable de entorno (INGENIERO_QUIEN) que nadie pone. Sin ella, quien corre es 'desconocido', asi que la excepcion 'Claude no se bloquea por lo que el mismo envio' nunca se aplica. Otra vez lo mismo: depende de que alguien se acuerde de ponerla",
+  "cura": "si no consta quien corre, se deduce: unos mensajes sin leer que los envio todos el mismo remitente no pueden bloquear a ese remitente. Y ante la duda se AVISA, no se bloquea: parar el trabajo de todos es peor que un aviso",
+  "no_volver_a": "hacer que un candado dependa de una variable de entorno que nadie pone; si no esta puesta, el candado se comporta al reves de como se penso",
+  "piezas": [
+   "arnes/candado_buzon.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_el_companero_es_continue.py",
+  "disparador": "buzon|mis propios mensajes|variable que nadie pone|quien corre",
+  "veces": 1
+ },
+ {
+  "id": 62,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "El candado del buzon tiene la lista de companeros ESCRITA A MANO y no incluye a Continue, asi que al cambiar de companero siguio exigiendo el buzon del anterior",
+  "causa_raiz": "arnes/candado_buzon.py lleva dentro una lista fija con 'cline'. Cuando Julio cambio a Continue el 2026-08-31, esa lista no se entero. Un nombre escrito a mano en diez sitios obliga a acordarse de diez sitios",
+  "cura": "que pregunte por el companero activo a arnes/companero.py, que es el unico sitio donde vive esa respuesta",
+  "no_volver_a": "escribir a mano el nombre del companero dentro de una pieza: se pregunta a quien lo sabe",
+  "piezas": [
+   "arnes/candado_buzon.py",
+   "arnes/companero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_el_companero_es_continue.py",
+  "disparador": "lista escrita a mano|companero fijo|cambiar de companero",
+  "veces": 1
+ },
+ {
+  "id": 63,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "El apuntador de ordenes se trago cuatro frases que NO las dijo Julio, sino Continue contestando por el canal",
+  "causa_raiz": "arnes/candado_legislar.py, en el modo que se engancha a lo que escribe Julio, recibe TODO el texto del turno y no solo lo que Julio teclea. Ahi dentro viene tambien lo que responden las otras IA, y algunos de esos trozos llevan marcas de mando y pasan el filtro",
+  "cura": "apuntar solo el texto que Julio teclea, y apartar de entrada lo que venga marcado como de otra IA o del canal",
+  "no_volver_a": "dar por dicho por Julio cualquier texto que aparezca en el turno: hay que distinguir quien habla",
+  "piezas": [
+   "arnes/candado_legislar.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+  "disparador": "apunta lo que no dijo Julio|quien habla|texto de otra IA",
+  "veces": 1
+ },
+ {
+  "id": 64,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "en cuerpo/obrero.py la funcion trabajar acepta los parametros generador y auditor pero no los usa en ningun sitio del cuerpo: se pide un revisor concreto y revisa otro, sin avisar",
+  "causa_raiz": "La funcion trabajar acepta los parametros generador y auditor pero no los usa en ningun sitio del cuerpo: se pide un revisor concreto y revisa otro, sin avisar",
+  "cura": "Anadir un comentario que indique que _preguntar_con_relevo no acepta los parametros y que se necesita decidir como pasarlos",
+  "no_volver_a": "La reparación debe implementar la lógica real para usar los parámetros 'generador' y 'auditor' y gestionar el reintento ante JSON rotos (que es lo que muestra la prueba B), en lugar de limitarse a añadir un comentario de duda.",
+  "piezas": [
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_trabajar_respeta_generador_auditor.py",
+  "disparador": "candado a medias|funcion que falta|se cae en silencio|buzon",
+  "veces": 5
+ },
+ {
+  "id": 65,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "Cuando todos los cerebros gratis se caen, el unico vivo acaba revisandose a si mismo y se contradice: rechazo una reparacion diciendo que se inventaba un nombre que el mismo encargo citaba dos renglones despues",
+  "causa_raiz": "No son cuatro ojos: es el mismo cerebro con dos sombreros. Y el sistema no sabe pedirle a un cerebro concreto que revise, porque cuerpo/obrero.py::trabajar acepta los parametros generador y auditor y no los usa: el que genera va siempre al de pago por pesado=True, y el revisor sale por descarte",
+  "cura": "que trabajar respete de verdad esos dos parametros, y que si no puede, lo diga. Julio se lo asigno a Continue el 2026-08-31 y Claude aprobo el plan",
+  "no_volver_a": "quemar vueltas insistiendo cuando el que revisa es el mismo que escribio: se para, se dice, y se espera a que haya un segundo cerebro de verdad",
+  "piezas": [
+   "cuerpo/obrero.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_el_cerebro_es_el_que_pido.py",
+  "disparador": "se revisa a si mismo|un solo cerebro vivo|revisor que se contradice",
+  "veces": 1
+ },
+ {
+  "id": 66,
+  "fecha": "2026-08-31",
+  "proyecto": "ingeniero",
+  "que_paso": "Diez recados quedaron guardados con el remitente 'desconocido', asi que contestarle a quien de verdad los escribio NO los cerraba, y el cierre del dia seguia bloqueado mostrando siempre los mismos",
+  "causa_raiz": "canal.enviar apunta el remitente con lo que devuelve _quien(), que lee la variable de entorno INGENIERO_QUIEN. Esa variable no la ponia nadie, asi que todo lo que se mandaba desde un sitio sin configurar quedaba firmado como 'desconocido'. Es el mismo fallo de raiz que dejaba al candado del buzon sin saber a quien bloqueaba",
+  "cura": "poner INGENIERO_QUIEN en la configuracion para que todo lo que se manda quede firmado, y cerrar a mano los diez que ya estaban sin firma",
+  "no_volver_a": "dejar que un dato que identifica a quien trabaja dependa de una variable que nadie pone: sin ella el sistema no sabe con quien habla y bloquea a ciegas",
+  "piezas": [
+   "arnes/canal.py",
+   "arnes/candado_buzon.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_contestar_cierra_el_recado.py",
+  "disparador": "remitente desconocido|recado sin firma|no se cierra al contestar",
+  "veces": 1
+ },
+ {
+  "id": 67,
+  "fecha": "2026-09-09",
+  "proyecto": "dmm",
+  "que_paso": "Aplicar el paquete dmm__enchufar_cuerpo_traductor_py_y_cuerpo_ap: enchufar cuerpo/traductor.py y cuerpo/aprobacion.py al chat real que atiende al dueno. Una peticion en palabras de persona se traduce a encargo; cuando la campana esta lista le llega una notificacion DENTRO de la app y el da el si / pide cambios / descarta por chat o microfono; al aprobar queda agendada sola. Sin romper vecinos. Despues prueba real de pantalla (Playwright).",
+  "causa_raiz": "El paquete pide enchufar cuerpo/traductor.py y cuerpo/aprobacion.py al chat real que atiende al dueno, pero el material no contiene el archivo del chat real ni la funcion que lo conecta, por lo que no se puede realizar la integracion sin inventar.",
+  "cura": "No se puede realizar el cambio porque el material no incluye el archivo del chat real ni la funcion que lo conecta con cuerpo/traductor.py y cuerpo/aprobacion.py.",
+  "no_volver_a": "La reparación propuesta no implementa la conexión del traductor y la aprobación al chat real de la aplicación. La prueba B requiere que la petición del usuario en el chat se traduzca y luego se apruebe dentro de la misma aplicación, lo cual no se aborda en la reparación.",
+  "piezas": [
+   "NO_ENCONTRADO"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_enchufar_traductor_aprobacion.py",
+  "disparador": "aplicar un paquete que pide enchufar una pieza al chat real sin traer el archivo de la conexion|traducir la peticion del chat y aprobarla dentro de la misma app sin el material|pedir que lo que se escribe en la app se traduzca y apruebe sin el archivo del chat",
+  "veces": 5
+ },
+ {
+  "id": 68,
+  "fecha": "2026-09-14",
+  "proyecto": "dmm",
+  "que_paso": "REPARACION QUE NO FUNCIONO: N1 y N1b (el cerebro del PC solo se usa si LM Studio contesta y tiene el modelo cargado) se guardaron el 2026-09-13 y la prueba real del DMM con navegador sigue con las MISMAS 5 pantallas colgadas (crear, medir y aprobar campana, resultados, competencia)",
+  "causa_raiz": "NO CONFIRMADA: la espera no venia solo del cerebro del PC. Se reparo lo que se supuso sin medir primero donde se quedaba esperando cada pantalla. La medicion (N1c) se corto dos veces por los candados de Big Pickle (python -c bloqueado, carpeta temporal rechazada).",
+  "cura": "PENDIENTE: medir primero con el mismo trabajo frenado (N1c: pila del servidor a los 15 s en cada ruta) y reparar la causa medida.",
+  "no_volver_a": "reparar una espera sin haber medido antes donde se queda esperando; y dar por arreglado algo sin repetir la prueba real que lo freno",
+  "piezas": [
+   "cuerpo/cerebro.py",
+   "web/servidor.py"
+  ],
+  "quien_lo_caza": "vigias/test_vigia_dmm_se_construye_a_si_mismo.py",
+  "disparador": "pantallas colgadas|se cuelga|Timeout 20000|TimeoutError|no descuelga",
+  "veces": 1
+ },
+ {
+  "id": 69,
+  "fecha": "2026-09-22",
+  "proyecto": "test_si_el_guardia_frena_no_se0",
+  "que_paso": "el guardia no dejo guardar lo que el equipo aplico",
+  "causa_raiz": "",
+  "cura": "se volvio atras solo (candado_equipo.volver_atras)",
+  "no_volver_a": "lo que no pasa las vigias no se queda en el disco",
+  "piezas": [
+   "pieza.py"
+  ],
+  "quien_lo_caza": "guardia_de_guardado",
+  "disparador": "git\\s+commit[^\\n]*--no-verify|INGENIERO_OFF\\s*=\\s*1[^\\n]{0,120}git\\s+commit",
+  "veces": 78,
+  "disparador_anterior": "git\\s+commit[^\\n]*--no-verify|INGENIERO_OFF\\s*=\\s*1"
+ },
+ {
+  "id": 70,
+  "fecha": "2026-09-21",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "El equipo RECHAZO la orden 95. El obrero (deepseek) solo entrego los puntos (1) y (2) del encargo —las tres constantes de tiempo y el cambio de subprocess.run a Popen con vigilante.esperar dentro de l",
+  "causa_raiz": "El encargo pedia tres cambios en DOS funciones separadas de cuerpo/capataz.py —lanzar_al_equipo (linea 10) y tipo_de_fallo (linea 248), a 238 lineas de distancia— y ordenaba 'entregalos en la lista cambios'. Pero el prompt con el que trabaja el obrero (_prompt_obrero, rama reparar, en cuerpo/obrero.",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "Un encargo que toca dos funciones separadas no se puede cumplir mientras el prompt del obrero solo ofrezca un texto_viejo/texto_nuevo: el interfaz del obrero tiene que exponer la lista 'cambios' que e",
+  "piezas": [
+   "cuerpo/capataz.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "cuerpo/capataz\\.py",
+  "veces": 1
+ },
+ {
+  "id": 71,
+  "fecha": "2026-09-22",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "El equipo RECHAZO la orden 95 (huella 527b80dd0bf293c8, tipo no_aprobo). deepseek entrego los tres cambios pedidos sobre cuerpo/capataz.py (constantes, subprocess.run -> subprocess.Popen con salida a ",
+  "causa_raiz": "El encargo de la orden 95 esta mal disenado: exige convertir subprocess.run en subprocess.Popen y a la vez ordena 'No toques ningun otro archivo'. Esas dos exigencias son incompatibles porque la vigia vecina vigias/test_vigia_el_capataz_lanza_al_equipo.py monkeypatchea capataz.subprocess.run y compr",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "Una orden que cambia una llamada que una vigia vecina falsea (subprocess.run) NO puede a la vez prohibir tocar esa vigia: la prueba vecina se coordina en la misma tarea.",
+  "piezas": [
+   "cuerpo/capataz.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "cuerpo/capataz\\.py",
+  "veces": 1
+ },
+ {
+  "id": 72,
+  "fecha": "2026-09-22",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "La orden 29 (agregar la funcion entregar_enteros_los_cortos y su llamada en cerebro/router.py) no aprobo. El obrero deepseek dejo el pedido a mitad y devolvio la marca NO_ENCONTRADO, porque el paquete",
+  "causa_raiz": "El repartidor entrega el archivo NOMBRADO recortado a sus primeros 80 renglones (min(80, lineas)), no entero. router.py tiene 636 renglones y los dos sitios que la orden manda editar estan muy por debajo de ese recorte (la llamada va tras la linea ~355 'pedazos = _pedazos_filtrados' y la funcion nue",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "Si una orden manda copiar el texto literal de un archivo, el paquete debe traer ese archivo ENTERO (no un recorte de 80 renglones), o el obrero no puede trabajar y devuelve NO_ENCONTRADO con razon.",
+  "piezas": [
+   "cerebro/router.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "cerebro/router\\.py",
+  "veces": 1
+ },
+ {
+  "id": 73,
+  "fecha": "2026-09-22",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "El equipo de la orden 95 (deepseek escribe, bigpickle revisa) entrego los tres cambios en cuerpo/capataz.py y bigpickle los APROBO, pero el revisor de programa (gratis, sin IA) freno antes de pagar la",
+  "causa_raiz": "El tercer cambio edita el CUERPO de la funcion tipo_de_fallo: su texto_viejo son las lineas internas ('if not isinstance(salida, str)... TOPE DE TIEMPO'), y para editar un cuerpo no hace falta repetir la linea 'def tipo_de_fallo'. Por eso la palabra 'tipo_de_fallo' no aparece literal en ningun trozo",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "El revisor de programa no debe exigir que el nombre de una funcion aparezca en el trozo cuando el trozo edita el CUERPO de esa funcion: editar un cuerpo no repite el nombre, y frenar eso es frenar lo ",
+  "piezas": [
+   "cuerpo/capataz.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "cuerpo/capataz\\.py",
+  "veces": 1
+ },
+ {
+  "id": 74,
+  "fecha": "2026-09-22",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "El equipo (deepseek escribe, bigpickle revisa) hizo el cambio de la orden 95 en cuerpo/capataz.py y bigpickle lo APROBO; al aplicarlo, el guardia lo freno porque la bateria de vigias dio rojo (16 fail",
+  "causa_raiz": "La orden 95 cambia subprocess.run por subprocess.Popen y manda llamar a vigilante.esperar POR POSICION, pero deja dos choques que ella misma no resuelve: (a) su PROPIA vigia exige que el limite llegue POR NOMBRE (kw.get('limite')/kw.get('tope_segundos')), asi que aun hecho tal cual se pidio, esa vig",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "Al cambiar como una pieza lanza procesos, la orden debe alinear su PROPIA vigia con el encargo y actualizar TODAS las vigias vecinas que falsifican la forma vieja, no solo una.",
+  "piezas": [
+   "cuerpo/capataz.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "cuerpo/capataz\\.py",
+  "veces": 1
+ }
+]

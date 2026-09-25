@@ -1,0 +1,26 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "No existe el archivo vigia pedido; hay que crearlo desde cero como prueba roja que verifica que capataz.la_tarea_esta_terminada consulta la prueba antes de dar por terminada una tarea.",
+  "archivo": "vigias/test_vigia_el_pit_mira_la_prueba_antes_de_dar_por_hecho.py",
+  "texto_nuevo": "\"\"\"Vigia: el pit mira la prueba antes de dar por hecho que una tarea esta terminada.\n\nEl 2026-09-20 el pit dio por terminadas tres tareas solo porque se guardaron,\nsin mirar ni una vez si la prueba de cada tarea estaba verde. Una de ellas dejo\nen la historia una prueba que no podia estar verde nunca.\n\nDar por hecho lo que no se ha comprobado es lo contrario de A-7.\n\nEsta vigia nace ROJA: exige que capataz.la_tarea_esta_terminada consulte de\nverdad los pasos de la prueba (comprobar_pasos) antes de responder que una\ntarea esta terminada.\n\"\"\"\n\nimport os\nimport sys\n\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nARNES = os.path.join(RAIZ, \"arnes\")\nfor _ruta in (RAIZ, ARNES):\n    if _ruta not in sys.path:\n        sys.path.insert(0, _ruta)\n\nfrom cuerpo import capataz\n\n\ndef test_el_pit_mira_la_prueba_antes_de_dar_por_hecho(monkeypatch):\n    \"\"\"Sin mirar la prueba, el pit da por hecho lo que no ha comprobado.\"\"\"\n    llamadas = []\n\n    def comprobar_pasos_falso(orden):\n        llamadas.append(orden)\n        return \"\"\n\n    monkeypatch.setattr(capataz, \"comprobar_pasos\", comprobar_pasos_falso)\n\n    orden = {\"id\": 7}\n    resultado = capataz.la_tarea_esta_terminada(orden)\n\n    assert isinstance(resultado, dict), (\n        \"la_tarea_esta_terminada debe devolver un diccionario\"\n    )\n    assert resultado.get(\"ok\") is True, (\n        \"sin mirar la prueba el pit da por hecho lo que no ha comprobado\"\n    )\n    assert len(llamadas) == 1, (\n        \"sin mirar la prueba el pit da por hecho lo que no ha comprobado\"\n    )\n\n\ndef test_una_tarea_con_prueba_roja_no_esta_terminada(monkeypatch):\n    \"\"\"Una tarea cuya prueba esta roja no esta terminada por mucho que se haya guardado.\"\"\"\n    llamadas = []\n\n    def comprobar_pasos_falso(orden):\n        llamadas.append(orden)\n        return \"vigia_verde\"\n\n    monkeypatch.setattr(capataz, \"comprobar_pasos\", comprobar_pasos_falso)\n\n    orden = {\"id\": 7}\n    resultado = capataz.la_tarea_esta_terminada(orden)\n\n    assert isinstance(resultado, dict), (\n        \"la_tarea_esta_terminada debe devolver un diccionario\"\n    )\n    assert resultado.get(\"ok\") is False, (\n        \"una tarea cuya prueba esta roja no esta terminada por mucho que se haya guardado\"\n    )\n    assert resultado.get(\"paso\") == \"vigia_verde\", (\n        \"una tarea cuya prueba esta roja no esta terminada por mucho que se haya guardado\"\n    )\n    razon = resultado.get(\"razon\")\n    assert isinstance(razon, str) and razon.strip() != \"\", (\n        \"una tarea cuya prueba esta roja no esta terminada por mucho que se haya guardado\"\n    )\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico creando el archivo solicitado con las pruebas requeridas sin afectar a otros componentes."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

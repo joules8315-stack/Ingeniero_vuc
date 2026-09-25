@@ -1,0 +1,63 @@
+{
+  "orden": {
+    "id": "85",
+    "titulo": "La vigia de que el arreglo de la herramienta pasa al frente",
+    "origen": "ley de Julio A-43 (2026-09-21): los fallos de la herramienta no pueden quedar en cola",
+    "repara": "agregar_orden pone la tarea que deja el forense al final de la lista, detras de decenas de tareas, y el mismo fallo se paga una y otra vez",
+    "pieza": "vigias/test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py. Vigila la funcion agregar_orden de cuerpo/capataz.py. Arriba: import json, from cuerpo import capataz. Con monkeypatch cambia capataz.leer_lista para que devuelva una lista con dos ordenes validas de ids A y B, capataz.ya_fallo para que devuelva False, y la funcion open que usa agregar_orden no se toca: en su lugar pon capataz.__file__ con monkeypatch apuntando a tmp_path/cuerpo/capataz.py y crea tmp_path/memoria, para que la lista se escriba en tmp_path/memoria/ORDENES.json. Una orden valida tiene titulo, origen, repara, pieza, depende (lista vacia), modo, razon, encargo e id; copia los campos de una orden real de memoria/ORDENES.json si hace falta. Pruebas, cada una con assert leyendo ese ORDENES.json: (1) una orden nueva con origen que empieza por forense: queda la PRIMERA de la lista; (2) una orden nueva con otro origen queda la ULTIMA, como hoy. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "4304a0ca1db74f31",
+  "tipo": "no_aplico",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_153251_APROBADO_test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py.json\nOBRERO deepseek -> AUDITOR groq\n  aviso       : GPT-OSS 120B (Groq) no le cabe (34850 letras, aguanta 19042) -> se le salta\n  aviso       : Big Pickle no contesto en 300s (timeout)\n  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None\n  diagnostico : Falta la vigia que comprueba que agregar_orden pone al frente las ordenes de origen forense y al final las demas, y el material ya trae el esqueleto de esa vigia sin las dos pruebas.\n  toca        : vigias/test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py funcion ?\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : Añade los dos tests requeridos y cumple con el diagnóstico sin introducir inventos ni romper nada.\n\nEL EQUIPO APROBO, pero no se pudo aplicar: La propuesta no trae 'texto_viejo'.\nLLAVE GUARDADA: se puede escribir en 113 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T15:32:51",
+  "analisis": {
+    "que_paso": "La orden 85 pedia CREAR una vigia nueva (crear=true, marca --crear de Julio). El equipo la escribio (deepseek) y la aprobo (VEREDICTO APROBADO), pero al escribirla en disco fallo: 'EL EQUIPO APROBO, pero no se pudo aplicar: La propuesta no trae texto_viejo'. La pieza vigias/test_vigia_el_arreglo_de_la_herramienta_pasa_al_frente.py ya existia en disco como esqueleto (el propio diagnostico dice 'el material ya trae el esqueleto de esa vigia'), asi que el aplicador no la creo: la trato como una EDICION y exigio un texto_viejo que una pieza escrita entera nunca trae. El trabajo pagado quedo aprobado y sin aplicar.",
+    "causa_raiz": "El modo 'crear' existe al GENERAR (obrero.trabajar con clase='crear') pero se PIERDE al APLICAR. cuerpo/aplicador.py::aplicar_cambio decide crear-vs-editar solo por os.path.exists(archivo): crea el archivo unicamente si NO existe (linea 146). Cuando la pieza a crear ya existe como esqueleto, cae al camino de edicion que exige texto_viejo (lineas 207-209) y devuelve 'La propuesta no trae texto_viejo.'. Ademas ingeniero.py:427 llama aplicar_cambio(prop, raiz=_raiz) SIN decirle que la clase es 'crear', de modo que el aplicador nunca sabe que debe sobrescribir. Es el mismo fallo que ya se pago en las ordenes 20, 28 y 65 (el propio expediente de la 65 lo llama 'fallo recurrente'): el parche siempre fue local y no cubrio el caso 'el archivo de la pieza nueva ya existe'.",
+    "donde": "cuerpo/aplicador.py, funcion aplicar_cambio (la creacion solo ocurre en el bloque 'if not os.path.exists(archivo)' de la linea 146; si el archivo existe, el flujo llega a las lineas 207-209 que exigen texto_viejo) y ingeniero.py:427, que llama a aplicar_cambio sin propagar la clase 'crear'.",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "    if not texto_viejo:\n        _apuntar_log(False, archivo, funcion, \"texto_viejo vacio\")\n        return False, \"La propuesta no trae 'texto_viejo'.\""
+      },
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "    if not os.path.exists(archivo):\n        try:\n            with open(archivo, \"w\", encoding=\"utf-8\") as f:\n                f.write(contenido)\n            _apuntar_log(True, archivo, funcion, \"archivo creado\")\n            return True, \"Archivo creado.\""
+      },
+      {
+        "archivo": "ingeniero.py",
+        "texto": "                _ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)"
+      }
+    ],
+    "no_volver_a": "Una pieza aprobada en modo crear debe escribirse entera aunque el archivo ya exista; a una creacion nunca se le exige texto_viejo.",
+    "tarea_nueva": {
+      "repara": "Que una pieza aprobada en modo crear se aplique en disco aunque el archivo ya exista (esqueleto), sin exigir texto_viejo; cierra el fallo recurrente 20/28/65/85.",
+      "pieza": "cuerpo/aplicador.py",
+      "razon": "el modo crear existe al generar pero se pierde al aplicar: aplicar_cambio solo crea si el archivo no existe y ingeniero.py:427 no le pasa la clase.",
+      "encargo": "En cuerpo/aplicador.py, aplicar_cambio: aceptar una senal de creacion (por ejemplo propuesta['crear']==True) de modo que, cuando la propuesta trae texto_nuevo (o codigo) y NO trae texto_viejo, se ESCRIBA el archivo completo con ese contenido AUNQUE el archivo ya exista, en vez de caer en la rama que devuelve 'La propuesta no trae texto_viejo.'. Enchufar esa senal desde ingeniero.py (la llamada aplicador.aplicar_cambio(prop, raiz=_raiz) del bloque 'v_final == APROBADO'), pasando la marca crear que ya viene de la orden. No cambiar el comportamiento de las reparaciones normales (las que traen texto_viejo). Distinto de la orden 85, que solo creaba la vigia.",
+      "encargo_vigia": "Una vigia que llame a aplicar_cambio con una propuesta crear cuyo archivo destino YA existe y compruebe que se sobrescribe con texto_nuevo y NO devuelve 'La propuesta no trae texto_viejo.'.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 300s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\85_20260921_153251.json"
+  }
+}

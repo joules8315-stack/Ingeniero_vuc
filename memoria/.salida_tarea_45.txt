@@ -1,0 +1,18 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-22_110217_RECHAZADO_revisor_de_programa.py.json
+OBRERO deepseek -> AUDITOR grok47
+  aviso       : GPT-OSS 120B (Groq) no le cabe (33972 letras, aguanta 19042) -> se le salta
+  aviso       : el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 306 del archivo completo: expected 'except' or 'finally' block. Asi no arranca.
+  aviso       : GPT-OSS 120B (Groq) no le cabe (35080 letras, aguanta 19042) -> se le salta
+  diagnostico : Falta en arnes/revisor_de_programa.py una regla que cace pruebas test_ que devuelven valor sin ningun assert, y pruebas que se saltan con SkipTest/pytest.skip diciendo que la pieza no existe todavia.
+  toca        : arnes/revisor_de_programa.py funcion revisar
+  confianza   : media
+  VEREDICTO   : RECHAZADO
+  *** INVENTO: arnes/revisor_de_programa.py; funcion revisar; el texto_viejo del bloque 2c (no aparece en el material; el material esta vacio) -> SE DESCARTA
+  fallo       : Ubicacion: el texto_viejo no aparece en el material. Regla 6: sin texto literal en el material, la ubicacion no vale.
+  fallo       : El ancla no es el final del bloque 2c. El texto_viejo abre un try y corta en `_sin_antes = _pruebas_sin_cuerpo(_arbol_antes_c)`, sin except ni finally. El texto_nuevo mete los try de 2d y 2e a 8 espacios, dedentando fuera de ese try. Eso parte el 2c por la mitad y deja un try sin except: SyntaxError. No queda 'justo despues del bloque 2c'.
+  fallo       : 2e no caza unittest.SkipTest. `_llama_a_skip` solo acepta Attribute.attr == 'skip' o Name.id == 'SkipTest'. `unittest.SkipTest(...)` es Attribute con attr 'SkipTest', asi que no dispara. El encargo pide esa llamada y la regla no la ve.
+  fallo       : 2e no mira el mensaje del skip: cualquier string del test (docstring incluido) con 'falta', 'pendiente', 'no esta' o 'todavia' basta, junto con cualquier `.skip`. Falsos positivos en skips legitimos.
+  resumen     : Rechazado: el parche se inserta a mitad del bloque 2c y lo rompe con un try sin cerrar, y ademas no detecta unittest.SkipTest.
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.

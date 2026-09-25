@@ -1,0 +1,72 @@
+{
+  "orden": {
+    "id": "132",
+    "titulo": "El revisor no llama a Big Pickle mientras descansa y cuenta sus fallos",
+    "origen": "orden de Julio A-46 (2026-09-21)",
+    "repara": "Big Pickle caido sigue costando 300 s por tarea",
+    "pieza": "cuerpo/obrero.py",
+    "depende": [
+      "131",
+      "135"
+    ],
+    "modo": "IA",
+    "razon": "Julio: siempre Big Pickle primero, salvo mientras descansa; entonces Grok 4.7",
+    "encargo": "En cuerpo/obrero.py, en la funcion auditar, en el bloque que empieza con la linea if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False): cambia esa linea por la misma con una condicion mas al final: and cuotas.desperto('bigpickle'):. Y dentro del mismo bloque: justo despues de quien_aud = 'bigpickle' agrega cuotas.bigpickle_acierto(), y en el else: (el que pone auditar._bp_caido = True) agrega cuotas.bigpickle_fallo(). Todo esta en el mismo bloque seguido: entregalo como UN solo cambio con el bloque entero. cuotas ya esta importado arriba del archivo (from cuerpo import cuotas). No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_revisor_respeta_el_descanso_de_big_pickle.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "25210eb735905db0",
+  "tipo": "tiempo",
+  "codigo": null,
+  "salida": "TOPE DE TIEMPO: 900 s",
+  "apartados": [],
+  "fecha": "2026-09-21T21:31:47",
+  "analisis": {
+    "que_paso": "La orden 132 (modo IA) pedia una edicion mecanica y ya redactada palabra por palabra en cuerpo/obrero.py, pero el trabajo se corto por \"TOPE DE TIEMPO: 900 s\" (tipo tiempo) sin dejar veredicto ni codigo. El cambio pedido, sin embargo, ya figura literal en el archivo, lo que confirma que era trivial y determinista.",
+    "causa_raiz": "Se enruto por el equipo de IA (modo: IA) una edicion 100% determinista y totalmente especificada en el encargo (sustituir una linea y agregar dos llamadas dentro del mismo bloque), algo que no necesita juicio de IA. El ciclo escribir+auditar con IA se hizo lento porque Big Pickle esta caido —justo la falla que la propia orden 132 y su dependencia 131 buscan reparar (repara: \"Big Pickle caido sigue costando 300 s por tarea\")— y el auditar entra al relevo de otras IA; esos ~300 s por llamada, sumados, agotaron el tope de 900 s. El parche era aplicable por PROGRAMA sin gastar una sola llamada de IA.",
+    "donde": "cuerpo/obrero.py, funcion auditar, bloque de lineas 1023-1037 (revision con bigpickle). Helpers ya presentes en cuerpo/cuotas.py: desperto (151), bigpickle_fallo (167), bigpickle_acierto (186).",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "    if auditor == 'bigpickle' and not getattr(auditar, '_bp_caido', False) and cuotas.desperto('bigpickle'):"
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "            quien_aud = 'bigpickle'\n            cuotas.bigpickle_acierto()"
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "            auditar._bp_caido = True\n            cuotas.bigpickle_fallo()"
+      },
+      {
+        "archivo": "cuerpo/cuotas.py",
+        "texto": "def desperto(quien):\n    \"\"\"True si ya paso su siesta. Si desperto, se le quita la marca (vuelve a la fila).\"\"\""
+      },
+      {
+        "archivo": "cuerpo/cuotas.py",
+        "texto": "def bigpickle_fallo():\n    \"\"\"Orden de Julio A-46 del 2026-09-21: cuenta los fallos seguidos de bigpickle."
+      }
+    ],
+    "no_volver_a": "Un cambio mecanico y totalmente especificado no se manda a la IA (lenta y cara, mas aun con Big Pickle caido): se aplica por PROGRAMA y jamas debe poder chocar contra el tope de 900 s.",
+    "donde_extra": "",
+    "tarea_nueva": {
+      "repara": "Aplicar la edicion ya especificada sin gastar IA, y comprobarla con su vigia, evitando el tope de 900 s que causo el timeout.",
+      "pieza": "cuerpo/obrero.py",
+      "razon": "El bloque a producir esta redactado literal en el encargo y los helpers (desperto/bigpickle_acierto/bigpickle_fallo) ya existen en cuotas.py; no requiere juicio de IA, por lo que el modo IA es la causa del timeout.",
+      "encargo": "Aplicar como parche de texto exacto el bloque de lineas 1023-1037 (linea if con la condicion 'and cuotas.desperto(\\'bigpickle\\'):', cuotas.bigpickle_acierto() tras quien_aud = 'bigpickle', y cuotas.bigpickle_fallo() en el else junto a auditar._bp_caido = True) y correr vigias/test_vigia_el_revisor_respeta_el_descanso_de_big_pickle.py. No tocar ningun otro archivo.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Las citas solo demuestran que existe mecanismo para detectar la caída de bigpickle y relevar el auditor, pero ninguna cita prueba lo causal de este caso: que la edición era 100% determinista y aplicable por PROGRAMA, que se enrutó en modo IA, ni los 300 s por llamada sumando arriba del tope de 900 s (ni las órdenes 132/131).",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\132_20260921_213147.json"
+  }
+}

@@ -1,0 +1,58 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/revisor_de_programa.py, dentro de revisar, el rechazo por texto nuevo vacio tambien frena un cambio que SOLO BORRA, que es legitimo.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        if not nuevo.strip():\n            return [\"La propuesta no trae texto nuevo: no hay nada que aplicar.\"]",
+  "texto_nuevo": "        # Un cambio que SOLO BORRA es legitimo: quitar codigo que sobra y no poner nada en su\n        # lugar es trabajo de verdad. Solo no hay nada que hacer cuando tampoco se dice que quitar.\n        if not nuevo.strip() and not viejo.strip():\n            return [\"La propuesta no trae texto nuevo: no hay nada que aplicar.\"]\n        if not nuevo.strip():\n            # Solo se borra: las demas cuentas suponen que hay codigo nuevo que leer, asi que\n            # se devuelve la lista de fallos tal como va, sin mirar mas cuentas.\n            return fallos",
+  "cambio": "Sustituir el rechazo incondicional por texto nuevo vacio: primero un comentario en castellano diciendo que un cambio que solo borra es legitimo y que solo no hay nada que hacer cuando tampoco se dice que quitar; despues la queja con esa misma frase solo cuando el texto nuevo esta vacio Y el texto viejo tambien esta vacio; y despues, cuando solo el texto nuevo esta vacio, devolver la lista de fallos tal como va, sin mirar mas cuentas. No tocar nada mas del archivo.",
+  "codigo": "        # Un cambio que SOLO BORRA es legitimo: quitar codigo que sobra y no poner nada en su\n        # lugar es trabajo de verdad. Solo no hay nada que hacer cuando tampoco se dice que quitar.\n        if not nuevo.strip() and not viejo.strip():\n            return [\"La propuesta no trae texto nuevo: no hay nada que aplicar.\"]\n        if not nuevo.strip():\n            # Solo se borra: las demas cuentas suponen que hay codigo nuevo que leer, asi que\n            # se devuelve la lista de fallos tal como va, sin mirar mas cuentas.\n            return fallos",
+  "vigia": "vigias/test_vigia_un_cambio_que_solo_borra_vale.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/candado_equipo.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_archivo_carga.py",
+   "vigias/test_vigia_el_freno_de_las_palabras_solo_pide_lo_nuevo.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_cambio_que_solo_borra_vale.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "candado_equipo.py",
+   "test_vigia_el_archivo_carga.py",
+   "test_vigia_el_freno_de_las_palabras_solo_pide_lo_nuevo.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_cambio_que_solo_borra_vale.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguna vigia del revisor ejercita texto nuevo vacio + texto viejo cargado: la unica que lo hace es test_vigia_un_cambio_que_solo_borra_vale.py, que existe en el repo (creada y aprobada hoy por el equipo) y que el cambio deja en verde: la corrí y hoy falla justo en lo que el diagnostico dice. Los llamadores (cuerpo/obrero.py:1169 y arnes/candado_equipo.py:115) tratan la lista vacia como pase, asi que el efecto es el querido. Como nota menor no bloqueante: el 'return fallos' temprano salta tambien la cuenta de sintaxis 'QUEDA ROTO' para un borrado, o sea que un borrado que deje el archivo malformado no lo caza el revisor de programa; es una decision de diseño, esta documentada en el propio comentario del cambio, no viola la vigia ni el encargo."
+  ]
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (30796 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

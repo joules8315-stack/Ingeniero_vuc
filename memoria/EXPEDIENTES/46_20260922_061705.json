@@ -1,0 +1,63 @@
+{
+  "orden": {
+    "id": "46",
+    "titulo": "La vigia del puente que pone los candados de Claude a Codex",
+    "origen": "acuerdo A-40 de Julio, 2026-09-21: Codex tiene que cumplir las mismas normas que Claude, por mecanismo y no por voluntad",
+    "repara": "medido el 2026-09-21: los ganchos de Codex reciben exactamente el mismo mensaje que los de Claude, y los candados del Ingeniero lo leen bien y contestan frenar (salen con 2). Pero Codex NO entiende esa salida como freno: la cuenta como fallo y deja pasar la orden. Codex solo frena si el gancho escribe en su salida un JSON con permissionDecision deny. Sin un puente, los candados estan puestos y no frenan nada",
+    "pieza": "vigias/test_vigia_el_puente_pone_los_candados_a_codex.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_puente_pone_los_candados_a_codex.py. Vigila una pieza NUEVA, arnes/puente_codex.py, que se usara asi desde los ganchos de Codex: python C:/Ingeniero_VUC/arnes/puente_codex.py RUTA_DEL_CANDADO ARGUMENTOS. La pieza lee de su entrada el JSON que manda Codex, corre ese candado con el mismo python y le pasa el mismo JSON por la entrada, y traduce lo que conteste. La vigia la corre de verdad con subprocess y usa candados de mentira escritos en una carpeta temporal (programas python pequenos que salen con 2 y escriben un motivo en la salida de errores, o que salen con 0 y escriben algo en su salida normal). Cinco pruebas: (1) si el candado sale con 2 y el evento es PreToolUse, el puente escribe en su salida UN JSON con hookSpecificOutput que lleva hookEventName PreToolUse, permissionDecision deny y permissionDecisionReason con el motivo que escribio el candado, y el puente sale con 0; (2) si el candado sale con 0, el puente copia tal cual lo que el candado escribio en su salida normal y sale con 0; (3) si el candado no existe o revienta y el evento es PreToolUse, el puente FRENA igual (deny con un motivo que diga que el candado no pudo correr), porque un freno roto no puede abrir la puerta; (4) si el candado sale con 2 y el evento NO es PreToolUse, el puente escribe un JSON con decision block y reason con el motivo; (5) los argumentos que van despues de la ruta del candado le llegan al candado. Importa y corre la pieza solo dentro de cada prueba, para no dejar ciega a la bateria mientras no exista. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_puente_pone_los_candados_a_codex.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "cfeec8936a53dd22",
+  "tipo": "no_aplico",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_061701_APROBADO_test_vigia_el_puente_pone_los_candados_a_codex.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (30230 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : Falta la vigia nueva que prueba de verdad, con subprocess y candados de mentira en carpeta temporal, que arnes/puente_codex.py traduce la salida de los candados al JSON que Codex entiende en los cinco casos pedidos.\n  toca        : vigias/test_vigia_el_puente_pone_los_candados_a_codex.py funcion ?\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : La vigia nueva prueba los cinco casos exactos del encargo, corre el puente de verdad con subprocess y candados de mentira en carpeta temporal, no usa nada que no exista y no toca nada mas: se aprueba.\n\nEL EQUIPO APROBO, pero no se pudo aplicar: La propuesta no trae 'texto_viejo'.\nLLAVE GUARDADA: se puede escribir en 42 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T06:17:05",
+  "analisis": {
+    "que_paso": "El equipo aprobo la vigia nueva de la orden 46 (deepseek escribe, bigpickle revisa: VEREDICTO APROBADO), pero al ir a escribirla el Ingeniero devolvio \"no se pudo aplicar: La propuesta no trae 'texto_viejo'\" y la tarea quedo sin aplicar (tipo no_aplico, codigo 0). El trabajo aprobado se archivo pero no toco el disco.",
+    "causa_raiz": "La orden 46 es de CREAR (crear:true, encargo de analista que escribe el documento entero, sin texto_viejo). Pero el archivo destino vigias/test_vigia_el_puente_pone_los_candados_a_codex.py YA EXISTIA de una ronda anterior (creado el 2026-09-21, ver memoria/trabajos_del_equipo/2026-09-21_091918_APROBADO_test_vigia_el_puente_pone_los_candados_a_codex.py.json). En cuerpo/aplicador.py la unica rama que escribe un archivo nuevo esta bajo 'if not os.path.exists(archivo)'. Como el archivo ya existe, esa rama se salta y el flujo cae en el camino de MODIFICAR, que exige texto_viejo; una propuesta de crear nunca lo trae, asi que llega a 'if not texto_viejo' y frena con \"La propuesta no trae 'texto_viejo'\". Falta en el aplicador la rama de re-escribir cuando la orden es crear y el archivo ya existe.",
+    "donde": "cuerpo/aplicador.py, funcion aplicar_cambio: la rama de creacion (solo se entra si 'not os.path.exists(archivo)') y el freno de la rama de modificar (linea ~199-201).",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "# El bloque que CREA el archivo nuevo pertenece al caso \"el archivo no existe\" y estaba\n    # quedando dentro de la comprobacion de humo: asi no se podia crear ni un archivo nuevo.\n    # Se devuelve a su sitio (Julio, 2026-09-05: la reparacion no puede romper al vecino).\n    if not os.path.exists(archivo):\n        try:\n            with open(archivo, \"w\", encoding=\"utf-8\") as f:\n                f.write(contenido)"
+      },
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "    if not texto_viejo:\n        _apuntar_log(False, archivo, funcion, \"texto_viejo vacio\")\n        return False, \"La propuesta no trae 'texto_viejo'.\""
+      },
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "    # Si el archivo NO existe y la propuesta trae texto_viejo, es un cambio sobre algo que deberia existir: no se crea nada.\n    if not os.path.exists(archivo):"
+      }
+    ],
+    "no_volver_a": "Una orden de CREAR debe re-escribir su archivo cuando ya existe (traiga solo el documento entero, sin texto_viejo), en vez de caer en el camino de modificar y frenarse por falta de texto_viejo.",
+    "tarea_nueva": {
+      "repara": "el aplicador no re-escribe el archivo cuando la orden es CREAR y el archivo destino ya existe: se salta la rama de crear (solo entra si no existe) y cae en el camino de modificar, que exige texto_viejo, un texto que una propuesta de crear nunca trae",
+      "pieza": "cuerpo/aplicador.py",
+      "razon": "distinta de la orden 46 (que crea la VIGIA): esta repara la HERRAMIENTA que no supo aplicar esa creacion aprobada",
+      "encargo": "En cuerpo/aplicador.py, funcion aplicar_cambio: cuando la propuesta trae el documento entero (codigo o texto_nuevo) y NO trae texto_viejo, aunque el archivo YA exista, se re-escribe el archivo con ese contenido y se devuelve ok, en lugar de caer en el camino de modificar y frenar con 'La propuesta no trae texto_viejo'. Mantener intacto el camino de modificar por trozos (cuando SI hay texto_viejo). Primero nace la vigia que lo prueba: una propuesta de crear (solo codigo/texto_nuevo, sin texto_viejo) sobre un archivo que YA existe debe re-escribirlo y devolver ok; nace roja antes del cambio.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": true,
+    "paso": "tarea",
+    "motivo": "agregada 46-F061935",
+    "tarea": "46-F061935",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\46_20260922_061705.json"
+  }
+}

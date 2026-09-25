@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_equipo.py::volver_atras, la llamada a fallos.apuntar no lleva el argumento disparador, y la vigia test_ningun_fallo_es_MUDO queda roja porque un fallo sin disparador nunca avisa.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "volver_atras",
+  "texto_viejo": "        from cuerpo import fallos\n        fallos.apuntar(\n            que_paso='el guardia no dejo guardar lo que el equipo aplico',\n            causa_raiz=str(motivo)[:300],\n            cura='se volvio atras solo (candado_equipo.volver_atras)',\n            no_volver_a='lo que no pasa las vigias no se queda en el disco',\n            proyecto=os.path.basename(str(raiz)),\n            piezas=list(rutas),\n            quien_lo_caza='guardia_de_guardado',\n        )",
+  "texto_nuevo": "        from cuerpo import fallos\n        fallos.apuntar(\n            que_paso='el guardia no dejo guardar lo que el equipo aplico',\n            causa_raiz=str(motivo)[:300],\n            cura='se volvio atras solo (candado_equipo.volver_atras)',\n            no_volver_a='lo que no pasa las vigias no se queda en el disco',\n            proyecto=os.path.basename(str(raiz)),\n            piezas=list(rutas),\n            quien_lo_caza='guardia_de_guardado',\n            disparador=r'''ingeniero\\.py\\s+equipo''',\n        )",
+  "cambio": "Agregar a la llamada fallos.apuntar dentro de volver_atras el argumento disparador con el patron crudo r'''ingeniero\\.py\\s+equipo''' que reconoce el comando 'ingeniero.py equipo'.",
+  "codigo": "            disparador=r'''ingeniero\\.py\\s+equipo''',",
+  "vigia": "vigias/test_ningun_fallo_es_MUDO.py (la vigia que hoy queda roja): comprueba que todo fallo apuntado lleva disparador no vacio; al anadir el argumento debe pasar a verde.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/fallos.py",
+   "vigias/test_ningun_fallo_es_MUDO.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "revisor_de_programa.py",
+   "test_ningun_fallo_es_MUDO.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio es exactamente lo que el encargo pide."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (26468 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

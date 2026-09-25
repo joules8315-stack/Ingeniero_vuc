@@ -1,0 +1,26 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El material muestra en ingeniero.py:545-584 la llamada _ok2, _msg2 = _ap.aplicar_cambio(_prop, raiz=_raiz2) que debe desaparecer y ser sustituida por _ap.aplicar_propuesta; creo la vigia de texto que lo comprueba.",
+  "archivo": "vigias/test_vigia_el_segundo_sitio_aplica_varios_trozos.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"Vigia de texto: el segundo sitio de aplicacion usa aplicar_propuesta, no aplicar_cambio.\n\nJulio, 2026-09-21: en ingeniero.py habia DOS sitios que aplicaban cambios en disco. El\nprimero (comando equipo) ya usaba aplicador.aplicar_propuesta. El segundo (el que aplica\nlo que el equipo ya aprobo) seguia llamando a aplicador.aplicar_cambio, que es la puerta\nvieja. Esta vigia es de TEXTO: abre ingeniero.py y comprueba, con assert, que el texto\nviejo YA NO aparece y que el texto nuevo SI aparece.\n\nNo toca ningun otro archivo. No importa ingeniero.py (solo lo lee como texto), asi que\nno dispara efectos secundarios ni escribe en memorias compartidas.\n\"\"\"\nimport os\n\n\nAQUI = os.path.dirname(os.path.abspath(__file__))\nRAIZ = os.path.dirname(AQUI)\nINGENIERO = os.path.join(RAIZ, \"ingeniero.py\")\n\n# El texto VIEJO que ya no debe estar: la puerta antigua del segundo sitio.\nVIEJO = \"_ok2, _msg2 = _ap.aplicar_cambio(_prop, raiz=_raiz2)\"\n\n# El texto NUEVO que si debe estar: la puerta buena, la misma que usa el comando equipo.\nNUEVO = \"_ok2, _msg2 = _ap.aplicar_propuesta(_prop, raiz=_raiz2)\"\n\n\ndef _leer_ingeniero():\n    \"\"\"Devuelve el contenido de ingeniero.py como texto, o falla claro si no esta.\"\"\"\n    assert os.path.isfile(INGENIERO), (\n        \"No encuentro ingeniero.py en %s: la vigia no puede mirar lo que no existe.\"\n        % INGENIERO\n    )\n    with open(INGENIERO, \"r\", encoding=\"utf-8\", errors=\"replace\") as f:\n        return f.read()\n\n\ndef test_el_texto_viejo_ya_no_aparece():\n    \"\"\"El segundo sitio ya NO llama a aplicar_cambio.\"\"\"\n    texto = _leer_ingeniero()\n    assert VIEJO not in texto, (\n        \"El texto viejo sigue en ingeniero.py:\\n  %s\\n\"\n        \"El segundo sitio debe usar aplicar_propuesta, no aplicar_cambio.\" % VIEJO\n    )\n\n\ndef test_el_texto_nuevo_si_aparece():\n    \"\"\"El segundo sitio SI llama a aplicar_propuesta.\"\"\"\n    texto = _leer_ingeniero()\n    assert NUEVO in texto, (\n        \"Falta el texto nuevo en ingeniero.py:\\n  %s\\n\"\n        \"El segundo sitio debe aplicar con la misma puerta que el comando equipo.\" % NUEVO\n    )\n\n\ndef test_los_dos_textos_no_conviven():\n    \"\"\"No puede estar el viejo y el nuevo a la vez: seria una sustitucion a medias.\"\"\"\n    texto = _leer_ingeniero()\n    tiene_viejo = VIEJO in texto\n    tiene_nuevo = NUEVO in texto\n    assert not (tiene_viejo and tiene_nuevo), (\n        \"ingeniero.py tiene el texto viejo Y el nuevo: la sustitucion quedo a medias.\"\n    )\n    assert tiene_nuevo, (\n        \"ingeniero.py no tiene ni el texto viejo ni el nuevo: el segundo sitio desaparecio.\"\n    )\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigia hace exactamente lo que pedia el encargo y no toca nada mas: abre ingeniero.py en solo lectura, comprueba con assert que el texto viejo (aplicar_cambio, que sigue vivo en la linea 552) ya no este y que el nuevo (aplicar_propuesta, que ya usa el primer sitio en la linea 427) si este; nace roja y espera su arreglo, que es el metodo de siempre."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27979 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (28155 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

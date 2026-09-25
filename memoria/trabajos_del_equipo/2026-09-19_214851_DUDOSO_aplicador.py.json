@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Cuando texto_viejo aparece mas de una vez se tira la ronda entera aunque el obrero haya dicho la funcion; hay que intentar acotar el cambio al trozo de esa funcion con ast antes de rendirse.",
+  "archivo": "cuerpo/aplicador.py",
+  "funcion": "aplicar_cambio",
+  "texto_viejo": "    if veces > 1:\n        _apuntar_log(False, archivo, funcion, f\"texto_viejo aparece {veces} veces\")\n        return False, f\"El texto_viejo aparece {veces} veces; no se sabe cual es.\"\n\n    # Sustituir en un temporal al lado.\n    nuevo_contenido = contenido.replace(texto_viejo, texto_nuevo, 1)",
+  "texto_nuevo": "    if veces > 1:\n        # 2026-09-19: si el obrero dijo en que funcion trabaja y es un .py, se acota el cambio\n        # al trozo de esa funcion con ast antes de rendirse. Lo vigila vigias/test_vigia_aplicador.py.\n        _cambio_hecho_en_trozo = False\n        try:\n            if funcion and funcion != \"?\" and archivo.endswith(\".py\"):\n                import ast as _ast\n                with open(archivo, \"r\", encoding=\"utf-8-sig\") as _f:\n                    _fuente = _f.read()\n                _arbol = _ast.parse(_fuente)\n                _nodo = None\n                for _n in _arbol.body:\n                    if isinstance(_n, (_ast.FunctionDef, _ast.AsyncFunctionDef, _ast.ClassDef)) and _n.name == funcion:\n                        _nodo = _n\n                        break\n                if _nodo is not None:\n                    _trozo = _ast.get_source_segment(_fuente, _nodo)\n                    if _trozo is not None and _trozo.count(texto_viejo) == 1:\n                        _trozo_nuevo = _trozo.replace(texto_viejo, texto_nuevo, 1)\n                        _ini = _fuente.index(_trozo)\n                        _fin = _ini + len(_trozo)\n                        contenido = _fuente[:_ini] + _trozo_nuevo + _fuente[_fin:]\n                        _cambio_hecho_en_trozo = True\n        except Exception:\n            _cambio_hecho_en_trozo = False\n        if not _cambio_hecho_en_trozo:\n            _apuntar_log(False, archivo, funcion, f\"texto_viejo aparece {veces} veces\")\n            return False, f\"El texto_viejo aparece {veces} veces; no se sabe cual es.\"\n\n    # Sustituir en un temporal al lado.\n    if veces > 1:\n        nuevo_contenido = contenido\n    else:\n        nuevo_contenido = contenido.replace(texto_viejo, texto_nuevo, 1)",
+  "cambio": "Sustituir el bloque actual del if veces > 1 (apunte + return) por un intento con ast que, si el obrero dijo funcion, el archivo es .py, se encuentra la definicion de nivel principal con ese nombre y texto_viejo aparece exactamente una vez dentro del trozo, reemplaza solo dentro del trozo y guarda el resultado en la variable contenido; si no se puede, se mantiene el apunte y el return de hoy. Ademas, el replace de mas abajo debe respetar que ya se hizo el cambio en el trozo (no volver a aplicar contenido.replace).",
+  "codigo": "    if veces > 1:\n        # 2026-09-19: si el obrero dijo en que funcion trabaja y es un .py, se acota el cambio\n        # al trozo de esa funcion con ast antes de rendirse. Lo vigila vigias/test_vigia_aplicador.py.\n        _cambio_hecho_en_trozo = False\n        try:\n            if funcion and funcion != \"?\" and archivo.endswith(\".py\"):\n                import ast as _ast\n                with open(archivo, \"r\", encoding=\"utf-8-sig\") as _f:\n                    _fuente = _f.read()\n                _arbol = _ast.parse(_fuente)\n                _nodo = None\n                for _n in _arbol.body:\n                    if isinstance(_n, (_ast.FunctionDef, _ast.AsyncFunctionDef, _ast.ClassDef)) and _n.name == funcion:\n                        _nodo = _n\n                        break\n                if _nodo is not None:\n                    _trozo = _ast.get_source_segment(_fuente, _nodo)\n                    if _trozo is not None and _trozo.count(texto_viejo) == 1:\n                        _trozo_nuevo = _trozo.replace(texto_viejo, texto_nuevo, 1)\n                        _ini = _fuente.index(_trozo)\n                        _fin = _ini + len(_trozo)\n                        contenido = _fuente[:_ini] + _trozo_nuevo + _fuente[_fin:]\n                        _cambio_hecho_en_trozo = True\n        except Exception:\n            _cambio_hecho_en_trozo = False\n        if not _cambio_hecho_en_trozo:\n            _apuntar_log(False, archivo, funcion, f\"texto_viejo aparece {veces} veces\")\n            return False, f\"El texto_viejo aparece {veces} veces; no se sabe cual es.\"\n\n    # Sustituir en un temporal al lado.\n    if veces > 1:\n        nuevo_contenido = contenido\n    else:\n        nuevo_contenido = contenido.replace(texto_viejo, texto_nuevo, 1)",
+  "vigia": "vigias/test_vigia_aplicador.py: con un .py donde texto_viejo aparece dos veces (una dentro de la funcion indicada y otra fuera), aplicar_cambio debe aplicar el cambio solo dentro de la funcion y devolver True; y con texto_viejo repetido dos veces dentro de la misma funcion, debe seguir devolviendo el aviso de que aparece varias veces.",
+  "puede_danar": [
+   "arnes/copista.py",
+   "vigias/test_vigia_aplicador.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "copista.py",
+   "test_vigia_aplicador.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El cambio acota bien por funcion con ast, pero para ubicar el trozo usa `_fuente.index(_trozo)`: si el mismo texto de la funcion aparece antes en el archivo (por ejemplo en un docstring, un string o una copia identica), reemplaza en la PRIMERA aparicion y devuelve True con un cambio en el sitio equivocado; como no lanza excepcion, el fallback no lo salva. Deberia usar las coordenadas que ast ya tiene (`_nodo.lineno`/`end_lineno`).",
+   "Re-lee el archivo con `encoding='utf-8-sig'`, un criterio distinto del read que produjo `contenido`; en un archivo con BOM la reescritura final sale en «espacio _fuente» y puede divergir (pierde BOM, cuenta textos distinto) de lo que el resto de la funcion espera.",
+   "La busqueda de nodo solo mira `_arbol.body` (nivel principal): si la funcion indicada es un metodo dentro de una clase no la encuentra y cae silenciosamente al return de hoy; no rompe, pero el diagnostico no queda resuelto ahi y nadie se entera.",
+   "Todo el bloque cuelga de codigo posterior a la linea 226 que el material no muestra (si `nuevo_contenido` es lo que se escribe, si existe un chequeo de 'no cambia nada') y el cambio asume la cola de la funcion sin haberla leido."
+  ],
+  "riesgo_vecinos": [
+   "vigias/test_vigia_aplicador.py: la propuesta no trae su actualizacion; si la vigia actual codifica el comportamiento viejo (veces>1 -> siempre error con funcion dicha), este cambio la deja ROJA y no se puede sellar.",
+   "El comentario dentro del codigo afirma «Lo vigila vigias/test_vigia_aplicador.py» afirmando que esa vigia cubre el caso nuevo, pero esa vigia no viene en el paquete (esta en _fuera_del_paquete): se afirma que existe una cobertura que el material no muestra.",
+   "arnes/copista.py: un cambio que antes se rechazaba («no se sabe cual es») ahora se aplica cuando el obrero dijo la funcion; cambia el flujo de llamada y debe confirmarse que ese es el trato con Julio."
+  ],
+  "que_falta": [
+   "Actualizar vigias/test_vigia_aplicador.py con los dos casos del enunciado y correr `python -m pytest -q vigias/` antes y despues.",
+   "Ubicar el trozo con `_nodo.lineno`/`end_lineno` (o `_ini`/`_fin` calculados del nodo) en vez de `str.index`, para no editar la primera aparicion equivocada.",
+   "Usar el mismo encoding/lectura que el resto de la funcion para el re-read del archivo.",
+   "Leer la cola de la funcion (despues del bloque sustituido) para confirmar que `nuevo_contenido` se escribe y que ningun chequeo de 'no cambio nada' quede descuadrado."
+  ],
+  "resumen_para_el_jefe": "La idea de acotar por funcion con ast va bien encaminada y no usa nada inexistente, pero la ubicacion del trozo es fragil (puede editar la primera aparicion equivocada), re-lee con otro encoding y anuncia una vigia que no entrega; con esos cabos atados se aprueba."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (26962 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (29047 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (29337 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 3"
+ ]
+}

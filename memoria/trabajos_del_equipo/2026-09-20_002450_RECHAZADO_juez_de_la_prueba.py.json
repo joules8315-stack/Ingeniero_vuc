@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion juzgar_con_vecinas en arnes/juez_de_la_prueba.py, que debe buscar sola la prueba que cubre el archivo usando el modulo vecinas, sin inventar funciones de vecinas ni usar Path sin importarlo.",
+  "archivo": "arnes/juez_de_la_prueba.py",
+  "funcion": "juzgar",
+  "texto_viejo": "    resultado['razon'] = (\n        'antes de tocar nada: %s. Con el cambio puesto: %s. Al deshacer el cambio: %s.'\n        % (detalle_antes, detalle_despues, detalle_vuelta)\n    )\n    return resultado",
+  "texto_nuevo": "    resultado['razon'] = (\n        'antes de tocar nada: %s. Con el cambio puesto: %s. Al deshacer el cambio: %s.'\n        % (detalle_antes, detalle_despues, detalle_vuelta)\n    )\n    return resultado\n\n\n# PARA QUE SIRVE:\n# Que el juez encuentre solo la prueba que cubre lo que se cambio, para no tener que\n# decirsela: busca las vigias que nombran el archivo y las juzga una por una.\ndef juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo):\n    \"\"\"Busca sola la prueba que cubre el archivo y la juzga.\n\n    Devuelve un diccionario con ok, prueba y razon. Nunca lanza error: si algo\n    revienta, ok en None, prueba en None y la razon lo explica.\n    \"\"\"\n    try:\n        from arnes import vecinas\n\n        lista_vigias = vecinas.lista_de_vigias(raiz)\n        encontradas = vecinas.vecinas_por_pieza([ruta_relativa], raiz, lista_vigias)\n\n        if not encontradas:\n            return {\n                'ok': None,\n                'prueba': None,\n                'razon': (\n                    'ninguna prueba nombra ese archivo, asi que no hay nada que '\n                    'correr para comprobarlo'\n                ),\n            }\n\n        for vigia in encontradas:\n            ruta_vigia = str(raiz) + '/' + str(vigia)\n            ruta_archivo = str(raiz) + '/' + str(ruta_relativa)\n            resultado = juzgar(\n                raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo\n            )\n\n            if not resultado.get('antes_roja'):\n                continue\n\n            if resultado.get('despues_verde') and resultado.get('vuelve_roja'):\n                return {\n                    'ok': True,\n                    'prueba': vigia,\n                    'razon': resultado.get('razon', ''),\n                }\n\n            return {\n                'ok': False,\n                'prueba': vigia,\n                'razon': resultado.get('razon', ''),\n            }\n\n        return {\n            'ok': None,\n            'prueba': None,\n            'razon': (\n                'ninguna de las pruebas que nombran ese archivo estaba roja, asi '\n                'que no habia nada que demostrar'\n            ),\n        }\n    except Exception as error:\n        return {\n            'ok': None,\n            'prueba': None,\n            'razon': 'al buscar la prueba que cubre el archivo, revento: %s' % error,\n        }",
+  "cambio": "Agregar despues de la funcion juzgar una funcion nueva juzgar_con_vecinas que importa arnes.vecinas dentro de la funcion, pide lista_de_vigias(raiz) y vecinas_por_pieza([ruta_relativa], raiz, lista_vigias), recorre las vecinas llamando a juzgar, y devuelve ok/prueba/razon segun el caso, todo dentro de un try.",
+  "vigia": "vigias/test_vigia_el_juez_busca_su_prueba.py",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py",
+   "arnes/vecinas.py"
+  ],
+  "preguntas": [
+   "El material no trae el cuerpo de arnes/vecinas.py: se asume que lista_de_vigias(raiz) y vecinas_por_pieza(lista, raiz, lista_vigias) existen con esos nombres y firma, tal como los nombra la tarea. Si no coinciden, hay que leer arnes/vecinas.py."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "vecinas.lista_de_vigias(raiz)",
+   "vecinas.vecinas_por_pieza([ruta_relativa], raiz, lista_vigias)"
+  ],
+  "fallos": [
+   "El cambio inventa dos funciones de arnes/vecinas.py que NO existen: el archivo real (arnes/vecinas.py) solo tiene elegir(raiz) como API publica y sus unicas listadoras son _vigias_existentes(raiz) y _vecinas_por_stem(cambiados, raiz, vigias), ambas privadas. Un grep por lista_de_vigias/vecinas_por_pieza en todo el repo da cero resultados.",
+   "Como las funciones no existen, cada llamada levanta AttributeError y cae en el except del try, devolviendo siempre ok=None. Resultado: la vigia test_vigia_el_juez_busca_su_prueba.py falla en la prueba 1 (espera ok is True) y en la prueba 2 (espera ok is False). El cambio NO arregla el diagnostico.",
+   "El propio diagnostico decia 'sin inventar funciones de vecinas' y el obrero las invento igual. En 'preguntas' reconocio que no tenia el cuerpo de vecinas.py: ahi debio pedir NECESITO_LEER: arnes/vecinas.py antes de escribir, no asumir los nombres (Ley 1: nunca asumir).",
+   "La nota 'COMPROBADO POR PROGRAMA' no salva esto: el archivo carga porque el import esta dentro de la funcion, pero las funciones de vecinas no existen en el modulo y el check no las verifica (y el material no traia vecinas.py)."
+  ],
+  "riesgo_vecinos": [
+   "No rompe a juzgar, ni a test_vigia_el_juez_de_la_prueba.py, ni a arnes/vecinas.py (no los toca). El dano real es sobre la vigia que debia satisfacer: sigue roja, asi que el trabajo no se sella."
+  ],
+  "que_falta": [
+   "Leer arnes/vecinas.py antes de escribir (NECESITO_LEER pendiente que el paquete no traia) y usar las funciones que de verdad existen: vecinas._vigias_existentes(raiz) para la lista de vigias y vecinas._vecinas_por_stem([ruta_relativa], raiz, lista_vigias) para las vecinas por nombre (su firma coincide exactamente con lo que pide el encargo: una lista con esa unica ruta, la raiz y la lista de vigias). Alternativa: pedir un encargo aparte que agregue esas dos funciones publicas a vecinas.py."
+  ],
+  "resumen_para_el_jefe": "El obrero invento dos funciones (lista_de_vigias y vecinas_por_pieza) que no existen en arnes/vecinas.py, asi que juzgar_con_vecinas siempre devuelve ok=None al estrellarse en el except y la vigia que debia cumplir sigue roja; hay que rehacerlo usando _vigias_existentes y _vecinas_por_stem, que son las que en realidad viven en el modulo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22271 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (24676 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (24938 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (25133 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

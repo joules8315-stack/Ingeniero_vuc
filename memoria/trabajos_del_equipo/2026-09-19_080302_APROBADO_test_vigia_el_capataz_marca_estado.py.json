@@ -1,0 +1,27 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El material trae leer_lista y marcar_estado de cuerpo/capataz.py, que derivan la ruta de memoria/ORDENES.json desde __file__, asi que la vigia puede aislarse con monkeypatch de __file__ a un tmp_path.",
+  "archivo": "vigias/test_vigia_el_capataz_marca_estado.py",
+  "texto_nuevo": "\"\"\"Vigia: el capataz marca el estado de una orden y lo deja escrito.\n\nComprueba tres cosas de cuerpo/capataz.py:\n  1. marcar_estado cambia estado, paso_fallido y fallos_seguidos de una orden.\n  2. marcar_estado limpia paso_fallido y fallos_seguidos cuando se le pide.\n  3. marcar_estado devuelve False con una orden que no existe y no toca el archivo.\n\nNunca toca el ORDENES.json real: cada prueba apunta __file__ a un tmp_path.\n\"\"\"\n\nimport json\nimport os\n\nimport pytest\n\nfrom cuerpo import capataz\n\n\ndef _preparar(tmp_path, monkeypatch, ordenes):\n    \"\"\"Aisla el modulo en un tmp_path y escribe un ORDENES.json de prueba.\n\n    Devuelve la ruta del ORDENES.json de prueba.\n    \"\"\"\n    monkeypatch.setattr(capataz, \"__file__\", str(tmp_path / \"cuerpo\" / \"capataz.py\"))\n    carpeta_memoria = tmp_path / \"memoria\"\n    carpeta_memoria.mkdir(parents=True, exist_ok=True)\n    ruta = carpeta_memoria / \"ORDENES.json\"\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(ordenes, f, indent=2, ensure_ascii=False)\n    return ruta\n\n\ndef _leer(ruta):\n    with open(ruta, encoding=\"utf-8\") as f:\n        return json.load(f)\n\n\ndef test_marcar_estado_escribe_estado_paso_y_fallos(tmp_path, monkeypatch):\n    \"\"\"Con una orden 'X1' pendiente, marcar 'hecha' devuelve True y queda escrito.\"\"\"\n    ruta = _preparar(\n        tmp_path,\n        monkeypatch,\n        [{\"id\": \"X1\", \"estado\": \"pendiente\", \"paso_fallido\": \"\", \"fallos_seguidos\": 0}],\n    )\n\n    resultado = capataz.marcar_estado(\"X1\", \"hecha\", \"vigia_verde\", 2)\n\n    assert resultado is True\n    lista = _leer(ruta)\n    orden = [o for o in lista if o.get(\"id\") == \"X1\"][0]\n    assert orden[\"estado\"] == \"hecha\"\n    assert orden[\"paso_fallido\"] == \"vigia_verde\"\n    assert orden[\"fallos_seguidos\"] == 2\n\n\ndef test_marcar_estado_limpia_paso_y_fallos(tmp_path, monkeypatch):\n    \"\"\"Despues de marcar 'hecha', volver a 'pendiente' limpia paso_fallido y fallos.\"\"\"\n    ruta = _preparar(\n        tmp_path,\n        monkeypatch,\n        [{\"id\": \"X1\", \"estado\": \"pendiente\", \"paso_fallido\": \"\", \"fallos_seguidos\": 0}],\n    )\n\n    assert capataz.marcar_estado(\"X1\", \"hecha\", \"vigia_verde\", 2) is True\n    assert capataz.marcar_estado(\"X1\", \"pendiente\", \"\", 0) is True\n\n    lista = _leer(ruta)\n    orden = [o for o in lista if o.get(\"id\") == \"X1\"][0]\n    assert orden[\"estado\"] == \"pendiente\"\n    assert orden[\"paso_fallido\"] == \"\"\n    assert orden[\"fallos_seguidos\"] == 0\n\n\ndef test_marcar_estado_con_id_inexistente_no_toca_el_archivo(tmp_path, monkeypatch):\n    \"\"\"Con un id que no existe devuelve False y el archivo queda igual byte a byte.\"\"\"\n    ruta = _preparar(\n        tmp_path,\n        monkeypatch,\n        [{\"id\": \"X1\", \"estado\": \"pendiente\", \"paso_fallido\": \"\", \"fallos_seguidos\": 0}],\n    )\n    with open(ruta, \"rb\") as f:\n        antes = f.read()\n\n    resultado = capataz.marcar_estado(\"NO_EXISTE\", \"hecha\")\n\n    assert resultado is False\n    with open(ruta, \"rb\") as f:\n        despues = f.read()\n    assert despues == antes\n"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Unico detalle: `import os` queda sin usar en el archivo nuevo; es una mancha de higiene, no afecta a nada y no bloquea (regla 7: forma no se rechaza)."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno. El material declara 'Nadie depende de estas piezas. Reparacion aislada' y la vigia aísla cada prueba con monkeypatch de __file__ sobre tmp_path, asi que jamás toca el ORDENES.json real ni otra pieza."
+  ],
+  "que_falta": [
+   "Nada para el obrero: el material le entregó las tres llamadas exactas (marcar_estado('X1','hecha','vigia_verde',2); marcar_estado('X1','pendiente','',0); marcar_estado('NO_EXISTE','hecha')) y el esquema de aislamiento, y la propuesta respeta ambas cosas. Nota de auditor: la ejecución real (pytest) no puede correrse aqui porque el paquete no trae el codigo de cuerpo/capataz.py, pero eso es falta del repartidor, no invencion del obrero."
+  ],
+  "resumen_para_el_jefe": "La vigia nueva es una copia fiel del encargo: hace las tres pruebas exactas con la firma y el aislamiento que el material mandaba, no inventa nada que no exista y no puede tocar el proyecto real."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

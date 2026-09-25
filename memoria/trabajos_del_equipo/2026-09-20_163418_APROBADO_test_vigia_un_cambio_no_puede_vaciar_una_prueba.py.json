@@ -1,0 +1,27 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "No existe el archivo vigia que frene cambios que vacian el cuerpo de una prueba; hay que crearlo importando revisor_de_programa desde la carpeta arnes y probar los dos casos (cuerpo vaciado y cuerpo cambiado).",
+  "archivo": "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+  "texto_nuevo": "\"\"\"Vigia: un cambio no puede vaciar el cuerpo de una prueba ya guardada.\n\nEl 2026-09-20 un cambio del equipo se comio el cuerpo entero de una prueba\nque ya estaba guardada y la dejo con su docstring y nada mas. Una prueba sin\ncuerpo PASA SIEMPRE, asi que nadie se entera: el candado sigue en su sitio\npero ya no vigila nada.\n\nEste vigia exige que el revisor de programa frene ese cambio gratis, antes de\naplicarlo. Nace ROJO: mientras el revisor no detecte el cuerpo vaciado, la\nprimera prueba falla.\n\"\"\"\n\nimport os\nimport sys\n\n# Raiz del proyecto: dos dirname sobre el abspath de este propio archivo.\n_RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n_ARNES = os.path.join(_RAIZ, \"arnes\")\n\nfor _ruta in (_RAIZ, _ARNES):\n    if _ruta not in sys.path:\n        sys.path.insert(0, _ruta)\n\nimport revisor_de_programa  # noqa: E402\n\n\n# Texto de la prueba de mentira: docstring de una linea y dos renglones de\n# cuerpo (una asignacion y un assert sobre esa variable).\n_CABEZA = 'def test_algo():\\n    \"\"\"Una prueba de mentira.\"\"\"\\n'\n_CUERPO_VIEJO = \"    numero = 1\\n    assert numero == 1\\n\"\n_CUERPO_NUEVO = \"    numero = 2\\n    assert numero == 2\\n\"\n\n\ndef _escribir_prueba_de_mentira(tmp_path, cuerpo):\n    \"\"\"Escribe prueba_de_mentira.py en tmp_path y devuelve su ruta.\"\"\"\n    ruta = tmp_path / \"prueba_de_mentira.py\"\n    ruta.write_text(_CABEZA + cuerpo, encoding=\"utf-8\")\n    return str(ruta)\n\n\ndef test_un_cambio_no_puede_vaciar_una_prueba(tmp_path):\n    \"\"\"Un cambio que deja la prueba sin cuerpo tiene que frenarse.\"\"\"\n    ruta = _escribir_prueba_de_mentira(tmp_path, _CUERPO_VIEJO)\n\n    propuesta = {\n        \"archivo\": ruta,\n        \"texto_viejo\": _CUERPO_VIEJO,\n        \"texto_nuevo\": \"\",\n    }\n    tarea = \"cambiar el cuerpo de la prueba\"\n\n    resultado = revisor_de_programa.revisar(propuesta, tarea)\n\n    assert isinstance(resultado, list) and resultado, (\n        \"Un cambio dejo una prueba sin cuerpo y el revisor no dijo nada. \"\n        \"Una prueba sin cuerpo pasa siempre, asi que el candado deja de \"\n        \"vigilar sin que nadie lo note.\"\n    )\n    assert any(\"sin cuerpo\" in str(texto) for texto in resultado), (\n        \"Un cambio dejo una prueba sin cuerpo y el revisor no lo nombro. \"\n        \"Una prueba sin cuerpo pasa siempre, asi que el candado deja de \"\n        \"vigilar sin que nadie lo note.\"\n    )\n\n\ndef test_un_cambio_que_conserva_el_cuerpo_no_se_frena(tmp_path):\n    \"\"\"Un cambio que solo cambia el numero no puede frenarse.\"\"\"\n    ruta = _escribir_prueba_de_mentira(tmp_path, _CUERPO_VIEJO)\n\n    propuesta = {\n        \"archivo\": ruta,\n        \"texto_viejo\": _CUERPO_VIEJO,\n        \"texto_nuevo\": _CUERPO_NUEVO,\n    }\n    tarea = \"cambiar el cuerpo de la prueba\"\n\n    resultado = revisor_de_programa.revisar(propuesta, tarea)\n\n    assert not any(\"sin cuerpo\" in str(texto) for texto in resultado), (\n        \"Se esta frenando un cambio bueno: el cuerpo sigue estando. Eso \"\n        \"quema una vuelta entera sin arreglar nada.\"\n    )\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta crea un nuevo archivo vigia para prevenir que cambios vacíen el cuerpo de una prueba, cumpliendo con el diagnóstico y sin inventar ni romper nada."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,27 @@
+{
+  "orden": {
+    "id": "16",
+    "titulo": "La vigia de que el registro del candado no miente",
+    "origen": "punto 4 del plan v4 (reparar los candados que frenan en falso), medido el 2026-09-20",
+    "repara": "hoy no se puede saber que candado frena en falso porque el registro marca FRENO tambien cuando deja pasar: en 3 dias, 714 lineas de 'documento libre' y 263 de 'veredicto del equipo cubre el archivo' estan apuntadas como frenos y las dos devuelven adelante. Decidir con esos numeros es decidir con datos sucios",
+    "pieza": "vigias/test_vigia_el_registro_del_candado_no_miente.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_registro_del_candado_no_miente.py. Vigila la funcion _apuntar_frenada de arnes/candado_equipo.py, que es la que escribe el registro de decisiones. Hoy esa funcion escribe la palabra FRENO en todas las lineas salvo cuando el motivo empieza por DEJO PASAR. Dos pruebas: con el motivo documento libre la linea del registro tiene que decir DEJO PASAR, y con el motivo veredicto del equipo cubre el archivo tambien. Las dos son decisiones que dejan pasar. Usa monkeypatch sobre la funcion _ruta_sin_equipo y sobre la ruta del registro para escribir en una carpeta temporal y no ensuciar el registro de verdad. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_registro_del_candado_no_miente.py",
+    "entrega_la_prueba": "si",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "primer intento perdido el 2026-09-20: el encargo describia la pieza en vez de nombrarla y el obrero contesto que no la encontraba, cuatro veces. Reescrito con el nombre exacto de la funcion."
+  },
+  "huella": "76d505ec10bb4602",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_212007_SIN_VEREDICTO_test_vigia_el_registro_del_candado_no_miente.py.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : GPT-OSS 120B (Groq) no le cabe (26102 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (26867 letras, aguanta 19042) -> se le salta\n  diagnostico : La vigia nueva no existe y hay que crearla para probar que _apuntar_frenada escribe DEJO PASAR cuando el motivo es 'documento libre' o 'veredicto del equipo cubre el archivo', usando monkeypatch sobre _ruta_sin_equipo y sobre la ruta del registro para no ensuciar el registro real.\n  toca        : vigias/test_vigia_el_registro_del_candado_no_miente.py funcion _apuntar_frenada (en arnes/candado_equipo.py) — la vigia nueva se llama test_vigia_el_registro_del_candado_no_miente.py\n  confianza   : media\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T21:24:51"
+}

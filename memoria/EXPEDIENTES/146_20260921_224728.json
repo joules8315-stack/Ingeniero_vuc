@@ -1,0 +1,60 @@
+{
+  "orden": {
+    "id": "146",
+    "titulo": "La vigia del cierre: una orden que corrige su propia prueba tambien espera",
+    "origen": "medido el 2026-09-21 (A-43): la regla de las ordenes 144-145 salio demasiado dura. El cierre no sabe que tarea se esta guardando, y ahora frena por pruebas rojas con razon que su propia orden va a corregir (89: test_vigia_el_loop_del_pit; 18: test_vigia_no_se_pisa_el_trabajo_apartado). El hueco de la orden 136 solo existe al GUARDAR la tarea que corre ahora, y eso lo ve el guardia (143, con INGENIERO_ETIQUETA)",
+    "repara": "el cierre frena por pruebas que esperan su arreglo, sin forma honrada de satisfacerlo",
+    "pieza": "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia cambia antes que el cambio, y queda roja",
+    "encargo": "En vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py, la funcion test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare se cambia entera por test_orden_que_corrige_su_propia_prueba_tambien_espera: el mismo cuerpo, con el texto de ayuda 'Una orden pendiente que corrige su propia prueba tambien espera: el cierre no sabe que tarea se guarda ahora, eso lo mira el guardia (medido 2026-09-21)', y el assert final pasa a ser assert verde is True, detalle. Es UN solo cambio. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "0e3be639a9d65e39",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_224728_APROBADO_test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : el revisor de programa freno antes de pagar la revision: DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 pieza(s) que si estaban en el viejo: test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare. Si ese borrado es querido, hay qu\n  aviso       : el revisor de programa freno antes de pagar la revision: DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 pieza(s) que si estaban en el viejo: test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare. Si ese borrado es querido, hay qu\n  aviso       : el revisor de programa freno antes de pagar la revision: DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 pieza(s) que si estaban en el viejo: test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare. Si ese borrado es querido, hay qu\n  diagnostico : La funcion test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare debe renombrarse y cambiar su texto de ayuda y su assert final, sin perder nada de lo que ya estaba.\n  toca        : vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py funcion test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : El cambio coincide exactamente con el encargo del material ('El texto de ayuda y el assert se pasan a True'), el texto viejo que dice tocar aparece literalmente, no usa nada que no exista y no toca ningún vecino: se aprueba.\n\nEL EQUIPO NO APROBO (RECHAZADO_POR_EL_PROGRAMA): NO se guardo llave, no se puede tocar codigo.\n\nEL REVISOR DE PROGRAMA FRENA (gratis, sin ninguna IA):\n   - DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 pieza(s) que si estaban en el viejo: test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare. Si ese borrado es querido, hay que decirlo por escrito; si no, es trabajo que se pierde en silencio, que fue lo que paso el 2026-09-11.\nNO se abre la puerta de escribir. El trabajo queda guardado.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T22:47:28",
+  "analisis": {
+    "que_paso": "El equipo (deepseek escribe, bigpickle revisa) APROBO el cambio de la orden 146 —renombrar la funcion test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare a test_orden_que_corrige_su_propia_prueba_tambien_espera—, pero el revisor de programa freno GRATIS, antes de pagar la revision de IA, con 'DESAPARECE LO QUE YA ESTABA': la funcion vieja se pierde. No se guardo llave y no se toco codigo (RECHAZADO_POR_EL_PROGRAMA).",
+    "causa_raiz": "El chequeo #5 del revisor_de_programa.py lista los nombres de funcion/clase del texto viejo que ya no estan en el nuevo y frena si alguno falta. Un renombre honrado ES exactamente eso: el nombre viejo desaparece y aparece uno nuevo. El propio comentario del candado promete 'SI es querido borrarlos, se dice y se sigue', pero NO existe ninguna ruta en el codigo que lea esa declaracion escrita: ni mira el encargo ('se cambia entera por...'), ni ningun campo. Por eso el chequeo dispara SIEMPRE ante un renombre y hace imposible cumplir la orden 146 por via honrada.",
+    "donde": "arnes/revisor_de_programa.py — chequeo #5 'DESAPARECE LO QUE YA ESTABA', bloque que calcula 'perdidas' y arma el fallo (aprox. lineas 653-661).",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "arnes/revisor_de_programa.py",
+        "texto": "quedan = _piezas(arbol)\n                perdidas = [n for n in _piezas(arbol_viejo) if n not in quedan]\n                if perdidas:\n                    fallos.append(\n                        \"DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante %d \"\n                        \"pieza(s) que si estaban en el viejo: %s. Si ese borrado es querido, \"\n                        \"hay que decirlo por escrito; si no, es trabajo que se pierde en \"\n                        \"silencio, que fue lo que paso el 2026-09-11.\""
+      },
+      {
+        "archivo": "arnes/revisor_de_programa.py",
+        "texto": "# texto y se dice cuales estaban y ya no estan. SI es querido borrarlos, se dice y se\n        # sigue; lo que no puede pasar es que se pierdan en silencio."
+      },
+      {
+        "archivo": "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py",
+        "texto": "def test_orden_que_edita_la_propia_prueba_hace_que_el_cierre_pare(monkeypatch, tmp_path):"
+      }
+    ],
+    "no_volver_a": "Un renombre pedido por escrito no puede tratarse como borrado en silencio: el revisor debe reconocer la intencion declarada en el encargo antes de frenar por una pieza que desaparece.",
+    "tarea_nueva": {
+      "repara": "el revisor de programa frena renombres ordenados por escrito porque los cuenta como borrado en silencio",
+      "pieza": "arnes/revisor_de_programa.py",
+      "razon": "el chequeo #5 no reconoce el renombre ni lee la declaracion de borrado que su propio comentario promete honrar",
+      "encargo": "En arnes/revisor_de_programa.py, en el chequeo #5 (DESAPARECE LO QUE YA ESTABA), antes de acusar por una pieza 'perdida' comprobar si el encargo (la variable 'tarea') declara por escrito el borrado o renombre de esa pieza: p. ej. que el texto contenga el nombre viejo junto a un verbo de cambio como 'se cambia entera por', 'renombra', 'se quita' o 'se reemplaza'. Si la intencion esta escrita, esa pieza no cuenta como perdida y no se frena. Anadir la vigia que lo prueba con el caso real de la orden 146. Es un solo cambio, no tocar otros archivos.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Las citas muestran que existe el chequeo de piezas perdidas y su comentario, pero ninguna prueba que falte la ruta para leer esa declaracion escrita ni que dispare siempre ante un renombre honrado.",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\146_20260921_224728.json"
+  }
+}

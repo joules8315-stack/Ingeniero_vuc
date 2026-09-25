@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El bloque que re-escribe un archivo existente cuando la propuesta trae el documento entero (codigo/texto_nuevo) y NO trae texto_viejo esta encerrado tras la marca propuesta.get('crear'), asi que sin esa marca cae al camino de modificar y frena con 'La propuesta no trae texto_viejo'.",
+  "archivo": "cuerpo/aplicador.py",
+  "funcion": "aplicar_cambio",
+  "texto_viejo": "    # 2026-09-22: crear=true con contenido y sin texto_viejo sobre un archivo que YA existe:\n    # si es identico no se toca el disco; si difiere se sobreescribe entero (validando .py).\n    if propuesta.get(\"crear\") and not texto_viejo:",
+  "texto_nuevo": "    # 2026-09-22: contenido entero (codigo o texto_nuevo) y sin texto_viejo sobre un archivo\n    # que YA existe: si es identico no se toca el disco; si difiere se sobreescribe entero\n    # (validando .py). La marca 'crear' ya no es obligatoria: el obrero puede mandar el\n    # documento entero sin texto_viejo y se re-escribe igual. Lo vigila\n    # vigias/test_vigia_aplicador.py.\n    if not texto_viejo and (codigo or texto_nuevo):",
+  "cambios": "",
+  "cambio": "Quitar la condicion propuesta.get(\"crear\") del bloque que re-escribe el archivo entero cuando no hay texto_viejo, dejando que dispare siempre que haya codigo o texto_nuevo. El camino de modificar por trozos (cuando SI hay texto_viejo) queda intacto porque este bloque solo se activa con 'not texto_viejo'.",
+  "codigo": "    if not texto_viejo and (codigo or texto_nuevo):\n        contenido_propuesto = codigo if codigo else texto_nuevo\n        if not contenido_propuesto:\n            _apuntar_log(False, archivo, funcion, \"crear sin contenido\")\n            return False, \"La propuesta no trae contenido para crear.\"\n        if contenido == contenido_propuesto:\n            _apuntar_log(True, archivo, funcion, \"archivo ya existe identico\")\n            return True, \"El archivo ya existe identico; nada que aplicar.\"\n        dir_archivo = os.path.dirname(archivo) or \".\"\n        fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix=\".tmp\")\n        try:\n            with os.fdopen(fd, \"w\", encoding=\"utf-8\") as f:\n                f.write(contenido_propuesto)\n            if archivo.endswith(\".py\"):\n                try:\n                    with open(tmp_path, \"r\", encoding=\"utf-8-sig\") as f:\n                        ast.parse(f.read())\n                except SyntaxError as e:\n                    os.remove(tmp_path)\n                    _apuntar_log(False, archivo, funcion, f\"sintaxis rota: {e}\")\n                    return False, f\"El cambio deja el codigo roto (renglon {e.lineno}): {e.msg}\"\n            os.replace(tmp_path, archivo)\n            _apuntar_log(True, archivo, funcion, \"archivo recreado\")\n            return True, \"Archivo recreado.\"\n        except Exception as e:\n            if os.path.exists(tmp_path):\n                os.remove(tmp_path)\n            _apuntar_log(False, archivo, funcion, f\"error al aplicar: {e}\")\n            return False, f\"Error al aplicar el cambio: {e}\"",
+  "vigia": "Una propuesta de crear (solo codigo/texto_nuevo, sin texto_viejo) sobre un archivo que YA existe debe re-escribirlo y devolver ok. Nace roja antes del cambio: con el codigo actual, esa propuesta cae al camino de modificar y devuelve False con 'La propuesta no trae texto_viejo'.",
+  "puede_danar": [
+   "arnes/copista.py",
+   "cerebro/protocolo.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_aplicador.py",
+   "vigias/test_vigia_dudas.py",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_respuestas.py",
+   "vigias/test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "copista.py",
+   "protocolo.py",
+   "test_vigia_aplicador.py",
+   "test_vigia_dudas.py",
+   "test_vigia_memoria_completa.py",
+   "test_vigia_respuestas.py",
+   "test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio elimina la condición 'crear' y permite reescribir el archivo cuando solo se envía el contenido completo, cumpliendo el diagnóstico sin introducir errores ni afectar a módulos vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (33148 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "GPT-OSS 120B (Groq) no le cabe (33903 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "Codex termino con codigo 1: OpenAI Codex v0.155.1\n--------\nworkdir: C:\\Ingeniero_VUC\nmodel: gpt-6-astra\nprovider: openai\napproval: never\nsandbox: read-only\nreasoning effort: low\nreasoning summaries: none\nsession id: 01a0ca22-debc-7902-89f7-7c601e83c36b\n--------\nuser\nEres el AUDITOR. Otro modelo propuso una reparacion. Tu traba",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "GPT-OSS 120B (Groq) no le cabe (34024 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "Codex termino con codigo 1: OpenAI Codex v0.155.1\n--------\nworkdir: C:\\Ingeniero_VUC\nmodel: gpt-6-astra\nprovider: openai\napproval: never\nsandbox: read-only\nreasoning effort: low\nreasoning summaries: none\nsession id: 01a0ca27-2fcb-7130-a053-de732293eb3c\n--------\nuser\nEres el AUDITOR. Otro modelo propuso una reparacion. Tu traba",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 3"
+ ]
+}

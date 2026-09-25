@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py, dentro de la funcion bucle, la comprobacion que frena por paso que no cuadra es demasiado amplia: frena por cualquier paso que no cuadre, incluidos pasos que el guardia ya cubre al guardar, y tumba cuatro vigias del propio pit que usan ordenes de mentira; el agujero real es que una tarea se de por terminada con su PRUEBA en rojo.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "                terminada = la_tarea_esta_terminada(orden)\n                if isinstance(terminada, dict) and terminada.get('ok') is False:\n                    aviso('SIN_TERMINAR ' + orden_id + ' ' + str(terminada.get('razon')))\n                    marcar_estado(orden.get('id'), 'fallida', terminada.get('paso'), (orden.get('fallos_seguidos') or 0) + 1)\n                    continue",
+  "texto_nuevo": "                terminada = la_tarea_esta_terminada(orden)\n                if isinstance(terminada, dict) and terminada.get('ok') is False and terminada.get('paso') == 'vigia_verde':\n                    aviso('SIN_TERMINAR ' + orden_id + ' ' + str(terminada.get('razon')))\n                    marcar_estado(orden.get('id'), 'fallida', terminada.get('paso'), (orden.get('fallos_seguidos') or 0) + 1)\n                    continue",
+  "cambio": "En la linea que decide si se frena dentro de bucle, ademas de pedir que la clave ok sea exactamente False, pedir tambien que la clave paso valga exactamente vigia_verde. El resto del bloque se queda igual.",
+  "codigo": "                terminada = la_tarea_esta_terminada(orden)\n                if isinstance(terminada, dict) and terminada.get('ok') is False and terminada.get('paso') == 'vigia_verde':\n                    aviso('SIN_TERMINAR ' + orden_id + ' ' + str(terminada.get('razon')))\n                    marcar_estado(orden.get('id'), 'fallida', terminada.get('paso'), (orden.get('fallos_seguidos') or 0) + 1)\n                    continue",
+  "vigia": "Una vigia que ejecute bucle con una orden cuyo resultado de la_tarea_esta_terminada devuelva ok False y paso distinto de vigia_verde (por ejemplo 'aplicada' o 'prueba_real') y compruebe que NO se marca como fallida ni se avisa SIN_TERMINAR; y otra que con paso 'vigia_verde' compruebe que SI se frena.",
+  "puede_danar": [
+   "cuerpo/capataz.py::bucle",
+   "las cuatro vigias del propio pit que usan ordenes de mentira",
+   "la_tarea_esta_terminada"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion es correcta y cumple con el diagnostico sin introducir errores."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,62 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta la regla 4b (orden de Julio A-38, tarea E-3) justo antes del comentario '# 5 — DESAPARECE LO QUE YA ESTABA.' en la funcion revisar de arnes/revisor_de_programa.py.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        # 5 — DESAPARECE LO QUE YA ESTABA. EL AGUJERO MEDIDO EL 2026-09-11: este revisor",
+  "texto_nuevo": "        # 4b — ORDEN DE JULIO A-38, TAREA E-3: el archivo tiene que seguir cargando; solo\n        # frena si antes cargaba, para no frenar en falso.\n        try:\n            if contenido_archivo is not None and str(p.get('archivo') or '').endswith('.py') and viejo and viejo in contenido_archivo and not no_carga(contenido_archivo):\n                fallos.extend(no_carga(contenido_archivo.replace(viejo, nuevo, 1)))\n        except Exception:\n            pass\n\n        # 5 — DESAPARECE LO QUE YA ESTABA. EL AGUJERO MEDIDO EL 2026-09-11: este revisor",
+  "cambio": "Insertar, justo antes del comentario '# 5 — DESAPARECE LO QUE YA ESTABA.', un comentario corto y el bloque try/except con la regla 4b que comprueba que el archivo sigue cargando tras el cambio, usando la funcion no_carga que ya existe en el archivo.",
+  "codigo": "        # 4b — ORDEN DE JULIO A-38, TAREA E-3: el archivo tiene que seguir cargando; solo\n        # frena si antes cargaba, para no frenar en falso.\n        try:\n            if contenido_archivo is not None and str(p.get('archivo') or '').endswith('.py') and viejo and viejo in contenido_archivo and not no_carga(contenido_archivo):\n                fallos.extend(no_carga(contenido_archivo.replace(viejo, nuevo, 1)))\n        except Exception:\n            pass",
+  "vigia": "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py: comprueba que revisar frena cuando el cambio deja el archivo sin cargar y no frena cuando el archivo ya venia sin cargar.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "arnes/asignador.py",
+   "vigias/test_vigia_el_archivo_carga.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+   "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "candado_equipo.py",
+   "test_vigia_el_archivo_carga.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "La función `no_carga` es utilizada en la propuesta, pero no se encuentra definida ni en el material original ni en el código proporcionado para la reparación. Esto constituye un uso de una función inexistente."
+  ],
+  "fallos": [
+   "La reparación intenta utilizar la función `no_carga` que no existe en el código proporcionado ni en el material original. Esto es un invento grave ya que se basa en una dependencia inexistente."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación falla porque intenta usar una función inexistente (`no_carga`), lo que la hace inviable."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (37007 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso gemini2",
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 4"
+ ]
+}

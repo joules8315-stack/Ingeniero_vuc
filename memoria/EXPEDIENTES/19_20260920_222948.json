@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "19",
+    "titulo": "No se pierde el trabajo apilado",
+    "origen": "limite medido el 2026-09-20 al recoger los pedazos",
+    "repara": "la copia apartada usa siempre el mismo nombre, asi que un segundo freno sobre la misma pieza borra en silencio el trabajo aprobado anterior",
+    "pieza": "arnes/candado_equipo.py",
+    "depende": [
+      "18"
+    ],
+    "modo": "IA",
+    "razon": "perder trabajo ya aprobado es el peor desperdicio: se pago y se tira",
+    "encargo": "En arnes/candado_equipo.py, dentro de la funcion volver_atras, la copia de la pieza se guarda siempre con el mismo nombre acabado en .FRENADO_POR_EL_GUARDIA, asi que una segunda frenada de la misma pieza borra la primera. Cambialo para que, si en el destino ya existe una copia de esa pieza, se le agregue un numero al final y queden las dos. Nunca se borra nada. Vale para los dos caminos de la funcion, el de la pieza que ya estaba guardada y el de la pieza nueva. No toques ningun otro archivo. Aviso: el primer camino (la pieza que ya estaba guardada) YA esta hecho y numerado; falta SOLO el segundo camino, el de la pieza nueva, donde se usa os.replace.",
+    "vigia": "vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py",
+    "sabotaje": "memoria/sabotajes/no_se_pisa_el_trabajo_apartado.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "medio hecha: el equipo solo cambia un trozo por ronda, asi que el primer camino entro y el segundo falta."
+  },
+  "huella": "449ffc77475a3f7e",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_222501_SIN_VEREDICTO_candado_equipo.py.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : GPT-OSS 120B (Groq) no le cabe (30362 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.\n  aviso       : GPT-OSS 120B (Groq) no le cabe (31158 letras, aguanta 19042) -> se le salta\n  diagnostico : En el segundo camino de volver_atras (pieza nueva), os.replace mueve el archivo al destino .FRENADO_POR_EL_GUARDIA sin numerar, asi que una segunda frenada de la misma pieza pisa la copia anterior.\n  toca        : arnes/candado_equipo.py funcion volver_atras\n  confianza   : alta\n  PREGUNTA_REQUERIDA: El material ya muestra el segundo camino (pieza nueva) con la numeracion puesta antes de os.replace. ¿Se confirma que el material entregado es el estado actual del archivo, o hay una version distinta donde el segundo camino aun no tiene la numeracion?\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T22:29:48",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: Ya terminé el análisis del perito (el JSON de arriba es la respuesta completa y no lleva jerga).\n\nSobre los avisos que aparecen al cerrar, te cuento en simple y sin hacer nada por mi cuenta, porque es",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\19_20260920_222948.json"
+  }
+}

@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la funcion recoger_lo_frenado en cuerpo/capataz.py, justo antes de armar_expediente, que devuelva a su sitio la copia apartada en memoria/trabajos_sin_revisar con final .FRENADO_POR_EL_GUARDIA.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "armar_expediente",
+  "texto_viejo": "def armar_expediente(orden, resultado):\n    \"\"\"Junta en un dict lo que el perito necesita para analizar el fallo sin usar su memoria.\"\"\"",
+  "texto_nuevo": "def recoger_lo_frenado(orden, raiz):\n    \"\"\"Devuelve a su sitio la copia buena que el guardia dejo apartada en memoria/trabajos_sin_revisar con el final .FRENADO_POR_EL_GUARDIA.\"\"\"\n    try:\n        if not raiz:\n            raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        pieza = orden.get('pieza') if isinstance(orden, dict) else ''\n        if not pieza:\n            return {'ok': False, 'razon': 'la orden no dice que pieza toca'}\n        nombre = os.path.basename(pieza) + '.FRENADO_POR_EL_GUARDIA'\n        from arnes import recoger_los_pedazos\n        return recoger_los_pedazos.recoger(raiz, nombre)\n    except Exception as e:\n        return {'ok': False, 'razon': str(e)}\n\n\ndef armar_expediente(orden, resultado):\n    \"\"\"Junta en un dict lo que el perito necesita para analizar el fallo sin usar su memoria.\"\"\"",
+  "cambio": "Insertar la funcion recoger_lo_frenado justo antes de la linea que empieza la funcion armar_expediente, sin tocar nada mas.",
+  "codigo": "def recoger_lo_frenado(orden, raiz):\n    \"\"\"Devuelve a su sitio la copia buena que el guardia dejo apartada en memoria/trabajos_sin_revisar con el final .FRENADO_POR_EL_GUARDIA.\"\"\"\n    try:\n        if not raiz:\n            raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        pieza = orden.get('pieza') if isinstance(orden, dict) else ''\n        if not pieza:\n            return {'ok': False, 'razon': 'la orden no dice que pieza toca'}\n        nombre = os.path.basename(pieza) + '.FRENADO_POR_EL_GUARDIA'\n        from arnes import recoger_los_pedazos\n        return recoger_los_pedazos.recoger(raiz, nombre)\n    except Exception as e:\n        return {'ok': False, 'razon': str(e)}",
+  "vigia": "Un test que llame a recoger_lo_frenado con una orden sin pieza y compruebe que devuelve ok en falso con razon en espanol, y con una orden con pieza compruebe que llama a arnes.recoger_los_pedazos.recoger con la raiz y el nombre basename(pieza)+'.FRENADO_POR_EL_GUARDIA'.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "arnes/recoger_los_pedazos.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "recoger_los_pedazos.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La función requerida se añadió correctamente antes de armar_expediente, sin usar elementos inexistentes ni romper código vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (26944 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'trabajos_sin_revisar' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "GPT-OSS 120B (Groq) no le cabe (28437 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 2"
+ ]
+}

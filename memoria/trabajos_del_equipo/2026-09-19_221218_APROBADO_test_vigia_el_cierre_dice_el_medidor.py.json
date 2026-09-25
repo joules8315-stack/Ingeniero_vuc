@@ -1,0 +1,30 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "No existe la vigia pedida; hay que crearla leyendo arnes/candado_cierre.py como texto y comprobando que nombra medidor_de_rondas y contar, sin ejecutar nada.",
+  "archivo": "vigias/test_vigia_el_cierre_dice_el_medidor.py",
+  "texto_nuevo": "#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n\"\"\"vigias/test_vigia_el_cierre_dice_el_medidor.py — EL MEDIDOR DE RONDAS NACE CONECTADO.\n\nJulio, 2026-09-08 (Regla 6 del contrato de crear pieza nueva):\n\n    \"Por que siguen cosas desconectadas, y lo mejor, POR QUE NACEN DESCONECTADAS.\n     Legisla: nada puede crearse y quedar huerfano.\"\n\n    \"La pieza no esta terminada hasta que algo la llama.\"\n\nQUE VIGILA ESTA VIGIA\n---------------------\nQue el medidor de rondas NO nazca huerfano: que el candado de cierre lo nombre de verdad\nen su codigo, y que nombre tambien la funcion que usa (contar). Una pieza que existe pero\nque nadie llama no sirve de nada: es exactamente el fallo medido el 2026-09-08, cuando\n25 de 38 contratos y 11 habilidades estaban escritos y con CERO llamadas.\n\nCOMO LO COMPRUEBA (sin ejecutar nada, solo leyendo texto)\n--------------------------------------------------------\nPRUEBA 1: se lee arnes/candado_cierre.py como texto y se comprueba que aparece la palabra\n          medidor_de_rondas.\nPRUEBA 2: en ese mismo texto se comprueba que aparece tambien la palabra contar, que es la\n          funcion del medidor que se usa.\n\nLa ruta del archivo vigilado se arma desde la carpeta de esta propia vigia: se sube un\nnivel (la raiz del proyecto) y se entra en arnes. Asi la vigia funciona aunque el proyecto\nse mueva de sitio.\n\nLas dos pruebas leen el archivo con codificacion utf-8 y con errors puesto en replace, para\nque un byte raro no tumbe la lectura.\n\"\"\"\n\nimport os\n\n\n# La carpeta de esta vigia (vigias/), su padre es la raiz del proyecto.\nAQUI = os.path.dirname(os.path.abspath(__file__))\nRAIZ = os.path.dirname(AQUI)\nCANDADO_CIERRE = os.path.join(RAIZ, \"arnes\", \"candado_cierre.py\")\n\n\ndef _leer_candado_cierre():\n    \"\"\"Lee arnes/candado_cierre.py entero como texto.\n\n    Se lee con utf-8 y errors='replace' para que ningun byte raro impida la lectura:\n    lo que se comprueba es que el texto NOMBRA al medidor, no que el archivo sea bonito.\n    \"\"\"\n    with open(CANDADO_CIERRE, \"r\", encoding=\"utf-8\", errors=\"replace\") as f:\n        return f.read()\n\n\ndef test_el_cierre_nombra_al_medidor_de_rondas():\n    \"\"\"PRUEBA 1: el candado de cierre nombra al medidor de rondas.\n\n    Si el candado de cierre no nombra al medidor, el medidor nace huerfano: existe el\n    archivo pero nadie lo llama. Una pieza que nadie llama no sirve de nada.\n    \"\"\"\n    texto = _leer_candado_cierre()\n    assert \"medidor_de_rondas\" in texto, (\n        \"El candado de cierre (arnes/candado_cierre.py) NO nombra al medidor de rondas \"\n        \"(no aparece 'medidor_de_rondas'). Una pieza que nadie llama no sirve de nada: \"\n        \"el medidor nace huerfano y al terminar nadie dice en voz alta cuanto se perdio.\"\n    )\n\n\ndef test_el_cierre_usa_la_funcion_contar_del_medidor():\n    \"\"\"PRUEBA 2: el candado de cierre usa la funcion contar del medidor.\n\n    No basta con nombrar la pieza: hay que usar su funcion. Si no aparece 'contar', el\n    medidor esta escrito pero su funcion no se llama desde el flujo.\n    \"\"\"\n    texto = _leer_candado_cierre()\n    assert \"contar\" in texto, (\n        \"El candado de cierre (arnes/candado_cierre.py) NO usa la funcion 'contar' del \"\n        \"medidor de rondas. Nombrar la pieza no es conectarla: si su funcion no se llama, \"\n        \"el medidor sigue huerfano y al terminar nadie dice cuanto se perdio.\"\n    )\n\n\nif __name__ == \"__main__\":\n    test_el_cierre_nombra_al_medidor_de_rondas()\n    test_el_cierre_usa_la_funcion_contar_del_medidor()\n    print(\"VIGIA VERDE: el candado de cierre nombra al medidor de rondas y usa contar.\")\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La cita del docstring dice 'Regla 6 del contrato de crear pieza nueva', pero el material solo muestra hasta la Regla 4 (el contrato completo tiene 250 lineas y llega recortado), asi que no es verificable. Es narrativo, no afecta la funcion y no es motivo de rechazo."
+  ],
+  "riesgo_vecinos": [
+   "No toca ningun archivo existente: solo crea vigias/test_vigia_el_cierre_dice_el_medidor.py nuevo y lee arnes/candado_cierre.py en modo lectura (ruta subiendo un nivel desde la propia vigia, como pide el encargo). Ninguna vigia existente se modifica."
+  ],
+  "que_falta": [
+   "Nada de lo pedido falta: PRUEBA 1 verifica 'medidor_de_rondas', PRUEBA 2 verifica 'contar', ambas leen el texto del candado con utf-8 y errors='replace', y cada assert tiene su mensaje explicando que una pieza que nadie llama no sirve de nada."
+  ],
+  "resumen_para_el_jefe": "La vigia se crea exactamente como se encargo, con las dos pruebas de texto pedidas y su mensaje, sin inventar nada existente y sin romper vecinos: se puede aprobar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (29987 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

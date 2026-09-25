@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En sabotear_la_orden, si la orden no trae ruta de sabotaje se abandona sin intentar armarlo, de modo que la mayoria de las ordenes nunca se sabotean.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "sabotear_la_orden",
+  "texto_viejo": "        sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None\n        if not vigia or not sabotaje:\n            return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}",
+  "texto_nuevo": "        sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None\n        if vigia and not sabotaje and orden.get('pieza') != vigia:\n            sabotaje = 'memoria/sabotajes/orden_' + str(orden.get('id', '')) + '.json'\n            orden = dict(orden, sabotaje=sabotaje)\n        if not vigia or not sabotaje:\n            return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}\n        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        if not os.path.isfile(os.path.join(raiz, sabotaje)):\n            if not armar_sabotaje(orden):\n                return {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}",
+  "cambio": "En sabotear_la_orden: cuando hay vigia pero la orden no trae sabotaje y la pieza no es la propia vigia, se le asigna una ruta propia memoria/sabotajes/orden_<id>.json; y si ese archivo no existe, se llama a armar_sabotaje(orden); si devuelve False se devuelve ok None con la razon indicada, y si devuelve True se sigue como hoy.",
+  "codigo": "        sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None\n        if vigia and not sabotaje and orden.get('pieza') != vigia:\n            sabotaje = 'memoria/sabotajes/orden_' + str(orden.get('id', '')) + '.json'\n            orden = dict(orden, sabotaje=sabotaje)\n        if not vigia or not sabotaje:\n            return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}\n        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        if not os.path.isfile(os.path.join(raiz, sabotaje)):\n            if not armar_sabotaje(orden):\n                return {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}",
+  "vigia": "Una prueba que llame a sabotear_la_orden con una orden que traiga vigia pero no sabotaje y compruebe que se le asigna la ruta memoria/sabotajes/orden_<id>.json, que si el archivo no existe se llama a armar_sabotaje y que si este devuelve False se recibe ok None con la razon 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El cambio hace que ordenes que antes devolvian ok None (sin lista de sabotaje) ahora corran sabotaje. El unico llamador es capataz.py:340, que ya maneja ok None con 'is False', asi que no rompe. codex.py no llama a esta funcion."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo que pedia el encargo (asignar ruta de sabotaje propia y armarla si falta), usa cosas que existen de verdad (os, armar_sabotaje en capataz.py:422) y no rompe al unico llamador, asi que se puede aplicar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (30800 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

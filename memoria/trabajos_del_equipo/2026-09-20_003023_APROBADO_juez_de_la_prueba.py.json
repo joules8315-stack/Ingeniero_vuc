@@ -1,0 +1,33 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion juzgar_con_vecinas en arnes/juez_de_la_prueba.py y, al crearla, hay que importar pathlib dentro de la funcion para no reventar con NameError.",
+  "archivo": "arnes/juez_de_la_prueba.py",
+  "funcion": "juzgar_con_vecinas (nueva, despues de juzgar)",
+  "texto_viejo": "    resultado['razon'] = (\n        'antes de tocar nada: %s. Con el cambio puesto: %s. Al deshacer el cambio: %s.'\n        % (detalle_antes, detalle_despues, detalle_vuelta)\n    )\n    return resultado",
+  "texto_nuevo": "    resultado['razon'] = (\n        'antes de tocar nada: %s. Con el cambio puesto: %s. Al deshacer el cambio: %s.'\n        % (detalle_antes, detalle_despues, detalle_vuelta)\n    )\n    return resultado\n\n\n# PARA QUE SIRVE:\n# El juez encuentra solo la prueba que cubre lo que se cambio, para no tener que\n# decirsela a mano. Recibe la raiz, la ruta relativa del archivo que se cambia (con\n# barras normales), el texto viejo y el texto nuevo; busca las vigias que nombran ese\n# archivo y devuelve un diccionario con ok, prueba y razon.\ndef juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo):\n    \"\"\"Busca sola la prueba que cubre el archivo y la juzga.\n\n    Devuelve un diccionario con ok, prueba y razon. Nunca lanza error: si algo\n    revienta, ok en None y la razon lo explica.\n    \"\"\"\n    try:\n        from pathlib import Path\n\n        from arnes import vecinas\n\n        raiz = str(raiz)\n        ruta_relativa = str(ruta_relativa)\n\n        vigias = vecinas._vigias_existentes(raiz)\n        candidatas = vecinas._vecinas_por_stem([ruta_relativa], raiz, vigias)\n\n        if not candidatas:\n            return {\n                'ok': None,\n                'prueba': None,\n                'razon': (\n                    'ninguna prueba nombra ese archivo, asi que no hay nada que '\n                    'correr para comprobarlo'\n                ),\n            }\n\n        for vigia in candidatas:\n            ruta_vigia = str(Path(raiz) / vigia)\n            ruta_archivo = str(Path(raiz) / ruta_relativa)\n            resultado = juzgar(\n                raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo\n            )\n\n            if not resultado.get('antes_roja'):\n                continue\n\n            if resultado.get('despues_verde') and resultado.get('vuelve_roja'):\n                return {\n                    'ok': True,\n                    'prueba': vigia,\n                    'razon': resultado.get('razon', ''),\n                }\n\n            return {\n                'ok': False,\n                'prueba': vigia,\n                'razon': resultado.get('razon', ''),\n            }\n\n        return {\n            'ok': None,\n            'prueba': None,\n            'razon': (\n                'ninguna de las pruebas que nombran ese archivo estaba roja, '\n                'asi que no habia nada que demostrar'\n            ),\n        }\n    except Exception as error:\n        return {\n            'ok': None,\n            'prueba': None,\n            'razon': 'al buscar la prueba que cubre el archivo, revento: %s' % error,\n        }",
+  "cambio": "Agregar despues de la funcion juzgar (al final del archivo) la funcion nueva juzgar_con_vecinas, con su comentario corto en castellano arriba, importando pathlib y el modulo vecinas DENTRO de la funcion, y todo el cuerpo dentro de un try.",
+  "codigo": "# PARA QUE SIRVE:\n# El juez encuentra solo la prueba que cubre lo que se cambio, para no tener que\n# decirsela a mano. Recibe la raiz, la ruta relativa del archivo que se cambia (con\n# barras normales), el texto viejo y el texto nuevo; busca las vigias que nombran ese\n# archivo y devuelve un diccionario con ok, prueba y razon.\ndef juzgar_con_vecinas(raiz, ruta_relativa, texto_viejo, texto_nuevo):\n    \"\"\"Busca sola la prueba que cubre el archivo y la juzga.\n\n    Devuelve un diccionario con ok, prueba y razon. Nunca lanza error: si algo\n    revienta, ok en None y la razon lo explica.\n    \"\"\"\n    try:\n        from pathlib import Path\n\n        from arnes import vecinas\n\n        raiz = str(raiz)\n        ruta_relativa = str(ruta_relativa)\n\n        vigias = vecinas._vigias_existentes(raiz)\n        candidatas = vecinas._vecinas_por_stem([ruta_relativa], raiz, vigias)\n\n        if not candidatas:\n            return {\n                'ok': None,\n                'prueba': None,\n                'razon': (\n                    'ninguna prueba nombra ese archivo, asi que no hay nada que '\n                    'correr para comprobarlo'\n                ),\n            }\n\n        for vigia in candidatas:\n            ruta_vigia = str(Path(raiz) / vigia)\n            ruta_archivo = str(Path(raiz) / ruta_relativa)\n            resultado = juzgar(\n                raiz, ruta_vigia, ruta_archivo, texto_viejo, texto_nuevo\n            )\n\n            if not resultado.get('antes_roja'):\n                continue\n\n            if resultado.get('despues_verde') and resultado.get('vuelve_roja'):\n                return {\n                    'ok': True,\n                    'prueba': vigia,\n                    'razon': resultado.get('razon', ''),\n                }\n\n            return {\n                'ok': False,\n                'prueba': vigia,\n                'razon': resultado.get('razon', ''),\n            }\n\n        return {\n            'ok': None,\n            'prueba': None,\n            'razon': (\n                'ninguna de las pruebas que nombran ese archivo estaba roja, '\n                'asi que no habia nada que demostrar'\n            ),\n        }\n    except Exception as error:\n        return {\n            'ok': None,\n            'prueba': None,\n            'razon': 'al buscar la prueba que cubre el archivo, revento: %s' % error,\n        }",
+  "vigia": "vigias/test_vigia_el_juez_busca_su_prueba.py",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_juez_busca_su_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22190 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (24698 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

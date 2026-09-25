@@ -1,0 +1,35 @@
+{
+  "orden": {
+    "id": "20",
+    "titulo": "La vigia de que al perito no le ponen los candados de Julio",
+    "origen": "medido el 2026-09-20 en los tres expedientes guardados",
+    "repara": "de tres expedientes, en dos el perito no contesto en 600 segundos y en el tercero contesto en espanol llano en vez del formato de datos que se le pidio. La causa del tercero es que al perito le corren encima los candados que existen para hablar con Julio, y esos le prohiben justo lo que la maquina le pide",
+    "pieza": "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py. Vigila la funcion pedir_al_perito de cuerpo/capataz.py, que llama a subprocess.run para preguntarle al perito. Prueba que esa llamada lleva su propio entorno con la marca INGENIERO_OFF puesta a 1, para que los candados pensados para hablar con Julio no le prohiban al perito contestar en formato JSON. Usa monkeypatch sobre subprocess.run y sobre shutil.which dentro de cuerpo/capataz.py para espiar como se llama, sin ejecutar nada. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py",
+    "entrega_la_prueba": "si",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "la prueba entro reventando (AttributeError) en vez de midiendo, asi que la maquina la dio por buena sin que vigilara nada. De aqui salieron las ordenes 38, 39, 40 y 41.",
+    "crear": true
+  },
+  "huella": "66ac4232628a152c",
+  "tipo": "no_aplico",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_224304_APROBADO_test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (28089 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : La vigia nueva debe espiar subprocess.run y shutil.which dentro de cuerpo/capataz.py para comprobar que pedir_al_perito pasa env con INGENIERO_OFF='1' sin ejecutar nada real.\n  toca        : vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py funcion ?\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : Crea solo el archivo que el encargo pide, espia subprocess.run y shutil.which con monkeypatch (no ejecuta nada real), verifica que el perito recibe env propio con INGENIERO_OFF='1' y que sin perito no se llama a subprocess; no toca vecinos y cumple la regla del paquete.\n\nEL EQUIPO APROBO, pero no se pudo aplicar: La propuesta no trae 'texto_viejo'.\nLLAVE GUARDADA: se puede escribir en 187 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T22:57:00",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: You've hit your session limit · resets 11:10pm (America/Bogota)\n",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\20_20260920_225700.json"
+  }
+}

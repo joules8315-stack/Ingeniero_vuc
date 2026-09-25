@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion aplicar_propuesta en cuerpo/aplicador.py, que decida entre aplicar_cambios y aplicar_cambio segun traiga o no la clave 'cambios', y por eso las cuatro pruebas del vigia estan rojas.",
+  "archivo": "cuerpo/aplicador.py",
+  "funcion": "aplicar_cambios",
+  "texto_viejo": "def aplicar_cambios(propuesta, raiz=None):\n    pedazos = propuesta.get('cambios') if isinstance(propuesta, dict) else []",
+  "texto_nuevo": "def aplicar_propuesta(propuesta, raiz=None):\n    \"\"\"Decide sola entre aplicar_cambios y aplicar_cambio. Devuelve (ok, mensaje).\n\n    Si la propuesta es un diccionario y trae la clave 'cambios' con una lista no vacia,\n    arma una copia donde cada trozo que no traiga su propia clave 'archivo' recibe el\n    archivo de la propuesta, y llama a aplicar_cambios con esa copia. Si no trae\n    'cambios', llama a aplicar_cambio con la propuesta tal cual. Devuelve lo que\n    devuelva la que llamo.\n    \"\"\"\n    if isinstance(propuesta, dict) and propuesta.get('cambios'):\n        copia = dict(propuesta)\n        archivo = propuesta.get('archivo')\n        copia['cambios'] = [\n            ({**pedazo, 'archivo': archivo} if isinstance(pedazo, dict) and not pedazo.get('archivo') else pedazo)\n            for pedazo in propuesta['cambios']\n        ]\n        return aplicar_cambios(copia, raiz=raiz)\n    return aplicar_cambio(propuesta, raiz=raiz)\n\n\ndef aplicar_cambios(propuesta, raiz=None):\n    pedazos = propuesta.get('cambios') if isinstance(propuesta, dict) else []",
+  "cambio": "Anadir la funcion nueva aplicar_propuesta justo antes de aplicar_cambios, sin tocar el cuerpo de aplicar_cambio ni el de aplicar_cambios.",
+  "codigo": "def aplicar_propuesta(propuesta, raiz=None):\n    \"\"\"Decide sola entre aplicar_cambios y aplicar_cambio. Devuelve (ok, mensaje).\n\n    Si la propuesta es un diccionario y trae la clave 'cambios' con una lista no vacia,\n    arma una copia donde cada trozo que no traiga su propia clave 'archivo' recibe el\n    archivo de la propuesta, y llama a aplicar_cambios con esa copia. Si no trae\n    'cambios', llama a aplicar_cambio con la propuesta tal cual. Devuelve lo que\n    devuelva la que llamo.\n    \"\"\"\n    if isinstance(propuesta, dict) and propuesta.get('cambios'):\n        copia = dict(propuesta)\n        archivo = propuesta.get('archivo')\n        copia['cambios'] = [\n            ({**pedazo, 'archivo': archivo} if isinstance(pedazo, dict) and not pedazo.get('archivo') else pedazo)\n            for pedazo in propuesta['cambios']\n        ]\n        return aplicar_cambios(copia, raiz=raiz)\n    return aplicar_cambio(propuesta, raiz=raiz)",
+  "vigia": "vigias/test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py: sus cuatro pruebas (varios trozos de un archivo en una ronda, sin cambios se aplica texto_viejo y texto_nuevo, y las otras dos) deben pasar en verde al existir aplicar_propuesta.",
+  "puede_danar": [
+   "arnes/copista.py",
+   "cuerpo/aplicador.py",
+   "vigias/test_vigia_aplicador.py",
+   "vigias/test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "copista.py",
+   "test_vigia_aplicador.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion crea exactamente la funcion que el encargo pide (aplicar_propuesta decide entre aplicar_cambio y aplicar_cambios segun venga 'cambios', con copia que inyecta el archivo de la propuesta a los trozos que no lo traen), no toca las funciones existentes ni ningun otro archivo, y el texto que dice tocar esta en el material: va aprobada sin peros."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (34583 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

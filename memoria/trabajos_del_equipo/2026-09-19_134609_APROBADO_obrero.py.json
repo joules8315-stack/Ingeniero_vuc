@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py::auditar el tope del material del revisor usa una excepcion de 40000 letras cuando auditor == 'bigpickle', lo que hace que el revisor lea casi el archivo entero, tarde hasta 300 s y se caiga (orden A-38 punto 1).",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,\n                                        tope=(40000 if auditor == \"bigpickle\" else TOPE_GRATIS) - 3344 - 47 -\n                                             len(json.dumps(propuesta, ensure_ascii=False)))",
+  "texto_nuevo": "    material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,\n                                        tope=TOPE_REVISOR - 3344 - 47 -\n                                             len(json.dumps(propuesta, ensure_ascii=False)))",
+  "cambio": "Sustituir el tope condicional (40000 si auditor es bigpickle, si no TOPE_GRATIS) por TOPE_REVISOR para todos los revisores, dejando el resto de la resta igual.",
+  "codigo": "    material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,\n                                        tope=TOPE_REVISOR - 3344 - 47 -\n                                             len(json.dumps(propuesta, ensure_ascii=False)))",
+  "vigia": "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py (ya vigila cuerpo/obrero.py) y la comprobacion de que el material del auditor no supera TOPE_REVISOR - 3344 - 47 - len(json.dumps(propuesta)) para ningun auditor, incluido bigpickle.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio elimina la excepción de 40000 para bigpickle, usando TOPE_REVISOR uniformemente, corrige el diagnóstico sin introducir inventos ni romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39111 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

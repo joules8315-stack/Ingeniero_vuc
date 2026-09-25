@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _vigias, una orden que edita su propia prueba queda esperando su arreglo y frena el guardado aunque la roja la haya causado ella misma; hay que dejar que la orden activa (INGENIERO_ETIQUETA) no espere por su propia pieza.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "    esperando = set()\n    if guardados:\n        try:\n            ruta_ordenes = os.path.join(raiz, \"memoria\", \"ORDENES.json\")\n            with open(ruta_ordenes, encoding=\"utf-8\") as f:\n                ordenes = json.load(f)\n            for orden in ordenes:\n                if str(orden.get(\"estado\", \"\")).strip().lower() == \"hecha\":\n                    continue\n                vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                if vigia:\n                    esperando.add(vigia)\n        except Exception:\n            esperando = set()",
+  "texto_nuevo": "    esperando = set()\n    # la tarea que se guarda ahora (INGENIERO_ETIQUETA) y edita su propia prueba no la deja esperando:\n    # si la rompe, se frena (medido 2026-09-21, orden 136); las pruebas que otra orden corregira\n    # despues siguen esperando.\n    actual = os.environ.get('INGENIERO_ETIQUETA', '').strip()\n    if guardados:\n        try:\n            ruta_ordenes = os.path.join(raiz, \"memoria\", \"ORDENES.json\")\n            with open(ruta_ordenes, encoding=\"utf-8\") as f:\n                ordenes = json.load(f)\n            for orden in ordenes:\n                if str(orden.get(\"estado\", \"\")).strip().lower() == \"hecha\":\n                    continue\n                vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                pieza = str(orden.get('pieza', '')).replace(chr(92), '/').strip()\n                if vigia and not (actual and str(orden.get('id', '')) == actual and vigia == pieza):\n                    esperando.add(vigia)\n        except Exception:\n            esperando = set()",
+  "cambio": "En _vigias, antes del bucle for orden in ordenes: leer actual = os.environ.get('INGENIERO_ETIQUETA', '').strip(). Dentro del bucle, tras calcular vigia, calcular pieza = str(orden.get('pieza', '')).replace(chr(92), '/').strip() y cambiar if vigia: por if vigia and not (actual and str(orden.get('id', '')) == actual and vigia == pieza):. Anadir el comentario corto encima explicando que la tarea que se guarda ahora y edita su propia prueba no la deja esperando.",
+  "codigo": "    esperando = set()\n    # la tarea que se guarda ahora (INGENIERO_ETIQUETA) y edita su propia prueba no la deja esperando:\n    # si la rompe, se frena (medido 2026-09-21, orden 136); las pruebas que otra orden corregira\n    # despues siguen esperando.\n    actual = os.environ.get('INGENIERO_ETIQUETA', '').strip()\n    if guardados:\n        try:\n            ruta_ordenes = os.path.join(raiz, \"memoria\", \"ORDENES.json\")\n            with open(ruta_ordenes, encoding=\"utf-8\") as f:\n                ordenes = json.load(f)\n            for orden in ordenes:\n                if str(orden.get(\"estado\", \"\")).strip().lower() == \"hecha\":\n                    continue\n                vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                pieza = str(orden.get('pieza', '')).replace(chr(92), '/').strip()\n                if vigia and not (actual and str(orden.get('id', '')) == actual and vigia == pieza):\n                    esperando.add(vigia)\n        except Exception:\n            esperando = set()",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py (y los demas vigias del guardia) deben seguir en verde; ademas, una prueba que simule INGENIERO_ETIQUETA igual al id de la orden y vigia igual a su pieza debe comprobar que esa roja NO entra en esperando y por tanto frena.",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "ORDENES.js",
+   "codex.py",
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion hace justo lo que exige la vigia: la tarea activa que edita su propia prueba ya no puede esconder su roja detras de 'espera su arreglo' y la roja frena, sin tocar a ninguna vigia vecina."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (24244 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

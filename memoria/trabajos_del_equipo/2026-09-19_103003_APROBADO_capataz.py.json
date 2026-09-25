@@ -1,0 +1,33 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion agregar_orden(orden) en cuerpo/capataz.py, que debe validar y agregar una orden nueva a memoria/ORDENES.json antes de ya_fallo.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "agregar_orden",
+  "texto_viejo": "def ya_fallo(orden):",
+  "texto_nuevo": "def agregar_orden(orden):\n    \"\"\"Agrega una orden nueva a la lista si pasa las validaciones.\"\"\"\n    if not isinstance(orden, dict):\n        return (False, 'no es una orden')\n    problemas = validar_etiqueta(orden)\n    if problemas:\n        return (False, 'etiqueta incompleta: ' + ', '.join(problemas))\n    lista = leer_lista()\n    orden_id = orden.get('id')\n    for otra in lista:\n        if isinstance(otra, dict) and otra.get('id') == orden_id:\n            return (False, 'ya existe el id ' + str(orden_id))\n    if ya_fallo(orden):\n        return (False, 'esa misma tarea ya fallo')\n    huella = huella_de(orden)\n    for otra in lista:\n        if isinstance(otra, dict) and huella_de(otra) == huella:\n            return (False, 'ya esta en la lista')\n    nueva = dict(orden)\n    nueva['estado'] = 'pendiente'\n    nueva['paso_fallido'] = ''\n    nueva['fallos_seguidos'] = 0\n    lista.append(nueva)\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, 'memoria', 'ORDENES.json')\n    with open(ruta, 'w', encoding='utf-8') as f:\n        json.dump(lista, f, indent=2, ensure_ascii=False)\n    return (True, 'agregada ' + str(orden_id))\n\n\ndef ya_fallo(orden):",
+  "cambio": "Insertar la funcion agregar_orden(orden) justo antes de la linea 'def ya_fallo(orden):', con las validaciones pedidas y la escritura en memoria/ORDENES.json.",
+  "codigo": "def agregar_orden(orden):\n    \"\"\"Agrega una orden nueva a la lista si pasa las validaciones.\"\"\"\n    if not isinstance(orden, dict):\n        return (False, 'no es una orden')\n    problemas = validar_etiqueta(orden)\n    if problemas:\n        return (False, 'etiqueta incompleta: ' + ', '.join(problemas))\n    lista = leer_lista()\n    orden_id = orden.get('id')\n    for otra in lista:\n        if isinstance(otra, dict) and otra.get('id') == orden_id:\n            return (False, 'ya existe el id ' + str(orden_id))\n    if ya_fallo(orden):\n        return (False, 'esa misma tarea ya fallo')\n    huella = huella_de(orden)\n    for otra in lista:\n        if isinstance(otra, dict) and huella_de(otra) == huella:\n            return (False, 'ya esta en la lista')\n    nueva = dict(orden)\n    nueva['estado'] = 'pendiente'\n    nueva['paso_fallido'] = ''\n    nueva['fallos_seguidos'] = 0\n    lista.append(nueva)\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, 'memoria', 'ORDENES.json')\n    with open(ruta, 'w', encoding='utf-8') as f:\n        json.dump(lista, f, indent=2, ensure_ascii=False)\n    return (True, 'agregada ' + str(orden_id))",
+  "vigia": "Un test que llame agregar_orden con una orden valida y compruebe que devuelve (True, 'agregada <id>') y que la orden aparece en memoria/ORDENES.json con estado 'pendiente', paso_fallido '' y fallos_seguidos 0; y que con orden no dict, etiqueta incompleta, id repetido, huella ya fallida o huella ya en lista devuelve (False, motivo) sin escribir.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "memoria/ORDENES.json"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El obrero hace exactamente lo que encarga el paquete: agrega agregar_orden antes de def ya_fallo, usa solo funciones que existen en el material (leer_lista, validar_etiqueta, ya_fallo, huella_de), respeta cada uno de los 5 motivos de rechazo con su mensaje exacto, escribe en la misma ruta de memoria/ORDENES.json sacada de __file__, agrega la copia con estado 'pendiente' y devuelve (True, 'agregada ' + str(id)) como pide la orden, sin tocar otras funciones ni romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21544 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

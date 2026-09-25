@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El intento anterior puso la cuenta nueva en un sitio equivocado (no justo antes del return que corta cuando es_un_pedazo), por eso no se ejecutaba.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        if es_un_pedazo(nuevo):\n            return fallos\n        conocidos = set(_conocidos(arbol))",
+  "texto_nuevo": "        # 2c — SE QUEDA SIN CUERPO: una prueba que se queda con su docstring y nada mas\n        # PASA SIEMPRE. El candado sigue en su sitio pero ya no vigila nada y nadie se entera.\n        # Medido el 2026-09-20: un cambio del equipo se comio el cuerpo entero de una prueba\n        # ya guardada. Es CUENTA: se comparan los cuerpos de las funciones test_ antes y\n        # despues. Si algo falla aqui, no se agrega nada y se sigue como siempre.\n        try:\n            _ruta_c = str(p.get(\"archivo\") or \"\")\n            if (_ruta_c.lower().endswith(\".py\") and os.path.isfile(_ruta_c)\n                    and viejo.strip()):\n                with open(_ruta_c, encoding=\"utf-8-sig\", errors=\"replace\") as _fc:\n                    _antes_c = _fc.read()\n                if viejo in _antes_c:\n                    _despues_c = _antes_c.replace(viejo, nuevo, 1)\n                    _arbol_antes_c = ast.parse(_antes_c)\n                    _arbol_despues_c = ast.parse(_despues_c)\n\n                    def _cuerpo_vacio(_nodo):\n                        _cuerpo = list(_nodo.body)\n                        if (_cuerpo and isinstance(_cuerpo[0], ast.Expr)\n                                and isinstance(_cuerpo[0].value, ast.Constant)\n                                and isinstance(_cuerpo[0].value.value, str)):\n                            _cuerpo = _cuerpo[1:]\n                        if not _cuerpo:\n                            return True\n                        if len(_cuerpo) == 1 and isinstance(_cuerpo[0], ast.Pass):\n                            return True\n                        return False\n\n                    def _pruebas_sin_cuerpo(_arbol):\n                        _sin = set()\n                        for _n in ast.walk(_arbol):\n                            if (isinstance(_n, (ast.FunctionDef, ast.AsyncFunctionDef))\n                                    and _n.name.startswith(\"test_\")\n                                    and _cuerpo_vacio(_n)):\n                                _sin.add(_n.name)\n                        return _sin\n\n                    _sin_antes = _pruebas_sin_cuerpo(_arbol_antes_c)\n                    _sin_despues = _pruebas_sin_cuerpo(_arbol_despues_c)\n                    for _nombre in sorted(_sin_despues - _sin_antes):\n                        fallos.append(\n                            \"SE QUEDA SIN CUERPO: la prueba '%s' tenia cuerpo antes y ahora \"\n                            \"no tiene nada o solo pass. Una prueba sin cuerpo PASA SIEMPRE: \"\n                            \"el candado sigue en su sitio pero deja de vigilar y nadie lo nota.\"\n                            % _nombre)\n        except Exception:\n            pass\n\n        if es_un_pedazo(nuevo):\n            return fallos\n        conocidos = set(_conocidos(arbol))",
+  "cambio": "Insertar, justo ANTES de la linea 'if es_un_pedazo(nuevo): return fallos' que corta la revision cuando el cambio es un pedazo, un bloque try/except que: saca la ruta del archivo de la propuesta; si acaba en .py, existe en disco y el texto viejo no esta vacio, lee el archivo entero; si el texto viejo aparece dentro, arma el archivo como quedaria cambiando esa primera aparicion por el texto nuevo; parsea los dos textos con ast.parse; recorre ambos con ast.walk buscando funciones cuyo nombre empiece por test_; mira si su cuerpo, quitando el docstring inicial, queda vacio o solo con pass; y si alguna funcion tenia cuerpo antes y se queda sin cuerpo despues, agrega a fallos un texto que empieza por 'SE QUEDA SIN CUERPO' con el nombre de la funcion y la explicacion de que una prueba sin cuerpo pasa siempre y deja de vigilar sin que nadie lo note. Si algo falla, el except no hace nada y se sigue como siempre.",
+  "codigo": "        # 2c — SE QUEDA SIN CUERPO: una prueba que se queda con su docstring y nada mas\n        # PASA SIEMPRE. El candado sigue en su sitio pero ya no vigila nada y nadie se entera.\n        # Medido el 2026-09-20: un cambio del equipo se comio el cuerpo entero de una prueba\n        # ya guardada. Es CUENTA: se comparan los cuerpos de las funciones test_ antes y\n        # despues. Si algo falla aqui, no se agrega nada y se sigue como siempre.\n        try:\n            _ruta_c = str(p.get(\"archivo\") or \"\")\n            if (_ruta_c.lower().endswith(\".py\") and os.path.isfile(_ruta_c)\n                    and viejo.strip()):\n                with open(_ruta_c, encoding=\"utf-8-sig\", errors=\"replace\") as _fc:\n                    _antes_c = _fc.read()\n                if viejo in _antes_c:\n                    _despues_c = _antes_c.replace(viejo, nuevo, 1)\n                    _arbol_antes_c = ast.parse(_antes_c)\n                    _arbol_despues_c = ast.parse(_despues_c)\n\n                    def _cuerpo_vacio(_nodo):\n                        _cuerpo = list(_nodo.body)\n                        if (_cuerpo and isinstance(_cuerpo[0], ast.Expr)\n                                and isinstance(_cuerpo[0].value, ast.Constant)\n                                and isinstance(_cuerpo[0].value.value, str)):\n                            _cuerpo = _cuerpo[1:]\n                        if not _cuerpo:\n                            return True\n                        if len(_cuerpo) == 1 and isinstance(_cuerpo[0], ast.Pass):\n                            return True\n                        return False\n\n                    def _pruebas_sin_cuerpo(_arbol):\n                        _sin = set()\n                        for _n in ast.walk(_arbol):\n                            if (isinstance(_n, (ast.FunctionDef, ast.AsyncFunctionDef))\n                                    and _n.name.startswith(\"test_\")\n                                    and _cuerpo_vacio(_n)):\n                                _sin.add(_n.name)\n                        return _sin\n\n                    _sin_antes = _pruebas_sin_cuerpo(_arbol_antes_c)\n                    _sin_despues = _pruebas_sin_cuerpo(_arbol_despues_c)\n                    for _nombre in sorted(_sin_despues - _sin_antes):\n                        fallos.append(\n                            \"SE QUEDA SIN CUERPO: la prueba '%s' tenia cuerpo antes y ahora \"\n                            \"no tiene nada o solo pass. Una prueba sin cuerpo PASA SIEMPRE: \"\n                            \"el candado sigue en su sitio pero deja de vigilar y nadie lo nota.\"\n                            % _nombre)\n        except Exception:\n            pass\n",
+  "vigia": "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+   "vigias/test_vigia_un_cambio_que_solo_borra_vale.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+   "test_vigia_un_cambio_que_solo_borra_vale.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa recursos y no rompe nada; se aprueba."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38561 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "el pasillo recorto el encargo de 33608 a 18943 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 2"
+ ]
+}

@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "45",
+    "titulo": "Una prueba no puede devolver en vez de afirmar",
+    "origen": "fallo visto el 2026-09-21",
+    "repara": "cazarlo gratis antes de pagar la revision evita que entre una vigilancia que no vigila",
+    "pieza": "arnes/revisor_de_programa.py",
+    "depende": [
+      "44"
+    ],
+    "modo": "IA",
+    "razon": "una vigilancia que parece que esta y no esta es el peor fallo; ya costo cinco rondas con la prueba sin cuerpo",
+    "encargo": "En arnes/revisor_de_programa.py agregar una regla mas, escrita entera en su sitio y del mismo estilo que la de SE QUEDA SIN CUERPO: si el texto nuevo es un archivo de prueba de Python y alguna funcion cuyo nombre empieza por test_ tiene un return con valor y ningun assert, se devuelve un fallo que diga que en pytest eso pasa siempre y la prueba no vigila nada, y que hay que usar assert. Un return sin valor no cuenta. Si el texto no se puede leer, no se dice nada. Medido el 2026-09-21: una vigia asi entro verde sin que existiera su arreglo; se escanearon todas las demas del proyecto y era la unica. Agrega tambien el segundo caso de la misma familia: si el texto nuevo es una prueba que llama a unittest.SkipTest o a pytest.skip con un mensaje que habla de que la pieza no existe todavia, se devuelve un fallo que diga que una prueba saltada no puede ponerse roja y que mientras la pieza no exista tiene que fallar con assert. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_una_prueba_no_devuelve_en_vez_de_afirmar.py",
+    "sabotaje": "memoria/sabotajes/una_prueba_no_devuelve_en_vez_de_afirmar.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "5da2c5f52c9b737e",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_110217_RECHAZADO_revisor_de_programa.py.json\nOBRERO deepseek -> AUDITOR grok47\n  aviso       : GPT-OSS 120B (Groq) no le cabe (33972 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 306 del archivo completo: expected 'except' or 'finally' block. Asi no arranca.\n  aviso       : GPT-OSS 120B (Groq) no le cabe (35080 letras, aguanta 19042) -> se le salta\n  diagnostico : Falta en arnes/revisor_de_programa.py una regla que cace pruebas test_ que devuelven valor sin ningun assert, y pruebas que se saltan con SkipTest/pytest.skip diciendo que la pieza no existe todavia.\n  toca        : arnes/revisor_de_programa.py funcion revisar\n  confianza   : media\n  VEREDICTO   : RECHAZADO\n  *** INVENTO: arnes/revisor_de_programa.py; funcion revisar; el texto_viejo del bloque 2c (no aparece en el material; el material esta vacio) -> SE DESCARTA\n  fallo       : Ubicacion: el texto_viejo no aparece en el material. Regla 6: sin texto literal en el material, la ubicacion no vale.\n  fallo       : El ancla no es el final del bloque 2c. El texto_viejo abre un try y corta en `_sin_antes = _pruebas_sin_cuerpo(_arbol_antes_c)`, sin except ni finally. El texto_nuevo mete los try de 2d y 2e a 8 espacios, dedentando fuera de ese try. Eso parte el 2c por la mitad y deja un try sin except: SyntaxError. No queda 'justo despues del bloque 2c'.\n  fallo       : 2e no caza unittest.SkipTest. `_llama_a_skip` solo acepta Attribute.attr == 'skip' o Name.id == 'SkipTest'. `unittest.SkipTest(...)` es Attribute con attr 'SkipTest', asi que no dispara. El encargo pide esa llamada y la regla no la ve.\n  fallo       : 2e no mira el mensaje del skip: cualquier string del test (docstring incluido) con 'falta', 'pendiente', 'no esta' o 'todavia' basta, junto con cualquier `.skip`. Falsos positivos en skips legitimos.\n  resumen     : Rechazado: el parche se inserta a mitad del bloque 2c y lo rompe con un try sin cerrar, y ademas no detecta unittest.SkipTest.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T11:02:18",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: You've hit your weekly limit · resets Sep 25, 11am (America/Bogota)\n",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\45_20260922_110218.json"
+  }
+}

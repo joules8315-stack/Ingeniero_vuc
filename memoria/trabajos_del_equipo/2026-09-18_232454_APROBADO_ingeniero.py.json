@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El aviso de 'NO SE GUARDO' en ingeniero.py ya no dice la verdad: ahora el guardia frena, se vuelve atras solo y lo rechazado queda apartado en memoria/trabajos_sin_revisar y archivado, pero el mensaje sigue diciendo lo viejo.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "print(\"NO SE GUARDO (el trabajo sigue en el disco y archivado). POR QUE: %s\" % _msgg)",
+  "texto_nuevo": "print(\"NO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: %s\" % _msgg)",
+  "cambio": "Sustituir el texto literal del print de 'NO SE GUARDO' por el nuevo texto que dice la verdad: se volvio atras y lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. No tocar nada mas.",
+  "codigo": "print(\"NO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: %s\" % _msgg)",
+  "vigia": "Un test que dispare el guardia, compruebe que frena y que la salida contiene 'se volvio atras' y 'memoria/trabajos_sin_revisar', y que no contiene el texto viejo 'el trabajo sigue en el disco y archivado'.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/portero.py",
+   "arnes/via_canonica.py",
+   "arnes/asignador.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_diagnostico.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "portero.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "via_canonica.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cambia solamente el literal 'NO SE GUARDO' por el texto exacto que pide el encargo, el texto viejo si aparece en el material, no toca ningun vecino ni inventa archivos o funciones: se aprueba tal cual."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19052 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

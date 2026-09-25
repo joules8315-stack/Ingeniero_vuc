@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El archivo nuevo debe nacer rojo: hoy comprobar_pasos devuelve '' (todo verde) cuando la vigia no existe, y la primera prueba exige que devuelva 'vigia_verde' para forzar el cambio, mientras la segunda comprueba que una vigia existente y verde no se cuenta como fallo.",
+  "archivo": "vigias/test_vigia_una_prueba_que_no_existe_no_vale.py",
+  "texto_nuevo": "\"\"\"Vigia: una prueba que NO EXISTE no puede valer como prueba verde.\n\nComprobado en vivo el 2026-09-20: si una orden dice tener una prueba (clave\n'vigia') y ese archivo NO EXISTE en el disco, la funcion comprobar_pasos de\ncuerpo/capataz.py devuelve el texto vacio, o sea que da por buenos todos los\npasos. Asi, la manera mas facil de que un trabajo pase sin ninguna vigilancia\nes sencillamente no escribir la prueba, y eso abre la puerta que todos los\ndemas candados cierran.\n\nOjo con la distincion, que es el corazon de esta vigia:\n\n  - Una prueba RECIEN ESCRITA y EN ROJO SI tiene que poder entrar, porque asi\n    nace el metodo: primero se escribe la prueba que falla, luego se repara.\n  - Una prueba AUSENTE no es lo mismo que una prueba verde. Que el archivo no\n    exista no puede contar como que la prueba paso.\n\nEsta vigia NACE ROJA: hoy comprobar_pasos devuelve '' cuando la vigia no\nexiste, y la primera prueba exige que devuelva 'vigia_verde' para forzar el\ncambio necesario en comprobar_pasos.\n\"\"\"\n\nimport os\nimport sys\n\nraiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, raiz)\nsys.path.insert(0, os.path.join(raiz, 'arnes'))\n\nfrom cuerpo import capataz\n\n\nRUTA_ESTE_ARCHIVO = os.path.abspath(__file__)\nRUTA_RELATIVA_ESTE_ARCHIVO = os.path.relpath(RUTA_ESTE_ARCHIVO, raiz).replace(os.sep, '/')\n\n\ndef test_una_prueba_que_no_existe_no_se_da_por_buena():\n    \"\"\"Si la orden dice tener una vigia y ese archivo NO existe, comprobar_pasos\n    no puede devolver 'vigia_verde' (que significa que todo esta bien).\n\n    Hoy devuelve '' (texto vacio), que tambien se interpreta como todo verde:\n    por eso esta prueba nace ROJA y obliga a cambiar comprobar_pasos.\n    \"\"\"\n    orden = {\n        'pieza': 'cuerpo/capataz.py',\n        'vigia': 'vigias/test_vigia_que_no_existe_en_ninguna_parte.py',\n        'comando': '',\n    }\n    resultado = capataz.comprobar_pasos(orden)\n    assert resultado == 'vigia_verde', (\n        'Una prueba que NO EXISTE se esta dando por buena: comprobar_pasos '\n        'devolvio ' + repr(resultado) + ' en vez de vigia_verde. Asi basta con '\n        'no escribir la prueba para que un trabajo pase sin ninguna vigilancia, '\n        'y eso abre la puerta que todos los demas candados cierran.'\n    )\n\n\ndef test_una_prueba_que_existe_y_pasa_no_se_cuenta_como_fallo():\n    \"\"\"Si la vigia apunta a un archivo que SI existe y esta verde (este mismo\n    archivo), comprobar_pasos NO puede devolver 'vigia_verde' como si fuera\n    un fallo: una prueba que existe y pasa no puede contarse como fallo,\n    porque entonces no entraria ningun trabajo bueno.\n    \"\"\"\n    orden = {\n        'pieza': 'cuerpo/capataz.py',\n        'vigia': RUTA_RELATIVA_ESTE_ARCHIVO,\n        'comando': '',\n    }\n    resultado = capataz.comprobar_pasos(orden)\n    assert resultado != 'vigia_verde', (\n        'Una prueba que EXISTE y PASA se esta contando como fallo: '\n        'comprobar_pasos devolvio ' + repr(resultado) + ' (vigia_verde) para '\n        'una vigia que si existe y esta verde. Si una prueba que pasa se '\n        'cuenta como fallo, entonces no entraria ningun trabajo bueno.'\n    )\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, respeta el contrato y no introduce elementos inexistentes."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38676 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "GPT-OSS 120B (Groq) no le cabe (38919 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "GPT-OSS 120B (Groq) no le cabe (39055 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 3"
+ ]
+}

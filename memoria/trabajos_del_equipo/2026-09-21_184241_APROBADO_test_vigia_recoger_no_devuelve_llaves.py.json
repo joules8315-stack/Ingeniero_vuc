@@ -1,0 +1,28 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "No existe la vigia pedida; hay que crearla desde cero probando recoger_lo_frenado con monkeypatch sobre recoger_los_pedazos.recoger, subprocess.run y guardia_de_guardado._hay_llaves.",
+  "archivo": "vigias/test_vigia_recoger_no_devuelve_llaves.py",
+  "texto_nuevo": "import subprocess\n\nfrom cuerpo import capataz\nfrom arnes import recoger_los_pedazos\nfrom arnes import guardia_de_guardado\n\n\nORDEN = {\n    'id': '1',\n    'pieza': 'pieza.py',\n    'vigia': 'vigias/test_x.py',\n    'entrega_la_prueba': 'si',\n}\n\n\ndef _preparar(monkeypatch, raiz, llaves):\n    \"\"\"Deja el terreno listo: la pieza existe, recoger devuelve ok, subprocess no corre nada\n    y _hay_llaves devuelve lo que le digamos.\"\"\"\n    (raiz / 'pieza.py').write_text('x = 1\\n', encoding='utf-8')\n\n    def recoger_falso(carpeta, nombre):\n        return {'ok': True, 'destino': 'pieza.py', 'razon': 'x'}\n\n    monkeypatch.setattr(recoger_los_pedazos, 'recoger', recoger_falso)\n\n    ordenes = []\n\n    def run_falso(*args, **kwargs):\n        ordenes.append((args, kwargs))\n\n        class Resultado:\n            returncode = 0\n            stdout = ''\n            stderr = ''\n\n        return Resultado()\n\n    monkeypatch.setattr(subprocess, 'run', run_falso)\n\n    def hay_llaves_falso(carpeta):\n        return llaves\n\n    monkeypatch.setattr(guardia_de_guardado, '_hay_llaves', hay_llaves_falso)\n\n    return ordenes\n\n\ndef test_si_hay_llaves_devuelve_ok_false_y_lo_dice(monkeypatch, tmp_path):\n    \"\"\"Si _hay_llaves devuelve ['pieza.py'], recoger_lo_frenado tiene que devolver ok False\n    y su razon tiene que contener la palabra llave.\"\"\"\n    _preparar(monkeypatch, tmp_path, ['pieza.py'])\n\n    resultado = capataz.recoger_lo_frenado(ORDEN, str(tmp_path))\n\n    assert isinstance(resultado, dict), 'recoger_lo_frenado no devolvio un dict'\n    assert resultado.get('ok') is False, (\n        'con llaves presentes el resultado deberia ser ok False, y vino: ' + repr(resultado))\n    razon = str(resultado.get('razon', ''))\n    assert 'llave' in razon.lower(), (\n        'la razon no nombra la palabra llave: ' + repr(razon))\n\n\ndef test_si_no_hay_llaves_devuelve_ok_true(monkeypatch, tmp_path):\n    \"\"\"Si _hay_llaves devuelve [], el resultado tiene que tener ok True.\"\"\"\n    _preparar(monkeypatch, tmp_path, [])\n\n    resultado = capataz.recoger_lo_frenado(ORDEN, str(tmp_path))\n\n    assert isinstance(resultado, dict), 'recoger_lo_frenado no devolvio un dict'\n    assert resultado.get('ok') is True, (\n        'sin llaves el resultado deberia ser ok True, y vino: ' + repr(resultado))\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La nueva vigia se crea correctamente, implementando las pruebas solicitadas sin inventar ni romper nada."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

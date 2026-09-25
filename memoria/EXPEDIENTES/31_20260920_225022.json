@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "31",
+    "titulo": "Las palabras de maquina no entran como orden de Julio",
+    "origen": "26 renglones de maquina recogidos la noche del 2026-09-20",
+    "repara": "cada sesion hay que resolver a mano decenas de renglones que escribio la propia maquina; el dia que ahi dentro haya una orden de verdad, se entierra",
+    "pieza": "arnes/candado_legislar.py",
+    "depende": [
+      "30"
+    ],
+    "modo": "IA",
+    "razon": "Julio no es tecnico y tiene prohibido por ley que se le hable asi: esas palabras no pueden ser suyas nunca",
+    "encargo": "En arnes/candado_legislar.py, en la funcion parece_una_orden, agregar una regla mas: si el texto trae alguna palabra que solo usa la maquina (monkeypatch, subprocess, TypeError, assert, tmp_path, un nombre pegado a parentesis vacios, o una ruta que acabe en punto py) NO es una orden de Julio y se descarta. Las reglas que ya estan no se tocan y ninguna otra frase deja de entrar. Motivo medido: de los 26 renglones recogidos el 2026-09-20 esta regla habria cazado 10 sin tocar ni una frase de Julio. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+    "sabotaje": "memoria/sabotajes/las_palabras_de_maquina_no_son_ordenes.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "bd8de748e4fcb6fa",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_225012_DUDOSO_candado_legislar.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : vueltas_dadas: 1\n  diagnostico : En arnes/candado_legislar.py, la funcion parece_una_orden no descarta textos que traen palabras o formas que solo usa la maquina (monkeypatch, subprocess, TypeError, assert, tmp_path, nombre pegado a parentesis vacios, o ruta que acabe en .py), asi que esos renglones pasan como ordenes de Julio.\n  toca        : arnes/candado_legislar.py funcion parece_una_orden\n  confianza   : media\n  PREGUNTA_REQUERIDA: De donde sale la lista PALABRAS_DE_MAQUINA: hay que crearla nueva en arnes/candado_legislar.py o ya existe en el archivo y no se ha mostrado en el material?\n  VEREDICTO   : DUDOSO\n  fallo       : La pieza critica del fix es PALABRAS_DE_MAQUINA y la propuesta misma no sabe si existe ni que contiene ('De donde sale la lista': pregunta abierta). No aparece en el material (que solo muestra EXCLUIR_DE_ORDEN y MINIMO_PALABRAS) y el codigo propuesto no la crea: si no existe, cada llamada a parece_una_orden lanza NameError y el candado deja de registrar TODO, no solo lo nuevo. Si existe pero no contiene exactamente monkeypatch, subprocess, typeerror, assert y tmp_path (en minusculas), el descarte (1) no caza nada y el diagnostico queda sin arreglar.\n  fallo       : El cambio va sin la otra mitad: define o crea la lista. El paquete pide 'una regla mas' con palabras textuales; poner la lista arriba con su nombre y solo nombre es lo correcto, pero aqui no viene ni una ni otra cosa.\n  fallo       : El vigia propuesto (crear una prueba que llame a parece_una_orden) implica escribir en otro archivo, y el encargo dice 'No toques ningun otro archivo'. Falta decidir donde vive esa prueba sin violar esa ley.\n  fallo       : El match por subcadena (palabra in texto.lower()) es laxo pero es exactamente el mismo patron de EXCLUIR_DE_ORDEN que ya existe en el archivo: no lo cuento como fallo, solo marco que el 'sin tocar ni una frase de Julio' depende de que la lista traiga las palabras exactas.\n  resumen     : El codigo nuevo hace justo lo que pide el encargo (tres descartes nuevos, reglas viejas intactas y ubicacion correcta), pero todo depende de una lista PALABRAS_DE_MAQUINA que ni el material ni la propuesta muestran: hay que confirmar que existe con esas 5 palabras o crearla, porque si falta el fix no caza o, peor, rompe el registro completo de ordenes.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T22:50:22",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: You've hit your session limit · resets 11:10pm (America/Bogota)\n",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\31_20260920_225022.json"
+  }
+}

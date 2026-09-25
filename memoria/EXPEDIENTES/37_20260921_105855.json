@@ -1,0 +1,29 @@
+{
+  "orden": {
+    "id": "37",
+    "titulo": "Recoger los pedazos no pisa trabajo mas nuevo",
+    "origen": "peligro real visto el 2026-09-20",
+    "repara": "devolver una copia vieja encima de trabajo nuevo destruye trabajo pagado y aprobado, y no avisa",
+    "pieza": "arnes/recoger_los_pedazos.py",
+    "depende": [
+      "36"
+    ],
+    "modo": "IA",
+    "razon": "la pieza existe para NO perder trabajo; hacerlo perder es lo contrario de su oficio",
+    "encargo": "En arnes/recoger_los_pedazos.py, en la funcion recoger, antes de devolver una copia apartada a su sitio, comprobar si esa copia es VIEJA: se le pregunta a git la fecha del ultimo guardado de ese archivo con git log -1 y el formato de fecha en segundos, y si ese ultimo guardado es mas nuevo que la fecha de la copia apartada, la copia es de antes y NO se devuelve: no se toca nada y se contesta que no con esa razon. OJO: no se compara con la fecha del archivo que hay ahora en el disco, porque el guardia lo restaura justo despues de apartar la copia y siempre parece mas nuevo; eso ya se probo y frenaba todas las recuperaciones buenas. Si git no contesta, se devuelve como hoy. Nunca se borra nada. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_recoger_no_pisa_trabajo_mas_nuevo.py",
+    "sabotaje": "memoria/sabotajes/recoger_no_pisa_trabajo_mas_nuevo.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "primer intento deshecho el 2026-09-21: comparaba la fecha del archivo, y en el caso normal el archivo siempre es mas nuevo que la copia porque el guardia lo restaura justo despues de apartarla. Habria frenado todas las recuperaciones buenas; la vigia vieja de recoger los pedazos lo cazo."
+  },
+  "huella": "73178540b0f334c5",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_105852_APROBADO_recoger_los_pedazos.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : vueltas_dadas: 1\n  diagnostico : En arnes/recoger_los_pedazos.py, la funcion recoger devuelve la copia apartada a su sitio sin comprobar antes si esa copia es VIEJA comparando la fecha del ultimo guardado en git con la fecha de la copia apartada.\n  toca        : arnes/recoger_los_pedazos.py funcion recoger\n  confianza   : media\n  PREGUNTA_REQUERIDA: El material no trae la funcion completa con sus importaciones: falta ver si ya esta importado subprocess en arnes/recoger_los_pedazos.py, y falta el texto literal exacto de las lineas de importacion para anadirlo si no esta.\n  VEREDICTO   : APROBADO\n  resumen     : Si git contesta y su ultimo guardado del destino es mas nuevo que la copia, recoger responde que no y no toca nada; si git no contesta, se devuelve como hoy: cumple el encargo sin romper vecinos ni inventar nada.\n\nAPLICADO en disco (lo escribio el equipo): arnes/recoger_los_pedazos.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   4 failed, 4 passed in 0.51s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): arnes/recoger_los_pedazos.py\nLLAVE GUARDADA: se puede escribir en 30 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T10:58:55"
+}

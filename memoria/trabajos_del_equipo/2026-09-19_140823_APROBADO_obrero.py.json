@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El bloque de la ley de julio 2026-09-15 deja SIN_AUDITAR y hace return cuando bigpickle no contesta, en vez de dejar que otra IA (nunca claude ni quien escribio) haga el relevo como manda A-38 punto 4.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    # LEY DE JULIO 2026-09-15: SI EL ENCARGO PIDIO UN REVISOR FIJO (bigpickle), ESE PEDIDO SE\n    # RESPETA SIEMPRE. NO se sustituye por claude, gemini, groq ni por el cerebro de pago. Si el\n    # revisor pedido no contesta, el veredicto queda SIN_AUDITAR con aviso, y NO se llama a ningun\n    # otro cerebro en su lugar. El trabajo queda archivado para que bigpickle lo revise despues.\n    revisor_fijo = auditor if auditor == \"bigpickle\" else None\n    if revisor_fijo and quien_aud != revisor_fijo:\n        auditoria = {\"veredicto\": \"SIN_AUDITAR\",\n                     \"resumen_para_el_jefe\":\n                         \"el revisor pedido (%s) no estaba; no se llama a otro cerebro en su lugar\" % revisor_fijo}\n        avisos.append(\"el revisor pedido (%s) no estaba: queda SIN_AUDITAR y archivado para su revision\" % revisor_fijo)\n        return auditoria, quien_aud, avisos",
+  "texto_nuevo": "    # A-38 punto 4 (Julio 2026-09-19): si bigpickle esta caido, revisa otra IA con solo lo necesario, nunca claude ni quien escribio.\n    revisor_fijo = auditor if auditor == 'bigpickle' else None\n    if revisor_fijo and quien_aud != revisor_fijo:\n        crudo_r, quien_r, av_r = _preguntar_con_relevo(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,\n            evitar=evitar, clase='auditar', vuelta=1)\n        avisos += av_r\n        aud_r = _json_de(crudo_r) if crudo_r else None\n        if isinstance(aud_r, dict) and '_error' not in aud_r and quien_r != 'claude':\n            auditoria = aud_r\n            quien_aud = quien_r\n            avisos.append('bigpickle no estaba: revisa %s con solo lo necesario (A-38)' % quien_r)\n        else:\n            auditoria = {'veredicto': 'SIN_AUDITAR',\n                         'resumen_para_el_jefe': 'bigpickle no estaba y ninguna otra IA pudo revisar'}\n            avisos.append('bigpickle no estaba y el relevo no contesto: SIN_AUDITAR (A-38)')\n        return auditoria, quien_aud, avisos",
+  "cambio": "Sustituir el bloque de la ley 2026-09-15 (comentario de 4 lineas, revisor_fijo = ..., y el if revisor_fijo con su return) por el bloque A-38 punto 4: si bigpickle no reviso, se llama a _preguntar_con_relevo con evitar=evitar y clase='auditar', vuelta=1; si el relevo contesta un dict sin '_error' y no es 'claude', se acepta como auditoria y se avisa; si no, queda SIN_AUDITAR con aviso; en los dos casos return auditoria, quien_aud, avisos.",
+  "codigo": "    # A-38 punto 4 (Julio 2026-09-19): si bigpickle esta caido, revisa otra IA con solo lo necesario, nunca claude ni quien escribio.\n    revisor_fijo = auditor if auditor == 'bigpickle' else None\n    if revisor_fijo and quien_aud != revisor_fijo:\n        crudo_r, quien_r, av_r = _preguntar_con_relevo(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,\n            evitar=evitar, clase='auditar', vuelta=1)\n        avisos += av_r\n        aud_r = _json_de(crudo_r) if crudo_r else None\n        if isinstance(aud_r, dict) and '_error' not in aud_r and quien_r != 'claude':\n            auditoria = aud_r\n            quien_aud = quien_r\n            avisos.append('bigpickle no estaba: revisa %s con solo lo necesario (A-38)' % quien_r)\n        else:\n            auditoria = {'veredicto': 'SIN_AUDITAR',\n                         'resumen_para_el_jefe': 'bigpickle no estaba y ninguna otra IA pudo revisar'}\n            avisos.append('bigpickle no estaba y el relevo no contesto: SIN_AUDITAR (A-38)')\n        return auditoria, quien_aud, avisos",
+  "vigia": "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py y vigias/test_vigia_nadie_revisa_su_propio_trabajo.py: comprueban que cuando bigpickle no contesta, el relevo revisa (nunca claude ni quien escribio) y que si nadie puede, queda SIN_AUDITAR con aviso A-38.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple la sustitución requerida sin inventar ni romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40064 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (41560 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "marcar_estado solo lee la lista y termina; su cuerpo real (buscar la orden, cambiar estado, paso_fallido, fallos_seguidos y escribir el JSON) quedo pegado al final de comprobar_pasos despues del return, como codigo muerto.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "marcar_estado",
+  "texto_viejo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    lista = leer_lista()",
+  "texto_nuevo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    lista = leer_lista()\n    encontrada = False\n    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            orden[\"paso_fallido\"] = paso_fallido\n            orden[\"fallos_seguidos\"] = fallos_seguidos\n            encontrada = True\n            break\n    if not encontrada:\n        return False\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2)\n    return True",
+  "cambio": "Mover el bloque de codigo que hoy esta pegado al final de comprobar_pasos (desde 'encontrada = False' hasta 'return True') al cuerpo de marcar_estado, justo despues de 'lista = leer_lista()'. Y en comprobar_pasos dejar solo el 'return \"\"' del paso 5, borrando ese bloque muerto que va despues.",
+  "codigo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    lista = leer_lista()\n    encontrada = False\n    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            orden[\"paso_fallido\"] = paso_fallido\n            orden[\"fallos_seguidos\"] = fallos_seguidos\n            encontrada = True\n            break\n    if not encontrada:\n        return False\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2)\n    return True",
+  "vigia": "Una prueba que llame a marcar_estado con un id existente y compruebe que devuelve True y que ORDENES.json quedo con el estado, paso_fallido y fallos_seguidos nuevos; y con un id inexistente que devuelva False sin tocar el archivo. Ademas, importar cuerpo/capataz.py sin error y comprobar que comprobar_pasos sigue devolviendo lo mismo que antes.",
+  "puede_danar": [
+   "comprobar_pasos (si se toca mal el bloque muerto)",
+   "memoria/ORDENES.json (si marcar_estado escribe mal)",
+   "quien llame a marcar_estado esperando True/False"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "ORDENES.js"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Menciona '_fuera_del_paquete: [ORDENES.js]', nombre que no aparece en el material (declarado fuera del paquete, no lo usa en el codigo; no impide aprobar pero conviene aclarar si es un error de tipeo por ORDENES.json)",
+   "Describe una vigia pero no la entrega creada; debe crearse/correrse antes de sellar"
+  ],
+  "riesgo_vecinos": [
+   "Material dice: 'Nadie depende de estas piezas. Reparacion aislada.' El borrado del bloque muerto tras 'return \"\"' de comprobar_pasos es codigo inalcanzable: no cambia su comportamiento.",
+   "ORDENES.json solo se toca cuando marcar_estado escribe con indent=2, identico al bloque original del material."
+  ],
+  "que_falta": [
+   "Crear/correr la vigia que propone (marcar_estado con id existente devuelve True y guarda estado/paso_fallido/fallos_seguidos; id inexistente devuelve False sin tocar archivo; importar capataz.py sin error)",
+   "Comprobar que comprobar_pasos sigue devolviendo lo mismo que antes"
+  ],
+  "resumen_para_el_jefe": "El plan mueve al cuerpo de marcar_estado el bloque muerto que esta identico en el material (no inventa nada), borra ese bloque de comprobar_pasos dejando solo el return \"\", y cumple exactamente lo que pide el encargo sin tocar vecinos; solo falta correr la prueba de verificacion antes de sellar."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

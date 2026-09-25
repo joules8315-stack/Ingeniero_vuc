@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la constante PIEZA_BUENA_ORDEN_CAMBIADO justo debajo de PIEZA_MALA, con el mismo texto que PIEZA_BUENA pero devolviendo b + a.",
+  "archivo": "vigias/test_vigia_el_juez_de_la_prueba.py",
+  "funcion": "constantes del modulo (PIEZA_MALA)",
+  "texto_viejo": "PIEZA_MALA = '''def suma(a, b):\n    return a * b\n'''",
+  "texto_nuevo": "PIEZA_MALA = '''def suma(a, b):\n    return a * b\n'''\n\nPIEZA_BUENA_ORDEN_CAMBIADO = '''def suma(a, b):\n    return b + a\n'''",
+  "cambio": "Agregar debajo de PIEZA_MALA una constante nueva llamada PIEZA_BUENA_ORDEN_CAMBIADO cuyo texto es identico al de PIEZA_BUENA salvo que devuelve b + a.",
+  "codigo": "PIEZA_BUENA_ORDEN_CAMBIADO = '''def suma(a, b):\n    return b + a\n'''",
+  "vigia": "vigias/test_vigia_el_juez_de_la_prueba.py (tercera prueba del archivo, que ya nombra PIEZA_BUENA_ORDEN_CAMBIADO)",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "juez_de_la_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No rompe arnes/juez_de_la_prueba.py: solo se anade una constante a nivel de modulo en el test, no se toca el juez.",
+   "No rompe las pruebas existentes del archivo: la constante nueva no tiene efectos colaterales sobre PIEZA_ROTA, PIEZA_BUENA, PIEZA_MALA, VIGIA ni _armar_raiz."
+  ],
+  "que_falta": [
+   "Nada: el texto_viejo (PIEZA_MALA = ... return a * b) aparece literal en el material y el paquete pide exactamente esta constante con este nombre y este contenido."
+  ],
+  "resumen_para_el_jefe": "El cambio anade justo lo que el encargo pide (la constante PIEZA_BUENA_ORDEN_CAMBIADO debajo de PIEZA_MALA, igual a PIEZA_BUENA pero devolviendo b + a), no inventa nada, no toca ninguna constante existente ni el juez, asi que se aprueba tal cual."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

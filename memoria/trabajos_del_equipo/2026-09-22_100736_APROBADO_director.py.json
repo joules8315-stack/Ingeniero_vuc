@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "El archivo cuerpo/director.py no tiene las funciones depende(raiz, id, lista_ids) ni archivar(raiz, id, motivo) que pide el encargo; hay que crearlas al final del archivo.",
+  "archivo": "cuerpo/director.py",
+  "funcion": "final del archivo (tras la funcion hecha)",
+  "texto_viejo": "    salida = (resultado.stdout or '') + (resultado.stderr or '')\n    ultimas = salida.splitlines()[-15:]\n    return (False, '\\n'.join(ultimas))",
+  "texto_nuevo": "    salida = (resultado.stdout or '') + (resultado.stderr or '')\n    ultimas = salida.splitlines()[-15:]\n    return (False, '\\n'.join(ultimas))\n\n\ndef depende(raiz, id, lista_ids):\n    \"\"\"Pone depende = lista_ids (lista de textos; vacia vale) en esa orden.\n\n    Guarda con escritura atomica como las demas y devuelve (True, motivo)\n    o (False, motivo) si no existe la orden.\n    \"\"\"\n    try:\n        ordenes = _leer_ordenes(raiz)\n    except Exception as e:\n        return (False, 'no se pudieron leer las ordenes: %s' % e)\n\n    orden = _buscar_orden(ordenes, id)\n    if orden is None:\n        return (False, 'no existe la orden %s' % id)\n\n    orden['depende'] = lista_ids\n\n    try:\n        _guardar_ordenes(raiz, ordenes)\n    except Exception as e:\n        return (False, 'no se pudo guardar: %s' % e)\n\n    return (True, 'orden %s: depende = %s' % (id, lista_ids))\n\n\ndef archivar(raiz, id, motivo):\n    \"\"\"Pone estado archivada y nota = motivo en esa orden.\n\n    Devuelve (True, motivo) o (False, motivo) si no existe la orden.\n    \"\"\"\n    try:\n        ordenes = _leer_ordenes(raiz)\n    except Exception as e:\n        return (False, 'no se pudieron leer las ordenes: %s' % e)\n\n    orden = _buscar_orden(ordenes, id)\n    if orden is None:\n        return (False, 'no existe la orden %s' % id)\n\n    orden['estado'] = 'archivada'\n    orden['nota'] = motivo\n\n    try:\n        _guardar_ordenes(raiz, ordenes)\n    except Exception as e:\n        return (False, 'no se pudo guardar: %s' % e)\n\n    return (True, 'orden %s archivada' % id)",
+  "cambio": "Anadir al final de cuerpo/director.py, justo despues de la funcion hecha, las dos funciones nuevas depende(raiz, id, lista_ids) y archivar(raiz, id, motivo), usando _leer_ordenes, _buscar_orden y _guardar_ordenes como las demas funciones del archivo.",
+  "codigo": "def depende(raiz, id, lista_ids):\n    \"\"\"Pone depende = lista_ids (lista de textos; vacia vale) en esa orden.\n\n    Guarda con escritura atomica como las demas y devuelve (True, motivo)\n    o (False, motivo) si no existe la orden.\n    \"\"\"\n    try:\n        ordenes = _leer_ordenes(raiz)\n    except Exception as e:\n        return (False, 'no se pudieron leer las ordenes: %s' % e)\n\n    orden = _buscar_orden(ordenes, id)\n    if orden is None:\n        return (False, 'no existe la orden %s' % id)\n\n    orden['depende'] = lista_ids\n\n    try:\n        _guardar_ordenes(raiz, ordenes)\n    except Exception as e:\n        return (False, 'no se pudo guardar: %s' % e)\n\n    return (True, 'orden %s: depende = %s' % (id, lista_ids))\n\n\ndef archivar(raiz, id, motivo):\n    \"\"\"Pone estado archivada y nota = motivo en esa orden.\n\n    Devuelve (True, motivo) o (False, motivo) si no existe la orden.\n    \"\"\"\n    try:\n        ordenes = _leer_ordenes(raiz)\n    except Exception as e:\n        return (False, 'no se pudieron leer las ordenes: %s' % e)\n\n    orden = _buscar_orden(ordenes, id)\n    if orden is None:\n        return (False, 'no existe la orden %s' % id)\n\n    orden['estado'] = 'archivada'\n    orden['nota'] = motivo\n\n    try:\n        _guardar_ordenes(raiz, ordenes)\n    except Exception as e:\n        return (False, 'no se pudo guardar: %s' % e)\n\n    return (True, 'orden %s archivada' % id)",
+  "vigia": "Un test que importe cuerpo/director.py, cree una orden con orden_nueva, llame a depende(raiz, id, ['a','b']) y compruebe que la orden guardada tiene depende == ['a','b'] y devuelve (True, ...); que con id inexistente devuelva (False, ...); y que archivar(raiz, id, 'motivo') deje estado == 'archivada' y nota == 'motivo'.",
+  "puede_danar": [
+   "cuerpo/codex.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_director.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "test_vigia_director.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

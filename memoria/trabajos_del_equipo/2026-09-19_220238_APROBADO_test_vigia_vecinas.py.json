@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta un fixture autouse con monkeypatch que borre la variable INGENIERO_BATERIA_COMPLETA del entorno para todas las pruebas del archivo, porque tres pruebas salian rojas en falso al quedar esa variable puesta por quien corre la bateria completa.",
+  "archivo": "vigias/test_vigia_vecinas.py",
+  "funcion": "import vecinas (zona de imports, justo debajo del renglon 'import vecinas  # noqa: E402  (import tras ajustar sys.path)')",
+  "texto_viejo": "import vecinas  # noqa: E402  (import tras ajustar sys.path)",
+  "texto_nuevo": "import vecinas  # noqa: E402  (import tras ajustar sys.path)\n\n\n# Quien corre la bateria completa deja puesta INGENIERO_BATERIA_COMPLETA, y con\n# ella puesta la eleccion de vecinas devuelve nada: tres pruebas de este archivo\n# salian rojas en falso. Se borra del entorno para todas las pruebas; la prueba\n# que si quiere esa variable la pone ella misma despues.\n@pytest.fixture(autouse=True)\ndef _sin_bateria_completa(monkeypatch):\n    monkeypatch.delenv(\"INGENIERO_BATERIA_COMPLETA\", raising=False)\n    yield",
+  "cambio": "Anadir, justo debajo del renglon 'import vecinas  # noqa: E402  (import tras ajustar sys.path)', un comentario corto en castellano y un fixture de pytest con autouse=True y monkeypatch que borre del entorno INGENIERO_BATERIA_COMPLETA sin quejarse si no estaba (raising=False) y ceda el turno a la prueba. No se toca nada mas del archivo.",
+  "codigo": "# Quien corre la bateria completa deja puesta INGENIERO_BATERIA_COMPLETA, y con\n# ella puesta la eleccion de vecinas devuelve nada: tres pruebas de este archivo\n# salian rojas en falso. Se borra del entorno para todas las pruebas; la prueba\n# que si quiere esa variable la pone ella misma despues.\n@pytest.fixture(autouse=True)\ndef _sin_bateria_completa(monkeypatch):\n    monkeypatch.delenv(\"INGENIERO_BATERIA_COMPLETA\", raising=False)\n    yield",
+  "vigia": "Correr vigias/test_vigia_vecinas.py con INGENIERO_BATERIA_COMPLETA=1 puesto en el entorno: las pruebas que no quieren esa variable deben pasar, y test_bateria_completa_devuelve_none (que la pone ella misma con monkeypatch.setenv) debe seguir pasando.",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "vigias/test_vigia_vecinas.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "monkeypatch.delenv solo afecta a las pruebas de este archivo via el fixture autouse y se revierte al terminar cada prueba; la prueba que si quiere la variable la re-pone con monkeypatch.setenv en su cuerpo, que corre despues del fixture, asi que no se descuadra. arnes/vecinas.py no se toca."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El fixture autouse con monkeypatch.delenv es exactamente lo que pedia el encargo, el texto toca aparece en el material, usa solo herramientas de pytest ya importadas y no rompe vecinos; se puede aplicar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (28116 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

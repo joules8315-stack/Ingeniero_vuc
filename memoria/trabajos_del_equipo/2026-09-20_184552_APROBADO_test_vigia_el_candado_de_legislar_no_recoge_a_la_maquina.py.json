@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "La lista TEXTOS_DE_LA_MAQUINA solo tiene seis textos y le faltan los cuatro que se colaron el 2026-09-20, que la regla de hoy no caza.",
+  "archivo": "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+  "funcion": "TEXTOS_DE_LA_MAQUINA",
+  "texto_viejo": "    \"OBRERO deepseek -> AUDITOR groq\",\n]",
+  "texto_nuevo": "    \"OBRERO deepseek -> AUDITOR groq\",\n    \"py::test_lo_mas_reciente_manda salio ROJA en una tanda completa y VERDE en la siguiente;\",\n    \"py, en la prueba test_lo_mas_reciente_manda, sale roja solo a veces cuando corre la bateria entera;\",\n    \"//n      toca      : arnes/candado_legislar\",\n    \"    resumen      : cumple el diagnostico sin inventar nada\",\n]",
+  "cambio": "Anadir cuatro textos nuevos a la lista TEXTOS_DE_LA_MAQUINA, justo despues de la linea del texto OBRERO deepseek -> AUDITOR groq y antes del corchete que cierra la lista.",
+  "codigo": "    \"OBRERO deepseek -> AUDITOR groq\",\n    \"py::test_lo_mas_reciente_manda salio ROJA en una tanda completa y VERDE en la siguiente;\",\n    \"py, en la prueba test_lo_mas_reciente_manda, sale roja solo a veces cuando corre la bateria entera;\",\n    \"//n      toca      : arnes/candado_legislar\",\n    \"    resumen      : cumple el diagnostico sin inventar nada\",",
+  "vigia": "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py::test_el_ruido_de_la_maquina_no_se_cola_como_orden",
+  "puede_danar": [
+   "arnes/candado_legislar.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "candado_legislar.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio añade correctamente los cuatro textos de ruido de la máquina solicitados a la lista de pruebas, cumpliendo con las instrucciones específicas de formato y contenido."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini2 con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

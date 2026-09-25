@@ -1,0 +1,58 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_equipo.py, dentro de main, las llamadas a _apuntar_frenada de los motivos 'documento libre' y 'veredicto del equipo cubre el archivo' no empiezan por DEJO PASAR, asi que el registro de decisiones las clasifica como FRENO aunque su camino termina en return 0 (dejan pasar).",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "main",
+  "texto_viejo": "        _apuntar_frenada(fp, \"documento libre\")\n        return 0                                    # documentos: libres",
+  "texto_nuevo": "        _apuntar_frenada(fp, \"DEJO PASAR: documento libre\")\n        return 0                                    # documentos: libres",
+  "cambio": "En main, cambiar el motivo de la llamada a _apuntar_frenada del caso 'documento libre' para que empiece por DEJO PASAR, y cambiar el motivo de la llamada a _apuntar_frenada del caso 'veredicto del equipo cubre el archivo' para que empiece por DEJO PASAR. No se toca ninguna decision ni ningun return.",
+  "codigo": "        _apuntar_frenada(fp, \"DEJO PASAR: documento libre\")\n        return 0                                    # documentos: libres\n...\n    if cubre(d, fp):\n        _apuntar_frenada(fp, \"DEJO PASAR: veredicto del equipo cubre el archivo\")\n        return 0                                    # el equipo ya lo miro: adelante",
+  "vigia": "vigias/test_vigia_el_registro_del_candado_no_miente.py (nacida el 2026-09-20): comprueba que en memoria/DECISIONES_CANDADO.log las entradas cuyo camino termina en return 0 (documento libre, veredicto del equipo cubre el archivo, es el propio arnes, vigia nueva de verdad, llave de Julio) quedan clasificadas como DEJO PASAR y no como FRENO.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El unico vecino tocable es la clasificacion del registro: cualquier sitio que lea literalmente 'documento libre' o 'veredicto del equipo cubre el archivo' en memoria/DECISIONES_CANDADO.log dejaria de encontrarlo al cambiar el motivo. revisor_de_programa.py, ingeniero.py y las vigias no estan en el paquete, asi que conviene correr la vigia nueva para confirmar que nadie los pedia por texto exacto."
+  ],
+  "que_falta": [
+   "La definicion de _apuntar_frenada y como el registro clasifica DEJO PASAR vs FRENO no esta en el material; el arreglo se apoya en el patron visible (toda ruta de return 0 usa prefijo DEJO PASAR) y la vigia nueva nacida el 2026-09-20 lo verifica empiricamente.",
+   "El texto del segundo caso ('veredicto del equipo cubre el archivo') no alcanza a verse en el material recortado; solo lo avala la comprobacion por programa. Si la vigia cae roja, hay que mirar ahi."
+  ],
+  "resumen_para_el_jefe": "Cambio minimo y correcto: solo agrega el prefijo DEJO PASAR a dos motivos que ya terminan en return 0, alineandolos con el patron que usan las otras rutas que dejan pasar; no toca ninguna decision ni return, y una vigia nueva lo comprueba."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (32514 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (33287 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (33499 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (33873 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

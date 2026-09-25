@@ -1,0 +1,59 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la vigia nueva que pruebe que el registro de decisiones dice DEJO PASAR cuando el candado deja pasar, en los dos casos que el encargo pide.",
+  "archivo": "vigias/test_vigia_el_registro_del_candado_no_miente.py",
+  "funcion": "archivo nuevo completo (no existe en el material)",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "CREAR el archivo vigias/test_vigia_el_registro_del_candado_no_miente.py. Debe: (1) monkeypatch de arnes.candado_equipo.AQUI a una carpeta temporal para que _apuntar_frenada escriba en <tmp>/memoria/DECISIONES_CANDADO.log y no en el registro real; (2) monkeypatch de arnes.candado_equipo.veredicto_vigente para controlar el caso del veredicto; (3) caso 1: un documento que no es codigo (extension fuera de CODIGO) -> main() con tool_input.file_path apuntando a un .md -> el candado deja pasar y la linea del registro debe decir 'DEJO PASAR'; (4) caso 2: un archivo .py que el veredicto del equipo ya cubre (veredicto_vigente devuelve un dict con veredicto APROBADO, reviso_a_si_mismo False y archivos incluyendo el basename) -> main() deja pasar y la linea del registro debe decir 'DEJO PASAR'; (5) en ambos casos comprobar que la linea NO dice 'FRENO'. Se llama a main() SIN argumentos (lee de stdin), por lo que hay que monkeypatchear sys.stdin con un io.StringIO(json.dumps(data)) y capturar el returncode. El registro se lee en <tmp>/memoria/DECISIONES_CANDADO.log (subcarpeta memoria, tal como escribe _apuntar_frenada).",
+  "codigo": "# -*- coding: utf-8 -*-\n\"\"\"vigias/test_vigia_el_registro_del_candado_no_miente.py\n\nVIGIA: el registro de decisiones del candado NO MIENTE.\n\nJulio, 2026-09-02: el candado apunta TODO lo que decide (lo que frena Y lo que deja pasar)\nen arnes/memoria/DECISIONES_CANDADO.log, con cuatro datos separados por barra:\ncuando | archivo | que decidio | por que.\n\nEsta vigia prueba que cuando el candado DEJA PASAR, la linea del registro dice\nDEJO PASAR y NO dice FRENO. Dos casos que el candado deja pasar:\n  1) un documento que no es codigo (extension fuera de CODIGO)\n  2) un archivo .py que el veredicto del equipo ya cubre\n\nUsa monkeypatch y una carpeta temporal para no ensuciar el registro de verdad.\n\"\"\"\nimport io\nimport json\nimport os\nimport sys\n\nimport pytest\n\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\n\nfrom arnes import candado_equipo\n\n\ndef _lineas_del_registro(tmp_path):\n    ruta = os.path.join(str(tmp_path), \"memoria\", \"DECISIONES_CANDADO.log\")\n    if not os.path.exists(ruta):\n        return []\n    with open(ruta, \"r\", encoding=\"utf-8\") as f:\n        return [l for l in f.read().splitlines() if l.strip()]\n\n\ndef _ejecutar_candado(monkeypatch, tmp_path, data):\n    \"\"\"Llama a main() SIN argumentos (lee de stdin) con el registro en carpeta temporal.\"\"\"\n    monkeypatch.setattr(candado_equipo, \"AQUI\", str(tmp_path))\n    monkeypatch.setattr(sys, \"stdin\", io.StringIO(json.dumps(data)))\n    return candado_equipo.main()\n\n\ndef test_documento_que_no_es_codigo_deja_pasar_y_lo_apunta(monkeypatch, tmp_path):\n    \"\"\"Caso 1: un .md no es codigo -> el candado deja pasar y el registro dice DEJO PASAR.\"\"\"\n    doc = os.path.join(str(tmp_path), \"notas.md\")\n    with open(doc, \"w\", encoding=\"utf-8\") as f:\n        f.write(\"# notas\\n\")\n    data = {\"tool_input\": {\"file_path\": doc, \"content\": \"# notas\\n\"}}\n\n    rc = _ejecutar_candado(monkeypatch, tmp_path, data)\n\n    assert rc == 0, \"un documento que no es codigo debe dejar pasar (rc=0)\"\n    lineas = _lineas_del_registro(tmp_path)\n    assert lineas, \"el candado debe apuntar su decision en el registro\"\n    ultima = lineas[-1]\n    assert \"DEJO PASAR\" in ultima, \"el registro debe decir DEJO PASAR, no FRENO: %r\" % ultima\n    assert \"FRENO\" not in ultima, \"el registro NO debe decir FRENO cuando deja pasar: %r\" % ultima\n\n\ndef test_archivo_cubierto_por_el_veredicto_deja_pasar_y_lo_apunta(monkeypatch, tmp_path):\n    \"\"\"Caso 2: un .py que el veredicto del equipo ya cubre -> deja pasar y el registro dice DEJO PASAR.\"\"\"\n    codigo = os.path.join(str(tmp_path), \"pieza.py\")\n    with open(codigo, \"w\", encoding=\"utf-8\") as f:\n        f.write(\"x = 1\\n\")\n\n    veredicto = {\n        \"cuando\": 0,\n        \"tarea\": \"prueba\",\n        \"archivos\": [codigo],\n        \"obrero\": \"obrero\",\n        \"auditor\": \"auditor\",\n        \"veredicto\": \"APROBADO\",\n        \"reviso_a_si_mismo\": False,\n        \"fallos_del_programa\": [],\n    }\n    monkeypatch.setattr(candado_equipo, \"veredicto_vigente\", lambda: veredicto)\n\n    data = {\"tool_input\": {\"file_path\": codigo, \"content\": \"x = 1\\n\"}}\n    rc = _ejecutar_candado(monkeypatch, tmp_path, data)\n\n    assert rc == 0, \"un archivo cubierto por el veredicto debe dejar pasar (rc=0)\"\n    lineas = _lineas_del_registro(tmp_path)\n    assert lineas, \"el candado debe apuntar su decision en el registro\"\n    ultima = lineas[-1]\n    assert \"DEJO PASAR\" in ultima, \"el registro debe decir DEJO PASAR, no FRENO: %r\" % ultima\n    assert \"FRENO\" not in ultima, \"el registro NO debe decir FRENO cuando deja pasar: %r\" % ultima\n",
+  "vigia": "vigias/test_vigia_el_registro_del_candado_no_miente.py: comprueba que en los dos casos en que el candado deja pasar (documento no-codigo y archivo cubierto por veredicto del equipo), la linea escrita en <tmp>/memoria/DECISIONES_CANDADO.log contiene 'DEJO PASAR' y no contiene 'FRENO'.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "vigias/conftest.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py"
+  ],
+  "preguntas": [
+   "El encargo dice 'un archivo que el veredicto del equipo ya cubre'. ¿Vale con monkeypatchear veredicto_vigente para devolver un dict APROBADO con el basename del archivo, o prefieres que se construya el veredicto llamando a guardar_veredicto (que escribe en el registro real de veredictos)?"
+  ],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "candado_equipo.main(data) lanza TypeError: main() no toma argumentos (candado_equipo.py:443) y lee de json.load(sys.stdin) (linea 454). Hay que alimentar sys.stdin con io.StringIO(json.dumps(datos)) y llamar main() sin argumento, como hace test_vigia_equipo_siempre.py:33-35.",
+   "Lee el registro en tmp_path/DECISIONES_CANDADO.log pero _apuntar_frenada lo escribe en os.path.join(AQUI,'memoria','DECISIONES_CANDADO.log') (linea 238), o sea tmp_path/memoria/DECISIONES_CANDADO.log. No lo encuentra, texto='' y assert texto falla.",
+   "La vigia nace roja: el candado actual escribe 'FRENO' (linea 240) para 'documento libre' (502) y 'veredicto del equipo cubre el archivo' (547). La propuesta da por hecho que dira 'DEJO PASAR' cuando eso es falso con el codigo vigente.",
+   "El alcance del paquete no puede cumplir su propia meta: la vigia solo se pone verde si ademas se repara candado_equipo.py, y el encargo dice 'No toques ningun otro archivo'. Hay que ampliar el encargo o traer la reparacion del candado en el paquete."
+  ],
+  "riesgo_vecinos": [
+   "No rompe arnes/candado_equipo.py ni las vigias vecinas (archivo nuevo aislado, monkeypatch y tmp_path por prueba, conftest autouse igualmente aislado).",
+   "Riesgo real: aprobado tal cual, la suite queda con 2 pruebas en ERROR y una vigia roja; por ley no se sella con una vigia roja y una roja falsa ensena a ignorar los rojos."
+  ],
+  "que_falta": [
+   "Alimentar la peticion por sys.stdin (io.StringIO) y llamar candado_equipo.main() sin argumento.",
+   "Leer el registro desde tmp_path/memoria/DECISIONES_CANDADO.log (o desviar la ruta del DECISIONES_CANDADO.log a tmp_path y leerla igual).",
+   "Pedir a Julio que amplie el encargo o incluir en el paquete la reparacion de candado_equipo.py para que esos dos motivos se registren como 'DEJO PASAR: ...' en vez de 'FRENO'.",
+   "Corregir el texto de la propuesta que afirma que main() devuelve 0 y la linea dice DEJO PASAR: hoy la linea dice FRENO, y eso es justo lo que la vigia debe delatar."
+  ],
+  "resumen_para_el_jefe": "La vigia no funciona como esta escrita: llama main(data) cuando main() no acepta argumentos (lee de stdin) y lee el registro donde no lo escribe el candado (le falta la subcarpeta memoria), y aunque se arregle eso, el candado hoy registra FRENO justo en los dos casos que la vigia debe ver DEJO PASAR, asi que nace roja y el 'no toques ningun otro archivo' del encargo no la deja ponerse verde; hay que rehacerla y aclarar el alcance antes de aprobar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27459 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (28074 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (28526 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (28584 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la funcion entregar_enteros_los_cortos en cerebro/router.py y su llamada justo despues de 'pedazos = completar_funciones(pedazos, codigo)'; la vigia vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py esta roja porque importa esa funcion que aun no existe.",
+  "archivo": "cerebro/router.py",
+  "funcion": "entregar_enteros_los_cortos (nueva, al lado de completar_funciones) y la llamada dentro de la funcion que hoy contiene 'pedazos = completar_funciones(pedazos, codigo)'",
+  "texto_viejo": "pedazos = completar_funciones(pedazos, codigo)",
+  "texto_nuevo": "pedazos = completar_funciones(pedazos, codigo)\n    pedazos = entregar_enteros_los_cortos(pedazos, codigo)",
+  "cambio": "1) Anadir en cerebro/router.py la funcion nueva entregar_enteros_los_cortos(pedazos, codigo) al lado de completar_funciones. Recibe pedazos (lista de dicts con pieza, abs, desde, hasta, texto) y codigo (lista de piezas con id y abs). Para cada pedazo: localiza el archivo por su clave abs o, si no, por la pieza en codigo; si el archivo existe y tiene 600 renglones o menos, sustituye el pedazo por uno solo con el archivo ENTERO en texto, desde=1 y hasta=numero de renglones; si el mismo archivo corto sale en varios pedazos, solo se entrega una vez; si el archivo tiene mas de 600 renglones o no se puede leer, el pedazo se deja tal cual. Nunca lanza: si algo falla, devuelve los pedazos como estaban. 2) Llamarla justo despues de la linea 'pedazos = completar_funciones(pedazos, codigo)'. No tocar ningun otro archivo.",
+  "codigo": "def entregar_enteros_los_cortos(pedazos, codigo):\n    \"\"\"Un archivo corto (<= 600 renglones) se entrega ENTERO, una sola vez.\n\n    Recibe pedazos (lista de dicts con pieza, abs, desde, hasta, texto) y\n    codigo (lista de piezas con id y abs). Devuelve otra lista de pedazos.\n    Si el archivo de un pedazo existe y tiene 600 renglones o menos, ese\n    pedazo se sustituye por uno solo con el archivo ENTERO en texto,\n    desde=1 y hasta=numero de renglones. Si el mismo archivo corto sale en\n    varios pedazos, solo se entrega una vez. Si el archivo tiene mas de 600\n    renglones o no se puede leer, el pedazo se deja tal cual. Nunca lanza:\n    si algo falla, devuelve los pedazos como estaban.\n    \"\"\"\n    LIMITE = 600\n    try:\n        if not pedazos:\n            return pedazos\n\n        abs_por_pieza = {}\n        try:\n            for pieza in codigo or []:\n                if isinstance(pieza, dict):\n                    pid = pieza.get(\"id\")\n                    pabs = pieza.get(\"abs\")\n                    if pid is not None and pabs:\n                        abs_por_pieza[pid] = pabs\n        except Exception:\n            abs_por_pieza = {}\n\n        salida = []\n        ya_entregados = set()\n\n        for pedazo in pedazos:\n            try:\n                if not isinstance(pedazo, dict):\n                    salida.append(pedazo)\n                    continue\n\n                ruta = pedazo.get(\"abs\")\n                if not ruta:\n                    ruta = abs_por_pieza.get(pedazo.get(\"pieza\"))\n\n                if not ruta:\n                    salida.append(pedazo)\n                    continue\n\n                if ruta in ya_entregados:\n                    continue\n\n                try:\n                    with open(ruta, \"r\", encoding=\"utf-8\") as f:\n                        lineas = f.readlines()\n                except Exception:\n                    salida.append(pedazo)\n                    continue\n\n                if len(lineas) > LIMITE:\n                    salida.append(pedazo)\n                    continue\n\n                nuevo = dict(pedazo)\n                nuevo[\"abs\"] = ruta\n                nuevo[\"desde\"] = 1\n                nuevo[\"hasta\"] = len(lineas)\n                nuevo[\"texto\"] = \"\".join(lineas)\n                salida.append(nuevo)\n                ya_entregados.add(ruta)\n            except Exception:\n                salida.append(pedazo)\n\n        return salida\n    except Exception:\n        return pedazos",
+  "vigia": "vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py: comprueba que un archivo corto (<=600 renglones) se sustituye por un solo pedazo con el archivo ENTERO, desde=1 y hasta=numero de renglones; que un archivo largo (>600) se deja igual; que el mismo archivo corto en dos pedazos solo se entrega una vez; y que si el archivo no se puede leer, el pedazo se deja igual.",
+  "puede_danar": [
+   "cerebro/router.py",
+   "vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_memoria_completa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La función y su llamada se añaden según el diagnóstico, sin inventar nada ni romper pruebas vecinas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27245 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (28548 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'entregar_enteros_los_cortos'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (28685 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'entregar_enteros_los_cortos'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (28822 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

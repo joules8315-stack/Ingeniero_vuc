@@ -1,0 +1,33 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba test_sin_perito_no_se_llama_a_subprocess hace monkeypatch.setattr sobre modulo.shutil, pero cuerpo/capataz.py importa shutil dentro de la funcion pedir_al_perito y no lo tiene como atributo del modulo, por lo que revienta con AttributeError.",
+  "archivo": "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py",
+  "funcion": "test_sin_perito_no_se_llama_a_subprocess",
+  "texto_viejo": "    monkeypatch.setattr(modulo.shutil, 'which', lambda nombre: None)",
+  "texto_nuevo": "    monkeypatch.setattr(shutil, 'which', lambda nombre: None)",
+  "cambio": "Sustituir el monkeypatch sobre modulo.shutil por monkeypatch sobre shutil directamente, usando el shutil que el archivo ya importa arriba, igual que hacen las otras tres pruebas.",
+  "codigo": "    monkeypatch.setattr(shutil, 'which', lambda nombre: None)",
+  "vigia": "Ejecutar pytest sobre vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py y comprobar que test_sin_perito_no_se_llama_a_subprocess pasa en verde sin AttributeError.",
+  "puede_danar": [
+   "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cambio de una sola linea, correcto y aislado: la prueba usaba modulo.shutil que en ese modulo no existe (el archivo importa shutil dentro de la funcion y a nivel de prueba), y ahora usa el shutil que la prueba ya importa arriba, lo que arregla de verdad el AttributeError sin tocar ningun vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (23879 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,26 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la vigia nueva que comprueba que obrero.auditar con auditor='bigpickle' respeta el descanso de bigpickle y no lo llama cuando cuotas.desperto('bigpickle') es False, y que cuenta bien los fallos y exitos en cuotas.",
+  "archivo": "vigias/test_vigia_el_revisor_respeta_el_descanso_de_big_pickle.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"VIGIA: el revisor respeta el descanso de Big Pickle.\n\nVigila cuerpo/obrero.py::auditar cuando se le pide auditor='bigpickle'.\n\nLo que se comprueba:\n  1. Si cuotas.desperto('bigpickle') devuelve False, bigpickle.preguntar NO se llama\n     y la revision la hace grok47 (el relevo de A-45).\n  2. Si bigpickle.preguntar devuelve ('', ['timeout']), despues de la llamada\n     cuotas._leer()['seguidos']['bigpickle'] vale 1 (se cuenta el fallo).\n  3. Si bigpickle.preguntar devuelve el JSON aprobado, la cuenta de seguidos\n     de bigpickle queda en 0 (se limpia el contador).\n\nNo toca ningun otro archivo: solo lee y monkeypatchea lo necesario.\n\"\"\"\nimport json\n\nimport pytest\n\nfrom cuerpo import obrero\nfrom cuerpo import bigpickle\nfrom cuerpo import grok\nfrom cuerpo import cuotas\n\n\nJSON_APROBADO = '{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}'\n\n\n@pytest.fixture(autouse=True)\ndef _aislar(monkeypatch, tmp_path):\n    \"\"\"Deja a bigpickle en pie y aisla el cuaderno de cuotas en tmp_path.\"\"\"\n    monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False)\n    monkeypatch.setattr(cuotas, 'RUTA', str(tmp_path / 'CUOTAS.json'), raising=False)\n    # grok siempre contesta aprobado y sin avisos, para que el relevo sea predecible.\n    monkeypatch.setattr(grok, 'preguntar',\n                        lambda *a, **k: (JSON_APROBADO, []), raising=False)\n    # claude nunca debe entrar: si entra, revienta y la prueba lo nota.\n    def _claude_prohibido(*a, **k):\n        raise AssertionError('claude no debe revisar en esta vigia')\n    monkeypatch.setattr(obrero, '_claude_directo', _claude_prohibido, raising=False)\n    yield\n\n\ndef _llamar_auditar():\n    \"\"\"Llama a auditar EXACTAMENTE como pide la tarea.\"\"\"\n    return obrero.auditar('', {'archivo': 'x.py'},\n                          auditor='bigpickle', evitar='deepseek')\n\n\ndef test_si_bigpickle_duerme_no_se_le_llama_y_revisa_grok47(monkeypatch):\n    \"\"\"(1) bigpickle dormido: no se le llama y revisa grok47.\"\"\"\n    monkeypatch.setattr(cuotas, 'desperto', lambda quien: False, raising=False)\n\n    llamadas = {'n': 0}\n\n    def _bp_no_llamar(*a, **k):\n        llamadas['n'] += 1\n        return (JSON_APROBADO, [])\n\n    monkeypatch.setattr(bigpickle, 'preguntar', _bp_no_llamar, raising=False)\n\n    auditoria, quien, avisos = _llamar_auditar()\n\n    assert llamadas['n'] == 0, 'bigpickle.preguntar NO debe llamarse si esta dormido'\n    assert quien == 'grok47', 'debe revisar grok47 cuando bigpickle duerme'\n    assert isinstance(auditoria, dict)\n    assert auditoria.get('veredicto') == 'APROBADO'\n\n\ndef test_fallo_de_bigpickle_suma_uno_en_seguidos(monkeypatch):\n    \"\"\"(2) bigpickle contesta vacio: la cuenta de seguidos sube a 1.\"\"\"\n    monkeypatch.setattr(cuotas, 'desperto', lambda quien: True, raising=False)\n    monkeypatch.setattr(bigpickle, 'preguntar',\n                        lambda *a, **k: ('', ['timeout']), raising=False)\n\n    _llamar_auditar()\n\n    datos = cuotas._leer()\n    seguidos = datos.get('seguidos') or {}\n    assert seguidos.get('bigpickle') == 1, \\\n        'un fallo de bigpickle debe dejar seguidos[bigpickle] en 1'\n\n\ndef test_exito_de_bigpickle_deja_la_cuenta_en_cero(monkeypatch):\n    \"\"\"(3) bigpickle contesta el JSON aprobado: la cuenta queda en 0.\"\"\"\n    monkeypatch.setattr(cuotas, 'desperto', lambda quien: True, raising=False)\n    monkeypatch.setattr(bigpickle, 'preguntar',\n                        lambda *a, **k: (JSON_APROBADO, []), raising=False)\n\n    auditoria, quien, avisos = _llamar_auditar()\n\n    assert quien == 'bigpickle', 'si bigpickle contesta, debe ser quien revisa'\n    assert isinstance(auditoria, dict)\n    assert auditoria.get('veredicto') == 'APROBADO'\n\n    datos = cuotas._leer()\n    seguidos = datos.get('seguidos') or {}\n    assert seguidos.get('bigpickle', 0) == 0, \\\n        'un exito de bigpickle debe dejar seguidos[bigpickle] en 0'\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigia nueva hace exactamente lo que pide el encargo (no llamar a bigpickle dormido, relevo grok47, contar fallo en 1 y exito en 0), crea solo el archivo pedido con su ruta, no toca nadie mas y todo lo que usa existe y lo ordena el material."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38386 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (38574 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

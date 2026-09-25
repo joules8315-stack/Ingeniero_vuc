@@ -1,0 +1,32 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba test_si_no_trae_guardado_al_momento_guardado_es_false usa returncode=1, asi que no caza un capataz que decida 'guardado' por el codigo de salida en vez de por el texto; y el comando equipo sale con codigo 0 aunque el equipo no apruebe.",
+  "archivo": "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+  "funcion": "test_si_no_trae_guardado_al_momento_guardado_es_false",
+  "texto_viejo": "def test_si_no_trae_guardado_al_momento_guardado_es_false(monkeypatch):\n    \"\"\"Si la salida no trae GUARDADO AL MOMENTO, guardado es False.\"\"\"\n    falsa = _falsa_run(\n        returncode=1,\n        stdout=\"EL EQUIPO NO APROBO\\n\",\n        stderr=\"\",\n    )\n    monkeypatch.setattr(capataz.subprocess, \"run\", falsa)\n\n    resultado = capataz.lanzar_al_equipo(\"dmm\", dict(ORDEN_BASE))\n\n    assert resultado[\"guardado\"] is False\n    assert resultado[\"codigo\"] == 1\n    assert \"EL EQUIPO NO APROBO\" in resultado[\"salida\"]",
+  "texto_nuevo": "def test_si_no_trae_guardado_al_momento_guardado_es_false(monkeypatch):\n    \"\"\"Si la salida no trae GUARDADO AL MOMENTO, guardado es False.\"\"\"\n    falsa = _falsa_run(\n        returncode=0,\n        stdout=\"EL EQUIPO NO APROBO\\n\",\n        stderr=\"\",\n    )\n    monkeypatch.setattr(capataz.subprocess, \"run\", falsa)\n\n    resultado = capataz.lanzar_al_equipo(\"dmm\", dict(ORDEN_BASE))\n\n    assert resultado[\"guardado\"] is False\n    assert resultado[\"codigo\"] == 0\n    assert \"EL EQUIPO NO APROBO\" in resultado[\"salida\"]",
+  "cambio": "En la prueba test_si_no_trae_guardado_al_momento_guardado_es_false, cambiar returncode=1 por returncode=0 en la ejecucion falsa y cambiar assert resultado[\"codigo\"] == 1 por assert resultado[\"codigo\"] == 0, dejando el stdout con 'EL EQUIPO NO APROBO' y la comprobacion de guardado False.",
+  "codigo": "def test_si_no_trae_guardado_al_momento_guardado_es_false(monkeypatch):\n    \"\"\"Si la salida no trae GUARDADO AL MOMENTO, guardado es False.\"\"\"\n    falsa = _falsa_run(\n        returncode=0,\n        stdout=\"EL EQUIPO NO APROBO\\n\",\n        stderr=\"\",\n    )\n    monkeypatch.setattr(capataz.subprocess, \"run\", falsa)\n\n    resultado = capataz.lanzar_al_equipo(\"dmm\", dict(ORDEN_BASE))\n\n    assert resultado[\"guardado\"] is False\n    assert resultado[\"codigo\"] == 0\n    assert \"EL EQUIPO NO APROBO\" in resultado[\"salida\"]",
+  "vigia": "vigias/test_vigia_el_capataz_lanza_al_equipo.py::test_si_no_trae_guardado_al_momento_guardado_es_false",
+  "puede_danar": [
+   "capataz.lanzar_al_equipo",
+   "vigias/test_vigia_el_capataz_lanza_al_equipo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La prueba se toca exactamente como manda el encargo (returncode 0, codigo 0, texto sin GUARDADO AL MOMENTO, guardado False), usa solo cosas que ya aparecen en el material, el texto a tocar casa con el trozo, y al devolver 0 con texto que no aprueba es la unica forma de cazar a un capataz que decida por codigo de salida en vez de por texto; no inventa nada y no rompe vecinos."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

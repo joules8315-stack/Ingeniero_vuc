@@ -1,0 +1,30 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta ver el cuerpo de cuerpo/bigpickle.py (firma de preguntar y atributo _bp_caido) y el resto de obrero.auditar tras el trozo recortado, pero con lo visible se puede escribir la vigia pedida usando monkeypatch sobre bigpickle.preguntar y obrero.auditar._bp_caido.",
+  "archivo": "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+  "texto_nuevo": "\"\"\"Vigia: si Big Pickle esta caido, no se le espera dos veces.\n\nJulio, 2026-09-21. Cuando el auditor pedido es 'bigpickle' y Big Pickle no contesta\n(timeout), obrero.auditar NO debe volver a llamar a bigpickle.preguntar en la misma\nronda: ya se sabe que esta caido y se pasa al relevo. Pero si Big Pickle SI contesta\nbien, cada llamada a obrero.auditar debe volver a preguntarle, porque no fallo.\n\nSe vigila la funcion auditar de cuerpo/obrero.py con auditor='bigpickle'.\n\"\"\"\n\nfrom cuerpo import obrero\nfrom cuerpo import bigpickle\n\n\nPROPUESTA = {'archivo': 'x.py'}\n\n\ndef _claude_prohibido(*args, **kwargs):\n    \"\"\"Si alguien llama a Claude, la vigia revienta: Claude no debe usarse aqui.\"\"\"\n    raise AssertionError('no se debe llamar a Claude en esta vigia')\n\n\ndef _preparar(monkeypatch, respuestas):\n    \"\"\"Deja el terreno listo: cuenta llamadas a bigpickle.preguntar y devuelve\n    las respuestas de la lista, una por llamada. Devuelve el contador.\"\"\"\n    llamadas = {'n': 0}\n\n    def _preguntar_falso(prompt):\n        i = llamadas['n']\n        llamadas['n'] += 1\n        if i < len(respuestas):\n            return respuestas[i]\n        return respuestas[-1]\n\n    monkeypatch.setattr(bigpickle, 'preguntar', _preguntar_falso)\n    monkeypatch.setattr(obrero, '_claude_directo', _claude_prohibido)\n    monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False)\n\n    def _relevo_falso(prompt, temperatura, evitar=None, primero=None, pesado=False,\n                      clase='', vuelta=0):\n        return ('{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}',\n                'groq', [])\n\n    monkeypatch.setattr(obrero, '_preguntar_con_relevo', _relevo_falso)\n    return llamadas\n\n\ndef test_big_pickle_caido_no_se_espera_dos_veces(monkeypatch):\n    \"\"\"Si Big Pickle no contesta (timeout), dos llamadas seguidas solo le preguntan UNA vez.\"\"\"\n    llamadas = _preparar(monkeypatch, [\n        ('', ['Big Pickle no contesto en 300s (timeout)']),\n    ])\n\n    auditoria1, quien1, avisos1 = obrero.auditar(\n        '', {'archivo': 'x.py'}, auditor='bigpickle', evitar='deepseek')\n    auditoria2, quien2, avisos2 = obrero.auditar(\n        '', {'archivo': 'x.py'}, auditor='bigpickle', evitar='deepseek')\n\n    assert llamadas['n'] == 1, (\n        'bigpickle.preguntar se llamo %d veces; con Big Pickle caido debe llamarse UNA sola vez'\n        % llamadas['n'])\n    assert isinstance(auditoria1, dict)\n    assert isinstance(auditoria2, dict)\n\n\ndef test_big_pickle_vivo_si_se_le_pregunta_cada_vez(monkeypatch):\n    \"\"\"Si Big Pickle contesta bien, dos llamadas seguidas le preguntan DOS veces.\"\"\"\n    llamadas = _preparar(monkeypatch, [\n        ('{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}', []),\n        ('{\"veredicto\": \"APROBADO\", \"resumen_para_el_jefe\": \"ok\"}', []),\n    ])\n\n    auditoria1, quien1, avisos1 = obrero.auditar(\n        '', {'archivo': 'x.py'}, auditor='bigpickle', evitar='deepseek')\n    auditoria2, quien2, avisos2 = obrero.auditar(\n        '', {'archivo': 'x.py'}, auditor='bigpickle', evitar='deepseek')\n\n    assert llamadas['n'] == 2, (\n        'bigpickle.preguntar se llamo %d veces; si Big Pickle contesta bien debe llamarse DOS veces'\n        % llamadas['n'])\n    assert isinstance(auditoria1, dict)\n    assert isinstance(auditoria2, dict)\n",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico sin introducir inventos ni romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39126 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (39314 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (39384 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 3"
+ ]
+}

@@ -1,0 +1,35 @@
+{
+  "orden": {
+    "id": "22",
+    "titulo": "La vigia de que los expedientes sin leer se ven al arrancar",
+    "origen": "punto 4 del plan v4; hay tres expedientes guardados que nadie ha leido nunca",
+    "repara": "cuando el perito no contesta, el expediente queda guardado y ahi se queda para siempre: nada lo nombra al arrancar, asi que el fallo se investiga solo si alguien se acuerda",
+    "pieza": "vigias/test_vigia_los_expedientes_sin_leer_se_ven_al_arrancar.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_los_expedientes_sin_leer_se_ven_al_arrancar.py. Vigila la funcion arranca de ingeniero.py. Prueba que lo que se muestra al arrancar nombra los expedientes de memoria/EXPEDIENTES que quedaron sin resolver, o sea los que guardan un informe cuya clave ok no es verdadera. Monta una carpeta temporal con dos expedientes de mentira, uno resuelto y otro sin resolver, apunta ahi la carpeta con monkeypatch, y comprueba que lo que se imprime nombra el sin resolver y no el resuelto. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_los_expedientes_sin_leer_se_ven_al_arrancar.py",
+    "entrega_la_prueba": "si",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "primer intento perdido el 2026-09-20: el encargo describia la pieza en vez de nombrarla y el obrero contesto que no la encontraba, cuatro veces. Reescrito con el nombre exacto de la funcion.",
+    "crear": true
+  },
+  "huella": "134848bdde0f02b5",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_223739_DUDOSO_test_vigia_los_expedientes_sin_leer_se_ven_al_arrancar.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (37463 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.\n  aviso       : GPT-OSS 120B (Groq) no le cabe (37651 letras, aguanta 19042) -> se le salta\n  diagnostico : Falta ver el codigo real de ingeniero.arranca y de estado.leer para saber como se leen los expedientes de memoria/EXPEDIENTES y como se imprime el arranque, y no aparece ningun archivo de vigias/ de ejemplo en el material.\n  toca        : vigias/test_vigia_los_expedientes_sin_leer_se_ven_al_arrancar.py funcion ?\n  confianza   : baja\n  VEREDICTO   : DUDOSO\n  *** INVENTO: estado.py y estado.leer(): el diagnostico los afirma como 'el codigo real' que lee los expedientes, y ninguno aparece en el material; vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py: lo cita como las vigias existentes del proyecto sin que el material mencione ese archivo -> SE DESCARTA\n  fallo       : Peticion 3 (estado.py) es redundante: el encargo ya dice donde vive la carpeta (memoria/EXPEDIENTES) y con que clave (ok); con el cuerpo de arranca() se ve el formato real del informe sin inventar un archivo\n  fallo       : No entrega ni un borrador de vigia: es un bloqueo en puro, no una reparacion. El encargo da la conducta exacta (nombrar el sin resolver, no el resuelto); pedia escribirse con la boca de arranca()\n  fallo       : Las peticiones de ejemplo deberian ser genericas ('alguna vigia de vigias/ como modelo'), no afirmar nombres de archivo especificos que no constan\n  resumen     : No invento codigo y pidio material en vez de abrir a ciegas, que es lo correcto, pero afirma que existen estado.py/estado.leer y una vigia de ejemplo que no aparecen en el material, pide de mas (el encargo ya da carpeta y clave ok) y no entrega ni un borrador: hay que devolverle las tres peticiones aterrizadas y un primer intento de vigia.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T22:37:39",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: You've hit your session limit · resets 11:10pm (America/Bogota)\n",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\22_20260920_223739.json"
+  }
+}

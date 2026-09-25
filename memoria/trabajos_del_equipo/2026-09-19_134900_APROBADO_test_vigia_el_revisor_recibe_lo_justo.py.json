@@ -1,0 +1,23 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_el_revisor_recibe_lo_justo.py que compruebe que el revisor recibe solo lo necesario (TOPE_REVISOR <= 12000, filtro con tope, sin '40000 if auditor').",
+  "archivo": "vigias/test_vigia_el_revisor_recibe_lo_justo.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\n\"\"\"Vigia: el revisor recibe SOLO lo necesario, nunca el archivo entero.\n\nOrden de Julio A-38 punto 1. El revisor (auditor) no puede tragarse el paquete\ncompleto: si le llega el bulto entero, su respuesta sale cortada y el veredicto\nsale roto. Esta vigia comprueba tres cosas:\n  1) existe un tope TOPE_REVISOR y no pasa de 12000 letras;\n  2) la llamada que arma material_auditor usa el tope (varias lineas) y en el\n     modulo no queda el atajo viejo '40000 if auditor';\n  3) _filtrar_paquete con un paquete enorme devuelve algo que cabe en el tope.\n\"\"\"\nimport os\nimport sys\nimport inspect\n\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, RAIZ)\n\nfrom cuerpo import obrero  # noqa: E402\n\n\ndef test_tope_revisor_existe_y_no_pasa_de_12000():\n    \"\"\"El tope del revisor tiene que existir y ser pequeno (<= 12000).\"\"\"\n    assert hasattr(obrero, \"TOPE_REVISOR\"), \"obrero no tiene TOPE_REVISOR\"\n    tope = obrero.TOPE_REVISOR\n    assert isinstance(tope, int), \"TOPE_REVISOR no es un entero: \" + repr(tope)\n    assert tope <= 12000, \"TOPE_REVISOR es demasiado grande: \" + str(tope)\n\n\ndef test_la_llamada_que_arma_material_auditor_usa_el_tope():\n    \"\"\"La llamada que arma material_auditor ocupa varias lineas y lleva TOPE_REVISOR.\n\n    Se toma el texto desde 'material_auditor = _filtrar_paquete(' hasta el primer\n    ')))' que le sigue, y ese trozo tiene que contener 'TOPE_REVISOR'. Ademas, en\n    todo el modulo no puede quedar el atajo viejo '40000 if auditor'.\n    \"\"\"\n    fuente = inspect.getsource(obrero)\n    marca = \"material_auditor = _filtrar_paquete(\"\n    inicio = fuente.find(marca)\n    assert inicio != -1, \"no aparece la llamada que arma material_auditor\"\n    fin = fuente.find(\")))\", inicio)\n    assert fin != -1, \"no se encontro el cierre ')))' de la llamada a material_auditor\"\n    trozo = fuente[inicio:fin + 3]\n    assert \"TOPE_REVISOR\" in trozo, (\n        \"la llamada que arma material_auditor NO usa TOPE_REVISOR: \" + trozo[:200])\n    assert \"40000 if auditor\" not in fuente, (\n        \"queda el atajo viejo '40000 if auditor' en obrero.py\")\n\n\ndef test_filtrar_paquete_recorta_al_tope_del_revisor():\n    \"\"\"Un paquete enorme se recorta y cabe en TOPE_REVISOR.\"\"\"\n    renglon = \"### `x.py:1-1`  (relevancia 99.0)\\n\"\n    paquete = \"## 1. LA LEY QUE MANDA\\n\" + (renglon * 2000)\n    assert len(paquete) >= 60000, \"el paquete de prueba no llega a 60000 letras\"\n    salida = obrero._filtrar_paquete(paquete, archivo=\"x.py\", tope=obrero.TOPE_REVISOR)\n    assert isinstance(salida, str), \"_filtrar_paquete no devolvio texto\"\n    assert len(salida) <= obrero.TOPE_REVISOR, (\n        \"el filtro devolvio mas letras que el tope: \" + str(len(salida)))\n\n\nif __name__ == \"__main__\":\n    fails = 0\n    for _n, _f in sorted(globals().items()):\n        if _n.startswith(\"test_\") and callable(_f):\n            try:\n                _f()\n                print(\"  VERDE  \" + _n)\n            except Exception as e:\n                fails += 1\n                print(\"  ROJA   \" + _n + \": \" + repr(e))\n    raise SystemExit(1 if fails else 0)\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La nueva vigia para el revisor cumple con todos los requisitos del diagnóstico, asegurando que el revisor reciba solo lo necesario y respetando los topes definidos."
+ },
+ "avisos": [
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 1"
+ ]
+}

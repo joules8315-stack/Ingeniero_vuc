@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py::trabajar la propuesta se manda a auditar (IA de pago) sin que antes la revise el revisor de programa gratis, y asi se tiran revisiones pagadas que el revisor de programa habria frenado.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "        # La revision se delega entera a auditar(): asi arnes/copista.py puede pedir SOLO una\n        # revision (un cambio gratis ya aplicado) y no hay el mismo codigo en dos sitios.\n        # Dentro de auditar() siguen vivos la cura de los dos reintentos del 2026-08-31 y el\n        # ultimo recurso con el cerebro de pago: no se quito nada, solo se movio.\n        auditoria, quien_aud, av2 = auditar(paquete, propuesta, auditor=auditor, evitar=quien_gen)",
+  "texto_nuevo": "        # A-38: el programa revisa primero, gratis; si frena no se paga la revision y el obrero recibe los motivos.\n        try:\n            import revisor_de_programa as _rp_antes\n            _fallos_prog = _rp_antes.revisar(propuesta, tarea) or []\n        except Exception:\n            _fallos_prog = []\n        if _fallos_prog and _vuelta < 3:\n            motivos_rechazo.extend(str(x) for x in _fallos_prog)\n            avisos_totales.append('el revisor de programa freno antes de pagar la revision: ' + '; '.join(str(x) for x in _fallos_prog)[:200])\n            continue\n        # La revision se delega entera a auditar(): asi arnes/copista.py puede pedir SOLO una\n        # revision (un cambio gratis ya aplicado) y no hay el mismo codigo en dos sitios.\n        # Dentro de auditar() siguen vivos la cura de los dos reintentos del 2026-08-31 y el\n        # ultimo recurso con el cerebro de pago: no se quito nada, solo se movio.\n        auditoria, quien_aud, av2 = auditar(paquete, propuesta, auditor=auditor, evitar=quien_gen)",
+  "cambio": "Insertar, justo antes del comentario '# La revision se delega entera a auditar(): asi arnes/copista.py puede pedir SOLO una', el bloque que importa revisor_de_programa, llama a revisar(propuesta, tarea), y si hay fallos y _vuelta < 3 acumula motivos, avisa y hace continue; en la ultima vuelta no salta y sigue a auditar como hoy.",
+  "codigo": "        # A-38: el programa revisa primero, gratis; si frena no se paga la revision y el obrero recibe los motivos.\n        try:\n            import revisor_de_programa as _rp_antes\n            _fallos_prog = _rp_antes.revisar(propuesta, tarea) or []\n        except Exception:\n            _fallos_prog = []\n        if _fallos_prog and _vuelta < 3:\n            motivos_rechazo.extend(str(x) for x in _fallos_prog)\n            avisos_totales.append('el revisor de programa freno antes de pagar la revision: ' + '; '.join(str(x) for x in _fallos_prog)[:200])\n            continue",
+  "vigia": "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "arnes/asignador.py",
+   "arnes/candado_equipo.py",
+   "cuerpo/aplicador.py",
+   "arnes/copista.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "aplicador.py",
+   "asignador.py",
+   "candado_equipo.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico sin introducir inventos ni romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40079 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

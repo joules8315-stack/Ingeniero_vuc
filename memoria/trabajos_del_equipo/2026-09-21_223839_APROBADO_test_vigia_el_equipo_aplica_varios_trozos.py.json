@@ -1,0 +1,26 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El comando equipo de ingeniero.py todavia llama a aplicador.aplicar_cambio (que solo aplica un trozo) en vez de aplicador.aplicar_propuesta, asi que hay que crear la vigia de texto que lo detecte.",
+  "archivo": "vigias/test_vigia_el_equipo_aplica_varios_trozos.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"Vigia de texto: el comando equipo aplica la propuesta ENTERA, no un solo trozo.\n\nJulio, 2026-09-21: cuando el equipo aprueba un arreglo que toca VARIOS trozos del mismo\narchivo, el comando `equipo` de ingeniero.py tiene que aplicar la propuesta completa.\n\nSi sigue llamando a `aplicador.aplicar_cambio`, ese aplicador solo sabe aplicar UN trozo:\nel resto de los trozos del mismo arreglo se quedan fuera, y el equipo paga una ronda nueva\npor cada trozo que falto. Es decir: se paga varias veces el mismo arreglo.\n\nEsta vigia es de TEXTO: abre ingeniero.py y comprueba, con assert, dos cosas del comando\nequipo:\n\n  1. que YA NO aparece la llamada `_ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)`\n  2. que SI aparece la llamada `_ok, _msg = aplicador.aplicar_propuesta(prop, raiz=_raiz)`\n\nNo toca ningun otro archivo.\n\"\"\"\n\nimport os\n\n\nAQUI = os.path.dirname(os.path.abspath(__file__))\nRAIZ = os.path.dirname(AQUI)\nINGENIERO = os.path.join(RAIZ, \"ingeniero.py\")\n\n# Los dos textos exactos que se buscan en ingeniero.py.\n# El viejo: aplica UN solo trozo (aplicar_cambio).\n# El nuevo: aplica la propuesta ENTERA (aplicar_propuesta).\nTEXTO_VIEJO = \"_ok, _msg = aplicador.aplicar_cambio(prop, raiz=_raiz)\"\nTEXTO_NUEVO = \"_ok, _msg = aplicador.aplicar_propuesta(prop, raiz=_raiz)\"\n\n\ndef _leer_ingeniero():\n    \"\"\"Devuelve el texto completo de ingeniero.py.\"\"\"\n    with open(INGENIERO, encoding=\"utf-8\") as f:\n        return f.read()\n\n\ndef test_el_equipo_ya_no_aplica_un_solo_trozo():\n    \"\"\"El comando equipo NO debe seguir llamando a aplicar_cambio.\n\n    aplicar_cambio solo sabe aplicar UN trozo. Si el arreglo aprobado toca varios trozos\ndel mismo archivo, los demas se quedan fuera y el equipo tiene que pagar una ronda nueva\npor cada trozo que falto. Por eso este texto tiene que haber desaparecido.\n    \"\"\"\n    texto = _leer_ingeniero()\n    assert TEXTO_VIEJO not in texto, (\n        \"El comando equipo de ingeniero.py todavia llama a \"\n        \"aplicador.aplicar_cambio, que solo sabe aplicar UN trozo. \"\n        \"Con eso, un arreglo que toca varios trozos del mismo archivo se aplica a medias \"\n        \"y el equipo paga una ronda nueva por cada trozo que falto. \"\n        \"Falta el texto: %r\" % TEXTO_VIEJO\n    )\n\n\ndef test_el_equipo_aplica_la_propuesta_entera():\n    \"\"\"El comando equipo SI debe llamar a aplicar_propuesta.\n\n    aplicar_propuesta aplica la propuesta ENTERA: todos los trozos del mismo arreglo de\nuna sola vez. Sin esto, el equipo paga una ronda por cada trozo de un mismo arreglo.\n    \"\"\"\n    texto = _leer_ingeniero()\n    assert TEXTO_NUEVO in texto, (\n        \"El comando equipo de ingeniero.py NO llama a \"\n        \"aplicador.aplicar_propuesta. Sin esa llamada, el equipo solo aplica un trozo \"\n        \"y paga una ronda nueva por cada trozo que falto del mismo arreglo. \"\n        \"Falta el texto: %r\" % TEXTO_NUEVO\n    )\n\n\nif __name__ == \"__main__\":\n    test_el_equipo_ya_no_aplica_un_solo_trozo()\n    test_el_equipo_aplica_la_propuesta_entera()\n    print(\"Vigia verde: el comando equipo aplica la propuesta entera, no un solo trozo.\")\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el encargo creando la vigia solicitada sin tocar otros archivos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (29722 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (29898 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

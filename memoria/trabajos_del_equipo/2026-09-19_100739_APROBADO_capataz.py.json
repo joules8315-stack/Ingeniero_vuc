@@ -1,0 +1,29 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion citas_que_no_existen en cuerpo/capataz.py, que debe comprobar que cada cita existe literalmente en su archivo antes de que una IA juzgue el analisis.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "citas_que_no_existen (nueva, se agrega despues de armar_expediente)",
+  "texto_viejo": "        return (ruta, dict_expediente)\n    except OSError:\n        return (None, dict_expediente)",
+  "texto_nuevo": "        return (ruta, dict_expediente)\n    except OSError:\n        return (None, dict_expediente)\n\n\ndef citas_que_no_existen(citas, raiz):\n    \"\"\"Devuelve las citas que no sirven: no son dict, estan vacias, se salen del proyecto, el archivo no existe o el texto no aparece literal.\"\"\"\n    if not isinstance(citas, list):\n        return [{'archivo': '', 'texto': '', 'por_que': 'no hay lista de citas'}]\n    malas = []\n    try:\n        raiz_real = os.path.realpath(raiz)\n    except (OSError, ValueError):\n        raiz_real = ''\n    for cita in citas:\n        if not isinstance(cita, dict):\n            malas.append({'archivo': '', 'texto': '', 'por_que': 'no es una cita'})\n            continue\n        archivo = cita.get('archivo', '')\n        texto = cita.get('texto', '')\n        if not isinstance(archivo, str):\n            archivo = ''\n        if not isinstance(texto, str):\n            texto = ''\n        if texto.strip() == '':\n            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'cita vacia'})\n            continue\n        try:\n            ruta = os.path.realpath(os.path.join(raiz_real, archivo))\n            dentro = os.path.commonpath([raiz_real, ruta]) == raiz_real\n        except (OSError, ValueError):\n            dentro = False\n        if not dentro:\n            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'fuera del proyecto'})\n            continue\n        try:\n            with open(ruta, 'r', encoding='utf-8') as f:\n                contenido = f.read()\n        except OSError:\n            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'el archivo no existe'})\n            continue\n        if texto.replace('\\r', '') not in contenido.replace('\\r', ''):\n            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'no aparece literal'})\n    return malas",
+  "cambio": "Agregar despues de armar_expediente la funcion citas_que_no_existen(citas, raiz) que devuelve la lista de citas invalidas con su motivo, sin lanzar nunca.",
+  "codigo": "def citas_que_no_existen(citas, raiz):\n    \"\"\"Devuelve las citas que no sirven: no son dict, estan vacias, se salen del proyecto, el archivo no existe o el texto no aparece literal.\"\"\"\n    if not isinstance(citas, list):\n        return [{'archivo': '', 'texto': '', 'por_que': 'no hay lista de citas'}]\n    malas = []\n    try:\n        raiz_real = os.path.realpath(raiz)\n    except (OSError, ValueError):\n        raiz_real = ''\n    for cita in citas:\n        if not isinstance(cita, dict):\n            malas.append({'archivo': '', 'texto': '', 'por_que': 'no es una cita'})\n            continue\n        archivo = cita.get('archivo', '')\n        texto = cita.get('texto', '')\n        if not isinstance(archivo, str):\n            archivo = ''\n        if not isinstance(texto, str):\n            texto = ''\n        if texto.strip() == '':\n            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'cita vacia'})\n            continue\n        try:\n            ruta = os.path.realpath(os.path.join(raiz_real, archivo))\n            dentro = os.path.commonpath([raiz_real, ruta]) == raiz_real\n        except (OSError, ValueError):\n            dentro = False\n        if not dentro:\n            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'fuera del proyecto'})\n            continue\n        try:\n            with open(ruta, 'r', encoding='utf-8') as f:\n                contenido = f.read()\n        except OSError:\n            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'el archivo no existe'})\n            continue\n        if texto.replace('\\r', '') not in contenido.replace('\\r', ''):\n            malas.append({'archivo': archivo, 'texto': texto, 'por_que': 'no aparece literal'})\n    return malas",
+  "vigia": "Un test que le pase citas con cada caso malo (no dict, texto vacio, ruta fuera de raiz, archivo inexistente, texto que no aparece) y compruebe que devuelve cada una con su 'por_que' correcto, y que con citas validas devuelve lista vacia; y que con citas no lista devuelve el dict 'no hay lista de citas'.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion cumple el encargo al pie de la letra: crea citas_que_no_existen(citas, raiz) despues de armar_expediente, con los cinco motivos literales del material, los mismos mensajes exactos, os.path.realpath/commonpath como manda, comparacion sin '\\r', el caso 'no hay lista de citas', docstring corto y sin tocar otras funciones ni vecinos; las unicas esquinas teoricas (raiz que no sea str o archivo con byte nulo) estan fuera del uso definido por el contrato, asi que se aprueba."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

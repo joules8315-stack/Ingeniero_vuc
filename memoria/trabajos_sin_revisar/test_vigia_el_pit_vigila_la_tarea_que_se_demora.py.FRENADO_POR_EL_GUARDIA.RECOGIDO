@@ -1,0 +1,67 @@
+import subprocess
+
+from cuerpo import capataz
+from cuerpo import vigilante
+
+
+class _PopenFalso:
+    """Popen de mentira: no lanza nada, devuelve salida fija y codigo 0."""
+
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+        self.returncode = 0
+
+    def communicate(self, *args, **kwargs):
+        return ('salida', '')
+
+    def wait(self, *args, **kwargs):
+        return self.returncode
+
+    def poll(self):
+        return self.returncode
+
+    def kill(self):
+        return None
+
+    def terminate(self):
+        return None
+
+
+def _montar(monkeypatch, respuesta):
+    """Deja Popen y vigilante.esperar de mentira y apunta las llamadas a esperar."""
+    llamadas = []
+
+    def esperar_falso(*args, **kwargs):
+        llamadas.append({'args': args, 'kwargs': kwargs})
+        return respuesta
+
+    monkeypatch.setattr(subprocess, 'Popen', _PopenFalso)
+    monkeypatch.setattr(vigilante, 'esperar', esperar_falso)
+    return llamadas
+
+
+def test_si_termina_devuelve_la_salida_y_espero_con_el_limite(monkeypatch):
+    llamadas = _montar(monkeypatch, 'termino')
+
+    resultado = capataz.lanzar_al_equipo('ingeniero', {'id': '1', 'encargo': 'x'})
+
+    assert isinstance(resultado, dict)
+    assert 'salida' in resultado
+    assert 'salida' in resultado['salida']
+    assert len(llamadas) == 1
+    limite = llamadas[0]['kwargs'].get('limite', llamadas[0]['args'][-1] if llamadas[0]['args'] else None)
+    assert limite == capataz.LIMITE_TAREA_SEGUNDOS
+
+
+def test_si_se_cuelga_la_salida_empieza_por_colgada(monkeypatch):
+    _montar(monkeypatch, 'colgada')
+
+    resultado = capataz.lanzar_al_equipo('ingeniero', {'id': '1', 'encargo': 'x'})
+
+    assert isinstance(resultado, dict)
+    assert resultado['salida'].startswith('COLGADA:')
+
+
+def test_tipo_de_fallo_reconoce_la_colgada():
+    assert capataz.tipo_de_fallo('COLGADA: sin avance') == 'colgada'

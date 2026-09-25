@@ -1,0 +1,74 @@
+{
+  "orden": {
+    "id": "84",
+    "titulo": "El pit corre una tarea a la vez",
+    "origen": "medido el 2026-09-21 11:19 (ley A-43)",
+    "repara": "dos tareas a la vez en la misma carpeta se contaminan y el guardia frena trabajo bueno",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "83"
+    ],
+    "modo": "IA",
+    "razon": "hasta que cada tarea tenga su propia copia, en paralelo se pierde mas de lo que se gana",
+    "encargo": "En cuerpo/capataz.py, en la linea def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):, cambia en_paralelo=2 por en_paralelo=1. No cambies nada mas ni toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_pit_corre_una_tarea_a_la_vez.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "arreglo de fondo pendiente: cada tarea en su propia copia de trabajo; entonces se vuelve a 2."
+  },
+  "huella": "2df8c65504671b81",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_115651_APROBADO_capataz.py.json\nOBRERO deepseek -> AUDITOR groq\n  aviso       : GPT-OSS 120B (Groq) no le cabe (22322 letras, aguanta 19042) -> se le salta\n  aviso       : Big Pickle no contesto en 300s (timeout)\n  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None\n  diagnostico : El valor por defecto de en_paralelo en la funcion bucle es 2 y debe ser 1.\n  toca        : cuerpo/capataz.py funcion bucle\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : Cambio correcto del valor por defecto a 1, sin inventos ni rupturas.\n\nAPLICADO en disco (lo escribio el equipo): cuerpo/capataz.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   11 failed, 106 passed in 13.07s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): cuerpo/capataz.py\nLLAVE GUARDADA: se puede escribir en 99 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T11:57:07",
+  "analisis": {
+    "que_paso": "El equipo aplico bien el cambio pedido por la orden 84 (bajar en_paralelo de 2 a 1 en cuerpo/capataz.py) y el veredicto fue APROBADO, pero al guardar el guardia corrio las vigias y encontro 11 rojas (11 failed, 106 passed), asi que NO dejo guardar y se volvio todo atras: cuerpo/capataz.py quedo otra vez con en_paralelo=2. La reparacion buena se perdio.",
+    "causa_raiz": "Es un candado que se muerde la cola. La orden 84 existe justamente para arreglar que 'dos tareas a la vez en la misma carpeta se contaminan y el guardia frena trabajo bueno'. Pero esa reparacion se corrio mientras el pit seguia con su defecto activo: bucle sigue arrancando en_paralelo=2 (capataz.py:276) y lanza las tareas en hilos sobre la MISMA carpeta de trabajo (capataz.py:284 y 307). Con dos tareas a la vez comparten carpeta, y el guardia de una ve el trabajo a medio hacer de la otra: por eso salieron 11 vigias rojas que NO las rompio el cambio de una sola linea (ninguna vigia exige que el defecto sea 2; solo test_vigia_el_pit_corre_una_tarea_a_la_vez pide que sea 1). El guardia, que no puede distinguir contaminacion de una regresion real, frena en rojo (guardia_de_guardado.py:395) y bota la reparacion correcta. En resumen: no se puede reparar la contaminacion por paralelo mientras el paralelo que contamina sigue encendido; ademas el equipo aprobo sin revisor real (groq no cabia, bigpickle timeout, 'reviso None'), asi que el unico filtro efectivo quedo el guardia, que mato el trabajo bueno.",
+    "donde": "cuerpo/capataz.py (funcion bucle, linea 276: defecto en_paralelo=2; lineas 284 y 307: tandas y hilos sobre la misma carpeta) y arnes/guardia_de_guardado.py (funcion _vigias: corre pytest y frena si hay rojas).",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "tanda = listas_para_correr()[:en_paralelo]"
+      },
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "with concurrent.futures.ThreadPoolExecutor(max_workers=len(tanda)) as ejecutor:"
+      },
+      {
+        "archivo": "vigias/test_vigia_el_pit_corre_una_tarea_a_la_vez.py",
+        "texto": "Medido el 2026-09-21: con dos tareas a la vez, las dos comparten la misma\ncarpeta de trabajo, y el guardia de una ve el trabajo a medias de la otra."
+      },
+      {
+        "archivo": "vigias/test_vigia_el_pit_corre_una_tarea_a_la_vez.py",
+        "texto": "Solo cuando cada tarea trabaje en su PROPIA COPIA de la carpeta. Mientras\nlas dos escriban en el mismo sitio, el pit corre una tarea a la vez."
+      },
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "\nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n"
+      }
+    ],
+    "no_volver_a": "No se repara la contaminacion por trabajo en paralelo mientras el paralelo que contamina sigue encendido: primero se aisla cada tarea en su propia copia, y recien despues se toca el numero.",
+    "tarea_nueva": {
+      "repara": "Cada tarea corre en su PROPIA copia aislada de la carpeta de trabajo, para que la de al lado no contamine ni las vigias del guardia; asi bajar/subir en_paralelo deja de romper trabajo bueno.",
+      "pieza": "cuerpo/capataz.py",
+      "razon": "Mientras dos tareas comparten la misma carpeta, el guardia de una ve el trabajo a medio hacer de la otra y frena codigo bueno (paso justo con la orden 84). Cambiar solo el valor por defecto no toca esa causa de fondo.",
+      "encargo": "En cuerpo/capataz.py, antes de correr cada orden (en correr_una / lanzar_al_equipo), dale a cada tarea su propia copia aislada de la carpeta de trabajo (git worktree o clon temporal) y corre alli su guardia; integra solo si queda verde y limpia la copia al terminar. No cambies el valor por defecto de en_paralelo en esta tarea: con el aislamiento hecho, se podra volver a 2 con seguridad.",
+      "modo": "IA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "citas",
+    "motivo": "citas que no existen: [{\"archivo\": \"arnes/guardia_de_guardado.py\", \"texto\": \"\\nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\\n\", \"por_que\": \"no aparece literal\"}]",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\84_20260921_115707.json"
+  }
+}

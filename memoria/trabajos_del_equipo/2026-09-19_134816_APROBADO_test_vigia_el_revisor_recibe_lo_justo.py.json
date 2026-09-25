@@ -1,0 +1,27 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta la vigia nueva que comprueba que el revisor recibe solo lo necesario (TOPE_REVISOR y _filtrar_paquete), y el rechazo previo fue por generar codigo; aqui se entrega el archivo de prueba entero y ejecutable tal como lo pide la tarea.",
+  "archivo": "vigias/test_vigia_el_revisor_recibe_lo_justo.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\n\"\"\"Vigia: el revisor recibe solo lo necesario, nunca el archivo entero.\n\nOrden de Julio A-38 punto 1. Comprueba tres cosas:\n  1) que existe obrero.TOPE_REVISOR y no pasa de 12000 letras;\n  2) que la linea que arma material_auditor usa TOPE_REVISOR y que en el modulo\n     no aparece el atajo viejo '40000 if auditor';\n  3) que _filtrar_paquete recorta de verdad: con un paquete enorme que nombra\n     x.py en cada renglon, el texto que sale no pasa del tope.\n\"\"\"\nimport os\nimport sys\nimport inspect\n\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, RAIZ)\n\nfrom cuerpo import obrero  # noqa: E402\n\n\ndef test_tope_revisor_existe_y_no_pasa_de_12000():\n    \"\"\"El tope del revisor tiene que existir y ser <= 12000.\"\"\"\n    assert hasattr(obrero, \"TOPE_REVISOR\"), \"obrero no tiene TOPE_REVISOR\"\n    tope = obrero.TOPE_REVISOR\n    assert isinstance(tope, int), \"TOPE_REVISOR no es un entero: \" + repr(tope)\n    assert tope <= 12000, \"TOPE_REVISOR pasa de 12000: \" + str(tope)\n\n\ndef test_material_auditor_usa_el_tope_y_no_el_atajo_viejo():\n    \"\"\"La linea que arma material_auditor usa TOPE_REVISOR, y no queda el atajo viejo.\"\"\"\n    fuente = inspect.getsource(obrero)\n    lineas = fuente.splitlines()\n    usan_tope = [ln for ln in lineas if \"material_auditor\" in ln and \"TOPE_REVISOR\" in ln]\n    assert usan_tope, (\n        \"ninguna linea que arma material_auditor usa TOPE_REVISOR; \"\n        \"lineas con material_auditor: \" + repr([ln.strip() for ln in lineas if \"material_auditor\" in ln])\n    )\n    assert \"40000 if auditor\" not in fuente, (\n        \"el modulo todavia trae el atajo viejo '40000 if auditor'\"\n    )\n\n\ndef test_filtrar_paquete_recorta_al_tope_del_revisor():\n    \"\"\"Con un paquete de 60000 letras que nombra x.py, el texto sale <= TOPE_REVISOR.\"\"\"\n    renglon = \"### `x.py:1-1`  (relevancia 99.0) x.py se nombra en este renglon de relleno\\n\"\n    relleno = renglon * 1000\n    paquete = (\n        \"# PAQUETE MINIMO\\n\"\n        \"## 1. LA LEY QUE MANDA AQUI\\n\"\n        \"ley de prueba\\n\"\n        \"## 3. LOS TROZOS EXACTOS\\n\"\n        + relleno\n        + \"## 5. A QUIEN PUEDE DANAR\\n\"\n        \"a nadie\\n\"\n    )\n    assert len(paquete) >= 60000, \"el paquete de prueba no llega a 60000 letras: \" + str(len(paquete))\n    texto = obrero._filtrar_paquete(paquete, archivo=\"x.py\", tope=obrero.TOPE_REVISOR)\n    assert isinstance(texto, str), \"_filtrar_paquete no devolvio texto: \" + repr(type(texto))\n    assert len(texto) <= obrero.TOPE_REVISOR, (\n        \"el revisor recibiria \" + str(len(texto)) + \" letras, mas que el tope \" + str(obrero.TOPE_REVISOR)\n    )\n\n\nif __name__ == \"__main__\":\n    fails = 0\n    for _n, _f in sorted(globals().items()):\n        if _n.startswith(\"test_\") and callable(_f):\n            try:\n                _f()\n                print(\"  VERDE  \" + _n)\n            except Exception as e:\n                fails += 1\n                print(\"  ROJA   \" + _n + \": \" + repr(e))\n    raise SystemExit(1 if fails else 0)\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigía propuesta cumple con todos los requisitos del diagnóstico, verificando el tope del revisor y el filtrado de paquetes sin inventar ni romper nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (34672 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (34891 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (34960 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 3"
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la tercera prueba test_una_prueba_no_escribe_en_la_memoria_de_verdad al final del archivo, y falta importar fallos desde cuerpo arriba junto a los otros imports.",
+  "archivo": "vigias/test_vigia_el_cruzado_corre_la_prueba.py",
+  "funcion": "imports del modulo (junto a 'from cuerpo import cruzado, obrero') y final del archivo tras la segunda prueba",
+  "texto_viejo": "from cuerpo import cruzado, obrero   # noqa: E402",
+  "texto_nuevo": "from cuerpo import cruzado, obrero, fallos   # noqa: E402",
+  "cambio": "1) Anadir 'fallos' al import de cuerpo. 2) Anadir al final del archivo, al margen izquierdo, la tercera prueba test_una_prueba_no_escribe_en_la_memoria_de_verdad(monkeypatch) que: pone las mismas funciones falsas que la segunda prueba (disponible y _preguntar_con_relevo con reparto por palabras VIGILANTE/JUEZ, y juzgar_con_vecinas del modulo arnes), pone en cuerpo.fallos una funcion falsa 'apuntar' que anota en una lista cada llamada sin escribir en archivo, llama a cruzado.resolver con paquete corto, problema corto y rondas=1, y afirma que la lista quedo VACIA con mensaje en espanol.",
+  "codigo": "from cuerpo import cruzado, obrero, fallos   # noqa: E402\n\n\ndef test_una_prueba_no_escribe_en_la_memoria_de_verdad(monkeypatch):\n    \"\"\"TERCERA prueba: una prueba NUNCA puede escribir en la memoria de fallos de verdad.\n\n    El 2026-09-20 una vigia que corria el cruzado con cerebros de mentira dejo un apunte\n    de mentira en la memoria de fallos de verdad, y eso puso roja otra vigia. La cura esta\n    puesta: si en el entorno esta la senal PYTEST_CURRENT_TEST, el cruzado no apunta nada.\n    Esta vigia sujeta esa cura.\n    \"\"\"\n    apuntes = []\n\n    def apuntar_falso(*args, **kwargs):\n        apuntes.append((args, kwargs))\n\n    monkeypatch.setattr(fallos, \"apuntar\", apuntar_falso, raising=False)\n\n    def disponible_falso(nombre):\n        return True\n\n    def preguntar_con_relevo_falso(papel, paquete, problema):\n        if papel == \"VIGILANTE\":\n            return \"VIGILANTE\"\n        if papel == \"JUEZ\":\n            return \"JUEZ\"\n        return papel\n\n    def juzgar_con_vecinas_falso(*args, **kwargs):\n        return 0\n\n    monkeypatch.setattr(obrero, \"disponible\", disponible_falso, raising=False)\n    monkeypatch.setattr(obrero, \"_preguntar_con_relevo\", preguntar_con_relevo_falso, raising=False)\n\n    import arnes.juez_de_la_prueba as juez_de_la_prueba\n    monkeypatch.setattr(juez_de_la_prueba, \"juzgar_con_vecinas\", juzgar_con_vecinas_falso, raising=False)\n\n    paquete_corto = \"paquete corto\"\n    problema_corto = \"problema corto\"\n\n    cruzado.resolver(paquete_corto, problema_corto, rondas=1)\n\n    assert apuntes == [], (\n        \"Una prueba NUNCA puede escribir en la memoria de fallos de verdad: \"\n        \"la envenena y pone rojas a otras vigias.\"\n    )",
+  "vigia": "vigias/test_vigia_el_cruzado_corre_la_prueba.py::test_una_prueba_no_escribe_en_la_memoria_de_verdad",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "juez_de_la_prueba.py",
+   "test_vigia_memoria_completa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple con el diagnóstico, no inventa nada, no rompe vecinos ni contratos; aprobado."
+ },
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de '_preguntar_con_relevo' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'juzgar_con_vecinas' y ",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 4"
+ ]
+}

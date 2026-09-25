@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "grok47",
+ "propuesta": {
+  "diagnostico": "En _escribir_salida_arreglada, cuando la salida es un dict con evento y trae additionalContext arriba, se quita de arriba y se pone dentro de hookSpecificOutput solo si este no lo trae ya; si hookSpecificOutput ya trae additionalContext, el de arriba se pierde y nunca queda additionalContext arriba.",
+  "archivo": "arnes/puente_codex.py",
+  "funcion": "_escribir_salida_arreglada",
+  "texto_viejo": "        if isinstance(datos.get(\"hookSpecificOutput\"), dict):\n            if not datos[\"hookSpecificOutput\"].get(\"hookEventName\"):\n                datos[\"hookSpecificOutput\"][\"hookEventName\"] = evento\n        elif \"additionalContext\" in datos:\n            contexto = datos.pop(\"additionalContext\")\n            datos[\"hookSpecificOutput\"] = {\n                \"hookEventName\": evento,\n                \"additionalContext\": contexto,\n            }\n        _escribir_json(datos)",
+  "texto_nuevo": "        if isinstance(datos.get(\"hookSpecificOutput\"), dict):\n            if not datos[\"hookSpecificOutput\"].get(\"hookEventName\"):\n                datos[\"hookSpecificOutput\"][\"hookEventName\"] = evento\n            if \"additionalContext\" in datos:\n                contexto = datos.pop(\"additionalContext\")\n                if not datos[\"hookSpecificOutput\"].get(\"additionalContext\"):\n                    datos[\"hookSpecificOutput\"][\"additionalContext\"] = contexto\n        elif \"additionalContext\" in datos:\n            contexto = datos.pop(\"additionalContext\")\n            datos[\"hookSpecificOutput\"] = {\n                \"hookEventName\": evento,\n                \"additionalContext\": contexto,\n            }\n        _escribir_json(datos)",
+  "cambio": "Dentro de la rama en que hookSpecificOutput ya es un dict, despues de asegurar hookEventName, sacar additionalContext de arriba (pop) y ponerlo dentro de hookSpecificOutput solo si este no lo trae ya; asi additionalContext nunca queda arriba, y si hookSpecificOutput ya lo trae se conserva el de dentro.",
+  "codigo": "        if isinstance(datos.get(\"hookSpecificOutput\"), dict):\n            if not datos[\"hookSpecificOutput\"].get(\"hookEventName\"):\n                datos[\"hookSpecificOutput\"][\"hookEventName\"] = evento\n            if \"additionalContext\" in datos:\n                contexto = datos.pop(\"additionalContext\")\n                if not datos[\"hookSpecificOutput\"].get(\"additionalContext\"):\n                    datos[\"hookSpecificOutput\"][\"additionalContext\"] = contexto\n        elif \"additionalContext\" in datos:\n            contexto = datos.pop(\"additionalContext\")\n            datos[\"hookSpecificOutput\"] = {\n                \"hookEventName\": evento,\n                \"additionalContext\": contexto,\n            }\n        _escribir_json(datos)",
+  "vigia": "Una prueba que llame a _escribir_salida_arreglada con un dict que traiga additionalContext arriba y hookSpecificOutput con hookEventName y additionalContext propios, y compruebe que la salida escrita no tiene additionalContext arriba y que hookSpecificOutput conserva su additionalContext original; y otra con hookSpecificOutput sin additionalContext que compruebe que el de arriba pasa a dentro.",
+  "puede_danar": [
+   "arnes/puente_codex.py",
+   "cuerpo/privacidad.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio quita additionalContext de arriba y solo lo copia dentro si hookSpecificOutput no lo trae; no inventa ni toca de mas."
+ },
+ "avisos": [
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "vueltas_dadas: 1"
+ ]
+}

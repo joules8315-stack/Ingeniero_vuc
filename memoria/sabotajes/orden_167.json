@@ -1,0 +1,7 @@
+[
+ {
+  "archivo": "ingeniero.py",
+  "viejo": "    if cmd == \"pit\" and len(sys.argv) >= 3:\n        from cuerpo import capataz as _cap\n        return _cap.bucle(sys.argv[2])\n    # A-48 (2026-09-22): con esto Codex o Claude dirigen el loop sin escribir archivos a mano.\n    if cmd == \"director\" and len(sys.argv) >= 3:\n        from cuerpo import director as _dir\n        _raiz_dir = os.path.dirname(os.path.abspath(__file__))\n        _acc = sys.argv[2]\n        if _acc == 'estado':\n            print(_dir.estado(_raiz_dir))\n            return 0\n        if _acc == 'nueva' and len(sys.argv) >= 4:\n            ok, motivo = _dir.orden_nueva(_raiz_dir, sys.argv[3])\n            print(motivo)\n            return 0 if ok else 1\n        if _acc == 'reintentar' and len(sys.argv) >= 4:\n            ok, motivo = _dir.reintentar(_raiz_dir, sys.argv[3])\n            print(motivo)\n            return 0 if ok else 1\n        if _acc == 'hecha' and len(sys.argv) >= 4:\n            ok, motivo = _dir.hecha(_raiz_dir, sys.argv[3])\n            print(motivo)\n            return 0 if ok else 1\n        print(\"uso: python ingeniero.py director estado | nueva '<orden en JSON>' | reintentar <id> | hecha <id>\")\n        return 1",
+  "nuevo": "    if cmd == \"pit\" and len(sys.argv) >= 3:\n        from cuerpo import capataz as _cap\n        return _cap.bucle(sys.argv[2])"
+ }
+]

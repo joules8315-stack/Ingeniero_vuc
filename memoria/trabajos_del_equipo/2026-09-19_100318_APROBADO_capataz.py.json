@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion armar_expediente(orden, resultado) en cuerpo/capataz.py, que debe ir despues de bucle y junta en un dict lo que el perito necesita para analizar el fallo sin usar su memoria.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "armar_expediente",
+  "texto_viejo": "                if fallos_por_pieza_tipo[clave] >= 3:\n                    return 'PARADO: 3 FALLOS DEL MISMO TIPO (' + tipo + ') EN ' + str(pieza)",
+  "texto_nuevo": "                if fallos_por_pieza_tipo[clave] >= 3:\n                    return 'PARADO: 3 FALLOS DEL MISMO TIPO (' + tipo + ') EN ' + str(pieza)\n\n\ndef armar_expediente(orden, resultado):\n    \"\"\"Junta en un dict lo que el perito necesita para analizar el fallo sin usar su memoria.\"\"\"\n    orden = orden if isinstance(orden, dict) else {}\n    resultado = resultado if isinstance(resultado, dict) else {}\n    salida = resultado.get('salida', '')\n    if not isinstance(salida, str):\n        salida = ''\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    carpeta_memoria = os.path.join(carpeta_proyecto, 'memoria')\n    pieza = orden.get('pieza', '')\n    if not isinstance(pieza, str):\n        pieza = ''\n    prefijo = os.path.basename(pieza)\n    apartados = []\n    carpeta_trabajos = os.path.join(carpeta_memoria, 'trabajos_sin_revisar')\n    if os.path.isdir(carpeta_trabajos):\n        for nombre in os.listdir(carpeta_trabajos):\n            if nombre.endswith('.FRENADO_POR_EL_GUARDIA') and nombre.startswith(prefijo):\n                apartados.append(nombre)\n    dict_expediente = {\n        'orden': orden,\n        'huella': huella_de(orden),\n        'tipo': tipo_de_fallo(salida),\n        'codigo': resultado.get('codigo'),\n        'salida': salida[-4000:],\n        'apartados': apartados,\n        'fecha': datetime.datetime.now().isoformat(timespec='seconds'),\n    }\n    carpeta_expedientes = os.path.join(carpeta_memoria, 'EXPEDIENTES')\n    try:\n        os.makedirs(carpeta_expedientes, exist_ok=True)\n        marca = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')\n        ruta = os.path.join(carpeta_expedientes, str(orden.get('id', '')) + '_' + marca + '.json')\n        with open(ruta, 'w', encoding='utf-8') as f:\n            json.dump(dict_expediente, f, indent=2, ensure_ascii=False)\n        return (ruta, dict_expediente)\n    except OSError:\n        return (None, dict_expediente)",
+  "cambio": "Agregar despues de la funcion bucle la funcion armar_expediente(orden, resultado) que arma el dict con orden, huella, tipo, codigo, salida (ultimos 4000 caracteres), apartados (nombres de archivo de memoria/trabajos_sin_revisar que terminan en '.FRENADO_POR_EL_GUARDIA' y empiezan con os.path.basename de la pieza; lista vacia si la carpeta no existe), fecha; lo guarda como json (indent=2, ensure_ascii=False) en memoria/EXPEDIENTES/<id>_<AAAAMMDD_HHMMSS>.json creando la carpeta si falta, y devuelve (ruta, dict); si no puede escribir devuelve (None, dict) sin lanzar.",
+  "codigo": "def armar_expediente(orden, resultado):\n    \"\"\"Junta en un dict lo que el perito necesita para analizar el fallo sin usar su memoria.\"\"\"\n    orden = orden if isinstance(orden, dict) else {}\n    resultado = resultado if isinstance(resultado, dict) else {}\n    salida = resultado.get('salida', '')\n    if not isinstance(salida, str):\n        salida = ''\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    carpeta_memoria = os.path.join(carpeta_proyecto, 'memoria')\n    pieza = orden.get('pieza', '')\n    if not isinstance(pieza, str):\n        pieza = ''\n    prefijo = os.path.basename(pieza)\n    apartados = []\n    carpeta_trabajos = os.path.join(carpeta_memoria, 'trabajos_sin_revisar')\n    if os.path.isdir(carpeta_trabajos):\n        for nombre in os.listdir(carpeta_trabajos):\n            if nombre.endswith('.FRENADO_POR_EL_GUARDIA') and nombre.startswith(prefijo):\n                apartados.append(nombre)\n    dict_expediente = {\n        'orden': orden,\n        'huella': huella_de(orden),\n        'tipo': tipo_de_fallo(salida),\n        'codigo': resultado.get('codigo'),\n        'salida': salida[-4000:],\n        'apartados': apartados,\n        'fecha': datetime.datetime.now().isoformat(timespec='seconds'),\n    }\n    carpeta_expedientes = os.path.join(carpeta_memoria, 'EXPEDIENTES')\n    try:\n        os.makedirs(carpeta_expedientes, exist_ok=True)\n        marca = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')\n        ruta = os.path.join(carpeta_expedientes, str(orden.get('id', '')) + '_' + marca + '.json')\n        with open(ruta, 'w', encoding='utf-8') as f:\n            json.dump(dict_expediente, f, indent=2, ensure_ascii=False)\n        return (ruta, dict_expediente)\n    except OSError:\n        return (None, dict_expediente)",
+  "vigia": "Una prueba que llame armar_expediente con una orden y un resultado de fallo, compruebe que el dict trae orden, huella, tipo, codigo, salida (recortada a 4000), apartados y fecha, que el json quedo escrito en memoria/EXPEDIENTES con indent=2 y ensure_ascii=False, y que si la carpeta no se puede escribir devuelve (None, dict) sin lanzar.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "memoria/EXPEDIENTES"
+  ],
+  "preguntas": [],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno. El material dice 'Nadie depende de estas piezas. Reparacion aislada.' El cambio solo anade una funcion detrás de bucle y no toca ninguna funcion existente. Los guards defensivos extra (isinstance) son inofensivos y apoyan el 'nunca lanza' que pide el encargo."
+  ],
+  "que_falta": [
+   "Nada. Cumple el encargo al pie de la letra: dict con orden, huella_de(orden), tipo_de_fallo(salida), codigo, salida[-4000:], apartados filtrados por '.FRENADO_POR_EL_GUARDIA' y os.path.basename(pieza) sobre memoria/trabajos_sin_revisar (vacía si la carpeta no existe), fecha isoformat timespec='seconds'; carpeta memoria calculada igual que leer_lista; guardado como json indent=2 y ensure_ascii=False en memoria/EXPEDIENTES/<id>_<fecha>.json creando la carpeta; devuelve (ruta, dict) y (None, dict) ante OSError."
+  ],
+  "resumen_para_el_jefe": "El obrero creo exactamente la funcion armar_expediente que pedia el encargo, usando solo funciones que si existen (huella_de y tipo_de_fallo estan en el material, os/json/datetime ya se usan en el archivo), la coloco despues de bucle en el lugar correcto, y no invento nada ni rompe vecinos: se puede aceptar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (30417 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

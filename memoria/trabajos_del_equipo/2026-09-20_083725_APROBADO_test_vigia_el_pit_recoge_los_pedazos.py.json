@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En la tercera prueba test_sin_pieza_no_se_toca_nada la ficha de mentira se llama APROBADO y su contenido no tiene la clave propuesta ni archivo, asi que no se puede leer y la prueba pasa por la razon equivocada.",
+  "archivo": "vigias/test_vigia_el_pit_recoge_los_pedazos.py",
+  "funcion": "test_sin_pieza_no_se_toca_nada",
+  "texto_viejo": "    (del_equipo / 'APROBADO').write_text(\n        '{\"pieza\": \"cuerpo/pieza.py\"}', encoding='utf-8'\n    )",
+  "texto_nuevo": "    (del_equipo / '2026-09-20_000000_APROBADO_pieza.py.json').write_text(\n        '{\"propuesta\": {\"archivo\": \"cuerpo/pieza.py\"}}', encoding='utf-8'\n    )",
+  "cambio": "Sustituir las tres lineas que crean la ficha de mentira dentro de la carpeta del equipo: cambiar el nombre APROBADO por 2026-09-20_000000_APROBADO_pieza.py.json y el texto por un JSON con clave propuesta que dentro lleva archivo con valor cuerpo/pieza.py, manteniendo el encoding utf-8.",
+  "codigo": "    (del_equipo / '2026-09-20_000000_APROBADO_pieza.py.json').write_text(\n        '{\"propuesta\": {\"archivo\": \"cuerpo/pieza.py\"}}', encoding='utf-8'\n    )",
+  "vigia": "vigias/test_vigia_el_pit_recoge_los_pedazos.py::test_sin_pieza_no_se_toca_nada debe seguir verde solo si recoger_lo_frenado devuelve ok False y cuerpo/pieza.py sigue diciendo viejo; con la ficha legible, si el programa tocara el archivo la prueba se pondria roja.",
+  "puede_danar": [
+   "vigias/test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "vigias/test_vigia_el_juez_busca_su_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "test_vigia_el_juez_busca_su_prueba.py",
+   "test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cambio corrige el diagnóstico sin inventar ni romper contratos ni afectar pruebas vecinas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (26344 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

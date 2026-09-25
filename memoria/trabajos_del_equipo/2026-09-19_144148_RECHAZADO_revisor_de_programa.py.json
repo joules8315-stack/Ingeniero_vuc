@@ -1,0 +1,59 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "En no_carga, la rama de nodos de nivel de modulo que NO son def ni class usa ast.walk sobre el nodo entero, y ast.walk entra en el cuerpo de lambdas y de def/class anidadas, cuyo codigo no corre al cargar, produciendo falsos positivos.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "no_carga",
+  "texto_viejo": "            else:\n                partes = [nodo]\n                for n in ast.walk(nodo):\n                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store):\n                        definidos.add(n.id)\n                    elif isinstance(n, ast.ExceptHandler) and n.name:\n                        definidos.add(n.name)\n                    elif isinstance(n, ast.Import):\n                        for a in n.names:\n                            definidos.add((a.asname or a.name).split('.')[0])\n                    elif isinstance(n, ast.ImportFrom):\n                        for a in n.names:\n                            definidos.add(a.asname or a.name.split('.')[0])\n                    elif isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):\n                        definidos.add(n.name)\n            for parte in partes:\n                for n in ast.walk(parte):\n                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load):\n                        if n.id not in definidos and n.id not in ya_dicho:\n                            ya_dicho.add(n.id)\n                            fallos.append('EL ARCHIVO NO CARGA: ' + n.id +\n                                          ' se usa al cargar el modulo y no esta definido ni importado arriba')",
+  "texto_nuevo": "            else:\n                partes = [nodo]\n                for n in ast.walk(nodo):\n                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store):\n                        definidos.add(n.id)\n                    elif isinstance(n, ast.ExceptHandler) and n.name:\n                        definidos.add(n.name)\n                    elif isinstance(n, ast.Import):\n                        for a in n.names:\n                            definidos.add((a.asname or a.name).split('.')[0])\n                    elif isinstance(n, ast.ImportFrom):\n                        for a in n.names:\n                            definidos.add(a.asname or a.name.split('.')[0])\n                    elif isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):\n                        definidos.add(n.name)\n            for parte in partes:\n                if isinstance(nodo, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):\n                    leidos = [n.id for n in ast.walk(parte)\n                              if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load)]\n                else:\n                    leidos = _leidos_al_cargar(parte)\n                for nombre in leidos:\n                    if nombre not in definidos and nombre not in ya_dicho:\n                        ya_dicho.add(nombre)\n                        fallos.append('EL ARCHIVO NO CARGA: ' + nombre +\n                                      ' se usa al cargar el modulo y no esta definido ni importado arriba')",
+  "cambio": "Anadir la funcion auxiliar _leidos_al_cargar(nodo) justo antes de no_carga, que devuelve los ids de ast.Name con ctx Load recorriendo con una pila: si el nodo es ast.Lambda solo sigue por sus args.defaults; si es FunctionDef o AsyncFunctionDef solo por decorator_list, args.defaults y args.kw_defaults no None; si es ClassDef solo por decorator_list, bases y keywords; cualquier otro, por ast.iter_child_nodes. Y en no_carga, en la busqueda de leidos, usar _leidos_al_cargar SOLO cuando el nodo de nivel de modulo NO es def ni class; la rama de def y class de nivel de modulo se deja EXACTAMENTE como estaba (con ast.walk sobre las partes), para no perder el caso real del @contextlib.contextmanager de modulo sin import arriba.",
+  "codigo": "def _leidos_al_cargar(nodo):\n    \"\"\"Ids de ast.Name con ctx Load que se LEEN al cargar el modulo, sin entrar en el cuerpo\n    de lambdas ni de def/class anidadas (ese codigo no corre al cargar).\n\n    Recorre con una pila: si el nodo es ast.Lambda solo sigue por sus args.defaults; si es\n    FunctionDef o AsyncFunctionDef solo por decorator_list, args.defaults y args.kw_defaults\n    no None; si es ClassDef solo por decorator_list, bases y keywords; cualquier otro, por\n    ast.iter_child_nodes.\n    \"\"\"\n    leidos = []\n    pila = [nodo]\n    while pila:\n        n = pila.pop()\n        if isinstance(n, ast.Lambda):\n            pila.extend(n.args.defaults)\n        elif isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)):\n            pila.extend(n.decorator_list)\n            pila.extend(n.args.defaults)\n            pila.extend(d for d in n.args.kw_defaults if d is not None)\n        elif isinstance(n, ast.ClassDef):\n            pila.extend(n.decorator_list)\n            pila.extend(n.bases)\n            pila.extend(n.keywords)\n        else:\n            if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load):\n                leidos.append(n.id)\n            pila.extend(ast.iter_child_nodes(n))\n    return leidos\n\n\ndef no_carga(contenido):",
+  "vigia": "vigias/test_vigia_revisor_de_programa.py y vigias/test_vigia_el_archivo_carga.py: un modulo con `print(sorted(d, key=lambda x: -x[1]))` a nivel de modulo no debe dar falso positivo, y un modulo con `@contextlib.contextmanager` sin importar contextlib arriba SI debe seguir cazandose.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_archivo_carga.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+   "vigias/test_vigia_revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_el_archivo_carga.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "La función auxiliar `_leidos_al_cargar` no existe en el material original."
+  ],
+  "fallos": [
+   "La propuesta introduce una nueva función `_leidos_al_cargar` que no se encuentra en el material original, lo cual constituye un invento.",
+   "La lógica para determinar los `leidos` se modifica para usar `_leidos_al_cargar` condicionalmente. El diagnóstico indica que la rama de nodos de nivel de módulo que NO son `def` ni `class` usa `ast.walk` sobre el nodo entero, y la reparación introduce una bifurcación (`if isinstance(nodo, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))`) que altera este comportamiento. La reparación dice que la rama de `def` y `class` de nivel de módulo se deja EXACTAMENTE como estaba, pero el código nuevo muestra que se aplica `_leidos_al_cargar` a `parte` que puede ser un nodo de nivel de módulo que no es `def` ni `class`, y en ese caso se usa `_leidos_al_cargar(parte)`. Esto contradice la descripción de la reparación y el diagnóstico original que se enfoca en `ast.walk` sobre el nodo entero para estos casos."
+  ],
+  "riesgo_vecinos": [
+   "El cambio en la lógica de `no_carga` para determinar los `leidos` podría afectar a `arnes/candado_equipo.py` si este interactúa con la forma en que `no_carga` identifica dependencias no definidas.",
+   "Los `vigias` mencionados (`vigias/test_vigia_revisor_de_programa.py` y `vigias/test_vigia_el_archivo_carga.py`) podrían verse afectados si la nueva lógica de `_leidos_al_cargar` no maneja correctamente los casos de `@contextlib.contextmanager` sin importación o los `print` a nivel de módulo, como se describe en el `vigia`."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación inventa una función auxiliar y modifica la lógica de análisis de código de forma que no se alinea completamente con el diagnóstico y la descripción de la reparación, introduciendo riesgos de falsos positivos/negativos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25369 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (26606 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (26700 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (26795 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 4"
+ ]
+}

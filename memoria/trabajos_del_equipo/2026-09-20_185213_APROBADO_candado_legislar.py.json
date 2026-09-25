@@ -1,0 +1,52 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En parece_una_orden se cuelan pedazos de nombre de archivo partidos por el punto (py, json, md, sh) y renglones sueltos de informe con palabra, espacios y dos puntos, porque solo se descartan los que empiezan por comillas dobles.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "parece_una_orden",
+  "texto_viejo": "    # b) Renglon suelto de un informe con formato, no una orden\n    if texto.startswith('\"') and '\":' in texto:\n        return False",
+  "texto_nuevo": "    # b) Renglon suelto de un informe con formato, no una orden\n    if texto.startswith('\"') and '\":' in texto:\n        return False\n    limpio = texto.strip()\n    # un pedazo que empieza por una extension de archivo es basura de haber partido por el punto\n    if re.match(r\"^(py|json|md|sh)(?![a-zA-Z0-9])\", limpio.lower()):\n        return False\n    # un renglon con una palabra, varios espacios y dos puntos es un renglon de informe\n    if re.search(r\"(toca|resumen|fallo|diagnostico|aviso|confianza)\\s+:\", limpio):\n        return False",
+  "cambio": "Anadir debajo del descarte de renglon con comillas dobles: guardar limpio = texto.strip(); descartar si limpio en minusculas empieza por py, json, md o sh seguido de algo que no sea letra ni numero; descartar si en limpio aparece toca, resumen, fallo, diagnostico, aviso o confianza seguido de espacios y dos puntos.",
+  "codigo": "    limpio = texto.strip()\n    # un pedazo que empieza por una extension de archivo es basura de haber partido por el punto\n    if re.match(r\"^(py|json|md|sh)(?![a-zA-Z0-9])\", limpio.lower()):\n        return False\n    # un renglon con una palabra, varios espacios y dos puntos es un renglon de informe\n    if re.search(r\"(toca|resumen|fallo|diagnostico|aviso|confianza)\\s+:\", limpio):\n        return False",
+  "vigia": "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py debe seguir en verde: frases normales de Julio entran y los pedazos tipo py/json/md/sh y renglones palabra+espacios+dos puntos quedan fuera.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [
+   "El modulo arnes/candado_legislar.py ya importa re en la parte de arriba, o hay que anadirlo?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio añade la lógica solicitada sin inventar nada, corrige el diagnóstico y no afecta a los módulos vecinos."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

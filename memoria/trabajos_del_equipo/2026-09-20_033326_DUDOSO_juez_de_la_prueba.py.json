@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion _alguna_esta_roja solo dice si alguna prueba fallo, pero no cuales; hay que reemplazarla por _cuales_estan_rojas que devuelva la lista de rutas rojas y usarla en juzgar_con_vecinas para probar solo esas.",
+  "archivo": "arnes/juez_de_la_prueba.py",
+  "funcion": "_alguna_esta_roja",
+  "texto_viejo": "def _alguna_esta_roja(raiz, rutas_pruebas):\n    \"\"\"Corre pytest UNA sola vez sobre todas las rutas juntas.\n\n    Devuelve True si alguna no paso, y False si pasaron todas o si no se pudo correr.\n    \"\"\"\n    orden = [\n        sys.executable,\n        '-m',\n        'pytest',\n        '-q',\n    ]\n    orden.extend(str(ruta) for ruta in rutas_pruebas)\n    try:\n        proceso = subprocess.run(\n            orden,\n            cwd=str(raiz),\n            env=_entorno_limpio(),\n            stdout=subprocess.PIPE,\n            stderr=subprocess.STDOUT,\n            timeout=TOPE_SEGUNDOS,\n        )\n    except subprocess.TimeoutExpired:\n        return False\n    except Exception:\n        return False\n    return proceso.returncode != 0",
+  "texto_nuevo": "def _cuales_estan_rojas(raiz, rutas_pruebas):\n    \"\"\"Corre pytest UNA sola vez sobre todas las rutas juntas.\n\n    Devuelve la LISTA de rutas de prueba que no pasaron, sin repetir.\n    Si pasaron todas o si no se pudo correr, devuelve una lista vacia.\n    \"\"\"\n    orden = [\n        sys.executable,\n        '-m',\n        'pytest',\n        '-q',\n    ]\n    orden.extend(str(ruta) for ruta in rutas_pruebas)\n    try:\n        proceso = subprocess.run(\n            orden,\n            cwd=str(raiz),\n            env=_entorno_limpio(),\n            stdout=subprocess.PIPE,\n            stderr=subprocess.STDOUT,\n            timeout=TOPE_SEGUNDOS,\n        )\n    except subprocess.TimeoutExpired:\n        return []\n    except Exception:\n        return []\n\n    salida = proceso.stdout or b''\n    try:\n        texto = salida.decode('utf-8', errors='replace')\n    except Exception:\n        texto = str(salida)\n\n    rojas = []\n    for renglon in texto.splitlines():\n        renglon = renglon.strip()\n        if renglon.startswith('FAILED') or renglon.startswith('ERROR'):\n            resto = renglon.split(' ', 1)[1] if ' ' in renglon else ''\n            ruta = resto.split(':', 1)[0]\n            if ruta and ruta not in rojas:\n                rojas.append(ruta)\n    return rojas",
+  "cambio": "Sustituir la funcion _alguna_esta_roja por _cuales_estan_rojas, que corre pytest igual pero guarda la salida y devuelve la lista de rutas rojas (lineas que empiezan por FAILED o ERROR, se toma lo que sigue hasta el primer espacio, y de eso la parte antes de los dos puntos), sin repetir; lista vacia si todo paso o si no se pudo correr. Ademas, dentro de juzgar_con_vecinas, cambiar la llamada a _alguna_esta_roja por _cuales_estan_rojas: si la lista viene vacia se devuelve el mismo mensaje de 'no habia nada que demostrar'; si trae algo, el recorrido de candidatas se limita a esas rutas rojas (maximo las tres primeras), comparando por el final de la ruta para tolerar barras distintas, con un comentario corto en castellano explicando que no se prueban una por una todas las vecinas sino solo las que la primera pasada dijo que estaban rojas.",
+  "codigo": "def _cuales_estan_rojas(raiz, rutas_pruebas):\n    \"\"\"Corre pytest UNA sola vez sobre todas las rutas juntas.\n\n    Devuelve la LISTA de rutas de prueba que no pasaron, sin repetir.\n    Si pasaron todas o si no se pudo correr, devuelve una lista vacia.\n    \"\"\"\n    orden = [\n        sys.executable,\n        '-m',\n        'pytest',\n        '-q',\n    ]\n    orden.extend(str(ruta) for ruta in rutas_pruebas)\n    try:\n        proceso = subprocess.run(\n            orden,\n            cwd=str(raiz),\n            env=_entorno_limpio(),\n            stdout=subprocess.PIPE,\n            stderr=subprocess.STDOUT,\n            timeout=TOPE_SEGUNDOS,\n        )\n    except subprocess.TimeoutExpired:\n        return []\n    except Exception:\n        return []\n\n    salida = proceso.stdout or b''\n    try:\n        texto = salida.decode('utf-8', errors='replace')\n    except Exception:\n        texto = str(salida)\n\n    rojas = []\n    for renglon in texto.splitlines():\n        renglon = renglon.strip()\n        if renglon.startswith('FAILED') or renglon.startswith('ERROR'):\n            resto = renglon.split(' ', 1)[1] if ' ' in renglon else ''\n            ruta = resto.split(':', 1)[0]\n            if ruta and ruta not in rojas:\n                rojas.append(ruta)\n    return rojas",
+  "vigia": "vigias/test_vigia_el_juez_de_la_prueba.py y vigias/test_vigia_el_juez_busca_su_prueba.py (declaradas en el contrato como las que vigilan arnes/juez_de_la_prueba.py)",
+  "puede_danar": [
+   "vigias/test_vigia_el_juez_busca_su_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "preguntas": [
+   "El material no trae el cuerpo completo de juzgar_con_vecinas con la llamada actual a _alguna_esta_roja ni el bloque donde se recorre candidatas; para copiar el texto_viejo literal de ese segundo cambio hace falta ver esa funcion entera tal como esta ahora. NECESITO_LEER: arnes/juez_de_la_prueba.py / necesito el cuerpo completo y actual de juzgar_con_vecinas (incluida la llamada a _alguna_esta_roja y el bucle sobre candidatas) / decide como sustituir la llamada y limitar el recorrido a las rojas / riesgo de romper el flujo de juzgar_con_vecinas si se edita a ciegas."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_el_juez_busca_su_prueba.py",
+   "test_vigia_el_juez_de_la_prueba.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La mitad entregada esta bien: _cuales_estan_rojas repite exactamente la orden de pytest del material, guarda la salida, saca la ruta de renglones FAILED/ERROR (despues del primer espacio y antes de los dos puntos) sin repetir, y devuelve lista vacia si todo paso o si no pudo correr; el texto_viejo coincide literal con el trozo arnes/juez_de_la_prueba.py:70-95.",
+   "Pero la segunda parte del encargo NO viene en codigo: solo hay una descripcion en el campo 'cambio' de lo que se hara en juzgar_con_vecinas (llamar a _cuales_estan_rojas, limitar el recorrido a las rojas, maximo tres, comparar por el final de la ruta, comentario en castellano). No aporta texto_viejo ni texto_nuevo de ese cambio, asi que aplicado tal cual el trabajo quedaria a mitad: _cuales_estan_rojas defiida y SIN llamarla nadie (codigo muerto), y juzgar_con_vecinas sin tocar.",
+   "El diagnostico estaba bien: _alguna_esta_roja no se llama en ninguna parte del codigo hoy (solo esta definida en linea 70), asi que reemplazarla no rompe nada; pero por lo mismo 'cambiar la llamada que hoy existe dentro de juzgar_con_vecinas' no corresponde al estado real del archivo (alli no hay tal llamada). El obrero acerto pidiendo el cuerpo completo de juzgar_con_vecinas en vez de editar a ciegas."
+  ],
+  "riesgo_vecinos": [
+   "Las dos vigias nombradas existen (vigias/test_vigia_el_juez_de_la_prueba.py y vigias/test_vigia_el_juez_busca_su_prueba.py); el reemplazo de la funcion sola no las afecta porque nadie la llama, el riesgo real cae recien cuando se toque juzgar_con_vecinas, y esa parte aun no esta escrita."
+  ],
+  "que_falta": [
+   "El cuerpo completo y actual de juzgar_con_vecinas (el NECESITO_LEER del obrero es legitimo y procede) para poder entregar el segundo cambio en codigo: la llamada a _cuales_estan_rojas, el corte a las que estan rojas con maximo tres, el matcheo por el final de la ruta y el comentario corto en castellano.",
+   "Conciliar el encargo ('donde hoy se llama a _alguna_esta_roja') con la realidad del archivo: hoy juzgar_con_vecinas no hace esa llamada; hay que decidir donde se inserta el chequeo para no reventar el flujo de candidatas."
+  ],
+  "resumen_para_el_jefe": "La funcion nueva _cuales_estan_rojas esta bien hecha y cumple su mitad, pero falta la otra mitad (usarla en juzgar_con_vecinas y limitar el recorrido a las rojas), que solo esta descrita en palabras, no en codigo: el obrero pidio el material que falta para entregarla bien."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'juzgar_con_vecinas' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 piez",
+  "GPT-OSS 120B (Groq) no le cabe (20610 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'juzgar_con_vecinas' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 piez",
+  "GPT-OSS 120B (Groq) no le cabe (20997 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'juzgar_con_vecinas' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "GPT-OSS 120B (Groq) no le cabe (21125 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

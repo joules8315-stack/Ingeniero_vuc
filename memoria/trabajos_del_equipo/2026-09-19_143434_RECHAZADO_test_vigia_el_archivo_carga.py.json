@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Faltan al final de vigias/test_vigia_el_archivo_carga.py las cuatro pruebas nuevas de falsos positivos (7 a 10) que pide el encargo; el rechazo anterior vino de un texto_viejo mal copiado que rompia el archivo en el renglon 43.",
+  "archivo": "vigias/test_vigia_el_archivo_carga.py",
+  "funcion": "final del archivo (despues de la ultima prueba existente, test_con_el_import_arriba_carga)",
+  "texto_viejo": "def test_con_el_import_arriba_carga():\n    contenido = (\n        'import contextlib\\n'\n        '\\n'",
+  "texto_nuevo": "def test_con_el_import_arriba_carga():\n    contenido = (\n        'import contextlib\\n'\n        '\\n'\n\n\ndef test_if_con_asignacion_y_uso_adentro_no_frena():\n    contenido = (\n        'import sys\\n'\n        'if __name__ == \"__main__\":\\n'\n        '    q = sys.argv\\n'\n        '    print(q)\\n'\n    )\n    fallos = r.no_carga(contenido)\n    assert isinstance(fallos, list)\n    assert fallos == [], 'un if con asignacion y uso adentro no puede dar NO CARGA'\n\n\ndef test_try_import_except_no_frena():\n    contenido = (\n        'try:\\n'\n        '    import json\\n'\n        'except Exception as e:\\n'\n        '    print(e)\\n'\n    )\n    fallos = r.no_carga(contenido)\n    assert isinstance(fallos, list)\n    assert fallos == [], 'un try/import/except no puede dar NO CARGA'\n\n\ndef test_lista_por_comprension_no_frena():\n    contenido = 'X = [f for f in range(3)]\\n'\n    fallos = r.no_carga(contenido)\n    assert isinstance(fallos, list)\n    assert fallos == [], 'una lista por comprension no puede dar NO CARGA'\n\n\ndef test_bom_al_principio_no_frena():\n    contenido = chr(0xFEFF) + 'import os\\n'\n    fallos = r.no_carga(contenido)\n    assert isinstance(fallos, list)\n    assert fallos == [], 'un BOM al principio no puede dar NO CARGA'",
+  "cambio": "Anadir al final del archivo, despues de la ultima prueba existente, cuatro pruebas nuevas (7 a 10) que comprueban que no_carga devuelve lista vacia para: un if con asignacion y uso adentro, un try/import/except, una lista por comprension y un contenido que empieza con BOM. Las pruebas existentes no se tocan.",
+  "codigo": "def test_if_con_asignacion_y_uso_adentro_no_frena():\n    contenido = (\n        'import sys\\n'\n        'if __name__ == \"__main__\":\\n'\n        '    q = sys.argv\\n'\n        '    print(q)\\n'\n    )\n    fallos = r.no_carga(contenido)\n    assert isinstance(fallos, list)\n    assert fallos == [], 'un if con asignacion y uso adentro no puede dar NO CARGA'\n\n\ndef test_try_import_except_no_frena():\n    contenido = (\n        'try:\\n'\n        '    import json\\n'\n        'except Exception as e:\\n'\n        '    print(e)\\n'\n    )\n    fallos = r.no_carga(contenido)\n    assert isinstance(fallos, list)\n    assert fallos == [], 'un try/import/except no puede dar NO CARGA'\n\n\ndef test_lista_por_comprension_no_frena():\n    contenido = 'X = [f for f in range(3)]\\n'\n    fallos = r.no_carga(contenido)\n    assert isinstance(fallos, list)\n    assert fallos == [], 'una lista por comprension no puede dar NO CARGA'\n\n\ndef test_bom_al_principio_no_frena():\n    contenido = chr(0xFEFF) + 'import os\\n'\n    fallos = r.no_carga(contenido)\n    assert isinstance(fallos, list)\n    assert fallos == [], 'un BOM al principio no puede dar NO CARGA'",
+  "vigia": "Las propias cuatro pruebas nuevas dentro de vigias/test_vigia_el_archivo_carga.py; al correr pytest sobre ese archivo deben pasar las existentes y las cuatro nuevas.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Se elimina el cuerpo de la prueba existente `test_con_el_import_arriba_carga`, dejando la función sin cerrar ni con aserciones, lo que genera un error de sintaxis.",
+   "Al modificar la prueba original se rompe la suite de pruebas existente, contraviniendo la indicación de que \"las pruebas existentes no se tocan\"."
+  ],
+  "riesgo_vecinos": [
+   "arnes/revisor_de_programa.py (las pruebas no se ejecutan correctamente al romper el archivo de test)"
+  ],
+  "que_falta": [
+   "Mantener intacta la definición completa de `test_con_el_import_arriba_carga` tal como está en el material.",
+   "Añadir las cuatro pruebas nuevas (7‑10) al final del archivo sin alterar código existente."
+  ],
+  "resumen_para_el_jefe": "Rechazado: el cambio borra parte de una prueba existente, provocando error de sintaxis y rompiendo la suite de tests."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22416 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 43 del archivo completo: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (23145 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (23203 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 43 del archivo completo: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (23295 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

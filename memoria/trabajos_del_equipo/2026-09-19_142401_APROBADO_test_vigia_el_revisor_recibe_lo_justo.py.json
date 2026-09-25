@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La vigia busca la marca 'material_auditor = _filtrar_paquete(' pero obrero.py ahora arma el material con 'material_auditor = _material_del_revisor('",
+  "archivo": "vigias/test_vigia_el_revisor_recibe_lo_justo.py",
+  "funcion": "test_la_llamada_que_arma_material_auditor_usa_el_tope",
+  "texto_viejo": "    marca = \"material_auditor = _filtrar_paquete(\"",
+  "texto_nuevo": "    marca = \"material_auditor = _material_del_revisor(\"",
+  "cambio": "En la funcion test_la_llamada_que_arma_material_auditor_usa_el_tope, cambiar la linea que define la marca para que busque 'material_auditor = _material_del_revisor(' en vez de 'material_auditor = _filtrar_paquete('. Ademas, ajustar la frase del docstring que nombra esa marca.",
+  "codigo": "    marca = \"material_auditor = _material_del_revisor(\"",
+  "vigia": "vigias/test_vigia_el_revisor_recibe_lo_justo.py::test_la_llamada_que_arma_material_auditor_usa_el_tope",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "El docstring de la funcion dice 'Se toma el texto desde material_auditor = _filtrar_paquete(' hasta el primer ')))' que le sigue'. ¿Debe cambiarse esa frase a 'material_auditor = _material_del_revisor(' o solo la linea marca = ...?"
+  ],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cambio correcto del marcador y docstring, sin inventos ni impactos colaterales."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40084 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

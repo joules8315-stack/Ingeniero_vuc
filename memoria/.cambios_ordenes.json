@@ -1,0 +1,28 @@
+{
+  "estados": {
+    "18": ["pendiente", "la vigia entro mal hecha: sus dos pruebas apartan subprocess a traves de arnes.candado_equipo, que lo importa DENTRO de la funcion, y revientan con AttributeError. La reparacion que vigila (orden 19) esta bien y guardada. Se corrige la vigia, que tiene que quedar VERDE."]
+  },
+  "encargos": {
+    "18": "En vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py las dos pruebas revientan con AttributeError: module arnes.candado_equipo has no attribute subprocess, en las dos lineas que dicen monkeypatch.setattr(candado.subprocess, \"run\", _hacer_run_falso(registro_git), raising=True). La causa: arnes/candado_equipo.py importa subprocess DENTRO de la funcion volver_atras, no arriba del archivo. Hay que cambiar esas dos lineas para que aparten subprocess.run en su propio modulo: agregar import subprocess arriba del archivo de la vigia, junto a los otros import, y en las dos lineas usar monkeypatch.setattr(subprocess, \"run\", _hacer_run_falso(registro_git), raising=True). Si hace falta cambiar varios sitios del mismo archivo, entregalos en la lista cambios. Lo que comprueba cada prueba no cambia. La reparacion que vigilan ya esta hecha, asi que tienen que quedar VERDES. No toques ningun otro archivo."
+  },
+  "sin_marca_de_crear": ["18"],
+  "nuevas": [
+    {"id": "61", "titulo": "La vigia de que el candado de cierre no para por una prueba que espera su arreglo",
+     "origen": "medido una y otra vez el 2026-09-20 y 21: el candado de cierre para el trabajo diciendo 15 rojas, y 14 de ellas son pruebas nacidas rojas a proposito que esperan su arreglo",
+     "repara": "el candado de cierre tiene el mismo choque de leyes que tenia el guardia (pareja 3 del informe del 14-09): no distingue una prueba que espera su arreglo de una prueba rota. El guardia ya se reparo (orden 35); el candado de cierre no, y para en falso cada vez que se termina un turno",
+     "pieza": "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py", "depende": [], "modo": "IA",
+     "razon": "la vigia nace antes que el cambio, y nace roja",
+     "encargo": "Crear la vigia nueva vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py. Vigila arnes/candado_cierre.py, en la parte que decide si las vigias rojas impiden terminar. Tiene que comportarse igual que ya lo hace la funcion _vigias de arnes/guardia_de_guardado.py: una prueba roja que la propia maquina declaro como la vigia de una orden suya todavia sin terminar (en memoria/ORDENES.json, campo vigia, con estado distinto de hecha) NO impide terminar; cualquier otra roja SI lo impide, igual que hoy. Tres pruebas con la salida de pytest y la lista de ordenes de mentira (monkeypatch, carpeta temporal, sin correr pytest de verdad): solo rojas que esperan su arreglo no paran; una roja que no espera nada si para; todo verde no para. Importa lo que se prueba dentro de cada prueba. No toques ningun otro archivo.",
+     "vigia": "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py", "entrega_la_prueba": "si", "crear": true,
+     "prueba_real": "", "comando": "", "estado": "pendiente", "paso_fallido": "", "fallos_seguidos": 0, "nota": ""},
+    {"id": "62", "titulo": "El candado de cierre no para por una prueba que espera su arreglo",
+     "origen": "choque de leyes numero 3 del informe del 14-09, ya reparado en el guardia el 2026-09-20",
+     "repara": "el candado de cierre para en falso cada vez que hay pruebas nacidas rojas esperando su arreglo, que es justo como trabaja el metodo",
+     "pieza": "arnes/candado_cierre.py", "depende": ["61"], "modo": "IA",
+     "razon": "la misma regla que ya tiene el guardia; no se afloja nada: solo deja pasar lo que la propia maquina declaro que espera su arreglo",
+     "encargo": "En arnes/candado_cierre.py, en la parte que cuenta las vigias rojas para decidir si se puede terminar, descontar las rojas que la propia maquina declaro como vigia de una orden suya todavia sin terminar: se leen las ordenes de memoria/ORDENES.json y se toman los campos vigia de las que tienen estado distinto de hecha, con las barras normalizadas, igual que ya lo hace la funcion _vigias de arnes/guardia_de_guardado.py. Si quedan rojas que no esperan nada, se para como hoy. Si la lista de ordenes no se puede leer, se para como hoy. No toques ningun otro archivo.",
+     "vigia": "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py",
+     "sabotaje": "memoria/sabotajes/el_cierre_no_para_por_una_prueba_que_espera.json",
+     "prueba_real": "", "comando": "", "estado": "pendiente", "paso_fallido": "", "fallos_seguidos": 0, "nota": ""}
+  ]
+}

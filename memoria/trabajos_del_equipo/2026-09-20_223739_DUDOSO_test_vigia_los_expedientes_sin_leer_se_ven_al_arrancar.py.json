@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta ver el codigo real de ingeniero.arranca y de estado.leer para saber como se leen los expedientes de memoria/EXPEDIENTES y como se imprime el arranque, y no aparece ningun archivo de vigias/ de ejemplo en el material.",
+  "archivo": "vigias/test_vigia_los_expedientes_sin_leer_se_ven_al_arrancar.py",
+  "texto_nuevo": "NECESITO_LEER: ingeniero.py / necesito el cuerpo completo de la funcion arranca() y de estado.leer() para saber exactamente que claves devuelve el estado y como se listan los expedientes de memoria/EXPEDIENTES / decide que es lo que se imprime al arrancar y de donde salen los expedientes sin resolver / riesgo: escribir la vigia a ciegas y que no pruebe lo que se pide.\nNECESITO_LEER: vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py / necesito ver como estan escritas las vigias existentes de este proyecto (imports, monkeypatch, tmp_path, como llaman a ingeniero) / decide el estilo y los imports exactos de la vigia nueva / riesgo: que la vigia nueva no arranque por usar un patron distinto al del proyecto.\nNECESITO_LEER: estado.py / necesito ver la funcion leer() y donde vive la carpeta memoria/EXPEDIENTES y con que clave se marca un informe como ok / decide como fabricar los dos expedientes de mentira (uno resuelto, uno sin resolver) / riesgo: inventar el formato del informe y que la vigia pase en falso.",
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": true,
+  "que_invento": [
+   "estado.py y estado.leer(): el diagnostico los afirma como 'el codigo real' que lee los expedientes, y ninguno aparece en el material",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py: lo cita como las vigias existentes del proyecto sin que el material mencione ese archivo"
+  ],
+  "fallos": [
+   "Peticion 3 (estado.py) es redundante: el encargo ya dice donde vive la carpeta (memoria/EXPEDIENTES) y con que clave (ok); con el cuerpo de arranca() se ve el formato real del informe sin inventar un archivo",
+   "No entrega ni un borrador de vigia: es un bloqueo en puro, no una reparacion. El encargo da la conducta exacta (nombrar el sin resolver, no el resuelto); pedia escribirse con la boca de arranca()",
+   "Las peticiones de ejemplo deberian ser genericas ('alguna vigia de vigias/ como modelo'), no afirmar nombres de archivo especificos que no constan"
+  ],
+  "riesgo_vecinos": [
+   "No toca ningun archivo, no rompe vecinos. Riesgo operativo: si estado.py no existe con ese nombre, la ronda vuelve NO_ENCONTRADO y se quema una vuelta por pedir por nombre inventado en vez de generico"
+  ],
+  "que_falta": [
+   "El cuerpo de arranca() en ingeniero.py para saber la constante que se apunta con monkeypatch y el texto exacto que imprime (es el unico pedido imprescindible)",
+   "Una vigia real de vigias/ como referencia de estilo, pedida sin inventarle nombre"
+  ],
+  "resumen_para_el_jefe": "No invento codigo y pidio material en vez de abrir a ciegas, que es lo correcto, pero afirma que existen estado.py/estado.leer y una vigia de ejemplo que no aparecen en el material, pide de mas (el encargo ya da carpeta y clave ok) y no entrega ni un borrador: hay que devolverle las tres peticiones aterrizadas y un primer intento de vigia."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (37463 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (37651 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (37713 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (37783 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

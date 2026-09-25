@@ -7,6 +7,17 @@ import subprocess
 import sys
 
 
+# Limites de tiempo medidos el 2026-09-21 en el cuaderno de llamadas:
+# DeepSeek tarda 4 a 11 s, Big Pickle hasta 328 s y con A-47 se le espera hasta 600 s,
+# el guardia corre la bateria en 262 s, y una tarea puede dar 4 vueltas de revision:
+# 4 por (11 + 600) + 262 = 2706 s. El tope de fuera tiene que ser mayor que la suma de los de dentro.
+# SIN_AVANCE tiene que ser MAYOR que la llamada callada mas larga (la espera de Big Pickle de hasta 600 s),
+# o se cortaria a una IA que esta contestando.
+LIMITE_TAREA_SEGUNDOS = 420
+SIN_AVANCE_SEGUNDOS = 660
+TOPE_DURO_SEGUNDOS = 3000
+
+
 def lanzar_al_equipo(proyecto, orden, tope_segundos=900):
     raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     comando = [
@@ -25,28 +36,55 @@ def lanzar_al_equipo(proyecto, orden, tope_segundos=900):
     entorno = dict(os.environ)
     entorno["PYTHONIOENCODING"] = "utf-8"
     entorno["INGENIERO_ETIQUETA"] = str(orden.get("id", ""))
-    try:
-        resultado = subprocess.run(
-            comando,
-            cwd=raiz,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=tope_segundos,
-            env=entorno,
-        )
-    except subprocess.TimeoutExpired:
+    archivo = open(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'), 'w', encoding='utf-8', errors='replace')
+    proceso = subprocess.Popen(
+        comando,
+        cwd=raiz,
+        stdout=archivo,
+        stderr=subprocess.STDOUT,
+        env=entorno,
+    )
+
+    def avance():
+        import psutil
+        total = 0.0
+        try:
+            pp = psutil.Process(proceso.pid)
+            for p in [pp] + pp.children(recursive=True):
+                try:
+                    t = p.cpu_times()
+                    total += t.user + t.system
+                except psutil.Error:
+                    pass
+        except Exception:
+            total = 0.0
+        total = round(total, 1)
+        try:
+            total += os.path.getsize(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'))
+        except Exception:
+            pass
+        for nombre in ('CUADERNO_DE_LLAMADAS.jsonl', 'APLICACIONES.log'):
+            try:
+                total += os.path.getmtime(os.path.join(raiz, 'memoria', nombre))
+            except Exception:
+                pass
+        return total
+
+    from cuerpo import vigilante
+    estado = vigilante.esperar(proceso=proceso, limite=LIMITE_TAREA_SEGUNDOS, sin_avance=SIN_AVANCE_SEGUNDOS, tope_duro=TOPE_DURO_SEGUNDOS, avance=avance)
+    archivo.close()
+    with open(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'), encoding='utf-8', errors='replace') as f:
+        salida = f.read()
+    if estado != 'termino':
         return {
-            "guardado": False,
-            "codigo": None,
-            "salida": "TOPE DE TIEMPO: " + str(tope_segundos) + " s",
+            'guardado': False,
+            'codigo': None,
+            'salida': 'COLGADA: ' + estado + ' (sin avance pasado el limite; se busca la causa raiz)\n' + salida,
         }
-    salida = resultado.stdout + resultado.stderr
     return {
-        "guardado": "GUARDADO AL MOMENTO" in salida,
-        "codigo": resultado.returncode,
-        "salida": salida,
+        'guardado': 'GUARDADO AL MOMENTO' in salida,
+        'codigo': proceso.returncode,
+        'salida': salida,
     }
 
 
@@ -247,6 +285,8 @@ def se_paso_del_tope(hoy=None):
 
 def tipo_de_fallo(salida):
     """Devuelve de que tipo fue el fallo, mirando el texto de salida."""
+    if isinstance(salida, str) and salida.startswith('COLGADA:'):
+        return 'colgada'
     if not isinstance(salida, str):
         return "otro"
     if salida.startswith("TOPE DE TIEMPO"):
@@ -260,7 +300,7 @@ def tipo_de_fallo(salida):
     return "otro"
 
 
-def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):
+def bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):
     """Corre las ordenes sola hasta que se para por una de las tres causas:
     tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos
     del mismo tipo en la misma pieza."""
@@ -379,6 +419,77 @@ def correr_orden_del_sistema(palabras):
     return resultado.returncode
 
 
+def armar_sabotaje(orden, raiz=None):
+    """Arma la lista de sabotaje de una orden a partir del trabajo aprobado mas nuevo de su pieza.
+
+    El sabotaje es deshacer el cambio aprobado (A-43): se busca en
+    raiz/memoria/trabajos_del_equipo el archivo cuyo nombre contiene APROBADO y
+    el nombre de la pieza, se toma el de fecha de cambio mas nueva, y se lee su
+    propuesta. Si trae una lista 'cambios', por cada trozo con texto_viejo y
+    texto_nuevo se agrega {'archivo': pieza, 'viejo': texto_nuevo, 'nuevo':
+    texto_viejo}; si no, y trae texto_viejo no vacio, se agrega un solo objeto
+    igual. Si no quedo ningun objeto, devuelve False. Si si, crea la carpeta del
+    archivo de orden['sabotaje'] (relativo a raiz), escribe la lista con
+    json.dump (indent 1, ensure_ascii False) y devuelve True. Nunca lanza: ante
+    cualquier error devuelve False.
+    """
+    try:
+        if raiz is None:
+            raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        pieza = ''
+        if isinstance(orden, dict):
+            pieza = os.path.basename(str(orden.get('pieza', '')))
+        if not pieza:
+            return False
+        carpeta = os.path.join(raiz, 'memoria', 'trabajos_del_equipo')
+        candidatos = []
+        for nombre_archivo in os.listdir(carpeta):
+            if 'APROBADO' in nombre_archivo and pieza in nombre_archivo:
+                ruta = os.path.join(carpeta, nombre_archivo)
+                try:
+                    candidatos.append((os.path.getmtime(ruta), ruta))
+                except OSError:
+                    continue
+        if not candidatos:
+            return False
+        candidatos.sort()
+        ruta_trabajo = candidatos[-1][1]
+        with open(ruta_trabajo, 'r', encoding='utf-8') as f:
+            trabajo = json.load(f)
+        propuesta = trabajo.get('propuesta') if isinstance(trabajo, dict) else None
+        if not isinstance(propuesta, dict):
+            return False
+        lista = []
+        cambios = propuesta.get('cambios')
+        if isinstance(cambios, list):
+            for trozo in cambios:
+                if not isinstance(trozo, dict):
+                    continue
+                viejo = trozo.get('texto_viejo')
+                nuevo = trozo.get('texto_nuevo')
+                if viejo and nuevo:
+                    lista.append({'archivo': pieza, 'viejo': nuevo, 'nuevo': viejo})
+        else:
+            viejo = propuesta.get('texto_viejo')
+            nuevo = propuesta.get('texto_nuevo')
+            if viejo and nuevo:
+                lista.append({'archivo': pieza, 'viejo': nuevo, 'nuevo': viejo})
+        if not lista:
+            return False
+        destino = orden.get('sabotaje') if isinstance(orden, dict) else None
+        if not destino:
+            return False
+        ruta_destino = os.path.join(raiz, destino)
+        carpeta_destino = os.path.dirname(ruta_destino)
+        if carpeta_destino:
+            os.makedirs(carpeta_destino, exist_ok=True)
+        with open(ruta_destino, 'w', encoding='utf-8') as f:
+            json.dump(lista, f, indent=1, ensure_ascii=False)
+        return True
+    except Exception:
+        return False
+
+
 def sabotear_la_orden(orden):
     """Corre el sabotaje de una orden y comprueba por programa que la vigia de verdad protege.
 
@@ -391,6 +502,14 @@ def sabotear_la_orden(orden):
         sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None
         if not vigia or not sabotaje:
             return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}
+        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        ruta_sabotaje = sabotaje
+        if not os.path.isabs(ruta_sabotaje):
+            ruta_sabotaje = os.path.join(raiz, ruta_sabotaje)
+        if not os.path.exists(ruta_sabotaje):
+            armado = armar_sabotaje(orden)
+            if not armado:
+                return {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}
         palabras = [sys.executable, 'arnes/sabotaje.py', vigia, sabotaje]
         codigo = correr_orden_del_sistema(palabras)
         if codigo == 0:
@@ -410,7 +529,51 @@ def recoger_lo_frenado(orden, raiz):
             return {'ok': False, 'razon': 'la orden no dice que pieza toca'}
         nombre = os.path.basename(pieza) + '.FRENADO_POR_EL_GUARDIA'
         from arnes import recoger_los_pedazos
-        return recoger_los_pedazos.recoger(raiz, nombre)
+        import subprocess
+        import sys
+        resultado = recoger_los_pedazos.recoger(raiz, nombre)
+        if not isinstance(resultado, dict) or not resultado.get('ok'):
+            return resultado
+        from arnes import guardia_de_guardado
+        if guardia_de_guardado._hay_llaves(raiz, [pieza]):
+            os.replace(pieza, os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.LLAVE'))
+            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida trae algo con forma de llave: no se deja en el disco'}
+        if orden.get('entrega_la_prueba') == 'si':
+            return resultado
+        vigia = orden.get('vigia')
+        if not vigia:
+            return resultado
+        entorno = dict(os.environ)
+        entorno['INGENIERO_OFF'] = '1'
+        prueba = subprocess.run(
+            [sys.executable, '-m', 'pytest', '-q', vigia],
+            cwd=raiz,
+            capture_output=True,
+            text=True,
+            timeout=300,
+            env=entorno,
+        )
+        if prueba.returncode != 0:
+            subprocess.run(
+                ['git', 'checkout', 'HEAD', '--', pieza],
+                cwd=raiz,
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida deja su prueba roja: no se deja en el disco'}
+        from arnes import guardia_de_guardado
+        paso, _mensaje = guardia_de_guardado._vigias(raiz)
+        if paso is not True:
+            subprocess.run(
+                ['git', 'checkout', 'HEAD', '--', pieza],
+                cwd=raiz,
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida pone rojas a sus vecinas: no se deja en el disco'}
+        return resultado
     except Exception as e:
         return {'ok': False, 'razon': str(e)}
 
@@ -502,38 +665,63 @@ def pedir_al_perito(expediente, raiz, tope_segundos=600):
     exe = shutil.which('claude')
     if not exe:
         return (None, 'no encuentro claude en el PATH')
-    pedido = ('Eres el perito del pit (acuerdo A-22). Analiza este fallo SOLO con el expediente y leyendo el codigo del proyecto; no uses tu memoria. Responde SOLO un objeto JSON con: que_paso, causa_raiz, donde, quien_fallo (herramienta, programa, equipo o diseno), citas (lista de {archivo, texto} copiados LITERAL del proyecto, que prueban la causa), no_volver_a (la leccion en una frase), tarea_nueva ({repara, pieza, razon, encargo, modo: PROGRAMA o IA}; distinta de la orden que fallo). EXPEDIENTE:' + json.dumps(expediente, ensure_ascii=False, indent=2))
-    try:
-        entorno = dict(os.environ)
-        entorno['INGENIERO_OFF'] = '1'
-        resultado = subprocess.run(
-            [exe, '-p', '--tools', 'Read,Grep,Glob', '--permission-mode', 'plan'],
-            input=pedido,
-            cwd=raiz,
-            capture_output=True,
-            text=True,
-            encoding='utf-8',
-            errors='replace',
-            timeout=tope_segundos,
-            env=entorno,
-        )
-    except subprocess.TimeoutExpired:
-        return (None, 'el perito no contesto en %d s' % tope_segundos)
-    except Exception:
-        return (None, 'el perito no contesto')
-    salida = resultado.stdout or ''
-    inicio = salida.find('{')
-    fin = salida.rfind('}')
-    if inicio == -1 or fin == -1 or fin < inicio:
-        return (None, 'el perito no devolvio JSON: ' + salida[:200])
-    trozo = salida[inicio:fin + 1]
-    try:
-        datos = json.loads(trozo)
-    except (ValueError, TypeError):
-        return (None, 'el perito no devolvio JSON: ' + salida[:200])
-    if not isinstance(datos, dict):
-        return (None, 'el perito no devolvio JSON: ' + salida[:200])
-    return (datos, 'ok')
+    pedido = ('Eres el perito del pit (acuerdo A-22). Analiza este fallo SOLO con el expediente y leyendo el codigo del proyecto; no uses tu memoria. Responde SOLO un objeto JSON con: que_paso, causa_raiz, donde, quien_fallo (herramienta, programa, equipo o diseno), citas (lista de {archivo, texto} copiados LITERAL del proyecto, que prueban la causa), no_volver_a (la leccion en una frase), tarea_nueva ({repara, pieza, razon, encargo, modo: PROGRAMA o IA}; distinta de la orden que fallo). OBLIGATORIO: tu respuesta completa es SOLO el objeto JSON, sin una sola palabra antes ni despues. EXPEDIENTE:' + json.dumps(expediente, ensure_ascii=False, indent=2))
+    esquema = json.dumps({
+        'type': 'object',
+        'properties': {
+            'que_paso': {'type': 'string'},
+            'causa_raiz': {'type': 'string'},
+            'donde': {'type': 'string'},
+            'quien_fallo': {'type': 'string'},
+            'no_volver_a': {'type': 'string'},
+            'citas': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'archivo': {'type': 'string'},
+                        'texto': {'type': 'string'},
+                    },
+                },
+            },
+            'tarea_nueva': {'type': 'object'},
+        },
+        'required': ['que_paso', 'causa_raiz'],
+    }, ensure_ascii=False)
+    orden = [exe, '-p', '--tools', 'Read,Grep,Glob', '--permission-mode', 'plan', '--json-schema', esquema]
+    entrada = pedido
+    for intento in range(3):
+        try:
+            entorno = dict(os.environ)
+            entorno['INGENIERO_OFF'] = '1'
+            resultado = subprocess.run(
+                orden,
+                input=entrada,
+                cwd=raiz,
+                capture_output=True,
+                text=True,
+                encoding='utf-8',
+                errors='replace',
+                timeout=tope_segundos,
+                env=entorno,
+            )
+        except subprocess.TimeoutExpired:
+            return (None, 'el perito no contesto en %d s' % tope_segundos)
+        except Exception:
+            return (None, 'el perito no contesto')
+        salida = resultado.stdout or ''
+        inicio = salida.find('{')
+        fin = salida.rfind('}')
+        if inicio != -1 and fin != -1 and fin >= inicio:
+            trozo = salida[inicio:fin + 1]
+            try:
+                datos = json.loads(trozo)
+            except (ValueError, TypeError):
+                datos = None
+            if isinstance(datos, dict):
+                return (datos, 'ok')
+        entrada = 'RECORDATORIO: no respondiste en JSON. Responde SOLO el objeto JSON pedido, nada mas. ' + pedido
+    return (None, 'el perito no devolvio JSON: ' + salida[:200])
 
 
 def juzgar_citas(analisis):

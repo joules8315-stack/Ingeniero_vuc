@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "En arnes/revisor_de_programa.py, dentro de revisar, hay una copia repetida del bloque 2c (SE QUEDA SIN CUERPO) despues del bloque NO CARGA que declara nombres ya existentes arriba del archivo, volviendolos locales para toda la funcion y matando en silencio la copia buena de mas arriba.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "",
+  "cambio": "Quitar la copia de abajo entera del bloque 2c (SE QUEDA SIN CUERPO), la que esta despues del bloque de NO CARGA, desde su comentario 2c hasta el except de ese mismo bloque con su pass, justo antes de la linea que pregunta si es un pedazo. La copia de arriba (antes del atajo de cuando solo se borra) se queda tal cual.",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py y vigias/test_vigia_un_cambio_que_solo_borra_vale.py: comprueban que la cuenta que frena cuando un cambio deja una prueba sin cuerpo dispara de verdad.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+   "vigias/test_vigia_un_cambio_que_solo_borra_vale.py",
+   "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py"
+  ],
+  "preguntas": [],
+  "confianza": "baja"
+ },
+ "auditoria": {},
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22499 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (23652 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (23710 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (23768 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

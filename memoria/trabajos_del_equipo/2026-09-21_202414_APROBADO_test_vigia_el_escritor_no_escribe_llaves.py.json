@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La vigía comprueba 'partes' en el texto sin normalizar a minúsculas, por lo que falla si el encargo escribe 'Partes' con mayúscula.",
+  "archivo": "vigias/test_vigia_el_escritor_no_escribe_llaves.py",
+  "funcion": "test_el_encargo_de_crear_codigo_pide_llaves_por_partes",
+  "texto_viejo": "    assert \"partes\" in texto, (",
+  "texto_nuevo": "    assert \"partes\" in texto.lower(), (",
+  "cambio": "Sustituir la comprobación de 'partes' en el texto por la misma comprobación sobre el texto en minúsculas.",
+  "codigo": "    assert \"partes\" in texto.lower(), (",
+  "vigia": "vigias/test_vigia_el_escritor_no_escribe_llaves.py",
+  "puede_danar": [
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio normaliza el texto a minúsculas antes de comprobar 'partes', que es justo lo que pide el diagnóstico, en una sola línea del archivo correcto y sin tocar nada más."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

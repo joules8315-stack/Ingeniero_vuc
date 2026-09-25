@@ -1,0 +1,58 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En arnes/revisor_de_programa.py la funcion no_carga usa ast.walk sobre el nodo entero, y asi entra al cuerpo de lambdas, funciones y clases anidadas dentro de if/with/try, contando nombres leidos que no corren al cargar (4 falsos positivos de 318).",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "no_carga",
+  "texto_viejo": "            else:\n                partes = [nodo]\n                for n in ast.walk(nodo):\n                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store):\n                        definidos.add(n.id)\n                    elif isinstance(n, ast.ExceptHandler) and n.name:\n                        definidos.add(n.name)\n                    elif isinstance(n, ast.Import):\n                        for a in n.names:\n                            definidos.add((a.asname or a.name).split('.')[0])\n                    elif isinstance(n, ast.ImportFrom):\n                        for a in n.names:\n                            definidos.add(a.asname or a.name.split('.')[0])\n                    elif isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):\n                        definidos.add(n.name)\n            for parte in partes:\n                for n in ast.walk(parte):\n                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load):\n                        if n.id not in definidos and n.id not in ya_dicho:\n                            ya_dicho.add(n.id)\n                            fallos.append('EL ARCHIVO NO CARGA: ' + n.id +\n                                          ' se usa al cargar el modulo y no esta definido ni importado arriba')",
+  "texto_nuevo": "            else:\n                partes = [nodo]\n                for n in _recorrer_al_cargar(nodo):\n                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store):\n                        definidos.add(n.id)\n                    elif isinstance(n, ast.ExceptHandler) and n.name:\n                        definidos.add(n.name)\n                    elif isinstance(n, ast.Import):\n                        for a in n.names:\n                            definidos.add((a.asname or a.name).split('.')[0])\n                    elif isinstance(n, ast.ImportFrom):\n                        for a in n.names:\n                            definidos.add(a.asname or a.name.split('.')[0])\n                    elif isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):\n                        definidos.add(n.name)\n            for parte in partes:\n                for n in _recorrer_al_cargar(parte):\n                    if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load):\n                        if n.id not in definidos and n.id not in ya_dicho:\n                            ya_dicho.add(n.id)\n                            fallos.append('EL ARCHIVO NO CARGA: ' + n.id +\n                                          ' se usa al cargar el modulo y no esta definido ni importado arriba')",
+  "cambio": "Sustituir los dos usos de ast.walk dentro de no_carga (el que recorre el nodo suelto y el que recorre cada parte) por una funcion nueva _recorrer_al_cargar que recorre el arbol sin entrar en el cuerpo de ast.Lambda (si sus defaults), ni en el cuerpo de FunctionDef/AsyncFunctionDef anidadas (si decorator_list y defaults), ni en el cuerpo de ClassDef anidadas (si bases, keywords y decorator_list). Anadir esa funcion nueva justo antes de no_carga.",
+  "codigo": "def _recorrer_al_cargar(nodo):\n    \"\"\"Recorre el arbol como ast.walk pero SIN entrar donde no corre al cargar.\n\n    No entra en: el cuerpo de ast.Lambda (sus args tampoco; si sus defaults), el cuerpo de\n    FunctionDef y AsyncFunctionDef anidadas (si sus decorator_list y defaults), ni el cuerpo\n    de ClassDef anidadas (si sus bases, keywords y decorator_list). Asi no_carga no cuenta\n    nombres leidos que solo corren cuando alguien llama a la funcion o crea el objeto.\n    \"\"\"\n    pila = [nodo]\n    while pila:\n        actual = pila.pop()\n        yield actual\n        if isinstance(actual, ast.Lambda):\n            for d in actual.args.defaults:\n                pila.append(d)\n            for d in actual.args.kw_defaults:\n                if d is not None:\n                    pila.append(d)\n            continue\n        if isinstance(actual, (ast.FunctionDef, ast.AsyncFunctionDef)):\n            for d in actual.decorator_list:\n                pila.append(d)\n            for d in actual.args.defaults:\n                pila.append(d)\n            for d in actual.args.kw_defaults:\n                if d is not None:\n                    pila.append(d)\n            continue\n        if isinstance(actual, ast.ClassDef):\n            for d in actual.decorator_list:\n                pila.append(d)\n            for b in actual.bases:\n                pila.append(b)\n            for k in actual.keywords:\n                pila.append(k)\n            continue\n        for hijo in ast.iter_child_nodes(actual):\n            pila.append(hijo)\n\n\ndef no_carga(contenido):",
+  "vigia": "vigias/test_vigia_el_archivo_carga.py y vigias/test_vigia_revisor_de_programa.py: comprobar que un archivo con sorted(d, key=lambda x: -x[1]) o con una def dentro de un with ya no da falso positivo, y que un nombre leido de verdad al cargar sigue dando fallo.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/candados_medicion.py",
+   "arnes/guardia_de_guardado.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_archivo_carga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_ruta_de_acceso.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vigias/test_vigia_vecinas.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "candados_medicion.py",
+   "guardia_de_guardado.py",
+   "test_vigia_el_archivo_carga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_ruta_de_acceso.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "test_vigia_vecinas.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Repara el problema de falsos positivos sin introducir código inexistente ni romper dependencias."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21565 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

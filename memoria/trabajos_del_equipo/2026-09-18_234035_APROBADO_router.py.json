@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la constante TOPE_FUNCION_NOMBRADA = 300 con su comentario en cerebro/router.py, justo despues de la linea literal 'TOPE_FUNCION_ENTERA = 120'.",
+  "archivo": "cerebro/router.py",
+  "funcion": "armar",
+  "texto_viejo": "TOPE_FUNCION_ENTERA = 120",
+  "texto_nuevo": "TOPE_FUNCION_ENTERA = 120\n# Una funcion que el encargo NOMBRA por su nombre se entrega entera hasta 300 lineas.\n# Las que solo caen por parecido de palabras siguen con el tope de 120, para no releer el repo.\nTOPE_FUNCION_NOMBRADA = 300",
+  "cambio": "Agregar, justo despues de la linea literal 'TOPE_FUNCION_ENTERA = 120', la constante nueva TOPE_FUNCION_NOMBRADA = 300 con su comentario. Un solo cambio, solo agregar esas lineas. No tocar nada mas.",
+  "codigo": "# Una funcion que el encargo NOMBRA por su nombre se entrega entera hasta 300 lineas.\n# Las que solo caen por parecido de palabras siguen con el tope de 120, para no releer el repo.\nTOPE_FUNCION_NOMBRADA = 300",
+  "vigia": "Una vigia que compruebe que en cerebro/router.py existe la constante TOPE_FUNCION_NOMBRADA con valor 300 y que una funcion nombrada por el encargo se entrega entera hasta 300 lineas, mientras que las que solo caen por parecido siguen con el tope de 120.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_memoria_completa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "ninguno: anadir 3 lineas despues de la constante no mueve codigo, las referencias a TOPE_FUNCION_ENTERA son por nombre (router.py:307 y router.py:612), no por linea",
+   "arnes/asignador.py, test_vigia_memoria_completa.py y test_vigia_revisor_roto_no_tira_la_vuelta.py solo llaman/importan el router; anadir una constante no cambia ningun comportamiento"
+  ],
+  "que_falta": [
+   "la constante sola NO cambia el comportamiento: todavia ningun sitio lee TOPE_FUNCION_NOMBRADA; hace falta el paso siguiente (usarla en el punto de corte del trozo, hoy router.py:307 y router.py:612) para que la funcion de ~220 lineas nombrada llegue de verdad al obrero",
+   "la vigia que la propuesta describe existe como especificacion, no como archivo: hay que crearla en una vuelta aparte"
+  ],
+  "resumen_para_el_jefe": "El obrero hizo EXACTAMENTE lo que pedia el encargo (anadir TOPE_FUNCION_NOMBRADA = 300 con su comentario tras TOPE_FUNCION_ENTERA = 120, que existe en router.py:29), sin inventar nada, sin tocar vecinos ni mas de lo pedido; solo recuerda que la constante queda dormida y falta enchufarla en el recorte en el paso siguiente."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19082 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

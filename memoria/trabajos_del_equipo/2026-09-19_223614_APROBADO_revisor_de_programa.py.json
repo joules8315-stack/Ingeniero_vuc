@@ -1,0 +1,67 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El revisor no distingue si el cambio cae dentro de un texto entre comillas triples y por eso grita nombres inexistentes y desapariciones en ejemplos guardados como texto.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        # 3 — USA UN NOMBRE QUE NO EXISTE. El fallo real del 2026-09-08: re sin importar.",
+  "texto_nuevo": "        # Lo que esta dentro de un texto entre comillas no es codigo de este archivo: juzgarlo\n        # como codigo frena trabajo bueno.\n        try:\n            _ruta_txt = str(p.get(\"archivo\") or \"\")\n            if (_ruta_txt.lower().endswith(\".py\") and os.path.isfile(_ruta_txt)\n                    and viejo.strip()):\n                with open(_ruta_txt, encoding=\"utf-8-sig\", errors=\"replace\") as _ftx:\n                    _todo_tx = _ftx.read()\n                _pos_tx = _todo_tx.find(viejo)\n                if _pos_tx >= 0:\n                    _renglon_tx = _todo_tx.count(\"\\n\", 0, _pos_tx) + 1\n                    _arbol_tx = ast.parse(_todo_tx)\n                    for _nodo_tx in ast.walk(_arbol_tx):\n                        if (isinstance(_nodo_tx, ast.Constant)\n                                and isinstance(_nodo_tx.value, str)\n                                and getattr(_nodo_tx, \"lineno\", None) is not None\n                                and getattr(_nodo_tx, \"end_lineno\", None) is not None):\n                            if _nodo_tx.lineno <= _renglon_tx <= _nodo_tx.end_lineno:\n                                return fallos\n        except Exception:\n            pass\n\n        # 3 — USA UN NOMBRE QUE NO EXISTE. El fallo real del 2026-09-08: re sin importar.",
+  "cambio": "Insertar, justo antes del comentario que abre la cuenta 3, un bloque envuelto en try que: solo si la ruta termina en .py, el archivo existe y viejo no esta vacio, lee el archivo del disco, busca donde empieza viejo, calcula su renglon contando saltos de linea previos, parsea el arbol con ast.parse, recorre con ast.walk buscando ast.Constant de valor cadena con lineno y end_lineno, y si el renglon calculado cae dentro de alguno devuelve fallos tal cual. Encima, un comentario corto en castellano explicando que lo que esta dentro de un texto entre comillas no es codigo de este archivo y juzgarlo como codigo frena trabajo bueno.",
+  "codigo": "        # Lo que esta dentro de un texto entre comillas no es codigo de este archivo: juzgarlo\n        # como codigo frena trabajo bueno.\n        try:\n            _ruta_txt = str(p.get(\"archivo\") or \"\")\n            if (_ruta_txt.lower().endswith(\".py\") and os.path.isfile(_ruta_txt)\n                    and viejo.strip()):\n                with open(_ruta_txt, encoding=\"utf-8-sig\", errors=\"replace\") as _ftx:\n                    _todo_tx = _ftx.read()\n                _pos_tx = _todo_tx.find(viejo)\n                if _pos_tx >= 0:\n                    _renglon_tx = _todo_tx.count(\"\\n\", 0, _pos_tx) + 1\n                    _arbol_tx = ast.parse(_todo_tx)\n                    for _nodo_tx in ast.walk(_arbol_tx):\n                        if (isinstance(_nodo_tx, ast.Constant)\n                                and isinstance(_nodo_tx.value, str)\n                                and getattr(_nodo_tx, \"lineno\", None) is not None\n                                and getattr(_nodo_tx, \"end_lineno\", None) is not None):\n                            if _nodo_tx.lineno <= _renglon_tx <= _nodo_tx.end_lineno:\n                                return fallos\n        except Exception:\n            pass\n",
+  "vigia": "vigias/test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/candado_equipo.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "vigias/test_vigia_el_archivo_carga.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py",
+   "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_cambio_que_solo_borra_vale.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "candado_equipo.py",
+   "test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "test_vigia_el_archivo_carga.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisar_frena_si_deja_de_cargar.py",
+   "test_vigia_revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_cambio_que_solo_borra_vale.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Ninguno que bloque la vuelta. Dos bordes del `return fallos` anticipado: (a) anula de golpe las cuentas 2b (no_carga), 3, 4 y 5; si el texto NUEVO adentro de la cadena rompe las comillas que la cierran, el freno NO CARGA deja de avisar — extremo y coherente con lo pedido (el encargo quiere que el texto-como-texto no se juzgue como codigo); (b) usan `_todo_tx.find(viejo)` con la PRIMERA aparicion, asi que si la primera coincidencia cae en un docstring y la real en codigo, se salta cuentas legitimas — tambien extremo. No se rechaza por esto: son costos del propio encargo, no errores.",
+   "Freno del 2026-09-08 intacto: demostrado con el escenario de PRUEBA 2 (nombre inventado en codigo real sigue siendo cazado) y con la vigia hermana que sigue verda en los 45 casos que corren hoy."
+  ],
+  "riesgo_vecinos": [
+   "Ninguna de las 15 vigias del puede_danar se rompe: recorri cada propuesta y ninguna tiene un texto_viejo cuya linea caiga dentro de una cadena en un .py real que exista en disco (la unica que usa un archivo real, test_vigia_revisor_roto_no_tira_la_vuelta, va por obrero.py con revisor falso y no llega a revisor.revisar). El bloque solo se activa cuando el archivo es .py real, existe, viejo no esta vacio y su renglon cae dentro de un ast.Constant de texto."
+  ],
+  "que_falta": [
+   "Nada obligatorio. Opcional de blindar: cubrir tambien los casos sin campo 'archivo' o con extension distinta a .py, donde la frenada en falso persistiria (quedo fuera del diagnostico, no es un defecto del cambio)."
+  ],
+  "resumen_para_el_jefe": "La reparacion es correcta y esta probada por la vigia roja que la pide: no inventa nada (todo nombre que usa existe o se importa), ataca exactamente la frenada en falso medida de los ejemplos entre comillas, y su escenario de control (codigo que si usa un nombre inexistente) sigue frenando; se aprueba."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39193 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _deepseek_directo se reciben d['usage'] y d['model'] pero se tiran: no queda registro del gasto de DeepSeek (de pago, tope 5 USD/mes).",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_deepseek_directo",
+  "texto_viejo": "    req = _u.Request(\"https://api.deepseek.com/chat/completions\", data=body, method=\"POST\")\n    req.add_header(\"Content-Type\", \"application/json\")\n    req.add_header(\"Authorization\", \"Bearer \" + k)\n    with _u.urlopen(req, timeout=300) as r:\n        d = _j.load(r)\n    return d[\"choices\"][0][\"message\"][\"content\"]",
+  "texto_nuevo": "    req = _u.Request(\"https://api.deepseek.com/chat/completions\", data=body, method=\"POST\")\n    req.add_header(\"Content-Type\", \"application/json\")\n    req.add_header(\"Authorization\", \"Bearer \" + k)\n    with _u.urlopen(req, timeout=300) as r:\n        d = _j.load(r)\n    try:\n        import datetime\n        _ruta = _o.environ.get('INGENIERO_GASTO_USD_TEST') or _o.path.join(\n            _o.path.dirname(_o.path.dirname(_o.path.abspath(__file__))), 'memoria', 'GASTO_USD.jsonl')\n        with open(_ruta, 'a', encoding='utf-8') as _f:\n            _f.write(_j.dumps({'cuando': datetime.datetime.now().isoformat(timespec='seconds'),\n                               'modelo': d.get('model', ''),\n                               'uso': d.get('usage') or {}}) + '\\n')\n    except Exception:\n        pass\n    return d[\"choices\"][0][\"message\"][\"content\"]",
+  "cambio": "Justo despues de cargar d y antes del return, agregar un bloque try/except Exception: pass que anexe una linea json con cuando/modelo/uso al archivo indicado por INGENIERO_GASTO_USD_TEST o, si no existe, a memoria/GASTO_USD.jsonl dentro de la carpeta del proyecto; importar datetime dentro del bloque. El registro nunca debe romper la respuesta.",
+  "codigo": "    try:\n        import datetime\n        _ruta = _o.environ.get('INGENIERO_GASTO_USD_TEST') or _o.path.join(\n            _o.path.dirname(_o.path.dirname(_o.path.abspath(__file__))), 'memoria', 'GASTO_USD.jsonl')\n        with open(_ruta, 'a', encoding='utf-8') as _f:\n            _f.write(_j.dumps({'cuando': datetime.datetime.now().isoformat(timespec='seconds'),\n                               'modelo': d.get('model', ''),\n                               'uso': d.get('usage') or {}}) + '\\n')\n    except Exception:\n        pass",
+  "vigia": "Una prueba que llame a _deepseek_directo con INGENIERO_GASTO_USD_TEST apuntando a un archivo temporal y compruebe que tras la llamada existe una linea json con las claves cuando, modelo y uso, y que si el archivo no se puede escribir la respuesta sigue saliendo igual.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "No hay fallo funcional: el bloque try/except que agrega es el que el encargo pedia y nada mas.",
+   "El unico matiz es que la vigia queda solo DESCRITA (no trae el archivo de test), pero el encargo decia 'Nada mas cambia' y no la pedia; no es motivo de rechazo."
+  ],
+  "riesgo_vecinos": [
+   "arnes/asignador.py: solo importa desde cuerpo/obrero.py; el cambio no toca firmas ni valores de retorno, el try/except mantiene el comportamiento identico.",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py: vigila la misma funcion pero el return no cambia; si la escritura falla, el except la tapa y la respuesta sale igual."
+  ],
+  "que_falta": [
+   "Ejecutar la vigia que describe (llamar a _deepseek_directo con INGENIERO_GASTO_USD_TEST apuntando a un temporal y comprobar la linea json y que el fallo de escritura no rompa la respuesta) antes de pedirle a Julio que pruebe."
+  ],
+  "resumen_para_el_jefe": "La reparacion es exactamente lo pedido: solo agrega el bloque que guarda cuando/modelo/uso antes del return, sin tocar nada mas y sin romper vecinos; se puede aprobar, solo falta correr su vigia."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25917 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

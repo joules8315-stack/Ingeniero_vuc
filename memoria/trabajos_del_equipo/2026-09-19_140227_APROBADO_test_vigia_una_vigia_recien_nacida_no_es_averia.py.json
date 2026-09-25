@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La prueba test_ninguno_se_queda_a_medias_dejando_pasar_lo_que_si_se_rompio salta con 'if \"ls-files\" not in vivo: continue' a los que no preguntan con ls-files, y como arnes/guardia_de_guardado.py ahora pregunta con 'git cat-file -e HEAD:<archivo>', se los saltaria sin comprobar que frenan lo que ya estaba verde.",
+  "archivo": "vigias/test_vigia_una_vigia_recien_nacida_no_es_averia.py",
+  "funcion": "test_ninguno_se_queda_a_medias_dejando_pasar_lo_que_si_se_rompio",
+  "texto_viejo": "        if \"ls-files\" not in vivo:\n            continue",
+  "texto_nuevo": "        if \"ls-files\" not in vivo and \"cat-file\" not in vivo:\n            continue",
+  "cambio": "Sustituir la condicion de salto 'if \"ls-files\" not in vivo:' por 'if \"ls-files\" not in vivo and \"cat-file\" not in vivo:' para que la prueba no se salte a los que preguntan con cat-file. Nada mas cambia.",
+  "codigo": "        if \"ls-files\" not in vivo and \"cat-file\" not in vivo:\n            continue",
+  "vigia": "vigias/test_vigia_una_vigia_recien_nacida_no_es_averia.py::test_ninguno_se_queda_a_medias_dejando_pasar_lo_que_si_se_rompio",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cambio correcto que soluciona el diagnóstico sin introducir inventos ni romper vecinos."
+ },
+ "avisos": [
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 3"
+ ]
+}

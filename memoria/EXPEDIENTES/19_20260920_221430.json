@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "19",
+    "titulo": "No se pierde el trabajo apilado",
+    "origen": "limite medido el 2026-09-20 al recoger los pedazos",
+    "repara": "la copia apartada usa siempre el mismo nombre, asi que un segundo freno sobre la misma pieza borra en silencio el trabajo aprobado anterior",
+    "pieza": "arnes/candado_equipo.py",
+    "depende": [
+      "18"
+    ],
+    "modo": "IA",
+    "razon": "perder trabajo ya aprobado es el peor desperdicio: se pago y se tira",
+    "encargo": "En arnes/candado_equipo.py, dentro de la funcion volver_atras, la copia de la pieza se guarda siempre con el mismo nombre acabado en .FRENADO_POR_EL_GUARDIA, asi que una segunda frenada de la misma pieza borra la primera. Cambialo para que, si en el destino ya existe una copia de esa pieza, se le agregue un numero al final y queden las dos. Nunca se borra nada. Vale para los dos caminos de la funcion, el de la pieza que ya estaba guardada y el de la pieza nueva. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py",
+    "sabotaje": "memoria/sabotajes/no_se_pisa_el_trabajo_apartado.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "4fba0a7a02bd8448",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_220819_APROBADO_candado_equipo.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (36939 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : En arnes/candado_equipo.py, dentro de volver_atras, la copia de la pieza se guarda siempre con el mismo nombre acabado en .FRENADO_POR_EL_GUARDIA, asi que una segunda frenada de la misma pieza borra la primera copia.\n  toca        : arnes/candado_equipo.py funcion volver_atras\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : La reparacion es correcta: en los dos caminos de volver_atras se comprueba si el destino .FRENADO_POR_EL_GUARDIA ya existe y, si existe, se anade .2, .3... hasta encontrar nombre libre; copia2 en el camino de pieza guardada y os.replace en el de pieza nueva, con os y shutil ya importados, asi que una segunda frenada ya no borra la primera copia y no se inventa nada; solo queda pendiente escribir la vigia que lo pruebe.\n\nAPLICADO en disco (lo escribio el equipo): arnes/candado_equipo.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   3 failed, 103 passed in 48.65s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): arnes/candado_equipo.py\nLLAVE GUARDADA: se puede escribir en 32 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T22:14:30",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no contesto en 600 s",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\19_20260920_221430.json"
+  }
+}

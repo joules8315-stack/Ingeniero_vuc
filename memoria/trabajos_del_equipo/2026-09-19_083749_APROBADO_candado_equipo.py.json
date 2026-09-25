@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta el gestor de contexto fila_de_commits justo antes de guardar_en_la_historia, y el import de contextlib a nivel de modulo que exige el decorador @contextlib.contextmanager.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "guardar_en_la_historia",
+  "texto_viejo": "def guardar_en_la_historia(raiz, archivos, mensaje):",
+  "texto_nuevo": "@contextlib.contextmanager\ndef fila_de_commits(raiz, espera=2400):\n    \"\"\"Espera el turno para guardar en git: dos tareas del pit no guardan a la vez.\"\"\"\n    import contextlib\n    import hashlib\n    import os\n    import tempfile\n    import time\n    clave = hashlib.sha1(os.path.abspath(str(raiz)).lower().encode(\"utf-8\")).hexdigest()[:12]\n    ruta = os.path.join(tempfile.gettempdir(), \"ingeniero_fila_\" + clave + \".lock\")\n    limite = time.time() + espera\n    while True:\n        try:\n            fd = os.open(ruta, os.O_CREAT | os.O_EXCL | os.O_WRONLY)\n            try:\n                os.write(fd, str(os.getpid()).encode(\"utf-8\"))\n            finally:\n                os.close(fd)\n            break\n        except FileExistsError:\n            try:\n                if time.time() - os.path.getmtime(ruta) > 7200:\n                    os.remove(ruta)\n                    continue\n            except OSError:\n                pass\n            if time.time() >= limite:\n                raise TimeoutError(\"la fila de guardado no avanzo en %d s\" % espera)\n            time.sleep(0.5)\n    try:\n        yield\n    finally:\n        try:\n            os.remove(ruta)\n        except OSError:\n            pass\n\n\ndef guardar_en_la_historia(raiz, archivos, mensaje):",
+  "cambio": "Anadir el import de contextlib a nivel de modulo (junto a json y os) y, justo antes de def guardar_en_la_historia, insertar el gestor de contexto fila_de_commits con @contextlib.contextmanager, imports internos, candado en tempfile.gettempdir(), reintento cada 0.5 s, borrado del candado abandonado a los 7200 s, TimeoutError al agotar espera y borrado del candado en finally.",
+  "codigo": "import contextlib\n\n@contextlib.contextmanager\ndef fila_de_commits(raiz, espera=2400):\n    \"\"\"Espera el turno para guardar en git: dos tareas del pit no guardan a la vez.\"\"\"\n    import contextlib\n    import hashlib\n    import os\n    import tempfile\n    import time\n    clave = hashlib.sha1(os.path.abspath(str(raiz)).lower().encode(\"utf-8\")).hexdigest()[:12]\n    ruta = os.path.join(tempfile.gettempdir(), \"ingeniero_fila_\" + clave + \".lock\")\n    limite = time.time() + espera\n    while True:\n        try:\n            fd = os.open(ruta, os.O_CREAT | os.O_EXCL | os.O_WRONLY)\n            try:\n                os.write(fd, str(os.getpid()).encode(\"utf-8\"))\n            finally:\n                os.close(fd)\n            break\n        except FileExistsError:\n            try:\n                if time.time() - os.path.getmtime(ruta) > 7200:\n                    os.remove(ruta)\n                    continue\n            except OSError:\n                pass\n            if time.time() >= limite:\n                raise TimeoutError(\"la fila de guardado no avanzo en %d s\" % espera)\n            time.sleep(0.5)\n    try:\n        yield\n    finally:\n        try:\n            os.remove(ruta)\n        except OSError:\n            pass",
+  "vigia": "Importar arnes/candado_equipo.py sin NameError; con dos hilos, el segundo espera a que el primero salga del gestor; con candado viejo (>7200 s) se borra y entra; con espera corta y candado fresco lanza TimeoutError con el mensaje exacto; al salir el candado ya no existe.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_fuera_de_casa.py",
+   "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "test_vigia_equipo_siempre.py",
+   "test_vigia_fuera_de_casa.py",
+   "test_vigia_lo_aprobado_se_guarda_al_momento.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Devia del literal 'imports dentro de la funcion' al anadir 'import contextlib' a nivel de modulo, pero es obligatorio: el decorador @contextlib.contextmanager se evalua al cargar el modulo y sin el import en ese ambito el archivo no importa (NameError). Es una contradiccion interna del material (pide decorador + imports solo internos); la propuesta la resuelve por la unica via posible y mantiene ademas los imports dentro.",
+   "Ambiguedad menor: 'cambio' dice ubicar el import junto a json y os (arriba) y 'codigo' lo muestra justo antes de la funcion; ambos son nivel de modulo y funcionalmente identicos, solo conviene que el obrero elija uno."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno funcional: el cuerpo de guardar_en_la_historia y su firma quedan intactos, fila_de_commits es una pieza nueva sin estado global compartido, y los 11 archivos que importan candado_equipo no ven cambio de comportamiento."
+  ],
+  "que_falta": [
+   "Nada. El encargo pide SOLO crear el gestor antes de guardar_en_la_historia; integrarlo dentro de guardar_en_la_historia no se pide y lo prohibe el mismo contrato ('No toques otras funciones')."
+  ],
+  "resumen_para_el_jefe": "La propuesta crea exactamente el gestor fila_de_commits que pide el encargo, con la unica desviacion (import de contextlib a nivel de modulo) que es tecnicamente necesaria para que el decorador funcione; no inventa nada y no rompe vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22484 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (23954 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

@@ -1,0 +1,31 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta ver el cuerpo real de completar_funciones en cerebro/router.py para saber su firma exacta y como decide entregar el archivo entero cuando tiene 600 renglones o menos.",
+  "archivo": "vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py",
+  "texto_nuevo": "NECESITO_LEER: cerebro/router.py / motivo: la vigia debe llamar a completar_funciones y comprobar que un archivo de 600 renglones o menos se entrega entero y uno mas largo se entrega por pedazos / que decide: la firma exacta de completar_funciones, la forma de los pedazos (claves pieza, abs, desde, hasta, texto) y el umbral de 600 renglones / riesgo: escribir la vigia contra una firma inventada y que no importe ni corra.",
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "cerebro/router.py solo se LEE, no se modifica; ningun vecino del cross-flow se toca"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "No hay propuesta de reparacion que juzgar: el obrero pide con el formato correcto permiso para leer la firma real de completar_funciones en cerebro/router.py antes de escribir la vigia, sin inventar nada ni tocar a ningun vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38696 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (38884 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (38954 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) no le cabe (39024 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

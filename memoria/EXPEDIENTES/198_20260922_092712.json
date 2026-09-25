@@ -1,0 +1,65 @@
+{
+  "orden": {
+    "id": "198",
+    "titulo": "La vigia de que el puente nunca deja additionalContext arriba",
+    "repara": "Codex dice hook returned invalid session start / user prompt submit JSON output y descarta todo el contexto: no le llega nada del repartidor",
+    "origen": "medido 2026-09-22 en la ventana de Codex de Julio: al empezar y en cada mensaje sale hook failed; la salida del puente trae additionalContext DENTRO de hookSpecificOutput y ADEMAS arriba, y Codex rechaza la clave de arriba",
+    "pieza": "vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py",
+    "modo": "IA",
+    "queda_roja": true,
+    "razon": "la vigia cambia antes que el cambio",
+    "vigia": "vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py",
+    "encargo": "En vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py agrega al final una prueba nueva, copiando el estilo de las que ya hay: un candado de mentira que sale con 0 y escribe el JSON {\"systemMessage\": \"hola\", \"additionalContext\": \"CTX\", \"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": \"CTX\"}}, con evento SessionStart; assert que la salida del puente es JSON, NO tiene la clave additionalContext arriba, y su hookSpecificOutput trae additionalContext CTX. Es UN solo cambio. No toques ningun otro archivo.",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "bb31eba9f9421962",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_092711_RECHAZADO_test_vigia_el_puente_arregla_el_formato_para_codex.py.json\nOBRERO deepseek -> AUDITOR groq\n  aviso       : GPT-OSS 120B (Groq) no le cabe (25688 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (26318 letras, aguanta 19042) -> se le salta\n  diagnostico : Falta al final del archivo una prueba nueva que use un candado de mentira con evento SessionStart y compruebe que el puente quita additionalContext de arriba y lo mete en hookSpecificOutput.\n  toca        : vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py funcion final del archivo (tras _correr_puente)\n  confianza   : media\n  VEREDICTO   : RECHAZADO\n  fallo       : Se inserta la nueva prueba dentro del cuerpo de la función _correr_puente, interrumpiendo la llamada a subprocess.run y eliminando el resto del código de la función.\n  fallo       : El cambio modifica más de lo solicitado: no solo se agrega una prueba al final del archivo, sino que se altera la implementación existente de _correr_puente.\n  resumen     : El parche corta la función _correr_puente y altera código existente, por lo que rompe la vigia y debe rechazarse.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T09:27:12",
+  "analisis": {
+    "que_paso": "La orden 198 (modo IA) pedia AGREGAR AL FINAL del archivo una prueba nueva copiando el estilo de las que ya hay, con un candado de mentira evento SessionStart, y \"No toques ningun otro archivo\". El obrero deepseek escribio el parche y el auditor bigpickle lo RECHAZO: el parche inserto la prueba nueva DENTRO del cuerpo de la funcion _correr_puente, cortando la llamada subprocess.run y borrando el resto de esa funcion, es decir cambio codigo existente ademas de agregar. Resultado: EL EQUIPO NO APROBO (RECHAZADO), no se guardo llave, no se toco codigo y la vigia sigue igual. Antes hubo avisos secundarios: el auditor con mas capacidad (GPT-OSS 120B Groq) no le cabe el archivo (25688/26318 letras vs 19042 que aguanta) y se salto, y DeepSeek dejo un intento a mitad con la marca NO_ENCONTRADO y se reintento.",
+    "causa_raiz": "El obrero (deepseek) coloco la funcion de prueba nueva en el lugar equivocado: la metio dentro del cuerpo de _correr_puente, interrumpiendo la llamada subprocess.run y eliminando el resto de la funcion, en vez de anadirla como funcion nueva a nivel de modulo despues de la ultima funcion del archivo. Con eso incumplio las dos condiciones del encargo (\"agrega al final una prueba nueva\" y \"No toques ningun otro archivo\"), por lo que el parche rompia la vigia y el auditor lo rechazo correctamente.",
+    "donde": "vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py, funcion _correr_puente (lineas 37-51), donde el parche corto la llamada subprocess.run.",
+    "quien_fallo": "equipo",
+    "citas": [
+      {
+        "archivo": "vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py",
+        "texto": "def _correr_puente(ruta_candado):"
+      },
+      {
+        "archivo": "vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py",
+        "texto": "    resultado = subprocess.run(\n        [sys.executable, PUENTE, ruta_candado],\n        input=entrada,\n        capture_output=True,\n        text=True,\n        timeout=TOPE_SEGUNDOS,\n    )"
+      },
+      {
+        "archivo": "vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py",
+        "texto": "    return resultado.stdout"
+      },
+      {
+        "archivo": "vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py",
+        "texto": "def test_json_ya_correcto_sale_igual(tmp_path):"
+      }
+    ],
+    "no_volver_a": "Una prueba nueva se agrega SIEMPRE como funcion a nivel de modulo despues de la ultima funcion del archivo, nunca dentro del cuerpo de una funcion existente.",
+    "tarea_nueva": {
+      "repara": "Anadir la prueba nueva al final del archivo sin tocar ni una linea existente, garantizando que _correr_puente y su subprocess.run queden intactos",
+      "pieza": "vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py",
+      "razon": "La orden 198 fallo porque una IA (deepseek) puso la funcion dentro de _correr_puente y corto subprocess.run; un anexo mecanico y determinista al final del archivo elimina el error de ubicacion",
+      "encargo": "Sin modificar ninguna linea existente, APPEND al final del archivo (tras la ultima funcion test_json_ya_correcto_sale_igual, en columna 0) UNA funcion nueva test_contexto_arriba_y_dentro_se_deja_solo_dentro(tmp_path): usa _escribir_candado con json.dumps de {\"systemMessage\": \"hola\", \"additionalContext\": \"CTX\", \"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": \"CTX\"}}; corre _correr_puente y _json_de_salida; assert que la salida es JSON, que 'additionalContext' NO esta arriba (not in datos) y que datos['hookSpecificOutput']['additionalContext'] == 'CTX'. Verificar que las lineas 1-144 originales siguen identicas antes de sellar.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Big Pickle no contesto: Big Pickle no contesto en 237.60000000000002s (timeout)",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\198_20260922_092712.json"
+  }
+}

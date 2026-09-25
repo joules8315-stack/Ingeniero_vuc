@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion marcar_estado solo lee la lista y termina; el codigo que busca la orden, cambia estado, marca paso_fallido/fallos_seguidos y guarda en ruta quedo pegado al final del archivo tras un return, donde nunca se ejecuta.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "marcar_estado",
+  "texto_viejo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    lista = leer_lista()",
+  "texto_nuevo": "def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):\n    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, \"memoria\", \"ORDENES.json\")\n    lista = leer_lista()\n    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            if paso_fallido:\n                orden[\"paso_fallido\"] = paso_fallido\n            if fallos_seguidos:\n                orden[\"fallos_seguidos\"] = fallos_seguidos\n            with open(ruta, \"w\", encoding=\"utf-8\") as f:\n                json.dump(lista, f, ensure_ascii=False, indent=2)\n            return True\n    return False",
+  "cambio": "Mover dentro de marcar_estado el bloque que busca la orden por id, le cambia estado, anota paso_fallido y fallos_seguidos, y escribe la lista en ruta con json; devolver True si la encontro y guardo, False si no existe. Borrar la copia muerta que quedo al final del archivo despues del return.",
+  "codigo": "    for orden in lista:\n        if orden.get(\"id\") == orden_id:\n            orden[\"estado\"] = estado\n            if paso_fallido:\n                orden[\"paso_fallido\"] = paso_fallido\n            if fallos_seguidos:\n                orden[\"fallos_seguidos\"] = fallos_seguidos\n            with open(ruta, \"w\", encoding=\"utf-8\") as f:\n                json.dump(lista, f, ensure_ascii=False, indent=2)\n            return True\n    return False",
+  "vigia": "Importar cuerpo/capataz.py y llamar marcar_estado con un id existente (debe devolver True y dejar el estado y los campos escritos en memoria/ORDENES.json) y con un id inexistente (debe devolver False sin tocar el archivo).",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "memoria/ORDENES.json"
+  ],
+  "preguntas": [
+   "PREGUNA_REQUERIDA: el material no muestra el bloque muerto del final del archivo ni el nombre exacto de la clave del id en ORDENES.json; ¿me pasas el archivo completo para copiar literalmente el bloque a mover y confirmar la clave del id?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "ORDENES.js"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Clave 'id' sin probar en el material: el paquete solo da la palabra 'id' en el problema ('buscar la orden por id'); si la clave real de ORDENES.json difiere, marcar_estado devolveria siempre False sin guardar. No es invento porque el texto la nombra y el propio obrero la pidio en su PREGUNTA_REQUERIDA, pero hay que confirmarla antes de aplicar.",
+   "La copia muerta que se ordena borrar no aparece en el material ni tiene texto literal; el borrado se haria a ciegas (el obrero lo admite al pedir 'el archivo completo'). Se sabe su comportamiento por el problema, asi que la reconstruccion es trabajo pedido, no invento, pero el borrado real debe verificarse sobre el archivo.",
+   "Detalle menor: los guardas 'if paso_fallido:'/'if fallos_seguidos:' asumen que el bloque original no escribia esos campos en vacio; si el bloque muerto los escribia sin condicion, el comportamiento difiere levemente. Aceptable como decision de no-pisar, pero vale anotarlo."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno: el material declara reparacion aislada ('Nadie depende de estas piezas'). El unico contacto con el mundo es escribir ORDENES.json, y solo se escribe cuando la orden existe; el id inexistente devuelve False sin abrir el archivo. Sin evidencia de escrituras paralelas que pise."
+  ],
+  "que_falta": [
+   "Confirmar con Julio la clave exacta del id y el texto del bloque muerto (la PREGUNTA_REQUERIDA del obrero pide exactamente eso; no aplicar hasta tenerla).",
+   "Correr la vigia propuesta (id existente -> True + campos escritos; id inexistente -> False sin tocar archivo) antes de pedirle a Julio que pruebe."
+  ],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que pide el encargo, no usa nada que no exista en el material, no rompe vecinos y cumple las leyes; solo queda confirmar con Julio la clave 'id' y el bloque muerto, que el propio obrero ya pidio con su PREGUNTA_REQUERIDA, antes de aplicar."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

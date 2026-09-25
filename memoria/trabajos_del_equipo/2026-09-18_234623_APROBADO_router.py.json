@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cerebro/router.py la comprobacion usa la constante TOPE_FUNCION_ENTERA en vez de TOPE_FUNCION_NOMBRADA, que es la que debe usarse para funciones nombradas.",
+  "archivo": "cerebro/router.py",
+  "funcion": "armar",
+  "texto_viejo": "if _lineas_funcion > TOPE_FUNCION_ENTERA:",
+  "texto_nuevo": "if _lineas_funcion > TOPE_FUNCION_NOMBRADA:",
+  "cambio": "Sustituir la constante TOPE_FUNCION_ENTERA por TOPE_FUNCION_NOMBRADA en la comprobacion del numero de lineas de la funcion nombrada.",
+  "codigo": "if _lineas_funcion > TOPE_FUNCION_NOMBRADA:",
+  "vigia": "vigias/test_vigia_memoria_completa.py, que vigila cerebro/router.py desde el flujo router",
+  "puede_danar": [
+   "vigias/test_vigia_memoria_completa.py",
+   "cerebro/router.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_memoria_completa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El unico vecino declarado es vigias/test_vigia_memoria_completa.py, que viene nombrado en el material en 'A QUIEN PUEDE DANAR'; el cambio es un solo reemplazo de constante que el plan ordena, sin mas alcance"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El obrero hace exactamente el cambio unico que el plan ordena (sustituir TOPE_FUNCION_ENTERA por TOPE_FUNCION_NOMBRADA, constante que el propio material confirma que ya existe y vale 300); no inventa nada, no toca vecinos y cumple la consigna 'un solo cambio, no tocar nada mas'."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

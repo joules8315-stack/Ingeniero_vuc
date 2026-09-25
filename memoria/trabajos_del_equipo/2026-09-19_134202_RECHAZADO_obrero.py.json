@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py el material del revisor se arma con tope=(40000 if auditor == \"bigpickle\" else TOPE_GRATIS) - 3344 - 47 - len(...), y esa excepcion de 40000 letras para bigpickle hace que el revisor lea casi el archivo entero en cada revision, tardando hasta 300 s y cayendose por tiempo.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,\n                                        tope=(40000 if auditor == \"bigpickle\" else TOPE_GRATIS) - 3344 - 47 -\n                                             len(json.dumps(propuesta, ensure_ascii=False)))",
+  "texto_nuevo": "    material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,\n                                        tope=TOPE_REVISOR - 3344 - 47 -\n                                             len(json.dumps(propuesta, ensure_ascii=False)))",
+  "cambio": "Sustituir el tope del material del revisor para que sea TOPE_REVISOR - 3344 - 47 - len(...) para todos los revisores, sin excepcion, y anadir junto a TOPE_GRATIS la constante TOPE_REVISOR = 12000 con un comentario corto (A-38: el revisor recibe solo el cambio y lo que toca, nunca el archivo entero).",
+  "codigo": "TOPE_REVISOR = 12000  # A-38: el revisor recibe solo el cambio y lo que toca, nunca el archivo entero\n\n    material_auditor = _filtrar_paquete(paquete, archivo=archivo_tocado,\n                                        tope=TOPE_REVISOR - 3344 - 47 -\n                                             len(json.dumps(propuesta, ensure_ascii=False)))",
+  "vigia": "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py debe seguir verde y comprobar que el material del revisor nunca supera TOPE_REVISOR - 3344 - 47 - len(propuesta), tambien cuando el auditor es bigpickle.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "Donde esta definida TOPE_GRATIS en cuerpo/obrero.py para poner TOPE_REVISOR = 12000 junto a ella?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La definición de TOPE_REVISOR = 12000 se añade al principio del archivo, pero el material original indica que debe añadirse junto a TOPE_GRATIS. No se especifica dónde está definida TOPE_GRATIS en `cuerpo/obrero.py` para poder colocarla correctamente."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "La ubicación exacta de TOPE_GRATIS para añadir TOPE_REVISOR junto a ella."
+  ],
+  "resumen_para_el_jefe": "La propuesta de reparación no especifica la ubicación correcta para la nueva constante TOPE_REVISOR, lo que podría llevar a un error de configuración."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (35439 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (36282 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "vueltas_dadas: 4"
+ ]
+}

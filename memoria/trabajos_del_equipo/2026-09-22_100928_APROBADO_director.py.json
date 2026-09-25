@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "grok47",
+ "propuesta": {
+  "diagnostico": "En cuerpo/director.py, la funcion orden_nueva guarda la orden sin validar antes su etiqueta con capataz.validar_etiqueta, por lo que pueden entrar ordenes incompletas.",
+  "archivo": "cuerpo/director.py",
+  "funcion": "orden_nueva",
+  "texto_viejo": "    nueva = dict(datos)\n    nueva.setdefault('depende', [])\n    nueva.setdefault('modo', 'IA')\n    nueva.setdefault('estado', 'pendiente')\n    nueva.setdefault('paso_fallido', '')\n    nueva.setdefault('fallos_seguidos', 0)\n    nueva.setdefault('nota', '')\n    nueva.setdefault('prueba_real', '')\n    nueva.setdefault('comando', '')\n\n    ordenes.insert(0, nueva)",
+  "texto_nuevo": "    nueva = dict(datos)\n    nueva.setdefault('depende', [])\n    nueva.setdefault('modo', 'IA')\n    nueva.setdefault('estado', 'pendiente')\n    nueva.setdefault('paso_fallido', '')\n    nueva.setdefault('fallos_seguidos', 0)\n    nueva.setdefault('nota', '')\n    nueva.setdefault('prueba_real', '')\n    nueva.setdefault('comando', '')\n\n    from cuerpo import capataz\n    problemas = capataz.validar_etiqueta(nueva)\n    if problemas:\n        return (False, 'faltan campos: ' + ', '.join(problemas))\n\n    ordenes.insert(0, nueva)",
+  "cambio": "Antes de insertar la orden nueva en la lista, importar capataz dentro de la funcion, llamar a validar_etiqueta con la orden ya completada con sus valores por defecto, y si devuelve una lista no vacia devolver (False, 'faltan campos: ' + esa lista unida por comas) sin guardarla.",
+  "codigo": "    from cuerpo import capataz\n    problemas = capataz.validar_etiqueta(nueva)\n    if problemas:\n        return (False, 'faltan campos: ' + ', '.join(problemas))",
+  "vigia": "Una prueba que llame a orden_nueva con un JSON al que le falte un campo de la etiqueta (por ejemplo 'depende' mal formado o 'modo' invalido) y compruebe que devuelve (False, 'faltan campos: ...') y que la orden NO quedo en ORDENES.json; y que con una orden completa devuelve (True, ...) y si queda guardada.",
+  "puede_danar": [
+   "cuerpo/codex.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_director.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "test_vigia_director.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo pedido: valida la etiqueta ya rellenada antes de guardar y, si falta algo, devuelve el fallo sin insertar la orden."
+ },
+ "avisos": [
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "vueltas_dadas: 1"
+ ]
+}

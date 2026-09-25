@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py::auditar, cuando bigpickle esta caido y el revisor fijo no es quien reviso, no se intenta Grok 4.7 antes de rendirse a SIN_AUDITAR",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    revisor_fijo = auditor if auditor == 'bigpickle' else None\n    if revisor_fijo and quien_aud != revisor_fijo:\n        crudo_r, quien_r, av_r = _preguntar_con_relevo(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,\n            evitar=evitar, clase='auditar', vuelta=1)\n        avisos += av_r\n        aud_r = _json_de(crudo_r) if crudo_r else None\n        if isinstance(aud_r, dict) and '_error' not in aud_r and quien_r != 'claude':\n            auditoria = aud_r\n            quien_aud = quien_r\n            avisos.append('bigpickle no estaba: revisa %s con solo lo necesario (A-38)' % quien_r)\n        else:\n            auditoria = {'veredicto': 'SIN_AUDITAR',\n                         'resumen_para_el_jefe': 'bigpickle no estaba y ninguna otra IA pudo revisar'}\n            avisos.append('bigpickle no estaba y el relevo no contesto: SIN_AUDITAR (A-38)')\n        return auditoria, quien_aud, avisos",
+  "texto_nuevo": "    revisor_fijo = auditor if auditor == 'bigpickle' else None\n    if revisor_fijo and quien_aud != revisor_fijo:\n        from cuerpo import grok\n        _texto_g, _avisos_g = grok.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_g or [])\n        if _texto_g:\n            aud_g = _json_de(_texto_g)\n            if isinstance(aud_g, dict) and '_error' not in aud_g and evitar != 'grok47':\n                avisos.append('bigpickle no contesto: revisa Grok 4.7 (A-45)')\n                return aud_g, 'grok47', avisos\n        crudo_r, quien_r, av_r = _preguntar_con_relevo(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,\n            evitar=evitar, clase='auditar', vuelta=1)\n        avisos += av_r\n        aud_r = _json_de(crudo_r) if crudo_r else None\n        if isinstance(aud_r, dict) and '_error' not in aud_r and quien_r != 'claude':\n            auditoria = aud_r\n            quien_aud = quien_r\n            avisos.append('bigpickle no estaba: revisa %s con solo lo necesario (A-38)' % quien_r)\n        else:\n            auditoria = {'veredicto': 'SIN_AUDITAR',\n                         'resumen_para_el_jefe': 'bigpickle no estaba y ninguna otra IA pudo revisar'}\n            avisos.append('bigpickle no estaba y el relevo no contesto: SIN_AUDITAR (A-38)')\n        return auditoria, quien_aud, avisos",
+  "cambio": "Justo despues de la linea 'if revisor_fijo and quien_aud != revisor_fijo:' y antes de la llamada a _preguntar_con_relevo, insertar el intento con Grok 4.7: importar grok, preguntar con _prompt_auditor, extender avisos, y si el texto no esta vacio y el JSON es un dict sin _error y evitar no es 'grok47', anadir el aviso 'bigpickle no contesto: revisa Grok 4.7 (A-45)' y devolver (aud_g, 'grok47', avisos). Si no, seguir con el relevo actual.",
+  "codigo": "        from cuerpo import grok\n        _texto_g, _avisos_g = grok.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_g or [])\n        if _texto_g:\n            aud_g = _json_de(_texto_g)\n            if isinstance(aud_g, dict) and '_error' not in aud_g and evitar != 'grok47':\n                avisos.append('bigpickle no contesto: revisa Grok 4.7 (A-45)')\n                return aud_g, 'grok47', avisos",
+  "vigia": "Una prueba que simule bigpickle caido (auditar._bp_caido=True) y compruebe que auditar devuelve quien_aud='grok47' y el aviso 'bigpickle no contesto: revisa Grok 4.7 (A-45)' cuando grok.preguntar devuelve un JSON valido; y que si grok devuelve vacio o JSON roto, sigue el relevo actual",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el cambio es correcto y minimo: anade el intento con Grok 4.7 (cuerpo/grok.py existe y preguntar devuelve (texto, avisos), 'grok47' es su nombre real y A-45 esta en AGENTS.md) en la rama exacta donde bigpickle caido desembocaba en SIN_AUDITAR, con guard que evita que Grok 4.7 revise su propio trabajo, y no toca a ningun vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39446 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

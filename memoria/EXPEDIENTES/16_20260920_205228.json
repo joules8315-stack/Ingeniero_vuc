@@ -1,0 +1,34 @@
+{
+  "orden": {
+    "id": "16",
+    "titulo": "La vigia de que el registro del candado no miente",
+    "origen": "punto 4 del plan v4 (reparar los candados que frenan en falso), medido el 2026-09-20",
+    "repara": "hoy no se puede saber que candado frena en falso porque el registro marca FRENO tambien cuando deja pasar: en 3 dias, 714 lineas de 'documento libre' y 263 de 'veredicto del equipo cubre el archivo' estan apuntadas como frenos y las dos devuelven adelante. Decidir con esos numeros es decidir con datos sucios",
+    "pieza": "vigias/test_vigia_el_registro_del_candado_no_miente.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_registro_del_candado_no_miente.py. Prueba que el registro de decisiones de arnes/candado_equipo.py dice DEJO PASAR cuando el candado deja pasar. Dos casos: un documento que no es codigo (la decision es dejar pasar) y un archivo que el veredicto del equipo ya cubre (tambien deja pasar). En los dos, la linea que se apunta en el registro tiene que decir DEJO PASAR y no FRENO. Usa monkeypatch y una carpeta temporal para no ensuciar el registro de verdad. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_registro_del_candado_no_miente.py",
+    "entrega_la_prueba": "si",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "2aa8e7d7bcbd9dd7",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_205228_RECHAZADO_test_vigia_el_registro_del_candado_no_miente.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (27459 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (28074 letras, aguanta 19042) -> se le salta\n  diagnostico : Falta la vigia nueva que pruebe que el registro de decisiones dice DEJO PASAR cuando el candado deja pasar, en los dos casos que el encargo pide.\n  toca        : vigias/test_vigia_el_registro_del_candado_no_miente.py funcion archivo nuevo completo (no existe en el material)\n  confianza   : media\n  PREGUNTA_REQUERIDA: El encargo dice 'un archivo que el veredicto del equipo ya cubre'. ¿Vale con monkeypatchear veredicto_vigente para devolver un dict APROBADO con el basename del archivo, o prefieres que se construya el veredicto llamando a guardar_veredicto (que escribe en el registro real de veredictos)?\n  VEREDICTO   : RECHAZADO\n  fallo       : candado_equipo.main(data) lanza TypeError: main() no toma argumentos (candado_equipo.py:443) y lee de json.load(sys.stdin) (linea 454). Hay que alimentar sys.stdin con io.StringIO(json.dumps(datos)) y llamar main() sin argumento, como hace test_vigia_equipo_siempre.py:33-35.\n  fallo       : Lee el registro en tmp_path/DECISIONES_CANDADO.log pero _apuntar_frenada lo escribe en os.path.join(AQUI,'memoria','DECISIONES_CANDADO.log') (linea 238), o sea tmp_path/memoria/DECISIONES_CANDADO.log. No lo encuentra, texto='' y assert texto falla.\n  fallo       : La vigia nace roja: el candado actual escribe 'FRENO' (linea 240) para 'documento libre' (502) y 'veredicto del equipo cubre el archivo' (547). La propuesta da por hecho que dira 'DEJO PASAR' cuando eso es falso con el codigo vigente.\n  fallo       : El alcance del paquete no puede cumplir su propia meta: la vigia solo se pone verde si ademas se repara candado_equipo.py, y el encargo dice 'No toques ningun otro archivo'. Hay que ampliar el encargo o traer la reparacion del candado en el paquete.\n  resumen     : La vigia no funciona como esta escrita: llama main(data) cuando main() no acepta argumentos (lee de stdin) y lee el registro donde no lo escribe el candado (le falta la subcarpeta memoria), y aunque se arregle eso, el candado hoy registra FRENO justo en los dos casos que la vigia debe ver DEJO PASAR, asi que nace roja y el 'no toques ningun otro archivo' del encargo no la deja ponerse verde; hay que rehacerla y aclarar el alcance antes de aprobar.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T20:52:28",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no contesto en 600 s",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\16_20260920_205228.json"
+  }
+}

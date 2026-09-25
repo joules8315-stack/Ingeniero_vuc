@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _vigias_verdes, el bucle que llena 'esperando' cuenta como pendiente la vigia de una orden cuya pieza es la propia prueba, asi que la orden se edita a si misma y nunca espera arreglo.",
+  "archivo": "arnes/candado_cierre.py",
+  "funcion": "_vigias_verdes",
+  "texto_viejo": "                for orden in ordenes:\n                    if str(orden.get(\"estado\", \"\")).strip().lower() == \"hecha\":\n                        continue\n                    vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                    if vigia:\n                        esperando.add(vigia)",
+  "texto_nuevo": "                for orden in ordenes:\n                    if str(orden.get(\"estado\", \"\")).strip().lower() == \"hecha\":\n                        continue\n                    vigia = str(orden.get(\"vigia\", \"\")).replace(\"\\\\\", \"/\").strip()\n                    # si la pieza de la orden es la propia prueba, la orden la edita y no espera arreglo (medido 2026-09-21, orden 136)\n                    pieza = str(orden.get('pieza', '')).replace(chr(92), '/').strip()\n                    if vigia and vigia != pieza:\n                        esperando.add(vigia)",
+  "cambio": "Dentro del bucle 'for orden in ordenes:' que llena 'esperando', justo despues de calcular 'vigia', agregar la linea que calcula 'pieza' desde orden.get('pieza') normalizando la barra invertida a '/' y quitando espacios; agregar el comentario corto encima; y cambiar 'if vigia:' por 'if vigia and vigia != pieza:'.",
+  "codigo": "                    # si la pieza de la orden es la propia prueba, la orden la edita y no espera arreglo (medido 2026-09-21, orden 136)\n                    pieza = str(orden.get('pieza', '')).replace(chr(92), '/').strip()\n                    if vigia and vigia != pieza:\n                        esperando.add(vigia)",
+  "vigia": "Una prueba que arme ORDENES.json con una orden no hecha cuya 'vigia' sea igual a su 'pieza' y compruebe que esa vigia NO entra en 'esperando' (no frena), y con otra orden no hecha cuya 'vigia' sea distinta de su 'pieza' y compruebe que SI entra en 'esperando'.",
+  "puede_danar": [
+   "arnes/candado_cierre.py::_vigias_verdes",
+   "el cierre de ronda que decide si las vigias rojas ya estaban guardadas"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación hace exactamente lo que pidió el encargo (excluir de 'esperando' la vigía que coincide con la pieza de su propia orden), la línea y el texto viejo aparecen literal en el material, y no toca ningún otro archivo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (29390 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

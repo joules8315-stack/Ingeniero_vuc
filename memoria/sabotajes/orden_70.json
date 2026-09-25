@@ -1,0 +1,7 @@
+[
+ {
+  "archivo": "arnes/puente_codex.py",
+  "viejo": "def _escribir_salida_arreglada(salida_normal, evento):\n    \"\"\"Ajusta la salida del candado al formato que Codex entiende. Nunca lanza.\n\n    Codex descarta el contexto que no va dentro de hookSpecificOutput con su\n    evento; sin esto no le llega la informacion del repartidor (medido 2026-09-22).\n    \"\"\"\n    try:\n        if not salida_normal:\n            return\n        try:\n            datos = json.loads(salida_normal)\n        except Exception:\n            _escribir_texto(salida_normal)\n            return\n        if not isinstance(datos, dict) or not evento:\n            _escribir_texto(salida_normal)\n            return\n        if isinstance(datos.get(\"hookSpecificOutput\"), dict):\n            if not datos[\"hookSpecificOutput\"].get(\"hookEventName\"):\n                datos[\"hookSpecificOutput\"][\"hookEventName\"] = evento\n        elif \"additionalContext\" in datos:\n            contexto = datos.pop(\"additionalContext\")\n            datos[\"hookSpecificOutput\"] = {\n                \"hookEventName\": evento,\n                \"additionalContext\": contexto,\n            }\n        _escribir_json(datos)\n    except Exception:\n        _escribir_texto(salida_normal)\n\n\ndef main(argv=None):\n    \"\"\"Punto de entrada. Sale siempre con 0 y nunca lanza.\"\"\"",
+  "nuevo": "def main(argv=None):\n    \"\"\"Punto de entrada. Sale siempre con 0 y nunca lanza.\"\"\""
+ }
+]

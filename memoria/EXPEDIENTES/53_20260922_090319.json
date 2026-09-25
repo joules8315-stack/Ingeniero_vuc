@@ -1,0 +1,73 @@
+{
+  "orden": {
+    "id": "53",
+    "titulo": "Si Big Pickle falla, revisa Codex",
+    "origen": "acuerdo A-40 de Julio, 2026-09-21",
+    "repara": "si Big Pickle falla, la revision cae hoy en las gratis, que fallan dos de cada tres, y muchas rondas se quedan sin revisar",
+    "pieza": "cuerpo/obrero.py",
+    "depende": [
+      "52",
+      "99",
+      "124"
+    ],
+    "modo": "IA",
+    "razon": "Julio: si tu estas, Codex revisa lo que escribe DeepSeek si Big Pickle falla",
+    "encargo": "En cuerpo/obrero.py, en la funcion auditar, en el camino donde Big Pickle no devolvio una revision valida (hoy ahi se pasa al relevo de las gratis), DESPUES del intento con Grok 4.7 (bloque que agrega la orden 99, A-45: Big Pickle, luego Grok, luego Codex) y antes del relevo de las gratis, se le hace la misma revision a Codex con la funcion preguntar de cuerpo/codex.py. Si Codex devuelve un JSON de revision valido, se usa, con codex como revisor y un aviso que diga que Big Pickle fallo y reviso Codex. Si no, se sigue exactamente como hoy. A Codex no se le pregunta si el que escribio fue codex. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_si_big_pickle_falla_revisa_codex.py",
+    "sabotaje": "memoria/sabotajes/si_big_pickle_falla_revisa_codex.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "6aaa513b93e0701a",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-22_085609_APROBADO_obrero.py.json\nOBRERO deepseek -> AUDITOR groq\n  aviso       : GPT-OSS 120B (Groq) no le cabe (39384 letras, aguanta 19042) -> se le salta\n  aviso       : Big Pickle no contesto en 470.40000000000003s (timeout)\n  aviso       : bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)\n  diagnostico : En el camino donde Big Pickle no devolvio revision valida, tras el intento con Grok 4.7 se pasa directo al relevo de las gratis sin preguntarle antes a Codex, y ademas el aviso de Codex debe salir justo cuando Grok falla y no despues.\n  toca        : cuerpo/obrero.py funcion auditar\n  confianza   : media\n  VEREDICTO   : APROBADO\n  resumen     : Cumple el diagnóstico, inserta la consulta a Codex en el punto correcto y no rompe nada.\n\nAPLICADO en disco (lo escribio el equipo): cuerpo/obrero.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   16 failed, 268 passed, 1 skipped in 370.81s (0:06:10)\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): cuerpo/obrero.py\nLLAVE GUARDADA: se puede escribir en 135 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-22T09:03:19",
+  "analisis": {
+    "que_paso": "La orden 53 (insertar en cuerpo/obrero.py, funcion auditar, la consulta a Codex cuando Big Pickle falla) se ejecuto en modo IA: DeepSeek escribio el cambio y el auditor Groq lo aprobo (VEREDICTO APROBADO, \"inserta la consulta a Codex en el punto correcto y no rompe nada\"). El cambio se APLICO en disco, pero al ir a guardar, el guardia corrio las vigias y 16 salieron rojas (16 failed, 268 passed, 1 skipped). Por eso NO se guardo: se volvio atras a lo ultimo bueno, se aparto lo rechazado y la orden quedo pendiente. La ronda pagada (DeepSeek escribiendo + Groq revisando) se tiro entera y el obrero nunca recibio esas 16 vigias rojas para corregirlas.",
+    "causa_raiz": "El flujo aprueba y aplica un cambio comprobandolo SOLO contra un juicio de IA (auditar) y contra las vigias \"vecinas por nombre\" del archivo tocado (juez_de_la_prueba), pero la bateria COMPLETA de vigias —la unica capaz de detectar que se rompieron vecinos (Ley 4)— se corre unicamente en la puerta del guardado (arnes/guardia_de_guardado.py, _vigias), DESPUES de aprobar y aplicar. Groq no puede ver que el cambio rompe otras 16 vigias porque su revision es juicio, no corrida de pruebas; y el juez solo mira las vigias que nombran obrero.py. Resultado: un cambio que rompe vigias no relacionadas se aprueba, se aplica y recien lo descubre el guardia, que lo descarta entero sin devolverle las rojas al obrero dentro del bucle de trabajar. Es un fallo de DISENO: la comprobacion total esta en el punto equivocado (al final), no antes de aprobar.",
+    "donde": "cuerpo/obrero.py, funcion trabajar (salida del bucle en APROBADO, ~linea 1278-1279) y funcion auditar (revision solo por IA). La red que de verdad frena vive aparte, en arnes/guardia_de_guardado.py (_vigias), y el chequeo previo por programa (arnes/juez_de_la_prueba.juzgar_con_vecinas) solo mira las vigias que nombran el archivo tocado.",
+    "quien_fallo": "diseno",
+    "citas": [
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "        # Si APROBADO o SIN_AUDITAR, salir del bucle.\n        break"
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "        if not _os_juez.environ.get('PYTEST_CURRENT_TEST'):"
+      },
+      {
+        "archivo": "arnes/juez_de_la_prueba.py",
+        "texto": "            candidatas = vecinas._vecinas_por_stem([ruta_relativa], raiz, vigias)"
+      },
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "    paso, mensaje = _vigias(raiz)"
+      },
+      {
+        "archivo": "arnes/guardia_de_guardado.py",
+        "texto": "  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar."
+      }
+    ],
+    "no_volver_a": "No aprobar ni aplicar un cambio sin correr antes la bateria COMPLETA de vigias: la comprobacion que detecta 'romper vecinos' no puede vivir solo en la puerta del guardado.",
+    "tarea_nueva": {
+      "repara": "un cambio aprobado por el equipo se aplica y recien el guardia descubre que rompio 16 vigias vecinas; la ronda pagada se tira entera y el obrero nunca recibe las vigias rojas para arreglarlas en la misma vuelta",
+      "pieza": "cuerpo/obrero.py",
+      "razon": "correr la prueba es CUENTA, no juicio (ya lo hacen juez_de_la_prueba.py y revisor_de_programa.py); falta hacerlo con la bateria COMPLETA antes de dar por buena la ronda, no solo con las vecinas por nombre",
+      "encargo": "En cuerpo/obrero.py, funcion trabajar, cuando el veredicto es APROBADO y ANTES del 'break' que sale del bucle, correr por programa (gratis, no IA) toda la bateria de vigias del proyecto con el cambio aplicado en memoria/aparte (salvo si ya se esta dentro de pytest: respetar el guard PYTEST_CURRENT_TEST que ya existe en la funcion). Si alguna vigia queda roja y aun quedan vueltas, meter el resumen de las rojas en motivos_rechazo y hacer 'continue' para que el obrero lo corrija en la misma vuelta, en vez de aprobar y que el guardia lo descarte entero. No tocar arnes/guardia_de_guardado.py ni el juez.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "citas",
+    "motivo": "citas que no existen: [{\"archivo\": \"arnes/guardia_de_guardado.py\", \"texto\": \"  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\\n  Arreglalo y vuelve a guardar.\", \"por_que\": \"no aparece literal\"}]",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\53_20260922_090319.json"
+  }
+}

@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El aviso de recorte se agrega DESPUES de cerrar el tope, asi que el paquete final puede volver a pasarse de las ~19.000 letras y el cerebro que lo recibe vuelve a cortar la respuesta a mitad.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_filtrar_paquete",
+  "texto_viejo": "    # Si aun asi se pasa del tope, se va soltando el relleno del final hasta caber: la cabecera,\n    # la ley y \"a quien puede danar\" son LO NECESARIO, no se tocan.\n    while len(\"\\n\".join(salida)) > tope and len(salida) > len(bloques[\"__cabecera__\"]):\n        salida.pop()\n    return \"\\n\".join(salida)",
+  "texto_nuevo": "    # Si aun asi se pasa del tope, se va soltando el relleno del final hasta caber: la cabecera,\n    # la ley y \"a quien puede danar\" son LO NECESARIO, no se tocan. Si el relleno que se suelta\n    # es un trozo de archivo, se suelta ENTERO (desde su cabecera \"### `\" hasta el final), para\n    # que nunca quede un trozo empezado y sin su final: eso es lo que hace que el que escribe el\n    # codigo se invente lo que no ve. El aviso de recorte se agrega ANTES de cerrar el tope, para\n    # que el paquete final nunca se pase de las ~19.000 letras.\n    recortado = False\n    while len(\"\\n\".join(salida)) > tope and len(salida) > len(bloques[\"__cabecera__\"]):\n        _cabeza_trozo = None\n        for _i in range(len(salida) - 1, len(bloques[\"__cabecera__\"]) - 1, -1):\n            if salida[_i].startswith(\"### `\"):\n                _cabeza_trozo = _i\n                break\n        if _cabeza_trozo is not None:\n            del salida[_cabeza_trozo:]\n            recortado = True\n        else:\n            salida.pop()\n            recortado = True\n    if recortado:\n        salida.append(\"AVISO: este material se recorto para que entrara en el tope. Puede faltar algun archivo entero. NO adivines lo que no ves: si te falta algo, contesta con la palabra NECESITO_LEER seguida del archivo que hace falta.\")\n    return \"\\n\".join(salida)",
+  "cambio": "En _filtrar_paquete, sustituir el comentario del final, el bucle while que solo hacia salida.pop() y el return, por: una marca recortado=False; un bucle que mientras el texto unido pase del tope busca el ULTIMO renglon de salida que empiece por '### `' (sin contar la cabecera) y si lo encuentra borra desde ahi hasta el final de un golpe y marca recortado=True, si no encuentra quita el ultimo renglon suelto y tambien marca recortado=True, y si la lista ya no puede encogerse mas corta el bucle; despues, si recortado quedo en True, se agrega al final de salida el renglon de aviso en castellano; y por ultimo se devuelve la lista unida por saltos de linea. El aviso se agrega ANTES de devolver, de modo que el texto final ya incluye el aviso y no se pasa del tope.",
+  "codigo": "    # Si aun asi se pasa del tope, se va soltando el relleno del final hasta caber: la cabecera,\n    # la ley y \"a quien puede danar\" son LO NECESARIO, no se tocan. Si el relleno que se suelta\n    # es un trozo de archivo, se suelta ENTERO (desde su cabecera \"### `\" hasta el final), para\n    # que nunca quede un trozo empezado y sin su final: eso es lo que hace que el que escribe el\n    # codigo se invente lo que no ve. El aviso de recorte se agrega ANTES de cerrar el tope, para\n    # que el paquete final nunca se pase de las ~19.000 letras.\n    recortado = False\n    while len(\"\\n\".join(salida)) > tope and len(salida) > len(bloques[\"__cabecera__\"]):\n        _cabeza_trozo = None\n        for _i in range(len(salida) - 1, len(bloques[\"__cabecera__\"]) - 1, -1):\n            if salida[_i].startswith(\"### `\"):\n                _cabeza_trozo = _i\n                break\n        if _cabeza_trozo is not None:\n            del salida[_cabeza_trozo:]\n            recortado = True\n        else:\n            salida.pop()\n            recortado = True\n    if recortado:\n        salida.append(\"AVISO: este material se recorto para que entrara en el tope. Puede faltar algun archivo entero. NO adivines lo que no ves: si te falta algo, contesta con la palabra NECESITO_LEER seguida del archivo que hace falta.\")\n    return \"\\n\".join(salida)",
+  "vigia": "Una prueba que llame a _filtrar_paquete con un paquete que se pase del tope y con trozos de archivo, y compruebe que (a) el texto devuelto mide <= tope, (b) si hubo recorte aparece el renglon de aviso con NECESITO_LEER, y (c) ningun trozo de archivo queda empezado sin su final (no hay '### `' sin su bloque completo).",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El aviso se agrega DESPUES de cerrar el tope, que es literalmente el defecto que el propio diagnostico dice curar ('El aviso de recorte se agrega DESPUES de cerrar el tope'). La propuesta hasta lo dice en su comentario ('El aviso se agrega ANTES de cerrar el tope') pero el codigo lo contradice: el while recorta, y recien despues del while se hace salida.append(aviso). El aviso mide ~200 letras y NO esta presupuestado en la condicion del while. Si el texto que queda tras el recorte deja menos de ~200 letras de aire bajo el tope, el paquete devuelto vuelve a medir mas de las ~19.000 y el cerebro que lo recibe corta la respuesta a mitad otra vez. La propia vigia (a) 'len(devuelto) <= tope' fallaria en ese caso.",
+   "El chequeo de que el texto final 'nunca se pase de las ~19.000 letras' (la meta explícita del encargo) queda a merced del azar del aire que deje la ultima iteracion del while."
+  ],
+  "riesgo_vecinos": [
+   "Si hoy el aviso de recorte lo agrega el LLAMADOR (asignador.py o revisor_de_programa.py) despues de llamar a _filtrar_paquete — que es lo que da sentido al diagnostico — al meter el aviso adentro ahora habra DOS avisos en el paquete, y el que agrega el llamador sigue empujando el texto sobre el tope sin que este cambio lo impida. Hace falta NECESITO_LEER del archivo que agrega el aviso hoy para confirmarlo y sacar el duplicado.",
+   "El nuevo borrado por trozo entero puede descartar relleno que antes se conservaba con pop() linea a linea, pero eso es el objetivo pedido y la cabecera/ley/dana quedan protegidas (el rango del scan no baja de len(bloques['__cabecera__'])). No es un fallo por si solo."
+  ],
+  "que_falta": [
+   "Presupuestar la longitud del aviso DENTRO del tope: o se agrega el aviso ANTES de recortar, o el while recorta mientras len('\\n'.join(salida)) + len(aviso) > tope, para que el paquete devuelto SIEMPRE mida <= tope.",
+   "Verificar en asignador.py / revisor_de_programa.py quien agrega el aviso actualmente y eliminar el duplicado si el llamador lo agrega despues del return.",
+   "Asegurar que la vigia propuesta (a) 'texto devuelto <= tope' pase SIEMPRE, no solo cuando el aire sobrante es grande."
+  ],
+  "resumen_para_el_jefe": "La mecanica de soltar trozos enteros es correcta y no inventa nada, pero el aviso se sigue sumando DESPUES de recortar al tope y sus ~200 letras no entran en el presupuesto: el paquete final puede volver a exceder las ~19.000 letras (el mismo defecto que el diagnostico dice curar) y la vigia fallaria; hay que incluir el largo del aviso en la condicion del tope y revisar si el llamador agrega otro aviso duplicado antes de aprobar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (35650 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (37611 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (37899 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (38150 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

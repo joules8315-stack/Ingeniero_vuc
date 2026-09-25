@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py, dentro de la funcion bucle, tras el bloque del sabotaje se marca la orden como hecha y se avisa HECHA sin comprobar antes si la tarea esta de verdad terminada.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "                marcar_estado(orden.get('id'), 'hecha', '', 0)\n                aviso('HECHA ' + orden_id)",
+  "texto_nuevo": "                terminada = la_tarea_esta_terminada(orden)\n                if isinstance(terminada, dict) and terminada.get('ok') is False:\n                    aviso('SIN_TERMINAR ' + orden_id + ' ' + str(terminada.get('razon')))\n                    marcar_estado(orden.get('id'), 'fallida', terminada.get('paso'), (orden.get('fallos_seguidos') or 0) + 1)\n                    continue\n                marcar_estado(orden.get('id'), 'hecha', '', 0)\n                aviso('HECHA ' + orden_id)",
+  "cambio": "Sustituir las dos lineas que marcan la orden como hecha y avisan HECHA por: primero llamar a la_tarea_esta_terminada(orden) guardando el resultado en terminada; si terminada es un diccionario con ok exactamente False, avisar SIN_TERMINAR con el id y la razon, marcar la orden como fallida con el paso devuelto y un fallo mas, y continuar con la siguiente orden; si no, dejar las mismas dos lineas de antes (marcar hecha y avisar HECHA). Todo con la misma sangria que ya tienen esas dos lineas.",
+  "codigo": "                terminada = la_tarea_esta_terminada(orden)\n                if isinstance(terminada, dict) and terminada.get('ok') is False:\n                    aviso('SIN_TERMINAR ' + orden_id + ' ' + str(terminada.get('razon')))\n                    marcar_estado(orden.get('id'), 'fallida', terminada.get('paso'), (orden.get('fallos_seguidos') or 0) + 1)\n                    continue\n                marcar_estado(orden.get('id'), 'hecha', '', 0)\n                aviso('HECHA ' + orden_id)",
+  "vigia": "Una prueba que corra el bucle con una orden cuyo resultado trae guardado=True y sabotaje ok, y con la_tarea_esta_terminada devolviendo {'ok': False, 'paso': 'prueba', 'razon': '...'}: debe comprobar que la orden queda en estado 'fallida' con paso_fallido 'prueba' y fallos_seguidos incrementado, que se avisa SIN_TERMINAR con el id y la razon, y que NO se avisa HECHA ni se marca 'hecha'.",
+  "puede_danar": [
+   "cuerpo/capataz.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación implementa la comprobación de finalización de tarea antes de marcarla como hecha, previniendo errores reportados."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (23046 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

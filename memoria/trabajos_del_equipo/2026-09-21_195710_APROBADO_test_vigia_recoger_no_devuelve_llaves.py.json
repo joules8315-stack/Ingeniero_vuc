@@ -1,0 +1,32 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion hay_llaves_falso recibe solo la carpeta, pero guardia_de_guardado._hay_llaves recibe la carpeta y la lista de archivos, asi que el monkeypatch no cubre la firma real.",
+  "archivo": "vigias/test_vigia_recoger_no_devuelve_llaves.py",
+  "funcion": "hay_llaves_falso",
+  "texto_viejo": "    def hay_llaves_falso(carpeta):\n        return llaves",
+  "texto_nuevo": "    def hay_llaves_falso(raiz, archivos):\n        return llaves",
+  "cambio": "Cambiar la firma de hay_llaves_falso para que reciba (raiz, archivos) en vez de (carpeta), manteniendo el cuerpo que devuelve llaves.",
+  "codigo": "    def hay_llaves_falso(raiz, archivos):\n        return llaves",
+  "vigia": "vigias/test_vigia_recoger_no_devuelve_llaves.py (los dos tests que usan _preparar y comprueban ok False con llaves y ok True sin llaves)",
+  "puede_danar": [
+   "vigias/test_vigia_recoger_no_devuelve_llaves.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio es la reparacion exacta que pedia el encargo: ajusta un solo parametro de la firma de hay_llaves_falso para que el monkeypatch cubra la llamada real, sin tocar nada mas ni inventar nada."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

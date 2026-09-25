@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En vigias/conftest.py, la funcion _nada_toca_lo_real no impide que las pruebas llamen a cerebros de pago o externos (bigpickle, grok, codex) cuando no son las tres vigias del enchufe.",
+  "archivo": "vigias/conftest.py",
+  "funcion": "_nada_toca_lo_real",
+  "texto_viejo": "    from cuerpo import cuotas as _cuo\n    monkeypatch.setattr(_cuo, \"RUTA\", str(tmp_path / \"CUOTAS.json\"))\n    yield",
+  "texto_nuevo": "    from cuerpo import cuotas as _cuo\n    monkeypatch.setattr(_cuo, \"RUTA\", str(tmp_path / \"CUOTAS.json\"))\n    # Ninguna prueba llama a un cerebro de verdad (ley 23; medido 2026-09-22, orden 53: 16 rojas en 370 s).\n    # Las tres vigias del enchufe falsifican por dentro y siguen igual; las que falsifican preguntar\n    # a su manera siguen igual porque su monkeypatch va despues.\n    _PRUEBAN_EL_ENCHUFE = (\n        \"test_vigia_bigpickle_enchufe.py\",\n        \"test_vigia_la_pieza_que_le_pregunta_a_codex.py\",\n        \"test_vigia_el_enchufe_de_grok.py\",\n    )\n    if request.node.fspath.basename not in _PRUEBAN_EL_ENCHUFE:\n        def _preguntar_falso(*args, **kwargs):\n            return (\"\", [\"en las pruebas no se llama a un cerebro de verdad\"])\n        for _nombre in (\"bigpickle\", \"grok\", \"codex\"):\n            try:\n                _mod = __import__(f\"cuerpo.{_nombre}\", fromlist=[\"preguntar\"])\n            except Exception:\n                continue\n            monkeypatch.setattr(_mod, \"preguntar\", _preguntar_falso)\n    yield",
+  "cambio": "Anadir el parametro request al fixture _nada_toca_lo_real y, justo antes del yield, sustituir preguntar por una funcion falsa en cuerpo.bigpickle, cuerpo.grok y cuerpo.codex (importados dentro de un try), salvo cuando el archivo de la prueba que corre este en _PRUEBAN_EL_ENCHUFE.",
+  "codigo": "    # Ninguna prueba llama a un cerebro de verdad (ley 23; medido 2026-09-22, orden 53: 16 rojas en 370 s).\n    # Las tres vigias del enchufe falsifican por dentro y siguen igual; las que falsifican preguntar\n    # a su manera siguen igual porque su monkeypatch va despues.\n    _PRUEBAN_EL_ENCHUFE = (\n        \"test_vigia_bigpickle_enchufe.py\",\n        \"test_vigia_la_pieza_que_le_pregunta_a_codex.py\",\n        \"test_vigia_el_enchufe_de_grok.py\",\n    )\n    if request.node.fspath.basename not in _PRUEBAN_EL_ENCHUFE:\n        def _preguntar_falso(*args, **kwargs):\n            return (\"\", [\"en las pruebas no se llama a un cerebro de verdad\"])\n        for _nombre in (\"bigpickle\", \"grok\", \"codex\"):\n            try:\n                _mod = __import__(f\"cuerpo.{_nombre}\", fromlist=[\"preguntar\"])\n            except Exception:\n                continue\n            monkeypatch.setattr(_mod, \"preguntar\", _preguntar_falso)\n    yield",
+  "vigia": "Correr la suite completa y comprobar que ninguna prueba llama a un cerebro real (sin rojas por llamadas externas) y que las tres vigias del enchufe siguen pasando.",
+  "puede_danar": [
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_memoria.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candados_medicion.py",
+   "cuerpo/privacidad.py"
+  ],
+  "preguntas": [
+   "El fixture _nada_toca_lo_real no aparece en el material con su firma actual (solo se ve el cuerpo desde 'def _nada_toca_lo_real(tmp_path, monkeypatch):'); hay que anadir 'request' a los parametros, pero no se ve la linea de firma exacta en el material para copiarla literalmente. ¿Se confirma que la firma es exactamente 'def _nada_toca_lo_real(tmp_path, monkeypatch):' y que hay que cambiarla a 'def _nada_toca_lo_real(tmp_path, monkeypatch, request):'?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_memoria.py",
+   "candado_prueba_real.py",
+   "candados_medicion.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico sin introducir inventos ni dañar vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27011 letras, aguanta 19042) -> se le salta",
+  "PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

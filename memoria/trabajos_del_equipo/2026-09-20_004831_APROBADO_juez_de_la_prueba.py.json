@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion juzgar no acepta el dato opcional dejar_el_cambio y en el ultimo paso siempre vuelve a dejar el cambio nuevo puesto, sin poder dejar el archivo como estaba.",
+  "archivo": "arnes/juez_de_la_prueba.py",
+  "funcion": "juzgar",
+  "texto_viejo": "def juzgar(raiz, ruta_prueba, ruta_archivo, texto_viejo, texto_nuevo):\n    \"\"\"Decide por programa si el cambio hace lo pedido.\n\n    Devuelve un diccionario con antes_roja, despues_verde, vuelve_roja, ok y razon.\n    Nunca lanza error: si algo revienta, todo en falso y la razon lo explica.\n    \"\"\"",
+  "texto_nuevo": "def juzgar(raiz, ruta_prueba, ruta_archivo, texto_viejo, texto_nuevo, dejar_el_cambio=True):\n    \"\"\"Decide por programa si el cambio hace lo pedido.\n\n    Devuelve un diccionario con antes_roja, despues_verde, vuelve_roja, ok y razon.\n    Nunca lanza error: si algo revienta, todo en falso y la razon lo explica.\n\n    Si dejar_el_cambio es falso, al terminar el archivo se queda con su contenido\n    original, tal como estaba antes de todo.\n    \"\"\"",
+  "cambio": "Anadir el sexto parametro opcional dejar_el_cambio=True a la firma de juzgar, y en el ultimo paso (donde hoy se escribe contenido_nuevo sin condicion) escribir contenido_nuevo solo si dejar_el_cambio es verdadero; si es falso, dejar el archivo con contenido_original. Ademas, el mensaje de error de ese bloque debe hablar de dejar el archivo como estaba, no de dejar el cambio puesto.",
+  "codigo": "def juzgar(raiz, ruta_prueba, ruta_archivo, texto_viejo, texto_nuevo, dejar_el_cambio=True):\n    \"\"\"Decide por programa si el cambio hace lo pedido.\n\n    Devuelve un diccionario con antes_roja, despues_verde, vuelve_roja, ok y razon.\n    Nunca lanza error: si algo revienta, todo en falso y la razon lo explica.\n\n    Si dejar_el_cambio es falso, al terminar el archivo se queda con su contenido\n    original, tal como estaba antes de todo.\n    \"\"\"\n    resultado = {\n        'antes_roja': False,\n        'despues_verde': False,\n        'vuelve_roja': False,\n        'ok': False,\n        'razon': '',\n    }\n\n    ruta_archivo = str(ruta_archivo)\n    ruta_prueba = str(ruta_prueba)\n    raiz = str(raiz)\n\n    # PASO 1: la prueba tal como esta todo ahora.\n    try:\n        pasa_antes, detalle_antes = _correr_prueba(raiz, ruta_prueba)\n    except Exception as error:\n        resultado['razon'] = 'al correr la prueba antes de tocar nada, revento: %s' % error\n        return resultado\n    resultado['antes_roja'] = not pasa_antes\n\n    # PASO 2: leer el archivo, comprobar el texto viejo y escribir el cambio.\n    try:\n        with open(ruta_archivo, 'r', encoding='utf-8') as f:\n            contenido_original = f.read()\n    except Exception as error:\n        resultado['razon'] = (\n            'antes de tocar nada: %s. No se pudo leer el archivo que se cambia: %s'\n            % (detalle_antes, error)\n        )\n        return resultado\n\n    if texto_viejo not in contenido_original:\n        resultado['razon'] = (\n            'antes de tocar nada: %s. El texto viejo no aparece en el archivo, '\n            'asi que no hay nada que cambiar.' % detalle_antes\n        )\n        return resultado\n\n    contenido_nuevo = contenido_original.replace(texto_viejo, texto_nuevo, 1)\n    try:\n        with open(ruta_archivo, 'w', encoding='utf-8') as f:\n            f.write(contenido_nuevo)\n    except Exception as error:\n        resultado['razon'] = (\n            'antes de tocar nada: %s. No se pudo escribir el cambio en el archivo: %s'\n            % (detalle_antes, error)\n        )\n        return resultado\n\n    # PASO 3: la prueba otra vez, ya con el cambio puesto.\n    try:\n        pasa_despues, detalle_despues = _correr_prueba(raiz, ruta_prueba)\n    except Exception as error:\n        detalle_despues = 'revento al correr la prueba con el cambio puesto: %s' % error\n        pasa_despues = False\n    resultado['despues_verde'] = bool(pasa_despues)\n\n    # PASO 4: devolver el archivo a su contenido original y correr la prueba otra vez.\n    try:\n        with open(ruta_archivo, 'w', encoding='utf-8') as f:\n            f.write(contenido_original)\n        pasa_vuelta, detalle_vuelta = _correr_prueba(raiz, ruta_prueba)\n    except Exception as error:\n        detalle_vuelta = 'revento al deshacer el cambio: %s' % error\n        pasa_vuelta = True\n    resultado['vuelve_roja'] = not pasa_vuelta\n\n    # Dejar el cambio nuevo puesto solo si se pide; si no, el archivo se queda\n    # con su contenido original, tal como estaba antes de todo.\n    try:\n        with open(ruta_archivo, 'w', encoding='utf-8') as f:\n            if dejar_el_cambio:\n                f.write(contenido_nuevo)\n            else:\n                f.write(contenido_original)\n    except Exception as error:\n        resultado['razon'] = (\n            'antes de tocar nada: %s. Despues del juicio no se pudo dejar el archivo '\n            'como estaba: %s' % (detalle_antes, error)\n        )\n        return resultado\n\n    resultado['ok'] = bool(\n        resultado['antes_roja']\n        and resultado['despues_verde']\n        and resultado['vuelve_roja']\n    )\n\n    resultado['razon'] = (\n        'antes de tocar nada: %s. Con el cambio puesto: %s. Al deshacer el cambio: %s.'\n        % (detalle_antes, detalle_despues, detalle_vuelta)\n    )\n    return resultado",
+  "vigia": "vigias/test_vigia_el_juez_de_la_prueba.py, ultima prueba: llama a juzgar con dejar_el_cambio en falso y exige que el archivo quede con el texto viejo.",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py",
+   "vigias/test_vigia_el_juez_busca_su_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_juez_busca_su_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Cuando dejar_el_cambio=False el archivo se escribe dos veces con contenido_original (PASO 4 y el bloque final): redundante e inofensivo, solo vuelve a tocar el mtime.",
+   "El mensaje de error del final dice 'no se pudo dejar el archivo como estaba' tambien cuando dejar_el_cambio=True (ahi el proposito era dejar el cambio puesto); es forma, y ademas es la redaccion que el propio encargo pidio, asi que no rompe nada."
+  ],
+  "riesgo_vecinos": [
+   "ninguno real: el parametro nuevo es opcional con default True, asi que test_vigia_el_juez_busca_su_prueba.py y cualquier llamador que no pase el sexto argumento conserva la conducta exacta de hoy (deja el cambio puesto)."
+  ],
+  "que_falta": [
+   "el codigo concreto de la vigia nueva solo esta descrito, no adjuntado; habra que verlo al correr: con dejar_el_cambio=False el archivo debe quedar con texto_viejo, y el codigo propuesto si lo garantiza (contenido_original conserva texto_viejo)."
+  ],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo pedido: anade el parametro opcional dejar_el_cambio a juzgar y, en el ultimo paso, escribe contenido_nuevo solo si se pide; con False el archivo queda con su contenido original, y como el parametro es opcional con default True no rompe a ningun vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (23999 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

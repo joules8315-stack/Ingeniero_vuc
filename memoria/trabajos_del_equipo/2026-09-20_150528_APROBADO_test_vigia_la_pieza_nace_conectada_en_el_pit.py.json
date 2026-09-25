@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "En el ayudante _preparar_casa la linea raiz.mkdir() falla en Windows cuando la carpeta casa ya existe porque las pruebas la crean antes con mkdir.",
+  "archivo": "vigias/test_vigia_la_pieza_nace_conectada_en_el_pit.py",
+  "funcion": "_preparar_casa",
+  "texto_viejo": "    raiz = tmp_path / \"casa\"\n    raiz.mkdir()",
+  "texto_nuevo": "    raiz = tmp_path / \"casa\"\n    raiz.mkdir(parents=True, exist_ok=True)",
+  "cambio": "Sustituir la creacion de la carpeta raiz dentro de _preparar_casa para que use parents=True y exist_ok=True, de modo que no falle si la carpeta ya existe ni si faltan carpetas de encima.",
+  "codigo": "    raiz = tmp_path / \"casa\"\n    raiz.mkdir(parents=True, exist_ok=True)",
+  "vigia": "vigias/test_vigia_la_pieza_nace_conectada_en_el_pit.py (las dos pruebas que llaman a _preparar_casa deben pasar de ROJO a VERDE)",
+  "puede_danar": [
+   "vigias/test_vigia_la_pieza_nace_conectada_en_el_pit.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion es correcta y cumple con lo solicitado, solucionando el problema de creacion de carpetas en Windows sin introducir nuevos fallos."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

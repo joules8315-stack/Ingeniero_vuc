@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En juzgar_con_vecinas, cuando una candidata estaba roja antes pero no quedo verde despues, se devuelve ok False de inmediato aunque haya varias pruebas candidatas y no se sepa cual es la del cambio.",
+  "archivo": "arnes/juez_de_la_prueba.py",
+  "funcion": "juzgar_con_vecinas",
+  "texto_viejo": "                if resultado.get('despues_verde') and resultado.get('vuelve_roja'):\n                    return {\n                        'ok': True,\n                        'prueba': vigia,\n                        'razon': resultado.get('razon', ''),\n                    }\n\n                return {\n                    'ok': False,\n                    'prueba': vigia,\n                    'razon': resultado.get('razon', ''),\n                }",
+  "texto_nuevo": "                if resultado.get('despues_verde') and resultado.get('vuelve_roja'):\n                    return {\n                        'ok': True,\n                        'prueba': vigia,\n                        'razon': resultado.get('razon', ''),\n                    }\n\n                # Con varias pruebas no se puede saber cual es la del cambio, asi que\n                # no se frena: para eso ya esta el guardia, que no deja guardar con\n                # pruebas rojas.\n                if len(candidatas) == 1:\n                    return {\n                        'ok': False,\n                        'prueba': vigia,\n                        'razon': resultado.get('razon', ''),\n                    }\n\n                continue",
+  "cambio": "En el recorrido de las candidatas, sustituir el return de ok False incondicional por un return de ok False solo cuando len(candidatas) == 1, y cuando haya mas de una candidata hacer continue para pasar a la siguiente, con un comentario corto en castellano explicando que con varias pruebas no se sabe cual es la del cambio y que para eso ya esta el guardia.",
+  "codigo": "                if resultado.get('despues_verde') and resultado.get('vuelve_roja'):\n                    return {\n                        'ok': True,\n                        'prueba': vigia,\n                        'razon': resultado.get('razon', ''),\n                    }\n\n                # Con varias pruebas no se puede saber cual es la del cambio, asi que\n                # no se frena: para eso ya esta el guardia, que no deja guardar con\n                # pruebas rojas.\n                if len(candidatas) == 1:\n                    return {\n                        'ok': False,\n                        'prueba': vigia,\n                        'razon': resultado.get('razon', ''),\n                    }\n\n                continue",
+  "vigia": "vigias/test_vigia_el_juez_busca_su_prueba.py, que comprueba que con una prueba roja ajena el juez no frena (resultado.get(\"ok\") is not False).",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "vigias/test_vigia_el_juez_busca_su_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio cumple exactamente el encargo: solo se frena con ok False cuando hay una sola candidata, con varias hace continue como pide el contrato, el texto_viejo coincide con el material y no usa nada que no exista (len(candidatas) esta en scope, la vigia que lo comprueba ya viene citada en el paquete)."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (28732 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

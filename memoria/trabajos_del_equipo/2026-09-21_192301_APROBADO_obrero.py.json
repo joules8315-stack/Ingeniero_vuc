@@ -1,0 +1,52 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py, en la funcion auditar, cuando el revisor fijo (bigpickle) no esta disponible, el relevo actual no intenta a Grok 4.7 antes de rendirse, y falta el aviso A-45 que lo diga.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    revisor_fijo = auditor if auditor == 'bigpickle' else None\n    if revisor_fijo and quien_aud != revisor_fijo:\n        crudo_r, quien_r, av_r = _preguntar_con_relevo(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,\n            evitar=evitar, clase='auditar', vuelta=1)\n        avisos += av_r\n        aud_r = _json_de(crudo_r) if crudo_r else None\n        if isinstance(aud_r, dict) and '_error' not in aud_r and quien_r != 'claude':\n            auditoria = aud_r\n            quien_aud = quien_r\n            avisos.append('bigpickle no estaba: revisa %s con solo lo necesario (A-38)' % quien_r)\n        else:\n            auditoria = {'veredicto': 'SIN_AUDITAR',\n                         'resumen_para_el_jefe': 'bigpickle no estaba y ninguna otra IA pudo revisar'}\n            avisos.append('bigpickle no estaba y el relevo no contesto: SIN_AUDITAR (A-38)')\n        return auditoria, quien_aud, avisos",
+  "texto_nuevo": "    revisor_fijo = auditor if auditor == 'bigpickle' else None\n    if revisor_fijo and quien_aud != revisor_fijo:\n        from cuerpo import grok\n        _texto_g, _avisos_g = grok.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_g or [])\n        if _texto_g:\n            aud_g = _json_de(_texto_g)\n            if isinstance(aud_g, dict) and '_error' not in aud_g and evitar != 'grok47':\n                avisos.append('bigpickle no contesto: revisa Grok 4.7 (A-45)')\n                return aud_g, 'grok47', avisos\n        crudo_r, quien_r, av_r = _preguntar_con_relevo(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)), 0.1,\n            evitar=evitar, clase='auditar', vuelta=1)\n        avisos += av_r\n        aud_r = _json_de(crudo_r) if crudo_r else None\n        if isinstance(aud_r, dict) and '_error' not in aud_r and quien_r != 'claude':\n            auditoria = aud_r\n            quien_aud = quien_r\n            avisos.append('bigpickle no estaba: revisa %s con solo lo necesario (A-38)' % quien_r)\n        else:\n            auditoria = {'veredicto': 'SIN_AUDITAR',\n                         'resumen_para_el_jefe': 'bigpickle no estaba y ninguna otra IA pudo revisar'}\n            avisos.append('bigpickle no estaba y el relevo no contesto: SIN_AUDITAR (A-38)')\n        return auditoria, quien_aud, avisos",
+  "cambio": "Justo despues de la linea 'if revisor_fijo and quien_aud != revisor_fijo:' y antes de la llamada a _preguntar_con_relevo, insertar el intento con Grok 4.7: importar grok, preguntar con el prompt del auditor, extender avisos, y si el texto no esta vacio y el JSON es un dict sin _error y evitar no es 'grok47', anadir el aviso A-45 y devolver (aud_g, 'grok47', avisos). Si no, seguir con el relevo actual.",
+  "codigo": "        from cuerpo import grok\n        _texto_g, _avisos_g = grok.preguntar(\n            _prompt_auditor(material_auditor, json.dumps(propuesta, ensure_ascii=False)))\n        avisos.extend(_avisos_g or [])\n        if _texto_g:\n            aud_g = _json_de(_texto_g)\n            if isinstance(aud_g, dict) and '_error' not in aud_g and evitar != 'grok47':\n                avisos.append('bigpickle no contesto: revisa Grok 4.7 (A-45)')\n                return aud_g, 'grok47', avisos",
+  "vigia": "Una prueba que simule bigpickle caido y compruebe que auditar llama a grok.preguntar, que devuelve quien_aud='grok47' y que aparece el aviso 'bigpickle no contesto: revisa Grok 4.7 (A-45)'.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "Se debe llamar a grok.preguntar tambien cuando evitar == 'grok47' (para no repetir el mismo cerebro), o en ese caso se salta directo al relevo actual?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El guard 'evitar != grok47' se evalua DESPUES de llamar y pagar a grok.preguntar: cuando grok47 fue el que genero, igual se gasta la llamada y se descarta el JSON. Lo correcto es saltarse la llamada antes (if evitar != 'grok47':) y que siga el relevo actual.",
+   "No se puede ver la firma de grok.preguntar en el material: el comprobado por programa solo confirma que el nombre existe y que el archivo carga, no que devuelva la tupla (texto, avisos) como bigpickle. Por eso la prueba vigia propuesta es obligatoria y debe nacer roja, porque es la unica que demuestra que el desempaquetado funciona."
+  ],
+  "riesgo_vecinos": [
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py (fuera del paquete, no lo pude leer): si grok esta disponible en el entorno de prueba, quien_aud pasa a 'grok47' y puede romper una asercion del comportamiento viejo; si grok no responde en la prueba, cae al relevo igual que antes y no cambia nada.",
+   "arnes/asignador.py y arnes/revisor_de_programa.py (fuera del paquete): si fijan el conjunto de revisores sin 'grok47', el nuevo quien_aud puede descuadrarlos; A-45 ya contempla a Grok 4.7 como relevo de la revision, asi que deberian tolerarlo."
+  ],
+  "que_falta": [
+   "La prueba vigia esta solo descrita, no existe: hay que crearla y comprobar que simula bigpickle caido, llama a grok.preguntar, devuelve quien_aud='grok47' y deja el aviso A-45.",
+   "El texto_viejo (el bloque 'revisor_fijo') no aparece en el trozo de material que me llego: se corta en 'auditoria = _json_de(_texto_bp)'. Lo doy por valido por el comprobado por programa y por coherencia del flujo, pero no lo pude leer literal.",
+   "Falta resolver el caso evitar=='grok47' para no pagar la llamada que se descarta."
+  ],
+  "resumen_para_el_jefe": "La reparacion hace lo que pide el diagnostico: con bigpickle caido intenta Grok 4.7 y avisa (A-45) antes del relevo, no inventa nada y no rompe lo que se ve; falta correr la prueba vigia (obligatoriamente roja al nacer) y corregir que hoy paga la llamada a grok aun cuando grok47 fue quien genero."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39446 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

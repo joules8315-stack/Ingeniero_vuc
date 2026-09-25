@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py, la funcion agregar_orden siempre hace lista.append(nueva), sin poner al frente las ordenes cuyo origen empieza por 'forense:'.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "agregar_orden",
+  "texto_viejo": "    nueva = dict(orden)\n    nueva['estado'] = 'pendiente'\n    nueva['paso_fallido'] = ''\n    nueva['fallos_seguidos'] = 0\n    lista.append(nueva)",
+  "texto_nuevo": "    nueva = dict(orden)\n    nueva['estado'] = 'pendiente'\n    nueva['paso_fallido'] = ''\n    nueva['fallos_seguidos'] = 0\n    # ley A-43, el arreglo de la herramienta va al frente\n    if str(nueva.get('origen', '')).startswith('forense:'):\n        lista.insert(0, nueva)\n    else:\n        lista.append(nueva)",
+  "cambio": "Sustituir el append incondicional de 'nueva' por: si str(nueva.get('origen', '')) empieza por 'forense:', lista.insert(0, nueva); si no, lista.append(nueva) como hoy. Anadir encima el comentario de una linea: ley A-43, el arreglo de la herramienta va al frente.",
+  "codigo": "    # ley A-43, el arreglo de la herramienta va al frente\n    if str(nueva.get('origen', '')).startswith('forense:'):\n        lista.insert(0, nueva)\n    else:\n        lista.append(nueva)",
+  "vigia": "Una prueba que llame a agregar_orden con una orden cuyo 'origen' empiece por 'forense:' y compruebe que queda en la posicion 0 de la lista leida, y que una orden sin ese origen sigue quedando al final.",
+  "puede_danar": [
+   "cuerpo/capataz.py::forense (es quien crea tareas con origen 'forense:...' y las pasa a agregar_orden)",
+   "cuerpo/codex.py (lo importa desde cuerpo/privacidad.py)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (29503 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

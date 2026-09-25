@@ -1,0 +1,27 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_si_el_juez_lo_demostro_no_se_paga_revision.py; el material muestra que auditar ya tiene la rama de _juez_de_la_prueba pero no el atajo que evita llamar a la IA, asi que la vigia nace roja a proposito.",
+  "archivo": "vigias/test_vigia_si_el_juez_lo_demostro_no_se_paga_revision.py",
+  "texto_nuevo": "\"\"\"Vigia: si el juez ya demostro la prueba, no se paga revision.\n\nVigila UNA sola cosa de la funcion `auditar` de cuerpo/obrero.py:\n\n    cuando la propuesta trae la marca '_juez_de_la_prueba' con texto dentro,\n    `auditar` NO le pregunta a ninguna IA y devuelve por su cuenta el\n    veredicto APROBADO.\n\nMotivo (orden de Julio A-39): correr la prueba es CUENTA, no JUICIO. Si el\njuez ya demostro que la prueba estaba roja antes del cambio, verde despues y\nroja al deshacerlo, pagar una IA para que confirme lo mismo es gastar sin\nganar. El programa ya lo sabe; que lo diga el.\n\nPor que nace ROJA a proposito:\n\n    Hoy `auditar` solo METE el texto del juez en el material del auditor y\n    sigue preguntandole a la IA. La IA cobra (o gasta cupo) por confirmar algo\n    que un programa ya demostro. Esta vigia exige el atajo: si hay\n    '_juez_de_la_prueba' con texto, no se llama a `_preguntar_con_relevo` y\n    el veredicto sale APROBADO por cuenta propia. Mientras ese atajo no\nexista, la vigia se pone roja. Roja aqui es la senal correcta: senala el\n    gasto que la orden A-39 manda cortar.\n\nLa vigia es determinista y sin red: sustituye `_preguntar_con_relevo` por una\nfuncion falsa que solo apunta que la llamaron. Si la lista queda vacia, nadie\npago revision. Si queda con algo, se le pregunto a una IA algo que el juez ya\nhabia demostrado.\n\"\"\"\n\nimport os\nimport sys\n\n# La raiz del proyecto se calcula desde este mismo archivo: vigias/ -> raiz.\n_RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n_ARNES = os.path.join(_RAIZ, \"arnes\")\nfor _ruta in (_RAIZ, _ARNES):\n    if _ruta not in sys.path:\n        sys.path.insert(0, _ruta)\n\nfrom cuerpo import obrero  # noqa: E402\n\n\n# La razon que el juez de la prueba deja escrita cuando ya demostro el cambio.\nRAZON_DEL_JUEZ = (\n    \"la prueba estaba roja antes del cambio, quedo verde con el cambio \"\n    \"y volvio a roja al deshacerlo\"\n)\n\n# La propuesta que trae la marca del juez con texto dentro.\nPROPUESTA_CON_JUEZ = {\n    \"archivo\": \"cuerpo/ejemplo_del_juez.py\",\n    \"texto_viejo\": \"def sumar(a, b):\\n    return a - b\\n\",\n    \"texto_nuevo\": \"def sumar(a, b):\\n    return a + b\\n\",\n    \"_juez_de_la_prueba\": RAZON_DEL_JUEZ,\n}\n\n\ndef test_si_el_juez_lo_demostro_no_se_paga_revision(monkeypatch):\n    \"\"\"Si el juez ya demostro la prueba, auditar no llama a ninguna IA.\n\n    Se sustituye `_preguntar_con_relevo` por una funcion falsa que apunta cada\n    llamada en una lista y devuelve una tupla de tres cosas (texto, quien,\n    avisos), como la de verdad. Si la lista queda vacia, nadie pago revision.\n    \"\"\"\n    llamadas = []\n\n    def _preguntar_con_relevo_falso(prompt, temperatura, evitar=None, primero=None,\n                                    pesado=False, clase=\"\", vuelta=0):\n        llamadas.append({\n            \"prompt\": prompt,\n            \"temperatura\": temperatura,\n            \"evitar\": evitar,\n            \"primero\": primero,\n            \"pesado\": pesado,\n            \"clase\": clase,\n            \"vuelta\": vuelta,\n        })\n        return (\"\", \"\", [])\n\n    monkeypatch.setattr(obrero, \"_preguntar_con_relevo\", _preguntar_con_relevo_falso)\n\n    paquete = \"paquete corto de prueba para la vigia del juez\"\n    auditoria, quien_reviso, avisos = obrero.auditar(paquete, PROPUESTA_CON_JUEZ)\n\n    assert llamadas == [], (\n        \"se le pregunto a una IA algo que el juez ya habia demostrado: \"\n        \"correr la prueba es cuenta, no juicio (orden de Julio A-39). \"\n        \"Llamadas hechas: %r\" % (llamadas,)\n    )\n\n    assert isinstance(auditoria, dict), (\n        \"auditar debe devolver la auditoria como diccionario, no %r\" % (auditoria,)\n    )\n    assert auditoria.get(\"veredicto\") == \"APROBADO\", (\n        \"si el juez ya demostro la prueba, el veredicto debe ser APROBADO \"\n        \"por cuenta propia, no %r\" % (auditoria.get(\"veredicto\"),)\n    )\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El archivo solicitado se crea correctamente, cumple con el diagnóstico y no rompe nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38875 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

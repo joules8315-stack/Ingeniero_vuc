@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion juzgar_citas(analisis) en cuerpo/capataz.py, que debe ir despues de pedir_al_perito y juzgar si las citas ya verificadas prueban la causa de raiz.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "juzgar_citas (nueva, se agrega despues de pedir_al_perito)",
+  "texto_viejo": "    if not isinstance(datos, dict):\n        return (None, 'el perito no devolvio JSON: ' + salida[:200])\n    return (datos, 'ok')",
+  "texto_nuevo": "    if not isinstance(datos, dict):\n        return (None, 'el perito no devolvio JSON: ' + salida[:200])\n    return (datos, 'ok')\n\n\ndef juzgar_citas(analisis):\n    \"\"\"Juzga si las citas de un analisis prueban de verdad la causa de raiz que se afirma.\"\"\"\n    from cuerpo import bigpickle\n    if not isinstance(analisis, dict):\n        return (False, 'no hay analisis')\n    pedido = ('Eres el revisor del forense. Estas citas son LITERALES del proyecto (un programa ya comprobo que existen). Juzga SOLO si prueban la causa de raiz que se afirma. Responde SOLO un objeto JSON {\"prueban\": true o false, \"por_que\": \"una frase\"}. CAUSA: ' + str(analisis.get('causa_raiz', '')) + ' CITAS: ' + json.dumps(analisis.get('citas', []), ensure_ascii=False))\n    texto, avisos = bigpickle.preguntar(pedido)\n    if not texto:\n        return (False, 'Big Pickle no contesto: ' + '; '.join(avisos)[:200])\n    inicio = texto.find('{')\n    fin = texto.rfind('}')\n    if inicio == -1 or fin == -1 or fin < inicio:\n        return (False, 'Big Pickle no devolvio JSON')\n    try:\n        dato = json.loads(texto[inicio:fin + 1])\n    except (ValueError, TypeError):\n        return (False, 'Big Pickle no devolvio JSON')\n    if not isinstance(dato, dict):\n        return (False, 'Big Pickle no devolvio JSON')\n    return (dato.get('prueban') is True, str(dato.get('por_que', '')))",
+  "cambio": "Agregar la funcion juzgar_citas(analisis) inmediatamente despues de pedir_al_perito, sin tocar ninguna otra funcion.",
+  "codigo": "def juzgar_citas(analisis):\n    \"\"\"Juzga si las citas de un analisis prueban de verdad la causa de raiz que se afirma.\"\"\"\n    from cuerpo import bigpickle\n    if not isinstance(analisis, dict):\n        return (False, 'no hay analisis')\n    pedido = ('Eres el revisor del forense. Estas citas son LITERALES del proyecto (un programa ya comprobo que existen). Juzga SOLO si prueban la causa de raiz que se afirma. Responde SOLO un objeto JSON {\"prueban\": true o false, \"por_que\": \"una frase\"}. CAUSA: ' + str(analisis.get('causa_raiz', '')) + ' CITAS: ' + json.dumps(analisis.get('citas', []), ensure_ascii=False))\n    texto, avisos = bigpickle.preguntar(pedido)\n    if not texto:\n        return (False, 'Big Pickle no contesto: ' + '; '.join(avisos)[:200])\n    inicio = texto.find('{')\n    fin = texto.rfind('}')\n    if inicio == -1 or fin == -1 or fin < inicio:\n        return (False, 'Big Pickle no devolvio JSON')\n    try:\n        dato = json.loads(texto[inicio:fin + 1])\n    except (ValueError, TypeError):\n        return (False, 'Big Pickle no devolvio JSON')\n    if not isinstance(dato, dict):\n        return (False, 'Big Pickle no devolvio JSON')\n    return (dato.get('prueban') is True, str(dato.get('por_que', '')))",
+  "vigia": "Una prueba que llame a juzgar_citas con un analisis sin dict (devuelve (False, 'no hay analisis')), con bigpickle.preguntar devolviendo texto vacio (devuelve (False, 'Big Pickle no contesto: ...')), con texto sin JSON (devuelve (False, 'Big Pickle no devolvio JSON')), y con JSON valido {\"prueban\": true, \"por_que\": \"...\"} (devuelve (True, '...')).",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "cuerpo/bigpickle.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "cuerpo/capataz.py: solo se agrega una funcion nueva al final de pedir_al_perito, no se toca ninguna linea existente",
+   "cuerpo/bigpickle.py: se importa dentro de la funcion y solo se llama a bigpickle.preguntar, que el material documenta como que nunca lanza"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La funcion juzgar_citas se agrega tal cual la pide el encargo, sin inventar nada: el pedido, los retornos y el manejo de JSON copian punto por punto lo del material, y no rompe a ningun vecino; se aprueba."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25463 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

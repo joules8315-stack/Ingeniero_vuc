@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La cuenta 4 exige las palabras que ya viven en el archivo (contexto) y deja pasar las que el encargo pide traer, por lo que la condicion esta invertida.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "            if contenido_archivo is not None and palabra not in contenido_archivo:\n                continue",
+  "texto_nuevo": "            # Una palabra que ya vive en el archivo es CONTEXTO: el encargo la nombra para decir\n            # DONDE hay que tocar, no para pedir que se traiga. Lo que se exige es lo que el\n            # encargo pide traer y no esta en ningun lado.\n            if contenido_archivo is not None and palabra in contenido_archivo:\n                continue",
+  "cambio": "Invertir la condicion de la cuenta 4: en vez de saltar cuando la palabra NO esta en el archivo, saltar cuando SI esta (es contexto). Anadir encima un comentario corto en castellano explicando que una palabra que ya vive en el archivo es contexto y que lo que se exige es lo que el encargo pide traer.",
+  "codigo": "            # Una palabra que ya vive en el archivo es CONTEXTO: el encargo la nombra para decir\n            # DONDE hay que tocar, no para pedir que se traiga. Lo que se exige es lo que el\n            # encargo pide traer y no esta en ningun lado.\n            if contenido_archivo is not None and palabra in contenido_archivo:\n                continue",
+  "vigia": "vigias/test_vigia_el_freno_de_las_palabras_solo_pide_lo_nuevo.py",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_freno_de_las_palabras_solo_pide_lo_nuevo.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_el_archivo_carga.py",
+   "vigias/test_vigia_el_humo_no_confunde_cadenas.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "vigias/test_vigia_los_avisos_no_hacen_repetir.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_el_archivo_carga.py",
+   "test_vigia_el_freno_de_las_palabras_solo_pide_lo_nuevo.py",
+   "test_vigia_el_humo_no_confunde_cadenas.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "test_vigia_los_avisos_no_hacen_repetir.py",
+   "test_vigia_revisor_de_programa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio invierte correctamente la condición de la cuenta 4 y añade la explicación requerida, sin inventar elementos ni afectar a los módulos vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (34011 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (35231 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 2"
+ ]
+}

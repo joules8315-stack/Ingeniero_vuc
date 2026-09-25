@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El comentario de la linea dice 'respetando el tope TOPE_FUNCION_ENTERA.' cuando el codigo de debajo ya usa TOPE_FUNCION_NOMBRADA (300 lineas).",
+  "archivo": "cerebro/router.py",
+  "funcion": "armar",
+  "texto_viejo": "    # respetando el tope TOPE_FUNCION_ENTERA.",
+  "texto_nuevo": "    # respetando el tope TOPE_FUNCION_NOMBRADA (300 lineas).",
+  "cambio": "Sustituir el texto del comentario para que mencione TOPE_FUNCION_NOMBRADA (300 lineas) en lugar de TOPE_FUNCION_ENTERA. No tocar nada mas.",
+  "codigo": "    # respetando el tope TOPE_FUNCION_NOMBRADA (300 lineas).",
+  "vigia": "vigias/test_vigia_memoria_completa.py (lo vigila desde cerebro/router.py)",
+  "puede_danar": [
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_memoria_completa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El cambio es de comentario: no toca codigo en ejecucion, asi que no rompe vecinos de runtime",
+   "unico riesgo hipotetico: que vigias/test_vigia_memoria_completa.py compruebe el texto viejo del comentario (no esta en el paquete y no se puede verificar sin violar la regla). Por eso hay que correr las vigias despues y confirmar que sigue en verde antes de sellar"
+  ],
+  "que_falta": [
+   "correr 'python ingeniero.py vigias ingeniero despues' para confirmar que el cambio deja la vigia en verde",
+   "que Julio lo vea con sus ojos antes de sellar (ley 3) — aunque aqui la 'prueba' es la vigia, el protocolo lo exige"
+  ],
+  "resumen_para_el_jefe": "Cambia UNA linea de comentario (TOPE_FUNCION_ENTERA -> TOPE_FUNCION_NOMBRADA (300 lineas)) exactamente como ordena el paquete; no inventa nada, no toca codigo y no puede romper vecinos; solo falta confirmar vigias en verde y que Julio lo selle."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19048 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

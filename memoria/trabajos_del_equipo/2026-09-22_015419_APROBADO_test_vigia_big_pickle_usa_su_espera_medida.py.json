@@ -1,0 +1,32 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En test_preguntar_usa_la_espera_medida se compara len(letras[0]) == 10, pero espera_de_bigpickle recibe el numero de letras, no el texto, asi que debe compararse letras[0] == 10.",
+  "archivo": "vigias/test_vigia_big_pickle_usa_su_espera_medida.py",
+  "funcion": "test_preguntar_usa_la_espera_medida",
+  "texto_viejo": "    assert len(letras) == 1\n    assert len(letras[0]) == 10",
+  "texto_nuevo": "    assert len(letras) == 1\n    # espera_de_bigpickle recibe el numero de letras, no el texto (medido 2026-09-22)\n    assert letras[0] == 10",
+  "cambio": "Sustituir la comprobacion len(letras[0]) == 10 por letras[0] == 10 y anadir encima el comentario que aclara que espera_de_bigpickle recibe el numero de letras, no el texto.",
+  "codigo": "    assert len(letras) == 1\n    # espera_de_bigpickle recibe el numero de letras, no el texto (medido 2026-09-22)\n    assert letras[0] == 10",
+  "vigia": "vigias/test_vigia_big_pickle_usa_su_espera_medida.py, que debe pasar comprobando que letras[0] vale 10 (el numero de letras) y no el texto.",
+  "puede_danar": [
+   "vigias/test_vigia_big_pickle_usa_su_espera_medida.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio arregla de verdad la prueba rompida: espera_de_bigpickle recibe el numero de letras (10) y no el texto, y el assert viejo rompia con TypeError porque a un numero no se le saca len()."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

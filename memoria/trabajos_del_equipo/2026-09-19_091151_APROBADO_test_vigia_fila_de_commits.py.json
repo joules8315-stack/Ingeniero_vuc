@@ -1,0 +1,28 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigias/test_vigia_fila_de_commits.py que pruebe fila_de_commits y guardar_en_la_historia; el material da el codigo exacto de ambas funciones y el arranque pedido.",
+  "archivo": "vigias/test_vigia_fila_de_commits.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"vigias/test_vigia_fila_de_commits.py — Vigia de la fila de guardado en git.\n\nPrueba que fila_de_commits deja entrar a uno y frena al otro, que suelta el candado\nal salir (aunque salga con error) y que un candado abandonado (mas de 2 horas) se\npisa. Tambien prueba que guardar_en_la_historia guarda DENTRO de la fila.\n\"\"\"\nimport glob\nimport os\nimport subprocess\nimport sys\nimport tempfile\nimport time\nimport types\n\nimport pytest\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, 'arnes'))\nimport candado_equipo  # noqa: E402\n\n\ndef _lock_de(raiz):\n    \"\"\"Devuelve la ruta del candado de esa raiz (mismo calculo que fila_de_commits).\"\"\"\n    import hashlib\n    clave = hashlib.sha1(os.path.abspath(str(raiz)).lower().encode('utf-8')).hexdigest()[:12]\n    return os.path.join(tempfile.gettempdir(), 'ingeniero_fila_' + clave + '.lock')\n\n\ndef test_uno_entra_y_el_otro_espera(tmp_path):\n    \"\"\"Con la fila tomada, el segundo con espera=1 se rinde con TimeoutError.\"\"\"\n    raiz = str(tmp_path)\n    with candado_equipo.fila_de_commits(raiz):\n        with pytest.raises(TimeoutError):\n            with candado_equipo.fila_de_commits(raiz, espera=1):\n                pass\n\n\ndef test_al_salir_se_puede_volver_a_entrar(tmp_path):\n    \"\"\"Al salir del with, la fila queda libre y se puede volver a entrar.\"\"\"\n    raiz = str(tmp_path)\n    with candado_equipo.fila_de_commits(raiz):\n        pass\n    with candado_equipo.fila_de_commits(raiz, espera=1):\n        pass\n\n\ndef test_si_dentro_falla_el_candado_se_libera(tmp_path):\n    \"\"\"Si dentro del with salta un ValueError, al salir la fila queda libre.\"\"\"\n    raiz = str(tmp_path)\n    with pytest.raises(ValueError):\n        with candado_equipo.fila_de_commits(raiz):\n            raise ValueError('fallo dentro de la fila')\n    with candado_equipo.fila_de_commits(raiz, espera=1):\n        pass\n\n\ndef test_candado_abandonado_se_pisa(tmp_path):\n    \"\"\"Un candado con mas de 2 horas de antiguedad no bloquea: se pisa y se entra.\"\"\"\n    raiz = str(tmp_path)\n    patron = os.path.join(tempfile.gettempdir(), 'ingeniero_fila_*.lock')\n    antes = set(glob.glob(patron))\n    with candado_equipo.fila_de_commits(raiz):\n        nuevos = set(glob.glob(patron)) - antes\n        assert len(nuevos) == 1, 'deberia aparecer un unico candado nuevo'\n        ruta = nuevos.pop()\n    # Se crea a mano el mismo candado y se envejece 3 horas.\n    with open(ruta, 'w', encoding='utf-8') as f:\n        f.write('999999')\n    viejo = time.time() - 3 * 3600\n    os.utime(ruta, (viejo, viejo))\n    with candado_equipo.fila_de_commits(raiz, espera=1):\n        pass\n\n\ndef test_guardar_en_la_historia_guarda_dentro_de_la_fila(tmp_path, monkeypatch):\n    \"\"\"guardar_en_la_historia corre git DENTRO de la fila: el 'add' no puede entrar.\"\"\"\n    raiz = str(tmp_path)\n    intento = {'timeout': False, 'visto': False}\n\n    def falsa(cmd, *args, **kwargs):\n        if 'add' in cmd:\n            intento['visto'] = True\n            try:\n                with candado_equipo.fila_de_commits(raiz, espera=0.2):\n                    pass\n            except TimeoutError:\n                intento['timeout'] = True\n        return types.SimpleNamespace(returncode=0, stdout='', stderr='')\n\n    monkeypatch.setattr(subprocess, 'run', falsa)\n    ok, motivo = candado_equipo.guardar_en_la_historia(raiz, ['a.py'], 'msg')\n    assert ok is True, motivo\n    assert intento['visto'] is True, 'no se llego a llamar a git add'\n    assert intento['timeout'] is True, 'la fila no estaba tomada durante el guardado'\n",
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El diagnostico afirma 'el material da el codigo exacto de ambas funciones' y es falso: el paquete solo entrega la spec de pruebas, no el codigo. No contamina la pieza: verifique las 5 pruebas contra el codigo real y todas casan.",
+   "_lock_de() queda definida y nadie la llama: codigo muerto. Es identica al calculo real (candado_equipo.py:302-303), asi que no es invento, pero es un anadido que el encargo no pedia."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Correr la vigia nueva ('python -m pytest -q vigilas/test_vigia_fila_de_commits.py') para sellar lo verde; la logica ya esta contrastada con el disco y deberia pasar."
+  ],
+  "resumen_para_el_jefe": "La vigia nueva esta bien: las 5 pruebas casan con el codigo real de fila_de_commits y guardar_en_la_historia, no inventa nada y no rompe a nadie; solo sobra una funcion auxiliar sin uso que no molesta."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (30625 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

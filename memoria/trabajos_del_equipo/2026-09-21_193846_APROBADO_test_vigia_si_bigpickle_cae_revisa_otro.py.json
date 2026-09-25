@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En la fixture _big_pickle_sin_marca falta simular que Grok tambien cae, para que las pruebas midan el relevo de hoy sin llamar a una IA de verdad",
+  "archivo": "vigias/test_vigia_si_bigpickle_cae_revisa_otro.py",
+  "funcion": "_big_pickle_sin_marca",
+  "texto_viejo": "    monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False)",
+  "texto_nuevo": "    monkeypatch.setattr(obrero.auditar, '_bp_caido', False, raising=False)\n    # Grok tambien cae en estas pruebas, que miden el relevo de hoy; nunca se llama a una IA de verdad (orden 99, 2026-09-21)\n    from cuerpo import grok as _grok\n    monkeypatch.setattr(_grok, 'preguntar', lambda *a, **k: ('', ['Grok no contesto (prueba)']))",
+  "cambio": "Agregar, justo despues de la linea de monkeypatch.setattr(obrero.auditar, '_bp_caido', ...), con la misma sangria, un comentario y dos lineas: importar cuerpo.grok como _grok y sustituir _grok.preguntar por una funcion que devuelve ('', ['Grok no contesto (prueba)'])",
+  "codigo": "    # Grok tambien cae en estas pruebas, que miden el relevo de hoy; nunca se llama a una IA de verdad (orden 99, 2026-09-21)\n    from cuerpo import grok as _grok\n    monkeypatch.setattr(_grok, 'preguntar', lambda *a, **k: ('', ['Grok no contesto (prueba)']))",
+  "vigia": "vigias/test_vigia_si_bigpickle_cae_revisa_otro.py (la propia prueba, al ejecutarse sin llamar a Grok de verdad)",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "cuerpo/grok.py",
+   "vigias/test_vigia_si_bigpickle_cae_revisa_otro.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No hay: el cambio toca solo la fixture autouse del archivo de prueba, el monkeypatch se revierte solo al terminar cada prueba, y _grok es un alias local creado por la propia linea que el encargo pide; cuerpo/obrero.py y cuerpo/grok.py solo se ven afectados dentro del contexto de prueba y vuelven a su estado original."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El obrero escribio exactamente lo que se le pidio: el comentario y las dos lineas que simulan a Grok caido en la fixture, con la sangria y el sitio correctos, sin tocar otro archivo ni usar nada que no exista."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

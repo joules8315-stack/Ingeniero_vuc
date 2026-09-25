@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La segunda prueba llama a _material_del_revisor, pero el aviso del juez se pone en auditar; ademas el archivo no importa json y la prueba usa json.dumps.",
+  "archivo": "vigias/test_vigia_el_revisor_sabe_lo_que_dijo_el_juez.py",
+  "funcion": "test_el_material_del_revisor_lleva_la_razon_del_juez",
+  "texto_viejo": "def test_el_material_del_revisor_lleva_la_razon_del_juez():\n    \"\"\"El material del revisor tiene que decir lo que ya decidio el juez.\n\n    Si el revisor no sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar\n    a ciegas lo que ya esta demostrado.\n    \"\"\"\n    material = obrero._material_del_revisor(PAQUETE, PROPUESTA, TOPE)\n    assert isinstance(material, str), (\n        '_material_del_revisor no devolvio texto: ' + repr(material)[:200])\n    assert RAZON_DEL_JUEZ in material, (\n        'el material del revisor NO dice lo que ya decidio el juez: si el revisor no '\n        'sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar a ciegas lo '\n        'que ya esta demostrado. Material: ' + material[:400])",
+  "texto_nuevo": "def test_el_material_del_revisor_lleva_la_razon_del_juez(monkeypatch):\n    \"\"\"El material del revisor tiene que decir lo que ya decidio el juez.\n\n    Si el revisor no sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar\n    a ciegas lo que ya esta demostrado.\n    \"\"\"\n    prompts = []\n\n    def falsa(prompt, *a, **k):\n        prompts.append(prompt)\n        return (json.dumps({'veredicto': 'APROBADO', 'fallos': []}), 'groq', [])\n\n    monkeypatch.setattr(obrero, '_preguntar_con_relevo', falsa)\n\n    obrero.auditar(PAQUETE, {'archivo': 'x.py', '_juez_de_la_prueba': RAZON_DEL_JUEZ},\n                   evitar='deepseek')\n\n    assert prompts, 'auditar no llego a preguntar a ninguna IA'\n    assert 'YA SE CORRIO LA PRUEBA' in prompts[0], (\n        'el prompt de la IA revisora no dice que la prueba ya se corrio: si el revisor no '\n        'sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar a ciegas lo '\n        'que ya esta demostrado. Prompt: ' + prompts[0][:400])\n    assert RAZON_DEL_JUEZ in prompts[0], (\n        'el prompt de la IA revisora NO dice lo que ya decidio el juez: si el revisor no '\n        'sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar a ciegas lo '\n        'que ya esta demostrado. Prompt: ' + prompts[0][:400])",
+  "cambio": "Reemplazar la funcion test_el_material_del_revisor_lleva_la_razon_del_juez entera por una que reciba monkeypatch, cree la lista prompts, defina la funcion falsa que la rellena y devuelve la tupla con json.dumps, ponga esa funcion en lugar de _preguntar_con_relevo con monkeypatch.setattr, llame a obrero.auditar con PAQUETE, el diccionario con archivo x.py y _juez_de_la_prueba valiendo RAZON_DEL_JUEZ, y evitar deepseek; y compruebe que prompts no esta vacia, que 'YA SE CORRIO LA PRUEBA' aparece en prompts[0] y que RAZON_DEL_JUEZ aparece en prompts[0]. Ademas anadir 'import json' arriba si no esta.",
+  "codigo": "import json\n\n\ndef test_el_material_del_revisor_lleva_la_razon_del_juez(monkeypatch):\n    \"\"\"El material del revisor tiene que decir lo que ya decidio el juez.\n\n    Si el revisor no sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar\n    a ciegas lo que ya esta demostrado.\n    \"\"\"\n    prompts = []\n\n    def falsa(prompt, *a, **k):\n        prompts.append(prompt)\n        return (json.dumps({'veredicto': 'APROBADO', 'fallos': []}), 'groq', [])\n\n    monkeypatch.setattr(obrero, '_preguntar_con_relevo', falsa)\n\n    obrero.auditar(PAQUETE, {'archivo': 'x.py', '_juez_de_la_prueba': RAZON_DEL_JUEZ},\n                   evitar='deepseek')\n\n    assert prompts, 'auditar no llego a preguntar a ninguna IA'\n    assert 'YA SE CORRIO LA PRUEBA' in prompts[0], (\n        'el prompt de la IA revisora no dice que la prueba ya se corrio: si el revisor no '\n        'sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar a ciegas lo '\n        'que ya esta demostrado. Prompt: ' + prompts[0][:400])\n    assert RAZON_DEL_JUEZ in prompts[0], (\n        'el prompt de la IA revisora NO dice lo que ya decidio el juez: si el revisor no '\n        'sabe que la prueba ya se corrio y quedo verde, vuelve a juzgar a ciegas lo '\n        'que ya esta demostrado. Prompt: ' + prompts[0][:400])",
+  "vigia": "vigias/test_vigia_el_revisor_sabe_lo_que_dijo_el_juez.py::test_el_material_del_revisor_lleva_la_razon_del_juez",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada y no afecta a vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20347 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'json'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (22127 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'json'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (22241 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'json'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (22355 letras, aguanta 19042) -> se le salta",
+  "OpenCode termino con codigo 1",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 4"
+ ]
+}

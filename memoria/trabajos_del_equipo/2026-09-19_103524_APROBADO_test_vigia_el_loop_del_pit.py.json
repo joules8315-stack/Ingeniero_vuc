@@ -1,0 +1,31 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En vigias/test_vigia_el_loop_del_pit.py la funcion auxiliar preparar no aisla el forense ni el archivo de fallos, asi que las pruebas que simulan fallos llamarian al perito de verdad (Claude) y a Big Pickle.",
+  "archivo": "vigias/test_vigia_el_loop_del_pit.py",
+  "funcion": "preparar",
+  "texto_viejo": "    monkeypatch.setenv('INGENIERO_GASTO_USD_TEST', str(memoria / 'GASTO_USD.jsonl'))\n    return memoria",
+  "texto_nuevo": "    monkeypatch.setenv('INGENIERO_GASTO_USD_TEST', str(memoria / 'GASTO_USD.jsonl'))\n    monkeypatch.setattr(capataz, 'forense', lambda *a, **k: {'ok': True, 'paso': 'prueba', 'motivo': 'forense falso'}, raising=False)\n    monkeypatch.setenv('INGENIERO_FALLOS_TEST', str(memoria / 'FALLOS.json'))\n    return memoria",
+  "cambio": "Agregar, despues del setenv de INGENIERO_GASTO_USD_TEST y antes del return memoria, dos lineas: un monkeypatch.setattr sobre capataz.forense con un forense falso y un monkeypatch.setenv de INGENIERO_FALLOS_TEST apuntando a memoria / 'FALLOS.json'.",
+  "codigo": "    monkeypatch.setattr(capataz, 'forense', lambda *a, **k: {'ok': True, 'paso': 'prueba', 'motivo': 'forense falso'}, raising=False)\n    monkeypatch.setenv('INGENIERO_FALLOS_TEST', str(memoria / 'FALLOS.json'))",
+  "vigia": "vigias/test_vigia_el_loop_del_pit.py::test_tres_fallos_del_mismo_tipo_para (y demas pruebas que simulan fallos) deben seguir en verde sin llamar al forense real ni a Big Pickle.",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Nada del encargo. Solo falta el paso de protocolo: correr las vigias y que Julio lo vea (Ley 7, Regla 5)."
+  ],
+  "resumen_para_el_jefe": "Aplica tal cual las dos lineas que el propio encargo pide por escrito (forense falso + desvio INGENIERO_FALLOS_TEST), con el texto literal que aparece en el material, sin inventar nada y sin riesgo de vecinos."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

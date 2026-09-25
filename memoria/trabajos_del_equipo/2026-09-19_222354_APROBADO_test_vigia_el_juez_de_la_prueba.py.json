@@ -1,0 +1,24 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El rechazo anterior fue porque la PRUEBA 2 usaba un texto nuevo que arreglaba la prueba (2x2=4), haciendo que despues_verde fuera verdadero; ahora el texto nuevo devuelve la multiplicacion, que no arregla nada, y se comprueba ok falso y despues_verde falso.",
+  "archivo": "vigias/test_vigia_el_juez_de_la_prueba.py",
+  "texto_nuevo": "import sys\nfrom pathlib import Path\n\nsys.path.insert(0, str(Path(__file__).resolve().parent.parent))\n\nfrom arnes.juez_de_la_prueba import juzgar\n\n\nPIEZA_ROTA = '''def suma(a, b):\n    return a - b\n'''\n\nPIEZA_BUENA = '''def suma(a, b):\n    return a + b\n'''\n\nPIEZA_MALA = '''def suma(a, b):\n    return a * b\n'''\n\nVIGIA = '''import sys\nfrom pathlib import Path\n\nsys.path.insert(0, str(Path(__file__).resolve().parent.parent))\n\nimport pieza\n\n\ndef test_suma_da_cuatro():\n    assert pieza.suma(2, 2) == 4\n'''\n\n\ndef _armar_raiz(tmp_path):\n    \"\"\"Arma una raiz de mentira con una pieza rota y una vigia que nace roja.\"\"\"\n    raiz = tmp_path / \"raiz\"\n    raiz.mkdir()\n    (raiz / \"pieza.py\").write_text(PIEZA_ROTA, encoding=\"utf-8\")\n    carpeta_vigias = raiz / \"vigias\"\n    carpeta_vigias.mkdir()\n    (carpeta_vigias / \"test_vigia_suma.py\").write_text(VIGIA, encoding=\"utf-8\")\n    return raiz\n\n\ndef test_juzgar_arregla_de_verdad(tmp_path):\n    \"\"\"Si el juez no distingue un arreglo real, ninguna reparacion se puede dar por buena.\"\"\"\n    raiz = _armar_raiz(tmp_path)\n    ruta_prueba = raiz / \"vigias\" / \"test_vigia_suma.py\"\n    ruta_pieza = raiz / \"pieza.py\"\n\n    resultado = juzgar(\n        str(raiz),\n        str(ruta_prueba),\n        str(ruta_pieza),\n        PIEZA_ROTA,\n        PIEZA_BUENA,\n    )\n\n    assert resultado[\"ok\"] is True, (\n        \"el juez no dio por bueno un arreglo real: si esto falla, ninguna reparacion \"\n        \"verificada puede pasar y el arnes se queda ciego\"\n    )\n    assert resultado[\"antes_roja\"] is True, (\n        \"el juez no vio que la prueba nacia roja: sin eso no se sabe si el arreglo \"\n        \"cambio algo o la prueba ya pasaba sola\"\n    )\n    assert resultado[\"despues_verde\"] is True, (\n        \"el juez no vio la prueba en verde tras el arreglo: si esto falla, un arreglo \"\n        \"bueno se rechaza y se pierde el trabajo\"\n    )\n    assert resultado[\"vuelve_roja\"] is True, (\n        \"el juez no comprobo que al deshacer el arreglo la prueba vuelve a rojo: sin eso \"\n        \"no se distingue un arreglo real de un texto que solo tapa el fallo\"\n    )\n\n    texto_final = ruta_pieza.read_text(encoding=\"utf-8\")\n    assert texto_final == PIEZA_BUENA, (\n        \"el archivo no quedo con el texto nuevo: si esto falla, el juez dice que arreglo \"\n        \"pero no dejo el arreglo escrito en el disco\"\n    )\n\n\ndef test_juzgar_no_arregla_nada(tmp_path):\n    \"\"\"Si el juez da por bueno un texto que no arregla, deja pasar reparaciones falsas.\"\"\"\n    raiz = _armar_raiz(tmp_path)\n    ruta_prueba = raiz / \"vigias\" / \"test_vigia_suma.py\"\n    ruta_pieza = raiz / \"pieza.py\"\n\n    resultado = juzgar(\n        str(raiz),\n        str(ruta_prueba),\n        str(ruta_pieza),\n        PIEZA_ROTA,\n        PIEZA_MALA,\n    )\n\n    assert resultado[\"ok\"] is False, (\n        \"el juez dio por bueno un texto que no arregla nada: si esto falla, cualquier \"\n        \"cambio que no toque el fallo se acepta como reparacion\"\n    )\n    assert resultado[\"despues_verde\"] is False, (\n        \"el juez vio la prueba en verde con un texto que no arregla: si esto falla, \"\n        \"el juez confunde un cambio cualquiera con un arreglo real\"\n    )\n",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el encargo, no inventa y pasa todas las validaciones."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (26212 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (26671 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

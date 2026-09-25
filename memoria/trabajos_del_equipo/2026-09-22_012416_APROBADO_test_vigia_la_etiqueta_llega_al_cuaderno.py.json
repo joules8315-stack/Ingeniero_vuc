@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La vigia test_capataz_pasa_la_etiqueta_al_equipo solo intercepta subprocess.run, pero lanzar_al_equipo puede usar subprocess.Popen, y ademas llama al vigilante real en vez de uno de mentira.",
+  "archivo": "vigias/test_vigia_la_etiqueta_llega_al_cuaderno.py",
+  "funcion": "test_capataz_pasa_la_etiqueta_al_equipo",
+  "texto_viejo": "def test_capataz_pasa_la_etiqueta_al_equipo(monkeypatch):\n    \"\"\"lanzar_al_equipo pasa INGENIERO_ETIQUETA con el id de la orden.\"\"\"\n    guardado = {}\n\n    def falso_run(*args, **kwargs):\n        guardado[\"env\"] = kwargs.get(\"env\")\n        return types.SimpleNamespace(returncode=0, stdout=\"\", stderr=\"\")\n\n    monkeypatch.setattr(capataz.subprocess, \"run\", falso_run)\n\n    capataz.lanzar_al_equipo(\n        \"ingeniero\", {\"id\": \"P9\", \"encargo\": \"x\", \"pieza\": \"y\"}\n    )\n\n    assert guardado[\"env\"][\"INGENIERO_ETIQUETA\"] == \"P9\"",
+  "texto_nuevo": "def test_capataz_pasa_la_etiqueta_al_equipo(monkeypatch):\n    \"\"\"lanzar_al_equipo pasa INGENIERO_ETIQUETA con el id de la orden.\"\"\"\n    guardado = {}\n\n    def falso_run(*args, **kwargs):\n        guardado[\"env\"] = kwargs.get(\"env\")\n        return types.SimpleNamespace(returncode=0, stdout=\"\", stderr=\"\")\n\n    class PopenFalso:\n        def __init__(self, comando, **kw):\n            guardado[\"env\"] = kw.get(\"env\")\n            self.pid = 1\n            self.returncode = 0\n\n        def poll(self):\n            return 0\n\n        def kill(self):\n            pass\n\n        def wait(self, timeout=None):\n            return 0\n\n    monkeypatch.setattr(capataz.subprocess, \"run\", falso_run)\n    monkeypatch.setattr(capataz.subprocess, \"Popen\", PopenFalso)\n\n    from cuerpo import vigilante\n    monkeypatch.setattr(vigilante, \"esperar\", lambda *a, **k: \"termino\")\n\n    capataz.lanzar_al_equipo(\n        \"ingeniero\", {\"id\": \"P9\", \"encargo\": \"x\", \"pieza\": \"y\"}\n    )\n\n    assert guardado[\"env\"][\"INGENIERO_ETIQUETA\"] == \"P9\"",
+  "cambio": "Reescribir la funcion test_capataz_pasa_la_etiqueta_al_equipo para que ademas de falso_run defina la clase PopenFalso (que guarda env, pid=1, returncode=0, poll()=0, kill() sin efecto, wait()=0), parchee capataz.subprocess.Popen con ella, importe vigilante dentro de la funcion y parchee vigilante.esperar con un lambda que devuelve 'termino'; el resto (llamada a lanzar_al_equipo y assert final) queda igual.",
+  "codigo": "def test_capataz_pasa_la_etiqueta_al_equipo(monkeypatch):\n    \"\"\"lanzar_al_equipo pasa INGENIERO_ETIQUETA con el id de la orden.\"\"\"\n    guardado = {}\n\n    def falso_run(*args, **kwargs):\n        guardado[\"env\"] = kwargs.get(\"env\")\n        return types.SimpleNamespace(returncode=0, stdout=\"\", stderr=\"\")\n\n    class PopenFalso:\n        def __init__(self, comando, **kw):\n            guardado[\"env\"] = kw.get(\"env\")\n            self.pid = 1\n            self.returncode = 0\n\n        def poll(self):\n            return 0\n\n        def kill(self):\n            pass\n\n        def wait(self, timeout=None):\n            return 0\n\n    monkeypatch.setattr(capataz.subprocess, \"run\", falso_run)\n    monkeypatch.setattr(capataz.subprocess, \"Popen\", PopenFalso)\n\n    from cuerpo import vigilante\n    monkeypatch.setattr(vigilante, \"esperar\", lambda *a, **k: \"termino\")\n\n    capataz.lanzar_al_equipo(\n        \"ingeniero\", {\"id\": \"P9\", \"encargo\": \"x\", \"pieza\": \"y\"}\n    )\n\n    assert guardado[\"env\"][\"INGENIERO_ETIQUETA\"] == \"P9\"",
+  "vigia": "La propia vigia test_capataz_pasa_la_etiqueta_al_equipo: al correrla debe pasar sin lanzar el equipo de verdad, tanto si lanzar_al_equipo usa subprocess.run como subprocess.Popen, y sin depender del vigilante real.",
+  "puede_danar": [
+   "capataz.lanzar_al_equipo",
+   "cuerpo.vigilante.esperar",
+   "vigias/test_vigia_la_etiqueta_llega_al_cuaderno.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Los parches se hacen con monkeypatch dentro de la propia prueba y se restauran al terminar; no tocan el codigo real de capataz ni de vigilante. No se ve dano a vecinos."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo que pedia el encargo: tapa los dos huecos del diagnostico (parchea Popen y al vigilante), no inventa nada y no toca a vecinos; se aprueba."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "37",
+    "titulo": "Recoger los pedazos no pisa trabajo mas nuevo",
+    "origen": "peligro real visto el 2026-09-20",
+    "repara": "devolver una copia vieja encima de trabajo nuevo destruye trabajo pagado y aprobado, y no avisa",
+    "pieza": "arnes/recoger_los_pedazos.py",
+    "depende": [
+      "36"
+    ],
+    "modo": "IA",
+    "razon": "la pieza existe para NO perder trabajo; hacerlo perder es lo contrario de su oficio",
+    "encargo": "En arnes/recoger_los_pedazos.py, en la funcion recoger, antes de devolver una copia apartada a su sitio comprobar la fecha: si el archivo que hay ahora en el proyecto es mas nuevo que la copia apartada, NO se devuelve, no se toca nada y se contesta que no con esa razon. Si la copia apartada es la mas nueva, se devuelve igual que hoy. Nunca se borra nada, ni antes ni ahora. Motivo medido: una recuperacion en bloque devolvio copias de sesiones viejas y piso trabajo de hoy, incluida una reparacion recien hecha. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_recoger_no_pisa_trabajo_mas_nuevo.py",
+    "sabotaje": "memoria/sabotajes/recoger_no_pisa_trabajo_mas_nuevo.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "fadfd3f09ec3bf13",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_225114_APROBADO_recoger_los_pedazos.py.json\nOBRERO deepseek -> AUDITOR juez de la prueba (programa)\n  aviso       : vueltas_dadas: 1\n  diagnostico : La funcion recoger devuelve la copia apartada encima del archivo del proyecto sin comprobar antes si el archivo que hay ahora en el proyecto es mas nuevo que la copia apartada, con lo que puede pisar trabajo reciente.\n  toca        : arnes/recoger_los_pedazos.py funcion recoger\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA\n\nAPLICADO en disco (lo escribio el equipo): arnes/recoger_los_pedazos.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   2 failed, 6 passed in 0.86s\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): arnes/recoger_los_pedazos.py\nLLAVE GUARDADA: se puede escribir en 40 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T22:58:05",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: You've hit your session limit · resets 11:10pm (America/Bogota)\n",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\37_20260920_225805.json"
+  }
+}

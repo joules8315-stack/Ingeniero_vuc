@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la cuenta barata que avisa cuando el texto viejo propuesto no existe tal cual en el archivo real, antes de las dos lineas que devuelven 'La propuesta no trae texto nuevo'.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        if not nuevo.strip() and not viejo.strip():\n            return [\"La propuesta no trae texto nuevo: no hay nada que aplicar.\"]",
+  "texto_nuevo": "        # Esta cuenta va PRIMERO porque es la mas barata de todas: si el texto viejo que dice\n        # cambiar no aparece tal cual en el archivo, lo que se propone no existe y seguramente\n        # se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo\n        # completo antes de proponer. Si algo falla aqui, no se dice nada y se sigue.\n        try:\n            _ruta_v = str(p.get(\"archivo\") or \"\")\n            if viejo.strip() and _ruta_v and os.path.isfile(_ruta_v):\n                with open(_ruta_v, encoding=\"utf-8\", errors=\"replace\") as _fv:\n                    _contenido_v = _fv.read()\n                if viejo not in _contenido_v:\n                    return [\"EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe \"\n                            \"tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se \"\n                            \"mando. Hay que pedir el archivo completo antes de proponer.\"]\n        except Exception:\n            pass\n\n        if not nuevo.strip() and not viejo.strip():\n            return [\"La propuesta no trae texto nuevo: no hay nada que aplicar.\"]",
+  "cambio": "Insertar, justo antes de las dos lineas que comprueban si no hay texto nuevo ni viejo, un bloque try que: solo si viejo no esta vacio, la ruta del archivo de la propuesta no esta vacia y ese archivo existe en disco, lee el archivo con encoding utf-8 y errors replace; si viejo no aparece dentro del contenido, devuelve de inmediato una lista con una sola frase que empieza exactamente por EL TEXTO VIEJO NO ESTA EN EL ARCHIVO y sigue explicando en castellano que lo que se dice cambiar no existe tal cual, que seguramente se adivino lo que hay mas alla del pedazo que se mando y que hay que pedir el archivo completo antes de proponer. Si viejo si aparece, no se dice nada y se sigue. El bloque va precedido de un comentario corto en castellano que explica eso mismo y que dice que esta cuenta va primero porque es la mas barata de todas. No se toca nada mas del archivo.",
+  "codigo": "        # Esta cuenta va PRIMERO porque es la mas barata de todas: si el texto viejo que dice\n        # cambiar no aparece tal cual en el archivo, lo que se propone no existe y seguramente\n        # se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo\n        # completo antes de proponer. Si algo falla aqui, no se dice nada y se sigue.\n        try:\n            _ruta_v = str(p.get(\"archivo\") or \"\")\n            if viejo.strip() and _ruta_v and os.path.isfile(_ruta_v):\n                with open(_ruta_v, encoding=\"utf-8\", errors=\"replace\") as _fv:\n                    _contenido_v = _fv.read()\n                if viejo not in _contenido_v:\n                    return [\"EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe \"\n                            \"tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se \"\n                            \"mando. Hay que pedir el archivo completo antes de proponer.\"]\n        except Exception:\n            pass\n",
+  "vigia": "vigias/test_vigia_el_texto_viejo_tiene_que_existir.py (ya existe y vigila arnes/revisor_de_programa.py): una propuesta cuyo texto_viejo no aparece en el archivo real debe devolver una lista con una sola frase que empiece por EL TEXTO VIEJO NO ESTA EN EL ARCHIVO; una propuesta cuyo texto_viejo si aparece no debe devolver esa frase.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_texto_viejo_tiene_que_existir.py",
+   "vigias/test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "test_vigia_el_texto_viejo_tiene_que_existir.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Menor y no bloquea: el campo puede_danar omite 4 archivos que tambien llaman al revisor real (vigias/test_vigia_revisor_de_programa.py, test_vigia_un_cambio_que_solo_borra_vale.py, test_vigia_revisar_frena_si_deja_de_cargar.py, test_vigia_el_humo_no_confunde_cadenas.py). Los revise uno por uno y ninguno se rompe con el cambio."
+  ],
+  "riesgo_vecinos": [
+   "arnes/candado_equipo.py y cuerpo/obrero.py llaman a revisar con try/except: no pueden reventar; si el texto viejo no esta en el archivo, frenar es justo lo que el cambio pide.",
+   "vigias/test_vigia_el_texto_viejo_tiene_que_existir.py: el bloque hace verde la PRUEBA 1 (hoy roja, confirmado corriendo pytest) y respeta las PRUEBAS 2 y 3.",
+   "Las demas vigias que corren el revisor (revisor_de_programa, un_cambio_que_solo_borra_vale, cambiar_dentro_de_un_texto_no_frena, revisar_frena_si_deja_de_cargar, el_humo_no_confunde_cadenas, el_programa_revisa_antes_que_la_ia, el_revisor_sabe_lo_que_ya_comprobo) usan texto_viejo que SI existe en su archivo en disco o un archivo que no existe, asi que el guard (viejo.strip() and isfile) nunca se dispara en falso. Las 39 pruebas tocan: 23 + 16 verdes hoy."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente la cuenta que faltaba, usa solo nombres que ya existen (os, p, viejo), la frase coincide con la vigia roja y ninguna vigia vecina se rompe: se puede aplicar tal cual."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40034 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

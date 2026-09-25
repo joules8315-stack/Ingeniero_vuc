@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En la ultima prueba del archivo, test_juzgar_puede_dejar_el_archivo_como_estaba, sobra el assert final que compara texto_final con PIEZA_BUENA y contradice al assert anterior que compara texto_final con PIEZA_ROTA.",
+  "archivo": "vigias/test_vigia_el_juez_de_la_prueba.py",
+  "funcion": "test_juzgar_puede_dejar_el_archivo_como_estaba",
+  "texto_viejo": "    assert texto_final == PIEZA_ROTA, (\n        \"el juez dejo el cambio metido en pieza.py sin que el trabajo este aprobado: \"\n        \"asi se cuela codigo que nadie aprobo\"\n    )\n    assert texto_final == PIEZA_BUENA, (\n        \"el archivo no quedo con el texto nuevo: si esto falla, el juez dice que arreglo \"\n        \"pero no dejo el arreglo escrito en el disco\"\n    )",
+  "texto_nuevo": "    assert texto_final == PIEZA_ROTA, (\n        \"el juez dejo el cambio metido en pieza.py sin que el trabajo este aprobado: \"\n        \"asi se cuela codigo que nadie aprobo\"\n    )",
+  "cambio": "Borrar el assert final que compara texto_final con PIEZA_BUENA, con su mensaje y su parentesis de cierre, dejando la prueba terminando en el assert que compara texto_final con PIEZA_ROTA.",
+  "codigo": "    assert texto_final == PIEZA_ROTA, (\n        \"el juez dejo el cambio metido en pieza.py sin que el trabajo este aprobado: \"\n        \"asi se cuela codigo que nadie aprobo\"\n    )",
+  "vigia": "Ejecutar vigias/test_vigia_el_juez_de_la_prueba.py y comprobar que test_juzgar_puede_dejar_el_archivo_como_estaba pasa sin el assert sobrante.",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "juez_de_la_prueba.py",
+   "pieza.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "No rompe vecinos: el cambio toca SOLO el archivo de pruebas y no toca arnes/juez_de_la_prueba.py ni pieza.py, aunque los liste como posible dano. Borrar ese assert no debilita el testigo: la asercion contra PIEZA_BUENA era imposible de cumplir con dejar_el_cambio=False (el archivo debe quedar ROTA, nunca BUENA), asi que era un fallo garantizado, no una guardia util. Las otras pruebas del archivo quedan intactas."
+  ],
+  "que_falta": [
+   "Correr el archivo de pruebas y que Julio lo vea pasar con sus ojos antes de sellar."
+  ],
+  "resumen_para_el_jefe": "El diagnostico es cierto (con dejar_el_cambio=False el archivo debe quedar como PIEZA_ROTA, asi que el assert final contra PIEZA_BUENA era contradictorio y la prueba no podia pasar), y el cambio lo borra exactamente como pidio el encargo, sin tocar nada mas, sin inventar nada y sin danar vecinos: aprobado."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (26259 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El material del obrero se ata a UN solo archivo (el primero que nombra la tarea), y si la tarea nombra antes otro archivo de contexto, el archivo que hay que tocar no llega y el obrero contesta NO_ENCONTRADO",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_filtrar_paquete",
+  "texto_viejo": "if trozos and archivo:",
+  "texto_nuevo": "if trozos and archivo:\n        _lista = [archivo] if isinstance(archivo, str) else [a for a in archivo if a]",
+  "cambio": "Al comienzo del bloque 'if trozos and archivo:' calcular _lista = [archivo] if isinstance(archivo, str) else [a for a in archivo if a]; y la comprobacion 'if archivo in t[i]:' pasa a 'if any(a in t[i] for a in _lista):'. Con un texto se comporta exactamente como hoy. No tocar nada mas.",
+  "codigo": "if trozos and archivo:\n        _lista = [archivo] if isinstance(archivo, str) else [a for a in archivo if a]\n        ...\n        if any(a in t[i] for a in _lista):",
+  "vigia": "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "cerebro/protocolo.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_dudas.py",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_respuestas.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "protocolo.py",
+   "test_vigia_dudas.py",
+   "test_vigia_memoria_completa.py",
+   "test_vigia_respuestas.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Nada bloqueante. Antes de sellar debe declarar cuál de los vecinos de 'A QUIÉN PUEDE DAÑAR' revisó y correr la vigía que lo protege (vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py), cuyo contenido no vino en el paquete (por eso el propio obrero la marca _fuera_del_paquete), pero tampoco es un invento: ese nombre figura en la sección de cross-flow del material."
+  ],
+  "resumen_para_el_jefe": "La propuesta copia el encargo palabra por palabra: archivo acepta texto o lista, con un solo texto se comporta idéntico a hoy, no inventa nada (el texto 'if trozos and archivo:' y la función _filtrar_paquete vienen citados en el encargo) y no toca ni un vecino."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

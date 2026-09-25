@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py, dentro de la funcion auditar, falta anadir tras el aviso 'COMPROBADO POR PROGRAMA' un segundo aviso que use la marca _juez_de_la_prueba.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "    if isinstance(propuesta, dict) and propuesta.get('_comprobado_por_programa'):\n        material_auditor = ('COMPROBADO POR PROGRAMA (gratis, antes de ti): los nombres que usa el cambio existen en el archivo o estan importados y el archivo sigue cargando. NO rechaces por no aparecer en el material: juzga solo si el cambio hace lo pedido y si rompe algo.\\n') + material_auditor",
+  "texto_nuevo": "    if isinstance(propuesta, dict) and propuesta.get('_comprobado_por_programa'):\n        material_auditor = ('COMPROBADO POR PROGRAMA (gratis, antes de ti): los nombres que usa el cambio existen en el archivo o estan importados y el archivo sigue cargando. NO rechaces por no aparecer en el material: juzga solo si el cambio hace lo pedido y si rompe algo.\\n') + material_auditor\n    if isinstance(propuesta, dict) and propuesta.get('_juez_de_la_prueba'):\n        material_auditor = ('YA SE CORRIO LA PRUEBA (gratis, antes de ti): un programa corrio la prueba de verdad. Estaba roja antes del cambio, quedo verde con el cambio y volvio a roja al deshacerlo. Por lo tanto el cambio SI hace lo que la prueba pide y eso no se discute. Solo queda juzgar si esa prueba expresa lo que se pidio y si el cambio rompe algo.\\n' + str(propuesta.get('_juez_de_la_prueba', ''))) + material_auditor",
+  "cambio": "Justo debajo del bloque que antepone el aviso 'COMPROBADO POR PROGRAMA' al material del revisor, anadir un bloque nuevo que, si la propuesta es un diccionario y trae la marca _juez_de_la_prueba, anteponga al material del revisor el aviso en castellano que empieza por 'YA SE CORRIO LA PRUEBA' seguido del texto de esa marca.",
+  "codigo": "    if isinstance(propuesta, dict) and propuesta.get('_juez_de_la_prueba'):\n        material_auditor = ('YA SE CORRIO LA PRUEBA (gratis, antes de ti): un programa corrio la prueba de verdad. Estaba roja antes del cambio, quedo verde con el cambio y volvio a roja al deshacerlo. Por lo tanto el cambio SI hace lo que la prueba pide y eso no se discute. Solo queda juzgar si esa prueba expresa lo que se pidio y si el cambio rompe algo.\\n' + str(propuesta.get('_juez_de_la_prueba', ''))) + material_auditor",
+  "vigia": "Una prueba que llame a auditar con una propuesta que traiga _juez_de_la_prueba y compruebe que el material que recibe el revisor empieza por 'YA SE CORRIO LA PRUEBA' y contiene el texto de la marca.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El aviso nuevo se concatena a material_auditor DESPUES de que _material_del_revisor ya calculo el presupuesto (TOPE_REVISOR - 3344 - 47 - len(propuesta)); si _juez_de_la_prueba trae un texto largo y siempre viene marcado, el material puede crecer y acercarse al corte medido en A-38 (24.124 letras). Es condicional y no rompe hoy, pero conviene que la propuesta con esa marca traiga texto corto.",
+   "Los tres nombres listados (asignador.py, revisor_de_programa.py, test_vigia_revisor_roto_no_tira_la_vuelta.py) no se tocan: el bloque es aditivo y local a auditar en cuerpo/obrero.py, no se observa rotura de ninguno."
+  ],
+  "que_falta": [
+   "Nada de la tarea: el encargo pide el aviso con _juez_de_la_prueba y esta. Para que el bloque tenga efecto falta que en otro lado (fuera de este trozo) alguien ponga _juez_de_la_prueba en la propuesta, pero eso no es de este cambio."
+  ],
+  "resumen_para_el_jefe": "El bloque nuevo se anade justo despues del aviso COMPROBADO POR PROGRAMA tal como el encargo pide, el texto_viejo coincide con el material y solo usa variables ya existentes (material_auditor, propuesta, str); no inventa nada y no rompe vecinos, se puede aprobar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (35206 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

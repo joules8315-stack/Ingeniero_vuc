@@ -1,0 +1,25 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "Falta la vigia nueva que comprueba que el revisor frena un .py que deja de cargar solo si antes cargaba; el material no trae el codigo de la comprobacion 'NO CARGA' pero la tarea fija las cuatro pruebas y el arranque exacto.",
+  "archivo": "vigias/test_vigia_revisar_frena_si_deja_de_cargar.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"Vigia nueva: el revisor de programa frena un cambio que deja un .py SIN CARGAR,\npero solo si antes cargaba. Asi no frena en falso archivos que la cuenta ya ve raros.\n\nNace roja: la comprobacion 'NO CARGA' todavia no existe en arnes/revisor_de_programa.py.\nOrden de Julio A-38, tarea E-3.\n\"\"\"\nimport os\nimport sys\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, 'arnes'))\nimport revisor_de_programa as r\n\nCV = 'texto' + '_viejo'\nCN = 'texto' + '_nuevo'\n\n\nX_PY = 'import os\\n\\ndef f():\\n    return 1\\n'\nY_PY = 'print(sorted([1], key=lambda x: x))\\nA = 1\\n'\nZ_TXT = 'esto no es python\\nA = 1\\n'\n\n\ndef _escribir(tmp_path, nombre, contenido):\n    ruta = tmp_path / nombre\n    ruta.write_text(contenido, encoding='utf-8')\n    return ruta\n\n\ndef _fallos(ruta, viejo, nuevo, tarea):\n    propuesta = {'archivo': str(ruta), CV: viejo, CN: nuevo}\n    return r.revisar(propuesta, tarea)\n\n\ndef _alguno_dice_no_carga(fallos):\n    return any('NO CARGA' in str(f) for f in fallos)\n\n\ndef test_cambio_que_deja_sin_cargar_frena(tmp_path):\n    \"\"\"(1) x.py cargaba y el cambio lo deja sin cargar: algun fallo dice NO CARGA.\"\"\"\n    ruta = _escribir(tmp_path, 'x.py', X_PY)\n    viejo = 'def f():'\n    nuevo = '@contextlib.contextmanager\\ndef f():'\n    fallos = _fallos(ruta, viejo, nuevo, 'cambia f')\n    assert _alguno_dice_no_carga(fallos), (\n        'el revisor no freno un .py que deja de cargar: ' + repr(fallos))\n\n\ndef test_cambio_que_sigue_cargando_no_frena(tmp_path):\n    \"\"\"(2) mismo archivo, cambio que sigue cargando: ningun fallo dice NO CARGA.\"\"\"\n    ruta = _escribir(tmp_path, 'x.py', X_PY)\n    viejo = 'return 1'\n    nuevo = 'return 2'\n    fallos = _fallos(ruta, viejo, nuevo, 'cambia el retorno')\n    assert not _alguno_dice_no_carga(fallos), (\n        'el revisor freno en falso un cambio que si carga: ' + repr(fallos))\n\n\ndef test_archivo_que_ya_veia_raro_no_frena(tmp_path):\n    \"\"\"(3) y.py ya no cargaba antes: el cambio no puede dar NO CARGA.\"\"\"\n    ruta = _escribir(tmp_path, 'y.py', Y_PY)\n    viejo = 'A = 1'\n    nuevo = 'A = 2'\n    fallos = _fallos(ruta, viejo, nuevo, 'cambia A')\n    assert not _alguno_dice_no_carga(fallos), (\n        'el revisor freno en falso un archivo que ya veia raro: ' + repr(fallos))\n\n\ndef test_archivo_que_no_es_py_nunca_da_no_carga(tmp_path):\n    \"\"\"(4) un archivo que no es .py nunca da NO CARGA.\"\"\"\n    ruta = _escribir(tmp_path, 'z.txt', Z_TXT)\n    viejo = 'A = 1'\n    nuevo = 'A = 2'\n    fallos = _fallos(ruta, viejo, nuevo, 'cambia A')\n    assert not _alguno_dice_no_carga(fallos), (\n        'el revisor dio NO CARGA en un archivo que no es .py: ' + repr(fallos))\n\n\nif __name__ == '__main__':\n    import tempfile\n    import pathlib\n\n    _fallos_totales = 0\n    for _n, _f in sorted(globals().items()):\n        if _n.startswith('test_') and callable(_f):\n            _dir = pathlib.Path(tempfile.mkdtemp(prefix='vigia_no_carga_'))\n            try:\n                _f(_dir)\n                print('  VERDE  ' + _n)\n            except Exception as _e:\n                _fallos_totales += 1\n                print('  ROJA   ' + _n + ': ' + repr(_e))\n    raise SystemExit(1 if _fallos_totales else 0)\n",
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La vigía cumple estrictamente con los requisitos, las cuatro pruebas solicitadas y el arranque exacto definido en el material."
+ },
+ "avisos": [
+  "se pidio auditar a groq y no esta disponible: reviso gemini4",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "se pidio auditar a groq y no esta disponible: reviso gemini2",
+  "vueltas_dadas: 2"
+ ]
+}

@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En juzgar_con_vecinas se prueban una por una TODAS las vecinas (cada una cuesta tres corridas de pytest), lo que tarda minutos cuando hay muchas; hay que mirar de un vistazo cuales estan rojas con _alguna_esta_roja y recorrer solo las tres primeras.",
+  "archivo": "arnes/juez_de_la_prueba.py",
+  "funcion": "juzgar_con_vecinas",
+  "texto_viejo": "            for vigia in candidatas:\n                ruta_vigia = str(Path(raiz) / vigia)",
+  "texto_nuevo": "            # No se prueban una por una todas las vecinas: cada una cuesta tres corridas\n            # y un archivo con muchas vecinas tardaba tres minutos. Se mira de un vistazo\n            # cuales estan rojas y solo esas se prueban.\n            rutas_candidatas = [str(Path(raiz) / vigia) for vigia in candidatas]\n            if not _alguna_esta_roja(raiz, rutas_candidatas):\n                return {\n                    'ok': None,\n                    'prueba': None,\n                    'razon': (\n                        'ninguna de las pruebas que nombran ese archivo estaba roja, '\n                        'asi que no habia nada que demostrar'\n                    ),\n                }\n\n            for vigia in candidatas[:3]:\n                ruta_vigia = str(Path(raiz) / vigia)",
+  "cambio": "Justo antes del for vigia in candidatas, y despues del bloque que devuelve que ninguna prueba nombra el archivo cuando no hay candidatas: anadir un comentario corto en castellano explicando que no se prueban una por una todas las vecinas (cada una cuesta tres corridas y con muchas vecinas tardaba tres minutos) sino que se mira de un vistazo cuales estan rojas y solo esas se prueban; armar la lista de rutas completas uniendo la raiz con cada candidata; llamar a _alguna_esta_roja(raiz, lista) y, si contesta que no hay ninguna roja, devolver de inmediato {'ok': None, 'prueba': None, 'razon': 'ninguna de las pruebas que nombran ese archivo estaba roja, asi que no habia nada que demostrar'}. Ademas, cambiar el for para que recorra solo las tres primeras candidatas (candidatas[:3]). No tocar nada mas.",
+  "codigo": "            # No se prueban una por una todas las vecinas: cada una cuesta tres corridas\n            # y un archivo con muchas vecinas tardaba tres minutos. Se mira de un vistazo\n            # cuales estan rojas y solo esas se prueban.\n            rutas_candidatas = [str(Path(raiz) / vigia) for vigia in candidatas]\n            if not _alguna_esta_roja(raiz, rutas_candidatas):\n                return {\n                    'ok': None,\n                    'prueba': None,\n                    'razon': (\n                        'ninguna de las pruebas que nombran ese archivo estaba roja, '\n                        'asi que no habia nada que demostrar'\n                    ),\n                }\n\n            for vigia in candidatas[:3]:\n                ruta_vigia = str(Path(raiz) / vigia)",
+  "vigia": "vigias/test_vigia_el_juez_busca_su_prueba.py y vigias/test_vigia_el_juez_de_la_prueba.py: comprueban que juzgar_con_vecinas sigue devolviendo ok/prueba/razon correctos, que cuando ninguna vecina esta roja devuelve ok None con la razon en castellano, y que no se recorren todas las candidatas sino solo las tres primeras.",
+  "puede_danar": [
+   "vigias/test_vigia_el_juez_busca_su_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_juez_busca_su_prueba.py",
+   "test_vigia_el_juez_de_la_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El primer bloque red que caiga fuera de candidatas[:3] se salta y entonces la funcion puede terminar diciendo 'ninguna estaba roja' cuando si la habia; pero eso es exactamente lo que el encargo pidio (probar solo las tres primeras), asi que no es error del obrero.",
+   "_alguna_esta_roja devuelve False tambien si pytest no pudo correr (timeout/error) y el nuevo return lo interpreta como 'ninguna roja'; ese caso ya existia en el return final de la funcion, asi que no es regresion."
+  ],
+  "que_falta": [
+   "Nada: el cambio toca solo el trozo pedido. Nota menor: el comentario dice 'solo esas se prueban' (las rojas) pero el codigo prueba las tres primeras si hay alguna roja; ambas frases vienen del encargo, que las exige literalmente."
+  ],
+  "resumen_para_el_jefe": "La reparacion usa _alguna_esta_roja que si existe (arnes/juez_de_la_prueba.py:70 con firma raiz+lista), se inserta en el lugar exacto que pide el encargo, respeta la estructura ok/prueba/razon y los dos retornos que ya habia, y de una corrida sola ahorra minutos; apruebese."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (23424 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

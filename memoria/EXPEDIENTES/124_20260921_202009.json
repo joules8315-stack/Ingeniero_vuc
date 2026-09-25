@@ -1,0 +1,68 @@
+{
+  "orden": {
+    "id": "124",
+    "titulo": "La pieza de Codex usa tambien el detector de llaves de Big Pickle",
+    "origen": "medido el 2026-09-21 (A-43, SEGURIDAD): la vigia de la orden 48 atrapa que cuerpo/codex.py llama a Codex con una llave de mentira en el texto; privacidad.limpiar no reconoce esa forma y bigpickle._trae_llave si",
+    "repara": "la pieza de Codex podria mandar una llave a la cuenta personal de Julio (todavia no esta conectada a nada)",
+    "pieza": "cuerpo/codex.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "mismas condiciones que Big Pickle (A-45): el mismo filtro de llaves, no uno mas flojo",
+    "encargo": "En cuerpo/codex.py, en la funcion _revisar_privacidad, justo antes del primer try: del cuerpo de la funcion (el que hace from cuerpo import privacidad), agrega con la misma sangria: from cuerpo import bigpickle as _bp y, si _bp._trae_llave(texto) es verdadero, return texto, ['NO se manda a Codex: el texto trae algo con forma de llave (mismo filtro que Big Pickle).']. Es UN solo cambio. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "bigpickle._trae_llave falla cerrado: ante un error dice que si hay llave."
+  },
+  "huella": "02ef81ed5b9772fc",
+  "tipo": "no_aplico",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-21_202009_APROBADO_codex.py.json\nOBRERO deepseek -> AUDITOR juez de la prueba (programa)\n  aviso       : GPT-OSS 120B (Groq) no le cabe (25895 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : En _revisar_privacidad falta el filtro de Big Pickle antes del primer try, asi que un texto con forma de llave segun bigpickle no se corta y podria llegar a Codex.\n  toca        : cuerpo/codex.py funcion _revisar_privacidad\n  confianza   : media\n  VEREDICTO   : APROBADO\n  resumen     : el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA\n\nEL EQUIPO APROBO, pero no se pudo aplicar: HUMO: el cambio solo toca comentarios, no repara nada.\nLLAVE GUARDADA: se puede escribir en 47 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-21T20:20:09",
+  "analisis": {
+    "que_paso": "El equipo aprobo la orden 124 (deepseek escribe, juez de la prueba revisa) y el juez demostro que el cambio reparaba de verdad: la vigia estaba roja antes, quedo verde con el cambio y volvio a roja al deshacerlo. Pero al aplicar, el cazador de humo del aplicador lo rechazo con 'HUMO: el cambio solo toca comentarios, no repara nada', pese a que el cambio inserta codigo ejecutable real (import de bigpickle, un if y un return). Resultado: EQUIPO APROBO pero no_aplico; la reparacion valida se perdio.",
+    "causa_raiz": "El detector de humo _quitar_ruido de cuerpo/aplicador.py (gemelo de sin_ruido en skills/cazar_el_humo.py) no distingue un triple-comilla que ABRE documentacion de uno que la CIERRA. El ancla texto_viejo empieza con la ultima linea del docstring de _revisar_privacidad seguida del cierre; el detector lee ese cierre como si abriera documentacion (dentro_docstring=True) y se traga TODO el codigo real que viene despues (el try y los imports) en AMBOS textos. Asi texto_viejo y texto_nuevo se reducen a la misma unica linea y la comparacion de igualdad da un falso HUMO. El fallo no es del equipo ni del codigo propuesto: es la logica de deteccion de humo, que no soporta que el fragmento-ancla arranque dentro/al final de una documentacion.",
+    "donde": "cuerpo/aplicador.py, funcion interna _quitar_ruido (deteccion de docstring en lineas 134-137 y comprobacion HUMO en lineas 194-197); misma logica duplicada en skills/cazar_el_humo.py, funcion sin_ruido (lineas 38-43).",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "if tira.startswith('\\\"\\\"\\\"'):\n    if tira.count('\\\"\\\"\\\"') < 2:\n        dentro_docstring = True\n    continue"
+      },
+      {
+        "archivo": "cuerpo/aplicador.py",
+        "texto": "if texto_viejo and texto_nuevo:\n    if _quitar_ruido(texto_viejo) == _quitar_ruido(texto_nuevo):\n        _apuntar_log(False, archivo, funcion, \"cambio humo: solo toca comentarios\")\n        return False, \"HUMO: el cambio solo toca comentarios, no repara nada.\""
+      },
+      {
+        "archivo": "skills/cazar_el_humo.py",
+        "texto": "abre = re.match(r'^[rubf]*(\\\"\\\"\\\"|...)', tira)\nif abre:\n    marca = abre.group(1)\n    if tira.count(marca) < 2:\n        dentro_doc = marca\n    continue"
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_202009_APROBADO_codex.py.json",
+        "texto": "\"texto_nuevo\": \"...    from cuerpo import bigpickle as _bp\\n    if _bp._trae_llave(texto):\\n        return texto, ['NO se manda a Codex: el texto trae algo con forma de llave (mismo filtro que Big Pickle).']\\n\\n    try:\\n        from cuerpo import privacidad  # type: ignore\""
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-09-21_202009_APROBADO_codex.py.json",
+        "texto": "\"_juez_de_la_prueba\": \"antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1).\""
+      }
+    ],
+    "no_volver_a": "El cazador de humo no debe comparar fragmentos sueltos: un ancla que empieza tras el cierre de una documentacion confunde apertura con cierre y marca como humo un cambio que si repara.",
+    "tarea_nueva": {
+      "repara": "El cazador de humo del aplicador da falso HUMO cuando el ancla texto_viejo empieza justo con el cierre de una documentacion, porque toma ese cierre por una apertura y se traga el codigo real de ambos textos.",
+      "pieza": "cuerpo/aplicador.py (funcion _quitar_ruido y la comprobacion de humo de lineas 194-197)",
+      "razon": "El equipo entrego un cambio valido (probado rojo->verde->rojo) y la herramienta lo bloqueo por un defecto de la deteccion, no del codigo; ademas la logica esta duplicada en skills/cazar_el_humo.py.",
+      "encargo": "En cuerpo/aplicador.py, dejar de decidir HUMO comparando los fragmentos texto_viejo/texto_nuevo (un fragmento puede arrancar dentro de una documentacion y romper el conteo de comillas). En su lugar: leer el contenido COMPLETO del archivo, calcular el contenido que quedaria tras reemplazar texto_viejo por texto_nuevo, y comparar _quitar_ruido(contenido_actual) con _quitar_ruido(contenido_reemplazado); ambos son codigo completo y bien formado, no fragmentos. Solo si son iguales devolver el HUMO. Mantener identico criterio en skills/cazar_el_humo.py (sin_ruido) o centralizar una sola funcion. Agregar una vigia con este caso exacto: ancla que empieza con la ultima linea de una documentacion y su cierre, seguida de codigo real insertado; debe NO marcar humo.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "citas",
+    "motivo": "citas que no existen: [{\"archivo\": \"cuerpo/aplicador.py\", \"texto\": \"if tira.startswith('\\\\\\\"\\\\\\\"\\\\\\\"'):\\n    if tira.count('\\\\\\\"\\\\\\\"\\\\\\\"') < 2:\\n        dentro_docstring = True\\n    continue\", \"por_que\": \"no aparece literal\"}, {\"archivo\": \"cuerpo/aplicador.py\", \"texto\": \"if texto_viejo and texto_nuevo:\\n    if _quitar_ruido(texto_viejo) == _quitar_ruido(texto_nuevo):\\n        _apuntar_log(False, archivo, funcion, \\\"cambio humo: solo toca comentarios\\\")\\n        return False, \\\"HUMO: el cambio solo toca comentarios, n",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\124_20260921_202009.json"
+  }
+}

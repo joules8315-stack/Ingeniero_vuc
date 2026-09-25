@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py, en trabajar, el bloque A-38 llama al revisor de programa pero no deja constancia de que reviso y no encontro nada, asi que la IA revisora rechaza por 'no aparece en el material' nombres que el programa ya comprobo.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "        # A-38: el programa revisa primero, gratis; si frena no se paga la revision y el obrero recibe los motivos.\n        try:\n            import revisor_de_programa as _rp_antes\n            _fallos_prog = _rp_antes.revisar(propuesta, tarea) or []\n        except Exception:\n            _fallos_prog = []\n        if _fallos_prog and _vuelta < 3:\n            motivos_rechazo.extend(str(x) for x in _fallos_prog)\n            avisos_totales.append('el revisor de programa freno antes de pagar la revision: ' + '; '.join(str(x) for x in _fallos_prog)[:200])\n            continue",
+  "texto_nuevo": "        # A-38: el programa revisa primero, gratis; si frena no se paga la revision y el obrero recibe los motivos.\n        _prog_corrio = False\n        try:\n            import revisor_de_programa as _rp_antes\n            _fallos_prog = _rp_antes.revisar(propuesta, tarea) or []\n            _prog_corrio = True\n        except Exception:\n            _fallos_prog = []\n        if _fallos_prog and _vuelta < 3:\n            motivos_rechazo.extend(str(x) for x in _fallos_prog)\n            avisos_totales.append('el revisor de programa freno antes de pagar la revision: ' + '; '.join(str(x) for x in _fallos_prog)[:200])\n            continue\n        if _prog_corrio and not _fallos_prog and isinstance(propuesta, dict):\n            propuesta['_comprobado_por_programa'] = True",
+  "cambio": "Anadir _prog_corrio = False antes del try; poner _prog_corrio = True dentro del try tras calcular _fallos_prog; y tras el if _fallos_prog and _vuelta < 3 (con su continue) agregar el if que marca propuesta['_comprobado_por_programa'] = True cuando el programa corrio, no hubo fallos y propuesta es dict.",
+  "codigo": "        _prog_corrio = False\n        try:\n            import revisor_de_programa as _rp_antes\n            _fallos_prog = _rp_antes.revisar(propuesta, tarea) or []\n            _prog_corrio = True\n        except Exception:\n            _fallos_prog = []\n        if _fallos_prog and _vuelta < 3:\n            motivos_rechazo.extend(str(x) for x in _fallos_prog)\n            avisos_totales.append('el revisor de programa freno antes de pagar la revision: ' + '; '.join(str(x) for x in _fallos_prog)[:200])\n            continue\n        if _prog_corrio and not _fallos_prog and isinstance(propuesta, dict):\n            propuesta['_comprobado_por_programa'] = True",
+  "vigia": "Un test que llame a trabajar con una propuesta cuyos nombres existen en el paquete y compruebe que la propuesta devuelta trae '_comprobado_por_programa' a True y que el auditor no rechaza por 'no aparece en el material'.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La adición de la bandera _prog_corrio y el registro '_comprobado_por_programa' soluciona el diagnóstico sin introducir inventos ni romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (35016 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a groq y no esta disponible: reviso ",
+  "vueltas_dadas: 1"
+ ]
+}

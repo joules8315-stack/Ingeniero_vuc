@@ -1,0 +1,35 @@
+{
+  "orden": {
+    "id": "28",
+    "titulo": "La vigia de que un archivo pequeno se entrega entero",
+    "origen": "ronda perdida medida el 2026-09-20: al obrero le llegaron los primeros 40 renglones de un archivo de 103 y no pudo trabajar",
+    "repara": "el material se corta en trozos de 40 renglones y se eligen por parecido de palabras; en un archivo pequeno el trozo que mas se parece al encargo suele ser la portada, que es justo la parte que habla de todo y no sirve para nada. El obrero pregunto en vez de inventar, que esta bien, pero la ronda se pago igual",
+    "pieza": "vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py. Vigila la funcion completar_funciones de cerebro/router.py, que es la que decide que pedazos de codigo se le entregan al obrero. Prueba que si un pedazo sale de un archivo de 600 renglones o menos, se entrega ese archivo ENTERO y no solo el pedazo; y que si el archivo es mas largo se sigue entregando por pedazos como hoy. Monta los archivos de mentira en una carpeta temporal. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py",
+    "entrega_la_prueba": "si",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "crear": true
+  },
+  "huella": "9e614c8280a91938",
+  "tipo": "no_aplico",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-20_224534_APROBADO_test_vigia_un_archivo_pequeno_se_entrega_entero.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (36499 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (36679 letras, aguanta 19042) -> se le salta\n  diagnostico : El material trae la vigia a medias (solo el primer test) y el router.py actual no tiene la funcion entregar_enteros_los_cortos que la vigia debe probar, asi que la vigia nueva debe montar archivos de mentira en carpeta temporal y comprobar el comportamiento de completar_funciones sobre archivos cortos y largos.\n  toca        : vigias/test_vigia_un_archivo_pequeno_se_entrega_entero.py funcion ?\n  confianza   : media\n  VEREDICTO   : APROBADO\n  fallo       : El vigia deja 3 de 7 pruebas en ROJO con el router actual (corto-entero, dedup y limite exacto 600): el comportamiento 'archivo corto se entrega entero' todavia NO existe en completar_funciones, asi que esta vigia es la especificacion que la proxima reparacion debe implementar en cerebro/router.py; si se pretende sellar como vigia verde hoy, falta esa mitad\n  fallo       : Detalle menor: el test 'largo' documenta en el docstring que un pedazo dentro de una funcion larga lleva cabecera, pero los archivos de mentira no tienen funciones y esa rama (TOPE_FUNCION_ENTERA) nunca se ejercita; no rompe nada, solo es cobertura que no viaja\n  resumen     : La vigia nueva apunta a la funcion real (completar_funciones, que existe) en lugar del nombre fantasma de la vigia vieja, cumple exactamente lo pedido y no rompe vecinos, pero deja 3 pruebas rojas a la espera de que el router implemente 'archivo corto entregado entero'; eso es la mitad del arreglo y debe ir el sigiuiente encargo.\n\nEL EQUIPO APROBO, pero no se pudo aplicar: La propuesta no trae 'texto_viejo'.\nLLAVE GUARDADA: se puede escribir en 118 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-09-20T22:47:55",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: You've hit your session limit · resets 11:10pm (America/Bogota)\n",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\28_20260920_224755.json"
+  }
+}

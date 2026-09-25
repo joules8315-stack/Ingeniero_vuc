@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta al final de vigias/test_vigia_el_juez_busca_su_prueba.py una prueba que compruebe que con una prueba roja ajena el juez no frena, sino que dice que no puede saberlo",
+  "archivo": "vigias/test_vigia_el_juez_busca_su_prueba.py",
+  "funcion": "final del archivo (despues de test_con_el_arreglo_bueno_ok_es_verdadero_y_la_prueba_aparece)",
+  "texto_viejo": "    assert \"test_vigia_pieza.py\" in str(prueba), (\n        \"la entrada prueba tiene que nombrar al archivo test_vigia_pieza.py, que es la \"\n        \"prueba que cubre a pieza.py; sin eso hay que pagarle a una IA para saber algo \"\n        \"que se puede correr gratis\"\n    )",
+  "texto_nuevo": "    assert \"test_vigia_pieza.py\" in str(prueba), (\n        \"la entrada prueba tiene que nombrar al archivo test_vigia_pieza.py, que es la \"\n        \"prueba que cubre a pieza.py; sin eso hay que pagarle a una IA para saber algo \"\n        \"que se puede correr gratis\"\n    )\n\n\ndef test_con_una_prueba_roja_ajena_el_juez_no_frena(tmp_path):\n    raiz = _armar_raiz(tmp_path)\n\n    ajena = raiz / \"vigias\" / \"test_vigia_pieza_ajena.py\"\n    ajena.write_text(\n        '''# -*- coding: utf-8 -*-\n\nimport pieza\n\n\ndef test_la_pieza_ajena_nunca_se_cumple():\n    assert pieza.suma(1, 1) == 100\n''',\n        encoding=\"utf-8\",\n    )\n\n    resultado = juzgar_con_vecinas(\n        str(raiz),\n        \"pieza.py\",\n        PIEZA_QUE_RESTA,\n        PIEZA_QUE_MULTIPLICA,\n        dejar_el_cambio=False,\n    )\n\n    assert resultado.get(\"ok\") is not False, (\n        \"una prueba roja ajena no puede frenar trabajo bueno: si en la vecindad hay una \"\n        \"prueba roja que no tiene nada que ver con el cambio, el juez no puede tomarla \"\n        \"por suya y decir que el cambio no sirve; para eso ya esta el guardia que no deja \"\n        \"guardar con pruebas rojas\"\n    )",
+  "cambio": "Agregar al final del archivo una prueba nueva llamada test_con_una_prueba_roja_ajena_el_juez_no_frena que arma la raiz de mentira con _armar_raiz, escribe en la carpeta vigias de esa raiz un segundo archivo test_vigia_pieza_ajena.py que importa pieza y comprueba que suma(1,1)==100 (nunca se cumple), llama a juzgar_con_vecinas con la raiz, pieza.py, PIEZA_QUE_RESTA, PIEZA_QUE_MULTIPLICA y dejar_el_cambio=False, y comprueba con assert que resultado['ok'] no es False",
+  "codigo": "def test_con_una_prueba_roja_ajena_el_juez_no_frena(tmp_path):\n    raiz = _armar_raiz(tmp_path)\n\n    ajena = raiz / \"vigias\" / \"test_vigia_pieza_ajena.py\"\n    ajena.write_text(\n        '''# -*- coding: utf-8 -*-\n\nimport pieza\n\n\ndef test_la_pieza_ajena_nunca_se_cumple():\n    assert pieza.suma(1, 1) == 100\n''',\n        encoding=\"utf-8\",\n    )\n\n    resultado = juzgar_con_vecinas(\n        str(raiz),\n        \"pieza.py\",\n        PIEZA_QUE_RESTA,\n        PIEZA_QUE_MULTIPLICA,\n        dejar_el_cambio=False,\n    )\n\n    assert resultado.get(\"ok\") is not False, (\n        \"una prueba roja ajena no puede frenar trabajo bueno: si en la vecindad hay una \"\n        \"prueba roja que no tiene nada que ver con el cambio, el juez no puede tomarla \"\n        \"por suya y decir que el cambio no sirve; para eso ya esta el guardia que no deja \"\n        \"guardar con pruebas rojas\"\n    )",
+  "vigia": "vigias/test_vigia_el_juez_busca_su_prueba.py (la prueba nueva comprueba que con una prueba roja ajena el juez no frena)",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "vigias/test_vigia_el_juez_busca_su_prueba.py"
+  ],
+  "preguntas": [
+   "El material no muestra el nombre exacto de la constante del texto que devuelve la multiplicacion (solo aparece PIEZA_QUE_RESTA y PIEZA_QUE_SUMA); se asumio PIEZA_QUE_MULTIPLICA, hay que confirmarlo",
+   "El material no muestra la firma completa de juzgar_con_vecinas ni si acepta el parametro dejar_el_cambio; hay que confirmarlo",
+   "El material no muestra el cuerpo de _armar_raiz ni si crea la carpeta vigias dentro de la raiz; hay que confirmarlo"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "juez_de_la_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La prueba añadida cumple el diagnóstico, no usa elementos inexistentes y no rompe contratos ni vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (29432 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _vigias_verdes, tras cargar memoria/ORDENES.json, se asume que el JSON es una lista; si el archivo guarda un diccionario con la clave 'ordenes', el bucle for orden in ordenes itera sobre las claves y no sobre las ordenes, dejando 'esperando' vacio y frenando vigias que si estaban esperando.",
+  "archivo": "arnes/candado_cierre.py",
+  "funcion": "_vigias_verdes",
+  "texto_viejo": "                with open(ruta_ordenes, encoding=\"utf-8\") as f:\n                    ordenes = _json.load(f)\n                for orden in ordenes:",
+  "texto_nuevo": "                with open(ruta_ordenes, encoding=\"utf-8\") as f:\n                    ordenes = _json.load(f)\n                if isinstance(ordenes, dict):\n                    ordenes = ordenes.get('ordenes', [])\n                for orden in ordenes:",
+  "cambio": "Justo despues de la linea 'ordenes = _json.load(f)', con la misma sangria, agregar la linea: if isinstance(ordenes, dict): ordenes = ordenes.get('ordenes', []). Es UN solo cambio, en un solo archivo.",
+  "codigo": "                if isinstance(ordenes, dict):\n                    ordenes = ordenes.get('ordenes', [])",
+  "vigia": "Una vigia que llame a _vigias_verdes con memoria/ORDENES.json guardado como diccionario {'ordenes': [...]} y compruebe que las vigias listadas como pendientes NO frenan (no se devuelve False por 'frenan'), y que con una lista plana el comportamiento es el mismo de antes.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/revisor_de_programa.py",
+   "arnes/candado_archivo_del_veredicto.py",
+   "arnes/edit_gate_universal.py",
+   "ingeniero.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El cambio es local a _vigias_verdes y no modifica firmas ni comportamiento con lista plana; los archivos vecinos listados no se tocan.",
+   "Si ORDENES.json fuera un diccionario SIN la clave 'ordenes', .get('ordenes', []) deja 'esperando' vacio y 'frenan' pasa todo; no es peor que los casos fallidos previos y el encargo pidio exactamente esta linea."
+  ],
+  "que_falta": [
+   "Escribir la vigia que verifique el caso diccionario (nace roja antes de la reparacion) y que compruebe que la lista plana sigue funcionando igual"
+  ],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo que el encargo pedia, en la funcion correcta y con el texto literal verificado en el material: convierte el diccionario en la lista bajo 'ordenes' cuando hace falta y deja intacta la lista plana, sin tocar a ningun vecino."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

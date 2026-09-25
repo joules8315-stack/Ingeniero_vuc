@@ -1,0 +1,17 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-22_095500_RECHAZADO_conftest.py.json
+OBRERO deepseek -> AUDITOR grok47
+  aviso       : GPT-OSS 120B (Groq) no le cabe (26350 letras, aguanta 19042) -> se le salta
+  aviso       : PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).
+  aviso       : Big Pickle no contesto en 470.40000000000003s (timeout)
+  diagnostico : El parche anterior usaba request sin anadirlo a la firma del fixture, y excluia un archivo de grok inexistente en vez del nombre real de la prueba de la espera medida, dejando rotas las vigias del enchufe de grok y de la espera medida.
+  toca        : vigias/conftest.py funcion _nada_toca_lo_real
+  confianza   : media
+  VEREDICTO   : RECHAZADO
+  *** INVENTO: test_vigia_grok_enchufe.py -> SE DESCARTA
+  fallo       : _PRUEBAN_EL_ENCHUFE nombra test_vigia_grok_enchufe.py, que no existe. El enchufe real es test_vigia_el_enchufe_de_grok.py: llama grok.preguntar y solo falsifica Popen, asi que el fixture tapa preguntar y esa vigia queda rota.
+  fallo       : No excluye test_vigia_big_pickle_usa_su_espera_medida.py. Esa prueba llama bigpickle.preguntar y exige tiempos == [777.0]. El falso devuelve vacio y no llama a espera_de_bigpickle, asi que la espera medida sigue rota.
+  fallo       : El diagnostico decia justo eso (archivo de grok inexistente en vez del nombre real de la espera medida) y el parche lo repite.
+  resumen     : Rechazado: sigue excluyendo un archivo de grok que no existe y no salva la prueba de la espera medida, que es lo que el diagnostico pedia arreglar.
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.

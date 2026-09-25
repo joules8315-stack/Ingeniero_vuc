@@ -1,0 +1,27 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta el archivo vigia que prueba que capataz.recoger_lo_frenado devuelve la copia .FRENADO_POR_EL_GUARDIA a su sitio; nace rojo porque capataz.py aun no tiene esa funcion.",
+  "archivo": "vigias/test_vigia_el_pit_recoge_los_pedazos.py",
+  "texto_nuevo": "\"\"\"Vigia: el pit recoge los pedazos que el guardia aparto.\n\nCuando el guardia frena un guardado, la copia buena se aparta con el final\n.FRENADO_POR_EL_GUARDIA y hoy alguien la devuelve a su sitio a mano. El pit\ntiene que hacerlo solo (orden A-39 de Julio del 2026-09-20).\n\nEsta vigia nace ROJA porque cuerpo/capataz.py todavia no sabe recoger los\npedazos: no existe la funcion recoger_lo_frenado. En cuanto el pit la tenga,\nla vigia se pone verde sola.\n\"\"\"\n\nimport os\nimport sys\nimport json\n\n\nRAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nARNES = os.path.join(RAIZ, 'arnes')\nfor _ruta in (RAIZ, ARNES):\n    if _ruta not in sys.path:\n        sys.path.insert(0, _ruta)\n\nfrom cuerpo import capataz\n\n\ndef test_el_pit_sabe_recoger_lo_frenado():\n    \"\"\"Solo texto: capataz.py tiene que nombrar recoger_los_pedazos.\"\"\"\n    ruta_capataz = os.path.join(RAIZ, 'cuerpo', 'capataz.py')\n    with open(ruta_capataz, 'r', encoding='utf-8') as f:\n        texto = f.read()\n    assert 'recoger_los_pedazos' in texto, (\n        'El pit no recoge lo que el guardia aparto: cuerpo/capataz.py no nombra '\n        'recoger_los_pedazos, asi que el trabajo aprobado se queda tirado.'\n    )\n\n\ndef test_el_pit_devuelve_la_copia_buena_a_su_sitio(tmp_path):\n    \"\"\"Con una casa de mentira, recoger_lo_frenado tiene que reponer la copia buena.\"\"\"\n    casa = tmp_path\n\n    carpeta_sin_revisar = os.path.join(casa, 'memoria', 'trabajos_sin_revisar')\n    os.makedirs(carpeta_sin_revisar, exist_ok=True)\n    ruta_frenada = os.path.join(carpeta_sin_revisar, 'pieza.py.FRENADO_POR_EL_GUARDIA')\n    with open(ruta_frenada, 'w', encoding='utf-8') as f:\n        f.write('nuevo')\n\n    carpeta_equipo = os.path.join(casa, 'memoria', 'trabajos_del_equipo')\n    os.makedirs(carpeta_equipo, exist_ok=True)\n    ruta_aprobado = os.path.join(\n        carpeta_equipo, '2026-09-20_000000_APROBADO_pieza.py.json'\n    )\n    with open(ruta_aprobado, 'w', encoding='utf-8') as f:\n        json.dump({'propuesta': {'archivo': 'cuerpo/pieza.py'}}, f, ensure_ascii=False)\n\n    carpeta_cuerpo = os.path.join(casa, 'cuerpo')\n    os.makedirs(carpeta_cuerpo, exist_ok=True)\n    ruta_pieza = os.path.join(carpeta_cuerpo, 'pieza.py')\n    with open(ruta_pieza, 'w', encoding='utf-8') as f:\n        f.write('viejo')\n\n    orden = {'pieza': 'cuerpo/pieza.py'}\n    resultado = capataz.recoger_lo_frenado(orden, casa)\n\n    assert isinstance(resultado, dict) and resultado.get('ok') is True, (\n        'Si el pit no recoge la copia buena, el trabajo aprobado se pierde y hay '\n        'que ir a buscarlo a mano: recoger_lo_frenado no devolvio ok verdadero.'\n    )\n\n    with open(ruta_pieza, 'r', encoding='utf-8') as f:\n        contenido = f.read()\n    assert 'nuevo' in contenido, (\n        'Si el pit no recoge la copia buena, el trabajo aprobado se pierde y hay '\n        'que ir a buscarlo a mano: cuerpo/pieza.py sigue con el texto viejo.'\n    )\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple con el diagnóstico, crea el archivo solicitado sin inventar, sin romper vecinos ni contratos; aprobado."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (26967 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}

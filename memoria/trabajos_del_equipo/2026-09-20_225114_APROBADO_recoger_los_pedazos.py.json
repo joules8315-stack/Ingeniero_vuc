@@ -1,0 +1,37 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "La funcion recoger devuelve la copia apartada encima del archivo del proyecto sin comprobar antes si el archivo que hay ahora en el proyecto es mas nuevo que la copia apartada, con lo que puede pisar trabajo reciente.",
+  "archivo": "arnes/recoger_los_pedazos.py",
+  "funcion": "recoger",
+  "texto_viejo": "    try:\n        destino_entero = destino if os.path.isabs(destino) else os.path.join(raiz, destino)\n        carpeta_destino = os.path.dirname(destino_entero)\n        if carpeta_destino:\n            os.makedirs(carpeta_destino, exist_ok=True)\n        shutil.copyfile(origen, destino_entero)\n        os.replace(origen, origen + SUFIJO_RECOGIDO)",
+  "texto_nuevo": "    try:\n        destino_entero = destino if os.path.isabs(destino) else os.path.join(raiz, destino)\n        if os.path.isfile(destino_entero) and os.path.getmtime(destino_entero) > os.path.getmtime(origen):\n            return {\n                \"ok\": False,\n                \"destino\": destino,\n                \"razon\": (\n                    \"No se devuelve la copia apartada '\"\n                    + str(nombre)\n                    + \"': el archivo que hay ahora en el proyecto es mas nuevo que la copia. No se toca nada.\"\n                ),\n            }\n        carpeta_destino = os.path.dirname(destino_entero)\n        if carpeta_destino:\n            os.makedirs(carpeta_destino, exist_ok=True)\n        shutil.copyfile(origen, destino_entero)\n        os.replace(origen, origen + SUFIJO_RECOGIDO)",
+  "cambio": "Dentro del bloque try de recoger, justo despues de calcular destino_entero y antes de crear la carpeta destino, anadir la comprobacion de fecha: si el archivo de destino ya existe y su fecha de modificacion es mas nueva que la de la copia apartada, devolver ok en falso con la razon de que el archivo del proyecto es mas nuevo y no se toca nada. Si la copia apartada es la mas nueva (o el destino no existe), seguir igual que hoy. No se borra nada en ningun caso.",
+  "codigo": "        if os.path.isfile(destino_entero) and os.path.getmtime(destino_entero) > os.path.getmtime(origen):\n            return {\n                \"ok\": False,\n                \"destino\": destino,\n                \"razon\": (\n                    \"No se devuelve la copia apartada '\"\n                    + str(nombre)\n                    + \"': el archivo que hay ahora en el proyecto es mas nuevo que la copia. No se toca nada.\"\n                ),\n            }",
+  "vigia": "vigias/test_vigia_recoger_los_pedazos.py: montar un destino con fecha mas nueva que la copia apartada y comprobar que recoger devuelve ok en falso, que el archivo de destino queda intacto y que la copia apartada sigue sin el sufijo .RECOGIDO; y montar el caso contrario (copia apartada mas nueva) y comprobar que se devuelve igual que hoy.",
+  "puede_danar": [
+   "vigias/test_vigia_recoger_los_pedazos.py",
+   "arnes/recoger_los_pedazos.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_recoger_los_pedazos.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

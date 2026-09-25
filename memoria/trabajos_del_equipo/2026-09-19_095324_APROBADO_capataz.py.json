@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print) en cuerpo/capataz.py, que corre las ordenes en loop hasta una de las tres causas de parada.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "def tipo_de_fallo(salida):\n    \"\"\"Devuelve de que tipo fue el fallo, mirando el texto de salida.\"\"\"\n    if not isinstance(salida, str):\n        return \"otro\"\n    if salida.startswith(\"TOPE DE TIEMPO\"):\n        return \"tiempo\"\n    if \"EL GUARDIA NO DEJO GUARDAR\" in salida or \"NO SE GUARDO\" in salida:\n        return \"guardia\"\n    if \"EL EQUIPO NO APROBO\" in salida:\n        return \"no_aprobo\"\n    if \"no se pudo aplicar\" in salida:\n        return \"no_aplico\"\n    return \"otro\"",
+  "texto_nuevo": "def tipo_de_fallo(salida):\n    \"\"\"Devuelve de que tipo fue el fallo, mirando el texto de salida.\"\"\"\n    if not isinstance(salida, str):\n        return \"otro\"\n    if salida.startswith(\"TOPE DE TIEMPO\"):\n        return \"tiempo\"\n    if \"EL GUARDIA NO DEJO GUARDAR\" in salida or \"NO SE GUARDO\" in salida:\n        return \"guardia\"\n    if \"EL EQUIPO NO APROBO\" in salida:\n        return \"no_aprobo\"\n    if \"no se pudo aplicar\" in salida:\n        return \"no_aplico\"\n    return \"otro\"\n\n\ndef bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):\n    \"\"\"Corre las ordenes sola hasta que se para por una de las tres causas:\n    tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos\n    del mismo tipo en la misma pieza.\"\"\"\n    fallos_por_pieza_tipo = {}\n    while True:\n        if se_paso_del_tope():\n            return 'PARADO: TOPE DE GASTO (%.2f USD este mes)' % gastado_del_mes()\n        tanda = listas_para_correr()[:en_paralelo]\n        if not tanda:\n            pendientes = []\n            for orden in leer_lista():\n                if isinstance(orden, dict) and orden.get('estado') in ('pendiente', 'corriendo'):\n                    pendientes.append(str(orden.get('id', '')))\n            if not pendientes:\n                return 'PARADO: TODO HECHO'\n            return 'PARADO: NADA SE PUEDE CORRER (pendientes: ' + ','.join(pendientes) + ')'\n        for orden in tanda:\n            marcar_estado(\n                orden.get('id'),\n                'corriendo',\n                orden.get('paso_fallido') or '',\n                orden.get('fallos_seguidos') or 0,\n            )\n\n        def correr_una(orden):\n            try:\n                return lanzar_al_equipo(proyecto, orden, tope_segundos)\n            except Exception as e:\n                return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}\n\n        with concurrent.futures.ThreadPoolExecutor(max_workers=len(tanda)) as ejecutor:\n            resultados = list(ejecutor.map(correr_una, tanda))\n\n        for orden, resultado in zip(tanda, resultados):\n            orden_id = str(orden.get('id', ''))\n            if resultado.get('guardado'):\n                marcar_estado(orden.get('id'), 'hecha', '', 0)\n                aviso('HECHA ' + orden_id)\n            else:\n                salida = resultado.get('salida', '')\n                tipo = tipo_de_fallo(salida)\n                anotar_huella_fallida(orden, tipo)\n                fallos_seguidos = (orden.get('fallos_seguidos') or 0) + 1\n                marcar_estado(orden.get('id'), 'fallida', tipo, fallos_seguidos)\n                aviso('FALLIDA ' + orden_id + ' (' + tipo + ')')\n                pieza = orden.get('pieza')\n                clave = (pieza, tipo)\n                fallos_por_pieza_tipo[clave] = fallos_por_pieza_tipo.get(clave, 0) + 1\n                if fallos_por_pieza_tipo[clave] >= 3:\n                    return 'PARADO: 3 FALLOS DEL MISMO TIPO (' + tipo + ') EN ' + str(pieza)",
+  "cambio": "Agregar despues de tipo_de_fallo la funcion bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print) que corre las ordenes en loop hasta una de las tres causas de parada, con ThreadPoolExecutor y escritura de ORDENES.json solo en el hilo principal.",
+  "codigo": "def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):\n    \"\"\"Corre las ordenes sola hasta que se para por una de las tres causas:\n    tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos\n    del mismo tipo en la misma pieza.\"\"\"\n    fallos_por_pieza_tipo = {}\n    while True:\n        if se_paso_del_tope():\n            return 'PARADO: TOPE DE GASTO (%.2f USD este mes)' % gastado_del_mes()\n        tanda = listas_para_correr()[:en_paralelo]\n        if not tanda:\n            pendientes = []\n            for orden in leer_lista():\n                if isinstance(orden, dict) and orden.get('estado') in ('pendiente', 'corriendo'):\n                    pendientes.append(str(orden.get('id', '')))\n            if not pendientes:\n                return 'PARADO: TODO HECHO'\n            return 'PARADO: NADA SE PUEDE CORRER (pendientes: ' + ','.join(pendientes) + ')'\n        for orden in tanda:\n            marcar_estado(\n                orden.get('id'),\n                'corriendo',\n                orden.get('paso_fallido') or '',\n                orden.get('fallos_seguidos') or 0,\n            )\n\n        def correr_una(orden):\n            try:\n                return lanzar_al_equipo(proyecto, orden, tope_segundos)\n            except Exception as e:\n                return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}\n\n        with concurrent.futures.ThreadPoolExecutor(max_workers=len(tanda)) as ejecutor:\n            resultados = list(ejecutor.map(correr_una, tanda))\n\n        for orden, resultado in zip(tanda, resultados):\n            orden_id = str(orden.get('id', ''))\n            if resultado.get('guardado'):\n                marcar_estado(orden.get('id'), 'hecha', '', 0)\n                aviso('HECHA ' + orden_id)\n            else:\n                salida = resultado.get('salida', '')\n                tipo = tipo_de_fallo(salida)\n                anotar_huella_fallida(orden, tipo)\n                fallos_seguidos = (orden.get('fallos_seguidos') or 0) + 1\n                marcar_estado(orden.get('id'), 'fallida', tipo, fallos_seguidos)\n                aviso('FALLIDA ' + orden_id + ' (' + tipo + ')')\n                pieza = orden.get('pieza')\n                clave = (pieza, tipo)\n                fallos_por_pieza_tipo[clave] = fallos_por_pieza_tipo.get(clave, 0) + 1\n                if fallos_por_pieza_tipo[clave] >= 3:\n                    return 'PARADO: 3 FALLOS DEL MISMO TIPO (' + tipo + ') EN ' + str(pieza)",
+  "vigia": "Una prueba que llame a bucle con ordenes simuladas y compruebe que devuelve 'PARADO: TODO HECHO' cuando no quedan pendientes, 'PARADO: TOPE DE GASTO' cuando se_paso_del_tope es True, y 'PARADO: 3 FALLOS DEL MISMO TIPO' tras tres fallos iguales en la misma pieza.",
+  "puede_danar": [
+   "cuerpo/capataz.py::lanzar_al_equipo",
+   "cuerpo/capataz.py::marcar_estado",
+   "cuerpo/capataz.py::listas_para_correr",
+   "cuerpo/capataz.py::leer_lista",
+   "cuerpo/capataz.py::anotar_huella_fallida",
+   "cuerpo/capataz.py::tipo_de_fallo",
+   "memoria/ORDENES.json",
+   "memoria/HUELLAS_QUE_FALLARON.jsonl"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "HUELLAS_QUE_FALLARON.js"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La funcion bucle hace exactamente lo que pide el plan (tope de gasto, TODO HECHO / NADA SE PUEDE CORRER, y 3 fallos del mismo tipo por pieza), usa solo funciones que estan en el paquete, `concurrent.futures` ya esta importado en la linea 1 del archivo, y solo agrega despues de tipo_de_fallo sin tocar nada mas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19964 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

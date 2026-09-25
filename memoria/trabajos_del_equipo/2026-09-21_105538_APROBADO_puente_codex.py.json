@@ -1,0 +1,70 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En main, cuando el candado sale con codigo 0, se copia la salida tal cual sin intentar leerla como JSON para arreglar el hookSpecificOutput o mover additionalContext, y el texto de ayuda de arriba no explica ese porque.",
+  "archivo": "arnes/puente_codex.py",
+  "funcion": "main",
+  "texto_viejo": "    if codigo == 0:\n        _escribir_texto(salida_normal)\n        return 0",
+  "texto_nuevo": "    if codigo == 0:\n        _escribir_salida_arreglada(salida_normal, evento)\n        return 0",
+  "cambio": "En main, en el camino if codigo == 0, sustituir la copia directa _escribir_texto(salida_normal) por una llamada a una funcion nueva _escribir_salida_arreglada(salida_normal, evento) que: intente leer salida_normal como JSON; si es dict y el evento no esta vacio, si trae hookSpecificOutput que es dict y su hookEventName esta vacio o falta le ponga el evento recibido, y si no trae hookSpecificOutput pero trae additionalContext arriba lo quite de arriba y lo ponga dentro de un hookSpecificOutput nuevo con hookEventName igual al evento recibido, y escriba el resultado con _escribir_json; si no se puede leer como JSON o no es un dict o el evento esta vacio, copie la salida tal cual con _escribir_texto. Ademas anadir una linea al texto de ayuda de arriba del archivo explicando el porque.",
+  "codigo": "def _escribir_salida_arreglada(salida_normal, evento):\n    \"\"\"Arregla la salida del candado antes de copiarla. Nunca lanza.\n\n    Motivo: Codex solo entiende el contexto adicional si va dentro de\n    hookSpecificOutput con su hookEventName; si el candado lo deja arriba\n    o sin evento, se pierde. Si no se puede leer como JSON o el evento\n    esta vacio, se copia tal cual como antes.\n    \"\"\"\n    if not evento:\n        _escribir_texto(salida_normal)\n        return\n    try:\n        datos = json.loads(salida_normal)\n    except Exception:\n        _escribir_texto(salida_normal)\n        return\n    if not isinstance(datos, dict):\n        _escribir_texto(salida_normal)\n        return\n    hso = datos.get(\"hookSpecificOutput\")\n    if isinstance(hso, dict):\n        if not hso.get(\"hookEventName\"):\n            hso[\"hookEventName\"] = evento\n    elif \"additionalContext\" in datos:\n        contexto = datos.pop(\"additionalContext\")\n        datos[\"hookSpecificOutput\"] = {\n            \"hookEventName\": evento,\n            \"additionalContext\": contexto,\n        }\n    _escribir_json(datos)",
+  "vigia": "Una vigia que llame a main con un candado de mentira que saque por su salida normal un JSON con additionalContext arriba y compruebe que la salida del puente lo lleva dentro de hookSpecificOutput con hookEventName igual al evento; y otra que saque un JSON con hookSpecificOutput sin hookEventName y compruebe que se le pone el evento; y otra que saque texto que no es JSON y compruebe que se copia tal cual.",
+  "puede_danar": [
+   "arnes/puente_codex.py",
+   "los ganchos de Codex que llaman a este puente",
+   "arnes/candado_equipo.py",
+   "arnes/candado_supervisor.py",
+   "arnes/edit_gate_universal.py",
+   "arnes/candado_cierre.py",
+   "arnes/candado_contexto.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "cerebro/protocolo.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_fila_de_commits.py",
+   "vigias/test_vigia_fuera_de_casa.py",
+   "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py",
+   "vigias/test_vigia_no_se_aplica_lo_frenado.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_cierre.py",
+   "candado_contexto.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "protocolo.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "test_vigia_equipo_siempre.py",
+   "test_vigia_fila_de_commits.py",
+   "test_vigia_fuera_de_casa.py",
+   "test_vigia_lo_aprobado_se_guarda_al_momento.py",
+   "test_vigia_no_se_aplica_lo_frenado.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Redactar la linea de ayuda que se anade y retocar la linea 16 del texto de ayuda ('salida 0 -> copia tal cual la salida normal del candado'), porque despues del cambio ese texto queda falso para las salidas dict."
+  ],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo pedido: arregla el JSON de la salida 0 del puente de Codex sin inventar nada ni romper vecinos; lo unico que falta es redactar la linea de ayuda nueva y que la linea vieja que dice 'copia tal cual' no quede mintiendo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19048 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

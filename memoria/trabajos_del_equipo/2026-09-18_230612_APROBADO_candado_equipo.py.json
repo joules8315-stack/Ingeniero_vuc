@@ -1,0 +1,69 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_equipo.py la llamada os.replace usa la ruta relativa al proyecto sin anteponer la carpeta raiz, por lo que solo acierta si el programa se lanzo desde esa carpeta.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "os.replace(str(ruta), destino)",
+  "texto_nuevo": "os.replace(os.path.join(str(raiz), str(ruta)), destino)",
+  "cambio": "Sustituir la llamada os.replace(str(ruta), destino) por os.replace(os.path.join(str(raiz), str(ruta)), destino), usando la variable raiz que ya es el primer parametro de la funcion. No tocar nada mas.",
+  "codigo": "os.replace(os.path.join(str(raiz), str(ruta)), destino)",
+  "vigia": "Una vigia que ejecute el comando equipo sobre DMM desde C:\\Ingeniero_VUC y compruebe que el archivo destino se crea en la carpeta del proyecto y no falla por no encontrar la ruta relativa.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/portero.py",
+   "arnes/revisor_de_programa.py",
+   "arnes/via_canonica.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "autorizacion.py",
+   "candado_diagnostico.py",
+   "candado_protocolo.py",
+   "candado_prueba_real.py",
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "portero.py",
+   "revisor_de_programa.py",
+   "test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "via_canonica.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Cambio de una sola linea dentro de arnes/candado_equipo.py usando la variable raiz que ya es el primer parametro de la funcion; no altera firmas ni importaciones, asi que los 20 vecinos declarados quedan intactos."
+  ],
+  "que_falta": [
+   "Solo el paso procesal: correr la vigia propuesta (prueba interna real del comando equipo sobre DMM desde C:\\Ingeniero_VUC) antes de pedirle a Julio que pruebe con sus ojos."
+  ],
+  "resumen_para_el_jefe": "La reparacion coincide letra por letra con lo que pide el paquete: una sola linea, el texto viejo y el nuevo son los literales del material, usa raiz que ya existe como primer parametro, no inventa nada y no toca nada mas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19085 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

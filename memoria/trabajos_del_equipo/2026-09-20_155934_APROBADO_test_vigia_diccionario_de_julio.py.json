@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Las cinco lineas finales de test_no_hace_falta_mirar_fuera_de_esta_carpeta (la llamada a _aparte, el bucle de tres parejas, el aprender y el assert de diccionario vacio) estan pegadas al final de la prueba nueva y la ponen roja; hay que quitarlas de ahi.",
+  "archivo": "vigias/test_vigia_diccionario_de_julio.py",
+  "funcion": "test_no_hace_falta_mirar_fuera_de_esta_carpeta",
+  "texto_viejo": "    sitios = diccionario.buscar(\"los informes no cargan\")\n    assert sitios[0].get(\"funcion\") == \"enterApp\", (\n        \"el primer sitio que sale no es enterApp: la prueba no esta mirando donde debe\")\n    _aparte(tmp_path, monkeypatch)\n    for archivo, funcion in ((\"\", \"enterApp\"), (\"app_web.html\", \"\"), (\"\", \"\")):\n        diccionario.aprender(\"algo que paso\", archivo, funcion, 1, \"foto_informe\")\n    assert not diccionario.todo(), (\n        \"guardo una pareja sin sitio probado. El diccionario solo vale si cada pareja salio de \"\n        \"una causa DEMOSTRADA; si acepta suposiciones, envenena al repartidor\")",
+  "texto_nuevo": "    sitios = diccionario.buscar(\"los informes no cargan\")\n    assert sitios[0].get(\"funcion\") == \"enterApp\", (\n        \"el primer sitio que sale no es enterApp: la prueba no esta mirando donde debe\")\n",
+  "cambio": "Quitar de test_no_hace_falta_mirar_fuera_de_esta_carpeta las cinco lineas finales (la llamada a _aparte, el bucle de tres parejas, el aprender y el assert de diccionario vacio), dejando la prueba terminada en su assert del sitio enterApp. Solo se quitan de aqui; no se devuelven a test_solo_guarda_lo_PROBADO en este encargo.",
+  "codigo": "    sitios = diccionario.buscar(\"los informes no cargan\")\n    assert sitios[0].get(\"funcion\") == \"enterApp\", (\n        \"el primer sitio que sale no es enterApp: la prueba no esta mirando donde debe\")\n",
+  "vigia": "Ejecutar vigias/test_vigia_diccionario_de_julio.py y comprobar que test_no_hace_falta_mirar_fuera_de_esta_carpeta pasa y que test_solo_guarda_lo_PROBADO sigue sin cuerpo (pendiente de otro encargo).",
+  "puede_danar": [
+   "arnes/diccionario.py",
+   "vigias/test_vigia_diccionario_de_julio.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "diccionario.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion elimina las lineas sobrantes de la prueba, cumpliendo el encargo sin introducir errores."
+ },
+ "avisos": [
+  "Big Pickle no contesto en 300s (timeout)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "bigpickle no estaba: revisa gemini4 con solo lo necesario (A-38)",
+  "vueltas_dadas: 1"
+ ]
+}
