@@ -1,5 +1,23 @@
 [
   {
+    "id": "R11b",
+    "titulo": "El candado del ancla debe buscar el trozo, no contar renglones",
+    "origen": "probado a mano el 2026-09-25: el candado freno prosa normal, se afino, y quedo demasiado suelto",
+    "repara": "arnes/candado_ancla.py intenta contar renglones, pero cuando el texto llega a la orden la terminal YA los junto en uno solo, asi que contar renglones nunca detecta el problema",
+    "pieza": "arnes/candado_ancla.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "el candado es la ley de Julio del ancla de un renglon; si no frena de verdad, es peor que no tenerlo porque da falsa seguridad",
+    "encargo": "Quita del candado la comprobacion de contar renglones y deja SOLO esta, que es la que sirve: si el texto de la orden trae un trozo que parece codigo y ese trozo no aparece tal cual, exactamente una vez, en alguno de los archivos que el texto nombra, se frena con codigo 2 y se explica en palabras simples que el ancla tiene que ser un renglon copiado tal cual del archivo, unico, y como comprobarlo. Si aparece una sola vez, pasa en silencio con codigo 0. Compara quitando solo los espacios de los extremos. Que siga respetando arnes/autorizacion.py. Deja escrito en el docstring el error de contar renglones para que nadie lo repita. Comprobacion: con un trozo copiado tal cual de un archivo del proyecto deja pasar; con un trozo que no existe alli, frena.",
+    "vigia": "vigias/test_vigia_el_ancla_es_un_renglon_exacto.py",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "R11",
     "titulo": "El ancla del encargo es UN renglon exacto, y lo vigila un candado",
     "origen": "Julio, 2026-09-25: que no dependa de tu memoria, que sea un programa el que te lo recuerde",
