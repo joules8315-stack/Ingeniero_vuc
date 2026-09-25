@@ -47,6 +47,22 @@ def _archivos_py(texto):
 
 
 def _trozos_codigo(texto):
+    """Saca los trozos que parecen codigo de un texto.
+
+    FRENO FALSO (2026-09-25, el mismo dia que se creo): antes bastaba un
+    parentesis suelto o un signo de igualdad suelto para tomar un trozo por
+    codigo, asi que una frase normal en espanol que menciona un archivo entre
+    parentesis ya se tomaba por codigo y frenaba una orden buena.
+
+    Por que se afino: un parentesis o una igualdad no son senales de que
+    empiece una instruccion; aparecen en cualquier frase. Se quitaron esas dos
+    senales y ahora un trozo cuenta como codigo SOLO si empieza por una palabra
+    reservada del lenguaje que abre una instruccion, o si termina con el signo
+    de dos puntos.
+
+    NO VOLVER A ENSANCHAR: no anadir senales sueltas como parentesis, igualdad,
+    comas ni comillas; eso vuelve a frenar ordenes buenas.
+    """
     trozos = []
     for linea in texto.splitlines():
         limpia = linea.strip()
@@ -55,14 +71,8 @@ def _trozos_codigo(texto):
         if limpia.endswith(":"):
             trozos.append(limpia)
             continue
-        if "=" in limpia:
-            trozos.append(limpia)
-            continue
-        if "(" in limpia or ")" in limpia:
-            trozos.append(limpia)
-            continue
         primera = limpia.split()[0]
-        if primera in ("if", "def", "for", "return", "with", "import"):
+        if primera in ("if", "elif", "else", "def", "class", "for", "while", "return", "with", "import", "from", "try", "except", "finally", "raise", "yield", "assert", "pass", "break", "continue", "del", "global", "nonlocal", "lambda", "async", "await"):
             trozos.append(limpia)
     return trozos
 
