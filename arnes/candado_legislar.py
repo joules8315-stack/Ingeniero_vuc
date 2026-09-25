@@ -190,7 +190,7 @@ def marcar(texto, resolucion, motivo=""):
 
 def pendientes():
     """Instrucciones que aun no estan legisladas (ni marcadas)."""
-    return [e for e in _leer().values() if e.get("estado") == "pendiente"]
+    return [e for e in _leer().values() if e.get("estado") == "pendiente" and parece_una_orden(e.get("texto", ""))]
 
 
 def main():
