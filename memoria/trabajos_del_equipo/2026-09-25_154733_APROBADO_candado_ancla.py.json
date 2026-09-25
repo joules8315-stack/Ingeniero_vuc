@@ -1,0 +1,58 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El candado marca como codigo cualquier linea con parentesis o igualdad, y una frase normal en espanol que menciona un archivo entre parentesis frena una orden buena.",
+  "archivo": "arnes/candado_ancla.py",
+  "funcion": "_trozos_codigo",
+  "texto_viejo": "def _trozos_codigo(texto):\n    trozos = []\n    for linea in texto.splitlines():\n        limpia = linea.strip()\n        if not limpia:\n            continue\n        if limpia.endswith(\":\"):\n            trozos.append(limpia)\n            continue\n        if \"=\" in limpia:\n            trozos.append(limpia)\n            continue\n        if \"(\" in limpia or \")\" in limpia:\n            trozos.append(limpia)\n            continue\n        primera = limpia.split()[0]\n        if primera in (\"if\", \"def\", \"for\", \"return\", \"with\", \"import\"):\n            trozos.append(limpia)\n    return trozos",
+  "texto_nuevo": "def _trozos_codigo(texto):\n    \"\"\"Saca los trozos que parecen codigo de un texto.\n\n    FRENO FALSO (2026-09-25, el mismo dia que se creo): antes bastaba un\n    parentesis suelto o un signo de igualdad suelto para tomar un trozo por\n    codigo, asi que una frase normal en espanol que menciona un archivo entre\n    parentesis ya se tomaba por codigo y frenaba una orden buena.\n\n    Por que se afino: un parentesis o una igualdad no son senales de que\n    empiece una instruccion; aparecen en cualquier frase. Se quitaron esas dos\n    senales y ahora un trozo cuenta como codigo SOLO si empieza por una palabra\n    reservada del lenguaje que abre una instruccion, o si termina con el signo\n    de dos puntos.\n\n    NO VOLVER A ENSANCHAR: no anadir senales sueltas como parentesis, igualdad,\n    comas ni comillas; eso vuelve a frenar ordenes buenas.\n    \"\"\"\n    trozos = []\n    for linea in texto.splitlines():\n        limpia = linea.strip()\n        if not limpia:\n            continue\n        if limpia.endswith(\":\"):\n            trozos.append(limpia)\n            continue\n        primera = limpia.split()[0]\n        if primera in (\"if\", \"elif\", \"else\", \"def\", \"class\", \"for\", \"while\", \"return\", \"with\", \"import\", \"from\", \"try\", \"except\", \"finally\", \"raise\", \"yield\", \"assert\", \"pass\", \"break\", \"continue\", \"del\", \"global\", \"nonlocal\", \"lambda\", \"async\", \"await\"):\n            trozos.append(limpia)\n    return trozos",
+  "cambios": "",
+  "cambio": "En _trozos_codigo: quitar las senales del parentesis suelto y de la igualdad suelta; dejar como codigo solo el trozo que empieza por una palabra reservada que abre instruccion o el que termina en dos puntos; y dejar escrito en el docstring el freno falso y por que se afino.",
+  "codigo": "def _trozos_codigo(texto):\n    \"\"\"Saca los trozos que parecen codigo de un texto.\n\n    FRENO FALSO (2026-09-25, el mismo dia que se creo): antes bastaba un\n    parentesis suelto o un signo de igualdad suelto para tomar un trozo por\n    codigo, asi que una frase normal en espanol que menciona un archivo entre\n    parentesis ya se tomaba por codigo y frenaba una orden buena.\n\n    Por que se afino: un parentesis o una igualdad no son senales de que\n    empiece una instruccion; aparecen en cualquier frase. Se quitaron esas dos\n    senales y ahora un trozo cuenta como codigo SOLO si empieza por una palabra\n    reservada del lenguaje que abre una instruccion, o si termina con el signo\n    de dos puntos.\n\n    NO VOLVER A ENSANCHAR: no anadir senales sueltas como parentesis, igualdad,\n    comas ni comillas; eso vuelve a frenar ordenes buenas.\n    \"\"\"\n    trozos = []\n    for linea in texto.splitlines():\n        limpia = linea.strip()\n        if not limpia:\n            continue\n        if limpia.endswith(\":\"):\n            trozos.append(limpia)\n            continue\n        primera = limpia.split()[0]\n        if primera in (\"if\", \"elif\", \"else\", \"def\", \"class\", \"for\", \"while\", \"return\", \"with\", \"import\", \"from\", \"try\", \"except\", \"finally\", \"raise\", \"yield\", \"assert\", \"pass\", \"break\", \"continue\", \"del\", \"global\", \"nonlocal\", \"lambda\", \"async\", \"await\"):\n            trozos.append(limpia)\n    return trozos",
+  "vigia": "Una prueba que meta una frase normal en espanol que menciona un archivo entre parentesis (por ejemplo: 'revisa el archivo (candado_ancla.py) antes de seguir') y compruebe que _trozos_codigo NO la devuelve; y otra que meta una linea que empieza por 'def ' o que termina en ':' y compruebe que SI la devuelve.",
+  "puede_danar": [
+   "arnes/candado_ancla.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "'cuerpo/codex.py' aparece en la seccion A QUIEN PUEDE DANAR del contrato pero queda marcado como _fuera_del_paquete y no revisado; el cambio es local a _trozos_codigo y el encargo ordenaba exactamente este estrechamiento, asi que no lo invalida"
+  ],
+  "que_falta": [
+   "Confirmar en la prueba que codigo real que antes frenaba y ahora se escape (p.ej. una asignacion suelta) no produces un falso negativo; el encargo ordenaba quitar esa senal explicitamente, asi que es aceptable, pero la prueba de vigia podria cubrir ese borde"
+  ],
+  "resumen_para_el_jefe": "El cambio quita las dos senales que el encargo prohibia, deja solo palabras reservadas o dos puntos, anade el docstring de freno falso y trae la prueba pedida; hace exactamente lo solicitado, nada mas"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el juez de la prueba lo freno antes de pagar la revision: antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba no paso (codigo 1). Al deshacer el cambio: la prueba no paso (codigo 1).",
+  "el juez de la prueba lo freno antes de pagar la revision: antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba no paso (codigo 1). Al deshacer el cambio: la prueba no paso (codigo 1).",
+  "el juez de la prueba lo freno antes de pagar la revision: antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba no paso (codigo 1). Al deshacer el cambio: la prueba no paso (codigo 1).",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "todas las gratis duermen: revisa bigpickle (A-32)",
+  "vueltas_dadas: 4"
+ ]
+}

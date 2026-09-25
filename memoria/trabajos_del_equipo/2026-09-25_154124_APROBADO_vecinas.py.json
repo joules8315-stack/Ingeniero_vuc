@@ -1,0 +1,61 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En arnes/vecinas.py, _vecinas_por_stem devuelve None en cuanto un archivo cambiado no tiene vigia, lo que dispara la bateria completa de 245 vigias y mata el guardado por tiempo.",
+  "archivo": "arnes/vecinas.py",
+  "funcion": "_vecinas_por_stem",
+  "texto_viejo": "def _vecinas_por_stem(\n    cambiados: list[str], raiz: str, vigias: list[str]",
+  "texto_nuevo": "def _vecinas_por_stem(\n    cambiados: list[str], raiz: str, vigias: list[str]",
+  "cambios": [
+   {
+    "texto_viejo": "def _vecinas_por_stem(\n    cambiados: list[str], raiz: str, vigias: list[str]",
+    "texto_nuevo": "def _vecinas_por_stem(\n    cambiados: list[str], raiz: str, vigias: list[str]"
+   },
+   {
+    "texto_viejo": "            return None",
+    "texto_nuevo": "            continue"
+   }
+  ],
+  "cambio": "En _vecinas_por_stem, sustituir el 'return None' que esta dentro del bucle (tras el comentario de que por seguridad se corre toda la bateria) por 'continue', para que un archivo sin vigia no aporte vecinas pero no aborte la seleccion; y anadir al docstring la razon: el guardado no puede morir por tiempo y tirar trabajo bueno. Ademas, al final de la funcion, si no se encontro ninguna vecina para ningun archivo, devolver None.",
+  "codigo": "def _vecinas_por_stem(\n    cambiados: list[str], raiz: str, vigias: list[str]\n) -> list[str] | None:\n    \"\"\"Vecinas por stem de cada archivo de codigo cambiado.\n\n    Si un archivo cambiado no aparece mencionado en ninguna vigia, ese\n    archivo simplemente no aporta vecinas: NO se devuelve None, porque\n    None manda correr las 245 vigias enteras (28.355 renglones) con tope\n    de 15 minutos y el guardado muere por tiempo, tirando trabajo ya\n    aprobado. Solo se devuelve None si NINGUN archivo cambiado tiene\n    vecinas, porque ahi no hay nada que probar y vale correr todo.\n    \"\"\"\n    encontradas: list[str] = []\n    for ruta in cambiados:\n        stem = ruta.rsplit(\"/\", 1)[-1].rsplit(\".\", 1)[0]\n        menciones = [v for v in vigias if stem in v]\n        if not menciones:\n            # Este archivo no tiene vigia que lo mencione: no aporta\n            # vecinas, pero tampoco puede matar el guardado por tiempo.\n            continue\n        encontradas.extend(menciones)\n    if not encontradas:\n        return None\n    return encontradas",
+  "vigia": "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py::test_un_archivo_sin_vigia_no_manda_correr_las_245 comprueba que con cambiados=['pieza_conocida.py','pieza_sin_vigia.py'] y vigias=['test_vigia_de_prueba.py'] el resultado NO es None.",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "vigias/test_vigia_vecinas.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "guardia_de_guardado.py",
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "test_vigia_vecinas.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa, no rompe vecinos y respeta contratos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.; NO HACE LO QUE SE PIDIO: el encargo habla de '_obliga_bateria_completa' y esa palabra no ap",
+  "el revisor de programa freno antes de pagar la revision: NO CARGA: el archivo se queda sin arrancar. Primera razon: EL ARCHIVO NO CARGA: error de sintaxis en la linea 249; NO HACE LO QUE SE PIDIO: el encargo habla de '_obliga_bateria_completa' y esa palabra",
+  "vueltas_dadas: 4"
+ ]
+}

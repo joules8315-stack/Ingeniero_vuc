@@ -1,0 +1,86 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El material no trae el procedimiento ni los registros para tramitar las cinco instrucciones pendientes, y el texto de esas instrucciones esta truncado a 120 caracteres en el listar.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "main",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO: no se puede aplicar ningun cambio porque falta el procedimiento autorizado y los registros de las cinco instrucciones pendientes.",
+  "codigo": "",
+  "vigia": "NO_ENCONTRADO",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: cual es el procedimiento autorizado para registrar contrato, tabla, matriz y vigia de una instruccion pendiente?",
+   "PREGUUNTA_REQUERIDA: donde estan los registros (contrato, tabla, matriz, vigia) que hay que comprobar como evidencia existente?",
+   "PREGUUNTA_REQUERIDA: cual es el texto completo de las cinco instrucciones pendientes que devuelve 'python arnes/candado_legislar.py listar'?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "No repara nada: `cambios: []`, `codigo: \"\"`, `texto_viejo` y `texto_nuevo` vacios. Es un expediente vacio, no una reparacion.",
+   "No pide el archivo que el propio paquete nombro como faltante. El paquete dice literalmente `NECESITO_LEER: arnes/candado_legislar.py`, y la propuesta llega a concluir que falta el procedimiento y los registros, pero `arnes/candado_legislar.py` NO esta en su lista `_fuera_del_paquete` ni en ninguna de sus tres preguntas. El archivo que解锁 el problema es el unico que no pide.",
+   "Las tres `PREGUNTA_REQUERIDA` van dirigidas a Julio, pero ninguna de ellas es una decision suya: son falta de material. La falta de material se resuelve pidiendo el paquete otra vez con ese archivo, no consultando al jefe. Tal como esta, la vuelta termina sin avanzar y se gasta una iteracion del loop.",
+   "Afirma un dato que no esta en el material: 'el texto de esas instrucciones esta truncado a 120 caracteres'. El paquete solo dice que esta truncado y que no se invente; el 120 no sale de ninguna parte. Es un numero sin respaldo en un expediente que se apoya en no inventar.",
+   "`vigia: \"NO_ENCONTRADO\"` y sin contrato, tabla ni matriz: aunque no haya pieza, el encargo pedia responder por cada una de las cinco con evidencia o con 'no aplica'. No hay ni una linea de respuesta, ni una orden nueva, ni un `NO_ENCONTRADO` con la lista de las cinco."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno directo: al no cambiar codigo no se rompe a `arnes/autorizacion.py`, `arnes/candado_cierre.py`, `arnes/candados_medicion.py` ni a las seis vigias listadas. El riesgo es de loop, no de codigo: se atasca sin producir nada accionable y las cinco instrucciones pendientes siguen igual."
+  ],
+  "que_falta": [
+   "La peticion en el formato del paquete: `NECESITO_LEER: arnes/candado_legislar.py / conocer el procedimiento y el origen de las instrucciones / como se registra contrato, tabla, matriz y vigia / dar por atendida una obligacion sin respaldo`.",
+   "El texto completo de las cinco instrucciones, o la constancia medida de que no se puede recuperar del material.",
+   "Una linea por cada una de las cinco: registrada, ya existe con evidencia, o no aplica con evidencia. Hoy no hay ninguna.",
+   "Si el archivo no se puede volver a pedir, una tarea nueva para el director que lo reclame, en vez de un expediente sin cuerpo."
+  ],
+  "resumen_para_el_jefe": "El diagnostico es honesto pero el expediente esta vacio: no cambia nada y, lo grave, pide todo menos el unico archivo que el paquete senalo como faltante, asi que la vuelta se pierde; hay que rehacerlo pidiendo `arnes/candado_legislar.py` en el formato del paquete."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19504 a 13072 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "todas las gratis duermen: revisa bigpickle (A-32)",
+  "vueltas_dadas: 4"
+ ]
+}

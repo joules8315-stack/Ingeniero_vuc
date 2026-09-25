@@ -20,6 +20,16 @@ cd C:\Ingeniero_VUC; findstr /c:"<el renglon>" <archivo>
 ```
 **No depende de la memoria de nadie:** lo frena `arnes/candado_ancla.py` (orden R11).
 
+## COMO SE LE HABLA AL EQUIPO (aprendido el 2026-09-25, son reglas)
+1. **El ancla es UN renglon** (ley de arriba, con su candado).
+2. **No atar las manos.** Dos rechazos seguidos salieron de encargos con "no toques esto". Se dice el
+   objetivo y se deja libertad de escribir el archivo entero; sale a la primera.
+3. **Si el material no trae la pieza, se pega el trozo DENTRO del encargo.** Tres intentos fallaron
+   por eso el mismo dia; al pegarlo, salio de una.
+4. **Lo "gratis" es lo mas caro en tiempo.** El de pago contesta en 5 s por centavos; el gratis lento
+   se llevo 26 horas fallando 4 de cada 10 veces (`memoria/BIGPICKLE.log`). En trabajos cortos no se
+   espera diez minutos por no gastar un centavo.
+
 ## LA REGLA QUE MANDA SOBRE TODAS
 **No se lee el proyecto. Se lee el PAQUETE MINIMO.**
 
