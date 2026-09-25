@@ -46,3 +46,42 @@ def test_un_mensaje_del_asistente_despues_del_ultimo_user(tmp_path):
         {"type": "assistant", "text": "Un solo mensaje escrito"},
     ])
     assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 1
+
+
+def test_aviso_de_candado_con_ismeta_no_abre_turno(tmp_path):
+    # 2026-09-25: comprobado en la conversacion real que los avisos de la maquina
+    # llegan como renglones de tipo user y reiniciaban la cuenta, dejando el freno muerto.
+    ruta = tmp_path / "conversacion.jsonl"
+    _escribir_jsonl(ruta, [
+        {"type": "user", "text": "Julio pregunta algo"},
+        {"type": "assistant", "text": "Primer mensaje escrito"},
+        {"type": "user", "text": "Aviso del candado", "isMeta": True},
+        {"type": "assistant", "text": "Segundo mensaje escrito"},
+    ])
+    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 2
+
+
+def test_aviso_de_tarea_de_fondo_con_promptsource_system_no_abre_turno(tmp_path):
+    # 2026-09-25: comprobado en la conversacion real que los avisos de la maquina
+    # llegan como renglones de tipo user y reiniciaban la cuenta, dejando el freno muerto.
+    ruta = tmp_path / "conversacion.jsonl"
+    _escribir_jsonl(ruta, [
+        {"type": "user", "text": "Julio pregunta algo"},
+        {"type": "assistant", "text": "Primer mensaje escrito"},
+        {"type": "user", "text": "Aviso de tarea de fondo", "promptSource": "system"},
+        {"type": "assistant", "text": "Segundo mensaje escrito"},
+    ])
+    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 2
+
+
+def test_respuesta_de_herramienta_no_abre_turno(tmp_path):
+    # 2026-09-25: comprobado en la conversacion real que los avisos de la maquina
+    # llegan como renglones de tipo user y reiniciaban la cuenta, dejando el freno muerto.
+    ruta = tmp_path / "conversacion.jsonl"
+    _escribir_jsonl(ruta, [
+        {"type": "user", "text": "Julio pregunta algo"},
+        {"type": "assistant", "text": "Primer mensaje escrito"},
+        {"type": "user", "content": [{"type": "tool_result", "content": "salida"}]},
+        {"type": "assistant", "text": "Segundo mensaje escrito"},
+    ])
+    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 2
