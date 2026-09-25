@@ -1,0 +1,57 @@
+{
+ "obrero": "gemini4",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "La lógica para detectar si un texto es una orden de Julio está mal implementada. Separa las comprobaciones de palabras comunes y señales de máquina, y asegura que las órdenes de Julio sin acentos sean reconocidas.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "parece_una_orden",
+  "texto_viejo": "    return True",
+  "texto_nuevo": "    # (1) si el texto NO tiene ninguna palabra corriente del espanol (por ejemplo que, de, la, el, los, las, un, una, para, con, por, donde, como, esta, esto, hay, no, se, mas, todo) y tampoco tiene vocales acentuadas, entonces no lo escribio Julio: return False.\n    palabras_corrientes = ['que', 'de', 'la', 'el', 'los', 'las', 'un', 'una', 'para', 'con', 'por', 'donde', 'como', 'esta', 'esto', 'hay', 'no', 'se', 'mas', 'todo']\n    acentos = 'áéíóúÁÉÍÓÚ'\n    if not any(c in texto for c in acentos) and not any(palabra in texto.lower() for palabra in palabras_corrientes):\n        return False\n    # (2) si el texto contiene alguna de estas senales de maquina: the user, task title, markdown, tool chatter, codex, catch-up, entonces tampoco es de Julio: return False.\n    senales_maquina = ['the user', 'task title', 'markdown', 'tool chatter', 'codex', 'catch-up']\n    if any(palabra in texto.lower() for palabra in senales_maquina):\n        return False\n    return True",
+  "cambio": "Se modifica la lógica de la función `parece_una_orden` para separar las comprobaciones de palabras comunes en español y señales de máquina, asegurando que las órdenes de Julio sin acentos sean correctamente identificadas.",
+  "codigo": "    # (1) si el texto NO tiene ninguna palabra corriente del espanol (por ejemplo que, de, la, el, los, las, un, una, para, con, por, donde, como, esta, esto, hay, no, se, mas, todo) y tampoco tiene vocales acentuadas, entonces no lo escribio Julio: return False.\n    palabras_corrientes = ['que', 'de', 'la', 'el', 'los', 'las', 'un', 'una', 'para', 'con', 'por', 'donde', 'como', 'esta', 'esto', 'hay', 'no', 'se', 'mas', 'todo']\n    acentos = 'áéíóúÁÉÍÓÚ'\n    if not any(c in texto for c in acentos) and not any(palabra in texto.lower() for palabra in palabras_corrientes):\n        return False\n    # (2) si el texto contiene alguna de estas senales de maquina: the user, task title, markdown, tool chatter, codex, catch-up, entonces tampoco es de Julio: return False.\n    senales_maquina = ['the user', 'task title', 'markdown', 'tool chatter', 'codex', 'catch-up']\n    if any(palabra in texto.lower() for palabra in senales_maquina):\n        return False\n    return True",
+  "vigia": "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py, vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py, vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "cuerpo/codex.py",
+   "cuerpo/privacidad.py",
+   "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio implementa exactamente las dos comprobaciones separadas que pide el paquete (palabras corrientes/acentos y senales de maquina) justo antes del return True, sin crear nada arriba del archivo; la frase de Julio sin acentos sigue devolviendo True porque contiene 'que', 'donde', 'esta', 'la', 'el', etc."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 3"
+ ]
+}
