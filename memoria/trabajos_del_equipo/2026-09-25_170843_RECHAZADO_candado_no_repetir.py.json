@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion mensajes_de_este_turno y su enganche en salida; el material no trae la funcion salida completa ni el texto del ancla, asi que no se puede copiar el texto_viejo literal.",
+  "archivo": "arnes/candado_no_repetir.py",
+  "funcion": "salida",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO: el material no incluye la funcion salida completa ni el renglon ancla (el que saca el ultimo mensaje escrito de la variable data). Sin ese texto literal no se puede proponer el enganche sin adivinar, que es justo el motivo del rechazo anterior.",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py",
+  "puede_danar": [
+   "arnes/candado_no_repetir.py",
+   "cerebro/trozos.py",
+   "cuerpo/respuestas.py"
+  ],
+  "preguntas": [],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "trozos.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "No trae NINGÚN cambio: \"cambios\": [] y \"codigo\": \"\". El candado sigue sin existir y la prueba vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py sigue roja. Es un no-op, no una reparacion.",
+   "La PRIMERA parte del encargo si esta entera en el material y no depende del ancla: la funcion nueva mensajes_de_este_turno (cuenta de renglones assistant con texto, forma \"text\" y forma \"message\"/content/text, ignorar filas user que son tool_result, devolver 0 si no se puede leer, json ya importado). Se podia escribir sin un solo renglon de salida y no se escribio: se abandono trabajo que no dependia de nada.",
+   "Cuando falta un trozo, el canal correcto es el del propio paquete: \"NECESITO_LEER: archivo / motivo / que decide / riesgo\". Lo entregado es NO_ENCONTRADO metido en el campo \"cambio\", que no es el canal pedido y por tanto no desbloquea nada: el director recibe una tarea igual de muerta.",
+   "Senala el trozo equivocado: lo que falta es el propio archivo del encargo, arnes/candado_no_repetir.py (funcion salida y el renglon ancla). En \"_fuera_del_paquete\" solo aparece trozos.py.",
+   "La cabecera del paquete afirma que trae la funcion salida completa; si de verdad no llego, eso es un fallo de emision del paquete y hay que decirlo nombrando el archivo exacto que falta, no devolver la tarea como si el encargo fuera imposible."
+  ],
+  "riesgo_vecinos": [
+   "No rompe a nadie porque no toca nada, pero el fallo que Julio reporto enojado sigue vivo: seguira recibiendo dos mensajes cada vez que pregunta."
+  ],
+  "que_falta": [
+   "La funcion mensajes_de_este_turno implementada y probada (parte 1, sin dependencias).",
+   "El enganche en la funcion salida justo encima del renglón ancla, usando la variable data y la clave transcript_path, con el aviso literal y el freno en 2, mas _bloqueos_seguidos / TOPE_BLOQUEOS / _apuntar_bloqueo y _registrar, dejando intacto lo de frases repetidas (parte 2, necesita el archivo).",
+   "La peticion de material en el formato debido, nombrando arnes/candado_no_repetir.py."
+  ],
+  "resumen_para_el_jefe": "Devolvio la tarea sin tocar nada; la funcion nueva venia entera en el material y se podia hacer ya, y el trozo que falta (el propio archivo del encargo) hay que pedirlo con el formato NECESITO_LEER."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "vueltas_dadas: 4"
+ ]
+}
