@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El trabajo anterior fue rechazado porque no decía qué archivo toca y porque creaba una pieza nueva sin documentar las cinco respuestas obligatorias del contrato CREAR_PIEZA_NUEVA.",
+  "archivo": "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+  "funcion": "test_un_archivo_sin_vigia_no_manda_correr_las_245",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "",
+    "texto_nuevo": "import os\nimport sys\nimport tempfile\n\n\n# --- Las cinco respuestas obligatorias (CONTRATO_CREAR_PIEZA_NUEVA.md, Regla 2) ---\n# QUE: una vigia que comprueba que vecinas._vecinas_por_stem devuelve una LISTA\n#      (no None) cuando entre los archivos cambiados hay uno sin vigia.\n# DONDE: en vigias/, junto al resto de vigias, porque es una prueba del arnes.\n# POR QUE: medido 82 veces en memoria/FALLOS.json id 69: hoy devuelve None en cuanto\n#          un archivo no aparece en ninguna vigia, y None significa correr las 245\n#          vigias enteras con tope de 15 minutos, por lo que el guardado muere y el\n#          trabajo aprobado se deshace.\n# CUANDO: la llama el arnes al correr las vigias; se dispara al ejecutar la suite.\n# COMO: es una cuenta, no necesita juicio: monta una carpeta temporal, llama a\n#       vecinas._vecinas_por_stem y exige con assert que el resultado sea lista y\n#       que venga la vigia de pieza_conocida.\n\n\ndef test_un_archivo_sin_vigia_no_manda_correr_las_245():\n    \"\"\"Vigia NACE ROJA: la reparacion aun no esta.\n\n    Hoy vecinas._vecinas_por_stem devuelve None en cuanto un archivo cambiado no\n    aparece en ninguna vigia. None significa correr las 245 vigias enteras con tope\n    de 15 minutos, por lo que el guardado muere y el trabajo aprobado se deshace.\n    Medido 82 veces en memoria/FALLOS.json id 69.\n\n    Esta vigia exige que el resultado sea una LISTA (no None) y que dentro venga la\n    vigia de pieza_conocida, aunque pieza_sin_vigia.py no tenga vigia.\n    \"\"\"\n    # (1) meter en sys.path la carpeta arnes que esta al lado de la carpeta vigias,\n    #     porque arnes no es un paquete, e importar vecinas.\n    aqui = os.path.dirname(os.path.abspath(__file__))\n    raiz = os.path.dirname(aqui)\n    carpeta_arnes = os.path.join(raiz, \"arnes\")\n    if carpeta_arnes not in sys.path:\n        sys.path.insert(0, carpeta_arnes)\n    import vecinas\n\n    # (2) crear una carpeta temporal con tempfile, y dentro de ella una carpeta\n    #     vigias con UN archivo test_vigia_de_prueba.py que mencione por su nombre\n    #     una pieza llamada pieza_conocida.\n    with tempfile.TemporaryDirectory() as tmp:\n        carpeta_vigias = os.path.join(tmp, \"vigias\")\n        os.makedirs(carpeta_vigias)\n        archivo_vigia = os.path.join(carpeta_vigias, \"test_vigia_de_prueba.py\")\n        with open(archivo_vigia, \"w\", encoding=\"utf-8\") as f:\n            f.write(\"# vigia de prueba\\n\")\n            f.write(\"def test_pieza_conocida():\\n\")\n            f.write(\"    assert 'pieza_conocida'\\n\")\n\n        # (3) llamar a vecinas._vecinas_por_stem con una lista de dos archivos\n        #     cambiados, uno que si tiene vigia (pieza_conocida.py) y otro que no\n        #     la tiene (pieza_sin_vigia.py), pasandole esa carpeta temporal como\n        #     raiz y la lista de vigias que hay en ella.\n        archivos_cambiados = [\"pieza_conocida.py\", \"pieza_sin_vigia.py\"]\n        lista_vigias = [archivo_vigia]\n        resultado = vecinas._vecinas_por_stem(\n            archivos_cambiados, raiz=tmp, vigias=lista_vigias\n        )\n\n        # (4) exigir con un assert que el resultado sea una LISTA y no None, y que\n        #     dentro venga la vigia de pieza_conocida.\n        assert isinstance(resultado, list), (\n            \"_vecinas_por_stem devolvio None: eso manda correr las 245 vigias \"\n            \"enteras con tope de 15 minutos y el guardado muere \"\n            \"(memoria/FALLOS.json id 69)\"\n        )\n        assert archivo_vigia in resultado, (\n            \"la vigia de pieza_conocida no vino en el resultado\"\n        )\n"
+   }
+  ],
+  "cambio": "Crear el archivo NUEVO vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py con una sola funcion de prueba, test_un_archivo_sin_vigia_no_manda_correr_las_245, que monta una carpeta temporal con una vigia que menciona pieza_conocida, llama a vecinas._vecinas_por_stem con pieza_conocida.py y pieza_sin_vigia.py, y exige con assert que el resultado sea lista y contenga la vigia de pieza_conocida. El docstring documenta las cinco respuestas del contrato y que la vigia NACE ROJA.",
+  "codigo": "import os\nimport sys\nimport tempfile\n\n\ndef test_un_archivo_sin_vigia_no_manda_correr_las_245():\n    \"\"\"Vigia NACE ROJA: la reparacion aun no esta.\n\n    Hoy vecinas._vecinas_por_stem devuelve None en cuanto un archivo cambiado no\n    aparece en ninguna vigia. None significa correr las 245 vigias enteras con tope\n    de 15 minutos, por lo que el guardado muere y el trabajo aprobado se deshace.\n    Medido 82 veces en memoria/FALLOS.json id 69.\n    \"\"\"\n    aqui = os.path.dirname(os.path.abspath(__file__))\n    raiz = os.path.dirname(aqui)\n    carpeta_arnes = os.path.join(raiz, \"arnes\")\n    if carpeta_arnes not in sys.path:\n        sys.path.insert(0, carpeta_arnes)\n    import vecinas\n\n    with tempfile.TemporaryDirectory() as tmp:\n        carpeta_vigias = os.path.join(tmp, \"vigias\")\n        os.makedirs(carpeta_vigias)\n        archivo_vigia = os.path.join(carpeta_vigias, \"test_vigia_de_prueba.py\")\n        with open(archivo_vigia, \"w\", encoding=\"utf-8\") as f:\n            f.write(\"# vigia de prueba\\n\")\n            f.write(\"def test_pieza_conocida():\\n\")\n            f.write(\"    assert 'pieza_conocida'\\n\")\n\n        archivos_cambiados = [\"pieza_conocida.py\", \"pieza_sin_vigia.py\"]\n        lista_vigias = [archivo_vigia]\n        resultado = vecinas._vecinas_por_stem(\n            archivos_cambiados, raiz=tmp, vigias=lista_vigias\n        )\n\n        assert isinstance(resultado, list), (\n            \"_vecinas_por_stem devolvio None: eso manda correr las 245 vigias \"\n            \"enteras con tope de 15 minutos y el guardado muere \"\n            \"(memoria/FALLOS.json id 69)\"\n        )\n        assert archivo_vigia in resultado, (\n            \"la vigia de pieza_conocida no vino en el resultado\"\n        )\n",
+  "vigia": "La propia funcion test_un_archivo_sin_vigia_no_manda_correr_las_245: exige que vecinas._vecinas_por_stem devuelva lista (no None) y que dentro venga la vigia de pieza_conocida cuando hay un archivo sin vigia entre los cambiados.",
+  "puede_danar": [
+   "vecinas._vecinas_por_stem",
+   "arnes (import por sys.path)",
+   "vigias/test_vigia_de_prueba.py (solo dentro de la carpeta temporal)"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Crea el archivo solicitado con la función y documentación requerida, incluye las cinco respuestas obligatorias y los asserts, y no afecta a otros componentes."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19539 a 11140 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 20911 a 11827 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 3"
+ ]
+}

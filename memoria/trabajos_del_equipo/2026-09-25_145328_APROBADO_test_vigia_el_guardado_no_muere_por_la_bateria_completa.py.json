@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta el archivo de prueba que exige que vecinas._vecinas_por_stem devuelva lista (no None) cuando un archivo cambiado no aparece en ninguna vigia, para que el guardado no muera por la bateria completa de 245 vigias.",
+  "archivo": "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+  "funcion": "test_un_archivo_sin_vigia_no_manda_correr_las_245",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambio": "CREAR el archivo NUEVO vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py con UNA sola funcion de prueba test_un_archivo_sin_vigia_no_manda_correr_las_245 que: (1) mete en sys.path la carpeta arnes que esta al lado de vigias e importa vecinas; (2) crea con tempfile una carpeta temporal con una subcarpeta vigias que contiene test_vigia_de_prueba.py cuyo texto menciona pieza_conocida; (3) llama a vecinas._vecinas_por_stem con la lista de cambiados [pieza_conocida.py, pieza_sin_vigia.py], la raiz temporal y la lista con la vigia de dentro; (4) exige con assert que el resultado sea lista y no None, y que contenga la vigia de pieza_conocida. Docstring explica el fallo (None = correr las 245 vigias, tope 15 min, guardado muere, trabajo aprobado se deshace; medido 82 veces en memoria/FALLOS.json id 69) y que la vigia NACE ROJA porque la reparacion aun no esta. No prueba vecinas.elegir. No toca ningun otro archivo.",
+  "codigo": "\"\"\"VIGIA: el guardado no muere por la bateria completa de vigias.\n\nNACE ROJA: la reparacion aun no esta.\n\nHoy vecinas._vecinas_por_stem devuelve None en cuanto un archivo de codigo\ncambiado no aparece en ninguna vigia. Y None significa correr las 245 vigias\nenteras con tope de 15 minutos, por lo que el guardado muere por tiempo y el\ntrabajo ya aprobado se deshace. Medido 82 veces en memoria/FALLOS.json id 69.\n\"\"\"\n\nimport os\nimport sys\nimport tempfile\n\n\nAQUI = os.path.dirname(os.path.abspath(__file__))\nARNES = os.path.join(os.path.dirname(AQUI), \"arnes\")\nif ARNES not in sys.path:\n    sys.path.insert(0, ARNES)\n\nimport vecinas  # noqa: E402\n\n\ndef test_un_archivo_sin_vigia_no_manda_correr_las_245():\n    with tempfile.TemporaryDirectory() as raiz:\n        carpeta_vigias = os.path.join(raiz, \"vigias\")\n        os.makedirs(carpeta_vigias)\n        vigia = \"test_vigia_de_prueba.py\"\n        with open(os.path.join(carpeta_vigias, vigia), \"w\", encoding=\"utf-8\") as f:\n            f.write(\"# vigila pieza_conocida\\n\")\n\n        cambiados = [\"pieza_conocida.py\", \"pieza_sin_vigia.py\"]\n        vigias = [vigia]\n\n        resultado = vecinas._vecinas_por_stem(cambiados, raiz, vigias)\n\n        assert resultado is not None, (\n            \"_vecinas_por_stem devolvio None: eso manda correr las 245 vigias \"\n            \"enteras con tope de 15 minutos y el guardado muere por tiempo\"\n        )\n        assert isinstance(resultado, list), (\n            \"_vecinas_por_stem debe devolver una lista, no %r\" % (type(resultado),)\n        )\n        assert vigia in resultado, (\n            \"la vigia de pieza_conocida debe venir en el resultado: %r\" % (resultado,)\n        )\n",
+  "vigia": "test_un_archivo_sin_vigia_no_manda_correr_las_245 comprueba que vecinas._vecinas_por_stem devuelve una lista (no None) y que incluye la vigia de pieza_conocida cuando hay un archivo cambiado sin vigia, evitando que el guardado dispare las 245 vigias enteras.",
+  "puede_danar": [
+   "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+   "arnes/vecinas.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La propuesta crea el archivo y la prueba solicitados sin usar código inexistente, cumple el diagnóstico y no afecta a otros componentes."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 3"
+ ]
+}

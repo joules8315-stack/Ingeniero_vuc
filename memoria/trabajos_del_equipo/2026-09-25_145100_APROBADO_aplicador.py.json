@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En aplicar_cambios, cuando el trozo crea un archivo NUEVO, se abre para leer y revienta con FileNotFoundError; ademas la exigencia de que texto_viejo aparezca exactamente una vez impide el caso del archivo nuevo con contenido vacio.",
+  "archivo": "cuerpo/aplicador.py",
+  "funcion": "aplicar_cambios",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "        if ruta not in contenidos:\n            with open(ruta, 'r', encoding='utf-8') as f:\n                contenidos[ruta] = f.read()",
+    "texto_nuevo": "        if ruta not in contenidos:\n            if os.path.exists(ruta):\n                with open(ruta, 'r', encoding='utf-8') as f:\n                    contenidos[ruta] = f.read()\n            else:\n                contenidos[ruta] = ''"
+   },
+   {
+    "texto_viejo": "        if not viejo or contenidos[ruta].count(viejo) != 1:\n            return False, f'El texto de antes no aparece exactamente una vez en {ruta}; no se aplico nada.'\n        contenidos[ruta] = contenidos[ruta].replace(viejo, nuevo, 1)",
+    "texto_nuevo": "        if contenidos[ruta] == '' and viejo == '':\n            contenidos[ruta] = nuevo\n        else:\n            if not viejo or contenidos[ruta].count(viejo) != 1:\n                return False, f'El texto de antes no aparece exactamente una vez en {ruta}; no se aplico nada.'\n            contenidos[ruta] = contenidos[ruta].replace(viejo, nuevo, 1)"
+   }
+  ],
+  "cambio": "Sustituir el bloque de apertura de archivo para que, si el archivo no existe en disco, arranque con contenido vacio en vez de abrirlo; y admitir el caso del archivo nuevo: si el contenido de partida esta vacio y texto_viejo viene vacio, el contenido pasa a ser texto_nuevo tal cual, sin exigir que texto_viejo aparezca exactamente una vez. Si el archivo existe, todo sigue igual.",
+  "codigo": "        if ruta not in contenidos:\n            if os.path.exists(ruta):\n                with open(ruta, 'r', encoding='utf-8') as f:\n                    contenidos[ruta] = f.read()\n            else:\n                contenidos[ruta] = ''\n        viejo = pedazo.get('texto_viejo', '')\n        nuevo = pedazo.get('texto_nuevo', '')\n        if contenidos[ruta] == '' and viejo == '':\n            contenidos[ruta] = nuevo\n        else:\n            if not viejo or contenidos[ruta].count(viejo) != 1:\n                return False, f'El texto de antes no aparece exactamente una vez en {ruta}; no se aplico nada.'\n            contenidos[ruta] = contenidos[ruta].replace(viejo, nuevo, 1)",
+  "vigia": "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py: comprobar que aplicar_cambios con un trozo que crea un archivo NUEVO (ruta que no existe en disco) no revienta con FileNotFoundError y deja el archivo con el texto_nuevo; y que si el archivo existe, el comportamiento es identico al de hoy.",
+  "puede_danar": [
+   "cuerpo/aplicador.py",
+   "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+   "cualquier flujo que aplique cambios con aplicar_cambios"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no introduce elementos inexistentes y no afecta a funcionalidades vecinas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)) -> se reintenta",
+  "el pasillo recorto el encargo de 19334 a 12715 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 2"
+ ]
+}

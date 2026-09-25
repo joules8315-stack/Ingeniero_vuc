@@ -11781,5 +11781,52 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.9
+ },
+ {
+  "id": 250,
+  "cuando": "2026-09-25 14:40",
+  "proyecto": "ingeniero",
+  "problema": "en cuerpo/aplicador.py la funcion aplicar_cambios se rompe con FileNotFoundError cuando un trozo de la lista cambios crea un archivo NUEVO, porque lo abre para leer antes de escribirlo, y el trabajo aprobado se pierde",
+  "flujos": [
+   "aplicador",
+   "antes",
+   "trabajo"
+  ],
+  "piezas": [
+   "cuerpo/aplicador.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cuerpo/aplicador.py:41-77",
+   "cuerpo/aplicador.py:129-168",
+   "cuerpo/aplicador.py:1-40",
+   "cuerpo/aplicador.py:289-316"
+  ],
+  "leyes": [
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md",
+   "CONTRATO_ANTES_DE_PREGUNTAR_SE_BUSCA.md",
+   "CONTRATO_ANTES_DE_REPARAR_SE_BUSCA_LA_CURA.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_SIN_GUARDAR_NO_HAY_TRABAJO.md",
+   "CONTRATO_TRABAJO_CON_CLINE.md",
+   "cerebro/protocolo.py"
+  ],
+  "vigias": [
+   "vigias/test_vigia_aplicador.py",
+   "vigias/test_vigia_el_aplicador_crea_la_carpeta.py",
+   "vigias/test_vigia_el_pit_mira_la_prueba_antes_de_dar_por_hecho.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_nadie_revisa_su_propio_trabajo.py",
+   "vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py",
+   "vigias/test_vigia_recoger_no_pisa_trabajo_mas_nuevo.py"
+  ],
+  "lineas_paquete": 352,
+  "lineas_proyecto": 325870,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
  }
 ]

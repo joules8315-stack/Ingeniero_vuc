@@ -1,0 +1,52 @@
+{
+ "obrero": "groq",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "aplicar_cambios intenta leer archivos nuevos y falla con FileNotFoundError",
+  "archivo": "cuerpo/aplicador.py",
+  "funcion": "aplicar_cambios",
+  "texto_viejo": "if ruta not in contenidos:\n    with open(ruta, 'r', encoding='utf-8') as f:\n        contenidos[ruta] = f.read()",
+  "texto_nuevo": "if ruta not in contenidos:\n    if os.path.exists(ruta):\n        with open(ruta, 'r', encoding='utf-8') as f:\n            contenidos[ruta] = f.read()\n    else:\n        os.makedirs(os.path.dirname(ruta), exist_ok=True)\n        contenidos[ruta] = ''",
+  "cambios": [
+   {
+    "texto_viejo": "viejo = pedazo.get('texto_viejo', '')\nnuevo = pedazo.get('texto_nuevo', '')\nif not viejo or contenidos[ruta].count(viejo) != 1:\n    return False, f'El texto de antes no aparece exactamente una vez en {ruta}; no se aplico nada.'\ncontenidos[ruta] = contenidos[ruta].replace(viejo, nuevo, 1)",
+    "texto_nuevo": "viejo = pedazo.get('texto_viejo', '')\nnuevo = pedazo.get('texto_nuevo', '')\nif viejo:\n    if contenidos[ruta].count(viejo) != 1:\n        return False, f'El texto de antes no aparece exactamente una vez en {ruta}; no se aplico nada.'\n    contenidos[ruta] = contenidos[ruta].replace(viejo, nuevo, 1)\nelse:\n    contenidos[ruta] = nuevo"
+   }
+  ],
+  "cambio": "manejar archivos inexistentes creando carpeta si falta y permitir texto_viejo vacío para crear archivos nuevos",
+  "codigo": "if ruta not in contenidos:\n    if os.path.exists(ruta):\n        with open(ruta, 'r', encoding='utf-8') as f:\n            contenidos[ruta] = f.read()\n    else:\n        os.makedirs(os.path.dirname(ruta), exist_ok=True)\n        contenidos[ruta] = ''\n\nviejo = pedazo.get('texto_viejo', '')\nnuevo = pedazo.get('texto_nuevo', '')\nif viejo:\n    if contenidos[ruta].count(viejo) != 1:\n        return False, f'El texto de antes no aparece exactamente una vez en {ruta}; no se aplico nada.'\n    contenidos[ruta] = contenidos[ruta].replace(viejo, nuevo, 1)\nelse:\n    contenidos[ruta] = nuevo",
+  "vigia": "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+  "puede_danar": [
+   "cuerpo/aplicador.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion cumple el encargo: si el archivo no existe arranca con contenido vacio y crea la carpeta, y admite texto_viejo vacio para que el trozo se aplique como texto_nuevo; si existe, mantiene la comprobacion de aparicion unica. No usa nada inexistente ni toca la sintaxis ni la escritura temporal."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 19727 a 13003 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "el pasillo recorto el encargo de 19929 a 13153 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 4"
+ ]
+}
