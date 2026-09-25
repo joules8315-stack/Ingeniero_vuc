@@ -48,13 +48,19 @@ def aplicar_cambios(propuesta, raiz=None):
         if raiz and not os.path.isabs(ruta):
             ruta = os.path.normpath(os.path.join(raiz, ruta))
         if ruta not in contenidos:
-            with open(ruta, 'r', encoding='utf-8') as f:
-                contenidos[ruta] = f.read()
+            if os.path.exists(ruta):
+                with open(ruta, 'r', encoding='utf-8') as f:
+                    contenidos[ruta] = f.read()
+            else:
+                contenidos[ruta] = ''
         viejo = pedazo.get('texto_viejo', '')
         nuevo = pedazo.get('texto_nuevo', '')
-        if not viejo or contenidos[ruta].count(viejo) != 1:
-            return False, f'El texto de antes no aparece exactamente una vez en {ruta}; no se aplico nada.'
-        contenidos[ruta] = contenidos[ruta].replace(viejo, nuevo, 1)
+        if contenidos[ruta] == '' and viejo == '':
+            contenidos[ruta] = nuevo
+        else:
+            if not viejo or contenidos[ruta].count(viejo) != 1:
+                return False, f'El texto de antes no aparece exactamente una vez en {ruta}; no se aplico nada.'
+            contenidos[ruta] = contenidos[ruta].replace(viejo, nuevo, 1)
     for ruta, texto in contenidos.items():
         if ruta.endswith('.py'):
             try:
