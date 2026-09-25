@@ -135,6 +135,15 @@ def parece_una_orden(texto):
     # c) Demasiado corto
     if len(texto.split()) < MINIMO_PALABRAS:
         return False
+    # (1) si el texto NO tiene ninguna palabra corriente del espanol (por ejemplo que, de, la, el, los, las, un, una, para, con, por, donde, como, esta, esto, hay, no, se, mas, todo) y tampoco tiene vocales acentuadas, entonces no lo escribio Julio: return False.
+    palabras_corrientes = ['que', 'de', 'la', 'el', 'los', 'las', 'un', 'una', 'para', 'con', 'por', 'donde', 'como', 'esta', 'esto', 'hay', 'no', 'se', 'mas', 'todo']
+    acentos = 'áéíóúÁÉÍÓÚ'
+    if not any(c in texto for c in acentos) and not any(palabra in texto.lower() for palabra in palabras_corrientes):
+        return False
+    # (2) si el texto contiene alguna de estas senales de maquina: the user, task title, markdown, tool chatter, codex, catch-up, entonces tampoco es de Julio: return False.
+    senales_maquina = ['the user', 'task title', 'markdown', 'tool chatter', 'codex', 'catch-up']
+    if any(palabra in texto.lower() for palabra in senales_maquina):
+        return False
     return True
 
 
