@@ -20,9 +20,7 @@ def test_el_candado_frena_un_ancla_de_varios_renglones():
     from arnes import autorizacion as _autorizacion
     if _autorizacion.autorizada():
         return
-    if autorizacion.is_file() and "Julio" in autorizacion.read_text(encoding="utf-8"):
-        import pytest
-        pytest.skip("Julio abrio la llave: el candado se abre a proposito")
+
 
     ancla = 'def _archivos_py(texto):'
 
