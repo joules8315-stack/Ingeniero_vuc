@@ -176,6 +176,22 @@ def salida():
         data = json.load(sys.stdin)
     except Exception:
         return 0
+    ruta_transcripcion = data.get("transcript_path")
+    if ruta_transcripcion:
+        if mensajes_de_este_turno(ruta_transcripcion) >= 2:
+            veces = _bloqueos_seguidos()
+            if veces >= TOPE_BLOQUEOS:
+                _apuntar_bloqueo(0)
+                _registrar("AVISO: se deja pasar para no atascar a Julio, pero ya le escribio dos veces en el turno.")
+                sys.stderr.write("AVISO: ya le hablaste a Julio en este turno. Se deja pasar para no\n"
+                                 "  atascar a Julio, pero incumple CONTRATO_NO_REPETIR.md.\n")
+                return 0
+            _apuntar_bloqueo(veces + 1)
+            _registrar("BLOQUEO: ya le escribio a Julio en este turno, se frena.")
+            sys.stderr.write(
+                "NO SE PUEDE TERMINAR: ya le hablaste a Julio en este turno, no le escribas otra vez;\n"
+                "  guarda lo que falte y termina sin escribir nada mas.\n")
+            return 2
     ultimo = str(data.get("last_assistant_message") or "")
     if not ultimo:
         return 0
