@@ -26,19 +26,19 @@ def _leer_entrada():
 
 
 def _autorizado():
+    # Fallo del 2026-09-25: se adivinaba el nombre de la funcion en vez de mirarlo en
+    # arnes/autorizacion.py. La prueba que lo destapa es
+    # test_vigia_el_candado_respeta_la_llave_de_julio.
     try:
         sys.path.insert(0, str(RAIZ))
         from arnes import autorizacion  # type: ignore
     except Exception:
         return False
-    for nombre in ("julio_autorizo", "autorizo_julio", "autorizado", "julio_autoriza"):
-        funcion = getattr(autorizacion, nombre, None)
-        if callable(funcion):
-            try:
-                if funcion():
-                    return True
-            except Exception:
-                continue
+    try:
+        if autorizacion.autorizada():
+            return True
+    except Exception:
+        return False
     return False
 
 
