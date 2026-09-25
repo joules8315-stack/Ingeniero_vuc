@@ -12133,5 +12133,88 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.9
+ },
+ {
+  "id": 256,
+  "cuando": "2026-09-25 17:57",
+  "proyecto": "dmm",
+  "problema": "No hay una prueba que avise si el mapa canonico de DMM desaparece o se queda sin las rutas que dice donde esta cada cosa",
+  "flujos": [
+   "canonico",
+   "prueba",
+   "indice"
+  ],
+  "piezas": [
+   "prueba_b_runner.py",
+   "cuerpo/indice.py",
+   "cuerpo/indice_nube.py",
+   "cuerpo/indice_semantico.py",
+   "cuerpo/embeddings.py"
+  ],
+  "trozos": [
+   "cuerpo/indice.py:49-79",
+   "cuerpo/indice.py:129-140",
+   "cuerpo/embeddings.py:61-90",
+   "cuerpo/indice_nube.py:1-40",
+   "prueba_b_runner.py:65-104"
+  ],
+  "leyes": [
+   "CONTRATO_ESTADO_CANONICO.md",
+   "CONTRATO_HOGAR_CANONICO.md",
+   "CONTRATO_MODELO_PUBLICACION_CANONICO.md",
+   "CONTRATO_PRUEBA_REAL_DOGFOOD.md",
+   "CONTRATO_WEB_DMM_PRUEBA_REAL.md",
+   "MAPA_CANONICO.md",
+   "CONTRATO_CARPETAS.md",
+   "matriz_verdad.py"
+  ],
+  "vigias": [
+   "vigias/test_vigia_estado_canonico.py",
+   "vigias/test_vigia_hogar_canonico.py",
+   "vigias/test_vigia_indice.py",
+   "vigias/test_vigia_indice_nube.py",
+   "vigias/test_vigia_indice_semantico.py",
+   "vigias/test_vigia_mapa_canonico.py",
+   "vigias/test_vigia_web_dmm_prueba.py"
+  ],
+  "lineas_paquete": 345,
+  "lineas_proyecto": 42116,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.2
+ },
+ {
+  "id": 257,
+  "cuando": "2026-09-25 17:58",
+  "proyecto": "dmm",
+  "problema": "El CONTRATO_PRUEBA_REAL_DOGFOOD no tiene ninguna vigia que compruebe que se cumple",
+  "flujos": [
+   "prueba",
+   "real"
+  ],
+  "piezas": [
+   "prueba_b_runner.py"
+  ],
+  "trozos": [
+   "prueba_b_runner.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_PRUEBA_REAL_DOGFOOD.md",
+   "CONTRATO_WEB_DMM_PRUEBA_REAL.md",
+   "matriz_verdad.py"
+  ],
+  "vigias": [
+   "vigias/test_vigia_envio_real.py",
+   "vigias/test_vigia_web_dmm_prueba.py"
+  ],
+  "lineas_paquete": 138,
+  "lineas_proyecto": 42116,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.7
  }
 ]
