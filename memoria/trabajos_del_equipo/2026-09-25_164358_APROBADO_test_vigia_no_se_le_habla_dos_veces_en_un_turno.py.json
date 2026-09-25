@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la prueba vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py que compruebe la funcion nueva mensajes_de_este_turno, que aun no existe en arnes/candado_no_repetir.py",
+  "archivo": "vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py",
+  "funcion": "archivo nuevo completo",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "",
+    "texto_nuevo": "#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n\"\"\"vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py — NO SE LE HABLA DOS VECES A JULIO EN UN TURNO.\n\nFallo del 2026-09-25, confirmado por Julio el mismo dia: en un mismo turno recibe DOS\nmensajes escritos, porque tras el primero un candado obliga a guardar y despues se le\nescribe otro. El candado arnes/candado_no_repetir.py de hoy solo compara frases repetidas\ny no cuenta cuantos mensajes se le escribieron en el turno, asi que no lo ve.\n\nEsta prueba comprueba la funcion nueva mensajes_de_este_turno, que todavia no existe en\narnes/candado_no_repetir.py. Nace ROJA porque esa funcion no existe todavia, y asi tiene\nque nacer.\n\"\"\"\nimport json\nimport os\nimport sys\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, AQUI)\n\nfrom arnes import candado_no_repetir\n\n\ndef _escribir_jsonl(ruta, renglones):\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        for r in renglones:\n            f.write(json.dumps(r, ensure_ascii=False) + \"\\n\")\n\n\ndef test_dos_mensajes_del_asistente_despues_del_ultimo_user(tmp_path):\n    # Fallo del 2026-09-25, confirmado por Julio el mismo dia.\n    ruta = tmp_path / \"conversacion.jsonl\"\n    _escribir_jsonl(ruta, [\n        {\"type\": \"user\", \"text\": \"Julio pregunta algo\"},\n        {\"type\": \"assistant\", \"text\": \"Primer mensaje escrito\"},\n        {\"type\": \"assistant\", \"text\": \"Segundo mensaje escrito\"},\n    ])\n    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 2\n\n\ndef test_un_mensaje_del_asistente_despues_del_ultimo_user(tmp_path):\n    # Fallo del 2026-09-25, confirmado por Julio el mismo dia.\n    ruta = tmp_path / \"conversacion.jsonl\"\n    _escribir_jsonl(ruta, [\n        {\"type\": \"user\", \"text\": \"Julio pregunta algo\"},\n        {\"type\": \"assistant\", \"text\": \"Un solo mensaje escrito\"},\n    ])\n    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 1\n"
+   }
+  ],
+  "cambio": "Crear el archivo vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py con dos pruebas que comprueban la funcion nueva mensajes_de_este_turno de arnes/candado_no_repetir.py, usando archivos jsonl escritos en tmp_path. La prueba nace roja porque la funcion no existe todavia.",
+  "codigo": "#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n\"\"\"vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py — NO SE LE HABLA DOS VECES A JULIO EN UN TURNO.\n\nFallo del 2026-09-25, confirmado por Julio el mismo dia: en un mismo turno recibe DOS\nmensajes escritos, porque tras el primero un candado obliga a guardar y despues se le\nescribe otro. El candado arnes/candado_no_repetir.py de hoy solo compara frases repetidas\ny no cuenta cuantos mensajes se le escribieron en el turno, asi que no lo ve.\n\nEsta prueba comprueba la funcion nueva mensajes_de_este_turno, que todavia no existe en\narnes/candado_no_repetir.py. Nace ROJA porque esa funcion no existe todavia, y asi tiene\nque nacer.\n\"\"\"\nimport json\nimport os\nimport sys\n\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, AQUI)\n\nfrom arnes import candado_no_repetir\n\n\ndef _escribir_jsonl(ruta, renglones):\n    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        for r in renglones:\n            f.write(json.dumps(r, ensure_ascii=False) + \"\\n\")\n\n\ndef test_dos_mensajes_del_asistente_despues_del_ultimo_user(tmp_path):\n    # Fallo del 2026-09-25, confirmado por Julio el mismo dia.\n    ruta = tmp_path / \"conversacion.jsonl\"\n    _escribir_jsonl(ruta, [\n        {\"type\": \"user\", \"text\": \"Julio pregunta algo\"},\n        {\"type\": \"assistant\", \"text\": \"Primer mensaje escrito\"},\n        {\"type\": \"assistant\", \"text\": \"Segundo mensaje escrito\"},\n    ])\n    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 2\n\n\ndef test_un_mensaje_del_asistente_despues_del_ultimo_user(tmp_path):\n    # Fallo del 2026-09-25, confirmado por Julio el mismo dia.\n    ruta = tmp_path / \"conversacion.jsonl\"\n    _escribir_jsonl(ruta, [\n        {\"type\": \"user\", \"text\": \"Julio pregunta algo\"},\n        {\"type\": \"assistant\", \"text\": \"Un solo mensaje escrito\"},\n    ])\n    assert candado_no_repetir.mensajes_de_este_turno(str(ruta)) == 1\n",
+  "vigia": "La propia prueba: al ejecutarse debe fallar porque mensajes_de_este_turno no existe todavia en arnes/candado_no_repetir.py; cuando la funcion exista y cuente bien, las dos pruebas deben pasar.",
+  "puede_danar": [
+   "arnes/candado_no_repetir.py (solo se importa, no se toca)",
+   "cuerpo/codex.py (lo importa desde cuerpo/privacidad.py, no se toca)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "conversacion.js"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el encargo creando el archivo de pruebas solicitado sin tocar nada más y sin infringir normas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 1"
+ ]
+}
