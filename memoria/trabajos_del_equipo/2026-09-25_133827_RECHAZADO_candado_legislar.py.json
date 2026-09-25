@@ -1,0 +1,77 @@
+{
+ "obrero": "gemini4",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "La función `parece_una_orden` en `arnes/candado_legislar.py` busca palabras clave como si fueran subcadenas, lo que causa falsos positivos. Además, la lógica para detectar órdenes de Julio no considera adecuadamente las señales de máquina y las palabras comunes del español.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "parece_una_orden",
+  "texto_viejo": "    if any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN):\n        return False",
+  "texto_nuevo": "    if any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN):\n        return False\n    # (1) si el texto NO tiene ninguna palabra corriente del espanol (por ejemplo que, de, la, el, los, las, un, una, para, con, por, donde, como, esta, esto, hay, no, se, mas, todo) y tampoco tiene vocales acentuadas, entonces no lo escribio Julio: return False.\n    palabras_corrientes = ['que', 'de', 'la', 'el', 'los', 'las', 'un', 'una', 'para', 'con', 'por', 'donde', 'como', 'esta', 'esto', 'hay', 'no', 'se', 'mas', 'todo']\n    acentos = 'áéíóúÁÉÍÓÚ'\n    if not any(c in texto for c in acentos) and not any(palabra in texto.lower() for palabra in palabras_corrientes):\n        return False\n    # (2) si el texto contiene alguna de estas senales de maquina: the user, task title, markdown, tool chatter, codex, catch-up, entonces tampoco es de Julio: return False.\n    senales_maquina = ['the user', 'task title', 'markdown', 'tool chatter', 'codex', 'catch-up']\n    if any(palabra in texto.lower() for palabra in senales_maquina):\n        return False",
+  "cambios": [
+   {
+    "texto_viejo": "    if any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN):\n        return False",
+    "texto_nuevo": "    if any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN):\n        return False\n    # (1) si el texto NO tiene ninguna palabra corriente del espanol (por ejemplo que, de, la, el, los, las, un, una, para, con, por, donde, como, esta, esto, hay, no, se, mas, todo) y tampoco tiene vocales acentuadas, entonces no lo escribio Julio: return False.\n    palabras_corrientes = ['que', 'de', 'la', 'el', 'los', 'las', 'un', 'una', 'para', 'con', 'por', 'donde', 'como', 'esta', 'esto', 'hay', 'no', 'se', 'mas', 'todo']\n    acentos = 'áéíóúÁÉÍÓÚ'\n    if not any(c in texto for c in acentos) and not any(palabra in texto.lower() for palabra in palabras_corrientes):\n        return False\n    # (2) si el texto contiene alguna de estas senales de maquina: the user, task title, markdown, tool chatter, codex, catch-up, entonces tampoco es de Julio: return False.\n    senales_maquina = ['the user', 'task title', 'markdown', 'tool chatter', 'codex', 'catch-up']\n    if any(palabra in texto.lower() for palabra in senales_maquina):\n        return False"
+   },
+   {
+    "texto_viejo": "    if re.match(r\"^(py|json|md|sh)(?![a-zA-Z0-9])\", limpio.lower()):\n        return False",
+    "texto_nuevo": "    # Corregir la búsqueda de palabras para que sean completas y no subcadenas.\n    # Se usa una expresión regular que busca la palabra completa rodeada de límites de palabra (espacios, signos de puntuación, inicio/fin de cadena).\n    palabras_a_buscar = ['que', 'de', 'la', 'el', 'los', 'las', 'un', 'una', 'para', 'con', 'por', 'donde', 'como', 'esta', 'esto', 'hay', 'no', 'se', 'mas', 'todo']\n    if any(re.search(r'\\b' + re.escape(palabra) + r'\\b', texto.lower()) for palabra in palabras_a_buscar):\n        return True # Es una orden si contiene palabras comunes del español\n\n    # Si no contiene palabras comunes del español, se considera que no es de Julio.\n    # Se mantiene la lógica original para avisos de máquina y textos cortos.\n    if texto.startswith(\"<\"):\n        return False\n    if any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN):\n        return False\n    if texto.startswith('\"') and '\":' in texto:\n        return False\n    limpio = texto.strip()\n    if re.match(r\"^(py|json|md|sh)(?![a-zA-Z0-9])\", limpio.lower()):\n        return False\n    if re.search(r\"(toca|resumen|fallo|diagnostico|aviso|confianza)\\s+:\", limpio):\n        return False\n    if texto.rstrip().endswith(\"?\"):\n        return False\n    if len(texto.split()) < MINIMO_PALABRAS:\n        return False\n\n    # Si no se cumplió ninguna de las exclusiones y tampoco se encontró una palabra común del español, se asume que no es de Julio.\n    return False"
+   }
+  ],
+  "cambio": "Modificar la función `parece_una_orden` para que las comprobaciones de palabras comunes del español y señales de máquina se realicen de forma que se identifiquen palabras completas y no subcadenas, y para asegurar que las frases en inglés que contienen señales de máquina se identifiquen correctamente como no provenientes de Julio.",
+  "codigo": "    # Corregir la búsqueda de palabras para que sean completas y no subcadenas.\n    # Se usa una expresión regular que busca la palabra completa rodeada de límites de palabra (espacios, signos de puntuación, inicio/fin de cadena).\n    palabras_a_buscar = ['que', 'de', 'la', 'el', 'los', 'las', 'un', 'una', 'para', 'con', 'por', 'donde', 'como', 'esta', 'esto', 'hay', 'no', 'se', 'mas', 'todo']\n    if any(re.search(r'\\b' + re.escape(palabra) + r'\\b', texto.lower()) for palabra in palabras_a_buscar):\n        return True # Es una orden si contiene palabras comunes del español\n\n    # Si no contiene palabras comunes del español, se considera que no es de Julio.\n    # Se mantiene la lógica original para avisos de máquina y textos cortos.\n    if texto.startswith(\"<\"):\n        return False\n    if any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN):\n        return False\n    if texto.startswith('\"') and '\":' in texto:\n        return False\n    limpio = texto.strip()\n    if re.match(r\"^(py|json|md|sh)(?![a-zA-Z0-9])\", limpio.lower()):\n        return False\n    if re.search(r\"(toca|resumen|fallo|diagnostico|aviso|confianza)\\s+:\", limpio):\n        return False\n    if texto.rstrip().endswith(\"?\"):\n        return False\n    if len(texto.split()) < MINIMO_PALABRAS:\n        return False\n\n    # Si no se cumplió ninguna de las exclusiones y tampoco se encontró una palabra común del español, se asume que no es de Julio.\n    return False",
+  "vigia": "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "cerebro/protocolo.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "protocolo.py",
+   "test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Lógica de cortocircuito errónea: El `return True` al encontrar una palabra común del español ocurre ANTES de las comprobaciones de exclusión (preguntas, longitud mínima, señales de máquina). Esto provoca que cualquier pregunta corta como '¿Qué?' sea clasificada como orden, rompiendo la función.",
+   "No soluciona el diagnóstico: El diagnóstico indica que `EXCLUIR_DE_ORDEN` busca subcadenas (causando falsos positivos), pero el código propuesto mantiene exactamente la misma línea `any(palabra in texto.lower() for palabra in EXCLUIR_DE_ORDEN)` sin usar límites de palabra (\\b).",
+   "Inconsistencia interna: La propuesta incluye dos bloques de `texto_nuevo` que se solapan y repiten lógica de forma desordenada, lo que resultaría en un código redundante y difícil de mantener."
+  ],
+  "riesgo_vecinos": [
+   "Al devolver True prematuramente, el candado de legislación dejará pasar como órdenes textos que son ruido, preguntas o avisos de sistema, afectando a toda la cadena de autorización y registro (cerebro/protocolo.py, arnes/autorizacion.py, etc.)."
+  ],
+  "que_falta": [
+   "Usar límites de palabra (\\b) en la comprobación de EXCLUIR_DE_ORDEN.",
+   "Colocar las nuevas validaciones de 'palabras comunes' al final de la función, no al principio, para no saltarse los filtros de exclusión existentes."
+  ],
+  "resumen_para_el_jefe": "La reparación rompe la lógica del candado al aceptar cualquier frase con palabras comunes (como 'que' o 'de') antes de comprobar si es una pregunta o ruido de máquina."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 19551 a 11761 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "vueltas_dadas: 4"
+ ]
+}
