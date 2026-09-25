@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El archivo vigias/test_vigia_los_candados_del_contrato_dogfood_existen.py no existe y hay que crearlo; el intento anterior quedo con un string sin cerrar en la linea 32.",
+  "archivo": "vigias/test_vigia_los_candados_del_contrato_dogfood_existen.py",
+  "funcion": "archivo nuevo completo",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "",
+    "texto_nuevo": "import re\nfrom pathlib import Path\n\nimport pytest\n\nRAIZ = Path(__file__).resolve().parent.parent\nCONTRATO = RAIZ / \"CONTRATO_PRUEBA_REAL_DOGFOOD.md\"\nCARPETA_VIGIAS = RAIZ / \"vigias\"\n\n\ndef _nombres_de_candados(texto):\n    seccion = None\n    for linea in texto.splitlines():\n        if linea.strip().startswith(\"#\") and \"Candados\" in linea:\n            seccion = []\n            continue\n        if seccion is not None:\n            if linea.strip().startswith(\"#\"):\n                break\n            seccion.append(linea)\n    if seccion is None:\n        return None\n    bloque = \"\\n\".join(seccion)\n    nombres = re.findall(r\"`(test_vigia[a-zA-Z0-9_]+)`\", bloque)\n    return nombres\n\n\ndef test_vigia_los_candados_del_contrato_dogfood_existen():\n    if not CONTRATO.exists():\n        pytest.skip(\n            \"No encuentro el contrato CONTRATO_PRUEBA_REAL_DOGFOOD.md en la raiz del proyecto, \"\n            \"asi que no puedo comprobar los candados que promete.\"\n        )\n\n    texto = CONTRATO.read_text(encoding=\"utf-8\")\n    nombres = _nombres_de_candados(texto)\n\n    if nombres is None:\n        pytest.skip(\n            \"El contrato CONTRATO_PRUEBA_REAL_DOGFOOD.md no tiene una seccion titulada Candados, \"\n            \"asi que no hay candados que comprobar.\"\n        )\n\n    if not nombres:\n        pytest.skip(\n            \"La seccion Candados del contrato no nombra ninguna prueba que empiece por test_vigia, \"\n            \"asi que no hay candados que comprobar.\"\n        )\n\n    faltan = []\n    for nombre in nombres:\n        nombre_limpio = nombre.strip().strip(\"`\").strip()\n        ruta = CARPETA_VIGIAS / (nombre_limpio + \".py\")\n        if not ruta.exists():\n            faltan.append(nombre_limpio)\n\n    if faltan:\n        pytest.fail(\n            \"El contrato promete candados que no existen. Falta el archivo vigias/\"\n            + \" y vigias/\".join(faltan)\n            + \".py. El contrato esta prometiendo proteccion que no esta.\"\n        )\n"
+   }
+  ],
+  "cambio": "Crear el archivo vigias/test_vigia_los_candados_del_contrato_dogfood_existen.py con una prueba que lee CONTRATO_PRUEBA_REAL_DOGFOOD.md, saca con regex los nombres test_vigia... de la seccion Candados, limpia los bordes (comillas inversas) y comprueba que existe vigias/<nombre>.py; si falta alguno falla diciendo cual; si no hay contrato o seccion, pytest.skip.",
+  "codigo": "import re\nfrom pathlib import Path\n\nimport pytest\n\nRAIZ = Path(__file__).resolve().parent.parent\nCONTRATO = RAIZ / \"CONTRATO_PRUEBA_REAL_DOGFOOD.md\"\nCARPETA_VIGIAS = RAIZ / \"vigias\"\n\n\ndef _nombres_de_candados(texto):\n    seccion = None\n    for linea in texto.splitlines():\n        if linea.strip().startswith(\"#\") and \"Candados\" in linea:\n            seccion = []\n            continue\n        if seccion is not None:\n            if linea.strip().startswith(\"#\"):\n                break\n            seccion.append(linea)\n    if seccion is None:\n        return None\n    bloque = \"\\n\".join(seccion)\n    nombres = re.findall(r\"`(test_vigia[a-zA-Z0-9_]+)`\", bloque)\n    return nombres\n\n\ndef test_vigia_los_candados_del_contrato_dogfood_existen():\n    if not CONTRATO.exists():\n        pytest.skip(\n            \"No encuentro el contrato CONTRATO_PRUEBA_REAL_DOGFOOD.md en la raiz del proyecto, \"\n            \"asi que no puedo comprobar los candados que promete.\"\n        )\n\n    texto = CONTRATO.read_text(encoding=\"utf-8\")\n    nombres = _nombres_de_candados(texto)\n\n    if nombres is None:\n        pytest.skip(\n            \"El contrato CONTRATO_PRUEBA_REAL_DOGFOOD.md no tiene una seccion titulada Candados, \"\n            \"asi que no hay candados que comprobar.\"\n        )\n\n    if not nombres:\n        pytest.skip(\n            \"La seccion Candados del contrato no nombra ninguna prueba que empiece por test_vigia, \"\n            \"asi que no hay candados que comprobar.\"\n        )\n\n    faltan = []\n    for nombre in nombres:\n        nombre_limpio = nombre.strip().strip(\"`\").strip()\n        ruta = CARPETA_VIGIAS / (nombre_limpio + \".py\")\n        if not ruta.exists():\n            faltan.append(nombre_limpio)\n\n    if faltan:\n        pytest.fail(\n            \"El contrato promete candados que no existen. Falta el archivo vigias/\"\n            + \" y vigias/\".join(faltan)\n            + \".py. El contrato esta prometiendo proteccion que no esta.\"\n        )\n",
+  "vigia": "vigias/test_vigia_los_candados_del_contrato_dogfood_existen.py comprueba que cada nombre test_vigia... citado en la seccion Candados de CONTRATO_PRUEBA_REAL_DOGFOOD.md tiene su archivo vigias/<nombre>.py.",
+  "puede_danar": [
+   "CONTRATO_PRUEBA_REAL_DOGFOOD.md (solo lo lee, no lo toca)",
+   "vigias/test_vigia_campana_prompt_persiste.py (lo referencia el contrato, no se toca)",
+   "vigias/test_vigia_chat_ia.py (lo referencia el contrato, no se toca)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_campana_prompt_persiste.py",
+   "test_vigia_chat_ia.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "La expresion regular exige comillas inversas alrededor del nombre: si el contrato escribe los nombres de las pruebas sincomillas inversas, la lista sale vacia y la prueba se salta para siempre, es decir un candado que nunca muerde (verde falso silencioso).",
+   "El fallo 0 en el encabezado de una seccion que contenga la palabra Candados reinicia la seccion y se queda con la ultima; si el contrato citara los candados en dos epigrafes con la misma palabra, solo se comprobaria el ultimo."
+  ],
+  "que_falta": [
+   "Comprobar que el contrato escribe los nombres entre comillas inversas; si no, el finder deberia aceptarlos tambien sin ellas (por ejemplo buscando test_vigia[a-zA-Z0-9_]+ dentro de la seccion y recortando lo que no sea letra, digito o guion bajo).",
+   "El .strip(chr(96)) sobre el nombre es codigo muerto: la expresion regular ya excluye las comillas inversas, asi que nunca hace nada. No rompe nada, pero indica que la limpieza no se ha probado de verdad."
+  ],
+  "resumen_para_el_jefe": "La reparacion hace lo pedido (crea solo el archivo nuevo, salta con explicacion si falta el contrato o la seccion y falla diciendo que candado no existe) y no inventa nada; el unico riesgo real es que la busqueda exige comillas inversas y, si el contrato no las usa, la prueba se quedara saltando sin avisar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 32: unterminated string literal (detected at line 32). Asi no arranca.",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 2"
+ ]
+}
