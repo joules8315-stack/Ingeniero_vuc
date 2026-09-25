@@ -1,0 +1,78 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion mensajes_de_este_turno en arnes/candado_no_repetir.py y su enganche en salida() para frenar cuando ya se le escribio dos veces a Julio en el turno.",
+  "archivo": "arnes/candado_no_repetir.py",
+  "funcion": "salida",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _registrar(mensaje):\n    \"\"\"Deja rastro en memoria/.repeticiones.log.\"\"\"\n    try:\n        with open(LOG, \"a\", encoding=\"utf-8\") as f:\n            f.write(time.strftime(\"%Y-%m-%d %H:%M:%S\") + \" \" + mensaje + \"\\n\")\n    except Exception:\n        pass",
+    "texto_nuevo": "def _registrar(mensaje):\n    \"\"\"Deja rastro en memoria/.repeticiones.log.\"\"\"\n    try:\n        with open(LOG, \"a\", encoding=\"utf-8\") as f:\n            f.write(time.strftime(\"%Y-%m-%d %H:%M:%S\") + \" \" + mensaje + \"\\n\")\n    except Exception:\n        pass\n\n\ndef mensajes_de_este_turno(ruta):\n    \"\"\"Cuenta los mensajes ESCRITOS por el asistente despues del ultimo renglon user.\n\n    Fallo del 2026-09-25, confirmado por Julio enojado ese mismo dia: sigue recibiendo\n    dos mensajes cada vez que pregunta, porque tras el primer mensaje un candado obliga\n    a guardar y despues se le escribe otro.\n\n    Entiende las dos formas:\n      - la sencilla: renglon con clave type y clave text.\n      - la de verdad de Claude Code: type == 'assistant' y el texto vive en message,\n        en su lista content, en los pedazos cuyo type es 'text'.\n    No cuenta: renglones del asistente que solo llevan llamadas a herramientas, ni el\n    texto vacio. Si el archivo no existe o no se puede leer, devuelve cero. Nunca revienta.\n    \"\"\"\n    try:\n        with open(ruta, \"r\", encoding=\"utf-8\") as f:\n            renglones = f.readlines()\n    except Exception:\n        return 0\n\n    ultimo_user = -1\n    for i, linea in enumerate(renglones):\n        try:\n            dato = json.loads(linea)\n        except Exception:\n            continue\n        if isinstance(dato, dict) and dato.get(\"type\") == \"user\":\n            ultimo_user = i\n\n    cuenta = 0\n    for linea in renglones[ultimo_user + 1:]:\n        try:\n            dato = json.loads(linea)\n        except Exception:\n            continue\n        if not isinstance(dato, dict):\n            continue\n        if dato.get(\"type\") != \"assistant\":\n            continue\n        if _tiene_texto_escrito(dato):\n            cuenta += 1\n    return cuenta\n\n\ndef _tiene_texto_escrito(dato):\n    \"\"\"True si el renglon del asistente lleva texto escrito de verdad.\"\"\"\n    texto = dato.get(\"text\")\n    if isinstance(texto, str) and texto.strip():\n        return True\n    mensaje = dato.get(\"message\")\n    if isinstance(mensaje, dict):\n        contenido = mensaje.get(\"content\")\n        if isinstance(contenido, list):\n            for pedazo in contenido:\n                if not isinstance(pedazo, dict):\n                    continue\n                if pedazo.get(\"type\") != \"text\":\n                    continue\n                t = pedazo.get(\"text\")\n                if isinstance(t, str) and t.strip():\n                    return True\n    return False"
+   },
+   {
+    "texto_viejo": "def salida():",
+    "texto_nuevo": "def salida():\n    # Fallo del 2026-09-25: Julio lo confirmo enojado ese dia diciendo que sigue\n    # recibiendo dos mensajes cada vez que pregunta. La causa es que tras el primer\n    # mensaje un candado obliga a guardar y despues se le escribe otro.\n    try:\n        entrada = json.loads(sys.stdin.read() or \"{}\")\n    except Exception:\n        entrada = {}\n    ruta = entrada.get(\"transcript_path\") if isinstance(entrada, dict) else None\n    if ruta:\n        try:\n            if mensajes_de_este_turno(ruta) >= 2:\n                _registrar(\"ya se le hablo a Julio en este turno: \" + str(ruta))\n                print(\"ya le hablaste a Julio en este turno, no le escribas otra vez; \"\n                      \"guarda lo que falte y termina sin escribir nada mas\")\n                sys.exit(2)\n        except SystemExit:\n            raise\n        except Exception:\n            pass\n\n    # ... aqui sigue lo que ya hacia hoy con las frases repetidas ..."
+   }
+  ],
+  "cambio": "Anadir la funcion mensajes_de_este_turno (y su ayudante _tiene_texto_escrito) en arnes/candado_no_repetir.py, y engancharla al principio de salida() leyendo transcript_path del json de entrada para frenar con salida 2 y el aviso pedido cuando ya hay dos o mas mensajes escritos del asistente en el turno.",
+  "codigo": "def mensajes_de_este_turno(ruta):\n    \"\"\"Cuenta los mensajes ESCRITOS por el asistente despues del ultimo renglon user.\n\n    Fallo del 2026-09-25, confirmado por Julio enojado ese mismo dia: sigue recibiendo\n    dos mensajes cada vez que pregunta, porque tras el primer mensaje un candado obliga\n    a guardar y despues se le escribe otro.\n\n    Entiende las dos formas:\n      - la sencilla: renglon con clave type y clave text.\n      - la de verdad de Claude Code: type == 'assistant' y el texto vive en message,\n        en su lista content, en los pedazos cuyo type es 'text'.\n    No cuenta: renglones del asistente que solo llevan llamadas a herramientas, ni el\n    texto vacio. Si el archivo no existe o no se puede leer, devuelve cero. Nunca revienta.\n    \"\"\"\n    try:\n        with open(ruta, \"r\", encoding=\"utf-8\") as f:\n            renglones = f.readlines()\n    except Exception:\n        return 0\n\n    ultimo_user = -1\n    for i, linea in enumerate(renglones):\n        try:\n            dato = json.loads(linea)\n        except Exception:\n            continue\n        if isinstance(dato, dict) and dato.get(\"type\") == \"user\":\n            ultimo_user = i\n\n    cuenta = 0\n    for linea in renglones[ultimo_user + 1:]:\n        try:\n            dato = json.loads(linea)\n        except Exception:\n            continue\n        if not isinstance(dato, dict):\n            continue\n        if dato.get(\"type\") != \"assistant\":\n            continue\n        if _tiene_texto_escrito(dato):\n            cuenta += 1\n    return cuenta\n\n\ndef _tiene_texto_escrito(dato):\n    \"\"\"True si el renglon del asistente lleva texto escrito de verdad.\"\"\"\n    texto = dato.get(\"text\")\n    if isinstance(texto, str) and texto.strip():\n        return True\n    mensaje = dato.get(\"message\")\n    if isinstance(mensaje, dict):\n        contenido = mensaje.get(\"content\")\n        if isinstance(contenido, list):\n            for pedazo in contenido:\n                if not isinstance(pedazo, dict):\n                    continue\n                if pedazo.get(\"type\") != \"text\":\n                    continue\n                t = pedazo.get(\"text\")\n                if isinstance(t, str) and t.strip():\n                    return True\n    return False",
+  "vigia": "vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py::test_dos_mensajes_del_asistente_despues_del_ultimo_user",
+  "puede_danar": [
+   "arnes/candado_no_repetir.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [
+   "El material solo trae el encabezado de salida() (la linea 'def salida():'), no su cuerpo actual. Para insertar el enganche sin romper lo que ya hace con las frases repetidas necesito ver la funcion salida() completa tal como esta hoy. NECESITO_LEER: arnes/candado_no_repetir.py / ver el cuerpo actual de salida() / decide donde va el enganche y como se conserva lo de las frases repetidas / riesgo de romper el candado actual si se sustituye a ciegas."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Ignora un encargo literal: 'Usa el mismo contador de bloqueos seguidos que ya tiene el archivo para no atascar nunca a Julio mas de dos veces seguidas'. El cambio solo llama a _registrar y hace sys.exit(2). Sin ese contador el freno no tiene salida: en cuanto el asistente escriba dos mensajes en un turno normal, Julio queda parado otra vez, y en el turno siguiente tambien.",
+   "En el formato real de Claude Code los resultados de herramientas son renglones de tipo 'user'. Al buscar el ultimo renglon 'user', ese resultado borra todo lo anterior y la cuenta queda en 1: el freno no ocurre nunca, que es justo el caso en que Julio recibe los dos mensajes. La prueba con un archivo de ejemplo puede quedar verde y el candado muerto.",
+   "No se comprobo que 'json' este importado en arnes/candado_no_repetir.py. Si no lo esta, el except del bucle se traga el NameError, mensajes_de_este_turno devuelve 0 siempre, y en salida() el except de la entrada la deja en {}: el candado no hace nada y nadie se entera.",
+   "La guarda se come stdin entero con sys.stdin.read() y el propio obrero admite en 'preguntas' que no vio el cuerpo actual de salida(). Si esa funcion ya leia stdin, se queda sin datos y lo que hoy hace con las frases repetidas deja de funcionar.",
+   "El primer cambio se ancla en el cuerpo entero de _registrar, texto que NO aparece en el material (el paquete solo garantiza el ancla 'def salida():' y que la funcion nueva puede ir justo encima). Depender de un bloque que nadie verifico es como se produce un cambio a medias."
+  ],
+  "riesgo_vecinos": [
+   "El candado de frases repetidas que ya hace hoy: posible doble lectura de stdin y, si el cambio entra a medias, queda huerfano.",
+   "cuerpo/codex.py aparece como vecino y a la vez marcado fuera del paquete: si es quien corre la salida, el exit(2) puede entrar en un bucle de reintento sin fin.",
+   "Julio mismo: el freno puede dispararse en turnos normales de dos mensajes, no solo en el turno que falla."
+  ],
+  "que_falta": [
+   "El nombre y el lugar del contador de bloqueos seguidos que ya existe en el archivo: es la pieza que el encargo obliga a usar y no aparece en ningun punto del cambio.",
+   "El cuerpo real de salida() y la cabecera del archivo con sus imports, que son justo las dos piezas que harian seguros el uso de stdin y de json.",
+   "Una prueba con el caso real: jsonl con un resultado de herramienta entre el user y los dos mensajes del asistente. Sin ella, la verde actual no dice nada."
+  ],
+  "resumen_para_el_jefe": "Rechazada: el freno nuevo no usa el contador de bloqueos seguidos que pedia el encargo y puede dejar a Julio bloqueado, ademas no se aseguro el import de json y con el formato real de Claude Code el conteo nunca llega a dos, asi que el candado queda verde y muerto."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'mensajes_de_este_turno'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'mensajes_de_este_turno'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'mensajes_de_este_turno'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "todas las gratis duermen: revisa bigpickle (A-32)",
+  "vueltas_dadas: 4"
+ ]
+}
