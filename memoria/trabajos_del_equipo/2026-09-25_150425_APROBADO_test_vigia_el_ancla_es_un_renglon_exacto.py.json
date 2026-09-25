@@ -1,0 +1,36 @@
+{
+ "obrero": "groq",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "Falta crear el archivo de prueba solicitado",
+  "archivo": "vigias/test_vigia_el_ancla_es_un_renglon_exacto.py",
+  "funcion": "test_el_candado_frena_un_ancla_de_varios_renglones",
+  "texto_viejo": "",
+  "texto_nuevo": "# vigia NACE ROJA porque el candado todavia no existe\n\"\"\"test_vigia_el_ancla_es_un_renglon_exacto\n\nLey de Julio 2026-09-25:\nCuando se le pega un trozo de código al equipo, el ancla tiene que ser UN solo renglón exacto y único,\nporque con varios renglones la terminal los junta, el texto no coincide con el archivo y el trabajo se rechaza.\n\"\"\"\n\nimport subprocess\nimport sys\nfrom pathlib import Path\n\ndef test_el_candado_frena_un_ancla_de_varios_renglones():\n    \"\"\"Comprueba que el candado arnes/candado_ancla.py rechaza un fragmento de varios renglones\n    y acepta uno de un solo renglón que aparece una única vez en el archivo.\"\"\"\n    candado_path = Path(__file__).parents[1] / \"arnes\" / \"candado_ancla.py\"\n    assert candado_path.is_file(), f\"Falta el candado {candado_path}\"\n\n    # Entrada con varios renglones que nombran un archivo del proyecto\n    multi_line_input = (\n        \"ingeniero.py equipo\\n\"\n        \"def foo():\\n\"\n        \"    pass\\n\"\n        \"archivo = 'cerebro/protocolo.py'\\n\"\n    )\n    result_multi = subprocess.run(\n        [sys.executable, str(candado_path)],\n        input=multi_line_input,\n        text=True,\n        capture_output=True,\n    )\n    assert result_multi.returncode == 2, f\"Se esperaba código 2, obtuvo {result_multi.returncode}\"\n\n    # Entrada con un solo renglón que existe una única vez en el archivo\n    # Elegimos una línea única del archivo candado_ancla.py (por ejemplo una importación)\n    single_line = \"import sys\\n\"\n    result_single = subprocess.run(\n        [sys.executable, str(candado_path)],\n        input=single_line,\n        text=True,\n        capture_output=True,\n    )\n    assert result_single.returncode == 0, f\"Se esperaba código 0, obtuvo {result_single.returncode}\"\n",
+  "cambio": "Crear archivo vigias/test_vigia_el_ancla_es_un_renglon_exacto.py con la prueba descrita",
+  "codigo": "def test_el_candado_frena_un_ancla_de_varios_renglones():\n    \"\"\"Comprueba que el candado arnes/candado_ancla.py rechaza un fragmento de varios renglones\n    y acepta uno de un solo renglón que aparece una única vez en el archivo.\"\"\"\n    candado_path = Path(__file__).parents[1] / \"arnes\" / \"candado_ancla.py\"\n    assert candado_path.is_file(), f\"Falta el candado {candado_path}\"\n    # ... resto del código ...",
+  "vigia": "test_el_candado_frena_un_ancla_de_varios_renglones",
+  "puede_danar": [
+   "arnes/candado_ancla.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El archivo nuevo y la funcion pedida existen en la propuesta, usan subprocess/sys/Path correctamente y cumplen los codigos 2 y 0 exigidos; no toca ningun otro archivo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19402 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 1"
+ ]
+}

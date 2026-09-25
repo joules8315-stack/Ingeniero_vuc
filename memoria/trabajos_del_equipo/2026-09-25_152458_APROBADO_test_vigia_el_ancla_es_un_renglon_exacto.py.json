@@ -1,0 +1,60 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El archivo vigias/test_vigia_el_ancla_es_un_renglon_exacto.py esta roto: falta el import de Path y tiene un comentario de relleno en vez del codigo de la prueba.",
+  "archivo": "vigias/test_vigia_el_ancla_es_un_renglon_exacto.py",
+  "funcion": "archivo entero",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "NO_ENCONTRADO",
+    "texto_nuevo": "\"\"\"Vigia: el ancla de un trozo de codigo tiene que ser UN solo renglon exacto.\n\nLey de Julio del 2026-09-25:\ncuando se le pega un trozo de codigo al equipo, el ancla tiene que ser UN solo\nrenglon exacto que aparezca una sola vez en el archivo. Con varios renglones la\nterminal los junta, el texto no coincide y el trabajo se rechaza. Paso dos veces\nese dia.\n\"\"\"\n\nimport os\nimport subprocess\nimport sys\nfrom pathlib import Path\n\n\nRAIZ = Path(__file__).resolve().parent.parent\nCANDADO = RAIZ / \"arnes\" / \"candado_ancla.py\"\n\n\ndef test_el_candado_frena_un_ancla_de_varios_renglones():\n    assert CANDADO.exists(), f\"no existe el candado: {CANDADO}\"\n\n    orden_mala = (\n        \"ingeniero.py equipo\\n\"\n        \"cuerpo/aplicador.py\\n\"\n        \"if ruta not in contenidos:\\n\"\n        \"    contenidos[ruta] = texto\\n\"\n    )\n    malo = subprocess.run(\n        [sys.executable, str(CANDADO)],\n        input=orden_mala,\n        capture_output=True,\n        text=True,\n        cwd=str(RAIZ),\n    )\n    assert malo.returncode == 2, (\n        f\"el candado debio frenar el ancla de varios renglones, \"\n        f\"salio {malo.returncode}: {malo.stdout} {malo.stderr}\"\n    )\n\n    orden_buena = (\n        \"ingeniero.py equipo\\n\"\n        \"cuerpo/aplicador.py\\n\"\n        \"if ruta not in contenidos: \\n\"\n    )\n    bueno = subprocess.run(\n        [sys.executable, str(CANDADO)],\n        input=orden_buena,\n        capture_output=True,\n        text=True,\n        cwd=str(RAIZ),\n    )\n    assert bueno.returncode == 0, (\n        f\"el candado debio aceptar el ancla de un solo renglon, \"\n        f\"salio {bueno.returncode}: {bueno.stdout} {bueno.stderr}\"\n    )\n"
+   }
+  ],
+  "cambio": "Reescribir entero el archivo vigias/test_vigia_el_ancla_es_un_renglon_exacto.py con el docstring de la ley, los imports os/sys/subprocess/pathlib y la unica funcion test_el_candado_frena_un_ancla_de_varios_renglones que comprueba que existe arnes/candado_ancla.py, corre el candado con subprocess y sys.executable desde la raiz del proyecto pasandole por stdin una orden con ingeniero.py equipo y un trozo de varios renglones que nombra cuerpo/aplicador.py exigiendo codigo 2, y luego con el unico renglon 'if ruta not in contenidos: ' exigiendo codigo 0.",
+  "codigo": "\"\"\"Vigia: el ancla de un trozo de codigo tiene que ser UN solo renglon exacto.\n\nLey de Julio del 2026-09-25:\ncuando se le pega un trozo de codigo al equipo, el ancla tiene que ser UN solo\nrenglon exacto que aparezca una sola vez en el archivo. Con varios renglones la\nterminal los junta, el texto no coincide y el trabajo se rechaza. Paso dos veces\neso dia.\n\"\"\"\n\nimport os\nimport subprocess\nimport sys\nfrom pathlib import Path\n\n\nRAIZ = Path(__file__).resolve().parent.parent\nCANDADO = RAIZ / \"arnes\" / \"candado_ancla.py\"\n\n\ndef test_el_candado_frena_un_ancla_de_varios_renglones():\n    assert CANDADO.exists(), f\"no existe el candado: {CANDADO}\"\n\n    orden_mala = (\n        \"ingeniero.py equipo\\n\"\n        \"cuerpo/aplicador.py\\n\"\n        \"if ruta not in contenidos:\\n\"\n        \"    contenidos[ruta] = texto\\n\"\n    )\n    malo = subprocess.run(\n        [sys.executable, str(CANDADO)],\n        input=orden_mala,\n        capture_output=True,\n        text=True,\n        cwd=str(RAIZ),\n    )\n    assert malo.returncode == 2, (\n        f\"el candado debio frenar el ancla de varios renglones, \"\n        f\"salio {malo.returncode}: {malo.stdout} {malo.stderr}\"\n    )\n\n    orden_buena = (\n        \"ingeniero.py equipo\\n\"\n        \"cuerpo/aplicador.py\\n\"\n        \"if ruta not in contenidos: \\n\"\n    )\n    bueno = subprocess.run(\n        [sys.executable, str(CANDADO)],\n        input=orden_buena,\n        capture_output=True,\n        text=True,\n        cwd=str(RAIZ),\n    )\n    assert bueno.returncode == 0, (\n        f\"el candado debio aceptar el ancla de un solo renglon, \"\n        f\"salio {bueno.returncode}: {bueno.stdout} {bueno.stderr}\"\n    )\n",
+  "vigia": "La propia prueba: corre arnes/candado_ancla.py con un ancla de varios renglones y exige codigo 2, y con el unico renglon 'if ruta not in contenidos: ' exige codigo 0.",
+  "puede_danar": [
+   "arnes/candado_ancla.py",
+   "cuerpo/aplicador.py"
+  ],
+  "preguntas": [],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El ancla buena se pasa con espacio final (\"if ruta not in contenidos: \"), copiado literal del encargo; si en cuerpo/aplicador.py ese renglón no lleva espacio final, el caso bueno daria codigo distinto de 0 y la prueba nunca pasaria. Viene del material, asi que no es invencion, pero conviene confirmarlo con una cuenta.",
+   "El reparto de lineas que espera el candado (orden, luego ruta, luego renglones del ancla) es la lectura natural del encargo, pero este material no trae arnes/candado_ancla.py: si el candado separa de otra forma, la prueba nace roja por un motivo que no es la ley."
+  ],
+  "que_falta": [
+   "El contenido de arnes/candado_ancla.py, para comprobar que lee la orden por la entrada y devuelve 2 al ancla de varios renglones y 0 a la de uno solo; y que cuerpo/aplicador.py tiene ese renglón una sola vez con el espacio final. Se resuelve con una cuenta, no con opinion."
+  ],
+  "resumen_para_el_jefe": "Reescribe entero el archivo de la vigia como pedia el encargo, sin tocar ningun otro; lo unico que queda por confirmar con un programa es si el candado espera ese formato de entrada y si el renglon bueno lleva ese espacio final."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "todas las gratis duermen: revisa bigpickle (A-32)",
+  "vueltas_dadas: 4"
+ ]
+}

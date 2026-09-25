@@ -10,6 +10,16 @@ aprobado llega al disco + R2 el material completo → recoger los 14 trabajos fr
 velocidad → R6 paralelo + R7 la llave por partes → R8 el comando `plan`.
 El estado vive en `memoria/ORDENES.json`, no en el chat.
 
+## LA LEY DEL ANCLA DE UN RENGLON (Julio, 2026-09-25)
+Cuando se le pega un trozo de codigo al equipo dentro de un encargo, el ancla es **UN SOLO RENGLON,
+exacto, que aparezca UNA sola vez en el archivo**. Con varios renglones la terminal los junta, el
+texto ya no coincide con el archivo y el trabajo se rechaza (paso dos veces el 2026-09-25).
+Antes de mandar el encargo se comprueba asi:
+```
+cd C:\Ingeniero_VUC; findstr /c:"<el renglon>" <archivo>
+```
+**No depende de la memoria de nadie:** lo frena `arnes/candado_ancla.py` (orden R11).
+
 ## LA REGLA QUE MANDA SOBRE TODAS
 **No se lee el proyecto. Se lee el PAQUETE MINIMO.**
 

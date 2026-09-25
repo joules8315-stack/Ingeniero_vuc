@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "Falta el archivo arnes/candado_ancla.py que frena cuando el ancla de un encargo ocupa mas de un renglon o no aparece exactamente una vez en el archivo citado.",
+  "archivo": "arnes/candado_ancla.py",
+  "funcion": "archivo nuevo completo",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "Crear el archivo NUEVO arnes/candado_ancla.py con el candado completo: lee de la entrada el texto de la orden (texto suelto o JSON con la orden dentro), si no contiene 'ingeniero.py equipo' sale con codigo 0 y calla; si lo contiene, saca los nombres de archivo .py citados y los trozos que parezcan codigo (acaban en dos puntos, llevan igual, llevan parentesis, o empiezan por if/def/for/return/with/import); por cada trozo, si ocupa mas de un renglon o no aparece exactamente una vez en alguno de esos archivos, sale con codigo 2 y escribe en la salida de error, en palabras simples y sin jerga, que el ancla tiene que ser UN renglon exacto y unico y como comprobarlo con findstr; si todo esta bien sale con codigo 0 y calla. Si arnes/autorizacion.py dice que Julio autorizo, deja pasar.",
+  "codigo": "#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\n\"\"\"Candado del ancla: el ancla de un encargo tiene que ser UN SOLO RENGLON,\nEXACTO, y aparecer UNA SOLA VEZ en el archivo citado.\n\nJulio, 2026-09-25: cuando se le pega un trozo de codigo al equipo dentro de un\nencargo, el ancla tiene que ser UN SOLO RENGLON, exacto, que aparezca UNA sola\nvez en el archivo. Con varios renglones la terminal los junta, el texto ya no\ncoincide y el trabajo se rechaza (paso dos veces ese dia).\n\nUso:\n    echo \"<texto de la orden>\" | python arnes/candado_ancla.py\n    echo '{\"orden\": \"<texto>\"}' | python arnes/candado_ancla.py\n\nSalidas:\n    0  -> pasa (no hay orden de equipo, o el ancla esta bien, o Julio autorizo)\n    2  -> frena: el ancla ocupa mas de un renglon o no aparece exactamente una vez\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nimport re\nimport sys\nfrom pathlib import Path\n\n\nRAIZ = Path(__file__).resolve().parents[1]\n\n# Marca que dispara el candado: solo actua si el texto pide tocar el equipo.\nMARCA_EQUIPO = \"ingeniero.py equipo\"\n\n# Nombres de archivo del proyecto que aparecen en el texto.\nPATRON_ARCHIVO_PY = re.compile(r\"[A-Za-z0-9_./\\\\-]+\\.py\")\n\n# Arranques que delatan un trozo de codigo.\nARRANQUES_CODIGO = (\"if \", \"def \", \"for \", \"return \", \"with \", \"import \")\n\n\ndef _leer_entrada() -> str:\n    \"\"\"Lee de la entrada el texto de la orden.\n\n    Acepta texto suelto o un JSON con la orden dentro (como los demas candados).\n    \"\"\"\n    crudo = sys.stdin.read()\n    if not crudo:\n        return \"\"\n    texto = crudo.strip()\n    if not texto:\n        return \"\"\n    # Intento JSON primero: si es un objeto con 'orden' o 'texto', se usa eso.\n    if texto.startswith(\"{\"):\n        try:\n            datos = json.loads(texto)\n        except Exception:\n            return crudo\n        if isinstance(datos, dict):\n            for clave in (\"orden\", \"texto\", \"comando\", \"command\", \"input\"):\n                valor = datos.get(clave)\n                if isinstance(valor, str):\n                    return valor\n        return crudo\n    return crudo\n\n\ndef _julio_autorizo() -> bool:\n    \"\"\"Pregunta a arnes/autorizacion.py si Julio autorizo esta orden.\"\"\"\n    try:\n        sys.path.insert(0, str(RAIZ))\n        from arnes import autorizacion  # type: ignore\n    except Exception:\n        return False\n    for nombre in (\"julio_autorizo\", \"autorizado\", \"esta_autorizado\", \"puede_pasar\"):\n        fn = getattr(autorizacion, nombre, None)\n        if callable(fn):\n            try:\n                return bool(fn())\n            except TypeError:\n                try:\n                    return bool(fn(\"candado_ancla\"))\n                except Exception:\n                    continue\n            except Exception:\n                continue\n    return False\n\n\ndef _archivos_citados(texto: str) -> list:\n    \"\"\"Saca los nombres de archivo .py que aparecen en el texto.\"\"\"\n    vistos = []\n    for m in PATRON_ARCHIVO_PY.finditer(texto):\n        ruta = m.group(0)\n        if ruta not in vistos:\n            vistos.append(ruta)\n    return vistos\n\n\ndef _parece_codigo(trozo: str) -> bool:\n    \"\"\"Dice si un trozo parece codigo segun las reglas del encargo.\"\"\"\n    t = trozo.strip()\n    if not t:\n        return False\n    if t.endswith(\":\"):\n        return True\n    if \"=\" in t:\n        return True\n    if \"(\" in t or \")\" in t:\n        return True\n    for arranque in ARRANQUES_CODIGO:\n        if t.startswith(arranque):\n            return True\n    return False\n\n\ndef _trozos_codigo(texto: str) -> list:\n    \"\"\"Saca los trozos del texto que parezcan codigo.\n\n    Se parte por renglones y se agrupan los renglones consecutivos que parezcan\n    codigo, para poder detectar anclas de varios renglones.\n    \"\"\"\n    renglones = texto.splitlines()\n    trozos = []\n    actual = []\n    for renglon in renglones:\n        if _parece_codigo(renglon):\n            actual.append(renglon)\n        else:\n            if actual:\n                trozos.append(\"\\n\".join(actual))\n                actual = []\n    if actual:\n        trozos.append(\"\\n\".join(actual))\n    return trozos\n\n\ndef _aparece_exactamente_una_vez(trozo: str, archivos: list) -> bool:\n    \"\"\"Comprueba que el trozo aparece exactamente una vez en alguno de los archivos.\"\"\"\n    for ruta in archivos:\n        candidatos = [ruta]\n        if not Path(ruta).is_absolute():\n            candidatos.append(str(RAIZ / ruta))\n        for cand in candidatos:\n            p = Path(cand)\n            if not p.is_file():\n                continue\n            try:\n                contenido = p.read_text(encoding=\"utf-8\", errors=\"replace\")\n            except Exception:\n                continue\n            if contenido.count(trozo) == 1:\n                return True\n    return False\n\n\ndef _mensaje_freno(trozo: str, archivos: list) -> str:\n    \"\"\"Mensaje en palabras simples, sin jerga, para la salida de error.\"\"\"\n    lineas = [\n        \"El ancla tiene que ser UN renglon exacto y unico.\",\n        \"\",\n        \"Lo que has pegado ocupa mas de un renglon, o no aparece exactamente una vez\",\n        \"en el archivo del proyecto. Cuando son varios renglones, la terminal los junta\",\n        \"y el texto ya no coincide: el trabajo se rechaza.\",\n        \"\",\n        \"Ancla que has pegado:\",\n        trozo,\n        \"\",\n        \"Archivos del proyecto que citas:\",\n    ]\n    if archivos:\n        for a in archivos:\n            lineas.append(\"  - \" + a)\n    else:\n        lineas.append(\"  (ninguno)\")\n    lineas.append(\"\")\n    lineas.append(\"Como comprobarlo con findstr (una sola linea, exacta, una sola vez):\")\n    for a in archivos or [\"<archivo.py>\"]:\n        lineas.append('  findstr /n /c:\"' + trozo.replace(\"\\n\", \" \") + '\" ' + a)\n    lineas.append(\"\")\n    lineas.append(\"Si sale mas de un numero de linea, el ancla no es unica: alargala hasta que lo sea.\")\n    lineas.append(\"Si no sale ninguna, el ancla no esta en el archivo: copiala tal cual del archivo.\")\n    return \"\\n\".join(lineas)\n\n\ndef main() -> int:\n    texto = _leer_entrada()\n    if MARCA_EQUIPO not in texto:\n        return 0\n    if _julio_autorizo():\n        return 0\n\n    archivos = _archivos_citados(texto)\n    trozos = _trozos_codigo(texto)\n\n    for trozo in trozos:\n        if \"\\n\" in trozo:\n            sys.stderr.write(_mensaje_freno(trozo, archivos) + \"\\n\")\n            return 2\n        if not _aparece_exactamente_una_vez(trozo, archivos):\n            sys.stderr.write(_mensaje_freno(trozo, archivos) + \"\\n\")\n            return 2\n\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main())\n",
+  "vigia": "vigias/test_vigia_el_ancla_es_un_renglon_exacto.py comprueba que arnes/candado_ancla.py existe, que frena un ancla de varios renglones (codigo 2) y que acepta un ancla de un solo renglon que aparece una unica vez en el archivo (codigo 0).",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "ingeniero.py",
+   "arnes/candado_equipo.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "archivo.py",
+   "candado_equipo.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 2"
+ ]
+}
