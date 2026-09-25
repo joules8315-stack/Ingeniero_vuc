@@ -16,7 +16,10 @@ def test_el_candado_frena_un_ancla_de_varios_renglones():
             text=True,
         )
 
-    autorizacion = Path(__file__).parents[1] / "arnes" / "autorizacion"
+    sys.path.insert(0, str(Path(__file__).parents[1]))
+    from arnes import autorizacion as _autorizacion
+    if _autorizacion.autorizada():
+        return
     if autorizacion.is_file() and "Julio" in autorizacion.read_text(encoding="utf-8"):
         import pytest
         pytest.skip("Julio abrio la llave: el candado se abre a proposito")
@@ -49,3 +52,19 @@ def test_el_candado_frena_un_ancla_de_varios_renglones():
     texto_tres = "Revisa el archivo (arnes/candado_ancla.py) cuando puedas.\n"
     r_tres = _correr(texto_tres)
     assert r_tres.returncode == 0, r_tres.stderr
+
+
+def test_vigia_el_candado_respeta_la_llave_de_julio(monkeypatch):
+    """Fallo del 2026-09-25: el candado arnes/candado_ancla.py pregunta por cuatro
+    nombres que no existen (julio_autorizo, autorizo_julio, autorizado, julio_autoriza)
+    y nunca por la funcion autorizada de arnes.autorizacion, asi que no respeta la
+    llave de Julio. Esta prueba nace roja a proposito."""
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).parents[1]))
+    from arnes import autorizacion as _autorizacion
+    from arnes import candado_ancla as _candado_ancla
+
+    monkeypatch.setattr(_autorizacion, "autorizada", lambda: True)
+    assert _candado_ancla._autorizado() is True
