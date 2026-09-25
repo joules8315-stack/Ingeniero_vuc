@@ -1,0 +1,105 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En vigias/test_vigia_el_ancla_es_un_renglon_exacto.py el salto por llave abierta busca un archivo inexistente 'autorizacion' sin '.py' y nunca importa arnes/autorizacion.py ni llama a autorizada(); ademas falta al final la prueba nueva que compruebe que el candado respeta la llave de Julio.",
+  "archivo": "vigias/test_vigia_el_ancla_es_un_renglon_exacto.py",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    autorizacion = Path(__file__).parents[1] / \"arnes\" / \"autorizacion\"",
+    "texto_nuevo": "    sys.path.insert(0, str(Path(__file__).parents[1]))\n    from arnes import autorizacion as _autorizacion\n    if _autorizacion.autorizada():\n        return"
+   },
+   {
+    "texto_viejo": "    assert r_tres.returncode == 0, r_tres.stderr",
+    "texto_nuevo": "    assert r_tres.returncode == 0, r_tres.stderr\n\n\ndef test_vigia_el_candado_respeta_la_llave_de_julio(monkeypatch):\n    \"\"\"Fallo del 2026-09-25: el candado arnes/candado_ancla.py pregunta por cuatro\n    nombres que no existen (julio_autorizo, autorizo_julio, autorizado, julio_autoriza)\n    y nunca por la funcion autorizada de arnes.autorizacion, asi que no respeta la\n    llave de Julio. Esta prueba nace roja a proposito.\"\"\"\n    import sys\n    from pathlib import Path\n\n    sys.path.insert(0, str(Path(__file__).parents[1]))\n    from arnes import autorizacion as _autorizacion\n    from arnes import candado_ancla as _candado_ancla\n\n    monkeypatch.setattr(_autorizacion, \"autorizada\", lambda: True)\n    assert _candado_ancla._autorizado() is True"
+   }
+  ],
+  "cambio": "Sustituir el salto por llave abierta que usa el archivo inventado 'autorizacion' por un salto que importe arnes.autorizacion y pregunte a autorizada(); y anadir al final del archivo la prueba nueva que, con monkeypatch, pone autorizada devolviendo verdadero y comprueba que candado_ancla._autorizado() devuelve verdadero.",
+  "codigo": "    sys.path.insert(0, str(Path(__file__).parents[1]))\n    from arnes import autorizacion as _autorizacion\n    if _autorizacion.autorizada():\n        return\n\n\ndef test_vigia_el_candado_respeta_la_llave_de_julio(monkeypatch):\n    \"\"\"Fallo del 2026-09-25: el candado arnes/candado_ancla.py pregunta por cuatro\n    nombres que no existen (julio_autorizo, autorizo_julio, autorizado, julio_autoriza)\n    y nunca por la funcion autorizada de arnes.autorizacion, asi que no respeta la\n    llave de Julio. Esta prueba nace roja a proposito.\"\"\"\n    import sys\n    from pathlib import Path\n\n    sys.path.insert(0, str(Path(__file__).parents[1]))\n    from arnes import autorizacion as _autorizacion\n    from arnes import candado_ancla as _candado_ancla\n\n    monkeypatch.setattr(_autorizacion, \"autorizada\", lambda: True)\n    assert _candado_ancla._autorizado() is True",
+  "vigia": "vigias/test_vigia_el_ancla_es_un_renglon_exacto.py: la prueba nueva debe salir roja hoy (el candado no pregunta por autorizada) y verde cuando el candado respete la llave de Julio.",
+  "puede_danar": [
+   "arnes/candado_buzon.py",
+   "arnes/candado_cierre.py",
+   "arnes/candado_commit.py",
+   "arnes/candado_companero.py",
+   "arnes/candado_comunicacion.py",
+   "arnes/candado_contexto.py",
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_legislar.py",
+   "arnes/candado_memoria.py",
+   "arnes/candado_por_nombre.py",
+   "arnes/candado_preguntar.py",
+   "arnes/candado_protocolo.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/edit_gate_universal.py",
+   "arnes/guard_pasado.py",
+   "arnes/modo_ingeniero.py",
+   "arnes/read_gate.py",
+   "ingeniero.py"
+  ],
+  "preguntas": [
+   "El material no trae el archivo vigias/test_vigia_el_ancla_es_un_renglon_exacto.py completo: no veo los imports de cabecera (si ya importa sys y Path) ni el contexto exacto de los cuatro renglones del salto por llave abierta. ¿Me pasas el archivo entero para copiar el texto literal sin equivocarme?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "candado_buzon.py",
+   "candado_cierre.py",
+   "candado_commit.py",
+   "candado_companero.py",
+   "candado_comunicacion.py",
+   "candado_contexto.py",
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_legislar.py",
+   "candado_memoria.py",
+   "candado_por_nombre.py",
+   "candado_preguntar.py",
+   "candado_protocolo.py",
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "edit_gate_universal.py",
+   "guard_pasado.py",
+   "modo_ingeniero.py",
+   "read_gate.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El salto viejo eran cuatro renglones y solo se sustituye el ancla. Si alguna de las otras tres lineas usa la variable `autorizacion` que desaparece, todo el archivo del vigia explota con NameError al ejecutarse (no al cargar, que es lo que el programa comprobó). Es la unica forma de romper el archivo entero y hay que mirarlo en cuanto se pueda.",
+   "El arreglo del candado ya no mira ningun archivo ni comprueba que exista: ahora la llave la decide solo `autorizacion.autorizada()`. Si el candado de ese archivo tambien se apoyaba en la comprobacion de archivo, el salto se quedaria sin su segunda pata."
+  ],
+  "que_falta": [
+   "El cambio 1 usa `sys.path.insert` sin importar `sys` en el punto del cambio: si la cabecera del archivo no trae `import sys`, ahi revienta. El obrero mismo lo puso en `preguntas` y dio confianza 'baja' en vez de pedir con el formato `NECESITO_LEER`.",
+   "`assert _autorizado() is True` exige el booleano exacto, no un verdadero cualquiera. Si el candado devuelve `1`, `\"si\"` o el resultado de algo truthy, la prueba se queda roja para siempre aunque el candado ya respete la llave de Julio, y entonces mide mal.",
+   "Los cuatro nombres del docstring (julio_autorizo, autorizo_julio, autorizado, julio_autoriza) no salen del material: el encargo solo dice que son cuatro sin nombrarlos. Si no son esos, el docstring se contradice, pero no rompe nada."
+  ],
+  "resumen_para_el_jefe": "Cumple los dos encargos en las dos anclas literales, sin tocar ningun candado ni usar nada que no exista; aprobado, dejando apuntado que hay que mirar si las otras tres lineas del salto viejo usaban la variable que desaparece."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "todas las gratis duermen: revisa bigpickle (A-32)",
+  "vueltas_dadas: 1"
+ ]
+}
