@@ -1,0 +1,40 @@
+{
+ "obrero": "gemini4",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El código está mal anidado y mezcla comprobaciones entre archivos, lo que causa errores cuando hay múltiples archivos. Además, la lógica está invertida al comprobar archivos antes que funciones, y la búsqueda de nombres con guion bajo falla.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_prompt_obrero"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "test_tres_material_no_menciona_el_archivo falla: MATERIAL_SIN_ESE_ARCHIVO NO contiene la cadena 'cuerpo/obrero.py' (solo cuerpo/ingeniero.py y cuerpo/revisor.py), asi que la prueba pasa; pero test_dos SI falla, y ese es el gordo: la funcion hace 'if not archivos: return []' ANTES de mirar las funciones, no importa si el archivo falta o no. En test_dos, el encargo '... dentro la funcion _prompt_obrero' SI menciona 'cuerpo/obrero.py', asi que el archivo falta (correcto) y ademas la funcion tambien se comprueba. Ahi hay 2 frases ('el material no trae el archivo' y 'la funcion') y la prueba exige len == 1: RECHAZADO en la linea de arriba, el assert len(resultado)==1 revienta.",
+   "El filtro de funciones usa re.findall(r'\\b_([A-Za-z0-9_]+)\\b', encargo), que captura el grupo SIN la raya y luego compara 'def ' + nombre, o sea 'def prompt_obrero' en vez de 'def _prompt_obrero'. Contra un material con 'def _prompt_obrero(...):' eso no aparece, luego da falso faltante. En test_uno el material SI trae el archivo y la funcion, pero la funcion se detecta como ausente: resultado != [] y el assert resultado == [] revienta.",
+   "El re.findall de archivos '[A-Za-z0-9_/\\\\][A-Za-z0-9_/\\\\.-]*\\.(?:py|md)' sobre 'Revisa el punto py y dime' no encuentra '.py' (no hay punto seguido de py, la palabra suelta es 'py'), asi que test_cinco si pasa por suerte, pero el filtro 'archivos = [a for a in archivos if a not in (\"py\", \"md\")]' no protege ese caso porque el regex nunca captura 'py' suelto. Queda como relleno sin efecto."
+  ],
+  "riesgo_vecinos": [
+   "El bloque try/except que se traga TODA excepcion y devuelve [] convierte cualquier error real (re no importado, por ejemplo) en 'no falta nada', que es el peor fallo posible en una funcion cuya unica gracia es avisar: en vez de 'el material no trae X' el obrero se calla y se vuelve a preguntar. Es el sintoma que costo tres intentos en el expediente 173.",
+   "Devuelve [] cuando el encargo no nombra archivos, aunque nombre funciones: un encargo que dice 'arregla la funcion buscar_cosas' sin ruta no da pista ninguna."
+  ],
+  "que_falta": [
+   "La prueba que decide es el vigia, no esta resolucion: se debe comprobar con el archivo real, y el propio diagnostico reconoce que no vio el cuerpo de obrero.py ni confirmo 'import re'.",
+   "Falta comprobar que 'import re' existe en la cabecera; con el except global, si falta, la funcion devuelve siempre [] y los tests pasan igual de verdes sin avisar de nada."
+  ],
+  "resumen_para_el_jefe": "La logica esta de cabeza al reves: comprueba los archivos antes que las funciones, y al buscar los nombres con guion bajo se come la raya, asi que da por faltante justo la funcion que si esta y la prueba que la mide se rompe."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19217 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 21486 a 12276 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite dejo el pedido a mitad (la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}
