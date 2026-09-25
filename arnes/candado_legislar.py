@@ -229,6 +229,15 @@ def main():
         p = pendientes()
         sys.stdout.write(("\n".join("- " + e["texto"][:120] for e in p)) or "sin pendientes\n")
         return 0
+    if args and args[0] == "marcar-todo" and len(args) >= 3:
+        resolucion = args[1]
+        motivo = " ".join(args[2:])
+        marcados = 0
+        for e in pendientes():
+            if marcar(e["texto"], resolucion, motivo):
+                marcados += 1
+        sys.stdout.write(f"{marcados} marcados\n")
+        return 0
     import autorizacion
     if autorizacion.autorizada():  # F7: solo Julio apaga (comando autorizar-off)
         return 0
