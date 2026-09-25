@@ -90,6 +90,80 @@ def _registrar(mensaje):
         pass
 
 
+def mensajes_de_este_turno(ruta):
+    """Cuenta los mensajes ESCRITOS por el asistente en el turno de ahora.
+
+    El turno empieza en el ultimo renglon de tipo user que NO sea respuesta de
+    herramienta (las respuestas de herramientas llegan como user con contenido en
+    lista y pedazos de tipo tool_result). Desde ahi se cuentan los renglones de
+    tipo assistant que llevan texto escrito: en la clave text, o dentro de la
+    clave message, en su lista content, en los pedazos de tipo text. No cuentan
+    los renglones del asistente que solo llevan llamadas a herramientas, ni el
+    texto vacio. Si el archivo no existe, no se puede leer, o un renglon viene
+    roto, no revienta: los renglones malos se saltan y si no hay nada devuelve 0.
+    """
+    try:
+        with open(ruta, "r", encoding="utf-8") as f:
+            renglones = f.readlines()
+    except Exception:
+        return 0
+
+    def _es_respuesta_de_herramienta(contenido):
+        if not isinstance(contenido, list):
+            return False
+        for pedazo in contenido:
+            if isinstance(pedazo, dict) and pedazo.get("type") == "tool_result":
+                return True
+        return False
+
+    def _tiene_texto_escrito(renglon):
+        texto = renglon.get("text")
+        if isinstance(texto, str) and texto.strip():
+            return True
+        mensaje = renglon.get("message")
+        if isinstance(mensaje, dict):
+            contenido = mensaje.get("content")
+            if isinstance(contenido, list):
+                for pedazo in contenido:
+                    if isinstance(pedazo, dict) and pedazo.get("type") == "text":
+                        t = pedazo.get("text")
+                        if isinstance(t, str) and t.strip():
+                            return True
+        return False
+
+    inicio = None
+    for i, linea in enumerate(renglones):
+        try:
+            renglon = json.loads(linea)
+        except Exception:
+            continue
+        if not isinstance(renglon, dict):
+            continue
+        if renglon.get("type") == "user":
+            contenido = renglon.get("content")
+            if contenido is None and isinstance(renglon.get("message"), dict):
+                contenido = renglon["message"].get("content")
+            if not _es_respuesta_de_herramienta(contenido):
+                inicio = i
+
+    if inicio is None:
+        return 0
+
+    cuenta = 0
+    for linea in renglones[inicio + 1:]:
+        try:
+            renglon = json.loads(linea)
+        except Exception:
+            continue
+        if not isinstance(renglon, dict):
+            continue
+        if renglon.get("type") != "assistant":
+            continue
+        if _tiene_texto_escrito(renglon):
+            cuenta += 1
+    return cuenta
+
+
 def salida():
     """Punto de enganche al terminar la respuesta (Stop).
 
