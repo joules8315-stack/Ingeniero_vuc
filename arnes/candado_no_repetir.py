@@ -116,6 +116,21 @@ def mensajes_de_este_turno(ruta):
                 return True
         return False
 
+    def _es_aviso_de_la_maquina(renglon, contenido):
+        # Fallo del 2026-09-25, verificado en la conversacion real: entre dos
+        # mensajes escritos siempre se cuela un aviso de la maquina, la cuenta
+        # se reinicia y nunca llega a dos. Sin esto el freno queda verde y muerto.
+        if renglon.get("isMeta") is True:
+            return True
+        if renglon.get("promptSource") == "system":
+            return True
+        if _es_respuesta_de_herramienta(contenido):
+            return True
+        origen = renglon.get("origin")
+        if isinstance(origen, dict) and origen.get("type") == "task":
+            return True
+        return False
+
     def _tiene_texto_escrito(renglon):
         texto = renglon.get("text")
         if isinstance(texto, str) and texto.strip():
@@ -143,7 +158,7 @@ def mensajes_de_este_turno(ruta):
             contenido = renglon.get("content")
             if contenido is None and isinstance(renglon.get("message"), dict):
                 contenido = renglon["message"].get("content")
-            if not _es_respuesta_de_herramienta(contenido):
+            if not _es_aviso_de_la_maquina(renglon, contenido):
                 inicio = i
 
     if inicio is None:
