@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "Falta la funcion mensajes_de_este_turno en arnes/candado_no_repetir.py, que cuente los mensajes escritos por el asistente en el turno actual, y la prueba vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py esta roja esperandola.",
+  "archivo": "arnes/candado_no_repetir.py",
+  "funcion": "salida",
+  "texto_viejo": "def salida():",
+  "texto_nuevo": "def mensajes_de_este_turno(ruta):\n    \"\"\"Cuenta los mensajes ESCRITOS por el asistente en el turno de ahora.\n\n    El turno empieza en el ultimo renglon de tipo user que NO sea respuesta de\n    herramienta (las respuestas de herramientas llegan como user con contenido en\n    lista y pedazos de tipo tool_result). Desde ahi se cuentan los renglones de\n    tipo assistant que llevan texto escrito: en la clave text, o dentro de la\n    clave message, en su lista content, en los pedazos de tipo text. No cuentan\n    los renglones del asistente que solo llevan llamadas a herramientas, ni el\n    texto vacio. Si el archivo no existe, no se puede leer, o un renglon viene\n    roto, no revienta: los renglones malos se saltan y si no hay nada devuelve 0.\n    \"\"\"\n    try:\n        with open(ruta, \"r\", encoding=\"utf-8\") as f:\n            renglones = f.readlines()\n    except Exception:\n        return 0\n\n    def _es_respuesta_de_herramienta(contenido):\n        if not isinstance(contenido, list):\n            return False\n        for pedazo in contenido:\n            if isinstance(pedazo, dict) and pedazo.get(\"type\") == \"tool_result\":\n                return True\n        return False\n\n    def _tiene_texto_escrito(renglon):\n        texto = renglon.get(\"text\")\n        if isinstance(texto, str) and texto.strip():\n            return True\n        mensaje = renglon.get(\"message\")\n        if isinstance(mensaje, dict):\n            contenido = mensaje.get(\"content\")\n            if isinstance(contenido, list):\n                for pedazo in contenido:\n                    if isinstance(pedazo, dict) and pedazo.get(\"type\") == \"text\":\n                        t = pedazo.get(\"text\")\n                        if isinstance(t, str) and t.strip():\n                            return True\n        return False\n\n    inicio = None\n    for i, linea in enumerate(renglones):\n        try:\n            renglon = json.loads(linea)\n        except Exception:\n            continue\n        if not isinstance(renglon, dict):\n            continue\n        if renglon.get(\"type\") == \"user\":\n            contenido = renglon.get(\"content\")\n            if contenido is None and isinstance(renglon.get(\"message\"), dict):\n                contenido = renglon[\"message\"].get(\"content\")\n            if not _es_respuesta_de_herramienta(contenido):\n                inicio = i\n\n    if inicio is None:\n        return 0\n\n    cuenta = 0\n    for linea in renglones[inicio + 1:]:\n        try:\n            renglon = json.loads(linea)\n        except Exception:\n            continue\n        if not isinstance(renglon, dict):\n            continue\n        if renglon.get(\"type\") != \"assistant\":\n            continue\n        if _tiene_texto_escrito(renglon):\n            cuenta += 1\n    return cuenta\n\n\ndef salida():",
+  "cambios": [],
+  "cambio": "Anadir la funcion mensajes_de_este_turno justo antes de def salida(), dejando def salida() intacta debajo.",
+  "codigo": "def mensajes_de_este_turno(ruta):\n    \"\"\"Cuenta los mensajes ESCRITOS por el asistente en el turno de ahora.\"\"\"\n    try:\n        with open(ruta, \"r\", encoding=\"utf-8\") as f:\n            renglones = f.readlines()\n    except Exception:\n        return 0\n\n    def _es_respuesta_de_herramienta(contenido):\n        if not isinstance(contenido, list):\n            return False\n        for pedazo in contenido:\n            if isinstance(pedazo, dict) and pedazo.get(\"type\") == \"tool_result\":\n                return True\n        return False\n\n    def _tiene_texto_escrito(renglon):\n        texto = renglon.get(\"text\")\n        if isinstance(texto, str) and texto.strip():\n            return True\n        mensaje = renglon.get(\"message\")\n        if isinstance(mensaje, dict):\n            contenido = mensaje.get(\"content\")\n            if isinstance(contenido, list):\n                for pedazo in contenido:\n                    if isinstance(pedazo, dict) and pedazo.get(\"type\") == \"text\":\n                        t = pedazo.get(\"text\")\n                        if isinstance(t, str) and t.strip():\n                            return True\n        return False\n\n    inicio = None\n    for i, linea in enumerate(renglones):\n        try:\n            renglon = json.loads(linea)\n        except Exception:\n            continue\n        if not isinstance(renglon, dict):\n            continue\n        if renglon.get(\"type\") == \"user\":\n            contenido = renglon.get(\"content\")\n            if contenido is None and isinstance(renglon.get(\"message\"), dict):\n                contenido = renglon[\"message\"].get(\"content\")\n            if not _es_respuesta_de_herramienta(contenido):\n                inicio = i\n\n    if inicio is None:\n        return 0\n\n    cuenta = 0\n    for linea in renglones[inicio + 1:]:\n        try:\n            renglon = json.loads(linea)\n        except Exception:\n            continue\n        if not isinstance(renglon, dict):\n            continue\n        if renglon.get(\"type\") != \"assistant\":\n            continue\n        if _tiene_texto_escrito(renglon):\n            cuenta += 1\n    return cuenta",
+  "vigia": "vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py::test_dos_mensajes_del_asistente_despues_del_ultimo_user",
+  "puede_danar": [
+   "arnes/candado_no_repetir.py (funcion salida, que debe quedar intacta debajo)",
+   "cerebro/trozos.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_respuestas.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_respuestas.py",
+   "trozos.py"
+  ],
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 1"
+ ]
+}
