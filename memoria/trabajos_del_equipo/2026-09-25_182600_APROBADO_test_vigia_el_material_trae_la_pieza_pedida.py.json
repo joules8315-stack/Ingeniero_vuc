@@ -1,0 +1,65 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El vigia anterior importaba falta_en_el_material arriba del archivo, lo que rompe la recogida de pytest porque la funcion todavia no existe en cuerpo/obrero.py; ademas no decia que archivo tocaba y traia NO_ENCONTRADO.",
+  "archivo": "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+  "funcion": "archivo nuevo completo (no existe todavia en el material)",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "",
+    "texto_nuevo": "import pytest\n\n\n# Fallo del 2026-09-25, expediente 173: se pregunto tres veces por una funcion\n# sin mandarla nunca, y se pago cada intento. Este vigia nace rojo a proposito:\n# la funcion falta_en_el_material todavia no existe en cuerpo/obrero.py.\n# El import va DENTRO de cada prueba (la casa lo obliga) para que pytest\n# pueda recoger el archivo aunque la funcion todavia no exista.\n\n\nENCARGO_CON_ARCHIVO_Y_FUNCION = (\n    \"Revisa el archivo cuerpo/obrero.py y dentro la funcion _prompt_obrero.\"\n)\n\nMATERIAL_COMPLETO = (\n    \"En cuerpo/obrero.py esta la pieza pedida.\\n\"\n    \"def _prompt_obrero(...):\\n\"\n    \"    ...\\n\"\n)\n\nMATERIAL_SOLO_NOMBRE_EN_LISTA = (\n    \"Piezas del proyecto:\\n\"\n    \"- cuerpo/obrero.py\\n\"\n    \"- cuerpo/ingeniero.py\\n\"\n)\n\nMATERIAL_SIN_ESE_ARCHIVO = (\n    \"Piezas del proyecto:\\n\"\n    \"- cuerpo/ingeniero.py\\n\"\n    \"- cuerpo/revisor.py\\n\"\n)\n\nENCARGO_SIN_ARCHIVO = \"Hay que mejorar un aviso para que se entienda mejor.\"\n\nENCARGO_PUNTO_PY_SUELTO = \"Revisa el punto py y dime que ves.\"\n\n\ndef test_uno_material_trae_archivo_y_funcion_lista_vacia():\n    from cuerpo.obrero import falta_en_el_material\n\n    resultado = falta_en_el_material(MATERIAL_COMPLETO, ENCARGO_CON_ARCHIVO_Y_FUNCION)\n    assert resultado == []\n\n\ndef test_dos_material_solo_nombra_archivo_en_lista_falta_la_funcion():\n    from cuerpo.obrero import falta_en_el_material\n\n    resultado = falta_en_el_material(\n        MATERIAL_SOLO_NOMBRE_EN_LISTA, ENCARGO_CON_ARCHIVO_Y_FUNCION\n    )\n    assert len(resultado) == 1\n    assert any(\"_prompt_obrero\" in frase for frase in resultado)\n\n\ndef test_tres_material_no_menciona_el_archivo():\n    from cuerpo.obrero import falta_en_el_material\n\n    resultado = falta_en_el_material(\n        MATERIAL_SIN_ESE_ARCHIVO, ENCARGO_CON_ARCHIVO_Y_FUNCION\n    )\n    assert len(resultado) >= 1\n    assert any(\"cuerpo/obrero.py\" in frase for frase in resultado)\n\n\ndef test_cuatro_encargo_sin_archivo_lista_vacia():\n    from cuerpo.obrero import falta_en_el_material\n\n    resultado = falta_en_el_material(MATERIAL_COMPLETO, ENCARGO_SIN_ARCHIVO)\n    assert resultado == []\n\n\ndef test_cinco_encargo_dice_punto_py_suelto_lista_vacia():\n    from cuerpo.obrero import falta_en_el_material\n\n    resultado = falta_en_el_material(MATERIAL_COMPLETO, ENCARGO_PUNTO_PY_SUELTO)\n    assert resultado == []\n"
+   }
+  ],
+  "cambio": "Crear el archivo vigias/test_vigia_el_material_trae_la_pieza_pedida.py con cinco funciones de prueba (una por caso), cada una importando falta_en_el_material DENTRO de la prueba (no arriba), y con el comentario del fallo 2026-09-25 / expediente 173. No se toca ningun otro archivo.",
+  "codigo": "import pytest\n\n\n# Fallo del 2026-09-25, expediente 173: se pregunto tres veces por una funcion\n# sin mandarla nunca, y se pago cada intento. Este vigia nace rojo a proposito:\n# la funcion falta_en_el_material todavia no existe en cuerpo/obrero.py.\n# El import va DENTRO de cada prueba (la casa lo obliga) para que pytest\n# pueda recoger el archivo aunque la funcion todavia no exista.\n\n\nENCARGO_CON_ARCHIVO_Y_FUNCION = (\n    \"Revisa el archivo cuerpo/obrero.py y dentro la funcion _prompt_obrero.\"\n)\n\nMATERIAL_COMPLETO = (\n    \"En cuerpo/obrero.py esta la pieza pedida.\\n\"\n    \"def _prompt_obrero(...):\\n\"\n    \"    ...\\n\"\n)\n\nMATERIAL_SOLO_NOMBRE_EN_LISTA = (\n    \"Piezas del proyecto:\\n\"\n    \"- cuerpo/obrero.py\\n\"\n    \"- cuerpo/ingeniero.py\\n\"\n)\n\nMATERIAL_SIN_ESE_ARCHIVO = (\n    \"Piezas del proyecto:\\n\"\n    \"- cuerpo/ingeniero.py\\n\"\n    \"- cuerpo/revisor.py\\n\"\n)\n\nENCARGO_SIN_ARCHIVO = \"Hay que mejorar un aviso para que se entienda mejor.\"\n\nENCARGO_PUNTO_PY_SUELTO = \"Revisa el punto py y dime que ves.\"\n\n\ndef test_uno_material_trae_archivo_y_funcion_lista_vacia():\n    from cuerpo.obrero import falta_en_el_material\n\n    resultado = falta_en_el_material(MATERIAL_COMPLETO, ENCARGO_CON_ARCHIVO_Y_FUNCION)\n    assert resultado == []\n\n\ndef test_dos_material_solo_nombra_archivo_en_lista_falta_la_funcion():\n    from cuerpo.obrero import falta_en_el_material\n\n    resultado = falta_en_el_material(\n        MATERIAL_SOLO_NOMBRE_EN_LISTA, ENCARGO_CON_ARCHIVO_Y_FUNCION\n    )\n    assert len(resultado) == 1\n    assert any(\"_prompt_obrero\" in frase for frase in resultado)\n\n\ndef test_tres_material_no_menciona_el_archivo():\n    from cuerpo.obrero import falta_en_el_material\n\n    resultado = falta_en_el_material(\n        MATERIAL_SIN_ESE_ARCHIVO, ENCARGO_CON_ARCHIVO_Y_FUNCION\n    )\n    assert len(resultado) >= 1\n    assert any(\"cuerpo/obrero.py\" in frase for frase in resultado)\n\n\ndef test_cuatro_encargo_sin_archivo_lista_vacia():\n    from cuerpo.obrero import falta_en_el_material\n\n    resultado = falta_en_el_material(MATERIAL_COMPLETO, ENCARGO_SIN_ARCHIVO)\n    assert resultado == []\n\n\ndef test_cinco_encargo_dice_punto_py_suelto_lista_vacia():\n    from cuerpo.obrero import falta_en_el_material\n\n    resultado = falta_en_el_material(MATERIAL_COMPLETO, ENCARGO_PUNTO_PY_SUELTO)\n    assert resultado == []\n",
+  "vigia": "El propio archivo vigias/test_vigia_el_material_trae_la_pieza_pedida.py: pytest debe poder recogerlo (import dentro de cada prueba) y las cinco pruebas deben pasar cuando exista falta_en_el_material en cuerpo/obrero.py.",
+  "puede_danar": [
+   "cuerpo/obrero.py (solo si alguien anade la funcion con firma distinta a la que esperan las pruebas)",
+   "vigias/ (si ya existiera un archivo con ese mismo nombre, se pisaria; el material no lo menciona)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "ingeniero.py",
+   "revisor.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Revisado: las dos unicas cosas que recorren la carpeta vigias/ (test_vigia_una_vigia_no_miente_por_el_nombre.py y arnes/vecinas.py) no se rompen: la primera solo marca vigias que LEEN un .py del proyecto con open().read() o _vivo('x.py') y luego afirman 'algo in texto', y este archivo nuevo no lee ninguno; la segunda descubre las vigias por listdir, sin registro que anadir.",
+   "test_vigia_menos_ia_mas_programa.py vigila los seis archivos de skills/ (uno se llama falta_en_el_material.py) y no se toca ninguno: sigue verde.",
+   "cuerpo/obrero.py no se toca en este turno, asi que la pieza sigue sin la funcion y la nueva prueba nace roja como pide el encargo (verificado: falta_en_el_material no existe todavia ahi, solo el modulo homonimo de skills/).",
+   "El archivo con ese nombre NO existe todavia en vigias/ (comprobado por listado): no pisa trabajo pagado ni deja dos vigias con el mismo nombre."
+  ],
+  "que_falta": [
+   "El 'import pytest' de arriba del archivo no se usa en ninguna de las cinco pruebas: es codigo muerto. No hay candado en la casa que lo mida, asi que no frena, pero sobraria.",
+   "En los casos 2 y 3 la prueba acota con len() y any(... in frase ...), y eso tambien pasaria si la funcion devolviera un diccionario con esas claves en vez de una lista de frases. El tipo no queda clavado ahi (si queda en 1, 4 y 5 por el == []). Es una debilidad pequena de la prueba, no un fallo del encargo.",
+   "La prueba no comprueba que la frase sea 'corta y sencilla', que es parte del encargo; solo que mencione el nombre justo."
+  ],
+  "resumen_para_el_jefe": "Crea el archivo de pruebas que pedia, con los cinco casos tal cual los cuenta el encargo y con el import de la funcion todavia inexistente dentro de cada prueba, que es justo lo que exige la ley de la bateria; no inventa nada, no rompe a ningun vecino y nace roja a proposito."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19570 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 21304 a 12009 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el pasillo recorto el encargo de 21639 a 12176 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) fallo (no es cuota): contesto vacio",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 4"
+ ]
+}
