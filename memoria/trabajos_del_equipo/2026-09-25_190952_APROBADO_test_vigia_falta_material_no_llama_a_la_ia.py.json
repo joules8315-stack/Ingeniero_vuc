@@ -1,0 +1,58 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El material no trae el archivo cuerpo/obrero.py ni la funcion trabajar ni falta_en_el_material, y el encargo pide crear un archivo nuevo de prueba que las usa.",
+  "archivo": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py",
+  "funcion": "archivo nuevo completo",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "Crear el archivo nuevo vigias/test_vigia_falta_material_no_llama_a_la_ia.py con el molde dado, dos casos (material sin la pieza -> prompts vacios y aviso FALTA_MATERIAL/NECESITO_LEER con el nombre del archivo; material con la pieza -> al menos un prompt).",
+  "codigo": "import json\nimport os\nimport sys\n\nimport pytest\n\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\n\nfrom cuerpo import obrero\n\n\nPROPUESTA_OK = json.dumps({\"archivo\": \"x.py\", \"texto_viejo\": \"a\", \"texto_nuevo\": \"b\"})\n\n\ndef _preparar(monkeypatch, material):\n    monkeypatch.setattr(obrero, \"_propuesta_cumple\", lambda p, c: (True, \"\"))\n    monkeypatch.setattr(obrero, \"_validar_en_paquete\", lambda *a, **k: [])\n    monkeypatch.setattr(obrero, \"_filtrar_paquete\", lambda paquete, **k: material)\n    prompts = []\n\n    def falsa_obrero(prompt, *a, **k):\n        prompts.append(prompt)\n        return (PROPUESTA_OK, \"deepseek\", [])\n\n    monkeypatch.setattr(obrero, \"_preguntar_con_relevo\", falsa_obrero)\n    llamadas_auditar = []\n\n    def aud(*a, **k):\n        llamadas_auditar.append((a, k))\n        return ({\"veredicto\": \"APROBADO\"}, \"groq\", [])\n\n    monkeypatch.setattr(obrero, \"auditar\", aud)\n    return prompts, llamadas_auditar\n\n\nENCARGO = (\n    \"Cambia en cuerpo/obrero.py la funcion _prompt_obrero para que respete \"\n    \"el generador pedido.\"\n)\n\nMATERIAL_SIN_PIEZA = \"# PAQUETE\\n- cuerpo/otra_cosa.py (10 lineas)\\n- cuerpo/y_otra.py (5 lineas)\\n\"\n\nMATERIAL_CON_PIEZA = (\n    \"# PAQUETE\\n\"\n    \"### cuerpo/obrero.py\\n\"\n    \"```\\n\"\n    \"def _prompt_obrero(...):\\n\"\n    \"    ...\\n\"\n    \"```\\n\"\n)\n\n\ndef test_material_sin_pieza_no_llama_a_la_ia(monkeypatch):\n    prompts, _ = _preparar(monkeypatch, MATERIAL_SIN_PIEZA)\n    resultado = obrero.trabajar(\n        ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\"\n    )\n    assert prompts == []\n    texto = json.dumps(resultado, ensure_ascii=False)\n    assert \"FALTA_MATERIAL\" in texto\n    assert \"NECESITO_LEER\" in texto\n    assert \"cuerpo/obrero.py\" in texto\n\n\ndef test_material_con_pieza_si_llama_a_la_ia(monkeypatch):\n    prompts, _ = _preparar(monkeypatch, MATERIAL_CON_PIEZA)\n    obrero.trabajar(ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")\n    assert len(prompts) >= 1\n",
+  "vigia": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py — caso uno exige prompts vacios y aviso con FALTA_MATERIAL, NECESITO_LEER y el nombre del archivo; caso dos exige al menos un prompt cuando el material trae la pieza.",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "El material no trae cuerpo/obrero.py: no puedo ver la firma exacta de trabajar ni el nombre/forma de falta_en_el_material ni el formato del aviso. ¿Se confirma que trabajar(encargo, generador=..., auditor=...) devuelve algo serializable que contiene FALTA_MATERIAL, NECESITO_LEER y el nombre del archivo?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "otra_cosa.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "y_otra.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "La lambda `lambda paquete, **k: material` de `_filtrar_paquete` y las llamadas con palabras clave `generador=`/`auditor=` en `obrero.trabajar` no se pueden confirmar con este material: si las firmas reales usan argumentos posicionales, la prueba seguirá roja por TypeError aunque el freno se enganche. Viene del molde de la casa, no lo introduce esta reparacion, y el propio diagnostico lo pregunta con confianza baja.",
+   "Se importa `pytest` y no se usa: lo pide el material de forma expresa, asi que no es fallo, pero es ruido que el revisor de estilo podria marcar."
+  ],
+  "que_falta": [
+   "Podria usarse `str(resultado)` en vez de `json.dumps(resultado)` para no depender de que lo que devuelve `trabajar` sea serializable; con `json.dumps` un retorno no serializable tumba la prueba con excepcion y no con asercion clara."
+  ],
+  "resumen_para_el_jefe": "Crea solo el archivo de prueba pedido, calcado del molde de la casa, con los dos casos exactos que pide el encargo, y nace rojo a proposito como se requeria; nada mas se toca y nada se inventa."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "todas las gratis duermen: revisa bigpickle (A-32)",
+  "vueltas_dadas: 2"
+ ]
+}
