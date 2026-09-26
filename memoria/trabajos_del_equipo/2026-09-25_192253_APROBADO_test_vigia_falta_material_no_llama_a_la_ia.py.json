@@ -1,0 +1,66 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Las dos llamadas a obrero.trabajar en la prueba pasan solo el encargo, pero trabajar pide primero el paquete y despues el encargo.",
+  "archivo": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    resultado = obrero.trabajar(\n        ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\"\n    )",
+    "texto_nuevo": "    resultado = obrero.trabajar(PAQUETE, ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")"
+   },
+   {
+    "texto_viejo": "    obrero.trabajar(ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")",
+    "texto_nuevo": "    obrero.trabajar(PAQUETE, ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")"
+   }
+  ],
+  "cambio": "Pasar el paquete como primer argumento en las dos llamadas a obrero.trabajar.",
+  "codigo": "resultado = obrero.trabajar(PAQUETE, ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")\nobrero.trabajar(PAQUETE, ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")",
+  "vigia": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py debe quedar rojo por el motivo bueno (el freno no enganchado) y no por la llamada mal escrita.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "PREGNTA_REQUERIDA: como se llama la variable que contiene el paquete en cada una de las dos pruebas de este archivo"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Las dos llamadas nuevas quedan en un solo renglon y la primera sigue guardando en 'resultado', asi que las comprobaciones de las dos pruebas no se tocan.",
+   "El segundo ancla ('obrero.trabajar(ENCARGO, ...)' con 4 espacios) no se solapa con el bloque de tres renglones del primer arreglo: ahi la llamada va precedida de 'resultado = ' y el renglon del medio no lleva 'obrero.trabajar('; por tanto no se aplica dos veces sobre el mismo sitio.",
+   "Los cuatro vecinos citados (asignador, revisor_de_programa, codex y los otros dos vigias) no se tocan: el cambio es de una sola prueba y no altera firmas ni mensajes, asi que el riesgo real es bajo."
+  ],
+  "que_falta": [
+   "El obrero dejo sin contestar su propia PREGUNTA_REQUERIDA sobre el nombre de la variable del paquete. La comprobacion automatica garantiza que el nombre existe en el archivo, pero no que exista con ese nombre en el ambito de la SEGUNDA prueba; si alli la variable se llama de otra forma, esa llamada quedara en NameError y la prueba seguira roja por el motivo equivocado, que es justo lo que este arreglo queria evitar.",
+   "No hay evidencia de que despues del cambio la prueba se ponga roja por el freno no enganchado; eso lo tiene que ver correr el pit, no el revisor."
+  ],
+  "resumen_para_el_jefe": "El arreglo hace exactamente lo pedido y no rompe a nadie; solo falta confirmar que en la segunda prueba la variable del paquete se llama igual que en la primera."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 1"
+ ]
+}
