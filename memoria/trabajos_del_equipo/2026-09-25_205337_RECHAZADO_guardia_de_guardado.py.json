@@ -1,0 +1,88 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El guardia usa un nombre inexistente (rojas_ahora) dentro de _vigias, donde la lista se llama archivos_rojos, y ademas escribe las conocidas en la raiz sin resolver la ruta ni en el momento correcto.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    guardados_que_frenan = [a for a in guardados if a not in esperando]",
+    "texto_nuevo": "    try:\n        with open(os.path.join(raiz, \".rojas_conocidas.json\"), \"r\", encoding=\"utf-8\") as f:\n            conocidas_de_antes = json.load(f)\n    except Exception:\n        conocidas_de_antes = []\n    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, esperando, conocidas_de_antes)\n    if not guardados_que_frenan:\n        try:\n            with open(os.path.join(raiz, \".rojas_conocidas.json\"), \"w\", encoding=\"utf-8\") as f:\n                json.dump(archivos_rojos, f)\n        except Exception:\n            pass"
+   }
+  ],
+  "cambio": "Sustituir la linea de calculo de guardados_que_frenan por: lectura tolerante de .rojas_conocidas.json en la raiz, llamada a rojas_que_frenan(archivos_rojos, guardados, esperando, conocidas_de_antes) guardada en guardados_que_frenan, y escritura tolerante de archivos_rojos en ese mismo archivo cuando no frena nada.",
+  "codigo": "    try:\n        with open(os.path.join(raiz, \".rojas_conocidas.json\"), \"r\", encoding=\"utf-8\") as f:\n            conocidas_de_antes = json.load(f)\n    except Exception:\n        conocidas_de_antes = []\n    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, esperando, conocidas_de_antes)\n    if not guardados_que_frenan:\n        try:\n            with open(os.path.join(raiz, \".rojas_conocidas.json\"), \"w\", encoding=\"utf-8\") as f:\n                json.dump(archivos_rojos, f)\n        except Exception:\n            pass",
+  "vigia": "Una prueba que llame a _vigias con archivos_rojos ya guardados y sin declarar, compruebe que guardados_que_frenan los contiene (frena), y que tras una llamada sin rojas que frenen el archivo .rojas_conocidas.json en la raiz contiene la lista de archivos_rojos; y que si el archivo no existe o no se puede leer/escribir, _vigias no revienta.",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "arnes/candado_cierre.py",
+   "arnes/revisor_de_programa.py",
+   "arnes/autorizacion.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_legislar.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candados_medicion.py",
+   "arnes/guard_pasado.py",
+   "arnes/medidor_de_rondas.py",
+   "arnes/via_canonica.py",
+   "cuerpo/obrero.py"
+  ],
+  "preguntas": [
+   "El nombre exacto de la variable que contiene la lista de rojas de ahora dentro de _vigias: el encargo dice 'las rojas de ahora' y el material solo muestra archivos_rojos como candidata; confirmar que es archivos_rojos.",
+   "El nombre exacto de la variable que contiene las declaradas por tareas sin terminar dentro de _vigias: el encargo dice 'las declaradas por tareas sin terminar' y el material solo muestra esperando como candidata; confirmar que es esperando.",
+   "El nombre exacto de la variable que contiene las guardadas dentro de _vigias: el encargo dice 'las guardadas' y el material solo muestra guardados como candidata; confirmar que es guardados.",
+   "Si el archivo .rojas_conocidas.json debe vivir en la raiz del proyecto (raiz) o en memoria/ (como BALANCE.log); el encargo dice 'vive en memoria' pero no da ruta exacta.",
+   "Si hay que importar json en arnes/guardia_de_guardado.py; el material no muestra los imports del archivo."
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_equipo.py",
+   "candado_legislar.py",
+   "candado_supervisor.py",
+   "candados_medicion.py",
+   "guard_pasado.py",
+   "medidor_de_rondas.py",
+   "via_canonica.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Ruta incumplida: el cambio lee y escribe con os.path.join(raiz, '.rojas_conocidas.json'), o sea en la raiz del proyecto, cuando el encargo dice textualmente que el archivo de apuntes 'vive en memoria'. El propio diagnostico de la propuesta acusa el defecto ('escribe las conocidas en la raiz sin resolver la ruta') y el codigo lo deja exactamente igual.",
+   "Se fija en el codigo una ruta que el propio obrero marca como dudosa: pregunta 4 ('¿raiz o memoria/?') y confianza 'baja'. Resolver una duda dejandola escrita en el codigo no es resolverla; el punto 1 de la ley obliga a que quede resuelto, noSupposeado.",
+   "Momento incorrecto: el encargo dice 'cuando NO hay ninguna que frene, o sea cuando se deja pasar, se escribe'. El cambio escribe en el punto del ancla, antes de que el resto de _vigias termine de decidir; si mas abajo se anaden razones de freno, el archivo queda apuntando rojas que en realidad no se dejaron pasar. El diagnostico ya senalaba 'ni en el momento correcto' y tampoco se arreglo."
+  ],
+  "riesgo_vecinos": [
+   "Aparecer un archivo nuevo en la raiz del proyecto (C:\\Ingeniero_VUC) puede disparar candados de archivos inesperados o de area protegida; el propio paquete lista candado_cierre, candado_equipo, candado_legislar y candado_supervisor como vecinos.",
+   "Los candados vigentes miden 29 pruebas que ya estaban rojas; cambiar el momento de la escritura puede alterar el orden en que se registra un放过 y mover pruebas vecinas de arnes/candado_cierre.py."
+  ],
+  "que_falta": [
+   "Confirmar que archivos_rojos es una lista y no un set: json.dump sobre un set lanza TypeError, el except lo traga en silencio y el archivo de apuntes nunca se escribe, o sea el trabajo pedido se pierde sin avisar.",
+   "Confirmar la firma real de rojas_que_frenan en el archivo (orden y numero de parametros); el material la da por probada pero no muestra su def en este recorte.",
+   "Resolver por escrito, no por suposicion, si json y os estan importados en el archivo (la pregunta 5 sigue abierta y confianza es 'baja')."
+  ],
+  "resumen_para_el_jefe": "Rechazada: el obrero admite en su propia lista que duda de la ruta y aun asi la fija en la raiz del proyecto cuando el encargo dice que el archivo de apuntes vive en memoria, y ademas anota las conocidas antes de que la guardia decida si deja pasar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el pasillo recorto el encargo de 20534 a 10882 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 20572 a 10910 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 4"
+ ]
+}
