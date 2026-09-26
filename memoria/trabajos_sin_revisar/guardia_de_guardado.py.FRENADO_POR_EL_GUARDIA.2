@@ -399,7 +399,7 @@ def _vigias(raiz):
             esperando = set()
     conocidas = []
     try:
-        with open(os.path.join(RAIZ, "memoria", "rojas_conocidas.json"), encoding="utf-8") as f:
+        with open(os.path.join(raiz, "memoria", "rojas_conocidas.json"), "r", encoding="utf-8") as f:
             conocidas = json.load(f)
     except Exception:
         conocidas = []
@@ -409,7 +409,7 @@ def _vigias(raiz):
         return False, ultima[0].strip()
     # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.
     try:
-        with open(os.path.join(RAIZ, "memoria", "rojas_conocidas.json"), "w", encoding="utf-8") as f:
+        with open(os.path.join(raiz, "memoria", "rojas_conocidas.json"), "w", encoding="utf-8") as f:
             json.dump(archivos_rojos, f)
     except Exception:
         pass

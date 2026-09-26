@@ -261,6 +261,40 @@ def _apuntar_balance(raiz, tipo, archivos):
         pass
 
 
+def rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas_de_antes):
+    """Devuelve las rojas que SI frenan el guardado, en el orden de rojas_ahora.
+
+    Fallo del 2026-09-25: el guardia tiro tres trabajos buenos el mismo dia
+    porque 29 pruebas ya estaban rojas desde antes. Es el fallo mas repetido
+    de la herramienta, 82 veces, y dejo 14 trabajos aprobados apartados.
+
+    Reglas:
+    - Una roja que no esta en guardadas es nueva y no frena.
+    - Una roja guardada que esta en declaradas no frena.
+    - Una roja guardada que esta en conocidas_de_antes no frena.
+    - Cualquier otra roja guardada si frena.
+    - Si algo llega vacio o no es lista, se trata como lista vacia.
+    """
+    def _como_lista(x):
+        return x if isinstance(x, list) else []
+
+    rojas_ahora = _como_lista(rojas_ahora)
+    guardadas = _como_lista(guardadas)
+    declaradas = _como_lista(declaradas)
+    conocidas_de_antes = _como_lista(conocidas_de_antes)
+
+    frenan = []
+    for roja in rojas_ahora:
+        if roja not in guardadas:
+            continue
+        if roja in declaradas:
+            continue
+        if roja in conocidas_de_antes:
+            continue
+        frenan.append(roja)
+    return frenan
+
+
 def _vigias(raiz):
     """(paso, mensaje). Si no hay vigias o no se pueden correr, se DEJA PASAR con aviso.
     Si hay vigias rojas, se distingue si son NUEVAS (recien escritas, sin pieza) o no.
@@ -289,8 +323,8 @@ def _vigias(raiz):
                            if k not in ("GIT_INDEX_FILE", "GIT_DIR", "GIT_WORK_TREE",
                                         "GIT_PREFIX", "GIT_OBJECT_DIRECTORY")}
         r = subprocess.run([sys.executable, "-m", "pytest", "-q"] + objetivo,
-                           cwd=raiz, capture_output=True, text=True, timeout=900,
-                           stdin=subprocess.DEVNULL, env=_entorno_limpio)
+                           cwd=raiz, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=900,
+                           stdin=subprocess.DEVNULL, env=_entorno_limpio)  # lee en utf-8, en cp1252 revienta con los acentos (2026-09-21)
     except subprocess.TimeoutExpired:
         return False, ("las vigias NO terminaron en 15 minutos: no se guarda sin probar. "
                        "Algo se quedo esperando; hay que ver cual se cuelga")
@@ -338,12 +372,49 @@ def _vigias(raiz):
         except Exception:
             # Si git falla, tratar como guardado (frenar) para no dejar pasar algo roto.
             guardados.append(archivo)
+    # Una roja ya guardada que la maquina declaro como vigia de una orden suya
+    # todavia sin terminar (estado != 'hecha') nacio roja a proposito y espera su
+    # arreglo: se trata igual que una roja nueva y deja pasar con aviso.
+    # Cualquier otra roja ya guardada sigue frenando. Si las ordenes no se pueden
+    # leer, se frena como hoy.
+    esperando = set()
+    # la tarea que se guarda ahora (INGENIERO_ETIQUETA) y edita su propia prueba no la deja esperando:
+    # si la rompe, se frena (medido 2026-09-21, orden 136); las pruebas que otra orden corregira
+    # despues siguen esperando.
+    actual = os.environ.get('INGENIERO_ETIQUETA', '').strip()
     if guardados:
-        # Al menos uno ya estaba guardado: es romper algo que estaba verde. Frenar.
+        try:
+            ruta_ordenes = os.path.join(raiz, "memoria", "ORDENES.json")
+            with open(ruta_ordenes, encoding="utf-8") as f:
+                ordenes = json.load(f)
+            for orden in ordenes:
+                if str(orden.get("estado", "")).strip().lower() == "hecha":
+                    continue
+                vigia = str(orden.get("vigia", "")).replace("\\", "/").strip()
+                pieza = str(orden.get('pieza', '')).replace(chr(92), '/').strip()
+                # una orden que declara queda_roja arregla una prueba que tiene que seguir roja hasta que llegue su codigo; romper sin decirlo sigue frenando (medido 2026-09-22)
+                if vigia and not (actual and str(orden.get('id', '')) == actual and vigia == pieza and not orden.get('queda_roja')):
+                    esperando.add(vigia)
+        except Exception:
+            esperando = set()
+    conocidas = []
+    try:
+        with open(os.path.join(RAIZ, "memoria", "rojas_conocidas.json"), encoding="utf-8") as f:
+            conocidas = json.load(f)
+    except Exception:
+        conocidas = []
+    guardados_que_frenan = rojas_que_frenan(rojas_ahora, guardados, declaradas, conocidas)
+    if guardados_que_frenan:
+        # Al menos uno ya estaba guardado y no espera arreglo: es romper algo que estaba verde. Frenar.
         return False, ultima[0].strip()
-    # Todos los rojos son nuevos: dejar pasar con aviso.
-    detalle = "; ".join(nuevos)
-    return True, "vigias recien escritas sin su pieza aun (se deja pasar): " + detalle
+    # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.
+    try:
+        with open(os.path.join(RAIZ, "memoria", "rojas_conocidas.json"), "w", encoding="utf-8") as f:
+            json.dump(rojas_ahora, f)
+    except Exception:
+        pass
+    detalle = "; ".join(nuevos + [a for a in guardados if a in esperando])
+    return True, "vigias recien escritas sin su pieza aun o esperando su arreglo (se deja pasar): " + detalle
 
 
 def main():

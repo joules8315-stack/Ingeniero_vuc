@@ -1,0 +1,67 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _vigias de arnes/guardia_de_guardado.py hay que leer las rojas conocidas del archivo de apuntes y usarlas al llamar a rojas_que_frenan, y escribir archivos_rojos en ese archivo de apuntes antes del detalle.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    guardados_que_frenan = [a for a in guardados if a not in esperando]",
+    "texto_nuevo": "    conocidas = []\n    try:\n        with open(os.path.join(raiz, \"memoria\", \"rojas_conocidas.json\"), \"r\", encoding=\"utf-8\") as f:\n            conocidas = json.load(f)\n    except Exception:\n        conocidas = []\n    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, esperando, conocidas)"
+   },
+   {
+    "texto_viejo": "    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando])",
+    "texto_nuevo": "    try:\n        with open(os.path.join(raiz, \"memoria\", \"rojas_conocidas.json\"), \"w\", encoding=\"utf-8\") as f:\n            json.dump(archivos_rojos, f)\n    except Exception:\n        pass\n    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando])"
+   }
+  ],
+  "cambio": "En _vigias: (1) sustituir la linea que calcula guardados_que_frenan por la lectura de memoria/rojas_conocidas.json (lista vacia si falla) y la llamada a rojas_que_frenan(archivos_rojos, guardados, esperando, conocidas); (2) antes de la linea del detalle, escribir archivos_rojos en memoria/rojas_conocidas.json sin reventar si falla.",
+  "codigo": "    conocidas = []\n    try:\n        with open(os.path.join(raiz, \"memoria\", \"rojas_conocidas.json\"), \"r\", encoding=\"utf-8\") as f:\n            conocidas = json.load(f)\n    except Exception:\n        conocidas = []\n    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, esperando, conocidas)\n\n    try:\n        with open(os.path.join(raiz, \"memoria\", \"rojas_conocidas.json\"), \"w\", encoding=\"utf-8\") as f:\n            json.dump(archivos_rojos, f)\n    except Exception:\n        pass\n    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando])",
+  "vigia": "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py y vigias/test_vigia_el_guardia_se_acuerda_y_frena.py: comprobar que una roja ya conocida no frena y que archivos_rojos queda escrita en memoria/rojas_conocidas.json.",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [
+   "El material no muestra el cuerpo completo de _vigias: ¿existen ya en ese punto los nombres raiz, os y json importados y disponibles, o hay que usar otra forma de armar la ruta y de leer/escribir el archivo?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "rojas_conocidas.js",
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El archivo de apuntes se sobrescribe con la lista archivos_rojos de la corrida actual, sin acumular las conocidas; una roja que dejo de aparecer y vuelve manana sera tratada como nueva. Es lo que pide el encargo, pero conviene que el jefe lo sepa: si rojas_que_frenan ya fusiona por dentro, la persistencia podria querer guardarse su resultado en vez de la lista cruda.",
+   "La escritura no es atomica (abre y escribe directo); si una corrida muere a mitad, el archivo de apuntes puede quedar vacio o corrupto. El except lo silencia y la siguiente corrida cae en lista vacia, asi que no frena de mas, pero el historico se pierde."
+  ],
+  "que_falta": [
+   "La pregunta que el obrero deja sobre si raiz, os y json estan disponibles en ese punto ya la contesta el encabezado del paquete (COMPROBADO POR PROGRAMA: los nombres existen o estan importados y el archivo carga); no queda nada pendiente."
+  ],
+  "resumen_para_el_jefe": "Cumple los dos cambios tal cual los pidio, con los nombres exactos del encargo y la llamada a rojas_que_frenan en el orden correcto; lo unico a tener en cuenta es que el archivo de apuntes se sobrescribe en vez de acumular."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 1"
+ ]
+}

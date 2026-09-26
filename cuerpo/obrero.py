@@ -70,6 +70,75 @@ def disponible():
 
 
 # ─── los prompts: cortos, con el paquete dentro, y prohibicion de inventar ──────────
+def falta_en_el_material(material, encargo):
+    """Devuelve frases cortas con lo que el encargo nombra y el material no trae.
+
+    Reglas:
+    - Los nombres de funcion se buscan con su raya baja incluida: se busca
+      'def ' + nombre tal cual aparece en el encargo.
+    - Las funciones se comprueban SIEMPRE, haya o no archivos en el encargo.
+    - La palabra suelta 'py' (sin punto ni nombre delante) no es un archivo.
+    - Un archivo falta si su nombre no aparece en el material.
+    - Una funcion falta si su renglon de declaracion no aparece en el material.
+    - Si el encargo no nombra ni archivos ni funciones, lista vacia.
+    - Ante algo vacio o raro, lista vacia. Nunca revienta.
+    """
+    if not material or not encargo:
+        return []
+
+    try:
+        texto_material = str(material)
+        texto_encargo = str(encargo)
+    except Exception:
+        return []
+
+    faltantes = []
+
+    # --- Archivos nombrados en el encargo ---
+    archivos = []
+    for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
+        limpia = palabra.strip("()[]{}<>\"'`")
+        if ".py" in limpia and limpia != "py":
+            # descartar la palabra suelta 'py' sin punto ni nombre delante
+            if limpia == "py":
+                continue
+            archivos.append(limpia)
+
+    for archivo in archivos:
+        if archivo not in texto_material:
+            faltantes.append(
+                "el material no trae el archivo " + archivo
+            )
+
+    # --- Funciones nombradas en el encargo ---
+    # Se buscan palabras que empiecen por raya baja (como _prompt_obrero).
+    funciones = []
+    for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
+        limpia = palabra.strip("()[]{}<>\"'`.:")
+        if limpia.startswith("_") and len(limpia) > 1:
+            funciones.append(limpia)
+
+    for funcion in funciones:
+        declaracion = "def " + funcion
+        if declaracion not in texto_material:
+            # distinguir si el archivo si esta pero la funcion no
+            if archivos and any(a in texto_material for a in archivos):
+                faltantes.append(
+                    "el material nombra el archivo pero no trae la funcion "
+                    + funcion
+                )
+            else:
+                faltantes.append(
+                    "el material no trae la funcion " + funcion
+                )
+
+    # Si el encargo no nombra ni archivos ni funciones, lista vacia
+    if not archivos and not funciones:
+        return []
+
+    return faltantes
+
+
 def _prompt_obrero(paquete, tarea, clase="reparar"):
     if clase != "reparar":
         # CREAR CODIGO O CREAR DOCUMENTO (2026-09-10). Medido: pedir crear vigias/_espia.py

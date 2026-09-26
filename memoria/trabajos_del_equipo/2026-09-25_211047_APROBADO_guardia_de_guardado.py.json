@@ -1,0 +1,62 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _vigias se usan los nombres rojas_ahora y declaradas, que no existen en ese punto; deben ser archivos_rojos y esperando.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    guardados_que_frenan = rojas_que_frenan(rojas_ahora, guardados, declaradas, conocidas)",
+    "texto_nuevo": "    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, esperando, conocidas)"
+   },
+   {
+    "texto_viejo": "            json.dump(rojas_ahora, f)",
+    "texto_nuevo": "            json.dump(archivos_rojos, f)"
+   }
+  ],
+  "cambio": "Sustituir rojas_ahora por archivos_rojos y declaradas por esperando en la llamada a rojas_que_frenan, y rojas_ahora por archivos_rojos en el json.dump.",
+  "codigo": "    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, esperando, conocidas)\n...\n            json.dump(archivos_rojos, f)",
+  "vigia": "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py y las otras cuatro pruebas del guardia que estaban verdes.",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El arreglo hace exactamente los dos cambios pedidos, con los mismos nombres buenos que da el encargo, sin tocar nada mas ni la funcion rojas_que_frenan; se aprueba."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19094 a 16263 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 1"
+ ]
+}

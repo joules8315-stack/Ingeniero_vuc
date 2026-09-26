@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La palabra PAQUETE se usa en las dos pruebas pero no esta declarada, y la declaracion nueva debe ir debajo del renglon ancla PROPUESTA_OK, no encima.",
+  "archivo": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py",
+  "funcion": "declaraciones de constantes del modulo (junto a las demas)",
+  "texto_viejo": "PROPUESTA_OK = json.dumps({\"archivo\": \"x.py\", \"texto_viejo\": \"a\", \"texto_nuevo\": \"b\"})",
+  "texto_nuevo": "PROPUESTA_OK = json.dumps({\"archivo\": \"x.py\", \"texto_viejo\": \"a\", \"texto_nuevo\": \"b\"})\nPAQUETE = \"paquete\"",
+  "cambio": "Declarar PAQUETE = \"paquete\" justo debajo del renglon ancla PROPUESTA_OK, dejando ese renglon tal cual encima.",
+  "codigo": "PAQUETE = \"paquete\"",
+  "vigia": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py (las dos pruebas que usan PAQUETE deben quedar verdes)",
+  "puede_danar": [
+   "vigias/test_vigia_falta_material_no_llama_a_la_ia.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Declara PAQUETE = \"paquete\" justo debajo del renglon ancla PROPUESTA_OK, tal cual lo pedia el encargo; no inventa nada, no toca mas archivos y deja las dos pruebas sin NameError."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 2"
+ ]
+}
