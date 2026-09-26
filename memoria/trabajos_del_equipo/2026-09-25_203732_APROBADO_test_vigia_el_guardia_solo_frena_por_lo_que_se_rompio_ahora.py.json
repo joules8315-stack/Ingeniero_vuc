@@ -1,0 +1,79 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta el archivo de prueba vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py que compruebe la funcion pura rojas_que_frenan de arnes/guardia_de_guardado.py, con cinco casos, sin arrancar pytest por dentro.",
+  "archivo": "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+  "funcion": "archivo nuevo completo",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "",
+    "texto_nuevo": "import os\nimport sys\n\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\n\nfrom arnes.guardia_de_guardado import rojas_que_frenan\n\n\ndef test_una_roja_no_guardada_es_nueva_y_no_frena():\n    rojas_ahora = [\"vigias/test_nueva.py\"]\n    guardadas = []\n    declaradas = []\n    conocidas = []\n    assert rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas) == []\n\n\ndef test_una_roja_guardada_declarada_por_tarea_no_frena():\n    rojas_ahora = [\"vigias/test_a.py\"]\n    guardadas = [\"vigias/test_a.py\"]\n    declaradas = [\"vigias/test_a.py\"]\n    conocidas = []\n    assert rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas) == []\n\n\ndef test_una_roja_guardada_conocida_no_frena():\n    rojas_ahora = [\"vigias/test_b.py\"]\n    guardadas = [\"vigias/test_b.py\"]\n    declaradas = []\n    conocidas = [\"vigias/test_b.py\"]\n    assert rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas) == []\n\n\ndef test_una_roja_guardada_no_declarada_ni_conocida_si_frena():\n    rojas_ahora = [\"vigias/test_c.py\"]\n    guardadas = [\"vigias/test_c.py\"]\n    declaradas = []\n    conocidas = []\n    assert rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas) == [\"vigias/test_c.py\"]\n\n\ndef test_varias_rojas_mezcladas_devuelve_solo_las_que_frenan():\n    rojas_ahora = [\n        \"vigias/test_nueva.py\",\n        \"vigias/test_declarada.py\",\n        \"vigias/test_conocida.py\",\n        \"vigias/test_frena_uno.py\",\n        \"vigias/test_frena_dos.py\",\n    ]\n    guardadas = [\n        \"vigias/test_declarada.py\",\n        \"vigias/test_conocida.py\",\n        \"vigias/test_frena_uno.py\",\n        \"vigias/test_frena_dos.py\",\n    ]\n    declaradas = [\"vigias/test_declarada.py\"]\n    conocidas = [\"vigias/test_conocida.py\"]\n    resultado = rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas)\n    assert sorted(resultado) == [\"vigias/test_frena_dos.py\", \"vigias/test_frena_uno.py\"]\n"
+   }
+  ],
+  "cambio": "Crear el archivo vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py con cinco pruebas que llaman a rojas_que_frenan con listas escritas a mano, sin arrancar pytest por dentro.",
+  "codigo": "import os\nimport sys\n\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\n\nfrom arnes.guardia_de_guardado import rojas_que_frenan\n\n\ndef test_una_roja_no_guardada_es_nueva_y_no_frena():\n    rojas_ahora = [\"vigias/test_nueva.py\"]\n    guardadas = []\n    declaradas = []\n    conocidas = []\n    assert rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas) == []\n\n\ndef test_una_roja_guardada_declarada_por_tarea_no_frena():\n    rojas_ahora = [\"vigias/test_a.py\"]\n    guardadas = [\"vigias/test_a.py\"]\n    declaradas = [\"vigias/test_a.py\"]\n    conocidas = []\n    assert rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas) == []\n\n\ndef test_una_roja_guardada_conocida_no_frena():\n    rojas_ahora = [\"vigias/test_b.py\"]\n    guardadas = [\"vigias/test_b.py\"]\n    declaradas = []\n    conocidas = [\"vigias/test_b.py\"]\n    assert rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas) == []\n\n\ndef test_una_roja_guardada_no_declarada_ni_conocida_si_frena():\n    rojas_ahora = [\"vigias/test_c.py\"]\n    guardadas = [\"vigias/test_c.py\"]\n    declaradas = []\n    conocidas = []\n    assert rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas) == [\"vigias/test_c.py\"]\n\n\ndef test_varias_rojas_mezcladas_devuelve_solo_las_que_frenan():\n    rojas_ahora = [\n        \"vigias/test_nueva.py\",\n        \"vigias/test_declarada.py\",\n        \"vigias/test_conocida.py\",\n        \"vigias/test_frena_uno.py\",\n        \"vigias/test_frena_dos.py\",\n    ]\n    guardadas = [\n        \"vigias/test_declarada.py\",\n        \"vigias/test_conocida.py\",\n        \"vigias/test_frena_uno.py\",\n        \"vigias/test_frena_dos.py\",\n    ]\n    declaradas = [\"vigias/test_declarada.py\"]\n    conocidas = [\"vigias/test_conocida.py\"]\n    resultado = rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas)\n    assert sorted(resultado) == [\"vigias/test_frena_dos.py\", \"vigias/test_frena_uno.py\"]\n",
+  "vigia": "El propio archivo vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py: al ejecutarse debe pasar en verde cuando rojas_que_frenan exista y cumpla las cinco reglas, y hoy nace rojo a proposito porque la funcion aun no existe.",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "arnes/vecinas.py",
+   "arnes/reparto.py",
+   "arnes/portero.py",
+   "ingeniero.py",
+   "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_sabotaje_es_programa.py",
+   "vigias/test_vigia_portero.py",
+   "vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vigias/test_vigia_vecinas.py"
+  ],
+  "preguntas": [
+   "El material no trae el archivo arnes/guardia_de_guardado.py ni la firma exacta de rojas_que_frenan: se asume el orden (rojas_ahora, guardadas, declaradas, conocidas) segun el enunciado. Si el orden real es otro, la prueba fallara al importar o al llamar. ¿Se confirma ese orden y el nombre exacto de la funcion?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "reparto.py",
+   "test_a.py",
+   "test_b.py",
+   "test_c.py",
+   "test_conocida.py",
+   "test_declarada.py",
+   "test_frena_dos.py",
+   "test_frena_uno.py",
+   "test_nueva.py",
+   "test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_sabotaje_es_programa.py",
+   "test_vigia_portero.py",
+   "test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "test_vigia_vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El archivo nace rojo a proposito en vigias/ y mientras exista el guardia ese rojo cuenta; es exactamente lo que pide la tarea R1b y el propio encargo lo declara, asi que no es culpa de este cambio, pero conviene que la regla 1 de la pieza (las que no estan guardadas no frenan) este escrita antes de que este test se account como roja sin explicar."
+  ],
+  "que_falta": [
+   "Nada que impida aprobar. Opcional: que el caso 4 compruebe tambien que la devuelta es una lista y no un generador, y que el caso 5 verifique que no se lose el orden de rojas_ahora, porque 'ni una mas' ya queda cubierto por el equal."
+  ],
+  "resumen_para_el_jefe": "Crea solo el archivo de prueba pedido, con los cinco casos en su propia funcion, en el orden de las cuatro listas que dice el encargo y sin arrancar pytest; nada de lo que usa existe de mentira y nada mas se toca."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 1"
+ ]
+}

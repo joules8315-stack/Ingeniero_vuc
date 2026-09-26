@@ -1,0 +1,63 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El freno no existe todavia en trabajar; hay que insertarlo justo debajo del renglon del tope, antes de _preguntar_con_relevo, llamando a falta_en_el_material(material_obrero, encargo) y devolviendo _error como texto (no diccionario), excluyendo la clase 'crear', y usando _archivo_tarea (no las frases) para el nombre del archivo.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)\n        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,",
+  "texto_nuevo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)\n        if clase != \"crear\":\n            _falta = falta_en_el_material(material_obrero, encargo)\n            if _falta:\n                _nombre = _archivo_tarea[0] if _archivo_tarea else \"el archivo que falta\"\n                return {\"_error\": (\n                    \"FALTA_MATERIAL: \" + \"; \".join(_falta)\n                    + \" NECESITO_LEER: \" + _nombre\n                    + \" motivo: sin ese trozo no se puede tocar lo que se pide\"\n                    + \" decide: si se puede escribir el cambio o hay que pedir mas material\"\n                    + \" riesgo: si no se lee, se paga una pregunta que nadie puede contestar\"\n                )}\n        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,",
+  "cambio": "Insertar el freno de falta_en_el_material debajo del renglon del tope, con sangria de ocho espacios, antes de _preguntar_con_relevo. Excluye la clase 'crear'. Devuelve _error como texto plano (no diccionario). El nombre del archivo sale de _archivo_tarea, no de las frases.",
+  "codigo": "        if clase != \"crear\":\n            _falta = falta_en_el_material(material_obrero, encargo)\n            if _falta:\n                _nombre = _archivo_tarea[0] if _archivo_tarea else \"el archivo que falta\"\n                return {\"_error\": (\n                    \"FALTA_MATERIAL: \" + \"; \".join(_falta)\n                    + \" NECESITO_LEER: \" + _nombre\n                    + \" motivo: sin ese trozo no se puede tocar lo que se pide\"\n                    + \" decide: si se puede escribir el cambio o hay que pedir mas material\"\n                    + \" riesgo: si no se lee, se paga una pregunta que nadie puede contestar\"\n                )}",
+  "vigia": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py: primer caso comprueba que no se pregunta a la IA y que el texto trae FALTA_MATERIAL, NECESITO_LEER y el nombre del archivo; segundo caso sigue verde.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "test_vigia_el_material_trae_la_pieza_pedida.py: si esa prueba llama a trabajar con un material de mentira que a proposito NO trae la pieza pedida, el freno nuevo devuelve temprano y la prueba puede romperse; no venía en el paquete y nadie lo ha mirado.",
+   "asignador.py y revisor_de_programa.py: reciben un _error sin propuesta ni auditoria, igual que los otros _error que esta funcion ya devuelve (cerebro prestado, sin llave), asi que el camino es el conocido; tampoco venían en el paquete."
+  ],
+  "que_falta": [
+   "No se ha comprobado con que tipo de dato contesta falta_en_el_material: el codigo hace '; '.join(_falta), y si devolviera un solo texto en vez de una lista, el mensaje saldria partido en letras ('F; A; L; T; A'). La vigia nueva no lo cazaria, porque FALTA_MATERIAL, NECESITO_LEER y el nombre del archivo se escriben a mano en el propiocodigo y saldrian igual.",
+   "Solo se puede comprobar que clase 'crear' es la que no pide texto viejo; si existiera otra clase de ese tipo (por ejemplo un analista que escribe desde cero), el freno la frenaria de mas. No hay forma de verlo con este material."
+  ],
+  "resumen_para_el_jefe": "El freno esta bien puesto, devuelve lo mismo que los otros fallos de la misma funcion y no inventa nada; lo unico que queda sin mirar es que tipo de cosa devuelve el revisor de material, porque el codigo la une con comas y punto y medio."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 4"
+ ]
+}
