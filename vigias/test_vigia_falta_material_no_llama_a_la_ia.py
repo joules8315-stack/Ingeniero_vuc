@@ -52,9 +52,7 @@ MATERIAL_CON_PIEZA = (
 
 def test_material_sin_pieza_no_llama_a_la_ia(monkeypatch):
     prompts, _ = _preparar(monkeypatch, MATERIAL_SIN_PIEZA)
-    resultado = obrero.trabajar(
-        ENCARGO, generador="deepseek", auditor="bigpickle"
-    )
+    resultado = obrero.trabajar(PAQUETE, ENCARGO, generador="deepseek", auditor="bigpickle")
     assert prompts == []
     texto = json.dumps(resultado, ensure_ascii=False)
     assert "FALTA_MATERIAL" in texto
@@ -64,5 +62,5 @@ def test_material_sin_pieza_no_llama_a_la_ia(monkeypatch):
 
 def test_material_con_pieza_si_llama_a_la_ia(monkeypatch):
     prompts, _ = _preparar(monkeypatch, MATERIAL_CON_PIEZA)
-    obrero.trabajar(ENCARGO, generador="deepseek", auditor="bigpickle")
+    obrero.trabajar(PAQUETE, ENCARGO, generador="deepseek", auditor="bigpickle")
     assert len(prompts) >= 1
