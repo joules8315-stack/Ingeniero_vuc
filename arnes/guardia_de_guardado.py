@@ -261,6 +261,40 @@ def _apuntar_balance(raiz, tipo, archivos):
         pass
 
 
+def rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas_de_antes):
+    """Devuelve las rojas que SI frenan el guardado, en el orden de rojas_ahora.
+
+    Fallo del 2026-09-25: el guardia tiro tres trabajos buenos el mismo dia
+    porque 29 pruebas ya estaban rojas desde antes. Es el fallo mas repetido
+    de la herramienta, 82 veces, y dejo 14 trabajos aprobados apartados.
+
+    Reglas:
+    - Una roja que no esta en guardadas es nueva y no frena.
+    - Una roja guardada que esta en declaradas no frena.
+    - Una roja guardada que esta en conocidas_de_antes no frena.
+    - Cualquier otra roja guardada si frena.
+    - Si algo llega vacio o no es lista, se trata como lista vacia.
+    """
+    def _como_lista(x):
+        return x if isinstance(x, list) else []
+
+    rojas_ahora = _como_lista(rojas_ahora)
+    guardadas = _como_lista(guardadas)
+    declaradas = _como_lista(declaradas)
+    conocidas_de_antes = _como_lista(conocidas_de_antes)
+
+    frenan = []
+    for roja in rojas_ahora:
+        if roja not in guardadas:
+            continue
+        if roja in declaradas:
+            continue
+        if roja in conocidas_de_antes:
+            continue
+        frenan.append(roja)
+    return frenan
+
+
 def _vigias(raiz):
     """(paso, mensaje). Si no hay vigias o no se pueden correr, se DEJA PASAR con aviso.
     Si hay vigias rojas, se distingue si son NUEVAS (recien escritas, sin pieza) o no.
