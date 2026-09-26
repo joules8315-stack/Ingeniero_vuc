@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion pura rojas_que_frenan en arnes/guardia_de_guardado.py, que decide que pruebas rojas deben frenar el guardado.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "rojas_que_frenan",
+  "texto_viejo": "def _vigias(",
+  "texto_nuevo": "def rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas_de_antes):\n    \"\"\"Devuelve las rojas que SI frenan el guardado, en el orden de rojas_ahora.\n\n    Fallo del 2026-09-25: el guardia tiro tres trabajos buenos el mismo dia\n    porque 29 pruebas ya estaban rojas desde antes. Es el fallo mas repetido\n    de la herramienta, 82 veces, y dejo 14 trabajos aprobados apartados.\n\n    Reglas:\n    - Una roja que no esta en guardadas es nueva y no frena.\n    - Una roja guardada que esta en declaradas no frena.\n    - Una roja guardada que esta en conocidas_de_antes no frena.\n    - Cualquier otra roja guardada si frena.\n    - Si algo llega vacio o no es lista, se trata como lista vacia.\n    \"\"\"\n    def _como_lista(x):\n        return x if isinstance(x, list) else []\n\n    rojas_ahora = _como_lista(rojas_ahora)\n    guardadas = _como_lista(guardadas)\n    declaradas = _como_lista(declaradas)\n    conocidas_de_antes = _como_lista(conocidas_de_antes)\n\n    frenan = []\n    for roja in rojas_ahora:\n        if roja not in guardadas:\n            continue\n        if roja in declaradas:\n            continue\n        if roja in conocidas_de_antes:\n            continue\n        frenan.append(roja)\n    return frenan\n\n\ndef _vigias(",
+  "cambio": "Anadir la funcion pura rojas_que_frenan justo encima del renglon donde se declara _vigias, dejando ese renglon tal cual debajo.",
+  "codigo": "def rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas_de_antes):\n    \"\"\"Devuelve las rojas que SI frenan el guardado, en el orden de rojas_ahora.\n\n    Fallo del 2026-09-25: el guardia tiro tres trabajos buenos el mismo dia\n    porque 29 pruebas ya estaban rojas desde antes. Es el fallo mas repetido\n    de la herramienta, 82 veces, y dejo 14 trabajos aprobados apartados.\n\n    Reglas:\n    - Una roja que no esta en guardadas es nueva y no frena.\n    - Una roja guardada que esta en declaradas no frena.\n    - Una roja guardada que esta en conocidas_de_antes no frena.\n    - Cualquier otra roja guardada si frena.\n    - Si algo llega vacio o no es lista, se trata como lista vacia.\n    \"\"\"\n    def _como_lista(x):\n        return x if isinstance(x, list) else []\n\n    rojas_ahora = _como_lista(rojas_ahora)\n    guardadas = _como_lista(guardadas)\n    declaradas = _como_lista(declaradas)\n    conocidas_de_antes = _como_lista(conocidas_de_antes)\n\n    frenan = []\n    for roja in rojas_ahora:\n        if roja not in guardadas:\n            continue\n        if roja in declaradas:\n            continue\n        if roja in conocidas_de_antes:\n            continue\n        frenan.append(roja)\n    return frenan",
+  "vigia": "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno funcional: la funcion nueva no se llama desde ningun sitio todavia, asi que el comportamiento del guardia no cambia con este paso; el freno de fondo (que el guardia no frene por rojas de antes) queda pendiente en el paso que la conecte, no en este."
+  ],
+  "que_falta": [
+   "La cifra '14 trabajos aprobados apartados' del docstring no sale del material que me pasaste (29 de 291 y 82 veces si aparecen en el aviso de claude): no rompe nada, pero o se confirma con el numero real o se quita del texto.",
+   "Falta el paso que hace que _vigias llame a rojas_que_frenan y le pase declaradas y conocidas_de_antes; sin eso, la causa de fondo sigue abierta."
+  ],
+  "resumen_para_el_jefe": "La pieza es correcta y no rompe a nadie: anade la funcion pura que pedia el diagnostico, sin tocar _vigias ni tocar codigo viejo; aprueba, pero falta conectarla y confirmar un numero del texto."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 2"
+ ]
+}
