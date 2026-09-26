@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En vigias/test_vigia_falta_material_no_llama_a_la_ia.py las dos llamadas usan la palabra PAQUETE, que no esta declarada en el archivo, y la prueba revienta antes de probar nada.",
+  "archivo": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "PROPUESTA_OK = json.dumps({\"archivo\": \"x.py\", \"texto_viejo\": \"a\", \"texto_nuevo\": \"b\"})",
+  "texto_nuevo": "PROPUESTA_OK = json.dumps({\"archivo\": \"x.py\", \"texto_viejo\": \"a\", \"texto_nuevo\": \"b\"})\nPAQUETE = \"paquete\"",
+  "cambio": "Declarar arriba, junto a las demas, la constante PAQUETE como un texto sencillo que hace de paquete de mentira (por ejemplo la palabra paquete), dejando el renglon ancla tal cual encima. Las dos llamadas que usan PAQUETE se quedan tal como estan.",
+  "codigo": "PAQUETE = \"paquete\"",
+  "vigia": "La prueba vigias/test_vigia_falta_material_no_llama_a_la_ia.py debe cargar sin reventar por nombre no declarado y quedar roja por el motivo bueno: el freno todavia no esta enganchado (tarea R2b).",
+  "puede_danar": [
+   "vigias/test_vigia_falta_material_no_llama_a_la_ia.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno real: solo se anade una constante de modulo en el mismo archivo, el renglon ancla queda intacto y PAQUETE solo se usa dentro de las dos pruebas, que se ejecutan despues de la declaracion, asi que no hay dependencia de orden."
+  ],
+  "que_falta": [
+   "Nada que impida aplicar. Queda pendiente, y es lo correcto, que la prueba siga ROJA por el motivo bueno (freno sin enganchar, tarea R2b ya declarada)."
+  ],
+  "resumen_para_el_jefe": "El diagnostico es cierto: PAQUETE no existe en el archivo; el cambio la declara arriba bajo el ancla correcta, deja todo lo demas igual y no rompe nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 1"
+ ]
+}
