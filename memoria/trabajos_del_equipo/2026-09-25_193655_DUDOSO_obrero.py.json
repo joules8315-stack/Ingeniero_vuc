@@ -1,0 +1,71 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py::trabajar, tras armar material_obrero con _filtrar_paquete y antes de llamar a _preguntar_con_relevo, no se consulta falta_en_el_material, asi que se pregunta a la IA aunque falte la pieza.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "Insertar el freno que consulta falta_en_el_material con el material recien armado y el encargo, y si devuelve algo, devolver un resultado FALTA_MATERIAL con NECESITO_LEER sin llamar a ninguna IA.",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El encargo pide que el resultado FALTA_MATERIAL incluya el formato NECESITO_LEER con el archivo que falta, su motivo, que decide y que riesgo hay si no se lee; la propuesta solo dice 'con NECESITO_LEER' y no nombra esos tres campos, asi que el obrero puede devolver un resultado con la palabra puesta y nada mas."
+  ],
+  "riesgo_vecinos": [
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py: si falta_en_el_material ya devolvia algo en algun camino de trabajar que hoy sigue vivo, el freno nuevo convierte ese camino en FALTA_MATERIAL y ese test se cae. Esta fuera del paquete, asi que no se ha medido.",
+   "arnes/asignador.py y arnes/revisor_de_programa.py: aparece un resultado nuevo, FALTA_MATERIAL, y no se ha leido si esos dos saben tratarlo o si se tragan algo que no esperan. El propio encargo los prohibe abrir, asi que el riesgo queda sin medir, no descartado."
+  ],
+  "que_falta": [
+   "No llega ni una linea de codigo: texto_viejo, texto_nuevo, cambios y codigo vienen vacios. Sin texto literal no se puede juzgar la ubicacion por el texto (regla 6) ni saber que devuelve exactamente el freno en el camino que hoy sigue igual.",
+   "El nombre _preguntar_con_relevo no sale literal del material: el paquete solo dice 'la llamada que pregunta con relevo'. Como ancla de posicion sirve, pero hay que confirmar el nombre real en el archivo antes de escribirlo en el encargo.",
+   "No dice que se hace con los casos que ya devuelve _filtrar_paquete: si el freno se pone antes de que la llamada cierre, el material aun no esta armado y faltarian piezas por mirar; el paquete pide despues del renglon siguiente, y eso no queda escrito en la propuesta.",
+   "La confianza declarada es 'baja' y coincide con lo anterior: el diagnostico esta bien, la reparacion todavia no existe."
+  ],
+  "resumen_para_el_jefe": "El diagnostico y el sitio son los que pide el paquete y no inventa nada, pero la propuesta llega sin una sola linea de codigo y sin el formato completo de lo que debe devolver, asi que no se aprueba todavia: que el obrero ponga el texto literal y se vuelva a mirar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a groq y no esta disponible: reviso ",
+  "todas las gratis duermen: revisa bigpickle (A-32)",
+  "vueltas_dadas: 4"
+ ]
+}
