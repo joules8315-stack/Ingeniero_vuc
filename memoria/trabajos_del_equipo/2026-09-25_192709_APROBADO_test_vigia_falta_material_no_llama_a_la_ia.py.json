@@ -1,0 +1,63 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Las dos llamadas a obrero.trabajar pasan solo el encargo, pero trabajar pide primero el paquete y despues el encargo.",
+  "archivo": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    resultado = obrero.trabajar(\n        ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\"\n    )",
+    "texto_nuevo": "    resultado = obrero.trabajar(PAQUETE, ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")"
+   },
+   {
+    "texto_viejo": "    obrero.trabajar(ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")",
+    "texto_nuevo": "    obrero.trabajar(PAQUETE, ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")"
+   }
+  ],
+  "cambio": "En las dos llamadas a obrero.trabajar, poner el paquete delante del encargo.",
+  "codigo": "resultado = obrero.trabajar(PAQUETE, ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")\n\nobrero.trabajar(PAQUETE, ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")",
+  "vigia": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py debe quedar rojo por el motivo bueno: el freno todavia no esta enganchado.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "El material no trae el nombre de la variable que contiene el paquete en esta prueba; se asume que se llama PAQUETE. ¿Es correcto?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Nada bloqueante: el nombre PAQUETE no viene en el texto del paquete, pero la cabecera del propio paquete dice que fue comprobado por programa contra el archivo; si aun asi se quisiera, la prueba debe seguir cayendo por el freno y no por el paso de argumentos."
+  ],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo pedido: en las dos llamadas de la prueba mete el paquete delante del encargo, sin tocar nada mas, y la prueba sigue roja por el motivo correcto; aprobado."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 3"
+ ]
+}
