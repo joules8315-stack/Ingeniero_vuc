@@ -1,0 +1,71 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Las dos pruebas llaman a obrero.trabajar solo con el encargo, sin pasar primero el paquete, y ademas la primera llamada no guarda lo que devuelve en la variable que luego se usa.",
+  "archivo": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py",
+  "funcion": "las dos pruebas que llaman a obrero.trabajar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    prompts, _ = _preparar(monkeypatch, MATERIAL_SIN_PIEZA)",
+    "texto_nuevo": "    prompts, _ = _preparar(monkeypatch, MATERIAL_SIN_PIEZA)\n    resultado = obrero.trabajar(paquete, ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")"
+   },
+   {
+    "texto_viejo": "    obrero.trabajar(ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")",
+    "texto_nuevo": "    obrero.trabajar(paquete, ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")"
+   }
+  ],
+  "cambio": "En la primera prueba, tras la linea de _preparar, anadir la llamada a obrero.trabajar pasando primero el paquete y despues el encargo, guardando el resultado en la variable que ya se usa despues. En la segunda prueba, sustituir la llamada que solo pasa el encargo por la misma llamada con el paquete delante.",
+  "codigo": "resultado = obrero.trabajar(paquete, ENCARGO, generador=\"deepseek\", auditor=\"bigpickle\")",
+  "vigia": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "Como se llama exactamente la variable del paquete en cada una de las dos pruebas (el material no muestra el cuerpo de las pruebas, solo el helper _preparar y las dos anclas)."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El primer cambio ANADE una llamada nueva debajo del ancla en vez de CORREGIR la llamada que el diagnostico dice que ya existe en esa prueba y que esta mal: si debajo de 'prompts, _ = _preparar(monkeypatch, MATERIAL_SIN_PIEZA)' habia ya un obrero.trabajar(ENCARGO, ...) (en una linea, en varias o con prefijo de asignacion), ese renglon queda vivo y la prueba seguiria reventando por TypeError, que es exactamente el 'motivo malo' que el encargo manda evitar ('no por una llamada mal escrita').",
+   "El nombre de la variable donde se guarda el retorno ('resultado') es una suposicion. El encargo pide 'la misma variable que ya se usa despues' y la propia propuesta admite en sus preguntas que no sabe los nombres; si la prueba usa otro identificador, la comprobacion posterior revienta con NameError y la prueba queda roja por el motivo equivocado.",
+   "Se usa el mismo nombre 'paquete' en las dos pruebas sin confirmar en ninguna de las dos. Ademas, si el segundo valor que devuelve _preparar es justamente el paquete (hoy descartado con '_'), el arreglo correcto era ligar ese valor y no inventar un 'paquete' suelto; con el '_' intacto, si 'paquete' no existe mas que ahi, la llamada es un nombre no definido.",
+   "El arreglo de la segunda llamada si es correcto y exacto (mismo generador y auditor, solo delante el paquete), pero la pieza no se puede dar por buena mientras la primera prueba no quede, medida, con una sola llamada correcta y con el retorno en la variable que la prueba usa."
+  ],
+  "riesgo_vecinos": [
+   "Vigias/test_vigia_el_material_trae_la_pieza_pedida.py y test_vigia_revisor_roto_no_tira_la_vuelta.py: comparten _preparar y el patron obrero.trabajar(paquete, ENCARGO, ...); al anadir una llamada sin quitar la vieja, la primera prueba podria invocar dos veces al equipo (si el mock no cubre la segunda) y falsear lo que esas vigias miden.",
+   "cuerpo/obrero.py: la firma real de trabajar no esta en el paquete; si no fuera (paquete, encargo, ...) el arreglo deja de tener efecto. Habria que confirmarlo con una corrida."
+  ],
+  "que_falta": [
+   "Si la primera prueba ya tenia una llamada a obrero.trabajar debajo de la linea de _preparar, cual era su texto literal (para sustituirla en vez de anadir otra).",
+   "El nombre exacto de la variable que la primera prueba usa despues de la llamada (la que debe recibir el retorno).",
+   "El nombre exacto de la variable del paquete en cada una de las dos pruebas, o si el paquete es el segundo valor que devuelve _preparar.",
+   "La corrida de las dos pruebas despues del cambio, para ver que quedan rojas SOLO por que el freno no esta enganchado."
+  ],
+  "resumen_para_el_jefe": "La segunda llamada queda bien, pero en la primera el obrero anadio una llamada nueva en vez de arreglar la que ya estaba mal y supuso el nombre de la variable del resultado: hay que confirmar esos dos nombres y si sobra la llamada vieja antes de dar la pieza por buena."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 2"
+ ]
+}
