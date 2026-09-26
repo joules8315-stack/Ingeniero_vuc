@@ -1,0 +1,62 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El freno nuevo de falta_en_el_material no distingue la clase crear, y sin ese resguardo la via de crear quedaria muerta; ademas falta el tercer caso de vigia que proteja esa via.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)\n        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,",
+    "texto_nuevo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)\n        if clase != \"crear\":\n            faltantes = falta_en_el_material(material_obrero, encargo)\n            if faltantes:\n                return {\"_error\": \"FALTA_MATERIAL: \" + \"; \".join(faltantes) + \" NECESITO_LEER: \" + (_archivo_tarea[0] if _archivo_tarea else \"el archivo que falta\") + \" motivo: sin ese trozo no se puede tocar lo que se pide decide: si se puede escribir el cambio o hay que pedir mas material riesgo: si no se lee, se paga una pregunta que nadie puede contestar\"}\n        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,"
+   }
+  ],
+  "cambio": "En cuerpo/obrero.py, dentro de trabajar, anadir el freno que solo actua cuando la clase NO es crear: llama a falta_en_el_material con material_obrero y encargo y, si hay faltantes, devuelve un diccionario con _error que empieza con FALTA_MATERIAL, sigue con las frases unidas por punto y coma, sigue con NECESITO_LEER y el primer nombre de _archivo_tarea (o 'el archivo que falta' si viene vacia), y termina con las tres explicaciones motivo/decide/riesgo. En vigias/test_vigia_falta_material_no_llama_a_la_ia.py, anadir un tercer caso que con material sin pieza pero clase crear SI pregunta a la IA (len(prompts) >= 1), llamando a trabajar como los otros dos casos y anadiendo la clase crear.",
+  "codigo": "        if clase != \"crear\":\n            faltantes = falta_en_el_material(material_obrero, encargo)\n            if faltantes:\n                return {\"_error\": \"FALTA_MATERIAL: \" + \"; \".join(faltantes) + \" NECESITO_LEER: \" + (_archivo_tarea[0] if _archivo_tarea else \"el archivo que falta\") + \" motivo: sin ese trozo no se puede tocar lo que se pide decide: si se puede escribir el cambio o hay que pedir mas material riesgo: si no se lee, se paga una pregunta que nadie puede contestar\"}",
+  "vigia": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py, tercer caso: material sin pieza + clase crear => len(prompts) >= 1",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "El material no trae el cuerpo completo de la funcion trabajar ni la firma exacta de falta_en_el_material; se asume que existe y devuelve una lista de frases. ¿Es correcto?",
+   "El material no trae el nombre exacto de la variable que guarda el primer archivo de la tarea (_archivo_tarea); se asume que es una lista y su primer elemento es el nombre. ¿Es correcto?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "ComproBado que no rompe a los vecinos: test_vigia_revisor_roto_no_tira_la_vuelta y test_vigia_el_programa_revisa_antes_que_la_ia llaman trabajar con tareas que no nombran archivo ni funcion (una tarea cualquiera / tarea de prueba), asi que falta_en_el_material devuelve lista vacia y el freno no se enciende.",
+   "Comprobado que la forma del return es la de siempre: {'_error': ...} ya lo devuelve working en otros puntos (cuerpo/obrero.py:1233, 1279) y ingeniero.py:363 lo sabe leer.",
+   "Comprobado que no rompe test_vigia_mirada_completa: anadir una llamada mas dentro de working solo hace mas largo el codigo que sigue la mirada, y las comprobaciones de ese archivo (que auditar y _prompt_obrero estan entre las llamadas, que _json_de no lee de mas) siguen validas.",
+   "Riesgo real que no es de esta tarea: si en una reparacion normal el paquete no trae el renglon 'def <funcion>' que nombra el encargo, el freno devuelve FALTA_MATERIAL y para esa tarea. Eso es justo lo que pedia el encargo, pero conviene tenerlo fichado para R2c."
+  ],
+  "que_falta": [
+   "El tercer caso de la vigia llega solo en prosa del campo cambio, sin el bloque de codigo en el campo codigo ni una entrada en cambios. La prosa es concreta (clase crear, mismo llamada que los otros dos, assert len(prompts) >= 1) y el ancla del archivo si viene en el paquete, asi que no lo tengo por motivo de rechazo, pero el capataz tendria que aplicarlo de esa prosa.",
+   "Las dos preguntas que dejo la propuesta ya estan contestadas por el proyecto: falta_en_el_material(material, encargo) existe en cuerpo/obrero.py:73 y devuelve una lista de frases, y _archivo_tarea es la lista _vistos de nombres de archivo (cuerpo/obrero.py:1263-1271) o None, asi que _archivo_tarea[0] es el primer nombre y el None esta cubierto."
+  ],
+  "resumen_para_el_jefe": "El cambio es el que pedia el encargo y esta bien:复用 falta_en_el_material que ya existe, frena solo cuando la clase NO es crear, el texto del _error sale tal cual lo pedido, y la via de crear queda viva con el tercer caso de la vigia; no he encontrado ni un invento ni un vecino roto, solo que el caso nuevo de la vigia llega escrito en prosa y no en codigo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 1"
+ ]
+}

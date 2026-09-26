@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El freno anterior sumaba texto a _archivo_tarea (que es una lista de rutas) y no traia la prueba; ademas el material de prueba lleva el problema copiado en su cabecera, asi que hay que unir la lista y no tocar el texto.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)\n        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,",
+  "texto_nuevo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)\n        faltantes = falta_en_el_material(material_obrero, encargo)\n        if faltantes:\n            archivo_pedido = _archivo_tarea[0] if _archivo_tarea else \"el archivo que falta\"\n            return {\"_error\": (\n                \"FALTA_MATERIAL: \" + \"; \".join(faltantes)\n                + \" NECESITO_LEER: \" + archivo_pedido\n                + \" motivo: sin ese trozo no se puede tocar lo que se pide\"\n                + \" decide: si se puede escribir el cambio o hay que pedir mas material\"\n                + \" riesgo: si no se lee, se paga una pregunta que nadie puede contestar\"\n            )}\n        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,",
+  "cambio": "Insertar el freno justo debajo del renglon del tope y antes de la llamada a _preguntar_con_relevo: llamar a falta_en_el_material(material_obrero, encargo); si devuelve lista no vacia, devolver de inmediato un dict con _error que empieza por FALTA_MATERIAL, une las frases con punto y coma, sigue con NECESITO_LEER y el primer elemento de _archivo_tarea unido (no sumado) o la frase 'el archivo que falta', y termina con las tres explicaciones literales. Si la lista viene vacia, no se hace nada.",
+  "codigo": "        faltantes = falta_en_el_material(material_obrero, encargo)\n        if faltantes:\n            archivo_pedido = _archivo_tarea[0] if _archivo_tarea else \"el archivo que falta\"\n            return {\"_error\": (\n                \"FALTA_MATERIAL: \" + \"; \".join(faltantes)\n                + \" NECESITO_LEER: \" + archivo_pedido\n                + \" motivo: sin ese trozo no se puede tocar lo que se pide\"\n                + \" decide: si se puede escribir el cambio o hay que pedir mas material\"\n                + \" riesgo: si no se lee, se paga una pregunta que nadie puede contestar\"\n            )}",
+  "vigia": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py: el primer caso (material sin pieza) debe quedar verde sin llamar a la IA y con FALTA_MATERIAL, NECESITO_LEER y cuerpo/obrero.py en el texto; el segundo caso (material con pieza) debe seguir verde y llamar a la IA.",
+  "puede_danar": [
+   "cuerpo/obrero.py: funcion trabajar",
+   "vigias/test_vigia_falta_material_no_llama_a_la_ia.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El freno se pone sin mirar la clase: llama a falta_en_el_material(material_obrero, encargo) para TODAS las clases, y en clase='crear' eso es siempre falso positivo. El encargo de --crear nombra el archivo nuevo que hay que escribir (cuerpo/obrero.py:1218-1225 y _prompt_obrero:155-157 lo dicen: 'un archivo que aun no existe nunca puede venir en el material'), ese archivo no esta en el material porque todavia no existe, falta_en_el_material devuelve la lista 'el material no trae el archivo X' y la funcion vuelve con FALTA_MATERIAL SIN LLAMAR NUNCA A LA IA.",
+   "Eso deja muerta justo la clase que se anadio el 2026-09-10 para que crear funcionara (ingeniero.py:318 y :342 pasan clase='crear' a trabajar). Todo trabajo de --crear con archivo .py pasara a devolver FALTA_MATERIAL siempre.",
+   "Y lo peor: no hay ninguna vigia que cubra la ruta de crear, asi que la suite se queda VERDE mientras una puerta entera del equipo queda cerrada en silencio. Fallo de vecino dentro de la misma funcion que el cambio toca, y no esta ni en la lista de puede_danar ni en el diagnostico."
+  ],
+  "riesgo_vecinos": [
+   "cuerpo/obrero.py: trabajo(), rama clase='crear' (CONTRATO_CREAR_PIEZA_NUEVA regla 5 y la ley escrita en _prompt_obrero:155-157): el freno la devuelve SIEMPRE con FALTA_MATERIAL. Es el fallo grave.",
+   "cuerpo/obrero.py: trabajo(), vueltas 2..4: el encargo que llega al freno ya lleva delante 'Este trabajo ya se rechazo antes...' con los motivos (linea 1259-1263); falta_en_el_material tambien escanea ese prefijo, asi que un motivo de rechazo que nombre un .py puede disparar un FALTA_MATERIAL falso en el reintento.",
+   "El unico caso de esta tarea es 'reparar' con el archivo en el paquete, asi que ahi el freno acierta; el dano esta en la rama que nadie midio."
+  ],
+  "que_falta": [
+   "Un guarda de clase: el freno solo debe correr cuando clase == 'reparar' (o, mejor, saltarlo cuando el encargo es de crear), porque para crear el archivo ausente es lo esperado y no un fallo.",
+   "Una vigia que compruebe que la ruta de crear sigue llamando a la IA: mismo estilo que la existente (material SIN la pieza nueva, tarea de crear, y assert de que la IA fue llamada). Sin ella, la puerta se cierra otra vez sin que nadie lo note.",
+   "Un afterthought menor: mejor pasar a falta_en_el_material la tarea limpia (tarea) y no el encargo con el prefijo de rechazos, para que los motivos viejos no generen faltantes falsos."
+  ],
+  "resumen_para_el_jefe": "El freno esta bien escrito y unir en vez de sumar es la leccion aprendida, pero se aplica a todas las clases y deja muerta la creacion de archivos nuevos sin que ninguna vigia lo note: hay que anadir el guarda de clase='reparar' y su prueba."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el pasillo recorto el encargo de 19234 a 11140 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el pasillo recorto el encargo de 19483 a 11327 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el pasillo recorto el encargo de 19764 a 11537 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 4"
+ ]
+}
