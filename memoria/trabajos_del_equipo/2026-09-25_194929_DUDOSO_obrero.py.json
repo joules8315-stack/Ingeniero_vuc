@@ -1,0 +1,62 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py::trabajar no existe el freno que llama a falta_en_el_material antes de preguntar a la IA, por lo que se paga por preguntar cuando falta material.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)\n        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,",
+    "texto_nuevo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)\n        faltantes = falta_en_el_material(material_obrero, encargo)\n        if faltantes:\n            return {\"_error\": \"FALTA_MATERIAL: \" + \"; \".join(faltantes) + \" NECESITO_LEER: \" + faltantes[0] + \" motivo: \" + \"\" + \" decide: \" + \"\" + \" riesgo: \" + \"\"}\n        crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,"
+   }
+  ],
+  "cambio": "Insertar, justo despues del renglon del tope y antes del renglon que pregunta con relevo, un freno que llama a falta_en_el_material con material_obrero y encargo; si la lista trae algo, devolver de inmediato un diccionario con la clave _error cuyo texto empieza con FALTA_MATERIAL, sigue con las frases unidas por punto y coma, y termina con el bloque NECESITO_LEER una sola vez nombrando el primer archivo que falta, y detras las palabras motivo, decide y riesgo, cada una con sus dos puntos y su explicacion corta. Si la lista viene vacia, no se hace nada.",
+  "codigo": "        faltantes = falta_en_el_material(material_obrero, encargo)\n        if faltantes:\n            return {\"_error\": \"FALTA_MATERIAL: \" + \"; \".join(faltantes) + \" NECESITO_LEER: \" + faltantes[0] + \" motivo: \" + \"\" + \" decide: \" + \"\" + \" riesgo: \" + \"\"}",
+  "vigia": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py: primer caso comprueba que no se pregunta a nadie y que el texto trae FALTA_MATERIAL, NECESITO_LEER y el nombre del archivo; segundo caso sigue verde.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "El material no trae el cuerpo completo de la funcion trabajar ni la definicion de falta_en_el_material: ¿como se llama exactamente la funcion que devuelve la lista de frases que faltan y cual es su firma (parametros y orden)?",
+   "El material no dice como se rellenan las explicaciones cortas de motivo, decide y riesgo: ¿de donde salen esos textos?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Las tres explicaciones pedidas salen como literales vacios: el texto devuelto queda \"... NECESITO_LEER: <algo> motivo:  decide:  riesgo: \" y el encargo (palabras de Julio en el ancla) pedia las tres palabras CON su explicacion corta; el autor lo admite en su propio campo preguntas y marca confianza \"baja\".",
+   "NECESITO_LEER mete `faltantes[0]`, pero el mismo material dice que falta_en_el_material devuelve una LISTA DE FRASES (textos sencillos, no diccionarios), asi que lo que se imprime ahi es una frase, no necesariamente el nombre del primer archivo que falta; el vigia pide que aparezca el nombre del archivo y eso no esta comprobado."
+  ],
+  "riesgo_vecinos": [
+   "El return temprano ocurre antes de lo que haya antes de ese renglon (reserva de cuota, aviso, registro). Si hay algo que se deba liberar o avisar aunque falte material, ese return se lo come. No se ve en el recorte.",
+   "La firma de falta_en_el_material no esta en el material; si no es (material, encargo) en ese orden, el freno revienta al ejecutarse. Lo detecta el primer caso del vigia, no antes.",
+   "El consumidor de la clave _error (arnes/revisor_de_programa.py, cuerpo/codex.py) queda fuera del paquete: si no trata un dict que solo trae _error, el freno devuelve bien y el turno siguiente falla mas lejos."
+  ],
+  "que_falta": [
+   "El cuerpo real de falta_en_el_material, para confirmar firma y que devuelve frases con el nombre del archivo dentro.",
+   "Quien lee la clave _error y si acepta un diccionario sin las otras claves de trabajo.",
+   "La definicion de las explicaciones cortas: si las tiene que rellenar quien pide el material (y entonces el codigo esta bien y hay que documentarlo) o la IA (y entonces hay que darle de donde sacarlas, porque ahora seria inventar)."
+  ]
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

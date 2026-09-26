@@ -1,0 +1,60 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py::trabajar, tras filtrar el material, se pregunta a la IA aunque el material no traiga la pieza pedida; falta el freno que llama a falta_en_el_material y devuelve _error con FALTA_MATERIAL sin preguntar.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)",
+  "texto_nuevo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)\n        _falta = falta_en_el_material(material_obrero, encargo)\n        if _falta:\n            return {\"_error\": \"FALTA_MATERIAL: \" + \"; \".join(_falta) + \" NECESITO_LEER: \" + _falta[0] + \" motivo: \" + _falta[0] + \" decide: \" + _falta[0] + \" riesgo: \" + _falta[0]}",
+  "cambio": "Insertar el freno justo debajo del renglon del tope: llamar a falta_en_el_material(material_obrero, encargo) y, si devuelve algo, devolver de inmediato un diccionario con clave _error cuyo texto empieza por FALTA_MATERIAL, sigue con las frases separadas por punto y coma, y termina con NECESITO_LEER, motivo, decide y riesgo.",
+  "codigo": "        _falta = falta_en_el_material(material_obrero, encargo)\n        if _falta:\n            return {\"_error\": \"FALTA_MATERIAL: \" + \"; \".join(_falta) + \" NECESITO_LEER: \" + _falta[0] + \" motivo: \" + _falta[0] + \" decide: \" + _falta[0] + \" riesgo: \" + _falta[0]}",
+  "vigia": "vigias/test_vigia_falta_material_no_llama_a_la_ia.py::test_material_sin_pieza_no_llama_a_la_ia (rojo hoy) y ::test_material_con_pieza_si_llama_a_la_ia (verde, debe seguir verde)",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [
+   "Que devuelve exactamente falta_en_el_material: una lista de frases, un texto, o un diccionario con archivo/motivo/decide/riesgo? El material no lo dice y de eso depende como se arma el texto de _error.",
+   "El texto de _error debe llevar NECESITO_LEER/motivo/decide/riesgo por cada pieza que falta o solo una vez al final? El material dice 'termina con cuatro cosas' en singular."
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a groq y no esta disponible: reviso ",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 1"
+ ]
+}
