@@ -10,6 +10,7 @@ from cuerpo import obrero
 
 
 PROPUESTA_OK = json.dumps({"archivo": "x.py", "texto_viejo": "a", "texto_nuevo": "b"})
+PAQUETE = "paquete"
 
 
 def _preparar(monkeypatch, material):
