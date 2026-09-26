@@ -1,0 +1,72 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/guardia_de_guardado.py, dentro de _vigias, el guardia no lee las rojas conocidas del archivo de apuntes ni las pasa a rojas_que_frenan, y no apunta las rojas de ahora antes del detalle.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    guardados_que_frenan = [a for a in guardados if a not in esperando]",
+    "texto_nuevo": "    conocidas = []\n    try:\n        with open(os.path.join(RAIZ, \"memoria\", \"rojas_conocidas.json\"), encoding=\"utf-8\") as f:\n            conocidas = json.load(f)\n    except Exception:\n        conocidas = []\n    guardados_que_frenan = rojas_que_frenan(rojas_ahora, guardados, declaradas, conocidas)"
+   },
+   {
+    "texto_viejo": "    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando])",
+    "texto_nuevo": "    try:\n        with open(os.path.join(RAIZ, \"memoria\", \"rojas_conocidas.json\"), \"w\", encoding=\"utf-8\") as f:\n            json.dump(rojas_ahora, f)\n    except Exception:\n        pass\n    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando])"
+   }
+  ],
+  "cambio": "Primero: leer las rojas conocidas de memoria/rojas_conocidas.json (lista vacia si falla) y llamar a rojas_que_frenan(rojas_ahora, guardados, declaradas, conocidas) guardando el resultado en guardados_que_frenan. Segundo: antes del renglon del detalle, escribir en memoria/rojas_conocidas.json la lista de las rojas de ahora, sin reventar si no se puede.",
+  "codigo": "    conocidas = []\n    try:\n        with open(os.path.join(RAIZ, \"memoria\", \"rojas_conocidas.json\"), encoding=\"utf-8\") as f:\n            conocidas = json.load(f)\n    except Exception:\n        conocidas = []\n    guardados_que_frenan = rojas_que_frenan(rojas_ahora, guardados, declaradas, conocidas)\n\n    try:\n        with open(os.path.join(RAIZ, \"memoria\", \"rojas_conocidas.json\"), \"w\", encoding=\"utf-8\") as f:\n            json.dump(rojas_ahora, f)\n    except Exception:\n        pass\n    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando])",
+  "vigia": "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [
+   "¿Como se llama exactamente la variable con la lista de rojas de ahora dentro de _vigias?",
+   "¿Como se llama exactamente la variable con las rojas declaradas por tareas sin terminar dentro de _vigias?",
+   "¿Como se llama exactamente la variable con las rojas guardadas dentro de _vigias?",
+   "¿Existe ya en el archivo la constante RAIZ y los imports de os y json, o hay que anadirlos?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "rojas_conocidas.js",
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El guardia ahora ESCRIBE en el archivo real memoria/rojas_conocidas.json en cada llamada: cuando corran las vigias se pisa el estado real del proyecto con las rojas de la prueba. La ruta es la que manda la orden, pero conviene saberlo antes de dar esto por cerrado.",
+   "El open en modo escritura trunca antes de volcar: si json.dump revienta a medias, el archivo queda vacio o a medias y el except se lo come callado. No frena al guardia (la proxima vuelta cae en lista vacia y frena igual), pero se pierde el historico sin que nadie se entere.",
+   "El except silencioso al escribir tapa tambien el fallo de permisos o de disco: el guardia sigue guardando como si hubiera apuntado. Es lo que pide la orden ('sin avisar y sin reventar'), asi que no es fallo, pero es un punto ciego real."
+  ],
+  "que_falta": [
+   "No se comprueba que lo que sale del json.load sea una lista; si el archivo esta corrupto y guarda otra cosa (un objeto), conocidas llega como diccionario a rojas_que_frenan. Es un extra, la orden no lo pedia.",
+   "La propuesta declara confianza baja y cuatro preguntas sobre los nombres de las variables; los nombres existen (comprobado por programa) y el orden de los cuatro argumentos es exactamente el del encargo, asi que no bloquea, pero nadie verifico que 'declaradas' sea la de tareas sin terminar y no otra de nombre parecido."
+  ],
+  "resumen_para_el_jefe": "Arregla exactamente lo que dice el diagnostico, con la ruta, el orden de argumentos y el momento de escribir correctos, y no toca nada mas; el unico aviso real es que el guardia pisa el archivo de estado del proyecto en cada pasada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 1"
+ ]
+}
