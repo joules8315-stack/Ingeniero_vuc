@@ -308,3 +308,49 @@ cd C:\Ingeniero_VUC; python ingeniero.py autorizar-off "<motivo en una frase>" "
 | Llamadas que acaban en nada | 20.6% | **menos de 5%** |
 | Órdenes a la vez | 1 | **3-4** |
 | Orden 173-F064924 | muere sin veredicto | **cerrada en 1 ronda** |
+
+---
+
+# QUÉ SIGNIFICA "ECONÓMICO" — DEFINICIÓN DE JULIO (2026-09-27)
+
+> **No se vuelve a preguntar el precio del token: eso NO es lo que lo hace económico.**
+> Palabras de Julio, sin retocar:
+>
+> *"Lo barato no es para que me preguntes cuánto cuesta el token, no, barato es que todo lo que no
+> necesita de IA, absolutamente todo, se haga por programa, eso es lo que lo hace económico.
+> Además, que no repita procesos innecesarios, que sea preciso y no se pierdan vueltas en esto, que
+> no se pierda trabajo bajo ninguna circunstancia. Que sea rápido, que se automaticen todas las
+> tareas que necesiten programa, que todo esté conectado, que las respuestas tengan disparadores,
+> para que se tomen acciones instantáneas. Esto es lo que lo hace económico. También que lo que
+> puedan hacer las IA gratis, lo hagan, esto lo hace económico. Que tú no uses sino los recursos
+> estrictamente necesarios, eso lo hace económico, y las IA pagas, Claude, DeepSeek."*
+
+**Esta es ahora la vara de medir de todo el plan.** Las tres palabras no son tres bloques
+separados: rápido, preciso y económico son la misma cosa vista desde tres lados.
+
+## Los siete puntos y dónde se cumple cada uno
+
+| Lo que dijo Julio | Quién lo cumple | Estado |
+|---|---|---|
+| 1. Todo lo que no necesita IA, lo hace un programa | `arnes/revisor_de_programa.py` (revisa gratis, sin IA), `R2b` (no se paga una pregunta imposible), `R9` (crear no es inventar: que lo compruebe un programa) | R2b hecha · **R9 pendiente** · falta una regla general |
+| 2. No repetir procesos innecesarios | `R4a`+`R4b` (la misma prueba no se corre dos veces), `R4`, `R4c` | R4a/R4b hechas · **R4, R4c pendientes** |
+| 3. Preciso, sin perder vueltas | `R13` (el paquete trae el archivo que se le nombra), `R14` (una ronda declara y usa), `R10` | **las tres pendientes — son las que más vueltas costaron** |
+| 4. No perder trabajo bajo ninguna circunstancia | `R1` y su familia `R1b`/`R1c`/`R1d` (el trabajo aprobado llega al disco) | R1b/R1c/R1d hechas · **R1 pendiente** |
+| 5. Automatizar y que todo esté conectado, con disparadores para acciones instantáneas | `R8` (el comando que arma el plan solo), `R3c` (disparador automático de los dos puestos de pago), `R5` (ningún proceso colgado) | R5 hecha · R3c en espera por orden suya · **R8 pendiente** · **falta la regla general de disparadores** |
+| 6. Lo que puedan hacer las IA gratis, que lo hagan | la fila de cerebros pone lo gratis primero (`cuotas.ORDEN`), `R3` (preguntarles a la vez, no en fila) | funciona · **R3 pendiente** |
+| 7. Claude no usa sino los recursos estrictamente necesarios; las de pago son Claude y DeepSeek | la ley del paquete mínimo, `arnes/read_gate.py`, `R7` (la llave abre solo lo que la tarea necesita) | funciona · **R7 pendiente** |
+
+## Lo que esta definición cambia en el plan
+
+1. **Ya no hace falta el dato del precio del millón de unidades.** Queda descartado como bloqueo.
+2. **Los tres objetivos dejan de ir por separado.** El bloque de precisión (`R13`, `R14`, `R1`,
+   `R9`, `R10`) es también el bloque económico: cada vuelta perdida es una llamada pagada de más.
+   Por eso el orden de ataque **no cambia**: `R13` y `R14` primero, porque son las que hacen que
+   todo lo demás no se repita.
+3. **Dos huecos que la definición deja al descubierto y que no tienen orden todavía:**
+   - **Una regla general de "programa antes que IA"**: hoy se cumple caso por caso, no hay nada que
+     lo obligue en cada vuelta.
+   - **Los disparadores**: hoy solo hay uno pensado así (el de los dos puestos de pago). No existe
+     una forma común de que una respuesta dispare la acción siguiente sin que alguien se acuerde.
+
+   Estos dos se apuntan como órdenes nuevas **antes** de seguir, para que no vivan en el chat.

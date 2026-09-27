@@ -1,5 +1,43 @@
 [
   {
+    "id": "R16-disparadores",
+    "titulo": "Cada respuesta dispara la accion siguiente, sin que nadie se acuerde",
+    "pieza": "cuerpo/capataz.py",
+    "vigia": "vigias/test_vigia_una_respuesta_dispara_la_accion_siguiente.py",
+    "origen": "Julio 2026-09-27",
+    "repara": "Hoy hay pasos que esperan a que alguien se acuerde de darlos, y cada espera es tiempo y llamadas de mas",
+    "razon": "Definicion de economico de Julio del 2026-09-27, punto 5: que todo este conectado y que las respuestas tengan disparadores para que se tomen acciones instantaneas",
+    "depende": [
+      "R15-programa-antes-que-ia"
+    ],
+    "modo": "PROGRAMA",
+    "encargo": "Primer paso, sin gastar ninguna IA: un programa que recorre las ordenes ya cerradas y las llamadas del mes y nombra los puntos donde una respuesta llego y la accion siguiente no salio sola, con el tiempo que se perdio en cada uno. Deja el resultado en un documento de la carpeta memoria. Su vigia comprueba que no llama a ninguna IA y que con datos de prueba nombra bien esos puntos. Con esa lista se decide cual disparador se construye primero, y eso va en una orden aparte.",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
+    "id": "R15-programa-antes-que-ia",
+    "titulo": "Programa antes que IA: lo que puede decidir un programa no se le paga a una IA",
+    "pieza": "arnes/revisor_de_programa.py",
+    "vigia": "vigias/test_vigia_programa_antes_que_ia.py",
+    "origen": "Julio 2026-09-27",
+    "repara": "Hoy se le pide a una IA cosas que ya estan resueltas en el disco, y eso se paga en cada vuelta",
+    "razon": "Definicion de economico de Julio del 2026-09-27, punto 1: todo lo que no necesita IA, absolutamente todo, se hace por programa",
+    "depende": [],
+    "modo": "PROGRAMA",
+    "encargo": "Primer paso, sin gastar ninguna IA: un programa que recorre el cuaderno de llamadas del mes y agrupa las llamadas por lo que se pidio, para nombrar con numeros las cosas que hoy se le piden a una IA y que un programa podria decidir solo con lo que ya esta en el disco. Deja el resultado en un documento de la carpeta memoria. Su vigia comprueba que el programa no llama a ninguna IA y que con un cuaderno de prueba saca las cuentas correctas. Con esa medida en la mano se decide que se pasa a programa, y eso va en una orden aparte: aqui no se repara nada todavia.",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "R3c-dos-deepseek",
     "titulo": "Cuando la puerta gratis se agote, entran dos puestos de DeepSeek: el 1 escribe y el 2 revisa",
     "pieza": "cuerpo/capataz.py",
@@ -47,7 +85,7 @@
     "queda_roja": true,
     "depende": [],
     "modo": "IA",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "",
