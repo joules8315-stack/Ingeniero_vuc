@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El vigia pide 600 s en el caso sin filas y 492 s en dos casos, cuando el techo decidido por Julio el 2026-09-27 es 400 s.",
+  "archivo": "vigias/test_vigia_a_big_pickle_se_le_espera_lo_que_tarda.py",
+  "funcion": "test_sin_filas_se_espera_el_valor_por_defecto, test_con_dos_filas_buenas_usa_su_record_por_uno_y_medio, test_tareas_parecidas_mandan_y_si_no_las_hay_usa_el_record_de_todas",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def test_sin_filas_se_espera_el_valor_por_defecto():\n    \"\"\"Sin nada apuntado, espera_de_bigpickle(1000) vale 600.\"\"\"\n    esperado = cuotas.espera_de_bigpickle(1000)\n    assert esperado == 600, (\n        \"sin filas apuntadas se esperaba 600 y salio %r\" % (esperado,)\n    )",
+    "texto_nuevo": "def test_sin_filas_se_espera_el_valor_por_defecto():\n    \"\"\"Sin nada apuntado, espera_de_bigpickle(1000) vale 400.\n\n    El techo de espera es 400 s por decision de Julio del 2026-09-27.\n    \"\"\"\n    esperado = cuotas.espera_de_bigpickle(1000)\n    assert esperado == 400, (\n        \"sin filas apuntadas se esperaba 400 y salio %r\" % (esperado,)\n    )"
+   },
+   {
+    "texto_viejo": "def test_con_dos_filas_buenas_usa_su_record_por_uno_y_medio():\n    \"\"\"Con 100 s y 328 s (tamano 0), espera_de_bigpickle(1000) esta entre 491 y 493.\n\n    328 * 1.5 = 492. El margen [491, 493] admite redondeos.\n    \"\"\"\n    _apuntar_bigpickle(tamano=0, segundos=100)\n    _apuntar_bigpickle(tamano=0, segundos=328)\n\n    esperado = cuotas.espera_de_bigpickle(1000)\n    assert 491 <= esperado <= 493, (\n        \"con dos filas buenas (100 y 328) se esperaba entre 491 y 493 y salio %r\"\n        % (esperado,)\n    )",
+    "texto_nuevo": "def test_con_dos_filas_buenas_usa_su_record_por_uno_y_medio():\n    \"\"\"Con 100 s y 328 s (tamano 0), espera_de_bigpickle(1000) vale 400.\n\n    328 * 1.5 = 492, pero el techo de espera es 400 s por decision de Julio del\n    2026-09-27.\n    \"\"\"\n    _apuntar_bigpickle(tamano=0, segundos=100)\n    _apuntar_bigpickle(tamano=0, segundos=328)\n\n    esperado = cuotas.espera_de_bigpickle(1000)\n    assert esperado == 400, (\n        \"con dos filas buenas (100 y 328) se esperaba 400 y salio %r\"\n        % (esperado,)\n    )"
+   },
+   {
+    "texto_viejo": "    espera_de_bigpickle(1000): NO hay tareas parecidas (10000 no esta entre la mitad y el\n    doble de 1000) -> se usa el record de todas, que es 328 -> 328 * 1.5 = 492.\n    Margen [491, 493].\n    \"\"\"\n    for _ in range(5):\n        _apuntar_bigpickle(tamano=10000, segundos=100)\n    _apuntar_bigpickle(tamano=0, segundos=328)\n\n    con_parecidas = cuotas.espera_de_bigpickle(12000)\n    assert 149 <= con_parecidas <= 151, (\n        \"con tareas parecidas (10000 letras, 100 s) se esperaba entre 149 y 151 y salio %r\"\n        % (con_parecidas,)\n    )\n\n    sin_parecidas = cuotas.espera_de_bigpickle(1000)\n    assert 491 <= sin_parecidas <= 493, (\n        \"sin tareas parecidas se esperaba el record de todas (492) y salio %r\"\n        % (sin_parecidas,)\n    )",
+    "texto_nuevo": "    espera_de_bigpickle(1000): NO hay tareas parecidas (10000 no esta entre la mitad y el\n    doble de 1000) -> se usa el record de todas, que es 328 -> 328 * 1.5 = 492, pero el\n    techo de espera es 400 s por decision de Julio del 2026-09-27.\n    \"\"\"\n    for _ in range(5):\n        _apuntar_bigpickle(tamano=10000, segundos=100)\n    _apuntar_bigpickle(tamano=0, segundos=328)\n\n    con_parecidas = cuotas.espera_de_bigpickle(12000)\n    assert 149 <= con_parecidas <= 151, (\n        \"con tareas parecidas (10000 letras, 100 s) se esperaba entre 149 y 151 y salio %r\"\n        % (con_parecidas,)\n    )\n\n    sin_parecidas = cuotas.espera_de_bigpickle(1000)\n    assert sin_parecidas == 400, (\n        \"sin tareas parecidas se esperaba el techo de 400 y salio %r\"\n        % (sin_parecidas,)\n    )"
+   }
+  ],
+  "cambio": "Apuntar como razon el techo de espera de 400 s por decision de Julio del 2026-09-27 y bajar a 400 los tres casos que hoy piden mas: el caso sin filas (de 600 a 400) y los dos casos que hoy piden 492 (el de dos filas buenas y el de sin tareas parecidas).",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_a_big_pickle_se_le_espera_lo_que_tarda.py en sus cinco pruebas: sin filas espera 400, con dos filas buenas espera 400, con tareas parecidas sigue esperando 150, sin tareas parecidas espera 400, y nunca menos de 60 s.",
+  "puede_danar": [
+   "cuerpo/cuotas.py::espera_de_bigpickle (el vigia solo comprueba, no cambia el comportamiento)",
+   "vigias/test_vigia_nada_lento.py (mide tiempos de reloj y podria notar el cambio de techo)"
+  ],
+  "preguntas": [
+   "El techo de 400 s, ¿se aplica solo en el vigia o tambien hay que cambiar el valor por defecto dentro de cuerpo/cuotas.py::espera_de_bigpickle? El material no trae ese archivo."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "cuotas.py",
+   "test_vigia_nada_lento.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Los cambios ajustan correctamente los tres casos que superaban el techo a 400 s, sin introducir código inexistente ni romper pruebas vecinas."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}
