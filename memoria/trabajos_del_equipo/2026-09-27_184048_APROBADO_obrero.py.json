@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "falta_en_el_material acepta como archivo la extension suelta (.py sin nombre delante) porque su unica defensa es comprobar que la palabra no sea 'py' a secas",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "falta_en_el_material",
+  "texto_viejo": "    # --- Archivos nombrados en el encargo ---\n    archivos = []\n    for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n        limpia = palabra.strip(\"()[]{}<>\\\"'`\")\n        if \".py\" in limpia and limpia != \"py\":\n            # descartar la palabra suelta 'py' sin punto ni nombre delante\n            if limpia == \"py\":\n                continue\n            archivos.append(limpia)",
+  "texto_nuevo": "    # --- Archivos nombrados en el encargo ---\n    archivos = []\n    for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n        limpia = palabra.strip(\"()[]{}<>\\\"'`\")\n        if \".py\" in limpia and limpia != \"py\":\n            # descartar la palabra suelta 'py' sin punto ni nombre delante\n            if limpia == \"py\":\n                continue\n            # descartar la extension SUELTA: un punto seguido de py sin ningun\n            # nombre delante. Solo cuenta como archivo si antes del punto hay al\n            # menos una letra, un numero o una raya baja.\n            _punto = limpia.find(\".py\")\n            _nombre = limpia[:_punto]\n            if not any(_c.isalnum() or _c == \"_\" for _c in _nombre):\n                continue\n            archivos.append(limpia)",
+  "cambio": "en falta_en_el_material, al recoger los archivos del encargo, descartar la extension suelta: solo cuenta como archivo si antes del '.py' hay al menos una letra, un numero o una raya baja",
+  "codigo": "            _punto = limpia.find(\".py\")\n            _nombre = limpia[:_punto]\n            if not any(_c.isalnum() or _c == \"_\" for _c in _nombre):\n                continue",
+  "vigia": "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py (tres casos: ruta de verdad se reconoce; solo extension suelta da lista vacia; ruta de verdad + extension suelta solo cuenta la ruta)",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Lado menor esperado ywanted: si el encargo solo nombraba la extension suelta, antes la lista de archivos no salia vacia y el mensaje de funcion ausente salia como 'el material nombra el archivo pero no trae la funcion X'; ahora sale 'el material no trae la funcion X'. Es exactamente el efecto pedido (dejar de creerse que hay un archivo), no una rotura.",
+   "Los cuatro vecinos de arnes/asignador.py, arnes/revisor_de_programa.py, cuerpo/codex.py y las tres vigias listadas NO vienen en el paquete: no se pueden leer, asi que su opinio se apoya en que son consumidores de falta_en_el_material y en la comprobacion por programa que dice que el archivo sigue cargando."
+  ],
+  "que_falta": [
+   "El docstring de falta_en_el_material sigue diciendo solo que 'la palabra suelta py no es un archivo'; ya no cuenta toda la regla nueva. No rompe nada y el encargo prohibia tocar mas cosas, asi que no es motivo de rechazo, pero quedaria mas honesto actualizado.",
+   "El `if limpia == \"py\": continue` interior sigue muerto desde antes (el `limpia != \"py\"` de arriba ya lo excluye). El cambio lo deja tal cual: correcto por cauto, no es fallo."
+  ],
+  "resumen_para_el_jefe": "El arreglo hace lo pedido y solo lo pedido: descarta la extension suelta mirando que haya un nombre de verdad antes del punto, no inventa nada, no toca pruebas y deja las rutas con carpetas igual; aprobado, solo queda por escribir el docstring que ya no describe la regla."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (32304 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
