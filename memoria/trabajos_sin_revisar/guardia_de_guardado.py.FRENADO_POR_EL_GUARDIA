@@ -324,8 +324,7 @@ def _vigias(raiz):
                                         "GIT_PREFIX", "GIT_OBJECT_DIRECTORY")}
         try:
             import bateria_en_paralelo
-            r = bateria_en_paralelo.correr(raiz, objetivo, procesos=4, tope=600,
-                                           env=_entorno_limpio, correr_uno=subprocess.run)
+            r = bateria_en_paralelo.correr(raiz, objetivo, procesos=4, tope=600)
         except Exception:
             r = subprocess.run([sys.executable, "-m", "pytest", "-q"] + objetivo,
                                cwd=raiz, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=900,

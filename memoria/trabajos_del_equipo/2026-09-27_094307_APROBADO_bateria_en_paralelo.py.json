@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Cuando la expansion del objetivo deja la lista de archivos vacia, no se arma ningun grupo y se devuelve returncode 0 sin correr pytest, ocultando el codigo 5 que antes devolvia pytest.",
+  "archivo": "arnes/bateria_en_paralelo.py",
+  "funcion": "_correr_seguro",
+  "texto_viejo": "    grupos = repartir(archivos, n_procesos)",
+  "texto_nuevo": "    if not archivos:\n        # Si la expansion dejo la lista vacia, se arma UN SOLO grupo con el\n        # objetivo tal como llego, para que sea pytest quien decida (y pueda\n        # devolver 5 = no se recogio ninguna prueba), como antes.\n        if isinstance(objetivo, (list, tuple)):\n            grupos = [list(objetivo)]\n        else:\n            grupos = [[objetivo]]\n    else:\n        grupos = repartir(archivos, n_procesos)",
+  "cambio": "En _correr_seguro, tras expandir el objetivo y calcular n_procesos y tope_segundos, sustituir la llamada a repartir(archivos, n_procesos) por una comprobacion: si archivos queda vacio, armar un unico grupo con el objetivo tal como llego (lista si es lista, [objetivo] si es texto); si no, seguir con repartir(archivos, n_procesos) exactamente igual que hoy. No se toca el reparto, ni el resumen, ni los tres atributos del Resultado, ni como se juntan los resultados.",
+  "codigo": "    if not archivos:\n        if isinstance(objetivo, (list, tuple)):\n            grupos = [list(objetivo)]\n        else:\n            grupos = [[objetivo]]\n    else:\n        grupos = repartir(archivos, n_procesos)",
+  "vigia": "Una prueba que llame a correr(raiz, carpeta_sin_pruebas) y compruebe que returncode es 5 (no 0), que el stdout lleva el ultimo renglon de resumen con 1 grupo, y que se llamo a pytest con la carpeta tal cual llego; y otra que con archivos no vacios el reparto y el resumen siguen igual que hoy.",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "guardia_de_guardado.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion corrige el comportamiento de _correr_seguro cuando la lista de archivos queda vacia, asegurando que pytest decida el returncode 5 en lugar de devolver 0 sin ejecutar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21432 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) no le cabe (22685 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) no le cabe (22788 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 4"
+ ]
+}

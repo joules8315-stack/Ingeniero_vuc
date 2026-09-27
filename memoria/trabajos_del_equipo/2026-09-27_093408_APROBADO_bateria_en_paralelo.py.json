@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En _correr_grupo no se reciben ni usan env ni correr_uno, y en _correr_seguro no se pasan esos dos argumentos a _correr_grupo en las dos llamadas.",
+  "archivo": "arnes/bateria_en_paralelo.py",
+  "funcion": "_correr_grupo",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _correr_grupo(raiz, grupo, tope):\n    \"\"\"Corre un grupo con pytest en su propio proceso.\n\n    Devuelve una tupla (returncode, stdout, stderr, cortado, error).\n    Nunca lanza: todo se captura aqui dentro.\n    \"\"\"\n    orden = [sys.executable, \"-m\", \"pytest\", \"-q\"] + list(grupo)\n    try:\n        completado = subprocess.run(\n            orden,\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            encoding=\"utf-8\",\n            errors=\"replace\",\n            stdin=subprocess.DEVNULL,\n            timeout=tope,\n        )",
+    "texto_nuevo": "def _correr_grupo(raiz, grupo, tope, env=None, correr_uno=None):\n    \"\"\"Corre un grupo con pytest en su propio proceso.\n\n    Devuelve una tupla (returncode, stdout, stderr, cortado, error).\n    Nunca lanza: todo se captura aqui dentro.\n    \"\"\"\n    orden = [sys.executable, \"-m\", \"pytest\", \"-q\"] + list(grupo)\n    try:\n        if correr_uno is not None:\n            if env is not None:\n                completado = correr_uno(\n                    orden,\n                    cwd=raiz,\n                    capture_output=True,\n                    text=True,\n                    encoding=\"utf-8\",\n                    errors=\"replace\",\n                    stdin=subprocess.DEVNULL,\n                    timeout=tope,\n                    env=env,\n                )\n            else:\n                completado = correr_uno(\n                    orden,\n                    cwd=raiz,\n                    capture_output=True,\n                    text=True,\n                    encoding=\"utf-8\",\n                    errors=\"replace\",\n                    stdin=subprocess.DEVNULL,\n                    timeout=tope,\n                )\n        else:\n            if env is not None:\n                completado = subprocess.run(\n                    orden,\n                    cwd=raiz,\n                    capture_output=True,\n                    text=True,\n                    encoding=\"utf-8\",\n                    errors=\"replace\",\n                    stdin=subprocess.DEVNULL,\n                    timeout=tope,\n                    env=env,\n                )\n            else:\n                completado = subprocess.run(\n                    orden,\n                    cwd=raiz,\n                    capture_output=True,\n                    text=True,\n                    encoding=\"utf-8\",\n                    errors=\"replace\",\n                    stdin=subprocess.DEVNULL,\n                    timeout=tope,\n                )"
+   },
+   {
+    "texto_viejo": "                futuros = [\n                    ejecutor.submit(_correr_grupo, raiz, grupo, tope_segundos)\n                    for grupo in grupos\n                ]",
+    "texto_nuevo": "                futuros = [\n                    ejecutor.submit(_correr_grupo, raiz, grupo, tope_segundos, env, correr_uno)\n                    for grupo in grupos\n                ]"
+   },
+   {
+    "texto_viejo": "            resultados = []\n            for grupo in grupos:\n                resultados.append(_correr_grupo(raiz, grupo, tope_segundos))",
+    "texto_nuevo": "            resultados = []\n            for grupo in grupos:\n                resultados.append(_correr_grupo(raiz, grupo, tope_segundos, env, correr_uno))"
+   }
+  ],
+  "cambio": "Anadir env=None y correr_uno=None a _correr_grupo, usarlos en la llamada a subprocess.run (o a correr_uno si no es None), y pasar esos dos argumentos a _correr_grupo en las dos llamadas dentro de _correr_seguro.",
+  "codigo": "def _correr_grupo(raiz, grupo, tope, env=None, correr_uno=None):\n    \"\"\"Corre un grupo con pytest en su propio proceso.\n\n    Devuelve una tupla (returncode, stdout, stderr, cortado, error).\n    Nunca lanza: todo se captura aqui dentro.\n    \"\"\"\n    orden = [sys.executable, \"-m\", \"pytest\", \"-q\"] + list(grupo)\n    try:\n        if correr_uno is not None:\n            if env is not None:\n                completado = correr_uno(\n                    orden,\n                    cwd=raiz,\n                    capture_output=True,\n                    text=True,\n                    encoding=\"utf-8\",\n                    errors=\"replace\",\n                    stdin=subprocess.DEVNULL,\n                    timeout=tope,\n                    env=env,\n                )\n            else:\n                completado = correr_uno(\n                    orden,\n                    cwd=raiz,\n                    capture_output=True,\n                    text=True,\n                    encoding=\"utf-8\",\n                    errors=\"replace\",\n                    stdin=subprocess.DEVNULL,\n                    timeout=tope,\n                )\n        else:\n            if env is not None:\n                completado = subprocess.run(\n                    orden,\n                    cwd=raiz,\n                    capture_output=True,\n                    text=True,\n                    encoding=\"utf-8\",\n                    errors=\"replace\",\n                    stdin=subprocess.DEVNULL,\n                    timeout=tope,\n                    env=env,\n                )\n            else:\n                completado = subprocess.run(\n                    orden,\n                    cwd=raiz,\n                    capture_output=True,\n                    text=True,\n                    encoding=\"utf-8\",\n                    errors=\"replace\",\n                    stdin=subprocess.DEVNULL,\n                    timeout=tope,\n                )",
+  "vigia": "Una prueba que llame a _correr_grupo con un correr_uno falso y compruebe que se le llama con los mismos argumentos y con env cuando env no es None, y que sin env no se le pasa env; y otra que llame a _correr_seguro con correr_uno falso y compruebe que se usa en el ejecutor.submit y en el camino de fila.",
+  "puede_danar": [
+   "arnes/bateria_en_paralelo.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candados_medicion.py",
+   "ingeniero.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada y no rompe vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20027 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de '_correr_seguro' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "GPT-OSS 120B (Groq) no le cabe (21243 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de '_correr_seguro' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "GPT-OSS 120B (Groq) no le cabe (21367 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de '_correr_seguro' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "GPT-OSS 120B (Groq) no le cabe (21491 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 4"
+ ]
+}

@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La llamada a subprocess.run que corre pytest con la lista objetivo y timeout 900 en _vigias no pasa por arnes/bateria_en_paralelo.py, que ya existe y evita que el guardia se quede sin tiempo.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "        r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\"] + objetivo,\n                           cwd=raiz, capture_output=True, text=True, encoding=\"utf-8\", errors=\"replace\", timeout=900,\n                           stdin=subprocess.DEVNULL, env=_entorno_limpio)  # lee en utf-8, en cp1252 revienta con los acentos (2026-09-21)",
+  "texto_nuevo": "        try:\n            import bateria_en_paralelo\n            r = bateria_en_paralelo.correr(raiz, objetivo, procesos=4, tope=600,\n                                           env=_entorno_limpio, correr_uno=subprocess.run)\n        except Exception:\n            r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\"] + objetivo,\n                               cwd=raiz, capture_output=True, text=True, encoding=\"utf-8\", errors=\"replace\", timeout=900,\n                               stdin=subprocess.DEVNULL, env=_entorno_limpio)  # lee en utf-8, en cp1252 revienta con los acentos (2026-09-21)",
+  "cambio": "En _vigias, sustituir la unica llamada a subprocess.run que corre pytest con la lista objetivo y timeout 900 por una llamada a bateria_en_paralelo.correr(raiz, objetivo, procesos=4, tope=600, env=_entorno_limpio, correr_uno=subprocess.run), importando bateria_en_paralelo como el guardia ya importa vecinas (insertando el directorio en sys.path). Si el import o la llamada fallan, se cae a la llamada de hoy con timeout 900. El resultado se lee igual (returncode, stdout, stderr), asi que todo lo de despues se queda igual.",
+  "codigo": "        try:\n            import bateria_en_paralelo\n            r = bateria_en_paralelo.correr(raiz, objetivo, procesos=4, tope=600,\n                                           env=_entorno_limpio, correr_uno=subprocess.run)\n        except Exception:\n            r = subprocess.run([sys.executable, \"-m\", \"pytest\", \"-q\"] + objetivo,\n                               cwd=raiz, capture_output=True, text=True, encoding=\"utf-8\", errors=\"replace\", timeout=900,\n                               stdin=subprocess.DEVNULL, env=_entorno_limpio)  # lee en utf-8, en cp1252 revienta con los acentos (2026-09-21)",
+  "vigia": "Las pruebas del guardia que cambian subprocess.run por un doble (vigias/test_vigia_el_guardia_lee_en_utf8.py, vigias/test_vigia_el_guardia_no_se_cuelga.py, vigias/test_vigia_el_guardia_se_acuerda_y_frena.py, vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py, vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py) siguen valiendo porque correr_uno=subprocess.run hace que el doble se use; y una prueba que verifique que _vigias llama a bateria_en_paralelo.correr con procesos=4, tope=600 y correr_uno=subprocess.run.",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico sin introducir inventos ni romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (30359 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) no le cabe (31269 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 2"
+ ]
+}

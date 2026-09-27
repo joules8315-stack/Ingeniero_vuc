@@ -1,0 +1,84 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "correr() y _correr_seguro() se tragan cualquier error y devuelven un resultado rojo, confundiendo 'no se pudieron correr las pruebas' con 'las pruebas fallaron'; hay que relanzar el error cuando TODOS los grupos fallaron sin ser corte por tiempo.",
+  "archivo": "arnes/bateria_en_paralelo.py",
+  "funcion": "correr",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    Esta funcion NUNCA lanza una excepcion hacia fuera.\n    \"\"\"\n    try:\n        return _correr_seguro(raiz, objetivo, procesos, tope, env, correr_uno)\n    except Exception as fallo:\n        # Red de ultimo recurso: pase lo que pase, se devuelve un resultado.\n        resumen = \"bateria en paralelo: 0 grupos, 1 rojos, 0 cortados por tiempo\"\n        return Resultado(\n            returncode=1,\n            stdout=resumen + \"\\n\",\n            stderr=\"bateria en paralelo: fallo inesperado: %r\\n\" % (fallo,),\n        )",
+    "texto_nuevo": "    Esta funcion NUNCA lanza una excepcion hacia fuera, con UNA SOLA\n    excepcion: si TODOS los grupos fallaron con un error que NO fue un corte\n    por tiempo (es decir, ni uno solo pudo arrancar), se vuelve a lanzar ese\n    error con raise, tal cual, en vez de devolver un resultado. Esa excepcion\n    esta ahi para no confundir \"no se pudo probar\" con \"salio mal\": quien la\n    usa (el guardia de guardado) tiene que poder distinguir \"no se pudieron\n    correr las pruebas\", que se deja pasar con aviso, de \"las pruebas\n    fallaron\", que frena. Si al menos un grupo si arranco, todo sigue igual\n    que hoy, y un corte por tiempo sigue contando como cortado y NO se lanza\n    nada.\n    \"\"\"\n    try:\n        return _correr_seguro(raiz, objetivo, procesos, tope, env, correr_uno)\n    except Exception as fallo:\n        # Red de ultimo recurso: pase lo que pase, se devuelve un resultado.\n        resumen = \"bateria en paralelo: 0 grupos, 1 rojos, 0 cortados por tiempo\"\n        return Resultado(\n            returncode=1,\n            stdout=resumen + \"\\n\",\n            stderr=\"bateria en paralelo: fallo inesperado: %r\\n\" % (fallo,),\n        )"
+   },
+   {
+    "texto_viejo": "    # 4) Juntar los resultados en el orden de los grupos.\n    trozos_salida = []\n    trozos_error = []\n    rojos = 0\n    cortados = 0\n    todos_ok = True\n\n    for indice, grupo in enumerate(grupos):\n        if indice < len(resultados):\n            codigo, salida, error, cortado, reventado = resultados[indice]\n        else:\n            codigo, salida, error, cortado, reventado = (None, \"\", \"\", False, \"sin resultado\")\n\n        if salida:\n            trozos_salida.append(salida)\n        if error:\n            trozos_error.append(error)\n\n        if cortado:\n            cortados += 1\n            todos_ok = False\n            trozos_salida.append(\n                \"bateria en paralelo: grupo cortado por tiempo: \"\n                + \", \".join(grupo)\n                + \"\\n\"\n            )\n        elif reventado is not None:\n            rojos += 1\n            todos_ok = False\n            trozos_salida.append(\n                \"bateria en paralelo: grupo reventado: \"\n                + \", \".join(grupo)\n                + \" -> \"\n                + str(reventado)\n                + \"\\n\"\n            )\n        elif codigo not in (0, 5):\n            rojos += 1\n            todos_ok = False\n\n    # 5) Resumen final: SIEMPRE el ultimo renglon del stdout.",
+    "texto_nuevo": "    # 4) Juntar los resultados en el orden de los grupos.\n    trozos_salida = []\n    trozos_error = []\n    rojos = 0\n    cortados = 0\n    todos_ok = True\n    arrancaron = 0\n    primer_error = None\n\n    for indice, grupo in enumerate(grupos):\n        if indice < len(resultados):\n            codigo, salida, error, cortado, reventado = resultados[indice]\n        else:\n            codigo, salida, error, cortado, reventado = (None, \"\", \"\", False, \"sin resultado\")\n\n        if salida:\n            trozos_salida.append(salida)\n        if error:\n            trozos_error.append(error)\n\n        if cortado:\n            cortados += 1\n            todos_ok = False\n            trozos_salida.append(\n                \"bateria en paralelo: grupo cortado por tiempo: \"\n                + \", \".join(grupo)\n                + \"\\n\"\n            )\n        elif reventado is not None:\n            rojos += 1\n            todos_ok = False\n            if primer_error is None:\n                primer_error = reventado\n            trozos_salida.append(\n                \"bateria en paralelo: grupo reventado: \"\n                + \", \".join(grupo)\n                + \" -> \"\n                + str(reventado)\n                + \"\\n\"\n            )\n        elif codigo not in (0, 5):\n            rojos += 1\n            todos_ok = False\n            arrancaron += 1\n        else:\n            arrancaron += 1\n\n    # 4b) Si NINGUN grupo pudo arrancar (todos reventaron con un error que NO\n    # fue un corte por tiempo), se vuelve a lanzar ese error con raise, tal\n    # cual, en vez de devolver un resultado. Asi quien usa la pieza puede\n    # distinguir \"no se pudieron correr las pruebas\" de \"las pruebas\n    # fallaron\". Un corte por tiempo NO cuenta como reventado: sigue contando\n    # como cortado y NO se lanza nada.\n    if grupos and arrancaron == 0 and cortados == 0 and primer_error is not None:\n        raise RuntimeError(primer_error)\n\n    # 5) Resumen final: SIEMPRE el ultimo renglon del stdout."
+   }
+  ],
+  "cambio": "En correr(): ampliar el docstring para documentar la UNICA excepcion a la regla de que nunca lanza (cuando TODOS los grupos fallaron con un error que no fue corte por tiempo, se relanza con raise). En _correr_seguro(): contar cuantos grupos arrancaron (codigo 0 o 5) y guardar el primer error de grupo reventado; si ningun grupo arranco y no hubo cortes por tiempo, relanzar ese error con raise antes de armar el Resultado. No se toca el reparto, ni el resumen del ultimo renglon, ni los tres atributos returncode, stdout y stderr.",
+  "codigo": "    # 4b) Si NINGUN grupo pudo arrancar (todos reventaron con un error que NO\n    # fue un corte por tiempo), se vuelve a lanzar ese error con raise, tal\n    # cual, en vez de devolver un resultado. Asi quien usa la pieza puede\n    # distinguir \"no se pudieron correr las pruebas\" de \"las pruebas\n    # fallaron\". Un corte por tiempo NO cuenta como reventado: sigue contando\n    # como cortado y NO se lanza nada.\n    if grupos and arrancaron == 0 and cortados == 0 and primer_error is not None:\n        raise RuntimeError(primer_error)",
+  "vigia": "Una vigia que llame a correr() con un correr_uno que siempre lance (p.ej. FileNotFoundError simulando pytest no instalado) y compruebe que correr() relanza el error en vez de devolver un Resultado rojo; y otra que llame con un correr_uno que devuelva returncode 1 en todos los grupos y compruebe que SI devuelve Resultado con returncode 1 (porque si arrancaron). Y otra con un grupo cortado por tiempo y el resto reventado, que compruebe que NO se lanza nada y el resumen sigue igual.",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "arnes/vecinas.py",
+   "arnes/reparto.py",
+   "arnes/portero.py",
+   "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_de_las_rojas_de_antes.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_las_leyes_de_hoy_tienen_guardian.py",
+   "vigias/test_vigia_lo_atascado_se_pasa.py",
+   "vigias/test_vigia_portero.py",
+   "vigias/test_vigia_reparto_con_cline.py",
+   "vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vigias/test_vigia_vecinas.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "guardia_de_guardado.py",
+   "portero.py",
+   "test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_se_acuerda_de_las_rojas_de_antes.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_las_leyes_de_hoy_tienen_guardian.py",
+   "test_vigia_lo_atascado_se_pasa.py",
+   "test_vigia_portero.py",
+   "test_vigia_reparto_con_cline.py",
+   "test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "test_vigia_vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La variable `arrancaron` se incrementa tanto en los casos de error (código no 0 ni 5) como en los casos de éxito, por lo que nunca será 0 cuando haya grupos procesados. La condición `if grupos and arrancaron == 0 ...` nunca se cumple y la excepción requerida no se lanza.",
+   "El incremento de `arrancaron` en la rama de error es incorrecto; debería contarse solo cuando el grupo arranca (código 0 o 5)."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Contar correctamente los grupos que realmente arrancaron (solo cuando `codigo` es 0 o 5) y usar esa cuenta en la condición para relanzar el error."
+  ],
+  "resumen_para_el_jefe": "El cambio no lanza la excepción solicitada porque la lógica de conteo de grupos arrancados está equivocada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (34378 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) no le cabe (35848 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (35956 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) no le cabe (36148 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 4"
+ ]
+}

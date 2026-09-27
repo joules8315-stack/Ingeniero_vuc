@@ -1,0 +1,57 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La funcion correr de arnes/bateria_en_paralelo.py no acepta los argumentos env ni correr_uno, y sus pruebas no pueden inyectar un entorno limpio ni doblar subprocess.run, por lo que al engancharla en el guardia se rompen cinco pruebas verdes.",
+  "archivo": "arnes/bateria_en_paralelo.py",
+  "funcion": "correr",
+  "texto_viejo": "def correr(raiz, objetivo, procesos=4, tope=600):",
+  "texto_nuevo": "def correr(raiz, objetivo, procesos=4, tope=600, env=None, correr_uno=None):",
+  "cambios": [
+   {
+    "texto_viejo": "def correr(raiz, objetivo, procesos=4, tope=600):",
+    "texto_nuevo": "def correr(raiz, objetivo, procesos=4, tope=600, env=None, correr_uno=None):"
+   },
+   {
+    "texto_viejo": "        return _correr_seguro(raiz, objetivo, procesos, tope)",
+    "texto_nuevo": "        return _correr_seguro(raiz, objetivo, procesos, tope, env, correr_uno)"
+   },
+   {
+    "texto_viejo": "def _correr_seguro(raiz, objetivo, procesos, tope):",
+    "texto_nuevo": "def _correr_seguro(raiz, objetivo, procesos, tope, env=None, correr_uno=None):"
+   }
+  ],
+  "cambio": "Anadir los parametros env y correr_uno a la firma de correr y pasarlos a _correr_seguro, que a su vez debe usarlos: si env no es None, pasarlo como argumento env a cada subprocess.run; si correr_uno no es None, usarlo en lugar de subprocess.run llamandolo con exactamente los mismos argumentos que hoy recibe subprocess.run. Mantener sin cambios el reparto, el resumen del ultimo renglon y los tres atributos returncode, stdout y stderr. Ademas, en vigias/test_vigia_la_bateria_corre_en_paralelo_y_no_se_pierde_nada.py anadir dos casos al final: uno que compruebe que si se le pasa env, ese mismo diccionario llega en el argumento env de cada llamada, y otro que compruebe que si se le pasa correr_uno, se usa esa funcion y NO subprocess.run.",
+  "codigo": "def correr(raiz, objetivo, procesos=4, tope=600, env=None, correr_uno=None):\n    ...\n    try:\n        return _correr_seguro(raiz, objetivo, procesos, tope, env, correr_uno)\n    except Exception as fallo:\n        ...\n\n\ndef _correr_seguro(raiz, objetivo, procesos, tope, env=None, correr_uno=None):\n    ...\n    # al lanzar cada grupo:\n    lanzar = correr_uno if correr_uno is not None else subprocess.run\n    kwargs = {}\n    if env is not None:\n        kwargs['env'] = env\n    resultado = lanzar([...], **kwargs)",
+  "vigia": "vigias/test_vigia_la_bateria_corre_en_paralelo_y_no_se_pierde_nada.py: los seis casos existentes siguen verdes, mas dos casos nuevos (env llega a cada llamada; correr_uno sustituye a subprocess.run).",
+  "puede_danar": [
+   "arnes/bateria_en_paralelo.py",
+   "vigias/test_vigia_la_bateria_corre_en_paralelo_y_no_se_pierde_nada.py",
+   "arnes/guardia_de_guardado.py",
+   "arnes/candados_medicion.py"
+  ],
+  "preguntas": [
+   "El material no trae el cuerpo completo de _correr_seguro (solo se ve hasta el paso 2, el reparto). Para escribir el cambio exacto donde hoy se llama a subprocess.run hace falta ver esa parte: NECESITO_LEER: arnes/bateria_en_paralelo.py / motivo: localizar la llamada literal a subprocess.run dentro de _correr_seguro / que decide: donde inyectar env y correr_uno / riesgo: si se cambia a ciegas se puede romper el reparto o el resumen del ultimo renglon.",
+   "El material no trae el contenido completo de vigias/test_vigia_la_bateria_corre_en_paralelo_y_no_se_pierde_nada.py (solo las lineas 53-55). Para anadir los dos casos al final hace falta ver el archivo entero: NECESITO_LEER: vigias/test_vigia_la_bateria_corre_en_paralelo_y_no_se_pierde_nada.py / motivo: conocer los seis casos existentes y el estilo de doblado de subprocess.run / que decide: como escribir los dos casos nuevos sin romper los seis verdes / riesgo: duplicar nombres de test o doblar mal subprocess.run."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "guardia_de_guardado.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Se añaden env y correr_uno como parámetros opcionales y se los pasa a _correr_seguro y a subprocess.run, cumpliendo el diagnóstico sin romper nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (30875 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

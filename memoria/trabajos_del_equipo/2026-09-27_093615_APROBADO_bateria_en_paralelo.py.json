@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En _correr_seguro, las dos llamadas a _correr_grupo (la del ejecutor.submit y la del camino en fila cuando el ejecutor falla) no reciben env ni correr_uno, asi que esos valores se quedan en el aire y no llegan a los procesos.",
+  "archivo": "arnes/bateria_en_paralelo.py",
+  "funcion": "_correr_seguro",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "                    ejecutor.submit(_correr_grupo, raiz, grupo, tope_segundos)",
+    "texto_nuevo": "                    ejecutor.submit(_correr_grupo, raiz, grupo, tope_segundos, env, correr_uno)"
+   },
+   {
+    "texto_viejo": "                resultados.append(_correr_grupo(raiz, grupo, tope_segundos))",
+    "texto_nuevo": "                resultados.append(_correr_grupo(raiz, grupo, tope_segundos, env, correr_uno))"
+   }
+  ],
+  "cambio": "Pasar env y correr_uno, en ese orden y despues del tope, a las dos llamadas a _correr_grupo dentro de _correr_seguro: la del ejecutor.submit y la del camino en fila cuando el ejecutor falla.",
+  "codigo": "ejecutor.submit(_correr_grupo, raiz, grupo, tope_segundos, env, correr_uno)\n\nresultados.append(_correr_grupo(raiz, grupo, tope_segundos, env, correr_uno))",
+  "vigia": "Una prueba que llame a correr() con env y correr_uno no nulos y compruebe que _correr_grupo los recibe en las dos vias (paralelo y fila), por ejemplo con un correr_uno espia que registre los argumentos env recibidos.",
+  "puede_danar": [
+   "arnes/bateria_en_paralelo.py::correr",
+   "arnes/bateria_en_paralelo.py::_correr_grupo",
+   "quien llame a correr() esperando que env y correr_uno lleguen a los procesos"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Arreglo correcto: pasa env y correr_uno a _correr_grupo en ambas llamadas, cumple el diagnóstico y no rompe nada."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

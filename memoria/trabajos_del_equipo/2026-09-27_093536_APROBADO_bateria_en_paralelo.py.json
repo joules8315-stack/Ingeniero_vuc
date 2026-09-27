@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La funcion _correr_grupo no acepta ni usa env ni correr_uno, asi que quien la llama no puede pasarle su entorno limpio ni su forma de lanzar procesos.",
+  "archivo": "arnes/bateria_en_paralelo.py",
+  "funcion": "_correr_grupo",
+  "texto_viejo": "def _correr_grupo(raiz, grupo, tope):\n    \"\"\"Corre un grupo con pytest en su propio proceso.\n\n    Devuelve una tupla (returncode, stdout, stderr, cortado, error).\n    Nunca lanza: todo se captura aqui dentro.\n    \"\"\"\n    orden = [sys.executable, \"-m\", \"pytest\", \"-q\"] + list(grupo)\n    try:\n        completado = subprocess.run(\n            orden,\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            encoding=\"utf-8\",\n            errors=\"replace\",\n            stdin=subprocess.DEVNULL,\n            timeout=tope,\n        )\n        return (\n            completado.returncode,\n            completado.stdout or \"\",\n            completado.stderr or \"\",\n            False,\n            None,\n        )\n    except subprocess.TimeoutExpired as fallo:\n        salida = fallo.stdout or \"\"\n        error = fallo.stderr or \"\"\n        if isinstance(salida, bytes):\n            salida = salida.decode(\"utf-8\", \"replace\")\n        if isinstance(error, bytes):\n            error = error.decode(\"utf-8\", \"replace\")\n        return (None, salida, error, True, None)\n    except Exception as fallo:\n        return (None, \"\", \"\", False, repr(fallo))",
+  "texto_nuevo": "def _correr_grupo(raiz, grupo, tope, env=None, correr_uno=None):\n    \"\"\"Corre un grupo con pytest en su propio proceso.\n\n    Devuelve una tupla (returncode, stdout, stderr, cortado, error).\n    Nunca lanza: todo se captura aqui dentro.\n\n    Si correr_uno no es None, se usa en lugar de subprocess.run, llamandolo\n    con los mismos argumentos. Si env no es None, se anade el argumento env\n    con ese valor a esa llamada; si es None no se anade.\n    \"\"\"\n    orden = [sys.executable, \"-m\", \"pytest\", \"-q\"] + list(grupo)\n    lanzar = correr_uno if correr_uno is not None else subprocess.run\n    argumentos = dict(\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n        encoding=\"utf-8\",\n        errors=\"replace\",\n        stdin=subprocess.DEVNULL,\n        timeout=tope,\n    )\n    if env is not None:\n        argumentos[\"env\"] = env\n    try:\n        completado = lanzar(orden, **argumentos)\n        return (\n            completado.returncode,\n            completado.stdout or \"\",\n            completado.stderr or \"\",\n            False,\n            None,\n        )\n    except subprocess.TimeoutExpired as fallo:\n        salida = fallo.stdout or \"\"\n        error = fallo.stderr or \"\"\n        if isinstance(salida, bytes):\n            salida = salida.decode(\"utf-8\", \"replace\")\n        if isinstance(error, bytes):\n            error = error.decode(\"utf-8\", \"replace\")\n        return (None, salida, error, True, None)\n    except Exception as fallo:\n        return (None, \"\", \"\", False, repr(fallo))",
+  "cambios": "",
+  "cambio": "Anadir los parametros env=None y correr_uno=None a la firma de _correr_grupo; usar correr_uno en lugar de subprocess.run cuando no sea None, llamandolo con los mismos argumentos; y anadir el argumento env con ese valor a esa llamada solo si env no es None. El resto de la funcion (orden con sys.executable y pytest -q, cwd, capture_output, text, encoding utf-8, errors replace, stdin cerrado, timeout, la tupla devuelta y la captura de subprocess.TimeoutExpired) se queda igual.",
+  "codigo": "def _correr_grupo(raiz, grupo, tope, env=None, correr_uno=None):\n    \"\"\"Corre un grupo con pytest en su propio proceso.\n\n    Devuelve una tupla (returncode, stdout, stderr, cortado, error).\n    Nunca lanza: todo se captura aqui dentro.\n\n    Si correr_uno no es None, se usa en lugar de subprocess.run, llamandolo\n    con los mismos argumentos. Si env no es None, se anade el argumento env\n    con ese valor a esa llamada; si es None no se anade.\n    \"\"\"\n    orden = [sys.executable, \"-m\", \"pytest\", \"-q\"] + list(grupo)\n    lanzar = correr_uno if correr_uno is not None else subprocess.run\n    argumentos = dict(\n        cwd=raiz,\n        capture_output=True,\n        text=True,\n        encoding=\"utf-8\",\n        errors=\"replace\",\n        stdin=subprocess.DEVNULL,\n        timeout=tope,\n    )\n    if env is not None:\n        argumentos[\"env\"] = env\n    try:\n        completado = lanzar(orden, **argumentos)\n        return (\n            completado.returncode,\n            completado.stdout or \"\",\n            completado.stderr or \"\",\n            False,\n            None,\n        )\n    except subprocess.TimeoutExpired as fallo:\n        salida = fallo.stdout or \"\"\n        error = fallo.stderr or \"\"\n        if isinstance(salida, bytes):\n            salida = salida.decode(\"utf-8\", \"replace\")\n        if isinstance(error, bytes):\n            error = error.decode(\"utf-8\", \"replace\")\n        return (None, salida, error, True, None)\n    except Exception as fallo:\n        return (None, \"\", \"\", False, repr(fallo))",
+  "vigia": "Una prueba que llame a _correr_grupo con un correr_uno falso y compruebe que se le pasa la orden con sys.executable y pytest -q, cwd, capture_output, text, encoding utf-8, errors replace, stdin cerrado y timeout; que cuando env no es None la llamada lleva env con ese valor y cuando es None no lleva env; y que la tupla devuelta sigue siendo (returncode, stdout, stderr, cortado, error) y que subprocess.TimeoutExpired sigue capturandose.",
+  "puede_danar": [
+   "arnes/bateria_en_paralelo.py::_correr_seguro",
+   "arnes/bateria_en_paralelo.py::correr"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, mantiene compatibilidad y no rompe vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21885 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) no le cabe (22869 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 2"
+ ]
+}

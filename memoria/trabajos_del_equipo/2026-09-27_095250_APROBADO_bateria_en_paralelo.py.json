@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En _correr_seguro el desempaquetado de cada resultado usa nombres que no respetan el orden real de la tupla (returncode, stdout, stderr, cortado, error): llama error a la TERCERA posicion, que es stderr, y stderr casi siempre es texto vacio (no None), asi que la comprobacion de si el grupo arranco falla siempre y se lanza el error del primer grupo aunque todos hayan arrancado bien.",
+  "archivo": "arnes/bateria_en_paralelo.py",
+  "funcion": "_correr_seguro",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    for indice, grupo in enumerate(grupos):\n        if indice < len(resultados):\n            codigo, salida, error, cortado, reventado = resultados[indice]\n        else:\n            codigo, salida, error, cortado, reventado = (None, \"\", \"\", False, \"sin resultado\")\n\n        if error is None:\n            alguno_arranco = True\n        elif primer_error is None:\n            primer_error = error\n\n        if salida:\n            trozos_salida.append(salida)\n        if error:\n            trozos_error.append(error)",
+    "texto_nuevo": "    for indice, grupo in enumerate(grupos):\n        if indice < len(resultados):\n            codigo, salida, error_texto, cortado, reventado = resultados[indice]\n        else:\n            codigo, salida, error_texto, cortado, reventado = (None, \"\", \"\", False, \"sin resultado\")\n\n        if reventado is None:\n            alguno_arranco = True\n        elif primer_error is None:\n            primer_error = reventado\n\n        if salida:\n            trozos_salida.append(salida)\n        if error_texto:\n            trozos_error.append(error_texto)"
+   }
+  ],
+  "cambio": "En _correr_seguro, al desempaquetar el resultado de cada grupo, usar nombres que respeten el orden real de la tupla (returncode, stdout, stderr, cortado, error): codigo, salida, error_texto, cortado y reventado. Decidir si el grupo ARRANCO mirando la QUINTA (reventado): arranco cuando reventado es None, y no arranco cuando no es None. El texto de stderr (error_texto) se sigue juntando igual que hoy para el stderr del resultado. Todo lo demas se queda igual: el reparto, el grupo unico cuando la lista queda vacia, la cuenta de rojos y de cortados, el resumen del ultimo renglon y los tres atributos returncode, stdout y stderr.",
+  "codigo": "    for indice, grupo in enumerate(grupos):\n        if indice < len(resultados):\n            codigo, salida, error_texto, cortado, reventado = resultados[indice]\n        else:\n            codigo, salida, error_texto, cortado, reventado = (None, \"\", \"\", False, \"sin resultado\")\n\n        if reventado is None:\n            alguno_arranco = True\n        elif primer_error is None:\n            primer_error = reventado\n\n        if salida:\n            trozos_salida.append(salida)\n        if error_texto:\n            trozos_error.append(error_texto)",
+  "vigia": "Correr la bateria en paralelo con varios grupos que arrancan bien (aunque alguno salga rojo con returncode 1 o cortado por tiempo) y comprobar que NO se lanza RuntimeError y que el resumen del ultimo renglon cuenta bien los grupos, rojos y cortados; y correr con todos los grupos sin poder arrancar y comprobar que SI se relanza el error del primero.",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "guardia_de_guardado.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Corrige el orden de desempaquetado y la lógica de arranque sin introducir nuevos elementos ni romper dependencias."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (34703 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}
