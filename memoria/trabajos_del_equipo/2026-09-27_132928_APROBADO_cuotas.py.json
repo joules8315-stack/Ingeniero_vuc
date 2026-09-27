@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La constante TECHO_ESPERA vale 300 y Julio decidio el 2026-09-27 que sea 400, con el comentario actualizado explicando la razon medida sobre el cuaderno de llamadas.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "TECHO_ESPERA (constante del modulo, junto a su comentario)",
+  "texto_viejo": "# MEDIDO el 2026-09-27 sobre memoria/CUADERNO_DE_LLAMADAS.jsonl: de las 163 respuestas buenas de\n# Big Pickle, 162 llegaron antes de 300 segundos; de las 27 buenas de grok47, todas antes de 240.\n# Esperar mas de 300 gana una respuesta de cada 163 y cuesta minutos en cada orden.\nTECHO_ESPERA = 300",
+  "texto_nuevo": "# MEDIDO el 2026-09-27 sobre memoria/CUADERNO_DE_LLAMADAS.jsonl: de las 163 respuestas buenas de\n# Big Pickle, la mas lenta tardo 314 segundos; de las 27 buenas de grok47, todas antes de 240.\n# Julio, 2026-09-27: el disparador es la respuesta, no un temporizador, asi que en cuanto contesta\n# no se espera ni un segundo mas; y si no contesta en 400 segundos, el encargo pasa a otro cerebro.\n# Con 400 no se pierde ni una sola respuesta buena de las 163 medidas, y el peor caso baja de 600 a 400.\nTECHO_ESPERA = 400",
+  "cambios": [],
+  "cambio": "Subir TECHO_ESPERA de 300 a 400 y reescribir su comentario con la razon de Julio (el disparador es la respuesta, no un temporizador; a los 400 segundos el encargo pasa a otro cerebro) y con la medicion del 2026-09-27 (la respuesta buena mas lenta de Big Pickle tardo 314 segundos, con 400 no se pierde ninguna de las 163 medidas y el peor caso baja de 600 a 400).",
+  "codigo": "TECHO_ESPERA = 400",
+  "vigia": "Una vigia que compruebe que cuerpo/cuotas.py::TECHO_ESPERA vale 400 y que su comentario menciona los 314 segundos y las 163 respuestas buenas medidas el 2026-09-27.",
+  "puede_danar": [
+   "cuerpo/codex.py",
+   "cuerpo/privacidad.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Actualiza TECHO_ESPERA a 400 y su comentario según el diagnóstico, sin inventar nada ni afectar a los módulos vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25015 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/cuotas.py falta declarar la constante de modulo TECHO_ESPERA con valor 300 y su comentario justificativo; no existe en el material ninguna constante con ese nombre.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "constantes del modulo (nivel de modulo, junto a AQUI y RUTA)",
+  "texto_viejo": "AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nRUTA = os.path.join(AQUI, \"memoria\", \"CUOTAS.json\")",
+  "texto_nuevo": "AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nRUTA = os.path.join(AQUI, \"memoria\", \"CUOTAS.json\")\n\n# MEDIDO el 2026-09-27 sobre memoria/CUADERNO_DE_LLAMADAS.jsonl: de las 163 respuestas buenas de\n# Big Pickle, 162 llegaron antes de 300 segundos; de las 27 buenas de grok47, todas antes de 240.\n# Esperar mas de 300 gana una respuesta de cada 163 y cuesta minutos en cada orden.\nTECHO_ESPERA = 300",
+  "cambios": "",
+  "cambio": "Declarar a nivel de modulo la constante TECHO_ESPERA = 300 con un comentario que explique de donde sale el numero (medicion del 2026-09-27 sobre memoria/CUADERNO_DE_LLAMADAS.jsonl: 162 de 163 respuestas buenas de Big Pickle antes de 300 s, y las 27 de grok47 antes de 240 s). No se toca ninguna funcion.",
+  "codigo": "# MEDIDO el 2026-09-27 sobre memoria/CUADERNO_DE_LLAMADAS.jsonl: de las 163 respuestas buenas de\n# Big Pickle, 162 llegaron antes de 300 segundos; de las 27 buenas de grok47, todas antes de 240.\n# Esperar mas de 300 gana una respuesta de cada 163 y cuesta minutos en cada orden.\nTECHO_ESPERA = 300",
+  "vigia": "Un test que importe cuerpo/cuotas.py y compruebe que TECHO_ESPERA existe y vale 300, y que el comentario inmediatamente anterior menciona la medicion del 2026-09-27 y el archivo memoria/CUADERNO_DE_LLAMADAS.jsonl.",
+  "puede_danar": [
+   "cerebro/trozos.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_respuestas.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "test_vigia_respuestas.py",
+   "trozos.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no rompe nada y no inventa nada; se aprueba."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19611 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "espera_de_bigpickle devuelve 600.0 cuando no hay filas y no aplica TECHO_ESPERA en ninguna de sus salidas, mientras que cuanto_esperarle si lo respeta",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "espera_de_bigpickle",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    Sin filas: devuelve 600.0.\"\"\"",
+    "texto_nuevo": "    Sin filas: devuelve TECHO_ESPERA.\"\"\""
+   },
+   {
+    "texto_viejo": "    if not filas:\n        return 600.0",
+    "texto_nuevo": "    if not filas:\n        return float(TECHO_ESPERA)"
+   },
+   {
+    "texto_viejo": "    if len(parecidas) >= 5:\n        mayor = max(f[\"segundos\"] for f in parecidas)\n    else:\n        mayor = max(f[\"segundos\"] for f in filas)\n    return max(float(MINIMO_ESPERA), mayor * MARGEN)",
+    "texto_nuevo": "    if len(parecidas) >= 5:\n        mayor = max(f[\"segundos\"] for f in parecidas)\n    else:\n        mayor = max(f[\"segundos\"] for f in filas)\n    return min(float(TECHO_ESPERA), max(float(MINIMO_ESPERA), mayor * MARGEN))"
+   }
+  ],
+  "cambio": "En espera_de_bigpickle: (1) la salida sin filas pasa de 600.0 a TECHO_ESPERA; (2) la salida final queda acotada por TECHO_ESPERA manteniendo el minimo MINIMO_ESPERA; (3) el docstring se actualiza para decir TECHO_ESPERA en vez de 600.0",
+  "codigo": "    if not filas:\n        return float(TECHO_ESPERA)\n...\n    return min(float(TECHO_ESPERA), max(float(MINIMO_ESPERA), mayor * MARGEN))",
+  "vigia": "Una prueba que llame a espera_de_bigpickle con cuaderno vacio (debe dar 300), con 5 o mas parecidas de segundos altos (debe dar como mucho 300 y como minimo MINIMO_ESPERA) y con pocas filas de segundos altos (debe dar como mucho 300 y como minimo MINIMO_ESPERA)",
+  "puede_danar": [
+   "cuerpo/cuotas.py",
+   "cerebro/trozos.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_respuestas.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "test_vigia_respuestas.py",
+   "trozos.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, respeta TECHO_ESPERA y MINIMO_ESPERA, no inventa nada ni rompe código vecino."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21215 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "cuanto_esperarle no tiene techo: devuelve MINIMO_ESPERA*3 cuando no hay record y record*MARGEN sin tope, y falta declarar la constante TECHO_ESPERA junto a MARGEN y MINIMO_ESPERA.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "cuanto_esperarle",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    g = _leer().get(\"gasto\", {}).get(quien, {})\n    record = float(g.get(\"record_seg\", 0))\n    if record <= 0:\n        return float(MINIMO_ESPERA * 3)      # aun no se sabe lo que tarda: margen ancho\n    return max(float(MINIMO_ESPERA), record * MARGEN)",
+    "texto_nuevo": "    g = _leer().get(\"gasto\", {}).get(quien, {})\n    record = float(g.get(\"record_seg\", 0))\n    if record <= 0:\n        return min(float(TECHO_ESPERA), float(MINIMO_ESPERA * 3))  # aun no se sabe lo que tarda: margen ancho, con techo\n    return min(float(TECHO_ESPERA), max(float(MINIMO_ESPERA), record * MARGEN))"
+   }
+  ],
+  "cambio": "Declarar la constante TECHO_ESPERA = 300 junto a MARGEN y MINIMO_ESPERA (con comentario de la medicion del 2026-09-27), y en cuanto_esperarle aplicar ese techo a los dos caminos de salida: el de record<=0 (MINIMO_ESPERA*3) y el normal (record*MARGEN con suelo MINIMO_ESPERA).",
+  "codigo": "TECHO_ESPERA = 300  # Techo maximo de espera, en segundos. Medido el 2026-09-27 en memoria/CUADERNO_DE_LLAMADAS.jsonl: de 163 respuestas buenas de Big Pickle, 162 llegaron antes de 300 s; de 27 buenas de grok47, todas antes de 240 s. Esperar mas de 300 gana una respuesta de cada 163 y cuesta minutos en cada orden.",
+  "vigia": "Un test que llame a cuanto_esperarle con un cerebro de record 100 y compruebe que devuelve exactamente 150, con record 10 y compruebe exactamente 60, con record 0 (sin historial) y compruebe que no pasa de TECHO_ESPERA, y con un record enorme (p.ej. 471) y compruebe que devuelve exactamente TECHO_ESPERA (300).",
+  "puede_danar": [
+   "cerebro/trozos.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_respuestas.py"
+  ],
+  "preguntas": [
+   "Donde estan declaradas exactamente MARGEN y MINIMO_ESPERA en cuerpo/cuotas.py (nombre de la seccion o texto literal de esas lineas) para colocar TECHO_ESPERA en el mismo sitio: el material no trae ese trozo."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "test_vigia_respuestas.py",
+   "trozos.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, declara TECHO_ESPERA y aplica el techo sin romper vecinos ni contrato."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25935 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

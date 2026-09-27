@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta declarar la constante TECHO_ESPERA=300 junto a MARGEN y MINIMO_ESPERA en el bloque de constantes de cuerpo/cuotas.py, con su comentario de procedencia.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "bloque de constantes (donde estan MARGEN y MINIMO_ESPERA)",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nRUTA = os.path.join(AQUI, \"memoria\", \"CUOTAS.json\")",
+    "texto_nuevo": "AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nRUTA = os.path.join(AQUI, \"memoria\", \"CUOTAS.json\")\n\n# MEDIDO el 2026-09-27 sobre memoria/CUADERNO_DE_LLAMADAS.jsonl: de las 163 respuestas buenas\n# de Big Pickle, 162 llegaron antes de 300 segundos; de las 27 buenas de grok47, todas antes\n# de 240. Esperar mas de 300 gana una respuesta de cada 163 y cuesta minutos en cada orden.\n# De momento nadie la usa: se declara ahora para que la siguiente reparacion la pueda usar\n# sin romper el archivo.\nTECHO_ESPERA = 300"
+   }
+  ],
+  "cambio": "Anadir la constante TECHO_ESPERA = 300 con su comentario de procedencia, justo al lado de MARGEN y MINIMO_ESPERA, sin tocar ninguna funcion ni otra constante.",
+  "codigo": "# MEDIDO el 2026-09-27 sobre memoria/CUADERNO_DE_LLAMADAS.jsonl: de las 163 respuestas buenas\n# de Big Pickle, 162 llegaron antes de 300 segundos; de las 27 buenas de grok47, todas antes\n# de 240. Esperar mas de 300 gana una respuesta de cada 163 y cuesta minutos en cada orden.\n# De momento nadie la usa: se declara ahora para que la siguiente reparacion la pueda usar\n# sin romper el archivo.\nTECHO_ESPERA = 300",
+  "vigia": "Un test que importe cuerpo/cuotas.py y compruebe que TECHO_ESPERA existe y vale 300, y que MARGEN y MINIMO_ESPERA siguen con sus valores originales.",
+  "puede_danar": [
+   "cerebro/trozos.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_respuestas.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "test_vigia_respuestas.py",
+   "trozos.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La constante TECHO_ESPERA se añadió después de la línea RUTA, no al lado de MARGEN y MINIMO_ESPERA como exige el diagnóstico."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Mover TECHO_ESPERA = 300 (con su comentario) al bloque de constantes donde están MARGEN y MINIMO_ESPERA."
+  ],
+  "resumen_para_el_jefe": "Rechazado: la constante se insertó en la posición incorrecta, no junto a MARGEN y MINIMO_ESPERA."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19330 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (20130 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'MINIMO_ESPERA' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "GPT-OSS 120B (Groq) no le cabe (20253 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'MINIMO_ESPERA' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "GPT-OSS 120B (Groq) no le cabe (20376 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 4"
+ ]
+}

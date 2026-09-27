@@ -7,6 +7,30 @@
 > Si una sesión nueva no sabe dónde íbamos, lee este documento y la lista de órdenes.
 > Orden de trabajo: R0 → (R1 + R2 a la vez) → 1b → (R3 + R4 + R5) → (R6 + R7) → R8.
 
+## ESTADO AL 2026-09-27 (lo primero que hay que leer al volver)
+
+**Hechas y selladas hoy, cada una con su vigía nacida ROJA y ahora verde:**
+
+| Orden | Qué quedó arreglado |
+|---|---|
+| R1b + R1c | El guardia ya **no frena por pruebas que estaban rojas de antes**. La pieza `rojas_que_frenan` quedó enganchada dentro de `_vigias`; el fallo estaba en que las declaradas se le pasaban como conjunto y él solo acepta listas, así que las anulaba. El aviso ya nombra la tercera razón. |
+| R1d | **La batería corre en paralelo**: pieza nueva `arnes/bateria_en_paralelo.py`, enganchada en el guardia. En fila, las 257 pruebas pasaban de 12 min y se perdió un trabajo aprobado; en 4 grupos termina en un par de minutos. Ya ha dejado guardar varias veces. |
+| R5 | **Ningún proceso del capataz sin tope**: los cuatro `subprocess.run` que salían sin tope ya lo llevan, y un cuelgue cuenta como fallo, nunca como aprobado. |
+| R4a + R4b | **La misma prueba no se corre dos veces**: pieza `arnes/memoria_de_pruebas.py` y el juez ya la usa. Un apunte rojo nunca se vuelve verde. |
+| R3a (a medias) | Techo de espera declarado y respetado por `cuanto_esperarle`. Lo de Big Pickle, ver la decisión de Julio en R3. |
+
+**Cómo funciona ahora el guardado, en corto:** las rojas que ya estaban rojas antes viven en
+`memoria/.rojas_conocidas.json` (no se sube al repositorio); el guardia las tolera, y cuando deja
+pasar **une** las de ahora con las que ya conocía en vez de borrarlas. Si hoy hay 21 rojas
+declaradas, son de antes y están apuntadas.
+
+**Apuntado para después (órdenes nuevas de hoy):** `R4c` (el capataz tampoco repita la corrida),
+`R6a` (la roja de `test_vigia_el_loop_del_pit.py` espera R6), `R13` (el paquete no trae el archivo
+que se le nombra si la frase es larga: costó tres rondas hoy) y `R14` (una ronda no puede declarar
+una constante y usarla a la vez: dejó la herramienta parada un rato).
+
+---
+
 Investigado el 2026-09-25: tres agentes en paralelo + verificación línea por línea hecha por Claude.
 **Dos conclusiones mías anteriores resultaron falsas y están corregidas abajo** (marcadas CORRECCIÓN).
 
@@ -117,6 +141,29 @@ completa. **Es falso**: `_vecinas_por_stem` ignora lo que no es código
 - **CUÁNDO:** tras R1 y R2.
 - **CÓMO:** vigía `test_vigia_se_pregunta_a_los_lentos_a_la_vez.py`; se mide con los segundos que ya
   guarda `memoria/CUADERNO_DE_LLAMADAS.jsonl`.
+
+### DECIDIDO POR JULIO EL 2026-09-27 — la espera máxima es 400 s
+
+Palabras de Julio: *"Que tenga un disparador la respuesta, para que cuando haya respuesta no tenga
+que esperar tiempo innecesario. Disminuir el tiempo de espera a 400 s, pero el criterio es: si se
+activa el disparador, se atiende el requerimiento y máximo se espera 400 s; si no responde en ese
+momento, se le pasa el encargo a otro."*
+
+Medición que lo respalda (2026-09-27, `memoria/CUADERNO_DE_LLAMADAS.jsonl`): de las **163 respuestas
+buenas** de Big Pickle, la más lenta tardó **314 s**, así que con 400 s **no se pierde ninguna** y el
+peor caso baja de 600 a 400. grok47: 27 buenas, todas antes de 240 s.
+
+Estado de esta decisión:
+- **HECHO:** `TECHO_ESPERA = 400` declarada en `cuerpo/cuotas.py` y respetada por `cuanto_esperarle`.
+- **HECHO (ya era así):** el disparador ya es la respuesta — `bigpickle.preguntar` devuelve en cuanto
+  el proceso contesta, y el tope solo es el máximo; al agotarse, el turno pasa al siguiente cerebro.
+- **FALTA:** que `espera_de_bigpickle` respete `TECHO_ESPERA`, y bajar `TIMEOUT_POR_DEFECTO` de
+  `cuerpo/bigpickle.py` de 600 a 400.
+- **FALTA, y ahora SÍ está permitido:** reescribir `vigias/test_vigia_a_big_pickle_se_le_espera_lo_que_tarda.py`
+  (orden A-47, 2026-09-21), cuyo caso "sin filas se espera el valor por defecto" exige 600. Se
+  reescribe **con esta decisión de Julio anotada como razón**, no por conveniencia.
+- **FALTA:** en `vigias/test_vigia_a_nadie_se_le_espera_mas_de_lo_medido.py`, los dos casos de Big
+  Pickle piden 300 y tienen que pedir 400.
 
 # R4 · La misma prueba no se corre cuatro veces
 

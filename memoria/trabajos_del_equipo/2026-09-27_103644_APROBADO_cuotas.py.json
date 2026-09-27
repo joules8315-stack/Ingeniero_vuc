@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "cuanto_esperarle no respeta TECHO_ESPERA: devuelve el record por MARGEN sin topar, y el camino sin record devuelve MINIMO_ESPERA*3 sin topar.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "cuanto_esperarle",
+  "texto_viejo": "    g = _leer().get(\"gasto\", {}).get(quien, {})\n    record = float(g.get(\"record_seg\", 0))\n    if record <= 0:\n        return float(MINIMO_ESPERA * 3)      # aun no se sabe lo que tarda: margen ancho\n    return max(float(MINIMO_ESPERA), record * MARGEN)",
+  "texto_nuevo": "    g = _leer().get(\"gasto\", {}).get(quien, {})\n    record = float(g.get(\"record_seg\", 0))\n    if record <= 0:\n        return min(float(TECHO_ESPERA), float(MINIMO_ESPERA * 3))  # aun no se sabe lo que tarda: margen ancho, topado\n    return min(float(TECHO_ESPERA), max(float(MINIMO_ESPERA), record * MARGEN))",
+  "cambio": "Topar por TECHO_ESPERA las dos salidas de cuanto_esperarle: la de record<=0 (hoy MINIMO_ESPERA*3) y la normal (hoy max(MINIMO_ESPERA, record*MARGEN)).",
+  "codigo": "    g = _leer().get(\"gasto\", {}).get(quien, {})\n    record = float(g.get(\"record_seg\", 0))\n    if record <= 0:\n        return min(float(TECHO_ESPERA), float(MINIMO_ESPERA * 3))  # aun no se sabe lo que tarda: margen ancho, topado\n    return min(float(TECHO_ESPERA), max(float(MINIMO_ESPERA), record * MARGEN))",
+  "vigia": "Un test que llame a cuanto_esperarle con un cerebro de record 1000 y compruebe que devuelve 300 (no 1500); con record 100 que devuelve 150; con record 10 que devuelve 60; y sin record que devuelve como mucho 300.",
+  "puede_danar": [
+   "cerebro/trozos.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_respuestas.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "test_vigia_respuestas.py",
+   "trozos.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, respeta TECHO_ESPERA, no usa código inexistente y no afecta a los vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22459 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}
