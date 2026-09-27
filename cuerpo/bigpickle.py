@@ -302,7 +302,8 @@ def preguntar(prompt: str, timeout: int = None) -> tuple[str, list[str]]:
         texto, costo = _parsear_salida(stdout or "")
 
         if not texto.strip():
-            _anotar(segundos, costo, False, nota="texto_vacio", tamano=len(prompt))
+            unidades = unidades_de_la_salida(stdout or "")
+            _anotar(segundos, costo, False, nota="texto_vacio", tamano=len(prompt), unidades=unidades["total"])
             return "", ["Big Pickle no devolvio texto"]
 
         unidades = unidades_de_la_salida(stdout or "")
