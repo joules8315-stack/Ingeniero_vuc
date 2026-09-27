@@ -17,13 +17,24 @@ Lo que esta vigia exige: que exista un techo maximo de espera de 300 segundos
 que nadie pueda pasar, sin cambiar nada mas.
 
 Esta vigia NACE ROJA: hoy el techo no existe y estos casos fallan.
+
+COMO SE MONTA EL DOBLE (esto es lo que estaba mal en la version vieja):
+
+  cuotas.cuanto_esperarle recibe el NOMBRE del cerebro como TEXTO, no un objeto.
+  Por dentro llama a cuotas._leer(), saca la clave "gasto", dentro de esa la clave
+  con el nombre del cerebro, y a esa ficha le pide "record_seg" con el metodo get.
+  Por eso la ficha tiene que ser un DICCIONARIO.
+
+  El ayudante _gasto_con recibe un nombre en texto y un numero de segundos y, con
+  monkeypatch, sustituye cuotas._leer por una funcion que devuelve un diccionario
+  con la clave "gasto" y dentro, bajo ese nombre, otro diccionario con la clave
+  "record_seg" y ese numero. Cada caso llama a cuotas.cuanto_esperarle pasandole
+  el NOMBRE en texto. No se usa ninguna clase para eso.
 """
 
 import json
 import os
 import sys
-
-import pytest
 
 
 # La raiz del repo se calcula subiendo dos niveles desde este archivo.
@@ -39,21 +50,19 @@ from cuerpo import cuaderno  # noqa: E402
 TOPE = 300
 
 
-class _CerebroDeMentira(object):
-    """Cerebro minimo para las pruebas: solo lo que cuotas necesita leer."""
+def _gasto_con(monkeypatch, nombre, record_seg):
+    """Monta el doble de la memoria de gasto para UN cerebro, por su NOMBRE.
 
-    def __init__(self, nombre, record_seg):
-        self.nombre = nombre
-        self.record_seg = record_seg
+    cuotas.cuanto_esperarle recibe el nombre del cerebro como texto y por dentro
+    llama a cuotas._leer(), saca la clave "gasto", dentro de esa la clave con el
+    nombre del cerebro, y a esa ficha le pide "record_seg" con el metodo get.
+    Por eso aqui se devuelve un diccionario con la clave "gasto" y dentro, bajo
+    ese nombre, otro diccionario con la clave "record_seg" y el numero pedido.
+    """
+    def _leer_de_mentira(*args, **kwargs):
+        return {"gasto": {nombre: {"record_seg": record_seg}}}
 
-
-def _gasto_con(monkeypatch, cerebro):
-    """Sustituye cuotas._leer por algo que devuelve un gasto con un cerebro dentro."""
-
-    def _leer_falso(*args, **kwargs):
-        return {"gasto": {cerebro.nombre: cerebro}}
-
-    monkeypatch.setattr(cuotas, "_leer", _leer_falso, raising=False)
+    monkeypatch.setattr(cuotas, "_leer", _leer_de_mentira, raising=False)
 
 
 def test_a_un_cerebro_lentisimo_no_se_le_esperan_mas_de_300(monkeypatch):
@@ -62,10 +71,9 @@ def test_a_un_cerebro_lentisimo_no_se_le_esperan_mas_de_300(monkeypatch):
     Si se le espera su record por 1.5, serian 1500 segundos. Eso es esperar de mas:
     con 300 s ya se cubre a 162 de las 163 respuestas buenas de Big Pickle.
     """
-    cerebro = _CerebroDeMentira("lentisimo", 1000)
-    _gasto_con(monkeypatch, cerebro)
+    _gasto_con(monkeypatch, "lentisimo", 1000)
 
-    espera = cuotas.cuanto_esperarle(cerebro)
+    espera = cuotas.cuanto_esperarle("lentisimo")
 
     assert espera <= TOPE, (
         "A un cerebro con record de 1000 s se le esta esperando %r segundos. "
@@ -80,10 +88,9 @@ def test_a_un_cerebro_normal_no_se_le_cambia_la_espera(monkeypatch):
 
     El techo de 300 s no debe tocar a los cerebros normales.
     """
-    cerebro = _CerebroDeMentira("normal", 100)
-    _gasto_con(monkeypatch, cerebro)
+    _gasto_con(monkeypatch, "normal", 100)
 
-    espera = cuotas.cuanto_esperarle(cerebro)
+    espera = cuotas.cuanto_esperarle("normal")
 
     assert espera == 150, (
         "A un cerebro normal con record de 100 s se le espera %r segundos, "
@@ -94,10 +101,9 @@ def test_a_un_cerebro_normal_no_se_le_cambia_la_espera(monkeypatch):
 
 def test_la_espera_minima_sigue_siendo_60(monkeypatch):
     """Un cerebro con record de 10 s sigue teniendo una espera minima de 60 s."""
-    cerebro = _CerebroDeMentira("rapido", 10)
-    _gasto_con(monkeypatch, cerebro)
+    _gasto_con(monkeypatch, "rapido", 10)
 
-    espera = cuotas.cuanto_esperarle(cerebro)
+    espera = cuotas.cuanto_esperarle("rapido")
 
     assert espera == 60, (
         "A un cerebro con record de 10 s se le espera %r segundos, "
