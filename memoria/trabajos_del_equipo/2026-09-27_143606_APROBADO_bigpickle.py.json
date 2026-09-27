@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/bigpickle.py falta la funcion unidades_de_la_salida y _anotar no escribe las unidades, asi que el gasto de la puerta gratis queda invisible en cero.",
+  "archivo": "cuerpo/bigpickle.py",
+  "funcion": "_anotar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _anotar(segundos: float, costo: float, ok: bool, nota: str = \"\", tamano: int = 0) -> None:\n    \"\"\"Anota una llamada en memoria/BIGPICKLE.log. Nunca lanza excepcion.\"\"\"\n    try:\n        RUTA_LOG.parent.mkdir(parents=True, exist_ok=True)\n        fecha = datetime.now().isoformat(timespec=\"seconds\")\n        linea = (\n            f\"{fecha}\\tsegundos={segundos:.3f}\\tcosto={costo:.6f}\\t\"\n            f\"ok={bool(ok)}\\tnota={nota}\\n\"\n        )",
+    "texto_nuevo": "def _anotar(\n    segundos: float,\n    costo: float,\n    ok: bool,\n    nota: str = \"\",\n    tamano: int = 0,\n    unidades: int = 0,\n) -> None:\n    \"\"\"Anota una llamada en memoria/BIGPICKLE.log. Nunca lanza excepcion.\"\"\"\n    try:\n        RUTA_LOG.parent.mkdir(parents=True, exist_ok=True)\n        fecha = datetime.now().isoformat(timespec=\"seconds\")\n        linea = (\n            f\"{fecha}\\tsegundos={segundos:.3f}\\tcosto={costo:.6f}\\t\"\n            f\"unidades={unidades}\\t\"\n            f\"ok={bool(ok)}\\tnota={nota}\\n\"\n        )"
+   },
+   {
+    "texto_viejo": "        elif tipo == \"step_finish\" and isinstance(parte, dict):\n            coste = parte.get(\"cost\")\n            if isinstance(coste, (int, float)):\n                costo_total += float(coste)\n    return \"\".join(trozos), costo_total",
+    "texto_nuevo": "        elif tipo == \"step_finish\" and isinstance(parte, dict):\n            coste = parte.get(\"cost\")\n            if isinstance(coste, (int, float)):\n                costo_total += float(coste)\n    return \"\".join(trozos), costo_total\n\n\ndef unidades_de_la_salida(salida: str) -> dict:\n    \"\"\"Suma las unidades que el recibo declara en cada step_finish.\n\n    Recorre las lineas JSON de la salida y, en cada linea con type igual a\n    'step_finish', suma part.tokens con las claves total, input y output.\n    Devuelve un diccionario con esas tres sumas. Con un recibo vacio, sin\n    tokens, o con lineas que no son JSON valido, devuelve ceros y no revienta.\n    \"\"\"\n    total = 0\n    entrada = 0\n    salida_tokens = 0\n    if not salida:\n        return {\"total\": 0, \"input\": 0, \"output\": 0}\n    for linea in salida.splitlines():\n        linea = linea.strip()\n        if not linea:\n            continue\n        try:\n            dato = json.loads(linea)\n        except (ValueError, TypeError):\n            continue\n        if not isinstance(dato, dict):\n            continue\n        if dato.get(\"type\") != \"step_finish\":\n            continue\n        parte = dato.get(\"part\")\n        if not isinstance(parte, dict):\n            continue\n        tokens = parte.get(\"tokens\")\n        if not isinstance(tokens, dict):\n            continue\n        valor = tokens.get(\"total\")\n        if isinstance(valor, (int, float)):\n            total += int(valor)\n        valor = tokens.get(\"input\")\n        if isinstance(valor, (int, float)):\n            entrada += int(valor)\n        valor = tokens.get(\"output\")\n        if isinstance(valor, (int, float)):\n            salida_tokens += int(valor)\n    return {\"total\": total, \"input\": entrada, \"output\": salida_tokens}"
+   }
+  ],
+  "cambio": "Agregar la funcion unidades_de_la_salida(salida) que suma part.tokens (total, input, output) de cada linea step_finish, y anadir a _anotar el argumento opcional unidades=0 que escribe unidades= en la linea del registro justo despues de costo=.",
+  "codigo": "def unidades_de_la_salida(salida: str) -> dict:\n    \"\"\"Suma las unidades que el recibo declara en cada step_finish.\n\n    Recorre las lineas JSON de la salida y, en cada linea con type igual a\n    'step_finish', suma part.tokens con las claves total, input y output.\n    Devuelve un diccionario con esas tres sumas. Con un recibo vacio, sin\n    tokens, o con lineas que no son JSON valido, devuelve ceros y no revienta.\n    \"\"\"\n    total = 0\n    entrada = 0\n    salida_tokens = 0\n    if not salida:\n        return {\"total\": 0, \"input\": 0, \"output\": 0}\n    for linea in salida.splitlines():\n        linea = linea.strip()\n        if not linea:\n            continue\n        try:\n            dato = json.loads(linea)\n        except (ValueError, TypeError):\n            continue\n        if not isinstance(dato, dict):\n            continue\n        if dato.get(\"type\") != \"step_finish\":\n            continue\n        parte = dato.get(\"part\")\n        if not isinstance(parte, dict):\n            continue\n        tokens = parte.get(\"tokens\")\n        if not isinstance(tokens, dict):\n            continue\n        valor = tokens.get(\"total\")\n        if isinstance(valor, (int, float)):\n            total += int(valor)\n        valor = tokens.get(\"input\")\n        if isinstance(valor, (int, float)):\n            entrada += int(valor)\n        valor = tokens.get(\"output\")\n        if isinstance(valor, (int, float)):\n            salida_tokens += int(valor)\n    return {\"total\": total, \"input\": entrada, \"output\": salida_tokens}",
+  "vigia": "vigias/test_vigia_la_puerta_gratis_tambien_se_cuenta.py, en particular test_unidades_de_la_salida_suma_varios_step_finish y los casos de recibo vacio, sin tokens y con lineas no JSON.",
+  "puede_danar": [
+   "cuerpo/grok.py (usa bigpickle._parsear_salida y bigpickle._trae_llave; la firma de _parsear_salida no se toca)",
+   "cuerpo/bigpickle.py::preguntar (llama a _anotar; el argumento nuevo es opcional con valor 0, no rompe llamadas existentes)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no rompe vecinos ni contrato, y no inventa nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25755 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

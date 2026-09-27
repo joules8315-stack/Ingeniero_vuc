@@ -291,7 +291,8 @@ def preguntar(prompt: str, timeout: int = None) -> tuple[str, list[str]]:
         if proc.returncode != 0:
             err = (stderr or "").strip()
             _, costo = _parsear_salida(stdout or "")
-            _anotar(segundos, costo, False, nota=f"returncode={proc.returncode}", tamano=len(prompt))
+            unidades = unidades_de_la_salida(stdout or "")
+            _anotar(segundos, costo, False, nota=f"returncode={proc.returncode}", tamano=len(prompt), unidades=unidades["total"])
             aviso = f"OpenCode termino con codigo {proc.returncode}"
             if err:
                 aviso = f"{aviso}: {err[:300]}"
@@ -304,7 +305,8 @@ def preguntar(prompt: str, timeout: int = None) -> tuple[str, list[str]]:
             _anotar(segundos, costo, False, nota="texto_vacio", tamano=len(prompt))
             return "", ["Big Pickle no devolvio texto"]
 
-        _anotar(segundos, costo, True, nota="ok", tamano=len(prompt))
+        unidades = unidades_de_la_salida(stdout or "")
+        _anotar(segundos, costo, True, nota="ok", tamano=len(prompt), unidades=unidades["total"])
         return texto, []
 
     except Exception as exc:  # red de seguridad: nunca se lanza hacia fuera

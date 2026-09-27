@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/bigpickle.py, en la llamada de verdad (funcion preguntar), los dos sitios que leen el recibo (returncode!=0 y ok) no calculan ni pasan las unidades al apunte, asi que el gasto queda en cero.",
+  "archivo": "cuerpo/bigpickle.py",
+  "funcion": "preguntar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "        if proc.returncode != 0:\n            err = (stderr or \"\").strip()\n            _, costo = _parsear_salida(stdout or \"\")\n            _anotar(segundos, costo, False, nota=f\"returncode={proc.returncode}\", tamano=len(prompt))",
+    "texto_nuevo": "        if proc.returncode != 0:\n            err = (stderr or \"\").strip()\n            _, costo = _parsear_salida(stdout or \"\")\n            unidades = unidades_de_la_salida(stdout or \"\")\n            _anotar(segundos, costo, False, nota=f\"returncode={proc.returncode}\", tamano=len(prompt), unidades=unidades[\"total\"])"
+   },
+   {
+    "texto_viejo": "        _anotar(segundos, costo, True, nota=\"ok\", tamano=len(prompt))\n        return texto, []",
+    "texto_nuevo": "        unidades = unidades_de_la_salida(stdout or \"\")\n        _anotar(segundos, costo, True, nota=\"ok\", tamano=len(prompt), unidades=unidades[\"total\"])\n        return texto, []"
+   }
+  ],
+  "cambio": "En los dos sitios de preguntar que leen el recibo (returncode!=0 y ok), calcular las unidades con unidades_de_la_salida sobre el mismo stdout y pasarlas al apunte con el argumento unidades, usando el total.",
+  "codigo": "unidades = unidades_de_la_salida(stdout or \"\")\n_anotar(..., unidades=unidades[\"total\"])",
+  "vigia": "Una prueba que llame a preguntar con una salida simulada que traiga step_finish con tokens y compruebe que el apunte queda con las unidades del total, tanto en el camino ok como en el de returncode distinto de cero.",
+  "puede_danar": [
+   "cuerpo/grok.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [
+   "El material no muestra la firma ni el cuerpo de _anotar: ¿acepta ya el argumento unidades y con que nombre exacto (unidades=) hay que pasarlo?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio calcula y pasa las unidades correctamente, sin inventar código ni romper vecinos ni contratos."
+ },
+ "avisos": [
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}
