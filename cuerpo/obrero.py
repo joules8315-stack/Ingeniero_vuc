@@ -112,11 +112,22 @@ def falta_en_el_material(material, encargo):
 
     # --- Funciones nombradas en el encargo ---
     # Se buscan palabras que empiecen por raya baja (como _prompt_obrero).
+    # El nombre se corta en el primer caracter que no puede formar parte de un
+    # nombre de Python: solo letras, numeros y rayas bajas desde el principio.
+    # Asi un trozo pegado como '_anotar(segundos' se queda en '_anotar'.
     funciones = []
     for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
         limpia = palabra.strip("()[]{}<>\"'`.:")
         if limpia.startswith("_") and len(limpia) > 1:
-            funciones.append(limpia)
+            corte = len(limpia)
+            for _i, _c in enumerate(limpia):
+                if not (_c.isalnum() or _c == "_"):
+                    corte = _i
+                    break
+            nombre = limpia[:corte]
+            # si despues de cortar no queda mas que la raya baja, no se exige
+            if nombre.startswith("_") and len(nombre) > 1:
+                funciones.append(nombre)
 
     for funcion in funciones:
         declaracion = "def " + funcion
