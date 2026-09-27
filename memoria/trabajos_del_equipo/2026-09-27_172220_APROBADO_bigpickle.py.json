@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La constante TIMEOUT_POR_DEFECTO vale 600 y debe valer 400 por decision de Julio del 2026-09-27.",
+  "archivo": "cuerpo/bigpickle.py",
+  "funcion": "Constantes del enchufe",
+  "texto_viejo": "TIMEOUT_POR_DEFECTO = 600",
+  "texto_nuevo": "TIMEOUT_POR_DEFECTO = 400",
+  "cambios": "",
+  "cambio": "Cambiar el valor de la constante TIMEOUT_POR_DEFECTO de 600 a 400, conservando todo lo demas del archivo tal cual.",
+  "codigo": "TIMEOUT_POR_DEFECTO = 400",
+  "vigia": "La prueba que ya existe en rojo esperando este arreglo comprobaria que TIMEOUT_POR_DEFECTO vale 400.",
+  "puede_danar": [
+   "cuerpo/codex.py",
+   "cuerpo/privacidad.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "TIMEOUT_POR_DEFECTO gobierna el tiempo maximo de espera de cada llamada a Big Pickle en cuerpo/bigpickle.py: al bajar de 600 a 400, una llamada lenta (>400 s) pasa a dispararse y se reencola con otro; el record medido del propio archivo es 328 s, asi que sigue por debajo del nuevo limite. Conviene que la prueba en rojo ya mida el valor de la constante y no solo el tiempo",
+   "cuerpo/codex.py y cuerpo/privacidad.py aparecen como vecinos declarados pero no vienen en el material: no se puede medir su dependencia del valor; el '_fuera_del_paquete' lo deja reconocido en vez de inventarlo"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio es exactamente el renglon pedido (600 -> 400 en TIMEOUT_POR_DEFECTO, una vez, conservando el resto); nada inventado, no rompe a nadie segun el material, y el limite nuevo (400) sigue por encima del record medido de 328 s."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20669 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

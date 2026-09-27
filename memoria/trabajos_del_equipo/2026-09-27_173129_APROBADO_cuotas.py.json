@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/cuotas.py la funcion espera_de_bigpickle devuelve 600.0 cuando no hay filas y su ultima salida no queda topada por TECHO_ESPERA, y su explicacion escrita dice 600 en vez del techo de 400.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "espera_de_bigpickle",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    Sin filas: devuelve 600.0.\"\"\"",
+    "texto_nuevo": "    Sin filas: devuelve el techo de 400.\"\"\""
+   },
+   {
+    "texto_viejo": "    if not filas:\n        return 600.0",
+    "texto_nuevo": "    if not filas:\n        return float(TECHO_ESPERA)"
+   },
+   {
+    "texto_viejo": "    return max(float(MINIMO_ESPERA), mayor * MARGEN)",
+    "texto_nuevo": "    return min(float(TECHO_ESPERA), max(float(MINIMO_ESPERA), mayor * MARGEN))"
+   }
+  ],
+  "cambio": "En espera_de_bigpickle: (1) la explicacion escrita pasa de decir que sin filas devuelve 600.0 a decir que devuelve el techo de 400; (2) la salida de cuando no hay filas devuelve float(TECHO_ESPERA) en vez de 600.0; (3) la ultima salida queda topada por TECHO_ESPERA conservando el suelo MINIMO_ESPERA.",
+  "codigo": "    Sin filas: devuelve el techo de 400.\"\"\"\n...\n    if not filas:\n        return float(TECHO_ESPERA)\n...\n    return min(float(TECHO_ESPERA), max(float(MINIMO_ESPERA), mayor * MARGEN))",
+  "vigia": "Las pruebas que ya existen en rojo para espera_de_bigpickle: que sin filas devuelva 400 (TECHO_ESPERA) y que ninguna salida pase de TECHO_ESPERA, conservando el suelo de 60 cuando el calculo sale por debajo.",
+  "puede_danar": [
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "cuerpo/codex.py queda fuera del paquete: quien llame a espera_de_bigpickle recibira como maximo 400 en vez de hasta 600, y pasara el encargo antes; es justo lo que decidio Julio, pero conviene que la prueba vecina de ese llamador siga verde"
+  ],
+  "que_falta": [
+   "No se pudo leer el texto literal de cuerpo/cuotas.py en este paquete; la ubicacion se acepta porque el programa precomprobo que los nombres existen y el archivo carga"
+  ],
+  "resumen_para_el_jefe": "Arregla exactamente las dos salidas malas y la explicacion, usando el techo ya declarado en vez de repetir el 400 en el codigo; nada inventado y nada roto."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21732 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
