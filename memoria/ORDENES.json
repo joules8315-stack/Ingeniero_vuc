@@ -1,5 +1,23 @@
 [
   {
+    "id": "R3c-dos-deepseek",
+    "titulo": "Cuando la puerta gratis se agote, entran dos puestos de DeepSeek: el 1 escribe y el 2 revisa",
+    "pieza": "cuerpo/capataz.py",
+    "origen": "Julio 2026-09-27: despues de que se acabe opencode, con Big Pickle y grok 4.7 dentro, se sustituye por DeepSeek en dos puestos; el 1 escribe codigo y el 2 ocupa el sitio de los modelos que se van. No debe depender de la memoria de Claude: se programa y se garantiza que se cumpla, por economia, porque las unidades de DeepSeek son mas baratas",
+    "repara": "hoy el que revisa es justo el que se agoto: el bucle lanza siempre escribe deepseek y revisa bigpickle escrito a mano, asi que con la puerta gratis muda las rondas caen a codex o mueren sin auditar",
+    "razon": "Julio se quedo sin su presupuesto el 2026-09-27. Big Pickle y grok 4.7 salen los dos por la misma puerta, la de opencode, y esa puerta arrastra unas 10.600 unidades fijas en cada llamada, medido ese dia con dos pruebas (6 letras y 1.500 letras dieron el mismo peso). Decisiones que tomo Julio ese dia: una sola cuenta de DeepSeek usada dos veces; el disparador es automatico, cuando esa puerta deja de contestar; y si la puerta gratis revive se vuelve a usar porque no cuesta dinero",
+    "encargo": "deepseek1 y deepseek2 entran en la fila como de pago, detras de todo lo gratis, con su apodo y su capacidad, y con su linea de modelo para que no queden de adorno. Funcion nueva que diga si la puerta gratis esta agotada, apoyada en el contador de fallos seguidos que ya se escribe solo, sin que nadie lo suba a mano. El bucle elige la pareja segun esa funcion, en vez de tenerla escrita a mano. En la cascada de revisores, deepseek2 entra antes de codex y de claude, con su guardia de no revisarse a si mismo. La vigia que hoy clava la pareja se ajusta a las dos situaciones, con esta orden de Julio como permiso. Nada se localiza por numero de linea: se busca por nombre.",
+    "vigia": "vigias/test_vigia_cuando_se_acaba_opencode_entran_dos_deepseek.py",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "R3b-cuenta-ciega",
     "titulo": "La puerta del ayudante gratis se cuenta, hoy se apunta en cero",
     "pieza": "cuerpo/bigpickle.py",
