@@ -382,7 +382,7 @@ def espera_de_bigpickle(letras):
     Parecidas = las filas con tamano entre letras/2 y letras*2 (y tamano mayor que 0).
     Si hay 5 o mas parecidas: devuelve max(MINIMO_ESPERA, el mayor segundos de las parecidas
     por MARGEN). Si no: devuelve max(MINIMO_ESPERA, el mayor segundos de todas por MARGEN).
-    Sin filas: devuelve 600.0."""
+    Sin filas: devuelve el techo de 400."""
     from cuerpo import cuaderno
     filas = []
     try:
@@ -415,7 +415,7 @@ def espera_de_bigpickle(letras):
     except Exception:
         filas = []
     if not filas:
-        return 600.0
+        return float(TECHO_ESPERA)
     try:
         letras = float(letras)
     except Exception:
@@ -426,7 +426,7 @@ def espera_de_bigpickle(letras):
         mayor = max(f["segundos"] for f in parecidas)
     else:
         mayor = max(f["segundos"] for f in filas)
-    return max(float(MINIMO_ESPERA), mayor * MARGEN)
+    return min(float(TECHO_ESPERA), max(float(MINIMO_ESPERA), mayor * MARGEN))
 
 
 def turno(disponibles=None):
