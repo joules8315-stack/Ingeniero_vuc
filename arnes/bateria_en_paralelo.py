@@ -153,24 +153,31 @@ def _expandir_objetivo(raiz, objetivo):
 # ---------------------------------------------------------------------------
 # CORRIDA DE UN GRUPO
 # ---------------------------------------------------------------------------
-def _correr_grupo(raiz, grupo, tope):
+def _correr_grupo(raiz, grupo, tope, env=None, correr_uno=None):
     """Corre un grupo con pytest en su propio proceso.
 
     Devuelve una tupla (returncode, stdout, stderr, cortado, error).
     Nunca lanza: todo se captura aqui dentro.
+
+    Si correr_uno no es None, se usa en lugar de subprocess.run, llamandolo
+    con los mismos argumentos. Si env no es None, se anade el argumento env
+    con ese valor a esa llamada; si es None no se anade.
     """
     orden = [sys.executable, "-m", "pytest", "-q"] + list(grupo)
+    lanzar = correr_uno if correr_uno is not None else subprocess.run
+    argumentos = dict(
+        cwd=raiz,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        stdin=subprocess.DEVNULL,
+        timeout=tope,
+    )
+    if env is not None:
+        argumentos["env"] = env
     try:
-        completado = subprocess.run(
-            orden,
-            cwd=raiz,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            stdin=subprocess.DEVNULL,
-            timeout=tope,
-        )
+        completado = lanzar(orden, **argumentos)
         return (
             completado.returncode,
             completado.stdout or "",
