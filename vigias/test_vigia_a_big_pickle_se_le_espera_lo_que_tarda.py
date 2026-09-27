@@ -58,10 +58,13 @@ def _apuntar_otro_cerebro(quien, tamano, segundos, resultado=None):
 # ---------------------------------------------------------------------------
 
 def test_sin_filas_se_espera_el_valor_por_defecto():
-    """Sin nada apuntado, espera_de_bigpickle(1000) vale 600."""
+    """Sin nada apuntado, espera_de_bigpickle(1000) vale 400.
+
+    El techo de espera es 400 s por decision de Julio del 2026-09-27.
+    """
     esperado = cuotas.espera_de_bigpickle(1000)
-    assert esperado == 600, (
-        "sin filas apuntadas se esperaba 600 y salio %r" % (esperado,)
+    assert esperado == 400, (
+        "sin filas apuntadas se esperaba 400 y salio %r" % (esperado,)
     )
 
 
@@ -70,16 +73,17 @@ def test_sin_filas_se_espera_el_valor_por_defecto():
 # ---------------------------------------------------------------------------
 
 def test_con_dos_filas_buenas_usa_su_record_por_uno_y_medio():
-    """Con 100 s y 328 s (tamano 0), espera_de_bigpickle(1000) esta entre 491 y 493.
+    """Con 100 s y 328 s (tamano 0), espera_de_bigpickle(1000) vale 400.
 
-    328 * 1.5 = 492. El margen [491, 493] admite redondeos.
+    328 * 1.5 = 492, pero el techo de espera es 400 s por decision de Julio del
+    2026-09-27.
     """
     _apuntar_bigpickle(tamano=0, segundos=100)
     _apuntar_bigpickle(tamano=0, segundos=328)
 
     esperado = cuotas.espera_de_bigpickle(1000)
-    assert 491 <= esperado <= 493, (
-        "con dos filas buenas (100 y 328) se esperaba entre 491 y 493 y salio %r"
+    assert esperado == 400, (
+        "con dos filas buenas (100 y 328) se esperaba 400 y salio %r"
         % (esperado,)
     )
 
@@ -116,8 +120,8 @@ def test_tareas_parecidas_mandan_y_si_no_las_hay_usa_el_record_de_todas():
     de 12000), tardaron 100 s como mucho -> 100 * 1.5 = 150. Margen [149, 151].
 
     espera_de_bigpickle(1000): NO hay tareas parecidas (10000 no esta entre la mitad y el
-    doble de 1000) -> se usa el record de todas, que es 328 -> 328 * 1.5 = 492.
-    Margen [491, 493].
+    doble de 1000) -> se usa el record de todas, que es 328 -> 328 * 1.5 = 492, pero el
+    techo de espera es 400 s por decision de Julio del 2026-09-27.
     """
     for _ in range(5):
         _apuntar_bigpickle(tamano=10000, segundos=100)
@@ -130,8 +134,8 @@ def test_tareas_parecidas_mandan_y_si_no_las_hay_usa_el_record_de_todas():
     )
 
     sin_parecidas = cuotas.espera_de_bigpickle(1000)
-    assert 491 <= sin_parecidas <= 493, (
-        "sin tareas parecidas se esperaba el record de todas (492) y salio %r"
+    assert sin_parecidas == 400, (
+        "sin tareas parecidas se esperaba el techo de 400 y salio %r"
         % (sin_parecidas,)
     )
 
