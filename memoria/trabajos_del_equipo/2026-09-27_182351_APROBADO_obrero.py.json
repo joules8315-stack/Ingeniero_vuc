@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "falta_en_el_material toma como nombre de funcion cualquier palabra que empiece por raya baja sin cortarla en el primer caracter que no puede formar parte de un nombre de Python, asi que un trozo pegado como '_anotar(segundos' se busca como declaracion imposible y avisa de una funcion que si esta.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "falta_en_el_material",
+  "texto_viejo": "    # --- Funciones nombradas en el encargo ---\n    # Se buscan palabras que empiecen por raya baja (como _prompt_obrero).\n    funciones = []\n    for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n        limpia = palabra.strip(\"()[]{}<>\\\"'`.:\")\n        if limpia.startswith(\"_\") and len(limpia) > 1:\n            funciones.append(limpia)",
+  "texto_nuevo": "    # --- Funciones nombradas en el encargo ---\n    # Se buscan palabras que empiecen por raya baja (como _prompt_obrero).\n    # El nombre se corta en el primer caracter que no puede formar parte de un\n    # nombre de Python: solo letras, numeros y rayas bajas desde el principio.\n    # Asi un trozo pegado como '_anotar(segundos' se queda en '_anotar'.\n    funciones = []\n    for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n        limpia = palabra.strip(\"()[]{}<>\\\"'`.:\")\n        if limpia.startswith(\"_\") and len(limpia) > 1:\n            corte = len(limpia)\n            for _i, _c in enumerate(limpia):\n                if not (_c.isalnum() or _c == \"_\"):\n                    corte = _i\n                    break\n            nombre = limpia[:corte]\n            # si despues de cortar no queda mas que la raya baja, no se exige\n            if nombre.startswith(\"_\") and len(nombre) > 1:\n                funciones.append(nombre)",
+  "cambio": "En falta_en_el_material, al sacar los nombres de funcion exigidos del encargo, cortar la palabra en el primer caracter que no puede formar parte de un nombre de Python (solo letras, numeros y rayas bajas desde el principio) y descartar la palabra si tras el corte no queda mas que la raya baja.",
+  "codigo": "            corte = len(limpia)\n            for _i, _c in enumerate(limpia):\n                if not (_c.isalnum() or _c == \"_\"):\n                    corte = _i\n                    break\n            nombre = limpia[:corte]\n            if nombre.startswith(\"_\") and len(nombre) > 1:\n                funciones.append(nombre)",
+  "vigia": "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py: caso 1 (nombre limpio, lista vacia), caso 2 (nombre pegado a parentesis, lista vacia porque la funcion si esta) y caso 3 (funcion con raya baja que de verdad no esta, la lista NO sale vacia).",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El recorte corta el nombre en el primer caracter que no puede ser de Python y descarta la palabra si solo queda la raya baja, tal como pide el encargo; un nombre con raya baja de verdad sale igual que hoy, los avisos de archivo y la rama de 'el archivo si esta pero la funcion no' quedan intactos, y no toca ninguna prueba."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (32631 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
