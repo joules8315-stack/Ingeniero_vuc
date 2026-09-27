@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El aviso de dejar pasar en _vigias solo menciona pruebas recien escritas y esperando su arreglo, y omite las rojas que ya estaban en conocidas_de_antes, por lo que el detalle sale vacio cuando la razon es esa.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando])\n    return True, \"vigias recien escritas sin su pieza aun o esperando su arreglo (se deja pasar): \" + detalle",
+  "texto_nuevo": "    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando] + [a for a in guardados if a in conocidas_de_antes and a not in esperando])\n    return True, \"vigias recien escritas sin su pieza aun, esperando su arreglo, o ya rojas antes de este trabajo (se deja pasar): \" + detalle",
+  "cambio": "En _vigias, ampliar el detalle para incluir tambien las rojas que estaban en conocidas_de_antes y no estaban en esperando, y cambiar el texto devuelto para que mencione las tres razones: pruebas recien escritas sin su pieza aun, pruebas esperando su arreglo, y pruebas que ya estaban rojas antes de este trabajo. No tocar la decision de frenar ni nada mas.",
+  "codigo": "    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando] + [a for a in guardados if a in conocidas_de_antes and a not in esperando])\n    return True, \"vigias recien escritas sin su pieza aun, esperando su arreglo, o ya rojas antes de este trabajo (se deja pasar): \" + detalle",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_de_las_rojas_de_antes.py y vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py deben quedar verdes; la primera exige que el mensaje mencione que una prueba ya roja de antes no la rompio este trabajo.",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada y no rompe pruebas vecinas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (32010 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

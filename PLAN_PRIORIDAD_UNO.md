@@ -152,6 +152,12 @@ completa. **Es falso**: `_vecinas_por_stem` ignora lo que no es código
   la tarea necesita. Hoy el código no puede cumplirla.
 - **CÓMO:** que la autorización diga **qué** se abre y por cuánto; cada guardia pregunta por su nombre.
   Vigía: `test_vigia_la_llave_abre_solo_lo_pedido.py`.
+- **DECIDIDO POR JULIO EL 2026-09-27 (opción b): sin trabajo doble.** R7 cambia la forma en que los
+  **21 candados** piden permiso; si se hiciera "a lo bruto" habría que volver a tocar cada candado ya
+  reparado. Julio eligió que el cambio sea **compatible con la forma vieja**: `autorizada()` sin
+  argumentos sigue funcionando igual, y el nombre del candado se le pasa **solo cuando le toque a ese
+  candado por otro motivo**. Así R7 se queda donde está en la fila y **ninguna reparación anterior se
+  rehace**.
 
 # R8 · El comando que arma el plan solo (para Foto Informe y cualquier repo)
 

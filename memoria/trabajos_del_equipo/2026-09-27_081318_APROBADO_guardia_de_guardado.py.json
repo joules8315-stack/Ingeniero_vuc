@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En _vigias, el renglón que calcula guardados_que_frenan no lee el apunte de rojas conocidas de antes (memoria/.rojas_conocidas.json) ni llama a rojas_que_frenan con las cuatro listas, y en el camino en que el guardia deja pasar no se apunta archivos_rojos en ese mismo archivo.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    guardados_que_frenan = [a for a in guardados if a not in esperando]",
+    "texto_nuevo": "    conocidas_de_antes = []\n    try:\n        ruta_conocidas = os.path.join(raiz, \"memoria\", \".rojas_conocidas.json\")\n        with open(ruta_conocidas, encoding=\"utf-8\") as f:\n            leidas = json.load(f)\n        if isinstance(leidas, list):\n            conocidas_de_antes = leidas\n    except Exception:\n        conocidas_de_antes = []\n    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, list(esperando), conocidas_de_antes)"
+   },
+   {
+    "texto_viejo": "    # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.\n    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando])",
+    "texto_nuevo": "    # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.\n    try:\n        ruta_conocidas = os.path.join(raiz, \"memoria\", \".rojas_conocidas.json\")\n        os.makedirs(os.path.dirname(ruta_conocidas), exist_ok=True)\n        with open(ruta_conocidas, \"w\", encoding=\"utf-8\") as f:\n            json.dump(archivos_rojos, f)\n    except Exception:\n        pass\n    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando])"
+   }
+  ],
+  "cambio": "En _vigias: (1) leer memoria/.rojas_conocidas.json con json.load dentro de un try except que nunca lance, quedándose con su lista de nombres o lista vacía si falla, y calcular guardados_que_frenan llamando a rojas_que_frenan(archivos_rojos, guardados, list(esperando), conocidas_de_antes) — el list(esperando) es obligatorio porque esperando es un set y rojas_que_frenan solo acepta listas; (2) en el camino en que el guardia deja pasar, justo encima del renglón que arma detalle, apuntar archivos_rojos en memoria/.rojas_conocidas.json con json.dump, creando la carpeta memoria si falta, todo dentro de un try except que nunca lance ni cambie lo que la función devuelve.",
+  "codigo": "    conocidas_de_antes = []\n    try:\n        ruta_conocidas = os.path.join(raiz, \"memoria\", \".rojas_conocidas.json\")\n        with open(ruta_conocidas, encoding=\"utf-8\") as f:\n            leidas = json.load(f)\n        if isinstance(leidas, list):\n            conocidas_de_antes = leidas\n    except Exception:\n        conocidas_de_antes = []\n    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, list(esperando), conocidas_de_antes)\n\n    # ... (más abajo, en el camino de dejar pasar) ...\n\n    try:\n        ruta_conocidas = os.path.join(raiz, \"memoria\", \".rojas_conocidas.json\")\n        os.makedirs(os.path.dirname(ruta_conocidas), exist_ok=True)\n        with open(ruta_conocidas, \"w\", encoding=\"utf-8\") as f:\n            json.dump(archivos_rojos, f)\n    except Exception:\n        pass",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_de_las_rojas_de_antes.py (debe quedar verde), y no deben romperse vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py ni vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+  "puede_danar": [
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación implementa la lectura y escritura del archivo .rojas_conocidas.json y usa rojas_que_frenan según el diagnóstico sin introducir código inexistente ni romper pruebas vecinas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (33078 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}
