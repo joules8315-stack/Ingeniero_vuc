@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Cuatro llamadas a subprocess.run en cuerpo/capataz.py no llevan tope de tiempo y correr_orden_del_sistema no captura subprocess.TimeoutExpired, por lo que un cuelgue revienta al capataz en vez de contarse como fallo.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "correr_orden_del_sistema",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    import subprocess\n    carpeta = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    resultado = subprocess.run(palabras, cwd=carpeta, capture_output=True, text=True)\n    return resultado.returncode",
+    "texto_nuevo": "    import subprocess\n    carpeta = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    try:\n        resultado = subprocess.run(palabras, cwd=carpeta, capture_output=True, text=True, timeout=300)\n    except subprocess.TimeoutExpired:\n        return 124\n    return resultado.returncode"
+   },
+   {
+    "texto_viejo": "    resultado_vigia = subprocess.run(\n        [\"python\", \"-m\", \"pytest\", vigia],\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )",
+    "texto_nuevo": "    try:\n        resultado_vigia = subprocess.run(\n            [\"python\", \"-m\", \"pytest\", vigia],\n            cwd=carpeta_proyecto,\n            capture_output=True,\n            text=True,\n            timeout=300,\n        )\n    except subprocess.TimeoutExpired:\n        return \"vigia_verde\""
+   },
+   {
+    "texto_viejo": "        resultado_git = subprocess.run(\n            [\"git\", \"ls-files\", vigia],\n            cwd=carpeta_proyecto,\n            capture_output=True,\n            text=True,\n        )",
+    "texto_nuevo": "        try:\n            resultado_git = subprocess.run(\n                [\"git\", \"ls-files\", vigia],\n                cwd=carpeta_proyecto,\n                capture_output=True,\n                text=True,\n                timeout=30,\n            )\n        except subprocess.TimeoutExpired:\n            return \"vigia_verde\""
+   },
+   {
+    "texto_viejo": "    resultado_prueba = subprocess.run(\n        comando,\n        shell=True,\n        cwd=carpeta_proyecto,\n        capture_output=True,\n        text=True,\n    )",
+    "texto_nuevo": "    try:\n        resultado_prueba = subprocess.run(\n            comando,\n            shell=True,\n            cwd=carpeta_proyecto,\n            capture_output=True,\n            text=True,\n            timeout=300,\n        )\n    except subprocess.TimeoutExpired:\n        return \"prueba_real\""
+   }
+  ],
+  "cambio": "Poner tope de tiempo a las cuatro llamadas a subprocess.run sin tope: 300s en correr_orden_del_sistema devolviendo 124 si salta TimeoutExpired; 300s en la llamada a pytest sobre la vigia devolviendo vigia_verde; 30s en git ls-files devolviendo vigia_verde; 300s en el comando de la prueba real devolviendo prueba_real.",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_ningun_proceso_del_capataz_se_queda_colgado.py debe quedar verde; no deben romperse vigias/test_vigia_el_capataz_lanza_al_equipo.py ni vigias/test_vigia_el_capataz_marca_estado.py",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "vigias/test_vigia_ningun_proceso_del_capataz_se_queda_colgado.py",
+   "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+   "vigias/test_vigia_el_capataz_marca_estado.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, añade los timeouts y manejos solicitados sin inventar nada ni romper pruebas vecinas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (28921 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

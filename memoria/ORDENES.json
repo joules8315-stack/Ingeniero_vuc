@@ -1,5 +1,25 @@
 [
   {
+    "id": "R6a",
+    "titulo": "El pit corre dos piezas distintas a la vez (la prueba que lo exige ya existe y esta roja)",
+    "pieza": "cuerpo/capataz.py",
+    "vigia": "vigias/test_vigia_el_loop_del_pit.py",
+    "encargo": "Su caso test_dos_piezas_distintas_corren_a_la_vez espera que dos ordenes de piezas distintas corran al mismo tiempo; hoy en_paralelo vale 1 en cuerpo/capataz.py y por eso la barrera de dos se rompe y la orden sale fallida. Se pone verde cuando entre R6: cada orden en su propia copia temporal y en_paralelo por encima de 1. No se toca esta prueba para ponerla verde a la fuerza.",
+    "origen": "medido el 2026-09-27 al reparar R5: es una roja anterior, no la rompio R5",
+    "repara": "que quede declarado por que esa prueba esta roja y que no frene el guardado de otros trabajos",
+    "razon": "una roja sin dueno hace que el guardia tire trabajo aprobado; es el fallo mas repetido de la herramienta",
+    "depende": [
+      "R6"
+    ],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "R1c",
     "titulo": "Enganchar en el guardia la pieza que decide cuales rojas frenan",
     "pieza": "arnes/guardia_de_guardado.py",
@@ -222,8 +242,8 @@
     "modo": "IA",
     "razon": "el propio archivo declara en sus lineas 9-13 que todo tope de dentro debe ser menor que el de fuera, y estos dos lo rompen; un guardado ya se colgo 5 horas y media",
     "encargo": "En cuerpo/capataz.py hay dos llamadas a subprocess.run SIN timeout: la de la linea 973 (corre pytest sobre la vigia de la orden, dentro de comprobar_pasos) y la de la linea 1018 (corre el comando de la orden en el paso prueba real). Ponles tope, y que ese tope sea MENOR que el tope de fuera que ya existe (LIMITE_TAREA_SEGUNDOS y TOPE_DURO_SEGUNDOS, lineas 16-18). Si se agota el tope, que quede escrito el motivo y la orden se marque fallida por tiempo, nunca por aprobada.",
-    "vigia": "vigias/test_vigia_ningun_proceso_del_capataz_va_sin_tope.py",
-    "estado": "pendiente",
+    "vigia": "vigias/test_vigia_ningun_proceso_del_capataz_se_queda_colgado.py",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "",
