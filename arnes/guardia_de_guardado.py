@@ -397,11 +397,27 @@ def _vigias(raiz):
                     esperando.add(vigia)
         except Exception:
             esperando = set()
-    guardados_que_frenan = [a for a in guardados if a not in esperando]
+    conocidas_de_antes = []
+    try:
+        ruta_conocidas = os.path.join(raiz, "memoria", ".rojas_conocidas.json")
+        with open(ruta_conocidas, encoding="utf-8") as f:
+            leidas = json.load(f)
+        if isinstance(leidas, list):
+            conocidas_de_antes = leidas
+    except Exception:
+        conocidas_de_antes = []
+    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, list(esperando), conocidas_de_antes)
     if guardados_que_frenan:
         # Al menos uno ya estaba guardado y no espera arreglo: es romper algo que estaba verde. Frenar.
         return False, ultima[0].strip()
     # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.
+    try:
+        ruta_conocidas = os.path.join(raiz, "memoria", ".rojas_conocidas.json")
+        os.makedirs(os.path.dirname(ruta_conocidas), exist_ok=True)
+        with open(ruta_conocidas, "w", encoding="utf-8") as f:
+            json.dump(archivos_rojos, f)
+    except Exception:
+        pass
     detalle = "; ".join(nuevos + [a for a in guardados if a in esperando])
     return True, "vigias recien escritas sin su pieza aun o esperando su arreglo (se deja pasar): " + detalle
 
