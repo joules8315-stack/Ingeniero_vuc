@@ -42,6 +42,18 @@ def _entorno_limpio():
 
 def _correr_prueba(raiz, ruta_prueba):
     """Corre pytest en modo callado sobre la prueba. Devuelve True si pasa."""
+    objetivos = [str(ruta_prueba)]
+    try:
+        import importlib.util as _ilu
+        _ruta_memoria = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'memoria_de_pruebas.py')
+        _spec = _ilu.spec_from_file_location('memoria_de_pruebas_del_juez', _ruta_memoria)
+        _modulo = _ilu.module_from_spec(_spec)
+        _spec.loader.exec_module(_modulo)
+        _apunte = _modulo.recordar(raiz, objetivos)
+        if isinstance(_apunte, dict):
+            return bool(_apunte.get('paso')), str(_apunte.get('detalle', ''))
+    except Exception:
+        pass
     orden = [
         sys.executable,
         '-m',
@@ -59,12 +71,19 @@ def _correr_prueba(raiz, ruta_prueba):
             timeout=TOPE_SEGUNDOS,
         )
     except subprocess.TimeoutExpired:
-        return False, 'la prueba se paso del tope de %d segundos' % TOPE_SEGUNDOS
+        paso, detalle = False, 'la prueba se paso del tope de %d segundos' % TOPE_SEGUNDOS
     except Exception as error:
-        return False, 'no se pudo correr la prueba: %s' % error
-    if proceso.returncode == 0:
-        return True, 'la prueba paso'
-    return False, 'la prueba no paso (codigo %s)' % proceso.returncode
+        paso, detalle = False, 'no se pudo correr la prueba: %s' % error
+    else:
+        if proceso.returncode == 0:
+            paso, detalle = True, 'la prueba paso'
+        else:
+            paso, detalle = False, 'la prueba no paso (codigo %s)' % proceso.returncode
+    try:
+        _modulo.apuntar(raiz, objetivos, paso, detalle)
+    except Exception:
+        pass
+    return paso, detalle
 
 
 def _alguna_esta_roja(raiz, rutas_pruebas):
