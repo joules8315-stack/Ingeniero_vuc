@@ -193,7 +193,7 @@ def _correr_grupo(raiz, grupo, tope):
 # ---------------------------------------------------------------------------
 # CORRIDA COMPLETA
 # ---------------------------------------------------------------------------
-def correr(raiz, objetivo, procesos=4, tope=600):
+def correr(raiz, objetivo, procesos=4, tope=600, env=None, correr_uno=None):
     """Corre la bateria repartida en grupos, cada grupo en su propio proceso.
 
     Devuelve un objeto con exactamente tres atributos: returncode, stdout y
@@ -212,7 +212,7 @@ def correr(raiz, objetivo, procesos=4, tope=600):
     Esta funcion NUNCA lanza una excepcion hacia fuera.
     """
     try:
-        return _correr_seguro(raiz, objetivo, procesos, tope)
+        return _correr_seguro(raiz, objetivo, procesos, tope, env, correr_uno)
     except Exception as fallo:
         # Red de ultimo recurso: pase lo que pase, se devuelve un resultado.
         resumen = "bateria en paralelo: 0 grupos, 1 rojos, 0 cortados por tiempo"
@@ -223,7 +223,7 @@ def correr(raiz, objetivo, procesos=4, tope=600):
         )
 
 
-def _correr_seguro(raiz, objetivo, procesos, tope):
+def _correr_seguro(raiz, objetivo, procesos, tope, env=None, correr_uno=None):
     """Cuerpo real de correr(), ya dentro de la red que captura todo."""
     # 1) Expandir el objetivo a una lista plana de archivos.
     archivos = _expandir_objetivo(raiz, objetivo)
