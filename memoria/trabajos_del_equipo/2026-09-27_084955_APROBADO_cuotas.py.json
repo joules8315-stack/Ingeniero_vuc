@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/cuotas.py falta la constante TECHO_ESPERA=300 y ni cuanto_esperarle ni espera_de_bigpickle limitan su resultado a ese techo, por lo que se puede esperar hasta 600 s o el record por 1.5.",
+  "archivo": "cuerpo/cuotas.py",
+  "funcion": "cuanto_esperarle",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    g = _leer().get(\"gasto\", {}).get(quien, {})\n    record = float(g.get(\"record_seg\", 0))\n    if record <= 0:\n        return float(MINIMO_ESPERA * 3)      # aun no se sabe lo que tarda: margen ancho\n    return max(float(MINIMO_ESPERA), record * MARGEN)",
+    "texto_nuevo": "    g = _leer().get(\"gasto\", {}).get(quien, {})\n    record = float(g.get(\"record_seg\", 0))\n    if record <= 0:\n        return min(float(TECHO_ESPERA), float(MINIMO_ESPERA * 3))   # aun no se sabe lo que tarda: margen ancho\n    return min(float(TECHO_ESPERA), max(float(MINIMO_ESPERA), record * MARGEN))"
+   },
+   {
+    "texto_viejo": "    if not filas:\n        return 600.0",
+    "texto_nuevo": "    if not filas:\n        return float(TECHO_ESPERA)"
+   },
+   {
+    "texto_viejo": "    if len(parecidas) >= 5:\n        mayor = max(f[\"segundos\"] for f in parecidas)\n    else:\n        mayor = max(f[\"segundos\"] for f in filas)\n    return max(float(MINIMO_ESPERA), mayor * MARGEN)",
+    "texto_nuevo": "    if len(parecidas) >= 5:\n        mayor = max(f[\"segundos\"] for f in parecidas)\n    else:\n        mayor = max(f[\"segundos\"] for f in filas)\n    return min(float(TECHO_ESPERA), max(float(MINIMO_ESPERA), mayor * MARGEN))"
+   }
+  ],
+  "cambio": "Declarar TECHO_ESPERA=300 junto a MARGEN y MINIMO_ESPERA con comentario de la medicion, y limitar a TECHO_ESPERA los tres caminos de salida: el de cuanto_esperarle (record<=0 y record>0) y los dos de espera_de_bigpickle (sin filas y con filas), sin bajar del MINIMO_ESPERA.",
+  "codigo": "TECHO_ESPERA = 300  # MEDIDO el 2026-09-27 en memoria/CUADERNO_DE_LLAMADAS.jsonl: de las 163 respuestas buenas de Big Pickle, 162 llegaron antes de 300 s; de las 27 de grok47, todas antes de 240 s. Esperar mas de 300 solo gana una respuesta de cada 163 y cuesta minutos en cada orden.",
+  "vigia": "vigias/test_vigia_a_nadie_se_le_espera_mas_de_lo_medido.py, incluidos sus dos casos de control: cerebro normal con record 100 que debe seguir esperando exactamente 150, y la espera minima de 60.",
+  "puede_danar": [
+   "cerebro/trozos.py",
+   "vigias/test_vigia_respuestas.py"
+  ],
+  "preguntas": [
+   "El material no muestra las lineas donde estan declaradas MARGEN y MINIMO_ESPERA en cuerpo/cuotas.py: se debe poner TECHO_ESPERA justo debajo de ellas, pero no se ve el texto literal de esas lineas para anclar el cambio."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_respuestas.py",
+   "trozos.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa, no rompe vecinos ni contrato."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25220 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

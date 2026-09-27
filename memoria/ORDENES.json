@@ -1,5 +1,43 @@
 [
   {
+    "id": "R3a",
+    "titulo": "A nadie se le espera mas de lo medido: techo de 300 segundos",
+    "pieza": "cuerpo/cuotas.py",
+    "vigia": "vigias/test_vigia_a_nadie_se_le_espera_mas_de_lo_medido.py",
+    "encargo": "Poner un techo maximo de espera de 300 segundos en cuanto_esperarle y en espera_de_bigpickle de cuerpo/cuotas.py, y bajar TIMEOUT_POR_DEFECTO de cuerpo/bigpickle.py de 600 a 300. Medido: con 300 s llegan 162 de las 163 respuestas buenas de Big Pickle y 27 de 27 de grok47.",
+    "origen": "PLAN_PRIORIDAD_UNO R3, medido el 2026-09-27",
+    "repara": "que no se esperen 600 segundos para ganar una respuesta de cada 163",
+    "razon": "90 minutos por orden y la meta son menos de 20; lo gratis lento es lo mas caro en tiempo",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
+    "id": "R4c",
+    "titulo": "El capataz tampoco repite la corrida de la vigia de la orden",
+    "pieza": "cuerpo/capataz.py",
+    "vigia": "vigias/test_vigia_el_capataz_no_repite_la_corrida_de_la_vigia.py",
+    "encargo": "En comprobar_pasos, sacar la llamada a pytest sobre la vigia a una funcion propia y pequena que primero pregunte a arnes/memoria_de_pruebas.py y solo corra si no hay nada que reusar. No se reusa en la rama entrega_la_prueba igual a si, porque ahi hace falta el texto de la salida. La vigia nueva, nacida roja, prueba esa funcion pequena.",
+    "origen": "PLAN_PRIORIDAD_UNO R4, tercera corrida repetida",
+    "repara": "la tercera repeticion de la misma corrida dentro de una orden",
+    "razon": "queda a proposito detras de R3: vale entre 5 y 25 segundos por orden, y R3 vale minutos",
+    "depende": [
+      "R4b"
+    ],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "R4b",
     "titulo": "El juez de la prueba no repite una corrida si nada cambio",
     "pieza": "arnes/juez_de_la_prueba.py",
