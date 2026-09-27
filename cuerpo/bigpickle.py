@@ -52,13 +52,21 @@ RUTA_LOG = RAIZ / "memoria" / "BIGPICKLE.log"
 # Anotacion en el log
 # ---------------------------------------------------------------------------
 
-def _anotar(segundos: float, costo: float, ok: bool, nota: str = "", tamano: int = 0) -> None:
+def _anotar(
+    segundos: float,
+    costo: float,
+    ok: bool,
+    nota: str = "",
+    tamano: int = 0,
+    unidades: int = 0,
+) -> None:
     """Anota una llamada en memoria/BIGPICKLE.log. Nunca lanza excepcion."""
     try:
         RUTA_LOG.parent.mkdir(parents=True, exist_ok=True)
         fecha = datetime.now().isoformat(timespec="seconds")
         linea = (
             f"{fecha}\tsegundos={segundos:.3f}\tcosto={costo:.6f}\t"
+            f"unidades={unidades}\t"
             f"ok={bool(ok)}\tnota={nota}\n"
         )
         with open(RUTA_LOG, "a", encoding="utf-8") as fh:
@@ -145,6 +153,49 @@ def _parsear_salida(salida: str) -> tuple[str, float]:
             if isinstance(coste, (int, float)):
                 costo_total += float(coste)
     return "".join(trozos), costo_total
+
+
+def unidades_de_la_salida(salida: str) -> dict:
+    """Suma las unidades que el recibo declara en cada step_finish.
+
+    Recorre las lineas JSON de la salida y, en cada linea con type igual a
+    'step_finish', suma part.tokens con las claves total, input y output.
+    Devuelve un diccionario con esas tres sumas. Con un recibo vacio, sin
+    tokens, o con lineas que no son JSON valido, devuelve ceros y no revienta.
+    """
+    total = 0
+    entrada = 0
+    salida_tokens = 0
+    if not salida:
+        return {"total": 0, "input": 0, "output": 0}
+    for linea in salida.splitlines():
+        linea = linea.strip()
+        if not linea:
+            continue
+        try:
+            dato = json.loads(linea)
+        except (ValueError, TypeError):
+            continue
+        if not isinstance(dato, dict):
+            continue
+        if dato.get("type") != "step_finish":
+            continue
+        parte = dato.get("part")
+        if not isinstance(parte, dict):
+            continue
+        tokens = parte.get("tokens")
+        if not isinstance(tokens, dict):
+            continue
+        valor = tokens.get("total")
+        if isinstance(valor, (int, float)):
+            total += int(valor)
+        valor = tokens.get("input")
+        if isinstance(valor, (int, float)):
+            entrada += int(valor)
+        valor = tokens.get("output")
+        if isinstance(valor, (int, float)):
+            salida_tokens += int(valor)
+    return {"total": total, "input": entrada, "output": salida_tokens}
 
 
 # ---------------------------------------------------------------------------
