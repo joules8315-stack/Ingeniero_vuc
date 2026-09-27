@@ -216,18 +216,15 @@ def correr(raiz, objetivo, procesos=4, tope=600, env=None, correr_uno=None):
 
     stderr es la union de los errores de los grupos.
 
-    Esta funcion NUNCA lanza una excepcion hacia fuera.
+    UNICA excepcion a la regla de que nunca lanza: si NINGUN grupo pudo
+    arrancar (es decir, TODOS los grupos tienen error distinto de None, porque
+    la orden de pytest ni siquiera se pudo lanzar), se relanza con raise el
+    error del primer grupo, tal cual. Esto existe para no confundir "no se
+    pudo probar" con "salio mal": un grupo con returncode 1 SI arranco (las
+    pruebas salieron rojas), y un grupo cortado por tiempo SI arranco. Solo
+    cuando ningun grupo arranco se lanza. Si no hay grupos, no se lanza nada.
     """
-    try:
-        return _correr_seguro(raiz, objetivo, procesos, tope, env, correr_uno)
-    except Exception as fallo:
-        # Red de ultimo recurso: pase lo que pase, se devuelve un resultado.
-        resumen = "bateria en paralelo: 0 grupos, 1 rojos, 0 cortados por tiempo"
-        return Resultado(
-            returncode=1,
-            stdout=resumen + "\n",
-            stderr="bateria en paralelo: fallo inesperado: %r\n" % (fallo,),
-        )
+    return _correr_seguro(raiz, objetivo, procesos, tope, env, correr_uno)
 
 
 def _correr_seguro(raiz, objetivo, procesos, tope, env=None, correr_uno=None):
@@ -248,7 +245,16 @@ def _correr_seguro(raiz, objetivo, procesos, tope, env=None, correr_uno=None):
     except Exception:
         tope_segundos = 600.0
 
-    grupos = repartir(archivos, n_procesos)
+    if not archivos:
+        # Si la expansion dejo la lista vacia, se arma UN SOLO grupo con el
+        # objetivo tal como llego, para que sea pytest quien decida (y pueda
+        # devolver 5 = no se recogio ninguna prueba), como antes.
+        if isinstance(objetivo, (list, tuple)):
+            grupos = [list(objetivo)]
+        else:
+            grupos = [[objetivo]]
+    else:
+        grupos = repartir(archivos, n_procesos)
 
     # 3) Correr los grupos a la vez, cada uno en su propio proceso.
     resultados = []
@@ -279,11 +285,25 @@ def _correr_seguro(raiz, objetivo, procesos, tope, env=None, correr_uno=None):
     cortados = 0
     todos_ok = True
 
+    # Un grupo cuenta como ARRANCADO solo cuando su error es None, es decir
+    # cuando la orden de pytest SI se pudo lanzar, aunque las pruebas hayan
+    # salido rojas con returncode 1. Un grupo cortado por tiempo SI arranco
+    # (su error es None). Un grupo cuyo error NO es None no arranco.
+    # NO se cuenta por el returncode: returncode distinto de 0 significa
+    # pruebas rojas, no que no arrancara.
+    alguno_arranco = False
+    primer_error = None
+
     for indice, grupo in enumerate(grupos):
         if indice < len(resultados):
             codigo, salida, error, cortado, reventado = resultados[indice]
         else:
             codigo, salida, error, cortado, reventado = (None, "", "", False, "sin resultado")
+
+        if error is None:
+            alguno_arranco = True
+        elif primer_error is None:
+            primer_error = error
 
         if salida:
             trozos_salida.append(salida)
@@ -311,6 +331,12 @@ def _correr_seguro(raiz, objetivo, procesos, tope, env=None, correr_uno=None):
         elif codigo not in (0, 5):
             rojos += 1
             todos_ok = False
+
+    # 4.5) Si NINGUN grupo pudo arrancar, se relanza el error del primero.
+    # Si no hay grupos, no se lanza nada. Si al menos uno arranco, todo sigue
+    # igual que hoy.
+    if grupos and not alguno_arranco and primer_error is not None:
+        raise RuntimeError(primer_error)
 
     # 5) Resumen final: SIEMPRE el ultimo renglon del stdout.
     resumen = "bateria en paralelo: %d grupos, %d rojos, %d cortados por tiempo" % (
