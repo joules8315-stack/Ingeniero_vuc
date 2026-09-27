@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La vigia nueva exige que la llamada que acaba en nota texto_vacio anote unidades=8000, pero hoy la rama de texto_vacio llama a _anotar sin pasar unidades, asi que el registro sale con unidades=0 y el caso nace rojo.",
+  "archivo": "vigias/test_vigia_la_puerta_gratis_tambien_se_cuenta.py",
+  "funcion": "test_vigia_la_puerta_gratis_tambien_se_cuenta",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def test_unidades_de_la_salida_suma_varios_step_finish():\n    \"\"\"Dos step_finish: las unidades se suman, no se pisan.\"\"\"",
+    "texto_nuevo": "def test_la_puerta_gratis_tambien_se_cuenta(monkeypatch, tmp_path):\n    \"\"\"Una llamada que acaba en texto_vacio tambien consume: se anota unidades=8000.\n\n    Nace ROJA a proposito: hoy la rama texto_vacio llama a _anotar sin pasar\n    unidades, asi que el registro sale con unidades=0. La reparacion va en la\n    ronda siguiente y NO se toca cuerpo/bigpickle.py en esta ronda.\n    \"\"\"\n    registro = tmp_path / \"BIGPICKLE.log\"\n    monkeypatch.setattr(bigpickle, \"RUTA_LOG\", registro)\n\n    salida = json.dumps(\n        {\n            \"type\": \"step_finish\",\n            \"part\": {\n                \"cost\": 0,\n                \"tokens\": {\"total\": 8000, \"input\": 7900, \"output\": 0},\n            },\n        }\n    )\n\n    class _Doble:\n        def __init__(self, *args, **kwargs):\n            self.pid = 0\n            self.returncode = 0\n\n        def communicate(self, input=None, timeout=None):\n            return salida + \"\\n\", \"\"\n\n    monkeypatch.setattr(bigpickle.subprocess, \"Popen\", _Doble)\n    monkeypatch.setattr(bigpickle.shutil, \"which\", lambda nombre: \"opencode\")\n\n    texto, avisos = bigpickle.preguntar(\"hola\", timeout=5)\n\n    assert texto == \"\"\n    assert avisos == [\"Big Pickle no devolvio texto\"]\n\n    lineas = registro.read_text(encoding=\"utf-8\").splitlines()\n    assert lineas, \"la llamada no se anoto en el registro\"\n    ultima = lineas[-1]\n    assert \"texto_vacio\" in ultima\n    assert \"unidades=8000\" in ultima\n\n\ndef test_unidades_de_la_salida_suma_varios_step_finish():\n    \"\"\"Dos step_finish: las unidades se suman, no se pisan.\"\"\""
+   }
+  ],
+  "cambio": "Agregar al final del archivo de vigia un caso nuevo, conservando tal cual todos los casos existentes, que llama a bigpickle.preguntar con subprocess.Popen doblado (codigo 0, una sola linea step_finish con cost 0 y tokens total 8000, input 7900, output 0, sin texto), con RUTA_LOG apuntada a tmp_path, y exige que la linea anotada lleve la nota texto_vacio y unidades=8000. El caso nace rojo porque hoy la rama texto_vacio no pasa unidades.",
+  "codigo": "def test_la_puerta_gratis_tambien_se_cuenta(monkeypatch, tmp_path):\n    \"\"\"Una llamada que acaba en texto_vacio tambien consume: se anota unidades=8000.\n\n    Nace ROJA a proposito: hoy la rama texto_vacio llama a _anotar sin pasar\n    unidades, asi que el registro sale con unidades=0. La reparacion va en la\n    ronda siguiente y NO se toca cuerpo/bigpickle.py en esta ronda.\n    \"\"\"\n    registro = tmp_path / \"BIGPICKLE.log\"\n    monkeypatch.setattr(bigpickle, \"RUTA_LOG\", registro)\n\n    salida = json.dumps(\n        {\n            \"type\": \"step_finish\",\n            \"part\": {\n                \"cost\": 0,\n                \"tokens\": {\"total\": 8000, \"input\": 7900, \"output\": 0},\n            },\n        }\n    )\n\n    class _Doble:\n        def __init__(self, *args, **kwargs):\n            self.pid = 0\n            self.returncode = 0\n\n        def communicate(self, input=None, timeout=None):\n            return salida + \"\\n\", \"\"\n\n    monkeypatch.setattr(bigpickle.subprocess, \"Popen\", _Doble)\n    monkeypatch.setattr(bigpickle.shutil, \"which\", lambda nombre: \"opencode\")\n\n    texto, avisos = bigpickle.preguntar(\"hola\", timeout=5)\n\n    assert texto == \"\"\n    assert avisos == [\"Big Pickle no devolvio texto\"]\n\n    lineas = registro.read_text(encoding=\"utf-8\").splitlines()\n    assert lineas, \"la llamada no se anoto en el registro\"\n    ultima = lineas[-1]\n    assert \"texto_vacio\" in ultima\n    assert \"unidades=8000\" in ultima",
+  "vigia": "El propio caso nuevo: al ejecutarse debe nacer ROJO hoy (porque la rama texto_vacio no pasa unidades) y ponerse verde cuando en la ronda siguiente se repare cuerpo/bigpickle.py para que _anotar reciba unidades tambien en la rama texto_vacio.",
+  "puede_danar": [
+   "cuerpo/bigpickle.py",
+   "cuerpo/codex.py",
+   "cuerpo/privacidad.py"
+  ],
+  "preguntas": [
+   "El material no muestra el nombre exacto de la constante del registro en cuerpo/bigpickle.py (solo se cita memoria/BIGPICKLE.log en el docstring y RUTA_LOG en el encargo). ¿Se confirma que el atributo a monkeypatchear se llama exactamente RUTA_LOG?",
+   "El material no muestra la firma exacta de _anotar ni el formato literal de la linea del registro (solo el ejemplo unidades=12720). ¿Se confirma que la linea contiene la subcadena 'unidades=8000' tal cual, sin separador distinto?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El nuevo caso de vigía se añade correctamente, falla como se espera y no rompe nada"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (24952 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}
