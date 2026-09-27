@@ -38,7 +38,7 @@ from pathlib import Path
 MODELO = "opencode/big-pickle"
 COMANDO = ["opencode", "run", "-m", MODELO, "--format", "json"]
 # Solo si no se puede medir; su record medido es 328 s (A-47, 2026-09-21).
-TIMEOUT_POR_DEFECTO = 600
+TIMEOUT_POR_DEFECTO = 400
 
 # Marcas que delatan una llave en el encargo. Si aparece cualquiera, no se manda.
 MARCAS_DE_LLAVE = ("API_KEY", "sk-")
