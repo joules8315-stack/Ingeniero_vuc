@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta el caso nuevo que exige que la salida con nota texto_vacio pase las unidades al apunte, y los nueve casos existentes deben conservarse intactos.",
+  "archivo": "vigias/test_vigia_la_puerta_gratis_tambien_se_cuenta.py",
+  "funcion": "test_anotar_no_toca_el_registro_de_verdad",
+  "texto_viejo": "def test_anotar_no_toca_el_registro_de_verdad(tmp_path, monkeypatch):\n    \"\"\"La prueba escribe SOLO en tmp_path, nunca en el registro real.\"\"\"\n    ruta_temporal = tmp_path / \"BIGPICKLE.log\"\n    monkeypatch.setattr(bigpickle, \"RUTA_LOG\", ruta_temporal)\n\n    bigpickle._anotar(segundos=0.1, costo=0.0, ok=True, nota=\"aislado\", unidades=1)\n\n    assert ruta_temporal.exists(), \"el registro temporal debe existir\"\n    assert ruta_temporal.parent == tmp_path",
+  "texto_nuevo": "def test_anotar_no_toca_el_registro_de_verdad(tmp_path, monkeypatch):\n    \"\"\"La prueba escribe SOLO en tmp_path, nunca en el registro real.\"\"\"\n    ruta_temporal = tmp_path / \"BIGPICKLE.log\"\n    monkeypatch.setattr(bigpickle, \"RUTA_LOG\", ruta_temporal)\n\n    bigpickle._anotar(segundos=0.1, costo=0.0, ok=True, nota=\"aislado\", unidades=1)\n\n    assert ruta_temporal.exists(), \"el registro temporal debe existir\"\n    assert ruta_temporal.parent == tmp_path\n\n\ndef test_anotar_texto_vacio_pasa_las_unidades(tmp_path, monkeypatch):\n    \"\"\"Una llamada que devuelve recibo con unidades pero SIN TEXTO tambien se cobro.\n\n    La salida que apunta la nota texto_vacio debe pasar las unidades al apunte;\n    hoy no las pasa y la linea queda en cero. Esta prueba nace ROJA a proposito:\n    en esta ronda NO se toca cuerpo/bigpickle.py.\n\n    Se comprueba leyendo el propio texto de cuerpo/bigpickle.py: en la rama de\n    la nota texto_vacio, la llamada a _anotar debe llevar el argumento unidades.\n    NUNCA se escribe en el registro de verdad ni en la memoria de verdad.\n    \"\"\"\n    from pathlib import Path\n\n    ruta_modulo = Path(bigpickle.__file__)\n    texto = ruta_modulo.read_text(encoding=\"utf-8\")\n\n    # Localiza la rama de la nota texto_vacio dentro de preguntar().\n    marca = 'nota=\"texto_vacio\"'\n    assert marca in texto, (\n        \"cuerpo/bigpickle.py debe tener la rama de la nota texto_vacio; \"\n        f\"no se encontro {marca!r}\"\n    )\n\n    # Toma la llamada a _anotar que contiene esa marca y exige el argumento unidades.\n    posicion = texto.index(marca)\n    inicio = texto.rfind(\"_anotar(\", 0, posicion)\n    assert inicio != -1, \"no se encontro la llamada a _anotar de la nota texto_vacio\"\n    fin = texto.find(\")\", posicion)\n    assert fin != -1, \"no se pudo cerrar la llamada a _anotar de la nota texto_vacio\"\n    llamada = texto[inicio:fin + 1]\n\n    assert \"unidades=\" in llamada, (\n        \"la salida de la nota texto_vacio debe pasar el argumento unidades al apunte; \"\n        f\"llamada encontrada: {llamada!r}\"\n    )",
+  "cambios": "",
+  "cambio": "Agregar al final del archivo vigias/test_vigia_la_puerta_gratis_tambien_se_cuenta.py un caso nuevo, test_anotar_texto_vacio_pasa_las_unidades, que lee el texto de cuerpo/bigpickle.py y exige que la llamada a _anotar de la rama nota texto_vacio lleve el argumento unidades. No se borra ni se modifica ninguno de los nueve casos existentes.",
+  "codigo": "def test_anotar_texto_vacio_pasa_las_unidades(tmp_path, monkeypatch):\n    \"\"\"Una llamada que devuelve recibo con unidades pero SIN TEXTO tambien se cobro.\n\n    La salida que apunta la nota texto_vacio debe pasar las unidades al apunte;\n    hoy no las pasa y la linea queda en cero. Esta prueba nace ROJA a proposito:\n    en esta ronda NO se toca cuerpo/bigpickle.py.\n\n    Se comprueba leyendo el propio texto de cuerpo/bigpickle.py: en la rama de\n    la nota texto_vacio, la llamada a _anotar debe llevar el argumento unidades.\n    NUNCA se escribe en el registro de verdad ni en la memoria de verdad.\n    \"\"\"\n    from pathlib import Path\n\n    ruta_modulo = Path(bigpickle.__file__)\n    texto = ruta_modulo.read_text(encoding=\"utf-8\")\n\n    # Localiza la rama de la nota texto_vacio dentro de preguntar().\n    marca = 'nota=\"texto_vacio\"'\n    assert marca in texto, (\n        \"cuerpo/bigpickle.py debe tener la rama de la nota texto_vacio; \"\n        f\"no se encontro {marca!r}\"\n    )\n\n    # Toma la llamada a _anotar que contiene esa marca y exige el argumento unidades.\n    posicion = texto.index(marca)\n    inicio = texto.rfind(\"_anotar(\", 0, posicion)\n    assert inicio != -1, \"no se encontro la llamada a _anotar de la nota texto_vacio\"\n    fin = texto.find(\")\", posicion)\n    assert fin != -1, \"no se pudo cerrar la llamada a _anotar de la nota texto_vacio\"\n    llamada = texto[inicio:fin + 1]\n\n    assert \"unidades=\" in llamada, (\n        \"la salida de la nota texto_vacio debe pasar el argumento unidades al apunte; \"\n        f\"llamada encontrada: {llamada!r}\"\n    )",
+  "vigia": "vigias/test_vigia_la_puerta_gratis_tambien_se_cuenta.py::test_anotar_texto_vacio_pasa_las_unidades (nace ROJA: hoy la rama texto_vacio llama a _anotar sin unidades)",
+  "puede_danar": [
+   "cuerpo/bigpickle.py (solo se lee su texto, no se modifica)",
+   "vigias/test_vigia_la_puerta_gratis_tambien_se_cuenta.py (se agrega un caso, no se borra ninguno)"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El código nuevo `test_anotar_texto_vacio_pasa_las_unidades` intenta leer el archivo `bigpickle.__file__` para verificar la presencia del argumento `unidades=` en la llamada a `_anotar`. Sin embargo, el diagnóstico especifica que 'en esta ronda NO se toca cuerpo/bigpickle.py'. La prueba debe verificar el comportamiento del código sin modificar o leer directamente el código fuente de `bigpickle.py`."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "El nuevo caso de prueba `test_anotar_texto_vacio_pasa_las_unidades` no implementa la lógica de simular la llamada real con `monkeypatch` para verificar que las unidades se pasan correctamente. En su lugar, se basa en la lectura del código fuente de `bigpickle.py`, lo cual está explícitamente prohibido para esta ronda."
+  ],
+  "resumen_para_el_jefe": "La reparación propuesta intenta verificar el comportamiento del código leyendo directamente su fuente, lo cual está prohibido en esta ronda. Además, no implementa la simulación de la llamada real como se sugiere como alternativa."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'test_unidades_de_la_salida_ignora_lineas_rotas' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla d",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'test_unidades_de_la_salida_ignora_lineas_rotas' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla d",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'test_unidades_de_la_salida_ignora_lineas_rotas' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla d",
+  "vueltas_dadas: 4"
+ ]
+}
