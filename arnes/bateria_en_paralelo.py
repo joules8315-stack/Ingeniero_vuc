@@ -258,7 +258,7 @@ def _correr_seguro(raiz, objetivo, procesos, tope, env=None, correr_uno=None):
                 max_workers=len(grupos)
             ) as ejecutor:
                 futuros = [
-                    ejecutor.submit(_correr_grupo, raiz, grupo, tope_segundos)
+                    ejecutor.submit(_correr_grupo, raiz, grupo, tope_segundos, env, correr_uno)
                     for grupo in grupos
                 ]
                 for futuro in futuros:
@@ -270,7 +270,7 @@ def _correr_seguro(raiz, objetivo, procesos, tope, env=None, correr_uno=None):
             # Si ni siquiera se pudo montar el ejecutor, se corre en fila.
             resultados = []
             for grupo in grupos:
-                resultados.append(_correr_grupo(raiz, grupo, tope_segundos))
+                resultados.append(_correr_grupo(raiz, grupo, tope_segundos, env, correr_uno))
 
     # 4) Juntar los resultados en el orden de los grupos.
     trozos_salida = []
