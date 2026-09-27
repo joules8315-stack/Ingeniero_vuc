@@ -108,6 +108,49 @@ def test_unidades_de_la_salida_sin_tokens_devuelve_ceros():
     assert unidades.get("output") == 0
 
 
+def test_la_puerta_gratis_tambien_se_cuenta(monkeypatch, tmp_path):
+    """Una llamada que acaba en texto_vacio tambien consume: se anota unidades=8000.
+
+    Nace ROJA a proposito: hoy la rama texto_vacio llama a _anotar sin pasar
+    unidades, asi que el registro sale con unidades=0. La reparacion va en la
+    ronda siguiente y NO se toca cuerpo/bigpickle.py en esta ronda.
+    """
+    registro = tmp_path / "BIGPICKLE.log"
+    monkeypatch.setattr(bigpickle, "RUTA_LOG", registro)
+
+    salida = json.dumps(
+        {
+            "type": "step_finish",
+            "part": {
+                "cost": 0,
+                "tokens": {"total": 8000, "input": 7900, "output": 0},
+            },
+        }
+    )
+
+    class _Doble:
+        def __init__(self, *args, **kwargs):
+            self.pid = 0
+            self.returncode = 0
+
+        def communicate(self, input=None, timeout=None):
+            return salida + "\n", ""
+
+    monkeypatch.setattr(bigpickle.subprocess, "Popen", _Doble)
+    monkeypatch.setattr(bigpickle.shutil, "which", lambda nombre: "opencode")
+
+    texto, avisos = bigpickle.preguntar("hola", timeout=5)
+
+    assert texto == ""
+    assert avisos == ["Big Pickle no devolvio texto"]
+
+    lineas = registro.read_text(encoding="utf-8").splitlines()
+    assert lineas, "la llamada no se anoto en el registro"
+    ultima = lineas[-1]
+    assert "texto_vacio" in ultima
+    assert "unidades=8000" in ultima
+
+
 def test_unidades_de_la_salida_suma_varios_step_finish():
     """Dos step_finish: las unidades se suman, no se pisan."""
     uno = json.dumps(
