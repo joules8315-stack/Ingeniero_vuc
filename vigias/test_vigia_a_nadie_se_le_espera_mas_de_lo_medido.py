@@ -47,7 +47,10 @@ from cuerpo import bigpickle  # noqa: E402
 from cuerpo import cuaderno  # noqa: E402
 
 
-TOPE = 300
+# Julio decidio el 2026-09-27 que la espera maxima es 400 s: si se activa el
+# disparador se atiende el requerimiento y se espera 400 s como maximo, y si no
+# contesta en ese momento el encargo pasa a otro.
+TOPE = 400
 
 
 def _gasto_con(monkeypatch, nombre, record_seg):
@@ -65,11 +68,11 @@ def _gasto_con(monkeypatch, nombre, record_seg):
     monkeypatch.setattr(cuotas, "_leer", _leer_de_mentira, raising=False)
 
 
-def test_a_un_cerebro_lentisimo_no_se_le_esperan_mas_de_300(monkeypatch):
-    """Un cerebro con record de 1000 s no puede hacer esperar mas de 300 s.
+def test_a_un_cerebro_lentisimo_no_se_le_esperan_mas_de_400(monkeypatch):
+    """Un cerebro con record de 1000 s no puede hacer esperar mas de 400 s.
 
     Si se le espera su record por 1.5, serian 1500 segundos. Eso es esperar de mas:
-    con 300 s ya se cubre a 162 de las 163 respuestas buenas de Big Pickle.
+    con 400 s ya se cubre a 162 de las 163 respuestas buenas de Big Pickle.
     """
     _gasto_con(monkeypatch, "lentisimo", 1000)
 
@@ -77,8 +80,8 @@ def test_a_un_cerebro_lentisimo_no_se_le_esperan_mas_de_300(monkeypatch):
 
     assert espera <= TOPE, (
         "A un cerebro con record de 1000 s se le esta esperando %r segundos. "
-        "Eso es esperar de mas: el techo tiene que ser 300 s como mucho. "
-        "Con 300 s ya llegan 162 de las 163 respuestas buenas de Big Pickle; "
+        "Eso es esperar de mas: el techo tiene que ser 400 s como mucho. "
+        "Con 400 s ya llegan 162 de las 163 respuestas buenas de Big Pickle; "
         "esperar mas solo alarga la orden sin ganar casi nada." % (espera,)
     )
 
@@ -111,12 +114,12 @@ def test_la_espera_minima_sigue_siendo_60(monkeypatch):
     )
 
 
-def test_a_big_pickle_tampoco_se_le_esperan_mas_de_300(monkeypatch, tmp_path):
-    """Big Pickle tampoco puede pasar de 300 s de espera.
+def test_a_big_pickle_tampoco_se_le_esperan_mas_de_400(monkeypatch, tmp_path):
+    """Big Pickle tampoco puede pasar de 400 s de espera.
 
     Se escribe un cuaderno de mentira con varias lineas JSON de quien bigpickle,
     resultado ok, segundos 500 y tamano 1000, y se comprueba que la espera
-    calculada para un tamano de 1000 no pasa de 300 s.
+    calculada para un tamano de 1000 no pasa de 400 s.
     """
     cuaderno_falso = tmp_path / "CUADERNO_DE_LLAMADAS.jsonl"
     lineas = []
@@ -136,21 +139,21 @@ def test_a_big_pickle_tampoco_se_le_esperan_mas_de_300(monkeypatch, tmp_path):
 
     assert espera <= TOPE, (
         "A Big Pickle, con un tamano de 1000, se le esta esperando %r segundos. "
-        "Eso es esperar de mas: el techo tiene que ser 300 s como mucho. "
+        "Eso es esperar de mas: el techo tiene que ser 400 s como mucho. "
         "Su record medido es 314 s y 162 de sus 163 respuestas buenas llegaron "
-        "antes de 300 s; esperar mas solo hace que una orden tarde 90 minutos." % (espera,)
+        "antes de 400 s; esperar mas solo hace que una orden tarde 90 minutos." % (espera,)
     )
 
 
-def test_el_tope_por_defecto_de_big_pickle_tampoco_pasa_de_300():
-    """El tope por defecto de Big Pickle no puede pasar de 300 s.
+def test_el_tope_por_defecto_de_big_pickle_tampoco_pasa_de_400():
+    """El tope por defecto de Big Pickle no puede pasar de 400 s.
 
     Hoy vale 600 s: eso es esperar de mas para ganar una respuesta de cada 163.
     """
     tope = bigpickle.TIMEOUT_POR_DEFECTO
 
     assert tope <= TOPE, (
-        "El tope por defecto de Big Pickle es %r segundos, y no puede pasar de 300. "
+        "El tope por defecto de Big Pickle es %r segundos, y no puede pasar de 400. "
         "Esperar 600 s para ganar una respuesta de cada 163 es lo que hace que "
         "una orden tarde 90 minutos." % (tope,)
     )
