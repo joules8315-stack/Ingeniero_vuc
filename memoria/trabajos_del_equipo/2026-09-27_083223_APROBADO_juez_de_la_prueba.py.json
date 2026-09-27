@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "El juez corre pytest siempre sin consultar ni apuntar en arnes/memoria_de_pruebas.py, repitiendo la misma corrida aunque nada haya cambiado.",
+  "archivo": "arnes/juez_de_la_prueba.py",
+  "funcion": "_correr_prueba",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _correr_prueba(raiz, ruta_prueba):\n    \"\"\"Corre pytest en modo callado sobre la prueba. Devuelve True si pasa.\"\"\"\n    orden = [\n        sys.executable,\n        '-m',\n        'pytest',\n        '-q',\n        str(ruta_prueba),\n    ]\n    try:\n        proceso = subprocess.run(",
+    "texto_nuevo": "def _correr_prueba(raiz, ruta_prueba):\n    \"\"\"Corre pytest en modo callado sobre la prueba. Devuelve True si pasa.\"\"\"\n    objetivos = [str(ruta_prueba)]\n    try:\n        import importlib.util as _ilu\n        _ruta_memoria = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'memoria_de_pruebas.py')\n        _spec = _ilu.spec_from_file_location('memoria_de_pruebas_del_juez', _ruta_memoria)\n        _modulo = _ilu.module_from_spec(_spec)\n        _spec.loader.exec_module(_modulo)\n        _apunte = _modulo.recordar(raiz, objetivos)\n        if isinstance(_apunte, dict):\n            return bool(_apunte.get('paso')), str(_apunte.get('detalle', ''))\n    except Exception:\n        pass\n    orden = [\n        sys.executable,\n        '-m',\n        'pytest',\n        '-q',\n        str(ruta_prueba),\n    ]\n    try:\n        proceso = subprocess.run("
+   },
+   {
+    "texto_viejo": "    except subprocess.TimeoutExpired:\n        return False, 'la prueba se paso del tope de %d segundos' % TOPE_SEGUNDOS\n    except Exception as error:\n        return False, 'no se pudo correr la prueba: %s' % error\n    if proceso.returncode == 0:\n        return True, 'la prueba paso'\n    return False, 'la prueba no paso (codigo %s)' % proceso.returncode",
+    "texto_nuevo": "    except subprocess.TimeoutExpired:\n        paso, detalle = False, 'la prueba se paso del tope de %d segundos' % TOPE_SEGUNDOS\n    except Exception as error:\n        paso, detalle = False, 'no se pudo correr la prueba: %s' % error\n    else:\n        if proceso.returncode == 0:\n            paso, detalle = True, 'la prueba paso'\n        else:\n            paso, detalle = False, 'la prueba no paso (codigo %s)' % proceso.returncode\n    try:\n        _modulo.apuntar(raiz, objetivos, paso, detalle)\n    except Exception:\n        pass\n    return paso, detalle"
+   }
+  ],
+  "cambio": "En _correr_prueba, antes de subprocess.run, cargar por ruta arnes/memoria_de_pruebas.py con importlib y consultar recordar(raiz, [str(ruta_prueba)]); si devuelve diccionario, devolver (paso, detalle) sin correr pytest. Tras correr pytest, apuntar el resultado con apuntar(raiz, objetivos, paso, detalle) dentro de try except que nunca lance, manteniendo los tres caminos de salida devolviendo lo mismo que hoy.",
+  "codigo": "def _correr_prueba(raiz, ruta_prueba):\n    \"\"\"Corre pytest en modo callado sobre la prueba. Devuelve True si pasa.\"\"\"\n    objetivos = [str(ruta_prueba)]\n    try:\n        import importlib.util as _ilu\n        _ruta_memoria = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'memoria_de_pruebas.py')\n        _spec = _ilu.spec_from_file_location('memoria_de_pruebas_del_juez', _ruta_memoria)\n        _modulo = _ilu.module_from_spec(_spec)\n        _spec.loader.exec_module(_modulo)\n        _apunte = _modulo.recordar(raiz, objetivos)\n        if isinstance(_apunte, dict):\n            return bool(_apunte.get('paso')), str(_apunte.get('detalle', ''))\n    except Exception:\n        pass\n    orden = [\n        sys.executable,\n        '-m',\n        'pytest',\n        '-q',\n        str(ruta_prueba),\n    ]\n    try:\n        proceso = subprocess.run(\n            orden,\n            cwd=str(raiz),\n            env=_entorno_limpio(),\n            stdout=subprocess.PIPE,\n            stderr=subprocess.STDOUT,\n            timeout=TOPE_SEGUNDOS,\n        )\n    except subprocess.TimeoutExpired:\n        paso, detalle = False, 'la prueba se paso del tope de %d segundos' % TOPE_SEGUNDOS\n    except Exception as error:\n        paso, detalle = False, 'no se pudo correr la prueba: %s' % error\n    else:\n        if proceso.returncode == 0:\n            paso, detalle = True, 'la prueba paso'\n        else:\n            paso, detalle = False, 'la prueba no paso (codigo %s)' % proceso.returncode\n    try:\n        _modulo.apuntar(raiz, objetivos, paso, detalle)\n    except Exception:\n        pass\n    return paso, detalle",
+  "vigia": "vigias/test_vigia_el_juez_no_repite_la_misma_corrida.py (casos 1, 2 y 3): dos llamadas seguidas solo producen una llamada a subprocess.run; si cambia un .py se corre dos veces; si la memoria dice paso=False se devuelve False sin llamar a subprocess.run.",
+  "puede_danar": [
+   "arnes/juez_de_la_prueba.py",
+   "arnes/memoria_de_pruebas.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py",
+   "vigias/test_vigia_el_cruzado_corre_la_prueba.py",
+   "vigias/test_vigia_el_juez_busca_su_prueba.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_cruzado_corre_la_prueba.py",
+   "test_vigia_el_juez_busca_su_prueba.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación implementa la lógica de memoria de pruebas para evitar ejecuciones redundantes de pytest, cumpliendo con el diagnóstico y sin introducir inventos ni romper el contrato."
+ },
+ "avisos": [
+  "vueltas_dadas: 2"
+ ]
+}
