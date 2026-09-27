@@ -20,9 +20,11 @@ AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUTA = os.path.join(AQUI, "memoria", "CUOTAS.json")
 
 # MEDIDO el 2026-09-27 sobre memoria/CUADERNO_DE_LLAMADAS.jsonl: de las 163 respuestas buenas de
-# Big Pickle, 162 llegaron antes de 300 segundos; de las 27 buenas de grok47, todas antes de 240.
-# Esperar mas de 300 gana una respuesta de cada 163 y cuesta minutos en cada orden.
-TECHO_ESPERA = 300
+# Big Pickle, la mas lenta tardo 314 segundos; de las 27 buenas de grok47, todas antes de 240.
+# Julio, 2026-09-27: el disparador es la respuesta, no un temporizador, asi que en cuanto contesta
+# no se espera ni un segundo mas; y si no contesta en 400 segundos, el encargo pasa a otro cerebro.
+# Con 400 no se pierde ni una sola respuesta buena de las 163 medidas, y el peor caso baja de 600 a 400.
+TECHO_ESPERA = 400
 
 # MEDIDO el 2026-08-21: Groq reparte el cupo POR MODELO, no por llave. O sea que cada modelo
 # que se anade es cupo gratis DE MAS sobre la misma llave, sin pagar ni registrarse en nada.
