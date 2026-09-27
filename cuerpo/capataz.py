@@ -415,7 +415,10 @@ def correr_orden_del_sistema(palabras):
     """
     import subprocess
     carpeta = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    resultado = subprocess.run(palabras, cwd=carpeta, capture_output=True, text=True)
+    try:
+        resultado = subprocess.run(palabras, cwd=carpeta, capture_output=True, text=True, timeout=300)
+    except subprocess.TimeoutExpired:
+        return 124
     return resultado.returncode
 
 
@@ -970,12 +973,16 @@ def comprobar_pasos(orden):
     ruta_vigia = os.path.join(carpeta_proyecto, vigia)
     if not os.path.isfile(ruta_vigia):
         return "vigia_verde"
-    resultado_vigia = subprocess.run(
-        ["python", "-m", "pytest", vigia],
-        cwd=carpeta_proyecto,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        resultado_vigia = subprocess.run(
+            ["python", "-m", "pytest", vigia],
+            cwd=carpeta_proyecto,
+            capture_output=True,
+            text=True,
+            timeout=300,
+        )
+    except subprocess.TimeoutExpired:
+        return "vigia_verde"
     if orden.get("entrega_la_prueba") == "si":
         # La tarea ENTREGA la prueba: se comprueba al reves. La prueba tiene
         # que existir y estar ROJA. Si ya esta verde, este paso falla, porque
@@ -1001,12 +1008,16 @@ def comprobar_pasos(orden):
             return "vigia_verde"
         return ""
     if resultado_vigia.returncode != 0:
-        resultado_git = subprocess.run(
-            ["git", "ls-files", vigia],
-            cwd=carpeta_proyecto,
-            capture_output=True,
-            text=True,
-        )
+        try:
+            resultado_git = subprocess.run(
+                ["git", "ls-files", vigia],
+                cwd=carpeta_proyecto,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+        except subprocess.TimeoutExpired:
+            return "vigia_verde"
         if resultado_git.stdout.strip() == "":
             return ""
         return "vigia_verde"
@@ -1015,13 +1026,17 @@ def comprobar_pasos(orden):
     comando = orden.get("comando")
     if not comando:
         return "prueba_real"
-    resultado_prueba = subprocess.run(
-        comando,
-        shell=True,
-        cwd=carpeta_proyecto,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        resultado_prueba = subprocess.run(
+            comando,
+            shell=True,
+            cwd=carpeta_proyecto,
+            capture_output=True,
+            text=True,
+            timeout=300,
+        )
+    except subprocess.TimeoutExpired:
+        return "prueba_real"
     if resultado_prueba.returncode != 0:
         return "prueba_real"
 
