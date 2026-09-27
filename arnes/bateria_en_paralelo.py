@@ -296,19 +296,19 @@ def _correr_seguro(raiz, objetivo, procesos, tope, env=None, correr_uno=None):
 
     for indice, grupo in enumerate(grupos):
         if indice < len(resultados):
-            codigo, salida, error, cortado, reventado = resultados[indice]
+            codigo, salida, error_texto, cortado, reventado = resultados[indice]
         else:
-            codigo, salida, error, cortado, reventado = (None, "", "", False, "sin resultado")
+            codigo, salida, error_texto, cortado, reventado = (None, "", "", False, "sin resultado")
 
-        if error is None:
+        if reventado is None:
             alguno_arranco = True
         elif primer_error is None:
-            primer_error = error
+            primer_error = reventado
 
         if salida:
             trozos_salida.append(salida)
-        if error:
-            trozos_error.append(error)
+        if error_texto:
+            trozos_error.append(error_texto)
 
         if cortado:
             cortados += 1
