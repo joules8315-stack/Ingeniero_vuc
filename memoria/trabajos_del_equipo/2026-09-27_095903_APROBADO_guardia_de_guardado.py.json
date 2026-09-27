@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Al dejar pasar, _vigias escribe en .rojas_conocidas.json solo las rojas de la corrida de ahora, borrando las que ya conocia de antes, aunque la corrida haya sido de unos pocos archivos.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "    # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.\n    try:\n        ruta_conocidas = os.path.join(raiz, \"memoria\", \".rojas_conocidas.json\")\n        os.makedirs(os.path.dirname(ruta_conocidas), exist_ok=True)\n        with open(ruta_conocidas, \"w\", encoding=\"utf-8\") as f:\n            json.dump(archivos_rojos, f)\n    except Exception:\n        pass",
+  "texto_nuevo": "    # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.\n    try:\n        ruta_conocidas = os.path.join(raiz, \"memoria\", \".rojas_conocidas.json\")\n        os.makedirs(os.path.dirname(ruta_conocidas), exist_ok=True)\n        # Si la corrida fue la bateria COMPLETA (la lista objetivo es la carpeta de vigias,\n        # no una lista de archivos concretos), una corrida completa ya lo sabe todo: se\n        # apuntan solo las rojas de ahora. Si la corrida fue de unos pocos archivos, se\n        # apunta la UNION de lo que ya habia y las rojas de ahora, sin repetidos y en\n        # orden alfabetico, para no perder lo que esa corrida ni siquiera probo.\n        if objetivo == [\"vigias/\"]:\n            a_apuntar = list(archivos_rojos)\n        else:\n            a_apuntar = sorted(set(conocidas_de_antes) | set(archivos_rojos))\n        with open(ruta_conocidas, \"w\", encoding=\"utf-8\") as f:\n            json.dump(a_apuntar, f)\n    except Exception:\n        pass",
+  "cambio": "En _vigias, al escribir memoria/.rojas_conocidas.json tras dejar pasar, distinguir si la corrida fue la bateria completa (objetivo == [\"vigias/\"]) para apuntar solo las rojas de ahora, o si fue de unos pocos archivos para apuntar la union sin repetidos y en orden alfabetico de conocidas_de_antes y archivos_rojos. Todo dentro del try except que ya esta.",
+  "codigo": "        if objetivo == [\"vigias/\"]:\n            a_apuntar = list(archivos_rojos)\n        else:\n            a_apuntar = sorted(set(conocidas_de_antes) | set(archivos_rojos))\n        with open(ruta_conocidas, \"w\", encoding=\"utf-8\") as f:\n            json.dump(a_apuntar, f)",
+  "vigia": "vigias/test_vigia_el_guardia_se_acuerda_de_las_rojas_de_antes.py",
+  "puede_danar": [
+   "arnes/bateria_en_paralelo.py",
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_de_las_rojas_de_antes.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+   "test_vigia_el_guardia_se_acuerda_de_las_rojas_de_antes.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico sin introducir inventos ni romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (29193 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "GPT-OSS 120B (Groq) no le cabe (30401 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 2"
+ ]
+}
