@@ -419,8 +419,17 @@ def _vigias(raiz):
     try:
         ruta_conocidas = os.path.join(raiz, "memoria", ".rojas_conocidas.json")
         os.makedirs(os.path.dirname(ruta_conocidas), exist_ok=True)
+        # Si la corrida fue la bateria COMPLETA (la lista objetivo es la carpeta de vigias,
+        # no una lista de archivos concretos), una corrida completa ya lo sabe todo: se
+        # apuntan solo las rojas de ahora. Si la corrida fue de unos pocos archivos, se
+        # apunta la UNION de lo que ya habia y las rojas de ahora, sin repetidos y en
+        # orden alfabetico, para no perder lo que esa corrida ni siquiera probo.
+        if objetivo == ["vigias/"]:
+            a_apuntar = list(archivos_rojos)
+        else:
+            a_apuntar = sorted(set(conocidas_de_antes) | set(archivos_rojos))
         with open(ruta_conocidas, "w", encoding="utf-8") as f:
-            json.dump(archivos_rojos, f)
+            json.dump(a_apuntar, f)
     except Exception:
         pass
     detalle = "; ".join(nuevos + [a for a in guardados if a in esperando] + [a for a in guardados if a in conocidas_de_antes and a not in esperando])
