@@ -418,8 +418,8 @@ def _vigias(raiz):
             json.dump(archivos_rojos, f)
     except Exception:
         pass
-    detalle = "; ".join(nuevos + [a for a in guardados if a in esperando])
-    return True, "vigias recien escritas sin su pieza aun o esperando su arreglo (se deja pasar): " + detalle
+    detalle = "; ".join(nuevos + [a for a in guardados if a in esperando] + [a for a in guardados if a in conocidas_de_antes and a not in esperando])
+    return True, "vigias recien escritas sin su pieza aun, esperando su arreglo, o ya rojas antes de este trabajo (se deja pasar): " + detalle
 
 
 def main():
