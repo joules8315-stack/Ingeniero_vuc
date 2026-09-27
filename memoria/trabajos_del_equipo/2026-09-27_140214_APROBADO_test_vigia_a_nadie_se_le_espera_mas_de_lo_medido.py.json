@@ -1,0 +1,59 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "TOPE vale 300 y debe valer 400 por decision de Julio del 2026-09-27, y los textos de la prueba dicen 300 donde debe decir 400.",
+  "archivo": "vigias/test_vigia_a_nadie_se_le_espera_mas_de_lo_medido.py",
+  "funcion": "constantes del modulo y textos de las pruebas",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "TOPE = 300",
+    "texto_nuevo": "# Julio decidio el 2026-09-27 que la espera maxima es 400 s.\nTOPE = 400"
+   },
+   {
+    "texto_viejo": "def test_a_un_cerebro_lentisimo_no_se_le_esperan_mas_de_300(monkeypatch):\n    \"\"\"Un cerebro con record de 1000 s no puede hacer esperar mas de 300 s.\n\n    Si se le espera su record por 1.5, serian 1500 segundos. Eso es esperar de mas:\n    con 300 s ya se cubre a 162 de las 163 respuestas buenas de Big Pickle.\n    \"\"\"\n    _gasto_con(monkeypatch, \"lentisimo\", 1000)\n\n    espera = cuotas.cuanto_esperarle(\"lentisimo\")\n\n    assert espera <= TOPE, (\n        \"A un cerebro con record de 1000 s se le esta esperando %r segundos. \"\n        \"Eso es esperar de mas: el techo tiene que ser 300 s como mucho. \"\n        \"Con 300 s ya llegan 162 de las 163 respuestas buenas de Big Pickle; \"\n        \"esperar mas solo alarga la orden sin ganar casi nada.\" % (espera,)\n    )",
+    "texto_nuevo": "def test_a_un_cerebro_lentisimo_no_se_le_esperan_mas_de_400(monkeypatch):\n    \"\"\"Un cerebro con record de 1000 s no puede hacer esperar mas de 400 s.\n\n    Si se le espera su record por 1.5, serian 1500 segundos. Eso es esperar de mas:\n    con 400 s ya se cubre a 162 de las 163 respuestas buenas de Big Pickle.\n    \"\"\"\n    _gasto_con(monkeypatch, \"lentisimo\", 1000)\n\n    espera = cuotas.cuanto_esperarle(\"lentisimo\")\n\n    assert espera <= TOPE, (\n        \"A un cerebro con record de 1000 s se le esta esperando %r segundos. \"\n        \"Eso es esperar de mas: el techo tiene que ser 400 s como mucho. \"\n        \"Con 400 s ya llegan 162 de las 163 respuestas buenas de Big Pickle; \"\n        \"esperar mas solo alarga la orden sin ganar casi nada.\" % (espera,)\n    )"
+   },
+   {
+    "texto_viejo": "def test_a_big_pickle_tampoco_se_le_esperan_mas_de_300(monkeypatch, tmp_path):\n    \"\"\"Big Pickle tampoco puede pasar de 300 s de espera.\n\n    Se escribe un cuaderno de mentira con varias lineas JSON de quien bigpickle,\n    resultado ok, segundos 500 y tamano 1000, y se comprueba que la espera\n    calculada para un tamano de 1000 no pasa de 300 s.\n    \"\"\"",
+    "texto_nuevo": "def test_a_big_pickle_tampoco_se_le_esperan_mas_de_400(monkeypatch, tmp_path):\n    \"\"\"Big Pickle tampoco puede pasar de 400 s de espera.\n\n    Se escribe un cuaderno de mentira con varias lineas JSON de quien bigpickle,\n    resultado ok, segundos 500 y tamano 1000, y se comprueba que la espera\n    calculada para un tamano de 1000 no pasa de 400 s.\n    \"\"\""
+   },
+   {
+    "texto_viejo": "    assert espera <= TOPE, (\n        \"A Big Pickle, con un tamano de 1000, se le esta esperando %r segundos. \"\n        \"Eso es esperar de mas: el techo tiene que ser 300 s como mucho. \"\n        \"Su record medido es 314 s y 162 de sus 163 respuestas buenas llegaron \"\n        \"antes de 300 s; esperar mas solo hace que una orden tarde 90 minutos.\" % (espera,)\n    )",
+    "texto_nuevo": "    assert espera <= TOPE, (\n        \"A Big Pickle, con un tamano de 1000, se le esta esperando %r segundos. \"\n        \"Eso es esperar de mas: el techo tiene que ser 400 s como mucho. \"\n        \"Su record medido es 314 s y 162 de sus 163 respuestas buenas llegaron \"\n        \"antes de 400 s; esperar mas solo hace que una orden tarde 90 minutos.\" % (espera,)\n    )"
+   },
+   {
+    "texto_viejo": "def test_el_tope_por_defecto_de_big_pickle_tampoco_pasa_de_300():\n    \"\"\"El tope por defecto de Big Pickle no puede pasar de 300 s.\n\n    Hoy vale 600 s: eso es esperar de mas para ganar una respuesta de cada 163.\n    \"\"\"\n    tope = bigpickle.TIMEOUT_POR_DEFECTO\n\n    assert tope <= TOPE, (\n        \"El tope por defecto de Big Pickle es %r segundos, y no puede pasar de 300. \"\n        \"Esperar 600 s para ganar una respuesta de cada 163 es lo que hace que \"\n        \"una orden tarde 90 minutos.\" % (tope,)\n    )",
+    "texto_nuevo": "def test_el_tope_por_defecto_de_big_pickle_tampoco_pasa_de_400():\n    \"\"\"El tope por defecto de Big Pickle no puede pasar de 400 s.\n\n    Hoy vale 600 s: eso es esperar de mas para ganar una respuesta de cada 163.\n    \"\"\"\n    tope = bigpickle.TIMEOUT_POR_DEFECTO\n\n    assert tope <= TOPE, (\n        \"El tope por defecto de Big Pickle es %r segundos, y no puede pasar de 400. \"\n        \"Esperar 600 s para ganar una respuesta de cada 163 es lo que hace que \"\n        \"una orden tarde 90 minutos.\" % (tope,)\n    )"
+   }
+  ],
+  "cambio": "Subir TOPE de 300 a 400 con la razon apuntada (decision de Julio del 2026-09-27), y cambiar los 300 de los textos y nombres de las pruebas por 400, conservando las tres pruebas que ya existian.",
+  "codigo": "# Julio decidio el 2026-09-27 que la espera maxima es 400 s.\nTOPE = 400",
+  "vigia": "vigias/test_vigia_a_nadie_se_le_espera_mas_de_lo_medido.py",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, actualiza TOPE y los textos a 400 sin inventar nada ni romper contratos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19061 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 pieza(s) que si estaban en el viejo: test_a_un_cerebro_lentisimo_no_se_le_esperan_mas_de_300. Si ese borrado es querido, hay que deci",
+  "GPT-OSS 120B (Groq) no le cabe (20372 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 pieza(s) que si estaban en el viejo: test_a_un_cerebro_lentisimo_no_se_le_esperan_mas_de_300. Si ese borrado es querido, hay que deci",
+  "GPT-OSS 120B (Groq) no le cabe (21369 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 pieza(s) que si estaban en el viejo: test_a_un_cerebro_lentisimo_no_se_le_esperan_mas_de_300. Si ese borrado es querido, hay que deci",
+  "GPT-OSS 120B (Groq) no le cabe (22258 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a gemini4 y no esta disponible: reviso groq",
+  "vueltas_dadas: 4"
+ ]
+}
