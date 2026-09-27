@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "En la rama de la nota texto_vacio de preguntar() se llama a _anotar sin pasarle las unidades, asi que el registro queda en unidades=0 aunque el recibo las traiga.",
+  "archivo": "cuerpo/bigpickle.py",
+  "funcion": "preguntar",
+  "texto_viejo": "        if not texto.strip():\n            _anotar(segundos, costo, False, nota=\"texto_vacio\", tamano=len(prompt))\n            return \"\", [\"Big Pickle no devolvio texto\"]",
+  "texto_nuevo": "        if not texto.strip():\n            unidades = unidades_de_la_salida(stdout or \"\")\n            _anotar(segundos, costo, False, nota=\"texto_vacio\", tamano=len(prompt), unidades=unidades[\"total\"])\n            return \"\", [\"Big Pickle no devolvio texto\"]",
+  "cambios": "",
+  "cambio": "En la salida que apunta la nota texto_vacio, calcular las unidades con unidades_de_la_salida sobre el mismo texto del recibo y pasarselas al apunte con el argumento unidades, usando el total, igual que ya se hace en la salida de la nota ok y en la salida del codigo distinto de cero.",
+  "codigo": "        if not texto.strip():\n            unidades = unidades_de_la_salida(stdout or \"\")\n            _anotar(segundos, costo, False, nota=\"texto_vacio\", tamano=len(prompt), unidades=unidades[\"total\"])\n            return \"\", [\"Big Pickle no devolvio texto\"]",
+  "vigia": "vigias/test_vigia_la_puerta_gratis_tambien_se_cuenta.py::test_la_puerta_gratis_tambien_se_cuenta (debe pasar de rojo a verde: la ultima linea del registro lleva texto_vacio y unidades=8000)",
+  "puede_danar": [
+   "cuerpo/grok.py",
+   "cuerpo/codex.py",
+   "cuerpo/privacidad.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion corrige el registro de unidades en el caso de texto vacio, tal como se pidio, sin introducir inventos ni romper nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (22468 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "vueltas_dadas: 1"
+ ]
+}
