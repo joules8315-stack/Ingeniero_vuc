@@ -358,8 +358,8 @@ def cuanto_esperarle(quien):
     g = _leer().get("gasto", {}).get(quien, {})
     record = float(g.get("record_seg", 0))
     if record <= 0:
-        return float(MINIMO_ESPERA * 3)      # aun no se sabe lo que tarda: margen ancho
-    return max(float(MINIMO_ESPERA), record * MARGEN)
+        return min(float(TECHO_ESPERA), float(MINIMO_ESPERA * 3))  # aun no se sabe lo que tarda: margen ancho, topado
+    return min(float(TECHO_ESPERA), max(float(MINIMO_ESPERA), record * MARGEN))
 
 
 def se_paso_de_su_marca(quien, segundos):
