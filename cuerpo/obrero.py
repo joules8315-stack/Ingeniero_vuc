@@ -102,6 +102,13 @@ def falta_en_el_material(material, encargo):
             # descartar la palabra suelta 'py' sin punto ni nombre delante
             if limpia == "py":
                 continue
+            # descartar la extension SUELTA: un punto seguido de py sin ningun
+            # nombre delante. Solo cuenta como archivo si antes del punto hay al
+            # menos una letra, un numero o una raya baja.
+            _punto = limpia.find(".py")
+            _nombre = limpia[:_punto]
+            if not any(_c.isalnum() or _c == "_" for _c in _nombre):
+                continue
             archivos.append(limpia)
 
     for archivo in archivos:
