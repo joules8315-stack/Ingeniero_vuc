@@ -56,15 +56,17 @@ def test_no_se_exige_una_funcion_que_no_existe():
 
 def test_el_obrero_le_pasa_las_conocidas_a_la_comprobacion():
     """El obrero entrega a falta_en_el_material la lista de funciones que existen de verdad."""
+    import os
     import re
-    from pathlib import Path
 
-    texto = Path("cuerpo/obrero.py").read_text(encoding="utf-8")
+    ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "cuerpo", "obrero.py")
+    texto = open(ruta, encoding="utf-8").read()
     patron = re.compile(r"falta_en_el_material\s*\(([^)]*)\)", re.S)
-    llamadas = patron.findall(texto)
+    llamadas = [m for m in patron.finditer(texto)
+                if not texto[max(0, m.start() - 4):m.start()].endswith("def ")]
     assert llamadas, "no aparece ninguna llamada a falta_en_el_material en cuerpo/obrero.py"
-    assert any(len([a for a in re.split(r",(?![^\[\]{}()]*[\]})])", args) if a.strip()]) >= 3
-               for args in llamadas), \
+    assert any(len([a for a in re.split(r",(?![^\[\]{}()]*[\]})])", m.group(1)) if a.strip()]) >= 3
+               for m in llamadas), \
         "ninguna llamada a falta_en_el_material le pasa TRES argumentos (las conocidas)"
 
 
