@@ -1,0 +1,52 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py pasa en verde sin medir nada porque el primer caso cita cuerpo/obrero.py:73 y el material de prueba contiene el texto 73 dentro de 73-157, asi que la comprobacion encuentra el numero de casualidad.",
+  "archivo": "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+  "funcion": "test_el_sitio_citado_no_es_un_archivo_que_falte",
+  "texto_viejo": "    encargo = \"revisa cuerpo/obrero.py:73 y dime si el aviso es correcto\"",
+  "texto_nuevo": "    encargo = \"revisa cuerpo/obrero.py:1290 y dime si el aviso es correcto\"",
+  "cambio": "En el primer caso de la prueba, cambiar el numero de renglon citado en el encargo de 73 a 1290, para que ese numero no aparezca en ninguna parte del material de prueba y la unica forma de que la lista salga vacia sea que la ruta se corte de verdad en los dos puntos.",
+  "codigo": "    encargo = \"revisa cuerpo/obrero.py:1290 y dime si el aviso es correcto\"",
+  "vigia": "La propia prueba vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py: al correrla debe seguir en verde con el arreglo y ponerse roja si se rompe el corte de la ruta en los dos puntos.",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno real: el cambio es una sola cadena dentro de una prueba; no se toca cuerpo/obrero.py ni ninguna de las otras vigias listadas."
+  ],
+  "que_falta": [
+   "La declaracion de la vigia dice 'debe seguir en verde con el arreglo', pero el encargo pide que esta ronda la deje ROJA a proposito; el codigo de la linea si es el correcto, el texto de la vigia contradice el encargo y conviene corregirlo.",
+   "El diagnostico no comprueba que '1290' no aparezca en la parte del archivo que no vino en el material (lineas 41 en adelante, donde vive el tercer caso); si ahi citara 1290, volveria el falso verde."
+  ],
+  "resumen_para_el_jefe": "El cambio es exactamente la una linea que pedia el encargo (73 -> 1290, que no aparece en el material), no inventa nada y no toca vecinos: aprobado; solo hay que corregir el texto de la vigia, que dice que la prueba debe quedar verde cuando el encargo la quiere roja."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (30972 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
