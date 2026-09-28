@@ -19,6 +19,33 @@ Las tres pruebas son por COMPORTAMIENTO, sin IA, sin red y sin lanzar procesos.
 import os
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from cuerpo.obrero import separar_avisos_y_frenos
+
+
+def test_4_el_mensaje_de_no_hace_lo_que_se_pidio_es_aviso():
+    """Nace ROJA a proposito: la reparacion va en cuerpo/obrero.py, no aqui.
+
+    Hoy separar_avisos_y_frenos solo mira si el texto empieza por 'AVISO:'.
+    El mensaje que empieza por 'NO HACE LO QUE SE PIDIO:' se clasifica como
+    freno y corta rondas buenas. Debe salir como AVISO: el programa cuenta,
+    el juicio de la intencion no es suyo (CONTRATO_CUENTA_O_JUICIO).
+    """
+    mensajes = [
+        "AVISO: esto es un aviso de verdad",
+        "NO HACE LO QUE SE PIDIO: el obrero entrego otra cosa",
+        "el texto viejo no existe en el archivo",
+    ]
+    avisos, frenos = separar_avisos_y_frenos(mensajes)
+    assert avisos == [
+        "AVISO: esto es un aviso de verdad",
+        "NO HACE LO QUE SE PIDIO: el obrero entrego otra cosa",
+    ], "el mensaje de NO HACE LO QUE SE PIDIO debe salir como aviso, no como freno"
+    assert frenos == ["el texto viejo no existe en el archivo"]
+    assert len(avisos) + len(frenos) == len(mensajes), "ningun mensaje se pierde ni se duplica"
+import sys
+
 
 # Arranque: meter en sys.path la carpeta que esta un nivel arriba de vigias,
 # la carpeta cuerpo y la carpeta arnes, a partir de la ruta de este archivo.
