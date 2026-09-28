@@ -41,7 +41,6 @@ a Claude se cambia por uno que revienta, para que quede demostrado que no se lla
 import os
 import sys
 
-import pytest
 
 
 # ---------------------------------------------------------------------------
@@ -90,7 +89,6 @@ def _montar(monkeypatch):
     """
     from cuerpo import obrero
     from cuerpo import cuotas
-    from arnes import asignador
 
     apuntes = []
 
@@ -105,7 +103,7 @@ def _montar(monkeypatch):
         apuntes.append((len(texto), tope))
         return "x" * LETRAS_DEL_RECORTE
 
-    monkeypatch.setattr(asignador, "recortar_prompt", recortar_prompt_falso)
+    monkeypatch.setattr(obrero.asignador, "recortar_prompt", recortar_prompt_falso)
 
     # --- Paso 2: quienes_hay falso ---
     def quienes_hay_falso():
