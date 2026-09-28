@@ -1,5 +1,23 @@
 [
   {
+    "id": "R23-codex-no-hace-el-papeleo",
+    "titulo": "A Codex no se le frena por papeleo que el no puede hacer",
+    "pieza": "arnes/puente_codex.py",
+    "encargo": "En arnes/puente_codex.py, cuando un candado frena a Codex por algo que Codex NO PUEDE HACER, el freno se convierte en aviso informativo y NO corta su turno. Los dos casos medidos son: legislar una instruccion de Julio, y guardar en la historia. Codex no legisla (eso es papeleo del que dirige) y no guarda (lo tiene prohibido por su propia configuracion, a proposito). HECHO MEDIDO 2026-09-28 15:17: Codex despertó con su cupo, se le pidio una sola linea y contesto bien y con buen juicio, pero su turno se lo llevo el candado de cierre exigiendole legislar dos frases; gasto 7.689 unidades en eso y 202 segundos. Antes, a las 12:43, se habia quedado sin cupo esperando una ronda. El candado de cierre le pide a Codex commit y legislacion en CADA turno, y Codex no puede hacer ninguna de las dos: asi que ese candado lo frena siempre, por diseño. Lo que Codex SI puede hacer queda igual de vigilado: sus candados de terminal, memoria, diagnostico, protocolo y equipo no se tocan, y sigue sin poder escribir codigo ni guardar. La ley que manda es CONTRATO_TOPE_MEDIDO_Y_CORTE_A_MINIMA_EXPRESION.md (una espera o un freno que no se puede satisfacer es fallo, no paciencia) y la regla de Julio de que un candado que frena lo legitimo ensena a ignorar todos los candados. Al frenar por uno de esos dos casos, el puente deja el motivo escrito para que el que dirige lo recoja, y deja pasar a Codex.",
+    "vigia": "vigias/test_vigia_a_codex_no_se_le_frena_por_papeleo.py",
+    "origen": "julio",
+    "repara": "que Codex gaste su cupo en papeleo que no puede hacer y no le quede turno para trabajar",
+    "razon": "orden de Julio del 2026-09-28: Codex debe quedar entrenado y listo para trabajar hoy, porque Claude se va cuatro dias, y su tiempo de espera debe repararse porque gasta cupo como si trabajara",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "R6b-los-turnos-entran-en-el-guardado",
     "titulo": "El guardado pide turno, asi que dos rondas a la vez ya no se pisan",
     "pieza": "arnes/guardia_de_guardado.py",
