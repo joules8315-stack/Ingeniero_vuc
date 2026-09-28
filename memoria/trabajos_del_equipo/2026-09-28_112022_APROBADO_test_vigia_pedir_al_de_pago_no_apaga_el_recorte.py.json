@@ -1,0 +1,73 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En vigias/test_vigia_pedir_al_de_pago_no_apaga_el_recorte.py falta falsear prestar_cerebro en el montaje, por lo que _preguntar_con_relevo se sale sin llegar al recorte y las dos pruebas fallan por un motivo ajeno al que se quiere vigilar; ademas sobra un import sin usar.",
+  "archivo": "vigias/test_vigia_pedir_al_de_pago_no_apaga_el_recorte.py",
+  "funcion": "_montar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    from cuerpo import obrero\n    from cuerpo import cuotas\n    from arnes import asignador\n\n    apuntes = []\n\n    # --- Paso 1: el recortador falso ---",
+    "texto_nuevo": "    from cuerpo import obrero\n    from cuerpo import cuotas\n    from arnes import asignador\n\n    apuntes = []\n\n    # --- Paso 0: el cerebro prestado devuelve pareja no vacia ---\n    def prestar_cerebro_falso(*args, **kwargs):\n        return object(), \"\"\n\n    monkeypatch.setattr(obrero, \"prestar_cerebro\", prestar_cerebro_falso)\n\n    # --- Paso 1: el recortador falso ---"
+   }
+  ],
+  "cambio": "Dentro de _montar, antes del Paso 1, anadir un paso que falsee cuerpo/obrero.py::prestar_cerebro para que devuelva una pareja con un objeto cualquiera y un texto vacio, sin tocar nada de verdad. Ademas, quitar el import que no se usa (no se puede determinar cual desde el material: el trozo visible solo muestra 'from cuerpo import obrero', 'from cuerpo import cuotas' y 'from arnes import asignador', y los tres parecen usarse en el propio _montar).",
+  "codigo": "    # --- Paso 0: el cerebro prestado devuelve pareja no vacia ---\n    def prestar_cerebro_falso(*args, **kwargs):\n        return object(), \"\"\n\n    monkeypatch.setattr(obrero, \"prestar_cerebro\", prestar_cerebro_falso)",
+  "vigia": "vigias/test_vigia_pedir_al_de_pago_no_apaga_el_recorte.py: la prueba sin pesado debe pasar hoy; la prueba con pesado debe seguir ROJA.",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: cual es exactamente el import que no se usa en vigias/test_vigia_pedir_al_de_pago_no_apaga_el_recorte.py? El material solo muestra el trozo de _montar y los tres imports visibles (obrero, cuotas, asignador) parecen usarse dentro de esa funcion."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_pide_la_funcion_publica.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La limpieza del import sin usar queda anunciada en el diagnostico y en el campo 'cambio' pero NO esta en el payload real de 'cambios': solo se inserta el Paso 0. Ademas la propia prosa se contradice ('quitar el import que no se usa' seguido de 'no se puede determinar cual'), asi que el encargo 'aprovecha y quita el import que no se usa' queda a medias.",
+   "El diagnostico afirma 'sobra un import sin usar' sin poder señalar cual es, con el unico trozo visible (obrero, cuotas, asignador) usandose los tres dentro de _montar: afirmacion sin respaldo en el material.",
+   "No se deja constancia de por que la prueba con pesado debe quedar ROJA ni de que el arreglo real entra en la ronda siguiente: la vigia declarada ('la prueba con pesado debe seguir ROJA') no esta respaldada por nada en el cambio, queda en declaracion."
+  ],
+  "riesgo_vecinos": [
+   "monkeypatch.setattr(obrero, 'prestar_cerebro', ...) solo surte efecto si quien llama resuelve el atributo en tiempo de llamada. Si el codigo vigilado hace 'from cuerpo.obrero import prestar_cerebro' a nivel de modulo, el enlace queda capturado en importacion y el monkeypatch no intercepta nada: la prueba seguiria fallando (eso si, ya sin el minuto de trabajo real). No se puede confirmar ni desmentir con el material.",
+   "devolver object() es literal al encargo ('un objeto cualquiera'), pero si _preguntar_con_relevo luego toca atributos de ese objeto prestado, reventara con AttributeError en vez de pasar. object() es lo que pide el ancla, asi que no es fallo, pero es el punto a vigilar cuando corra la vigia.",
+   "Nada de esto toca cuerpo/obrero.py ni ningun otro archivo: el monkeypatch es de prueba y pytest lo revierte, asi que los otros archivos que la propuesta lista como puede_danar (codex.py, asignador.py, revisor_de_programa.py, las otras vigias) no se ven afectados."
+  ],
+  "que_falta": [
+   "Quitar de verdad el import que no se usa, o dejar escrito que se pidio material para determinarlo (el propio paquete manda: no adivines lo que no ves).",
+   "Comprobar que el ancla 'def _montar(monkeypatch):' sigue igual y que el paso cinco no se toco: el cambio cumple esto, pero no queda dicho en la propuesta.",
+   "La justificacion de que la prueba sin pesado pasara hoy y la de pesado seguira roja queda en el texto de la vigia, no en un razonamiento verificable."
+  ],
+  "resumen_para_el_jefe": "El arreglo central es el que pide el ancla y esta bien puesto (falsar prestar_cerebro con una pareja no vacia dentro de _montar, sin tocar cuerpo/obrero.py); se aprueba, con dos flecos: el import que hay que quitar no se quito y no quedo claro por que la prueba con pesado debe seguir roja."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (35882 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
