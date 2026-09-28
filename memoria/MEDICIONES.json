@@ -14688,5 +14688,50 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.9
+ },
+ {
+  "id": 305,
+  "cuando": "2026-09-28 12:21",
+  "proyecto": "ingeniero",
+  "problema": "cuerpo/obrero.py funcion _preguntar_con_relevo: el recorte del pasillo vive dentro de una condicion que lo apaga cuando el trabajo es pesado",
+  "flujos": [
+   "obrero",
+   "trabajo",
+   "pasillo"
+  ],
+  "piezas": [
+   "medir_el_pasillo.py",
+   "cuerpo/obrero.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cuerpo/obrero.py:870-1090",
+   "cuerpo/obrero.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_EL_PASILLO_SE_REPARTA_POR_CAPACIDAD.md",
+   "CONTRATO_SIN_GUARDAR_NO_HAY_TRABAJO.md",
+   "CONTRATO_TRABAJO_CON_CLINE.md",
+   "CONTRATO_ALARMA_QUE_GRITA_EN_FALSO.md",
+   "CONTRATO_CREAR_PIEZA_NUEVA.md",
+   "CONTRATO_EL_CRM_DEL_DMM.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_el_obrero_puede_entregar_varios_trozos.py",
+   "vigias/test_vigia_el_obrero_repara_por_texto.py",
+   "vigias/test_vigia_el_pasillo_recorta_el_hecho.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_nadie_revisa_su_propio_trabajo.py",
+   "vigias/test_vigia_no_se_pisa_el_trabajo_apartado.py",
+   "vigias/test_vigia_recoger_no_pisa_trabajo_mas_nuevo.py"
+  ],
+  "lineas_paquete": 411,
+  "lineas_proyecto": 370711,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
  }
 ]
