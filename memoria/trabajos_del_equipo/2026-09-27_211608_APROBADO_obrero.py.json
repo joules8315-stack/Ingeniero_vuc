@@ -1,0 +1,71 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion _filtrar_paquete no acepta el parametro funciones, asi que la vigia roja test_vigia_el_recorte_no_se_come_la_funcion_pedida.py falla; ademas el tramo final suelta bloques desde el final sin proteger los que traen la declaracion de las funciones pedidas, y si de tanto proteger no cabe, se queda callado sin poner el aviso de recorte.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_filtrar_paquete",
+  "texto_viejo": "def _filtrar_paquete(paquete, archivo=None, tope=None):",
+  "texto_nuevo": "def _filtrar_paquete(paquete, archivo=None, tope=None, funciones=None):",
+  "cambios": [
+   {
+    "texto_viejo": "def _filtrar_paquete(paquete, archivo=None, tope=None):",
+    "texto_nuevo": "def _filtrar_paquete(paquete, archivo=None, tope=None, funciones=None):"
+   },
+   {
+    "texto_viejo": "    tope_trabajo = tope - len(aviso) - 1\n    recortado = False\n    while len(\"\\n\".join(salida)) > tope_trabajo and len(salida) > len(bloques[\"__cabecera__\"]):\n        cabecera = len(bloques[\"__cabecera__\"])\n        ultimo = None\n        for i in range(len(salida) - 1, cabecera - 1, -1):\n            if salida[i].startswith(\"### `\"):\n                ultimo = i\n                break\n        if ultimo is not None:\n            del salida[ultimo:]\n            recortado = True\n        else:\n            if len(salida) <= cabecera:\n                break\n            salida.pop()\n            recortado = True\n    if recortado:\n        salida.append(aviso)\n    return \"\\n\".join(salida)",
+    "texto_nuevo": "    tope_trabajo = tope - len(aviso) - 1\n    recortado = False\n    # Los nombres de funcion que la tarea pide son LO NECESARIO: sus bloques no se sueltan.\n    _pedidas = []\n    if funciones:\n        if isinstance(funciones, str):\n            _pedidas = [funciones]\n        else:\n            try:\n                _pedidas = [f for f in funciones if f]\n            except Exception:\n                _pedidas = []\n    def _trae_funcion_pedida(lineas):\n        for ln in lineas:\n            for f in _pedidas:\n                if ln.startswith(\"def \" + f):\n                    return True\n        return False\n    while len(\"\\n\".join(salida)) > tope_trabajo and len(salida) > len(bloques[\"__cabecera__\"]):\n        cabecera = len(bloques[\"__cabecera__\"])\n        ultimo = None\n        for i in range(len(salida) - 1, cabecera - 1, -1):\n            if salida[i].startswith(\"### `\"):\n                j = i + 1\n                while j < len(salida) and not salida[j].startswith(\"### `\"):\n                    j += 1\n                if _trae_funcion_pedida(salida[i:j]):\n                    continue\n                ultimo = i\n                break\n        if ultimo is not None:\n            del salida[ultimo:]\n            recortado = True\n        else:\n            if len(salida) <= cabecera:\n                break\n            salida.pop()\n            recortado = True\n    if recortado or len(\"\\n\".join(salida)) > tope_trabajo:\n        salida.append(aviso)\n    return \"\\n\".join(salida)"
+   }
+  ],
+  "cambio": "Anadir el parametro funciones=None a la firma de _filtrar_paquete, y en el tramo final que suelta bloques desde el final, saltar (no soltar) los bloques que traen la declaracion de alguna de las funciones pedidas; si de tanto proteger ya no se puede bajar del tope, dejar puesto el aviso de que el material se recorto en vez de quedarse callado.",
+  "codigo": "def _filtrar_paquete(paquete, archivo=None, tope=None, funciones=None):\n    # ... (resto igual) ...\n    tope_trabajo = tope - len(aviso) - 1\n    recortado = False\n    _pedidas = []\n    if funciones:\n        if isinstance(funciones, str):\n            _pedidas = [funciones]\n        else:\n            try:\n                _pedidas = [f for f in funciones if f]\n            except Exception:\n                _pedidas = []\n    def _trae_funcion_pedida(lineas):\n        for ln in lineas:\n            for f in _pedidas:\n                if ln.startswith(\"def \" + f):\n                    return True\n        return False\n    while len(\"\\n\".join(salida)) > tope_trabajo and len(salida) > len(bloques[\"__cabecera__\"]):\n        cabecera = len(bloques[\"__cabecera__\"])\n        ultimo = None\n        for i in range(len(salida) - 1, cabecera - 1, -1):\n            if salida[i].startswith(\"### `\"):\n                j = i + 1\n                while j < len(salida) and not salida[j].startswith(\"### `\"):\n                    j += 1\n                if _trae_funcion_pedida(salida[i:j]):\n                    continue\n                ultimo = i\n                break\n        if ultimo is not None:\n            del salida[ultimo:]\n            recortado = True\n        else:\n            if len(salida) <= cabecera:\n                break\n            salida.pop()\n            recortado = True\n    if recortado or len(\"\\n\".join(salida)) > tope_trabajo:\n        salida.append(aviso)\n    return \"\\n\".join(salida)",
+  "vigia": "vigias/test_vigia_el_recorte_no_se_come_la_funcion_pedida.py (los tres casos: con funciones pedidas conserva la declaracion, conserva LA LEY QUE MANDA y A QUIEN PUEDE DANAR; sin funciones se comporta como hoy)",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La rama else del while nuevo (cuerpo/obrero.py, tras el cambio) sigue soltando renglones de uno en uno cuando TODOS los bloques que quedan son protegidos: si la funcion pedida sola no cabe en el tope, se come su bloque linea a linea y puede comerse la misma declaracion que el comentario dice que no se suelta, dejando ademas un bloque a medias (lo contrario de la vigia test_vigia_el_material_no_se_corta_a_medias). Los tres casos de la vigia roja no llegan a esa rama, asi que no la rompen, pero el comentario nuevo es mas fuerte que el codigo.",
+   "La proteccion solo mira lineas que empiezan por 'def ' + nombre (cuerpo/obrero.py::_trae_funcion_pedida): no protege 'async def', ni 'class', ni una def indentada, asi que si el encargo pide una clase el recorte se la come igual y la vigia no se entera."
+  ],
+  "riesgo_vecinos": [
+   "La firma gana un parametro con valor por defecto, asi que los dos llamadores reales (cuerpo/obrero.py:522 y cuerpo/obrero.py:1302) siguen funcionando igual: ningun vecino se rompe.",
+   "El unico cambio de comportamiento con funciones=None es poner el aviso tambien cuando no se recortó nada pero el texto sigue pasado del tope; ninguna vigia prohibe ese aviso (la unica que lo prohibe, test_vigia_el_material_no_se_corta_a_medias caso 3, usa tope de 100000 y todo cabe), asi que no se rompe.",
+   "El recorte por bloques en test_vigia_el_revisor_recibe_lo_justo sigue entregando tope justo (11812 + 1 + 187 = 12000) porque ahi no hay funciones pedidas y el while se comporta igual que antes."
+  ],
+  "que_falta": [
+   "Los dos llamadores de produccion (cuerpo/obrero.py:522 y cuerpo/obrero.py:1302) siguen sin pasar funciones=, asi que en el trabajo real el recorte todavia se come la funcion pedida: la proteccion solo existe para la vigia. Es trabajo de otra tarea, no de esta, pero conviene una orden que lo ate.",
+   "Falta un cuarto caso de vigia con un tope tan pequeno que no quepa ni conservando la funcion pedida, para que la rama else quede medida y no sea un agujero silencioso."
+  ],
+  "resumen_para_el_jefe": "Arregla de verdad la vigia roja ( mete el parametro funciones, protege el bloque de la declaracion al soltar desde el final y avisa cuando no cabe) y no rompe ninguna vigia vecina; queda un agujero menor: cuando lo protegido no cabe, la rama else se lo come linea a linea, y ademas no protege clases ni async def."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (37887 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (39783 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}
