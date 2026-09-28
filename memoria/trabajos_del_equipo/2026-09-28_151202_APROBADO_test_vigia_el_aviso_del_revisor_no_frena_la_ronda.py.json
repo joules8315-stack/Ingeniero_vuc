@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta en vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py una cuarta prueba que nazca roja: hoy separar_avisos_y_frenos clasifica el mensaje 'NO HACE LO QUE SE PIDIO: ...' como freno, y debe salir como aviso.",
+  "archivo": "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+  "funcion": "seccion de pruebas del vigia (junto a las tres pruebas verdes existentes)",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "import os",
+    "texto_nuevo": "import os\nimport sys\n\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\n\nfrom cuerpo.obrero import separar_avisos_y_frenos\n\n\ndef test_4_el_mensaje_de_no_hace_lo_que_se_pidio_es_aviso():\n    \"\"\"Nace ROJA a proposito: la reparacion va en cuerpo/obrero.py, no aqui.\n\n    Hoy separar_avisos_y_frenos solo mira si el texto empieza por 'AVISO:'.\n    El mensaje que empieza por 'NO HACE LO QUE SE PIDIO:' se clasifica como\n    freno y corta rondas buenas. Debe salir como AVISO: el programa cuenta,\n    el juicio de la intencion no es suyo (CONTRATO_CUENTA_O_JUICIO).\n    \"\"\"\n    mensajes = [\n        \"AVISO: esto es un aviso de verdad\",\n        \"NO HACE LO QUE SE PIDIO: el obrero entrego otra cosa\",\n        \"el texto viejo no existe en el archivo\",\n    ]\n    avisos, frenos = separar_avisos_y_frenos(mensajes)\n    assert avisos == [\n        \"AVISO: esto es un aviso de verdad\",\n        \"NO HACE LO QUE SE PIDIO: el obrero entrego otra cosa\",\n    ], \"el mensaje de NO HACE LO QUE SE PIDIO debe salir como aviso, no como freno\"\n    assert frenos == [\"el texto viejo no existe en el archivo\"]\n    assert len(avisos) + len(frenos) == len(mensajes), \"ningun mensaje se pierde ni se duplica\""
+   }
+  ],
+  "cambio": "Agregar al vigia el import de separar_avisos_y_frenos desde cuerpo/obrero.py y una cuarta prueba test_4_el_mensaje_de_no_hace_lo_que_se_pidio_es_aviso que comprueba que los dos primeros mensajes salen como avisos y el tercero como freno, sin perder ni duplicar ninguno. No se toca nada de lo que ya existe.",
+  "codigo": "import sys\n\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\n\nfrom cuerpo.obrero import separar_avisos_y_frenos\n\n\ndef test_4_el_mensaje_de_no_hace_lo_que_se_pidio_es_aviso():\n    \"\"\"Nace ROJA a proposito: la reparacion va en cuerpo/obrero.py, no aqui.\n\n    Hoy separar_avisos_y_frenos solo mira si el texto empieza por 'AVISO:'.\n    El mensaje que empieza por 'NO HACE LO QUE SE PIDIO:' se clasifica como\n    freno y corta rondas buenas. Debe salir como AVISO: el programa cuenta,\n    el juicio de la intencion no es suyo (CONTRATO_CUENTA_O_JUICIO).\n    \"\"\"\n    mensajes = [\n        \"AVISO: esto es un aviso de verdad\",\n        \"NO HACE LO QUE SE PIDIO: el obrero entrego otra cosa\",\n        \"el texto viejo no existe en el archivo\",\n    ]\n    avisos, frenos = separar_avisos_y_frenos(mensajes)\n    assert avisos == [\n        \"AVISO: esto es un aviso de verdad\",\n        \"NO HACE LO QUE SE PIDIO: el obrero entrego otra cosa\",\n    ], \"el mensaje de NO HACE LO QUE SE PIDIO debe salir como aviso, no como freno\"\n    assert frenos == [\"el texto viejo no existe en el archivo\"]\n    assert len(avisos) + len(frenos) == len(mensajes), \"ningun mensaje se pierde ni se duplica\"",
+  "vigia": "test_4_el_mensaje_de_no_hace_lo_que_se_pidio_es_aviso (nace roja: hoy el segundo mensaje cae en frenos)",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El bloque 'codigo' empieza en 'import sys' y NO incluye 'import os', mientras que el par de 'cambios' si reescribe 'import os' -> 'import os\\nimport sys...'. Si la ronda aplica 'codigo' como reemplazo del ancla en vez de usar 'cambios', el archivo se queda sin 'import os' y las tres pruebas verdes que lo usan (os.path para el raiz) revientan. Aterriza solo por el lado de 'cambios'.",
+   "La prueba desempaqueta 'avisos, frankly_city' como tupla de dos: si la firma real de separar_avisos_y_frenos devolviera otra cosa (dict, lista de pares), la prueba no nace roja sino que revienta con error, que es un rojo que no prueba lo que dice. El nombre de la funcion y el encargo hacen muy probable la tupla, pero no esta escrito en el material."
+  ],
+  "que_falta": [
+   "Unificar 'codigo' y 'cambios': que el bloque de codigo entregado incluya 'import os' al inicio, para que las dos vias de aplicacion den el mismo resultado y no se pueda perder el import que usan las tres pruebas existentes.",
+   "Afirmar el orden en los asserts con listas exactas: si la implementacion devolviera los avisos en otro orden, la prueba caeria roja por orden y no por la clasificacion que se quiere fijar. No es motivo de rechazo, pero conviene saberlo antes de que la prueba se lea como 'la de NO HACE LO QUE SE PIDIO'."
+  ],
+  "resumen_para_el_jefe": "Hace exactamente lo pedido: una sola prueba nueva, en el ancla 'import os', de un solo archivo, con los tres textos correctos y那句 'nace ROJA' dentro del docstring; no toca las tres pruebas verdes, no toca cuerpo/obrero.py y no inventa nada. Unico apunte a dejar cerrado: el bloque 'codigo' omite 'import os' y solo es seguro si se aplica el par de 'cambios'."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 39666 a 17753 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 42161 a 17748 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 42219 a 17767 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 3"
+ ]
+}
