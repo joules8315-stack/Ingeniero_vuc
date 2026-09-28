@@ -1,0 +1,62 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Las dos llamadas a quitar_contenidos y recortar_por_presupuesto estan demasiado arriba en armar, antes de cinco sitios que vuelven a meter trozos en la lista, por lo que el recorte no sirve y nace la duplicacion.",
+  "archivo": "cerebro/router.py",
+  "funcion": "armar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    # SE CORTA A SU MINIMA EXPRESION (Julio, 2026-09-28).\n    # Primero se quitan los trozos contenidos dentro de otro de la misma pieza, y despues se\n    # recortan por presupuesto de letras. Va ANTES del bloque que garantiza que armar viaje\n    # entero, para que ese recorte no borre la propia pieza de armar ya completada.\n    pedazos = quitar_contenidos(pedazos)\n    pedazos = recortar_por_presupuesto(pedazos, TOPE_LETRAS_TROZOS)\n",
+    "texto_nuevo": ""
+   },
+   {
+    "texto_viejo": "            pedazos = _pedazos_filtrados\n",
+    "texto_nuevo": "            pedazos = _pedazos_filtrados\n\n    # SE CORTA A SU MINIMA EXPRESION (Julio, 2026-09-28).\n    # Va AQUI, al final, y no antes: mas arriba la lista se vuelve a llenar (el bloque que\n    # garantiza que armar viaje entero, completar_funciones, la funcion que el problema nombra\n    # y los dos que meten fichas), y ademas la parte que mete una funcion ENTERA deja dentro el\n    # trozo parcial de esa misma funcion. Este es el ultimo sitio donde la lista de trozos se\n    # toca antes de entregarse, asi que es el unico sitio donde el corte manda de verdad.\n    pedazos = quitar_contenidos(pedazos)\n    pedazos = recortar_por_presupuesto(pedazos, TOPE_LETRAS_TROZOS)\n"
+   }
+  ],
+  "cambio": "Mover el bloque de dos llamadas (quitar_contenidos y recortar_por_presupuesto) desde donde esta hoy, junto con su comentario, hasta justo despues del renglon 'pedazos = _pedazos_filtrados', fuera ya de ese bloque, con un comentario corto que explique por que van ahi y no antes.",
+  "codigo": "    # SE CORTA A SU MINIMA EXPRESION (Julio, 2026-09-28).\n    # Va AQUI, al final, y no antes: mas arriba la lista se vuelve a llenar (el bloque que\n    # garantiza que armar viaje entero, completar_funciones, la funcion que el problema nombra\n    # y los dos que meten fichas), y ademas la parte que mete una funcion ENTERA deja dentro el\n    # trozo parcial de esa misma funcion. Este es el ultimo sitio donde la lista de trozos se\n    # toca antes de entregarse, asi que es el unico sitio donde el corte manda de verdad.\n    pedazos = quitar_contenidos(pedazos)\n    pedazos = recortar_por_presupuesto(pedazos, TOPE_LETRAS_TROZOS)",
+  "vigia": "vigias/test_vigia_el_paquete_se_corta_a_su_minima_expresion.py",
+  "puede_danar": [
+   "cerebro/protocolo.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_dudas.py",
+   "vigias/test_vigia_el_paquete_se_corta_a_su_minima_expresion.py",
+   "vigias/test_vigia_el_paquete_trae_el_archivo_nombrado.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "protocolo.py",
+   "test_vigia_dudas.py",
+   "test_vigia_el_paquete_se_corta_a_su_minima_expresion.py",
+   "test_vigia_el_paquete_trae_el_archivo_nombrado.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El paquete de router saldra mas pequeno y sin el duplicado funcion-entera/trozo-parcial: es exactamente el efecto pedido, pero cualquier vigia que mida tamano minimo del paquete o que compte llamadas a quitar_contenidos/recortar_por_presupuesto por posicion tendra que moverse (las dos funciones y TOPE_LETRAS_TROZOS no se tocan, asi que protocolo.py, trozos.py, dudas.py y respuestas.py no cambian de comportamiento).",
+   "Riesgo mecanico, no de fondo: el primer cambio borra tambien las tres lineas de comentario, cuyo texto literal no viene en el material; si ese comentario no coincide caracter a caracter el primer cambio no aplicara y quedarian las llamadas en el sitio viejo duplicadas. Es lo que el encargo pedia ('se quitan de ahi junto con su comentario de encima'), asi que no lo computo como fallo, pero conviene comprobar que el comentario es el de verdad."
+  ],
+  "que_falta": [
+   "Nada esencial. Unico detalle de forma: el comentario nuevo son 6 lineas cuando el encargo pedia 'un comentario corto'; dice lo que tenia que decir, asi que no lo rechazo."
+  ],
+  "resumen_para_el_jefe": "Mueve las dos llamadas al ancla indicada, fuera del bloque, con el orden correcto y sin tocar nada mas: cumple el encargo y arregla la duplicacion; aprobado."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40587 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
