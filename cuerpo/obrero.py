@@ -917,8 +917,15 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
     # a todos = paga el de pago = se juzga a si mismo. Ahora se RECORTA antes de elegir, UNA
     # vez, para las 9 puertas. El tope es la capacidad real MEDIDA del gratis mas pequeno que
     # esta despierto: recortar para el garantiza que ningun gratis quede fuera por tamano.
-    # Se respeta lo "pesado": si Julio pidio de verdad al de pago, no se le recorta su material.
-    if turnos and not pesado:
+    # EL RECORTE SE HACE SIEMPRE (Julio, 2026-09-28). Antes esta condicion miraba lo pesado y
+    # apagaba el filtro: como todas las rondas se lanzan pidiendo que escriba el de pago, el
+    # recorte no se ejecutaba nunca. Medido el 2026-09-28: en las 19 rondas el cerebro gratis
+    # escribio CERO veces, con el aviso de que no le cabe en todas, entre 19.950 y 44.605 letras
+    # contra 19.042 que aguanta. Lo pesado decide A QUIEN SE LE PREGUNTA PRIMERO (eso se hace mas
+    # abajo, en la linea que pone al de pago delante, y esa no se toca), nunca CUANTO MATERIAL
+    # VIAJA: el material se corta SIEMPRE a su minima expresion completa, para todos, porque
+    # mandarle material de mas al de pago lo hace caro Y ademas impreciso.
+    if turnos:
         _capas = [cuotas._capacidad(q) for q in turnos]
         _capas = [c for c in _capas if c > 0]
         if _capas:
