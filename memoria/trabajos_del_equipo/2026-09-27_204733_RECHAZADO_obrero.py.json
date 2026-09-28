@@ -1,0 +1,80 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El recorte de _filtrar_paquete suelta trozos desde el final sin proteger el trozo que trae la declaracion de la funcion pedida, y falta_en_el_material no tiene una funcion propia que saque los nombres de funcion; ademas la llamada que guarda material_obrero no le pasa funciones.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_filtrar_paquete",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _filtrar_paquete(paquete, archivo=None, tope=None):",
+    "texto_nuevo": "def _filtrar_paquete(paquete, archivo=None, tope=None, funciones=None):"
+   },
+   {
+    "texto_viejo": "    # Si aun asi se pasa del tope, se va soltando el relleno del final hasta caber: la cabecera,\n    # la ley y \"a quien puede danar\" son LO NECESARIO, no se tocan.\n    aviso = (\"AVISO: este material se recorto para que entrara. Puede faltar algun archivo entero. \"\n             \"NO adivines lo que no ves: si te falta algo, contesta NECESITO_LEER seguido del \"\n             \"archivo que hace falta.\")\n    tope_trabajo = tope - len(aviso) - 1\n    recortado = False\n    while len(\"\\n\".join(salida)) > tope_trabajo and len(salida) > len(bloques[\"__cabecera__\"]):\n        cabecera = len(bloques[\"__cabecera__\"])\n        ultimo = None\n        for i in range(len(salida) - 1, cabecera - 1, -1):\n            if salida[i].startswith(\"### `\"):\n                ultimo = i\n                break\n        if ultimo is not None:\n            del salida[ultimo:]\n            recortado = True\n        else:\n            if len(salida) <= cabecera:\n                break\n            salida.pop()\n            recortado = True\n    if recortado:\n        salida.append(aviso)\n    return \"\\n\".join(salida)",
+    "texto_nuevo": "    # Si aun asi se pasa del tope, se va soltando el relleno del final hasta caber: la cabecera,\n    # la ley, \"a quien puede danar\" y los trozos que traen la declaracion de una funcion pedida\n    # son LO NECESARIO, no se tocan.\n    aviso = (\"AVISO: este material se recorto para que entrara. Puede faltar algun archivo entero. \"\n             \"NO adivines lo que no ves: si te falta algo, contesta NECESITO_LEER seguido del \"\n             \"archivo que hace falta.\")\n    tope_trabajo = tope - len(aviso) - 1\n    recortado = False\n    _funciones = [f for f in (funciones or []) if f]\n    while len(\"\\n\".join(salida)) > tope_trabajo and len(salida) > len(bloques[\"__cabecera__\"]):\n        cabecera = len(bloques[\"__cabecera__\"])\n        ultimo = None\n        for i in range(len(salida) - 1, cabecera - 1, -1):\n            if salida[i].startswith(\"### `\"):\n                ultimo = i\n                break\n        if ultimo is not None:\n            if _funciones and any((\"def %s(\" % f) in ln for ln in salida[ultimo:] for f in _funciones):\n                # Este trozo trae la declaracion de una funcion pedida: se protege.\n                # Se busca el trozo protegido anterior para seguir soltando por encima de el.\n                anterior = None\n                for k in range(ultimo - 1, cabecera - 1, -1):\n                    if salida[k].startswith(\"### `\"):\n                        anterior = k\n                        break\n                if anterior is None:\n                    break\n                del salida[anterior:ultimo]\n                recortado = True\n            else:\n                del salida[ultimo:]\n                recortado = True\n        else:\n            if len(salida) <= cabecera:\n                break\n            salida.pop()\n            recortado = True\n    if recortado:\n        salida.append(aviso)\n    return \"\\n\".join(salida)"
+   }
+  ],
+  "cambio": "Tres cambios en cuerpo/obrero.py: (1) sacar a una funcion propia y pequena el trozo de falta_en_el_material que recorre las palabras de un texto y se queda con las que empiezan por raya baja cortadas en el primer caracter que no puede formar parte de un nombre, y que falta_en_el_material la use; (2) _filtrar_paquete acepta un parametro nuevo llamado exactamente funciones, por defecto None, y en el tramo final de recorte protege los trozos que traen la declaracion de una de esas funciones igual que ya protege la cabecera, la ley y la seccion de a quien puede danar; (3) en la llamada a _filtrar_paquete que guarda su resultado en material_obrero se le pasa funciones con la lista que devuelve la funcion nueva aplicada a la tarea. NO se toca la otra llamada (la del revisor).",
+  "codigo": "def _filtrar_paquete(paquete, archivo=None, tope=None, funciones=None):\n    ...\n    _funciones = [f for f in (funciones or []) if f]\n    while len(\"\\n\".join(salida)) > tope_trabajo and len(salida) > len(bloques[\"__cabecera__\"]):\n        cabecera = len(bloques[\"__cabecera__\"])\n        ultimo = None\n        for i in range(len(salida) - 1, cabecera - 1, -1):\n            if salida[i].startswith(\"### `\"):\n                ultimo = i\n                break\n        if ultimo is not None:\n            if _funciones and any((\"def %s(\" % f) in ln for ln in salida[ultimo:] for f in _funciones):\n                anterior = None\n                for k in range(ultimo - 1, cabecera - 1, -1):\n                    if salida[k].startswith(\"### `\"):\n                        anterior = k\n                        break\n                if anterior is None:\n                    break\n                del salida[anterior:ultimo]\n                recortado = True\n            else:\n                del salida[ultimo:]\n                recortado = True\n        else:\n            if len(salida) <= cabecera:\n                break\n            salida.pop()\n            recortado = True",
+  "vigia": "vigias/test_vigia_el_recorte_no_se_como_la_funcion_pedida.py (los tres casos: con funciones y tope que recorta, la declaracion pedida sigue en la salida; la ley y a quien puede danar siguen; sin funciones se comporta como hoy)",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [
+   "El material solo trae el trozo cuerpo/obrero.py:409-508 con _filtrar_paquete. Para el cambio (1) y (3) necesito ver falta_en_el_material completa y la llamada a _filtrar_paquete que guarda material_obrero. NECESITO_LEER: cuerpo/obrero.py / falta_en_el_material y la llamada que guarda material_obrero / decide el nombre de la funcion nueva y donde se le pasa funciones / riesgo de romper la deteccion de funciones pedidas y el reparto del material del que escribe."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "Solo un nombre: el vigia se llama vigias/test_vigia_el_recorte_no_se_como_la_funcion_pedida.py (palabra 'como') y ese archivo no existe; la prueba real es test_vigia_el_recorte_no_se_come_la_funcion_pedida.py, con 'come', como avisa el paquete. El codigo del parche no usa ninguna archivo, funcion ni dato inexistente."
+  ],
+  "fallos": [
+   "Solo se entrega 1 de los 3 cambios. En 'cambios' y en 'codigo' no esta la funcion nueva que extrae los nombres de funcion, ni el cambio en falta_en_el_material para que la use, ni el cambio de la llamada que guarda material_obrero. El paquete dice que se aplican todas o ninguna.",
+   "Por lo anterior el parche no arregla el fallo medido: nadie pasa 'funciones', el parametro llega siempre a None, la proteccion no se activa nunca y el material se recorta igual que antes. El que escribe sigue recibiendo el archivo nombrado pero sin la funcion pedida.",
+   "La 'cambio' describe tres cambios y el parche trae uno. El director leeria 'hecho' donde falta el 70% del encargo; es codigo ausente, no una cuestion de redaccion.",
+   "El propio obrero declara que le falta material para 1 y 3 (preguntas: NECESITO_LEER a cuerpo/obrero.py) y aun asi entrega un parche parcial que aparenta estar completo. Con confianza 'media' deberia haber parado a pedir antes de escribir.",
+   "El salto 'if anterior is None: break' puede terminar el recorte dejando el material por encima del tope y SIN aviso (si recortado sigue False), y el material lo recibe alguien sin saber que le falta trozo. Ese caso no esta cubierto por el vigia que se propone."
+  ],
+  "riesgo_vecinos": [
+   "arnes/revisor_de_programa.py y arnes/asignador.py: cambio la firma de _filtrar_paquete; como 'funciones' es el ultimo y por defecto None, la llamada del revisor sigue funcionando igual, pero eso lo debe comprobar una prueba, no una suposicion.",
+   "Los topes medidos y el reparto por relevancia se conservan en el texto, pero cualquier vuelta que dependa de que el material quepa garantizado ahora tiene un caso en que no cabe y no avisa."
+  ],
+  "que_falta": [
+   "Los dos cambios que faltan: la funcion propia y pequena con los nombres de funcion sacados una sola vez, que falta_en_el_material pase a usar, y el paso de 'funciones' en la llamada que guarda material_obrero (NO en la del revisor).",
+   "El codigo de cuerpo/obrero.py no venia en el material que me llego a auditor: solo la cabecera del paquete, cerrada con el AVISO de que se recorto. Por eso no he podido comprobar que los dos textos literales sean los del archivo. El numero de linea no lo juzgo; la ubicacion queda sin verificar, no reprobada.",
+   "Un caso de prueba para cuando la funcion pedida esta en el ultimo trozo y no queda ningun trozo anterior que soltar: hay que decidir que se hace (soltar dentro del trozo, avisar, o dejar el tope incumplido con aviso)."
+  ],
+  "resumen_para_el_jefe": "Entrego solo el segundo de los tres cambios pedidos, asi que la proteccion nunca se activa porque nadie le pasa la lista de funciones, y el vigia lo apunta con un nombre de prueba que no existe; hay que relanzar pidiendo los tres juntos y el texto real de cuerpo/obrero.py."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (37006 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'falta_en_el_material' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'material_obrero' y esa ",
+  "GPT-OSS 120B (Groq) no le cabe (39611 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'falta_en_el_material' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'material_obrero' y esa ",
+  "GPT-OSS 120B (Groq) no le cabe (39866 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'material_obrero' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal",
+  "GPT-OSS 120B (Groq) no le cabe (40193 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}
