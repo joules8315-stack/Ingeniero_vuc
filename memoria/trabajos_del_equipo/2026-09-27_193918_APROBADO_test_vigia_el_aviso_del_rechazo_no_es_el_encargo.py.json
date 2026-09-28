@@ -1,0 +1,30 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion falta_en_el_material trata 'ruta.py:12' como un archivo distinto y avisa en falso; la prueba nueva exige los tres casos (sitio citado, ruta ausente real, ruta limpia) y nace roja a proposito.",
+  "archivo": "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+  "texto_nuevo": "import os\nimport sys\n\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\n\nfrom cuerpo.obrero import falta_en_el_material\n\n\n# Material de prueba: trae la ruta cuerpo/obrero.py con su codigo dentro.\n# Se arma por partes para que el texto de la prueba no dependa de nada externo.\nMATERIAL = (\n    \"===== MATERIAL =====\\n\"\n    \"### cuerpo/obrero.py:73-157\\n\"\n    \"def falta_en_el_material(material, encargo):\\n\"\n    \"    return []\\n\"\n    \"===== FIN DEL MATERIAL =====\\n\"\n)\n\n\ndef test_el_sitio_citado_no_es_un_archivo_que_falte():\n    # Caso 1: el encargo cita un SITIO del codigo (ruta + dos puntos + renglon).\n    # Es la misma ruta que ya esta en el material, asi que no falta nada.\n    encargo = \"revisa cuerpo/obrero.py:73 y dime si el aviso es correcto\"\n    faltantes = falta_en_el_material(MATERIAL, encargo)\n    assert faltantes == [], (\n        \"el aviso de un revisor citaba un sitio del codigo y la vuelta murio \"\n        \"diciendo que faltaba material; la lista debe salir vacia: \" + repr(faltantes)\n    )\n\n\ndef test_la_ruta_que_de_verdad_no_esta_si_se_avisa():\n    # Caso 2: el encargo nombra una ruta que de verdad no esta en el material.\n    # El aviso de verdad no se afloja: la lista NO sale vacia.\n    encargo = \"revisa cuerpo/no_existe_esta_pieza.py y dime que le falta\"\n    faltantes = falta_en_el_material(MATERIAL, encargo)\n    assert faltantes != [], (\n        \"una ruta que de verdad no esta en el material tiene que avisarse; \"\n        \"la lista salio vacia\"\n    )\n\n\ndef test_la_ruta_limpia_sigue_saliendo_vacia():\n    # Caso 3: el encargo nombra la ruta limpia, sin dos puntos ni renglon.\n    # Es como se porta hoy: la lista sale vacia.\n    encargo = \"revisa cuerpo/obrero.py y dime si el aviso es correcto\"\n    faltantes = falta_en_el_material(MATERIAL, encargo)\n    assert faltantes == [], (\n        \"la ruta limpia ya esta en el material y no debe avisarse: \" + repr(faltantes)\n    )\n\n\nif __name__ == \"__main__\":\n    test_el_sitio_citado_no_es_un_archivo_que_falte()\n    test_la_ruta_que_de_verdad_no_esta_si_se_avisa()\n    test_la_ruta_limpia_sigue_saliendo_vacia()\n    print(\"prueba ejecutada\")\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El guardián que recorre la carpeta de pruebas se vuelve rojo en esta ronda; es justo lo pedido, pero la ronda que toque la pieza tiene que venir seguida o el rojo se acumula como si fuera una avería."
+  ],
+  "que_falta": [
+   "El paquete no trae el código de la función, así que nadie comprobó que el encabezado '### cuerpo/obrero.py:73-157' del material de prueba sea el formato que el lector real entiende; si el formato no fuera el suyo, la prueba nacería roja por un motivo que no es el del fallo.",
+   "Nadie corrió la prueba: que el caso 1 nazca rojo por el sitio citado y que los casos 2 y 3 ya salgan como se dice, queda medido para la ronda de la pieza.",
+   "Con el bloque de ejecución directa, si el caso 1 falla se detiene ahí y los casos 2 y 3 nunca salen en pantalla; conviene que el guardián los corra con pytest, que sí los recoge todos."
+  ],
+  "resumen_para_el_jefe": "Crea solo la prueba que se pidió, con los tres casos exactos, sin tocar la pieza y sin inventar nada; se aprueba y lo que falta es medir que nace roja."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40673 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
