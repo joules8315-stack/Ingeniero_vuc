@@ -30,6 +30,56 @@ TOPE_FUNCION_ENTERA = 120
 # Una funcion que el encargo NOMBRA por su nombre se entrega entera hasta 300 lineas.
 # Las que solo caen por parecido de palabras siguen con el tope de 120, para no releer el repo.
 TOPE_FUNCION_NOMBRADA = 300
+# Tope de letras que aguanta un cerebro gratis (2026-09-28).
+TOPE_LETRAS_TROZOS = 19000
+
+
+def quitar_contenidos(trozos):
+    """Devuelve otra lista sin los trozos contenidos dentro de otro de la MISMA pieza.
+
+    Un trozo esta contenido cuando tiene el mismo valor de pieza que otro y su desde es
+    mayor o igual y su hasta es menor o igual que los de ese otro. Se queda el que contiene
+    y se va el contenido. Dos trozos de piezas distintas nunca se estorban. El orden de los
+    que quedan no cambia. Ante cualquier error devuelve la lista tal como llego y nunca lanza.
+    """
+    try:
+        quedan = []
+        for t in trozos:
+            contenido = False
+            for o in trozos:
+                if o is t:
+                    continue
+                if o.get("pieza") != t.get("pieza"):
+                    continue
+                if o.get("desde") <= t.get("desde") and o.get("hasta") >= t.get("hasta"):
+                    contenido = True
+                    break
+            if not contenido:
+                quedan.append(t)
+        return quedan
+    except Exception:
+        return trozos
+
+
+def recortar_por_presupuesto(trozos, tope):
+    """Devuelve los trozos que caben en el tope, de mayor a menor puntaje.
+
+    Se suman las longitudes de sus textos. El de mayor puntaje se queda SIEMPRE, aunque el
+    solo ya pase del tope, porque es el que trae lo que se pidio. Los que no caben se quedan
+    fuera. Ante cualquier error devuelve la lista tal como llego y nunca lanza.
+    """
+    try:
+        ordenados = sorted(trozos, key=lambda t: t.get("puntaje", 0), reverse=True)
+        elegidos = []
+        suma = 0
+        for t in ordenados:
+            largo = len(t.get("texto") or "")
+            if not elegidos or suma + largo <= tope:
+                elegidos.append(t)
+                suma += largo
+        return elegidos
+    except Exception:
+        return trozos
 
 
 def _claves_de(g, nombres_flujo):
@@ -252,6 +302,13 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
             pedazos = semantico.reordenar(problema, pedazos, campo="texto", k=k_trozos)
         except Exception:
             pedazos = pedazos[:k_trozos]
+
+    # SE CORTA A SU MINIMA EXPRESION (Julio, 2026-09-28).
+    # Primero se quitan los trozos contenidos dentro de otro de la misma pieza, y despues se
+    # recortan por presupuesto de letras. Va ANTES del bloque que garantiza que armar viaje
+    # entero, para que ese recorte no borre la propia pieza de armar ya completada.
+    pedazos = quitar_contenidos(pedazos)
+    pedazos = recortar_por_presupuesto(pedazos, TOPE_LETRAS_TROZOS)
 
     # LA HERRAMIENTA SE REPARA MIENTRAS CONSTRUYE (Julio, 2026-08-27, ley L13/L14).
     # Cuando el problema toca al REPARTIDOR, el fragmentador corta router.py en trozos de 40 lineas
