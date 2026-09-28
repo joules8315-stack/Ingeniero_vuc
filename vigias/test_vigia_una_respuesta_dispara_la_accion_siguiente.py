@@ -39,10 +39,10 @@ def _llamada(clase, quien, cuando, segundos):
 
 def _cuatro_llamadas():
     return [
-        _llamada("reparar", "uno", "2026-09-01T10:00:00", 10),
-        _llamada("auditar", "dos", "2026-09-01T10:00:30", 20),
-        _llamada("reparar", "uno", "2026-09-01T10:20:00", 60),
-        _llamada("auditar", "dos", "2026-09-01T10:30:00", 30),
+        _llamada("reparar", "uno", "2026-09-01 10:00:00", 10),
+        _llamada("auditar", "dos", "2026-09-01 10:00:30", 20),
+        _llamada("reparar", "uno", "2026-09-01 10:20:00", 60),
+        _llamada("auditar", "dos", "2026-09-01 10:30:00", 30),
     ]
 
 
