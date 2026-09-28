@@ -1,0 +1,61 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "separar_avisos_y_frenos solo trata como AVISO los mensajes que empiezan por 'AVISO:', y debe tratar tambien los que empiezan por 'NO HACE LO QUE SE PIDIO:' sin importar los espacios de delante.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "separar_avisos_y_frenos",
+  "texto_viejo": "def separar_avisos_y_frenos(mensajes):\n    \"\"\"Reparte una lista de mensajes en dos: primero los AVISOS, despues los FRENOS.\n\n    Es aviso todo texto que, quitandole los espacios de delante, empieza por la\n    palabra AVISO seguida de dos puntos. Todo lo demas es freno. No se pierde ni\n    se duplica ningun mensaje. Si no llega una lista, o trae cosas que no son\n    texto, no revienta: devuelve dos listas y sigue.\n    \"\"\"\n    avisos = []\n    frenos = []\n    if not isinstance(mensajes, (list, tuple)):\n        return avisos, frenos\n    for mensaje in mensajes:\n        if not isinstance(mensaje, str):\n            continue\n        if mensaje.lstrip().startswith(\"AVISO:\"):\n            avisos.append(mensaje)\n        else:\n            frenos.append(mensaje)\n    return avisos, frenos",
+  "texto_nuevo": "def separar_avisos_y_frenos(mensajes):\n    \"\"\"Reparte una lista de mensajes en dos: primero los AVISOS, despues los FRENOS.\n\n    Es aviso todo texto que, quitandole los espacios de delante, empieza por la\n    palabra AVISO seguida de dos puntos, o por las palabras NO HACE LO QUE SE PIDIO\n    seguidas de dos puntos. Todo lo demas es freno. No se pierde ni se duplica\n    ningun mensaje. Si no llega una lista, o trae cosas que no son texto, no\n    revienta: devuelve dos listas y sigue.\n\n    Hecho medido 2026-09-28: la cuenta del revisor por programa tumbo un cambio que\n    el auditor del equipo ya habia APROBADO, porque el encargo mencionaba dos piezas\n    como explicacion y no para cambiarlas. Lleva cuatro parches por frenadas en falso\n    en tres semanas. La razon de fondo es que esa cuenta adivina la INTENCION, y la\n    intencion es juicio, no cuenta: le toca a quien revisa, no al programa\n    (CONTRATO_CUENTA_O_JUICIO). Por eso ese mensaje se dice pero NO frena.\n    \"\"\"\n    avisos = []\n    frenos = []\n    if not isinstance(mensajes, (list, tuple)):\n        return avisos, frenos\n    for mensaje in mensajes:\n        if not isinstance(mensaje, str):\n            continue\n        limpio = mensaje.lstrip()\n        if limpio.startswith(\"AVISO:\") or limpio.startswith(\"NO HACE LO QUE SE PIDIO:\"):\n            avisos.append(mensaje)\n        else:\n            frenos.append(mensaje)\n    return avisos, frenos",
+  "cambio": "En separar_avisos_y_frenos, ademas de 'AVISO:' tratar como aviso el mensaje que empieza por 'NO HACE LO QUE SE PIDIO:' sin importar los espacios de delante, y dejar un comentario corto con el hecho medido (2026-09-28) y la razon (la cuenta adivina la intencion, se dice pero no frena).",
+  "codigo": "        limpio = mensaje.lstrip()\n        if limpio.startswith(\"AVISO:\") or limpio.startswith(\"NO HACE LO QUE SE PIDIO:\"):\n            avisos.append(mensaje)\n        else:\n            frenos.append(mensaje)",
+  "vigia": "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py, cuarta prueba: pasa de roja a verde; las otras tres siguen verdes, incluida la que garantiza que un freno de verdad sigue frenando.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cerebro/piezas.py",
+   "mapa/inventario.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_pide_la_funcion_publica.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El 'comentario' quedo dentro del docstring, no como comentario de codigo: si algun vigia comparara el docstring de separar_avisos_y_frenos con una cadena exacta, el texto nuevo lo tumbaria. No se ve tal vigia en el material, pero es el unico punto donde anadir texto podria molestar.",
+   "La causa raiz (el revisor sigue contando y por ahi entra la ambiguedad) queda intacta a proposito: sigueemitiendo el mensaje visible, solo deja de contar como freno. Es lo que pide el encargo, pero conviene saber que la cuenta sigue viva y visible."
+  ],
+  "que_falta": [
+   "El comentario son 7 lineas, no un 'comentario corto'. Es forma, no fondo: no lo hace fallar.",
+   "No se puede confirmar desde aqui que la cuarta prueba de vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py pase de roja a verde ni que las otras tres sigan verdes; eso hay que verlo correr."
+  ],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo pedido en la unica pieza autorizada: anade el prefijo 'NO HACE LO QUE SE PIDIO:' a los avisos sin tocar el texto del revisor ni los 默认 Bucket, y el unico pero es de forma (comentario algo largo dentro del docstring) — aprueba y solo falta correr los vigias para confirmar."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 34724 a 18896 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (37057 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}
