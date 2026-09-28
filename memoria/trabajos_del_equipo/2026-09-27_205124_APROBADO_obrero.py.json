@@ -1,0 +1,61 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Dentro de falta_en_el_material hay un trozo que recorre las palabras del encargo y se queda con las que empiezan por raya baja, cortadas en el primer caracter que no puede formar parte de un nombre; hay que sacarlo a una funcion propia del mismo archivo y que falta_en_el_material la use.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "falta_en_el_material",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    # --- Funciones nombradas en el encargo ---\n    # Se buscan palabras que empiecen por raya baja (como _prompt_obrero).\n    # El nombre se corta en el primer caracter que no puede formar parte de un\n    # nombre de Python: solo letras, numeros y rayas bajas desde el principio.\n    # Asi un trozo pegado como '_anotar(segundos' se queda en '_anotar'.\n    funciones = []\n    for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n        limpia = palabra.strip(\"()[]{}<>\\\"'`.:\")\n        if limpia.startswith(\"_\") and len(limpia) > 1:\n            corte = len(limpia)\n            for _i, _c in enumerate(limpia):\n                if not (_c.isalnum() or _c == \"_\"):\n                    corte = _i\n                    break\n            nombre = limpia[:corte]\n            # si despues de cortar no queda mas que la raya baja, no se exige\n            if nombre.startswith(\"_\") and len(nombre) > 1:\n                funciones.append(nombre)\n",
+    "texto_nuevo": "    # --- Funciones nombradas en el encargo ---\n    funciones = _nombres_de_funcion_del_texto(texto_encargo)\n"
+   },
+   {
+    "texto_viejo": "def falta_en_el_material(material, encargo):\n    \"\"\"Devuelve frases cortas con lo que el encargo nombra y el material no trae.\n",
+    "texto_nuevo": "def _nombres_de_funcion_del_texto(texto_encargo):\n    \"\"\"Devuelve los nombres de funcion que un texto nombra.\n\n    Se buscan palabras que empiecen por raya baja (como _prompt_obrero).\n    El nombre se corta en el primer caracter que no puede formar parte de un\n    nombre de Python: solo letras, numeros y rayas bajas desde el principio.\n    Asi un trozo pegado como '_anotar(segundos' se queda en '_anotar'.\n    \"\"\"\n    funciones = []\n    for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n        limpia = palabra.strip(\"()[]{}<>\\\"'`.:\")\n        if limpia.startswith(\"_\") and len(limpia) > 1:\n            corte = len(limpia)\n            for _i, _c in enumerate(limpia):\n                if not (_c.isalnum() or _c == \"_\"):\n                    corte = _i\n                    break\n            nombre = limpia[:corte]\n            # si despues de cortar no queda mas que la raya baja, no se exige\n            if nombre.startswith(\"_\") and len(nombre) > 1:\n                funciones.append(nombre)\n    return funciones\n\ndef falta_en_el_material(material, encargo):\n    \"\"\"Devuelve frases cortas con lo que el encargo nombra y el material no trae.\n"
+   }
+  ],
+  "cambio": "Sacar el trozo que recorre las palabras del encargo buscando nombres de funcion (los que empiezan por raya baja, cortados en el primer caracter que no puede formar parte de un nombre) a una funcion propia del mismo archivo llamada _nombres_de_funcion_del_texto, y que falta_en_el_material la use en vez de llevar la copia dentro.",
+  "codigo": "def _nombres_de_funcion_del_texto(texto_encargo):\n    \"\"\"Devuelve los nombres de funcion que un texto nombra.\n\n    Se buscan palabras que empiecen por raya baja (como _prompt_obrero).\n    El nombre se corta en el primer caracter que no puede formar parte de un\n    nombre de Python: solo letras, numeros y rayas bajas desde el principio.\n    Asi un trozo pegado como '_anotar(segundos' se queda en '_anotar'.\n    \"\"\"\n    funciones = []\n    for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n        limpia = palabra.strip(\"()[]{}<>\\\"'`.:\")\n        if limpia.startswith(\"_\") and len(limpia) > 1:\n            corte = len(limpia)\n            for _i, _c in enumerate(limpia):\n                if not (_c.isalnum() or _c == \"_\"):\n                    corte = _i\n                    break\n            nombre = limpia[:corte]\n            # si despues de cortar no queda mas que la raya baja, no se exige\n            if nombre.startswith(\"_\") and len(nombre) > 1:\n                funciones.append(nombre)\n    return funciones",
+  "vigia": "Las pruebas que ya existen y ya estan verdes sobre falta_en_el_material: vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py, vigias/test_vigia_el_material_trae_la_pieza_pedida.py, vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py, vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py, vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py. Si el comportamiento cambiara, se pondrian rojas.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "NADA que impida: solo cosmetico. La funcion nueva queda debajo del encabezado de seccion 'los prompts' (cuerpo/obrero.py:72) en vez de en su propio apartado; no rompe nada."
+  ]
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (37470 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
