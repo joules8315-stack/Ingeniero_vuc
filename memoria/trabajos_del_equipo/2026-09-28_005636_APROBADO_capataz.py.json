@@ -1,0 +1,57 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py falta la funcion reintentar_lo_que_esperaba y marcar_estado no la llama cuando el estado escrito es 'hecha', por lo que las ordenes fallidas que dependian de esa orden quedan paradas.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "reintentar_tras_el_arreglo y marcar_estado",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "        with open(ruta_huellas, 'w', encoding='utf-8') as f:\n            f.writelines(conservados)\n        return True\n    except Exception:\n        return False",
+    "texto_nuevo": "        with open(ruta_huellas, 'w', encoding='utf-8') as f:\n            f.writelines(conservados)\n        return True\n    except Exception:\n        return False\n\n\ndef reintentar_lo_que_esperaba(id_orden):\n    \"\"\"Devuelve la lista de ids que volvieron a la cola tras arreglarse id_orden.\n\n    Recorre leer_lista y se queda con las ordenes en estado 'fallida' cuya\n    lista 'depende' contiene id_orden. Para cada una llama a\n    reintentar_tras_el_arreglo pasandole el id de esa orden fallida y el id\n    recibido; si devuelve True, suma ese id a la lista que se devuelve.\n    Nunca lanza: ante cualquier error devuelve lo que tenga juntado.\n    \"\"\"\n    reintentadas = []\n    try:\n        for orden in leer_lista():\n            if not isinstance(orden, dict):\n                continue\n            if orden.get('estado') != 'fallida':\n                continue\n            depende = orden.get('depende')\n            if not isinstance(depende, list):\n                continue\n            if id_orden not in depende:\n                continue\n            id_fallida = orden.get('id')\n            if reintentar_tras_el_arreglo(id_fallida, id_orden):\n                reintentadas.append(id_fallida)\n    except Exception:\n        return reintentadas\n    return reintentadas"
+   },
+   {
+    "texto_viejo": "    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2, ensure_ascii=False)\n    return True",
+    "texto_nuevo": "    with open(ruta, \"w\", encoding=\"utf-8\") as f:\n        json.dump(lista, f, indent=2, ensure_ascii=False)\n    if estado == 'hecha':\n        try:\n            reintentar_lo_que_esperaba(orden_id)\n        except Exception:\n            pass\n    return True"
+   }
+  ],
+  "cambio": "Agregar la funcion reintentar_lo_que_esperaba justo despues de reintentar_tras_el_arreglo, y en marcar_estado, tras escribir la lista en disco y antes del return True, llamar a reintentar_lo_que_esperaba(orden_id) dentro de un try que se calla cuando el estado escrito es 'hecha'.",
+  "codigo": "def reintentar_lo_que_esperaba(id_orden):\n    \"\"\"Devuelve la lista de ids que volvieron a la cola tras arreglarse id_orden.\n\n    Recorre leer_lista y se queda con las ordenes en estado 'fallida' cuya\n    lista 'depende' contiene id_orden. Para cada una llama a\n    reintentar_tras_el_arreglo pasandole el id de esa orden fallida y el id\n    recibido; si devuelve True, suma ese id a la lista que se devuelve.\n    Nunca lanza: ante cualquier error devuelve lo que tenga juntado.\n    \"\"\"\n    reintentadas = []\n    try:\n        for orden in leer_lista():\n            if not isinstance(orden, dict):\n                continue\n            if orden.get('estado') != 'fallida':\n                continue\n            depende = orden.get('depende')\n            if not isinstance(depende, list):\n                continue\n            if id_orden not in depende:\n                continue\n            id_fallida = orden.get('id')\n            if reintentar_tras_el_arreglo(id_fallida, id_orden):\n                reintentadas.append(id_fallida)\n    except Exception:\n        return reintentadas\n    return reintentadas\n\n# y en marcar_estado, tras json.dump(...) y antes de return True:\n    if estado == 'hecha':\n        try:\n            reintentar_lo_que_esperaba(orden_id)\n        except Exception:\n            pass",
+  "vigia": "vigias/test_vigia_al_cerrar_una_ronda_arranca_la_siguiente.py: comprueba que al marcar_estado con 'hecha' las ordenes fallidas cuya 'depende' contiene ese id vuelven a 'pendiente' y que reintentar_lo_que_esperaba devuelve la lista de ids reintentados sin lanzar.",
+  "puede_danar": [
+   "cerebro/protocolo.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "protocolo.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Reentrada: si reintentar_tras_el_arreglo acaba llamando a marcar_estado por dentro, se anida guardar->leer->guardar. El corte natural es que ese estado interno es 'pendiente' y no 'hecha', asi que no hay recursion infinita, pero la lista queda escrita por la llamada interna despues de que la externa ya volco en disco. Conviene que la vigia lo compruebe con dos niveles.",
+   "La iteracion de reintentar_lo_que_esperaba trabaja sobre el snapshot de leer_lista(): si reintentar_tras_el_arreglo muta la lista en memoria, las ordenes posteriores del bucle se juzgan contra datos viejos. Es lo que pide el encargo, pero no cascaddea: C que depende de B no se revive en la misma pasada si B solo pasa a 'pendiente'.",
+   "El try/except: pass alrededor de la llamada es redundante porque la funcion nueva ya nunca lanza, pero es inocuo y cumple el 'que un disparador nunca tumbe el guardado'.",
+   "El segundo ancla (json.dump + return True) es un patron generico: si existiera otra funcion con ese mismo final, un parche por texto podria caer en la copia equivocada. El encargo dice que la escritura ocurre dentro de marcar_estado, asi que el contexto de estado/orden_id cuadra; lo unico que lo haria fallar es que el ancla fuera duplicada."
+  ],
+  "que_falta": [
+   "El diagnostico no muestra el cuerpo de reintentar_tras_el_arreglo ni el de marcar_estado, asi que no se puede confirmar que la firma sea (id_fallida, id_orden) ni que estado/orden_id sean los parametros de marcar_estado; la comprobacion por programa dice que los nombres existen, pero no que esten en ese ambito."
+  ],
+  "resumen_para_el_jefe": "Arregla exactamente los dos trozos pedidos, sin tocar ya_fallo, huella_de, reintentar_tras_el_arreglo ni ningun otro archivo, y no introduce nada inexistente; el unico riesgo real es de reentrada anidada al guardar, que la vigia deberia verificar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27377 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
