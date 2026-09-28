@@ -1,0 +1,61 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El comando 'hecho' ya existe y admite texto+resolucion+motivo, pero el encargo pide ejecutar doce resoluciones administrativas con evidencia real, cosa que este comando de codigo no puede hacer por si solo.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "main",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "NO se cambia codigo. El mecanismo existente ya esta documentado en el propio archivo: 'python arnes/candado_legislar.py hecho \"<texto>\" legislado|ya_existe|no_aplica [\"motivo\"]' (docstring lineas 1-40 y rama 'hecho' en main). Este comando SOLO puede proponer cambios de codigo; NO puede ejecutar el trabajo administrativo de resolver las doce instrucciones. Para ejecutarlo hay que correr, una por una, el comando 'hecho' con el texto literal de cada instruccion pendiente, su resolucion (legislado|ya_existe|no_aplica) y el motivo con la evidencia real (contrato, tabla, matriz, vigia). Eso lo hace quien tenga el listado real de las doce instrucciones y su evidencia; aqui no viene ni el listado ni la evidencia.",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_legislar_pendientes.py comprueba que no queden pendientes sin legislar; vigias/test_vigia_memoria_completa.py comprueba que la memoria quede completa.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [
+   "Cuales son las doce instrucciones pendientes exactas (texto literal) que hay que resolver?",
+   "Que evidencia real (contrato, tabla, matriz, vigia) corresponde a cada una de las doce, para decidir legislado / ya_existe / no_aplica?"
+  ],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple: indica que el comando no puede ejecutar las doce resoluciones y devuelve la documentación existente sin modificar código."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "vueltas_dadas: 4"
+ ]
+}

@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El filtro que recorta el encargo vive dentro de una condicion que lo apaga cuando el trabajo es pesado, y como todas las rondas piden al de pago, el recorte no se ejecuta nunca y los gratis se saltan por tamano.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_preguntar_con_relevo",
+  "texto_viejo": "    # Se respeta lo \"pesado\": si Julio pidio de verdad al de pago, no se le recorta su material.\n    if turnos and not pesado:",
+  "texto_nuevo": "    # EL RECORTE SE HACE SIEMPRE (Julio, 2026-09-28). Antes esta condicion miraba lo pesado y\n    # apagaba el filtro: como todas las rondas se lanzan pidiendo que escriba el de pago, el\n    # recorte no se ejecutaba nunca. Medido el 2026-09-28: en las 19 rondas el cerebro gratis\n    # escribio CERO veces, con el aviso de que no le cabe en todas, entre 19.950 y 44.605 letras\n    # contra 19.042 que aguanta. Lo pesado decide A QUIEN SE LE PREGUNTA PRIMERO (eso se hace mas\n    # abajo, en la linea que pone al de pago delante, y esa no se toca), nunca CUANTO MATERIAL\n    # VIAJA: el material se corta SIEMPRE a su minima expresion completa, para todos, porque\n    # mandarle material de mas al de pago lo hace caro Y ademas impreciso.\n    if turnos:",
+  "cambios": "",
+  "cambio": "Quitar la excepcion por pesado en la condicion del bloque de recorte: la condicion deja de mirar lo pesado y solo mira que haya alguien en la fila. El contenido del bloque no cambia (mismo tope medido, mismo aviso, misma comprobacion de que el recorte salio mas corto). El comentario de encima se ajusta para decir la regla verdadera de Julio y nombrar el hecho medido de las 19 rondas.",
+  "codigo": "    # EL RECORTE SE HACE SIEMPRE (Julio, 2026-09-28). Antes esta condicion miraba lo pesado y\n    # apagaba el filtro: como todas las rondas se lanzan pidiendo que escriba el de pago, el\n    # recorte no se ejecutaba nunca. Medido el 2026-09-28: en las 19 rondas el cerebro gratis\n    # escribio CERO veces, con el aviso de que no le cabe en todas, entre 19.950 y 44.605 letras\n    # contra 19.042 que aguanta. Lo pesado decide A QUIEN SE LE PREGUNTA PRIMERO (eso se hace mas\n    # abajo, en la linea que pone al de pago delante, y esa no se toca), nunca CUANTO MATERIAL\n    # VIAJA: el material se corta SIEMPRE a su minima expresion completa, para todos, porque\n    # mandarle material de mas al de pago lo hace caro Y ademas impreciso.\n    if turnos:",
+  "vigia": "vigias/test_vigia_pedir_al_de_pago_no_apaga_el_recorte.py: con el cambio las DOS pruebas tienen que quedar verdes y en menos de un segundo. La roja (test_con_pesado_tambien_se_recorta) se pone verde porque con pesado encendido el recorte ya se llama; la verde (test_sin_pesado_se_sigue_recortando) sigue verde porque sin pesado nada cambio.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_pide_la_funcion_publica.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "La lista puede_danar menciona ocho archivos (arnes/asignador.py, arnes/revisor_de_programa.py y seis vigias test_vigia_*) que no aparecen en este recorte de material: no es codigo usado, solo una lista de riesgo, asi que no es invento, pero son suposiciones no verificadas por el material",
+   "El aviso de recorte ('el pasillo recorto el encargo de ... tope medido ...') ahora se emite tambien en rondas pesadas; si alguna vigia buscase ese texto solo en el camino sin pesado, podria enrojecerse. El texto del aviso no se ha tocado, asi que el riesgo es bajo",
+   "Los numeros medidos (19 rondas, 19.950-44.605, 19.042) quedan congelados en un comentario con fecha 2026-09-28: se quedaran viejos, pero el encargo pide justamente nombrarlos"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo pedido: quita la excepcion 'not pesado' del ancla 'if turnos:' que el material señalaba literalmente, no toca el bloque ni la linea de reparto por peso, y el comentario nuevo dice la regla verdadera de Julio; APROBADO."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (33655 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

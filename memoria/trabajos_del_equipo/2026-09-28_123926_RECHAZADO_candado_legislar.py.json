@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "El material no trae la salida real de 'candado_legislar.py listar' (los textos exactos de las instrucciones pendientes), asi que no se puede acreditar cada instruccion individualmente ni copiar su texto literal para el comando 'hecho'.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "main",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO: no se puede ejecutar ni redactar la acreditacion individual porque el material no incluye la lista de instrucciones pendientes (salida de 'python arnes/candado_legislar.py listar') ni la evidencia de contrato/tabla/matriz/vigia por instruccion. Lo unico demostrable con este material es el procedimiento existente de resolucion: 'python arnes/candado_legislar.py hecho \"<texto>\" legislado|ya_existe|no_aplica [\"motivo\"]' (definido en main y en marcar).",
+  "codigo": "",
+  "vigia": "Ejecutar 'python arnes/candado_legislar.py listar' y comprobar que cada instruccion pendiente queda resuelta con 'hecho' y su resolucion valida (legislado/ya_existe/no_aplica) con motivo; y que el hook de cierre (sin argumentos) devuelve 0 cuando no quedan pendientes.",
+  "puede_danar": [
+   "arnes/candado_legislar.py",
+   "memoria/.legislacion_pendiente.json",
+   "arnes/candados_medicion.py",
+   "autorizacion"
+  ],
+  "preguntas": [
+   "Cual es la salida exacta de 'python arnes/candado_legislar.py listar' (texto literal de cada instruccion pendiente) para poder acreditarlas una por una?",
+   "Donde esta la evidencia existente (contrato, tabla de la verdad, matriz y vigia) que corresponde a cada instruccion pendiente, para decidir legislado / ya_existe / no_aplica con motivo concreto?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "legislacion_pendiente.js"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El diagnóstico indica que el material no trae la salida real de 'candado_legislar.py listar', lo cual impide acreditar cada instrucción individualmente y copiar su texto literal para el comando 'hecho'. Sin embargo, la propuesta no proporciona ninguna solución concreta para obtener o simular esta salida. Se limita a describir el problema sin ofrecer una reparación.",
+   "La propuesta no implementa ninguna acción para obtener la salida de 'candado_legislar.py listar' ni la evidencia de contrato/tabla/matriz/vigia, que son los elementos faltantes según el diagnóstico. Simplemente expone la falta de información sin proponer cómo subsanarla.",
+   "El cambio propuesto no arregla el problema descrito en el diagnóstico. El diagnóstico señala la falta de datos para acreditar instrucciones, y la propuesta no añade ni modifica código para obtener esos datos o permitir la acreditación."
+  ],
+  "riesgo_vecinos": [
+   "El archivo 'arnes/candado_legislar.py' es mencionado en el material original y en la propuesta, pero la propuesta no realiza cambios directos en él, sino que se enfoca en la falta de datos externos. Por lo tanto, el riesgo de dañar este archivo es bajo, pero el problema subyacente no se resuelve."
+  ],
+  "que_falta": [
+   "La salida exacta de 'python arnes/candado_legislar.py listar' (texto literal de cada instrucción pendiente).",
+   "La evidencia existente (contrato, tabla de la verdad, matriz y vigia) que corresponde a cada instrucción pendiente."
+  ],
+  "resumen_para_el_jefe": "La propuesta no resuelve el problema de la falta de datos para acreditar instrucciones pendientes, solo lo describe. No se aporta la información necesaria ni se propone cómo obtenerla."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "Gemini 2.5 flash-lite dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

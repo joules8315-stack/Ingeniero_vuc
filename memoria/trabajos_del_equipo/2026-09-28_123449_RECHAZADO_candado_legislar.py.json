@@ -1,0 +1,53 @@
+{
+ "obrero": "gemini4",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "La función `pendientes` en `arnes/candado_legislar.py` necesita ser modificada para verificar la existencia de contrato, tabla, matriz y vigía antes de marcar una instrucción como pendiente de legislar. Actualmente, solo verifica si el estado es 'pendiente' y si parece una orden, lo cual no cumple con los requisitos de la tarea.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "pendientes",
+  "texto_viejo": "    return [e for e in _leer().values() if e.get(\"estado\") == \"pendiente\" and parece_una_orden(e.get(\"texto\", \"\"))]",
+  "texto_nuevo": "    pendientes_legislacion = []\n    for instruccion_id, instruccion_data in _leer().items():\n        if instruccion_data.get(\"estado\") == \"pendiente\" and parece_una_orden(instruccion_data.get(\"texto\", \"\")):\n            # Verificar la existencia de contrato, tabla, matriz y vigía\n            tiene_contrato = instruccion_data.get(\"contrato\") is not None\n            tiene_tabla = instruccion_data.get(\"tabla\") is not None\n            tiene_matriz = instruccion_data.get(\"matriz\") is not None\n            tiene_vigia = instruccion_data.get(\"vigia\") is not None\n\n            if tiene_contrato and tiene_tabla and tiene_matriz and tiene_vigia:\n                # Si ya existen, se registra como 'ya existe' y no se añade a pendientes\n                # Esta lógica se implementará en la función 'resolver'\n                pass\n            else:\n                # Si falta alguno, se considera pendiente de legislar\n                pendientes_legislacion.append(instruccion_data)\n    return pendientes_legislacion",
+  "cambio": "Modificar la función `pendientes` para incluir la verificación de contrato, tabla, matriz y vigía.",
+  "codigo": "    pendientes_legislacion = []\n    for instruccion_id, instruccion_data in _leer().items():\n        if instruccion_data.get(\"estado\") == \"pendiente\" and parece_una_orden(instruccion_data.get(\"texto\", \"\")):\n            # Verificar la existencia de contrato, tabla, matriz y vigía\n            tiene_contrato = instruccion_data.get(\"contrato\") is not None\n            tiene_tabla = instruccion_data.get(\"tabla\") is not None\n            tiene_matriz = instruccion_data.get(\"matriz\") is not None\n            tiene_vigia = instruccion_data.get(\"vigia\") is not None\n\n            if tiene_contrato and tiene_tabla and tiene_matriz and tiene_vigia:\n                # Si ya existen, se registra como 'ya existe' y no se añade a pendientes\n                # Esta lógica se implementará en la función 'resolver'\n                pass\n            else:\n                # Si falta alguno, se considera pendiente de legislar\n                pendientes_legislacion.append(instruccion_data)\n    return pendientes_legislacion",
+  "vigia": "Se necesitaría un nuevo vigía que verifique que las instrucciones marcadas como 'pendiente' en el archivo `.legislacion_pendiente.json` tengan asociados los campos 'contrato', 'tabla', 'matriz' y 'vigia'. Si alguno de estos campos falta, la instrucción no debería ser considerada 'pendiente' para legislar, sino que debería ser tratada de otra manera (por ejemplo, marcada como 'incompleta' o requerir la generación de estos elementos).",
+  "puede_danar": [
+   "arnes/candado_legislar.py"
+  ],
+  "preguntas": [
+   "¿Cómo se deben obtener los datos de contrato, tabla, matriz y vigía para cada instrucción pendiente? ¿Se deben leer de archivos específicos, se deben generar, o se espera que ya estén presentes en la estructura de datos de la instrucción?",
+   "¿Cuál es el comportamiento esperado cuando una instrucción pendiente tiene contrato, tabla, matriz y vigía ya definidos? ¿Se debe registrar como 'ya existe' automáticamente, o esto se maneja en otra parte del flujo?",
+   "¿Cómo se deben completar las legislaciones para las instrucciones restantes que no tienen contrato, tabla, matriz y vigía? ¿Se debe modificar el plan vigente o se deben crear nuevos elementos de legislación?",
+   "¿Qué significa 'registrar ya existe solo con evidencia'? ¿Dónde se almacena esta evidencia?"
+  ],
+  "confianza": "baja",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El cambio NO hace lo que pide el encargo: el encargo pide 'comprobar cuales ya tienen contrato, tabla, matriz y vigia y registrar ya existe solo con evidencia'. El codigo propuesto, cuando los cuatro campos existen, hace `pass` y NO registra nada. El propio comentario lo admite: 'Esta lógica se implementará en la función resolver'. Es decir, deja sin implementar la parte central del encargo (registrar 'ya existe').",
+   "El cambio invierte el criterio: el encargo dice que las que YA tienen contrato/tabla/matriz/vigia se registran como 'ya existe', y las RESTANTES se completan. El codigo propuesto mete en `pendientes_legislacion` justo las que NO tienen los cuatro campos, y descarta silenciosamente las que sí los tienen. Eso no es 'registrar ya existe', es ignorarlas.",
+   "El diagnostico dice que la funcion 'necesita verificar la existencia de contrato, tabla, matriz y vigia antes de marcar una instruccion como pendiente'. Pero el codigo sigue marcando como pendiente a las que no tienen los campos, sin distinguir 'pendiente de legislar' de 'incompleta'. No hay logica de registro ni de evidencia.",
+   "El campo 'vigia' del propio JSON admite que 'se necesitaria un nuevo vigia' y las 'preguntas' confiesan que no se sabe de donde salen contrato/tabla/matriz/vigia. Un cambio que no sabe de donde lee los datos no puede verificar su existencia de forma fiable."
+  ],
+  "riesgo_vecinos": [
+   "arnes/candado_legislar.py es importado por arnes/autorizacion.py y por arnes/revisor_de_programa.py (segun la seccion A QUIEN PUEDE DANAR). Cambiar el contrato de retorno de `pendientes()` (antes lista de dicts con estado pendiente y texto de orden; ahora subconjunto filtrado por campos que pueden no existir en el esquema) puede romper a esos consumidores si esperan ver todas las pendientes.",
+   "Si el esquema de las entradas de _leer() no tiene los campos 'contrato', 'tabla', 'matriz', 'vigia', entonces `is not None` siempre es False y TODAS las pendientes se colaran como 'pendientes de legislar', con lo que el filtro no filtra nada y el cambio es inutil."
+  ],
+  "que_falta": [
+   "Implementar de verdad el registro de 'ya existe' cuando los cuatro campos existen (no un `pass`).",
+   "Definir de donde se leen contrato, tabla, matriz y vigia (el propio autor lo pregunta y no lo responde).",
+   "Definir que se hace con las instrucciones que no tienen los cuatro campos: el encargo dice 'completar su legislacion dentro del plan vigente, sin cambiarlo ni apagar candados'. Eso no aparece en el codigo.",
+   "Un vigia real que verifique la condicion, no una descripcion en prosa."
+  ],
+  "resumen_para_el_jefe": "El cambio solo mete un filtro que descarta las que ya tienen los cuatro campos y deja las incompletas como pendientes, pero NO registra 'ya existe' (hace `pass`) ni completa legislacion: la parte central del encargo queda sin hacer."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 4"
+ ]
+}
