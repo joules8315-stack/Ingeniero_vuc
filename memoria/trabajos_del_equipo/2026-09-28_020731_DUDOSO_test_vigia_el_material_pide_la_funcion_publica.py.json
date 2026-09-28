@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El texto_viejo debe ser SOLO el ancla literal sin comillas, y el texto_nuevo debe repetir el ancla al final para no borrar la prueba existente; las pruebas nuevas deben tratar el retorno de falta_en_el_material como lista de avisos y la prueba dos debe comprobar que no se paga.",
+  "archivo": "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+  "funcion": "test_falta_en_el_material_avisa_solo_con_conocidas",
+  "texto_viejo": "def test_falta_en_el_material_avisa_solo_con_conocidas():",
+  "texto_nuevo": "def test_no_se_exige_una_funcion_que_no_existe():\n    from cuerpo import obrero\n\n    material = \"## 3. LOS TROZOS EXACTOS\\n### `cuerpo/obrero.py:1-10`\\n```\\ndef falta_en_el_material(paquete, tarea, conocidas=None):\\n    pass\\n```\\n\"\n    tarea = \"en falta_en_el_material y en _inventada_que_no_existe, cambiar el aviso\"\n\n    avisos = obrero.falta_en_el_material(material, tarea, conocidas=[\"falta_en_el_material\"])\n    texto = \"\\n\".join(avisos) if isinstance(avisos, list) else str(avisos)\n    assert \"falta_en_el_material\" in texto\n    assert \"_inventada_que_no_existe\" not in texto\n\n    avisos_sin = obrero.falta_en_el_material(material, tarea)\n    texto_sin = \"\\n\".join(avisos_sin) if isinstance(avisos_sin, list) else str(avisos_sin)\n    assert \"_inventada_que_no_existe\" in texto_sin\n\n\ndef test_el_obrero_pide_la_funcion_publica_antes_de_pagar(monkeypatch):\n    from cuerpo import obrero\n\n    paquete_falso = (\n        \"## 3. LOS TROZOS EXACTOS\\n\"\n        \"### `cuerpo/obrero.py:1-10`\\n\"\n        \"```\\n\"\n        \"def otra_cosa_cualquiera():\\n\"\n        \"    pass\\n\"\n        \"```\\n\"\n    )\n    tarea = \"en falta_en_el_material, cambiar el aviso que devuelve\"\n\n    def _revienta(*a, **k):\n        raise AssertionError(\"no debia llamarse\")\n\n    monkeypatch.setattr(obrero, \"_preguntar_con_relevo\", _revienta)\n    monkeypatch.setattr(obrero, \"auditar\", _revienta)\n    monkeypatch.setattr(obrero, \"_propuesta_cumple\", lambda *a, **k: (True, \"\"))\n    monkeypatch.setattr(obrero, \"_validar_en_paquete\", lambda *a, **k: (True, \"\"))\n    monkeypatch.setattr(obrero, \"_filtrar_paquete\", lambda paquete, *a, **k: paquete_falso)\n    monkeypatch.setattr(obrero, \"prestar_cerebro\", lambda *a, **k: (object(), \"falso\"))\n    monkeypatch.setattr(obrero, \"quienes_hay\", lambda *a, **k: [\"falso\"])\n\n    resultado = obrero.trabajar(tarea, paquete_falso)\n    texto = str(resultado)\n    assert \"FALTA_MATERIAL\" in texto\n    assert \"falta_en_el_material\" in texto\n\n\ndef test_falta_en_el_material_avisa_solo_con_conocidas():",
+  "cambios": [],
+  "codigo": "def test_no_se_exige_una_funcion_que_no_existe():\n    from cuerpo import obrero\n\n    material = \"## 3. LOS TROZOS EXACTOS\\n### `cuerpo/obrero.py:1-10`\\n```\\ndef falta_en_el_material(paquete, tarea, conocidas=None):\\n    pass\\n```\\n\"\n    tarea = \"en falta_en_el_material y en _inventada_que_no_existe, cambiar el aviso\"\n\n    avisos = obrero.falta_en_el_material(material, tarea, conocidas=[\"falta_en_el_material\"])\n    texto = \"\\n\".join(avisos) if isinstance(avisos, list) else str(avisos)\n    assert \"falta_en_el_material\" in texto\n    assert \"_inventada_que_no_existe\" not in texto\n\n    avisos_sin = obrero.falta_en_el_material(material, tarea)\n    texto_sin = \"\\n\".join(avisos_sin) if isinstance(avisos_sin, list) else str(avisos_sin)\n    assert \"_inventada_que_no_existe\" in texto_sin\n\n\ndef test_el_obrero_pide_la_funcion_publica_antes_de_pagar(monkeypatch):\n    from cuerpo import obrero\n\n    paquete_falso = (\n        \"## 3. LOS TROZOS EXACTOS\\n\"\n        \"### `cuerpo/obrero.py:1-10`\\n\"\n        \"```\\n\"\n        \"def otra_cosa_cualquiera():\\n\"\n        \"    pass\\n\"\n        \"```\\n\"\n    )\n    tarea = \"en falta_en_el_material, cambiar el aviso que devuelve\"\n\n    def _revienta(*a, **k):\n        raise AssertionError(\"no debia llamarse\")\n\n    monkeypatch.setattr(obrero, \"_preguntar_con_relevo\", _revienta)\n    monkeypatch.setattr(obrero, \"auditar\", _revienta)\n    monkeypatch.setattr(obrero, \"_propuesta_cumple\", lambda *a, **k: (True, \"\"))\n    monkeypatch.setattr(obrero, \"_validar_en_paquete\", lambda *a, **k: (True, \"\"))\n    monkeypatch.setattr(obrero, \"_filtrar_paquete\", lambda paquete, *a, **k: paquete_falso)\n    monkeypatch.setattr(obrero, \"prestar_cerebro\", lambda *a, **k: (object(), \"falso\"))\n    monkeypatch.setattr(obrero, \"quienes_hay\", lambda *a, **k: [\"falso\"])\n\n    resultado = obrero.trabajar(tarea, paquete_falso)\n    texto = str(resultado)\n    assert \"FALTA_MATERIAL\" in texto\n    assert \"falta_en_el_material\" in texto\n\n\ndef test_falta_en_el_material_avisa_solo_con_conocidas():",
+  "vigia": "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "test_el_obrero_pide_la_funcion_publica_antes_de_pagar afirma assert \"FALTA_MATERIAL\" in texto, pero ese centinela NO aparece en ningun punto del material (el trecho llega a 'con monkeypatch pon estas ' y se corta justo antes de decir que poner y que debe devolver trabajar). Si obrero.trabajar no emite literalmente ese token, la prueba no podra ponerse verde nunca y la reparacion del turno siguiente no aterrizara: es un rojo falso disfrazado de prueba buena.",
+   "La misma prueba depende de monkeypatchear nombres que el material nunca lista de forma cerrada (_preguntar_con_relevo, auditar, _propuesta_cumple, _validar_en_paquete, _filtrar_paquete, prestar_cerebro, quienes_hay) y de que obrero tenga un punto de entrada llamado trabajar, que tampoco sale en el material. Si alguno no existe o tiene otra firma, la prueba revienta por AttributeError/TypeError y no por la causa que deberia vigilar.",
+   "test_no_se_exige_una_funcion_que_no_existe llama con palabra clave conocidas=[\"falta_en_el_material\"], pero la prueba que ya existia pasa ese mismo dato en posicional (falta_en_el_material(material, encargo, {\"comprobar_pasos\"})), o sea que el material no demuestra que el parametro se llame exactamente asi. Si se llama de otro modo, la prueba uno, que es la que sostiene el diagnostico, muere por TypeError."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno visible: los monkeypatch se revierten solos, no se toca cuerpo/obrero.py y el ancla se vuelve a emitir, de modo que las cuatro pruebas previas siguen intactas.",
+   "Ruido menor de estilo: el archivo importa falta_en_el_material a nivel de modulo y las pruebas nuevas vuelven a importarlo con from cuerpo import obrero dentro de la funcion. Funciona si ambos apuntan al mismo objeto, que es lo esperable, pero es una segunda puerta al mismo simbolo."
+  ],
+  "que_falta": [
+   "El texto del encargo se corta justo en la instruccion que mas importa para la prueba dos: que monkeypatch poner y con que valores. Sin esa parte no se puede juzgar si el set elegido cumple lo pedido (en concreto, prestar_cerebro y quienes_hay devuelven objetos falsos en vez de reventar, con lo que la prohibicion de pagar queda comprobada solo por el assert de FALTA_MATERIAL, no por el corte de la llamada).",
+   "Ninguna prueba comprueba que _inventada_que_no_existe no se pide en el camino de verdad (trabajar); la prueba uno llama directo a falta_en_el_material. Es lo que pedia el encargo, asi que no es fallo, pero conviene saberlo."
+  ],
+  "resumen_para_el_jefe": "El cambio cumple todo lo que se lee en el material (ancla sin comillas, dos pruebas nuevas antes de la vieja, la vieja intacta, no se toca obrero.py, nada inventado), pero la prueba dos se apoya en el centinela FALTA_MATERIAL y en una lista de monkeypatches que el encargo deja truncados: approve solo si confirmas en el codigo real que ese token y esos nombres son los de verdad, porque si no la prueba nace roja y no se podra arreglar en la ronda siguiente."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40538 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (44316 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (44605 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 3"
+ ]
+}

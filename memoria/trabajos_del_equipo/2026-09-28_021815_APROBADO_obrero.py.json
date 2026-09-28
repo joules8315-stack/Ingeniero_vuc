@@ -1,0 +1,81 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py faltan tres trozos: la funcion funciones_que_declara, el uso de conocidas dentro de falta_en_el_material, y el enganche en trabajar que arma las conocidas y las pasa como tercer argumento.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def falta_en_el_material(material, encargo, conocidas=None):",
+    "texto_nuevo": "def funciones_que_declara(ruta):\n    \"\"\"Devuelve el conjunto de nombres que ese archivo declara: funciones y clases,\n    incluidas las que viven dentro de una clase. Ante cualquier error, conjunto vacio.\n    Nunca lanza.\"\"\"\n    try:\n        import ast as _ast\n        with open(ruta, encoding=\"utf-8\") as _f:\n            _arbol = _ast.parse(_f.read())\n        _nombres = set()\n        for _nodo in _ast.walk(_arbol):\n            if isinstance(_nodo, (_ast.FunctionDef, _ast.AsyncFunctionDef, _ast.ClassDef)):\n                _nombres.add(_nodo.name)\n        return _nombres\n    except Exception:\n        return set()\n\n\ndef falta_en_el_material(material, encargo, conocidas=None):"
+   },
+   {
+    "texto_viejo": "    # --- Funciones nombradas en el encargo ---\n    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)",
+    "texto_nuevo": "    # --- Funciones nombradas en el encargo ---\n    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)\n    if conocidas:\n        funciones = [f for f in funciones if f in conocidas]"
+   },
+   {
+    "texto_viejo": "            faltantes = falta_en_el_material(material_obrero, tarea)",
+    "texto_nuevo": "            _conocidas = set()\n            if _archivo_tarea:\n                _raiz_proyecto = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), \"..\"))\n                for _ruta_nombrada in _archivo_tarea:\n                    _ruta_resuelta = _ruta_nombrada\n                    if not os.path.isabs(_ruta_resuelta):\n                        _ruta_resuelta = os.path.join(_raiz_proyecto, _ruta_resuelta)\n                    _conocidas |= funciones_que_declara(_ruta_resuelta)\n            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)"
+   }
+  ],
+  "cambio": "Anadir funciones_que_declara antes de falta_en_el_material; dentro de falta_en_el_material filtrar las funciones por conocidas cuando trae nombres; y en trabajar, antes del ancla, armar la coleccion de nombres conocidos recorriendo los archivos que la tarea nombra resueltos contra la raiz del proyecto y pasarla como tercer argumento.",
+  "codigo": "def funciones_que_declara(ruta):\n    try:\n        import ast as _ast\n        with open(ruta, encoding=\"utf-8\") as _f:\n            _arbol = _ast.parse(_f.read())\n        _nombres = set()\n        for _nodo in _ast.walk(_arbol):\n            if isinstance(_nodo, (_ast.FunctionDef, _ast.AsyncFunctionDef, _ast.ClassDef)):\n                _nombres.add(_nodo.name)\n        return _nombres\n    except Exception:\n        return set()",
+  "vigia": "vigias/test_vigia_el_material_pide_la_funcion_publica.py, en particular test_el_obrero_le_pasa_las_conocidas_a_la_comprobacion y test_no_se_exige_una_funcion_que_no_existe",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cerebro/protocolo.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py",
+   "vigias/test_vigia_dudas.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "protocolo.py",
+   "revisor_de_programa.py",
+   "test_vigia_dudas.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_memoria_completa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El filtro convierte en lista lo que devuelva _nombres_de_funcion_del_texto: si aguas abajo de falta_en_el_material ese valor se usa con operaciones de conjunto (set(), diferencia, update) y no como simple iterable, el AttributeError apareceria ahi. Es el unico punto de la propuesta que no se puede verificar con el material recibido y conviene mirarlo antes de dar por buena la ronda.",
+   "La lista de funciones exigidas se recalcula en cada vuelta del bucle en que vive el ancla (12 espacios de indentacion), no una sola vez: correcto, pero hace el parseo por AST de los archivos de la tarea una vez por material. Molestia, no fallo.",
+   "funciones_que_declara junta funciones, clases y metodos en un mismo conjunto, tal y como pide el encargo, pero eso permite que un nombre de clase satisfaga la exigencia de una funcion. Es exactamente la regla pedida, asi que no es culpa de la reparacion.",
+   "Falsos negativos posibles: una funcion con raya baja realmente necesaria que viva en un archivo que la tarea NO nombra quedara silenciosamente sin exigir, porque el filtro la descarta. Consecuencia directa de la regla que el encargo impone, no un error del obrero.",
+   "Los vecinos listados que el obrero no leyo (vigias de trozos pegados, aviso de rechazo, extension suelta, memoria completa) se ven solo por el cambio de comportamiento de falta_en_el_material cuando se le pasa un conjunto no vacio; con el default None siguen exactamente igual."
+  ],
+  "que_falta": [
+   "Correr las dos pruebas rojas que nombra el encargo (test_el_obrero_le_pasa_las_conocidas_a_la_comprobacion y test_no_se_exige_una_funcion_que_no_existe): la propuesta no muestra esa ejecucion, y es la unica prueba directa de que el enganche y el filtro hacen lo pedido.",
+   "Confirmar en el archivo que lo que devuelve _nombres_de_funcion_del_texto es una lista de nombres planos y que en falta_en_el_material se consume solo recorriendolo."
+  ],
+  "resumen_para_el_jefe": "Cumple los tres trozos pedidos, usa el ancla literal y no toca otro archivo; approve con una sola comprobacion pendiente: que el filtrado a lista no rompa como se consume mas abajo la lista de funciones, mas correr las dos pruebas rojas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39649 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

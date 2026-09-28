@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba test_el_obrero_le_pasa_las_conocidas_a_la_comprobacion nace VERDE por error porque su patron regex cuenta el renglon 'def falta_en_el_material(material, encargo, conocidas=None)' como si fuera una llamada con tres argumentos, y ademas lee la ruta con texto relativo dependiente de la carpeta de ejecucion.",
+  "archivo": "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+  "funcion": "test_el_obrero_le_pasa_las_conocidas_a_la_comprobacion",
+  "texto_viejo": "def test_el_obrero_le_pasa_las_conocidas_a_la_comprobacion():\n    \"\"\"El obrero entrega a falta_en_el_material la lista de funciones que existen de verdad.\"\"\"\n    import re\n    from pathlib import Path\n\n    texto = Path(\"cuerpo/obrero.py\").read_text(encoding=\"utf-8\")\n    patron = re.compile(r\"falta_en_el_material\\s*\\(([^)]*)\\)\", re.S)\n    llamadas = patron.findall(texto)\n    assert llamadas, \"no aparece ninguna llamada a falta_en_el_material en cuerpo/obrero.py\"\n    assert any(len([a for a in re.split(r\",(?![^\\[\\]{}()]*[\\]})])\", args) if a.strip()]) >= 3\n               for args in llamadas), \\\n        \"ninguna llamada a falta_en_el_material le pasa TRES argumentos (las conocidas)\"",
+  "texto_nuevo": "def test_el_obrero_le_pasa_las_conocidas_a_la_comprobacion():\n    \"\"\"El obrero entrega a falta_en_el_material la lista de funciones que existen de verdad.\"\"\"\n    import os\n    import re\n\n    ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), \"..\", \"cuerpo\", \"obrero.py\")\n    texto = open(ruta, encoding=\"utf-8\").read()\n    patron = re.compile(r\"falta_en_el_material\\s*\\(([^)]*)\\)\", re.S)\n    llamadas = [m for m in patron.finditer(texto)\n                if not texto[max(0, m.start() - 4):m.start()].endswith(\"def \")]\n    assert llamadas, \"no aparece ninguna llamada a falta_en_el_material en cuerpo/obrero.py\"\n    assert any(len([a for a in re.split(r\",(?![^\\[\\]{}()]*[\\]})])\", m.group(1)) if a.strip()]) >= 3\n               for m in llamadas), \\\n        \"ninguna llamada a falta_en_el_material le pasa TRES argumentos (las conocidas)\"",
+  "cambio": "Reescribir la prueba entera: (1) descartar las apariciones del nombre que vienen justo detras de la palabra 'def ' para que solo cuenten las llamadas de verdad, y (2) armar la ruta del archivo cuerpo/obrero.py con os.path a partir de la ruta de este mismo archivo de prueba (subir un nivel desde vigias y entrar a cuerpo/obrero.py) en vez de usar el texto relativo 'cuerpo/obrero.py'.",
+  "codigo": "def test_el_obrero_le_pasa_las_conocidas_a_la_comprobacion():\n    \"\"\"El obrero entrega a falta_en_el_material la lista de funciones que existen de verdad.\"\"\"\n    import os\n    import re\n\n    ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), \"..\", \"cuerpo\", \"obrero.py\")\n    texto = open(ruta, encoding=\"utf-8\").read()\n    patron = re.compile(r\"falta_en_el_material\\s*\\(([^)]*)\\)\", re.S)\n    llamadas = [m for m in patron.finditer(texto)\n                if not texto[max(0, m.start() - 4):m.start()].endswith(\"def \")]\n    assert llamadas, \"no aparece ninguna llamada a falta_en_el_material en cuerpo/obrero.py\"\n    assert any(len([a for a in re.split(r\",(?![^\\[\\]{}()]*[\\]})])\", m.group(1)) if a.strip()]) >= 3\n               for m in llamadas), \\\n        \"ninguna llamada a falta_en_el_material le pasa TRES argumentos (las conocidas)\"",
+  "vigia": "La propia prueba test_el_obrero_le_pasa_las_conocidas_a_la_comprobacion: al correrla debe quedar ROJA hoy (no existe ninguna llamada de verdad con tres argumentos), y debe ponerse VERDE cuando en la ronda siguiente se anada una llamada real a falta_en_el_material con tres argumentos en cuerpo/obrero.py.",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno real: solo se reescribe la prueba ancla; las otras cinco pruebas, cuerpo/obrero.py y el resto de archivos quedan intactos, y el import de Path estaba dentro de la funcion, asi que quitarlo no deja a ninguna vecina sin simbolo."
+  ],
+  "que_falta": [
+   "Nitidez, no fallo: open(ruta).read() deja el descriptor sin cerrar y la ruta queda sin normalizar ('vigias\\\\..\\\\cuerpo\\\\obrero.py'); funciona igual en Windows y no impide aprobar."
+  ],
+  "resumen_para_el_jefe": "Cumple exactamente los dos arreglos pedidos (filtra el renglon 'def ' comprobando los 4 caracteres previos y arma la ruta con os.path desde __file__), no inventa nada y no toca a nadie; la prueba queda roja como debe."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (37502 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la vigia que exige el parametro opcional conocidas en _nombres_de_funcion_del_texto y falta_en_el_material; nace roja a proposito porque obrero.py aun no lo tiene.",
+  "archivo": "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+  "texto_nuevo": "import os\nimport sys\n\n# Arranque: la carpeta un nivel arriba de vigias y la carpeta cuerpo, para poder\n# importar cuerpo.obrero sin depender de como se lance pytest.\n_AQUI = os.path.dirname(os.path.abspath(__file__))\n_RAIZ = os.path.dirname(_AQUI)\n_CUERPO = os.path.join(_RAIZ, \"cuerpo\")\nfor _ruta in (_RAIZ, _CUERPO):\n    if _ruta not in sys.path:\n        sys.path.insert(0, _ruta)\n\nfrom cuerpo.obrero import _nombres_de_funcion_del_texto, falta_en_el_material\n\n\nTEXTO_ENCARGO = (\n    \"En comprobar_pasos, sacar la llamada a pytest a una funcion propia\"\n)\n\n\ndef test_sin_conocidas_no_pide_la_funcion_publica():\n    \"\"\"Hoy, sin pasar conocidas, un nombre normal no se reconoce.\"\"\"\n    nombres = _nombres_de_funcion_del_texto(TEXTO_ENCARGO)\n    assert \"comprobar_pasos\" not in nombres\n\n\ndef test_con_conocidas_si_pide_la_funcion_publica():\n    \"\"\"Con conocidas, las palabras del texto que estan en la coleccion vuelven.\"\"\"\n    conocidas = {\"comprobar_pasos\", \"otro_nombre_uno\", \"otro_nombre_dos\"}\n    nombres = _nombres_de_funcion_del_texto(TEXTO_ENCARGO, conocidas)\n    assert \"comprobar_pasos\" in nombres\n    assert \"otro_nombre_uno\" not in nombres\n    assert \"otro_nombre_dos\" not in nombres\n\n\ndef test_lo_de_siempre_sigue_funcionando():\n    \"\"\"Los nombres con raya baja vuelven aunque no se pase conocidas.\"\"\"\n    nombres = _nombres_de_funcion_del_texto(\"hay que tocar _prompt_obrero\")\n    assert \"_prompt_obrero\" in nombres\n\n\ndef test_falta_en_el_material_avisa_solo_con_conocidas():\n    \"\"\"Con conocidas avisa que falta la funcion; sin conocidas no dice nada de ella.\"\"\"\n    material = \"el material trae cuerpo/capataz.py y nada mas\"\n    encargo = \"En comprobar_pasos, sacar la llamada a pytest a una funcion propia\"\n\n    avisos_con = falta_en_el_material(material, encargo, {\"comprobar_pasos\"})\n    assert any(\"comprobar_pasos\" in aviso for aviso in avisos_con)\n\n    avisos_sin = falta_en_el_material(material, encargo)\n    assert not any(\"comprobar_pasos\" in aviso for aviso in avisos_sin)\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El arranque mete la raiz y raiz/cuerpo en sys.path[0] al importarse el archivo, y eso afecta a toda la sesion de pytest, no solo a este archivo: si algun modulo de primer nivel de la raiz choca con un nombre que importan otras pruebas, cambia cual se resuelve. Es exactamente lo que ordena el encargo (usar os a partir de __file__), asi que no se rechaza, pero conviene que el resto de vigias usen el mismo patron para que no se pisen entre si.",
+   "La prueba 4 depende de la firma real de falta_en_el_material: el material nombra la funcion y el parametro nuevas, pero no dice cual es el orden de sus argumentos actuales ni que devuelve. Si el orden fuera distinto o devolviera un unico string en vez de una lista de avisos, las aserciones fallarian con la reparacion correcta y la vigia no se pondria verde nunca."
+  ],
+  "que_falta": [
+   "Ninguna de las cuatro pruebas comprueba la parte 'sin repetir ninguna' del contrato: si la reparacion devuelve comprobar_pasos duplicado en la lista, la vigia sigue verde. El encargo no lo pedia entre las cuatro pruebas, asi que no es fallo, pero es el agujero del contrato que nadie vigila.",
+   "Tampoco se vigila el 'sin cambiar ninguna otra regla' de falta_en_el_material: ningun assert comprueba que sin conocidas siga avisando lo que avisaba antes, asi que una reparacion que rompiera reglas de aviso pasaria inadvertida."
+  ],
+  "resumen_para_el_jefe": "Crea el archivo de la vigia pedido con las cuatro pruebas exactas, sin tocar cuerpo/obrero.py y sin codigo de mas; nace roja como manda la ley, y el unico riesgo de verdad es que la prueba 4 dalle por hecho que falta_en_el_material devuelve una lista de textos y con que orden de argumentos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40367 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

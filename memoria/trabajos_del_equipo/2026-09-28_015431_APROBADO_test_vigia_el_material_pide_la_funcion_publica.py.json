@@ -1,0 +1,58 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El material no trae el archivo vigias/test_vigia_el_material_pide_la_funcion_publica.py completo, solo el ancla final, y las pruebas nuevas deben anadirse tras ese ancla sin tocar las cuatro existentes.",
+  "archivo": "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+  "funcion": "final del archivo (tras la ultima comprobacion)",
+  "texto_viejo": "    assert not any(comprobar_pasos in aviso for aviso in avisos_sin)",
+  "texto_nuevo": "    assert not any(comprobar_pasos in aviso for aviso in avisos_sin)\n\n\ndef test_no_se_exige_una_funcion_que_no_existe():\n    from cuerpo.obrero import falta_en_el_material\n\n    material = \"# PAQUETE\\n\\n### `cuerpo/obrero.py`\\n\\n```\\ndef falta_en_el_material(paquete, tarea, conocidas=None):\\n    pass\\n```\\n\"\n    tarea = \"en falta_en_el_material cambiar el aviso; y tambien en _inventada_que_no_existe cambiar otra cosa\"\n\n    aviso = falta_en_el_material(material, tarea, conocidas=[\"falta_en_el_material\"])\n    assert \"falta_en_el_material\" in aviso\n    assert \"_inventada_que_no_existe\" not in aviso\n\n    aviso_sin = falta_en_el_material(material, tarea)\n    assert \"_inventada_que_no_existe\" in aviso_sin\n\n\ndef test_el_obrero_pide_la_funcion_publica_antes_de_pagar(monkeypatch):\n    from cuerpo import obrero\n\n    paquete_falso = (\n        \"# PAQUETE MINIMO\\n\\n\"\n        \"### `cuerpo/obrero.py`\\n\\n\"\n        \"```\\ndef otra_cosa_cualquiera():\\n    return 1\\n```\\n\"\n    )\n    tarea_falsa = \"en falta_en_el_material, cambiar el aviso que devuelve\"\n\n    llamadas = {\"relevo\": 0, \"auditar\": 0}\n\n    def _relevo_revienta(*a, **k):\n        llamadas[\"relevo\"] += 1\n        raise AssertionError(\"no se debe llamar a _preguntar_con_relevo\")\n\n    def _auditar_revienta(*a, **k):\n        llamadas[\"auditar\"] += 1\n        raise AssertionError(\"no se debe llamar a auditar\")\n\n    monkeypatch.setattr(obrero, \"_preguntar_con_relevo\", _relevo_revienta)\n    monkeypatch.setattr(obrero, \"auditar\", _auditar_revienta)\n    monkeypatch.setattr(obrero, \"_propuesta_cumple\", lambda *a, **k: (True, \"\"))\n    monkeypatch.setattr(obrero, \"_validar_en_paquete\", lambda *a, **k: [])\n    monkeypatch.setattr(obrero, \"_filtrar_paquete\", lambda paquete, *a, **k: paquete_falso)\n    monkeypatch.setattr(obrero, \"prestar_cerebro\", lambda *a, **k: (object(), \"falso\"))\n    monkeypatch.setattr(obrero, \"quienes_hay\", lambda *a, **k: [\"falso\"])\n\n    salida = obrero.trabajar(paquete_falso, tarea_falsa)\n    texto = salida if isinstance(salida, str) else str(salida)\n\n    assert \"FALTA_MATERIAL\" in texto\n    assert \"falta_en_el_material\" in texto\n    assert llamadas[\"relevo\"] == 0\n    assert llamadas[\"auditar\"] == 0",
+  "cambio": "Anadir al final del archivo, tras el ancla, las dos pruebas nuevas test_no_se_exige_una_funcion_que_no_existe y test_el_obrero_pide_la_funcion_publica_antes_de_pagar, sin tocar las cuatro existentes ni ningun otro archivo.",
+  "codigo": "def test_no_se_exige_una_funcion_que_no_existe():\n    from cuerpo.obrero import falta_en_el_material\n\n    material = \"# PAQUETE\\n\\n### `cuerpo/obrero.py`\\n\\n```\\ndef falta_en_el_material(paquete, tarea, conocidas=None):\\n    pass\\n```\\n\"\n    tarea = \"en falta_en_el_material cambiar el aviso; y tambien en _inventada_que_no_existe cambiar otra cosa\"\n\n    aviso = falta_en_el_material(material, tarea, conocidas=[\"falta_en_el_material\"])\n    assert \"falta_en_el_material\" in aviso\n    assert \"_inventada_que_no_existe\" not in aviso\n\n    aviso_sin = falta_en_el_material(material, tarea)\n    assert \"_inventada_que_no_existe\" in aviso_sin\n\n\ndef test_el_obrero_pide_la_funcion_publica_antes_de_pagar(monkeypatch):\n    from cuerpo import obrero\n\n    paquete_falso = (\n        \"# PAQUETE MINIMO\\n\\n\"\n        \"### `cuerpo/obrero.py`\\n\\n\"\n        \"```\\ndef otra_cosa_cualquiera():\\n    return 1\\n```\\n\"\n    )\n    tarea_falsa = \"en falta_en_el_material, cambiar el aviso que devuelve\"\n\n    llamadas = {\"relevo\": 0, \"auditar\": 0}\n\n    def _relevo_revienta(*a, **k):\n        llamadas[\"relevo\"] += 1\n        raise AssertionError(\"no se debe llamar a _preguntar_con_relevo\")\n\n    def _auditar_revienta(*a, **k):\n        llamadas[\"auditar\"] += 1\n        raise AssertionError(\"no se debe llamar a auditar\")\n\n    monkeypatch.setattr(obrero, \"_preguntar_con_relevo\", _relevo_revienta)\n    monkeypatch.setattr(obrero, \"auditar\", _auditar_revienta)\n    monkeypatch.setattr(obrero, \"_propuesta_cumple\", lambda *a, **k: (True, \"\"))\n    monkeypatch.setattr(obrero, \"_validar_en_paquete\", lambda *a, **k: [])\n    monkeypatch.setattr(obrero, \"_filtrar_paquete\", lambda paquete, *a, **k: paquete_falso)\n    monkeypatch.setattr(obrero, \"prestar_cerebro\", lambda *a, **k: (object(), \"falso\"))\n    monkeypatch.setattr(obrero, \"quienes_hay\", lambda *a, **k: [\"falso\"])\n\n    salida = obrero.trabajar(paquete_falso, tarea_falsa)\n    texto = salida if isinstance(salida, str) else str(salida)\n\n    assert \"FALTA_MATERIAL\" in texto\n    assert \"falta_en_el_material\" in texto\n    assert llamadas[\"relevo\"] == 0\n    assert llamadas[\"auditar\"] == 0",
+  "vigia": "vigias/test_vigia_el_material_pide_la_funcion_publica.py (las dos pruebas nuevas nacen rojas a proposito; el cambio que las pone verdes va en cuerpo/obrero.py en la ronda siguiente)",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "monkeypatch.setattr(obrero, 'prestar_cerebro', lambda *a, **k: (object(), 'falso')) y 'quienes_hay' asumen que ambos se patchean sobre el namespace de cuerpo/obrero.py y que prestar_cerebro devuelve una tupla (cerebro, llave); siestan en otro modulo o se llaman como piezas.prestar_cerebro(...), el setattr revienta con AttributeError y la prueba no queda roja-por-diseño sino roja-por-error.",
+   "'_propuesta_cumple' como (True, \"\") tambien es una suposicion sobre la forma del retorno, no verificada.",
+   "lambda paquete, *a, **k: paquete_falso para _filtrar_paquete: si trabajar la invoca con otra palabra clave distinta de 'paquete', revienta TypeError; lambda *a, **k era igual de valido y mas seguro."
+  ],
+  "que_falta": [
+   "texto = salida if isinstance(salida, str) else str(salida) asume que trabajar devuelve str o algo cuyo repr contenga FALTA_MATERIAL; si devuelve un objeto con el aviso en un atributo, las aserciones no podran ponerse verdes nunca.",
+   "la tercera asercion de la prueba uno solo comprueba que sin conocidas se pide la inventada; 'tambien' sugeria comprobar las dos, aunque la parte que tiene que nacer roja (la segunda) esta bien."
+  ],
+  "resumen_para_el_jefe": "Arregla exactamente lo pedido: dos pruebas nuevas al final, tras el ancla literal, sin tocar las cuatro existentes ni otros archivos, usando solo funciones y el parametro 'conocidas' que el material nombra; lo unico fragile son suposiciones no verificadas sobre donde y con que firma estan prestar_cerebro/quienes_hay y sobre la forma de lo que devuelve trabajar, que se ajustarian en la ronda siguiente."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40551 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "GPT-OSS 120B (Groq) no le cabe (43705 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "GPT-OSS 120B (Groq) no le cabe (43907 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "GPT-OSS 120B (Groq) no le cabe (44109 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

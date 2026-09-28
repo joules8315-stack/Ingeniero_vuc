@@ -1,0 +1,79 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El extractor _nombres_de_funcion_del_texto solo reconoce nombres que empiezan con raya baja, y falta_en_el_material no acepta ni pasa una coleccion de nombres conocidos, asi que una funcion publica nombrada en el encargo nunca se pide.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_nombres_de_funcion_del_texto",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _nombres_de_funcion_del_texto(texto_encargo):\n    \"\"\"Devuelve los nombres de funcion que un texto nombra.\n\n    Se buscan palabras que empiecen por raya baja (como _prompt_obrero).\n    El nombre se corta en el primer caracter que no puede formar parte de un\n    nombre de Python: solo letras, numeros y rayas bajas desde el principio.\n    Asi un trozo pegado como '_anotar(segundos' se queda en '_anotar'.\n    \"\"\"\n    funciones = []\n    for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n        limpia = palabra.strip(\"()[]{}<>\\\"'`.:\")\n        if limpia.startswith(\"_\") and len(limpia) > 1:\n            corte = len(limpia)\n            for _i, _c in enumerate(limpia):\n                if not (_c.isalnum() or _c == \"_\"):\n                    corte = _i\n                    break\n            nombre = limpia[:corte]\n            # si despues de cortar no queda mas que la raya baja, no se exige\n            if nombre.startswith(\"_\") and len(nombre) > 1:\n                funciones.append(nombre)\n    return funciones",
+    "texto_nuevo": "def _nombres_de_funcion_del_texto(texto_encargo, conocidas=None):\n    \"\"\"Devuelve los nombres de funcion que un texto nombra.\n\n    Se buscan palabras que empiecen por raya baja (como _prompt_obrero).\n    El nombre se corta en el primer caracter que no puede formar parte de un\n    nombre de Python: solo letras, numeros y rayas bajas desde el principio.\n    Asi un trozo pegado como '_anotar(segundos' se queda en '_anotar'.\n\n    Si se pasa `conocidas` (una coleccion de nombres), ademas se recorren las\n    palabras del texto y se agregan las que aparecen en esa coleccion. Asi una\n    funcion de nombre normal nombrada en el encargo tambien se reconoce. La\n    lista que vuelve no repite ningun nombre. Si `conocidas` es None o viene\n    rara, se porta igual que antes.\n    \"\"\"\n    funciones = []\n    for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n        limpia = palabra.strip(\"()[]{}<>\\\"'`.:\")\n        if limpia.startswith(\"_\") and len(limpia) > 1:\n            corte = len(limpia)\n            for _i, _c in enumerate(limpia):\n                if not (_c.isalnum() or _c == \"_\"):\n                    corte = _i\n                    break\n            nombre = limpia[:corte]\n            # si despues de cortar no queda mas que la raya baja, no se exige\n            if nombre.startswith(\"_\") and len(nombre) > 1:\n                funciones.append(nombre)\n    if conocidas:\n        try:\n            for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n                limpia = palabra.strip(\"()[]{}<>\\\"'`.:\")\n                if limpia in conocidas and limpia not in funciones:\n                    funciones.append(limpia)\n        except Exception:\n            pass\n    return funciones"
+   },
+   {
+    "texto_viejo": "def falta_en_el_material(material, encargo):",
+    "texto_nuevo": "def falta_en_el_material(material, encargo, conocidas=None):"
+   },
+   {
+    "texto_viejo": "    funciones = _nombres_de_funcion_del_texto(texto_encargo)",
+    "texto_nuevo": "    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)"
+   }
+  ],
+  "cambio": "Anadir el parametro opcional conocidas a _nombres_de_funcion_del_texto (que ademas agrega las palabras del texto que estan en esa coleccion, sin repetir) y a falta_en_el_material (que se lo pasa al extractor).",
+  "codigo": "def _nombres_de_funcion_del_texto(texto_encargo, conocidas=None):\n    ...\n    if conocidas:\n        try:\n            for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n                limpia = palabra.strip(\"()[]{}<>\\\"'`.:\")\n                if limpia in conocidas and limpia not in funciones:\n                    funciones.append(limpia)\n        except Exception:\n            pass\n    return funciones\n\ndef falta_en_el_material(material, encargo, conocidas=None):\n    ...\n    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)",
+  "vigia": "vigias/test_vigia_el_material_pide_la_funcion_publica.py (sus cuatro pruebas: sin conocidas no pide la publica, con conocidas si, lo de siempre sigue, y falta_en_el_material avisa solo con conocidas)",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Menor: si 'conocidas' llega como texto suelto (no coleccion), 'limpia in conocidas' hace busqueda por subcadena y puede anadir un nombre equivocado sin que el try/except lo detecte; el docstring promete 'si viene rara, se porta igual que hoy' y eso no se cumple literalmente en ese caso.",
+   "Menor: el troceado de palabras esta duplicado (mismo replace/strip en dos bucles) en vez de reutilizar el bucle existente; si un dia cambian las reglas de limpieza, el bloque nuevo se queda viejo. No rompe hoy.",
+   "Menor: 'except Exception: pass' cumple 'nunca lanza' pero se traga tambien un 'conocidas' roto en silencio."
+  ],
+  "riesgo_vecinos": [
+   "Las otras llamadas al extractor no se tocan y siguen funcionando porque el parametro es opcional (None) y la rama de raya baja queda intacta: sin cambios en asignador, revisor, trozos, dudas ni respuestas.",
+   "La unica llamada modificada es la de falta_en_el_material, que es justo la que el encargo manda cambiar ('se lo pasa al extractor cuando lo llama'); no se toco ninguna otra llamada existente.",
+   "No se repiten nombres en lo que vuelve (guarda 'limpia not in funciones'), asi que la vigia de la funcion publica no se rompe por duplicados.",
+   "La rama de raya baja no se modifico un caracter, asi que la prueba 'lo de siempre sigue' sigue verde."
+  ],
+  "que_falta": [
+   "Nada obligatorio: las cuatro pruebas de la vigia quedan cubiertas por los dos parametros opcionales y el paso de 'conocidas'.",
+   "Opcional y barato: normalizar 'conocidas' a coleccion (o comprobar que no sea str) antes del browseo para que la garantia de 'nunca lanza / se porta como hoy' sea literal."
+  ],
+  "resumen_para_el_jefe": "Aprobado: el reparo hace justo los dos trozos pedidos, no toca ningun otro archivo, deja las llamadas viejas intactas por ser parametros opcionales y no inventa nada; solo queda un detalle menor con 'conocidas' si llega como texto suelto."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39315 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,60 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Faltan las dos pruebas nuevas en vigias/test_vigia_el_material_pide_la_funcion_publica.py; nacen rojas a proposito y no se toca cuerpo/obrero.py en esta ronda",
+  "archivo": "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+  "funcion": "test_falta_en_el_material_avisa_solo_con_conocidas",
+  "texto_viejo": "def test_falta_en_el_material_avisa_solo_con_conocidas():",
+  "texto_nuevo": "def test_no_se_exige_una_funcion_que_no_existe():\n    \"\"\"Con conocidas en posicion, el aviso nombra la que existe y NO la inventada.\"\"\"\n    from cuerpo.obrero import falta_en_el_material\n\n    material = \"el material trae cuerpo/obrero.py y nada mas\"\n    encargo = \"En falta_en_el_material, sacar la llamada a _raya_baja_inventada a una funcion propia\"\n\n    avisos_con = falta_en_el_material(material, encargo, {\"falta_en_el_material\"})\n    assert any(\"falta_en_el_material\" in aviso for aviso in avisos_con)\n    assert not any(\"_raya_baja_inventada\" in aviso for aviso in avisos_con)\n\n    avisos_sin = falta_en_el_material(material, encargo)\n    assert any(\"_raya_baja_inventada\" in aviso for aviso in avisos_sin)\n\n\ndef test_el_obrero_le_pasa_las_conocidas_a_la_comprobacion():\n    \"\"\"El obrero entrega a falta_en_el_material la lista de funciones que existen de verdad.\"\"\"\n    import re\n    from pathlib import Path\n\n    texto = Path(\"cuerpo/obrero.py\").read_text(encoding=\"utf-8\")\n    patron = re.compile(r\"falta_en_el_material\\s*\\(([^)]*)\\)\", re.S)\n    llamadas = patron.findall(texto)\n    assert llamadas, \"no aparece ninguna llamada a falta_en_el_material en cuerpo/obrero.py\"\n    assert any(len([a for a in re.split(r\",(?![^\\[\\]{}()]*[\\]})])\", args) if a.strip()]) >= 3\n               for args in llamadas), \\\n        \"ninguna llamada a falta_en_el_material le pasa TRES argumentos (las conocidas)\"\n\n\ndef test_falta_en_el_material_avisa_solo_con_conocidas():",
+  "cambios": "",
+  "cambio": "Anadir DOS pruebas nuevas delante del ancla, sin tocar las cuatro que ya estan ni ningun otro archivo. La prueba uno llama a falta_en_el_material con conocidas EN POSICION como tercer argumento y comprueba que el aviso nombra la que existe y no la inventada, y que sin el tercer argumento se pide tambien la inventada. La prueba dos lee cuerpo/obrero.py en disco y comprueba que hay una llamada a falta_en_el_material con TRES argumentos, buscando en el texto sin importar espacios de mas.",
+  "codigo": "def test_no_se_exige_una_funcion_que_no_existe():\n    \"\"\"Con conocidas en posicion, el aviso nombra la que existe y NO la inventada.\"\"\"\n    from cuerpo.obrero import falta_en_el_material\n\n    material = \"el material trae cuerpo/obrero.py y nada mas\"\n    encargo = \"En falta_en_el_material, sacar la llamada a _raya_baja_inventada a una funcion propia\"\n\n    avisos_con = falta_en_el_material(material, encargo, {\"falta_en_el_material\"})\n    assert any(\"falta_en_el_material\" in aviso for aviso in avisos_con)\n    assert not any(\"_raya_baja_inventada\" in aviso for aviso in avisos_con)\n\n    avisos_sin = falta_en_el_material(material, encargo)\n    assert any(\"_raya_baja_inventada\" in aviso for aviso in avisos_sin)\n\n\ndef test_el_obrero_le_pasa_las_conocidas_a_la_comprobacion():\n    \"\"\"El obrero entrega a falta_en_el_material la lista de funciones que existen de verdad.\"\"\"\n    import re\n    from pathlib import Path\n\n    texto = Path(\"cuerpo/obrero.py\").read_text(encoding=\"utf-8\")\n    patron = re.compile(r\"falta_en_el_material\\s*\\(([^)]*)\\)\", re.S)\n    llamadas = patron.findall(texto)\n    assert llamadas, \"no aparece ninguna llamada a falta_en_el_material en cuerpo/obrero.py\"\n    assert any(len([a for a in re.split(r\",(?![^\\[\\]{}()]*[\\]})])\", args) if a.strip()]) >= 3\n               for args in llamadas), \\\n        \"ninguna llamada a falta_en_el_material le pasa TRES argumentos (las conocidas)\"",
+  "vigia": "vigias/test_vigia_el_material_pide_la_funcion_publica.py — las dos pruebas nuevas nacen rojas a proposito; la ronda siguiente las pone verdes tocando cuerpo/obrero.py",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cerebro/piezas.py",
+   "mapa/inventario.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "test_el_obrero_le_pasa_las_conocidas_a_la_comprobacion lee Path(\"cuerpo/obrero.py\") con ruta RELATIVA: si pytest corre con otro CWD falla con FileNotFoundError en vez de rojo limpio. No rompe nada hoy, pero conviene que la raiz de pytest sea C:\\Ingeniero_VUC.",
+   "El regex r\"falta_en_el_material\\s*\\(([^)]*)\\)\" tambien casaria con un import-parentesisado tipo from x import (falta_en_el_material, a, b, c), dando un verde falso. Solo false-positive, no falso-rojo, y el encargo pedia buscar en el texto; hoy la llamada real de 2 args mantiene la prueba roja igual.",
+   "El bloque de la prueba nueva uno se solapa en proposito con la ultima prueba del archivo (misma forma de llamada); no se toco ninguna de las cuatro existentes, asi que no hay colision de nombre de test ni de helpers."
+  ],
+  "que_falta": [
+   "El campo 'vigia' afirma que LAS DOS pruebas nacen rojas; solo la segunda lo esta por el motivo que el propio paquete garantiza (hoy la llamada pasa 2 argumentos). La primera comprueba comportamiento que el codigo actual ya cumple, asi que nacera verde. No es un fallo del cambio — el encargo la pedia con ese nombre exacto y como candado de regresion — pero la linea de vigia es inexacta y conviene corregirla en la ficha.",
+   "La division de argumentos usa el truco del lookahead r\",(?![^\\[\\]{}()]*[\\]})]\" en vez de un conteo explicito de comas de primer nivel. Funciona para llamadas simples, pero es fragil ante argumentos que contengan corchetes."
+  ],
+  "resumen_para_el_jefe": "Cumple el encargo exacto: dos pruebas nuevas con los nombres pedidos, imports dentro, ancla literal usada, sin tocar cuerpo/obrero.py ni las otras cuatro; lo unico que arrastro es una linea de vigia que promete dos rojas cuando solo lo sera una."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38088 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
