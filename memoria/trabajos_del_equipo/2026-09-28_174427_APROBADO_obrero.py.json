@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "separar_avisos_y_frenos solo trata como AVISO los mensajes que empiezan por 'AVISO:', y debe tratar tambien como aviso los que empiezan por 'NO HACE LO QUE SE PIDIO:' sin importar los espacios de delante.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "separar_avisos_y_frenos",
+  "texto_viejo": "    Es aviso todo texto que, quitandole los espacios de delante, empieza por la\n    palabra AVISO seguida de dos puntos. Todo lo demas es freno. No se pierde ni\n    se duplica ningun mensaje. Si no llega una lista, o trae cosas que no son\n    texto, no revienta: devuelve dos listas y sigue.\n    \"\"\"\n    avisos = []\n    frenos = []\n    if not isinstance(mensajes, (list, tuple)):\n        return avisos, frenos\n    for mensaje in mensajes:\n        if not isinstance(mensaje, str):\n            continue\n        if mensaje.lstrip().startswith(\"AVISO:\"):\n            avisos.append(mensaje)\n        else:\n            frenos.append(mensaje)\n    return avisos, frenos",
+  "texto_nuevo": "    Es aviso todo texto que, quitandole los espacios de delante, empieza por la\n    palabra AVISO seguida de dos puntos, o por las palabras NO HACE LO QUE SE\n    PIDIO seguidas de dos puntos. Todo lo demas es freno. No se pierde ni\n    se duplica ningun mensaje. Si no llega una lista, o trae cosas que no son\n    texto, no revienta: devuelve dos listas y sigue.\n\n    Hecho medido 2026-09-28: la cuenta del revisor por programa tumbo un cambio\n    que el auditor del equipo ya habia APROBADO, porque el encargo mencionaba dos\n    piezas como explicacion y no para cambiarlas. Lleva cuatro parches por\n    frenadas en falso en tres semanas. La razon de fondo es que esa cuenta\n    adivina la INTENCION, y la intencion es juicio, no cuenta: le toca a quien\n    revisa, no al programa (CONTRATO_CUENTA_O_JUICIO). Por eso el mensaje se dice\n    pero no frena. No volver a convertirlo en freno sin saber lo que costo.\n    \"\"\"\n    avisos = []\n    frenos = []\n    if not isinstance(mensajes, (list, tuple)):\n        return avisos, frenos\n    for mensaje in mensajes:\n        if not isinstance(mensaje, str):\n            continue\n        limpio = mensaje.lstrip()\n        if limpio.startswith(\"AVISO:\") or limpio.startswith(\"NO HACE LO QUE SE PIDIO:\"):\n            avisos.append(mensaje)\n        else:\n            frenos.append(mensaje)\n    return avisos, frenos",
+  "cambio": "En separar_avisos_y_frenos, ademas de 'AVISO:' tratar como aviso el mensaje que, quitando espacios de delante, empieza por 'NO HACE LO QUE SE PIDIO:'. Se anade el comentario con el hecho medido y la fecha.",
+  "codigo": "        limpio = mensaje.lstrip()\n        if limpio.startswith(\"AVISO:\") or limpio.startswith(\"NO HACE LO QUE SE PIDIO:\"):\n            avisos.append(mensaje)\n        else:\n            frenos.append(mensaje)",
+  "vigia": "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py (la cuarta prueba pasa de roja a verde; las otras tres siguen verdes, incluida la que garantiza que un freno de verdad sigue frenando)",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cerebro/piezas.py",
+   "mapa/inventario.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Cambio de semantica real: lo que antes era freno y cortaba la ronda ahora es aviso y no la corta. Es justo lo pedido, pero cualquier llamador que contara con esos mensajes dentro de los frenos vera menos frenos; conviene que el jefe lo asuma consciente.",
+   "El texto del revisor no se toca (correcto, lo prohiben tres vigias), asi que si en el futuro ese mensaje saliera con texto delante de 'NO HACE LO QUE SE PIDIO:' dejaria de ser aviso y volveria a frenar en falso. Hoy el material fija ese texto tal cual, asi que no es fallo."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo pedido en un solo archivo, sin inventar nada ni romper a los vecinos: aprueba, dejando claro que a proposito lo que antes frenaba la ronda ahora solo avisa."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 34724 a 18896 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (37057 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}
