@@ -107,6 +107,23 @@ def _nombres_de_funcion_del_texto(texto_encargo, conocidas=None):
             pass
     return funciones
 
+def funciones_que_declara(ruta):
+    """Devuelve el conjunto de nombres que ese archivo declara: funciones y clases,
+    incluidas las que viven dentro de una clase. Ante cualquier error, conjunto vacio.
+    Nunca lanza."""
+    try:
+        import ast as _ast
+        with open(ruta, encoding="utf-8") as _f:
+            _arbol = _ast.parse(_f.read())
+        _nombres = set()
+        for _nodo in _ast.walk(_arbol):
+            if isinstance(_nodo, (_ast.FunctionDef, _ast.AsyncFunctionDef, _ast.ClassDef)):
+                _nombres.add(_nodo.name)
+        return _nombres
+    except Exception:
+        return set()
+
+
 def falta_en_el_material(material, encargo, conocidas=None):
     """Devuelve frases cortas con lo que el encargo nombra y el material no trae.
 
@@ -161,6 +178,8 @@ def falta_en_el_material(material, encargo, conocidas=None):
 
     # --- Funciones nombradas en el encargo ---
     funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)
+    if conocidas:
+        funciones = [f for f in funciones if f in conocidas]
 
     for funcion in funciones:
         declaracion = "def " + funcion
@@ -1341,7 +1360,15 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
                                        tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690,
                                        funciones=_nombres_de_funcion_del_texto(tarea))
         if clase != "crear":
-            faltantes = falta_en_el_material(material_obrero, tarea)
+            _conocidas = set()
+            if _archivo_tarea:
+                _raiz_proyecto = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+                for _ruta_nombrada in _archivo_tarea:
+                    _ruta_resuelta = _ruta_nombrada
+                    if not os.path.isabs(_ruta_resuelta):
+                        _ruta_resuelta = os.path.join(_raiz_proyecto, _ruta_resuelta)
+                    _conocidas |= funciones_que_declara(_ruta_resuelta)
+            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)
             if faltantes:
                 return {"_error": "FALTA_MATERIAL: " + "; ".join(faltantes) + " NECESITO_LEER: " + (_archivo_tarea[0] if _archivo_tarea else "el archivo que falta") + " motivo: sin ese trozo no se puede tocar lo que se pide decide: si se puede escribir el cambio o hay que pedir mas material riesgo: si no se lee, se paga una pregunta que nadie puede contestar"}
         crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,
