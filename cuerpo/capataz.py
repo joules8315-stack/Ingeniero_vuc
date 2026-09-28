@@ -854,6 +854,35 @@ def reintentar_tras_el_arreglo(id_orden, id_arreglo):
         return False
 
 
+def reintentar_lo_que_esperaba(id_orden):
+    """Devuelve la lista de ids que volvieron a la cola tras arreglarse id_orden.
+
+    Recorre leer_lista y se queda con las ordenes en estado 'fallida' cuya
+    lista 'depende' contiene id_orden. Para cada una llama a
+    reintentar_tras_el_arreglo pasandole el id de esa orden fallida y el id
+    recibido; si devuelve True, suma ese id a la lista que se devuelve.
+    Nunca lanza: ante cualquier error devuelve lo que tenga juntado.
+    """
+    reintentadas = []
+    try:
+        for orden in leer_lista():
+            if not isinstance(orden, dict):
+                continue
+            if orden.get('estado') != 'fallida':
+                continue
+            depende = orden.get('depende')
+            if not isinstance(depende, list):
+                continue
+            if id_orden not in depende:
+                continue
+            id_fallida = orden.get('id')
+            if reintentar_tras_el_arreglo(id_fallida, id_orden):
+                reintentadas.append(id_fallida)
+    except Exception:
+        return reintentadas
+    return reintentadas
+
+
 def forense(orden, resultado, raiz=None):
     """Analiza un fallo con el perito, comprueba sus citas, lo juzga y deja tarea nueva. Nunca lanza."""
     if raiz is None:
@@ -952,6 +981,11 @@ def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):
         return False
     with open(ruta, "w", encoding="utf-8") as f:
         json.dump(lista, f, indent=2, ensure_ascii=False)
+    if estado == 'hecha':
+        try:
+            reintentar_lo_que_esperaba(orden_id)
+        except Exception:
+            pass
     return True
 
 
