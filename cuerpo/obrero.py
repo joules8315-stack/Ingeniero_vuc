@@ -70,13 +70,19 @@ def disponible():
 
 
 # ─── los prompts: cortos, con el paquete dentro, y prohibicion de inventar ──────────
-def _nombres_de_funcion_del_texto(texto_encargo):
+def _nombres_de_funcion_del_texto(texto_encargo, conocidas=None):
     """Devuelve los nombres de funcion que un texto nombra.
 
     Se buscan palabras que empiecen por raya baja (como _prompt_obrero).
     El nombre se corta en el primer caracter que no puede formar parte de un
     nombre de Python: solo letras, numeros y rayas bajas desde el principio.
     Asi un trozo pegado como '_anotar(segundos' se queda en '_anotar'.
+
+    Si se pasa `conocidas` (una coleccion de nombres), ademas se recorren las
+    palabras del texto y se agregan las que aparecen en esa coleccion. Asi una
+    funcion de nombre normal nombrada en el encargo tambien se reconoce. La
+    lista que vuelve no repite ningun nombre. Si `conocidas` es None o viene
+    rara, se porta igual que antes.
     """
     funciones = []
     for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
@@ -91,9 +97,17 @@ def _nombres_de_funcion_del_texto(texto_encargo):
             # si despues de cortar no queda mas que la raya baja, no se exige
             if nombre.startswith("_") and len(nombre) > 1:
                 funciones.append(nombre)
+    if conocidas:
+        try:
+            for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
+                limpia = palabra.strip("()[]{}<>\"'`.:")
+                if limpia in conocidas and limpia not in funciones:
+                    funciones.append(limpia)
+        except Exception:
+            pass
     return funciones
 
-def falta_en_el_material(material, encargo):
+def falta_en_el_material(material, encargo, conocidas=None):
     """Devuelve frases cortas con lo que el encargo nombra y el material no trae.
 
     Reglas:
@@ -146,7 +160,7 @@ def falta_en_el_material(material, encargo):
             )
 
     # --- Funciones nombradas en el encargo ---
-    funciones = _nombres_de_funcion_del_texto(texto_encargo)
+    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)
 
     for funcion in funciones:
         declaracion = "def " + funcion
