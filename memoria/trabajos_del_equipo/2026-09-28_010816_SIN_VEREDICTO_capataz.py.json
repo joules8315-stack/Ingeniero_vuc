@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "El encargo pide extraer la llamada a pytest a una funcion propia en cuerpo/capataz.py que use recordar/apuntar de arnes/memoria_de_pruebas.py, pero el material no trae el inicio de cuerpo/capataz.py (imports) ni el archivo completo, asi que no se puede saber si subprocess, os, json ya estan importados ni donde colocar la funcion sin adivinar.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "comprobar_pasos",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO: falta el inicio de cuerpo/capataz.py para ver los imports (subprocess, os, json, sys) y saber si hay que anadir el import de arnes.memoria_de_pruebas. Sin eso, cualquier texto_viejo que proponga para la cabecera seria adivinado y volveria a fallar por EL TEXTO VIEJO NO ESTA EN EL ARCHIVO.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "arnes/memoria_de_pruebas.py",
+   "vigias/test_vigia_el_capataz_no_repite_la_corrida_de_la_vigia.py"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: se puede leer el archivo cuerpo/capataz.py completo (o al menos las primeras 60 lineas con los imports) para saber si subprocess, os, json y sys ya estan importados y donde anadir el import de arnes.memoria_de_pruebas?"
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {},
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40034 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'recordar'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'apuntar'. No se importa, no se define y no es de Py",
+  "GPT-OSS 120B (Groq) no le cabe (41051 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'recordar'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'apuntar'. No se importa, no se define y no es de Py",
+  "GPT-OSS 120B (Groq) no le cabe (41488 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'memoria_de_pruebas'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (41616 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

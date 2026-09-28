@@ -1237,5 +1237,20 @@
   "quien_lo_caza": "pit (forense)",
   "disparador": "arnes/instalar_reglas_codex\\.py",
   "veces": 1
+ },
+ {
+  "id": 78,
+  "fecha": "2026-09-28",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "El equipo (deepseek escribe, bigpickle revisa) RECHAZO la orden R4c. DeepSeek no encontro en el material la funcion que llama a pytest sobre la vigia, invento una API (memoria_de_pruebas.leer(raiz, vi",
+  "causa_raiz": "El paquete/material no le entrego al obrero las dos piezas que la orden necesitaba: (1) el trozo real de comprobar_pasos, que NO vive en un archivo comprobar_pasos.py sino DENTRO de cuerpo/capataz.py (funcion en la linea 992, con la llamada a pytest embebida en la 1063); y (2) las funciones publicas",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "Cuando el encargo pide tocar una funcion, el paquete debe traer la rebanada literal de su archivo anfitrion (comprobar_pasos vive en cuerpo/capataz.py, no en un comprobar_pasos.py) y las firmas reales",
+  "piezas": [
+   "cuerpo/capataz.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "cuerpo/capataz\\.py",
+  "veces": 1
  }
 ]
