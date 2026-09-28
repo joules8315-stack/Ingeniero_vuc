@@ -20,7 +20,7 @@ MATERIAL = (
 def test_el_sitio_citado_no_es_un_archivo_que_falte():
     # Caso 1: el encargo cita un SITIO del codigo (ruta + dos puntos + renglon).
     # Es la misma ruta que ya esta en el material, asi que no falta nada.
-    encargo = "revisa cuerpo/obrero.py:73 y dime si el aviso es correcto"
+    encargo = "revisa cuerpo/obrero.py:1290 y dime si el aviso es correcto"
     faltantes = falta_en_el_material(MATERIAL, encargo)
     assert faltantes == [], (
         "el aviso de un revisor citaba un sitio del codigo y la vuelta murio "
