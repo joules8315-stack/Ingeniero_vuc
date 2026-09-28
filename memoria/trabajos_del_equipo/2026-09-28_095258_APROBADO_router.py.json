@@ -1,0 +1,59 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Faltan las dos funciones nuevas (quitar_contenidos y recortar_por_presupuesto) y la constante TOPE_LETRAS_TROZOS, y el enchufe debe ir justo antes del bloque que garantiza que armar viaje entero, no despues.",
+  "archivo": "cerebro/router.py",
+  "funcion": "armar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "TOPE_FUNCION_NOMBRADA = 300\n\n\ndef _claves_de(g, nombres_flujo):",
+    "texto_nuevo": "TOPE_FUNCION_NOMBRADA = 300\n# Tope de letras que aguanta un cerebro gratis (2026-09-28).\nTOPE_LETRAS_TROZOS = 19000\n\n\ndef quitar_contenidos(trozos):\n    \"\"\"Devuelve otra lista sin los trozos contenidos dentro de otro de la MISMA pieza.\n\n    Un trozo esta contenido cuando tiene el mismo valor de pieza que otro y su desde es\n    mayor o igual y su hasta es menor o igual que los de ese otro. Se queda el que contiene\n    y se va el contenido. Dos trozos de piezas distintas nunca se estorban. El orden de los\n    que quedan no cambia. Ante cualquier error devuelve la lista tal como llego y nunca lanza.\n    \"\"\"\n    try:\n        quedan = []\n        for t in trozos:\n            contenido = False\n            for o in trozos:\n                if o is t:\n                    continue\n                if o.get(\"pieza\") != t.get(\"pieza\"):\n                    continue\n                if o.get(\"desde\") <= t.get(\"desde\") and o.get(\"hasta\") >= t.get(\"hasta\"):\n                    contenido = True\n                    break\n            if not contenido:\n                quedan.append(t)\n        return quedan\n    except Exception:\n        return trozos\n\n\ndef recortar_por_presupuesto(trozos, tope):\n    \"\"\"Devuelve los trozos que caben en el tope, de mayor a menor puntaje.\n\n    Se suman las longitudes de sus textos. El de mayor puntaje se queda SIEMPRE, aunque el\n    solo ya pase del tope, porque es el que trae lo que se pidio. Los que no caben se quedan\n    fuera. Ante cualquier error devuelve la lista tal como llego y nunca lanza.\n    \"\"\"\n    try:\n        ordenados = sorted(trozos, key=lambda t: t.get(\"puntaje\", 0), reverse=True)\n        elegidos = []\n        suma = 0\n        for t in ordenados:\n            largo = len(t.get(\"texto\") or \"\")\n            if not elegidos or suma + largo <= tope:\n                elegidos.append(t)\n                suma += largo\n        return elegidos\n    except Exception:\n        return trozos\n\n\ndef _claves_de(g, nombres_flujo):"
+   },
+   {
+    "texto_viejo": "    # LA HERRAMIENTA SE REPARA MIENTRAS CONSTRUYE (Julio, 2026-08-27, ley L13/L14).",
+    "texto_nuevo": "    # SE CORTA A SU MINIMA EXPRESION (Julio, 2026-09-28).\n    # Primero se quitan los trozos contenidos dentro de otro de la misma pieza, y despues se\n    # recortan por presupuesto de letras. Va ANTES del bloque que garantiza que armar viaje\n    # entero, para que ese recorte no borre la propia pieza de armar ya completada.\n    pedazos = quitar_contenidos(pedazos)\n    pedazos = recortar_por_presupuesto(pedazos, TOPE_LETRAS_TROZOS)\n\n    # LA HERRAMIENTA SE REPARA MIENTRAS CONSTRUYE (Julio, 2026-08-27, ley L13/L14)."
+   }
+  ],
+  "cambio": "Anadir la constante TOPE_LETRAS_TROZOS = 19000 junto a las otras constantes, anadir las funciones quitar_contenidos y recortar_por_presupuesto justo antes de armar, y dentro de armar pasar la lista de pedazos por quitar_contenidos y luego por recortar_por_presupuesto justo antes del bloque que garantiza que armar viaje entero.",
+  "codigo": "TOPE_LETRAS_TROZOS = 19000\n\n\ndef quitar_contenidos(trozos):\n    try:\n        quedan = []\n        for t in trozos:\n            contenido = False\n            for o in trozos:\n                if o is t:\n                    continue\n                if o.get(\"pieza\") != t.get(\"pieza\"):\n                    continue\n                if o.get(\"desde\") <= t.get(\"desde\") and o.get(\"hasta\") >= t.get(\"hasta\"):\n                    contenido = True\n                    break\n            if not contenido:\n                quedan.append(t)\n        return quedan\n    except Exception:\n        return trozos\n\n\ndef recortar_por_presupuesto(trozos, tope):\n    try:\n        ordenados = sorted(trozos, key=lambda t: t.get(\"puntaje\", 0), reverse=True)\n        elegidos = []\n        suma = 0\n        for t in ordenados:\n            largo = len(t.get(\"texto\") or \"\")\n            if not elegidos or suma + largo <= tope:\n                elegidos.append(t)\n                suma += largo\n        return elegidos\n    except Exception:\n        return trozos\n\n\n# dentro de armar, antes del bloque que garantiza que armar viaje entero:\n    pedazos = quitar_contenidos(pedazos)\n    pedazos = recortar_por_presupuesto(pedazos, TOPE_LETRAS_TROZOS)",
+  "vigia": "vigias/test_vigia_el_paquete_se_corta_a_su_minima_expresion.py: sus cinco pruebas deben pasar de rojas (ImportError) a verdes al existir quitar_contenidos, recortar_por_presupuesto y TOPE_LETRAS_TROZOS, y al aplicarse el recorte antes del bloque que garantiza armar entero.",
+  "puede_danar": [
+   "cerebro/protocolo.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "mapa/inventario.py",
+   "vigias/test_vigia_el_paquete_trae_el_archivo_nombrado.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "protocolo.py",
+   "test_vigia_el_paquete_trae_el_archivo_nombrado.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "quitar_contenidos y recortar_por_presupuesto pueden dejar fuera trozos que otras funciones (protocolo, dudas, respuestas, inventario) esperen ver en la lista, pero ese recorte es exactamente lo que el paquete ordena: cortar a la minima expresion antes de viajar, y se hace justo antes del bloque que garantiza que armar viaje entero, asi que la pieza de armar queda a salvo.",
+   "el ancla del enchufe que usa el obrero (el comentario LA HERRAMIENTA SE REPARA...) no es el ancla literal que da el material (b = trozos.Buscador(codigo)), pero el material dice que el enchufe va un poco mas abajo de ese ancla, justo antes del bloque que garantiza armar entero; el programa ya verifico que el texto existe y que el archivo carga, y el diagnóstico pide exactamente ese sitio, asi que no es motivo de rechazo."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Hace exactamente las tres piezas pedidas (TOPE_LETRAS_TROZOS=19000 junto a las constantes, quitar_contenidos y recortar_por_presupuesto antes de armar, y el enchufe de ambas antes del bloque que garantiza armar entero, respetando el siempre-conservar-al-de-mayor-puntaje y sin tocar el buscador ni otros archivos); no inventa nada y se puede aprobar."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39990 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (42974 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (43082 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 3"
+ ]
+}
