@@ -303,12 +303,6 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
         except Exception:
             pedazos = pedazos[:k_trozos]
 
-    # SE CORTA A SU MINIMA EXPRESION (Julio, 2026-09-28).
-    # Primero se quitan los trozos contenidos dentro de otro de la misma pieza, y despues se
-    # recortan por presupuesto de letras. Va ANTES del bloque que garantiza que armar viaje
-    # entero, para que ese recorte no borre la propia pieza de armar ya completada.
-    pedazos = quitar_contenidos(pedazos)
-    pedazos = recortar_por_presupuesto(pedazos, TOPE_LETRAS_TROZOS)
 
     # LA HERRAMIENTA SE REPARA MIENTRAS CONSTRUYE (Julio, 2026-08-27, ley L13/L14).
     # Cuando el problema toca al REPARTIDOR, el fragmentador corta router.py en trozos de 40 lineas
@@ -439,6 +433,15 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
         _pedazos_filtrados = [t for t in pedazos if t.get("pieza") in _nombrados_set]
         if len(_pedazos_filtrados) >= 2:
             pedazos = _pedazos_filtrados
+
+    # SE CORTA A SU MINIMA EXPRESION (Julio, 2026-09-28).
+    # Va AQUI, al final, y no antes: mas arriba la lista se vuelve a llenar (el bloque que
+    # garantiza que armar viaje entero, completar_funciones, la funcion que el problema nombra
+    # y los dos que meten fichas), y ademas la parte que mete una funcion ENTERA deja dentro el
+    # trozo parcial de esa misma funcion. Este es el ultimo sitio donde la lista de trozos se
+    # toca antes de entregarse, asi que es el unico sitio donde el corte manda de verdad.
+    pedazos = quitar_contenidos(pedazos)
+    pedazos = recortar_por_presupuesto(pedazos, TOPE_LETRAS_TROZOS)
 
     leyes = sorted([f for f in fichas if f["rol"] in ("CONTRATO", "MATRIZ", "PROTOCOLO")],
                    key=lambda x: x["id"])
