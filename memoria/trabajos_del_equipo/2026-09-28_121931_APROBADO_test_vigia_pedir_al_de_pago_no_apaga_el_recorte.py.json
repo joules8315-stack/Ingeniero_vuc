@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El montaje parchea arnes.asignador.recortar_prompt, pero cuerpo/obrero.py importa asignador con el nombre corto, asi que son dos entradas distintas en sys.modules y el recortador falso no queda donde el obrero lo mira; ademas sobra el import de pytest.",
+  "archivo": "vigias/test_vigia_pedir_al_de_pago_no_apaga_el_recorte.py",
+  "funcion": "_montar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    from cuerpo import obrero\n    from cuerpo import cuotas\n    from arnes import asignador\n\n    apuntes = []",
+    "texto_nuevo": "    from cuerpo import obrero\n    from cuerpo import cuotas\n\n    apuntes = []"
+   },
+   {
+    "texto_viejo": "    monkeypatch.setattr(asignador, \"recortar_prompt\", recortar_prompt_falso)",
+    "texto_nuevo": "    monkeypatch.setattr(obrero.asignador, \"recortar_prompt\", recortar_prompt_falso)"
+   },
+   {
+    "texto_viejo": "import pytest\n",
+    "texto_nuevo": ""
+   }
+  ],
+  "cambio": "En _montar: quitar el import suelto 'from arnes import asignador' y parchear el recortador sobre el atributo asignador que cuelga del propio modulo del obrero (obrero.asignador), que es la MISMA entrada que el obrero usa. Ademas quitar el import de pytest que no se usa.",
+  "codigo": "    from cuerpo import obrero\n    from cuerpo import cuotas\n\n    apuntes = []\n\n    # --- Paso 0: el cerebro prestado devuelve pareja no vacia ---\n    def prestar_cerebro_falso(*args, **kwargs):\n        return object(), \"\"\n\n    monkeypatch.setattr(obrero, \"prestar_cerebro\", prestar_cerebro_falso)\n\n    # --- Paso 1: el recortador falso, sobre la MISMA entrada que usa el obrero ---\n    def recortar_prompt_falso(texto, tope):\n        apuntes.append((len(texto), tope))\n        return \"x\" * LETRAS_DEL_RECORTE\n\n    monkeypatch.setattr(obrero.asignador, \"recortar_prompt\", recortar_prompt_falso)",
+  "vigia": "test_sin_pesado_se_sigue_recortando debe pasar en menos de un segundo (apuntes no vacio y tope == CAPACIDAD_FALSA); test_con_pesado_tambien_se_recorta debe seguir roja por su motivo verdadero (apuntes vacio con pesado=True).",
+  "puede_danar": [
+   "vigias/test_vigia_pedir_al_de_pago_no_apaga_el_recorte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Al parchear obrero.asignador (la entrada que usa el obrero) el atributo recortar_prompt queda cambiado para todo el que importe ese modulo durante la prueba; monkeypatch lo revierte al final, y es justo el objeto que exige el encargo, asi que no es falta.",
+   "Al quitar 'from arnes import asignador' dentro de _montar desaparece la creacion de la entrada sys.modules['arnes.asignador'] durante esta prueba; el resto de archivos la importan por su cuenta, asi que no afecta a arnes/asignador.py, cuerpo/obrero.py ni a los otros vigias listados."
+  ],
+  "que_falta": [
+   "Falta la medicion real: el encargo exige que test_sin_pesado_se_sigue_recortando pase en menos de un segundo y que test_con_pesado_tambien_se_recorta siga roja con apuntes vacio y pesado=True. El cambio lo hace posible por construccion, pero nadie lo ha ejecutado.",
+   "El bloque 'codigo' reescribe parte de _montar con comentarios nuevos ('Paso 0', 'Paso 1'); esAllowed por el encargo (podia reescribir el ayudante entero) pero no estaba en la lista de cambios, que solo anuncia 3 cambios puntuales. Cosmeticamente mas cambio del anunciado, sin efecto funcional."
+  ],
+  "resumen_para_el_jefe": "Arregla exactamente lo pedido: parchea el recortador sobre obrero.asignador (la entrada que el obrero realmente mira), quita el import suelto de arnes y borra el import de pytest sin usar; no inventa nada y no toca vecino, solo falta ejecutar y confirmar que la prueba sin pesado pasa en menos de un segundo y la con pesado sigue roja por su motivo verdadero."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (21689 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
