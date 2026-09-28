@@ -1,5 +1,23 @@
 [
   {
+    "id": "R25-el-guardado-compara-el-color-no-exige-verde",
+    "titulo": "El guardado compara con el color de antes, en vez de exigir verde absoluto",
+    "pieza": "arnes/guardia_de_guardado.py",
+    "encargo": "En arnes/guardia_de_guardado.py, la decision de guardar tiene que comparar el color de las vigias vecinas CON EL DE ANTES del cambio, y frenar solo si el cambio EMPEORA algo: una vigia que ya estaba roja antes no puede frenar un trabajo que no la toca. HECHO MEDIDO 2026-09-28: la bateria completa da 54 rojas y 1.252 verdes, y tarda 18 minutos y 30 segundos. Hoy el guardia frena en cuanto encuentra una roja ya guardada en el vecindario, y como hay 54 rojas repartidas por el proyecto, cualquier pieza con muchas vecinas queda imposible de guardar: hoy se cayeron por esto DOS cambios correctos y ya aprobados por el equipo, y la unica roja que de verdad tocaba la pieza era la vigia declarada de su propia orden. Lo que se pide: antes de correr, se lee el color de referencia guardado; se corre la seleccion de vecinas; y se frena solo si aparece una roja que antes estaba verde, o si desaparece una verde. Si no hay color de referencia guardado, se guarda el de esta corrida y se deja pasar con aviso, diciendo que es la primera medida. El color de referencia se guarda en memoria, con fecha, y se actualiza en cada corrida completa. Las demas garantias del guardia no se tocan: lo que se escribio a solas sigue sin pasar, y el trabajo aprobado sigue quedando apartado si no se puede guardar. SEGUNDO HECHO MEDIDO, que va en el mismo comentario: el tope de esa corrida esta en 600 segundos y la bateria entera tarda 1.110, asi que el tope corta por tiempo y eso se toma por fallo; el tope tiene que ser coherente con lo medido, como manda CONTRATO_TOPE_MEDIDO_Y_CORTE_A_MINIMA_EXPRESION.md, o correr solo las vecinas de verdad. La ley que manda es la regla 5 de CONTRATO_LOS_CUATRO_OBJETIVOS_ORQUESTADOS.md, la puerta de regresion.",
+    "vigia": "vigias/test_vigia_el_guardado_compara_el_color.py",
+    "origen": "julio",
+    "repara": "que una vigia roja de antes, ajena al cambio, impida guardar trabajo correcto",
+    "razon": "orden de Julio del 2026-09-28: el trabajo nuevo no debe romper lo que ya sirve, y eso se comprueba comparando el color, no exigiendo un verde que el proyecto no tiene",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "R24-el-aviso-no-frena-la-ronda",
     "titulo": "El mensaje que adivina la intencion avisa, y deja de cortar rondas buenas",
     "pieza": "cuerpo/obrero.py",
