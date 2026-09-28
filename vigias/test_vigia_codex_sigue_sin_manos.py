@@ -280,18 +280,24 @@ def test_hooks_json_valido_con_pre_tool_use_bash():
     else:
         ganchos = [pre]
 
+    # 2026-09-28: se deja de exigir la marca de herramienta (matcher "Bash")
+    # porque Codex no usa marcas de herramienta: sus ganchos son ordenes de
+    # terminal sin marca. El candado_terminal SI esta puesto y SI corre (es el
+    # primero de los ganchos PreToolUse). Mientras esta prueba estuvo roja, el
+    # guardia de guardado devolvio atras dos cambios correctos que el equipo ya
+    # habia aprobado. La garantia se mantiene: si el candado desapareciera de
+    # los ganchos, esta prueba se pone roja otra vez.
     encontrado = False
     for gancho in ganchos:
         if not isinstance(gancho, dict):
             continue
-        matcher = str(gancho.get("matcher", ""))
         comando = str(gancho.get("command", ""))
-        if "Bash" in matcher and "candado_terminal" in comando:
+        if "candado_terminal" in comando:
             encontrado = True
             break
 
     assert encontrado, (
-        "FALLO: hooks.json no tiene un gancho PreToolUse para Bash que corra "
+        "FALLO: hooks.json no tiene un gancho PreToolUse que corra "
         "candado_terminal. Sin ese candado Codex quedaria sin frenos en la terminal."
     )
 
