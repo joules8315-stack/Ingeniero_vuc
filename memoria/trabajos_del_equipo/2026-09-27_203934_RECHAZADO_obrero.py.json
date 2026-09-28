@@ -1,0 +1,83 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El recorte de _filtrar_paquete suelta trozos desde el final sin proteger los que traen la declaracion de la funcion pedida, y la llamada que arma el material del que escribe no le pasa los nombres de funcion que ya se sacan de la tarea.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_filtrar_paquete",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _filtrar_paquete(paquete, archivo=None, tope=None):",
+    "texto_nuevo": "def _filtrar_paquete(paquete, archivo=None, tope=None, funciones=None):"
+   },
+   {
+    "texto_viejo": "    tope_trabajo = tope - len(aviso) - 1\n    recortado = False\n    while len(\"\\n\".join(salida)) > tope_trabajo and len(salida) > len(bloques[\"__cabecera__\"]):\n        cabecera = len(bloques[\"__cabecera__\"])\n        ultimo = None\n        for i in range(len(salida) - 1, cabecera - 1, -1):\n            if salida[i].startswith(\"### `\"):\n                ultimo = i\n                break\n        if ultimo is not None:\n            del salida[ultimo:]\n            recortado = True\n        else:\n            if len(salida) <= cabecera:\n                break\n            salida.pop()\n            recortado = True",
+    "texto_nuevo": "    tope_trabajo = tope - len(aviso) - 1\n    recortado = False\n    # Los trozos que traen la declaracion de una funcion pedida son LO NECESARIO:\n    # no se sueltan nunca, igual que la cabecera, la ley y \"a quien puede danar\".\n    _pedidas = [f for f in (funciones or []) if f]\n    _protegidos = set()\n    if _pedidas:\n        _i = 0\n        while _i < len(salida):\n            if salida[_i].startswith(\"### `\"):\n                _j = _i + 1\n                while _j < len(salida) and not salida[_j].startswith(\"### `\"):\n                    _j += 1\n                _bloque = \"\\n\".join(salida[_i:_j])\n                if any((\"def \" + _f) in _bloque for _f in _pedidas):\n                    _protegidos.update(range(_i, _j))\n                _i = _j\n            else:\n                _i += 1\n    while len(\"\\n\".join(salida)) > tope_trabajo and len(salida) > len(bloques[\"__cabecera__\"]):\n        cabecera = len(bloques[\"__cabecera__\"])\n        ultimo = None\n        for i in range(len(salida) - 1, cabecera - 1, -1):\n            if i in _protegidos:\n                continue\n            if salida[i].startswith(\"### `\"):\n                ultimo = i\n                break\n        if ultimo is not None:\n            del salida[ultimo:]\n            recortado = True\n        else:\n            if len(salida) <= cabecera:\n                break\n            _quitado = False\n            for i in range(len(salida) - 1, cabecera - 1, -1):\n                if i not in _protegidos:\n                    salida.pop(i)\n                    recortado = True\n                    _quitado = True\n                    break\n            if not _quitado:\n                break"
+   },
+   {
+    "texto_viejo": "    material_auditor = _material_del_revisor(paquete, propuesta,\n                                            TOPE_REVISOR - 3344 - 47 -\n                                            len(json.dumps(propuesta, ensure_ascii=False)))",
+    "texto_nuevo": "    _funciones_pedidas = []\n    for _palabra in str(tarea or \"\").replace(\",\", \" \").replace(\";\", \" \").split():\n        _limpia = _palabra.strip(\"()[]{}<>\\\"'`.:\")\n        if _limpia.startswith(\"_\") and len(_limpia) > 1:\n            _corte = len(_limpia)\n            for _i, _c in enumerate(_limpia):\n                if not (_c.isalnum() or _c == \"_\"):\n                    _corte = _i\n                    break\n            _nombre = _limpia[:_corte]\n            if _nombre.startswith(\"_\") and len(_nombre) > 1:\n                _funciones_pedidas.append(_nombre)\n    material_auditor = _material_del_revisor(paquete, propuesta,\n                                            TOPE_REVISOR - 3344 - 47 -\n                                            len(json.dumps(propuesta, ensure_ascii=False)),\n                                            funciones=_funciones_pedidas)"
+   }
+  ],
+  "cambio": "1) _filtrar_paquete acepta funciones=None y, al recortar, protege los trozos que traen 'def <nombre>' de las funciones pedidas. 2) En auditar, antes de llamar a _material_del_revisor se sacan los nombres de funcion que empiezan por raya baja de la tarea y se pasan como funciones.",
+  "codigo": "def _filtrar_paquete(paquete, archivo=None, tope=None, funciones=None):\n    ...\n    _pedidas = [f for f in (funciones or []) if f]\n    _protegidos = set()\n    if _pedidas:\n        _i = 0\n        while _i < len(salida):\n            if salida[_i].startswith(\"### `\"):\n                _j = _i + 1\n                while _j < len(salida) and not salida[_j].startswith(\"### `\"):\n                    _j += 1\n                _bloque = \"\\n\".join(salida[_i:_j])\n                if any((\"def \" + _f) in _bloque for _f in _pedidas):\n                    _protegidos.update(range(_i, _j))\n                _i = _j\n            else:\n                _i += 1\n    ...",
+  "vigia": "vigias/test_vigia_el_recorte_no_se_como_la_funcion_pedida.py (los tres casos: con funcion pedida al final sobrevive, la ley y a quien puede danar sobreviven, y sin funciones se comporta como hoy)",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La SEGUNDA mitad del encargo no se aplica donde dice el encargo (y donde dice el propio diagnostico). El encargo pide tocar 'el sitio donde se llama a _filtrar_paquete para armar el material del que escribe'. El cambio no toca ninguna llamada a _filtrar_paquete: toca la llamada a _material_del_revisor, y la variable que guarda el resultado sigue llamandose material_auditor (asi esta en el propio texto_nuevo del cambio). Es el material del que REVISA, no del que escribe. Con esto, quien escribe sigue recibiendo el archivo nombrado pero sin la funcion pedida, que es justo el fallo medido del 2026-09-27.",
+   "Se pasa 'funciones=' a _material_del_revisor, pero el material entregado NO muestra la firma de _material_del_revisor ni que reenvie ese parametro a _filtrar_paquete. Como mucho hace dos cosas: o _material_del_revisor no acepta 'funciones' y la llamada revienta con TypeError en la ruta del revisor (vecinos: arnes/revisor_de_programa.py y vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py), o lo acepta y lo tira, dejando el arreglo sin efecto. Las dos salidas son malas.",
+   "Los nombres de funcion se vuelven a sacar del texto de la tarea con un parser propio, en vez de pasarse los que 'ya se sacan de la tarea unos renglones mas abajo' como pide el encargo. Duplicar la extraccion es exactamente el descuadre entre dos sitios que la ley quiere evitar: si la extraccion que ya existe cambia, estas dos dan conjuntos distintos y nadie se entera.",
+   "El vigia que dice crear esta mal escrito: 'test_vigia_el_recorte_no_se_como_la_funcion_pedida.py' (como). La prueba que ya existe y esta roja se llama 'test_vigia_el_recorte_no_se_come_la_funcion_pedida.py' (come). Con esa ruta se crearia un archivo nuevo al lado del otro, y la prueba roja seguiria sin tocarse."
+  ],
+  "riesgo_vecinos": [
+   "arnes/revisor_de_programa.py: si _material_del_revisor no acepta el parametro nuevo, la ruta del revisor revienta y con ella la vuelta.",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py: es justo la prueba que cubre que un revisor roto no tires la vuelta; un TypeError nuevo cae de lleno en su territorio.",
+   "cerebro/trozos.py: el recorte protege trozos enteros; si un trozo protegido es enorme, el bucle while ya no puede bajar del tope y el material se pasa del limite en silencio (no revienta, pero deja de cumplir el tope medido).",
+   "Los trozos de la cabecera, la ley y 'a quien puede danar' ya venian protegidos por el guardia len(salida) > len(bloques['__cabecera__']); anadir _protegidos no los solapa mal, pero el indice de corte de la cabecera se recalcula dentro del while y las posiciones de _protegidos ya estan calculadas sobre la lista original: si la cabecera cambia de largo entre iteraciones, los indices protegidos quedan desalineados."
+  ],
+  "que_falta": [
+   "La firma real de _material_del_revisor, para saber si acepta 'funciones' y si lo reenvia a _filtrar_paquete.",
+   "La llamada a _filtrar_paquete que arma el material del que escribe, que es donde el encargo ordenaba pasar los nombres. Sin ese trozo no se puede saber a que llamada se le anade el argumento.",
+   "El renglon exacto donde ya se sacan los nombres de funcion de la tarea, para poder pasar ESA variable en vez de re-derivarla.",
+   "Falta comprobar que la prueba que ya existe y esta roja se pone verde; la propuesta no lo dice."
+  ],
+  "resumen_para_el_jefe": "La primera mitad esta bien y probably pone verde la prueba roja, pero la segunda mitad se aplico en el material del revisor en vez de en la llamada que arma el material de quien escribe, y de paso pasa un parametro que nadie ha comprobrado que esa funcion acepte: hay que repetir cambiando el sitio, no la idea."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38497 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (40680 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (41020 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (41201 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}
