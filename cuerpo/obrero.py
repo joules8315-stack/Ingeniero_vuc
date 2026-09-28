@@ -1356,18 +1356,18 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
                 _vistos.append(_n)
         if _vistos:
             _archivo_tarea = _vistos
+        _conocidas = set()
+        if _archivo_tarea:
+            _raiz_proyecto = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+            for _ruta_nombrada in _archivo_tarea:
+                _ruta_resuelta = _ruta_nombrada
+                if not os.path.isabs(_ruta_resuelta):
+                    _ruta_resuelta = os.path.join(_raiz_proyecto, _ruta_resuelta)
+                _conocidas |= funciones_que_declara(_ruta_resuelta)
         material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,
                                        tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690,
-                                       funciones=_nombres_de_funcion_del_texto(tarea))
+                                       funciones=_nombres_de_funcion_del_texto(tarea, _conocidas))
         if clase != "crear":
-            _conocidas = set()
-            if _archivo_tarea:
-                _raiz_proyecto = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-                for _ruta_nombrada in _archivo_tarea:
-                    _ruta_resuelta = _ruta_nombrada
-                    if not os.path.isabs(_ruta_resuelta):
-                        _ruta_resuelta = os.path.join(_raiz_proyecto, _ruta_resuelta)
-                    _conocidas |= funciones_que_declara(_ruta_resuelta)
             faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)
             if faltantes:
                 return {"_error": "FALTA_MATERIAL: " + "; ".join(faltantes) + " NECESITO_LEER: " + (_archivo_tarea[0] if _archivo_tarea else "el archivo que falta") + " motivo: sin ese trozo no se puede tocar lo que se pide decide: si se puede escribir el cambio o hay que pedir mas material riesgo: si no se lee, se paga una pregunta que nadie puede contestar"}
