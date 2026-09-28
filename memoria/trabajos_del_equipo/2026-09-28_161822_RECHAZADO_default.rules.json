@@ -1,0 +1,52 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En config/codex/default.rules faltan los dos permisos de los mandos que no bloquean (cruzado y resultado) y falta la frase del comentario de arriba sobre que los mandos que bloquean no son para Codex cuando trabaja solo.",
+  "archivo": "config/codex/default.rules",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": "NO_ENCONTRADO",
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "vigias/test_vigia_codex_sigue_sin_manos.py",
+  "puede_danar": [
+   "config/codex/default.rules",
+   "Codex (permisos de mandos)"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: no tengo el contenido literal de config/codex/default.rules en el material; necesito el archivo completo para copiar el texto exacto del comentario de arriba y del renglon del mando director, y para saber donde insertar los dos permisos nuevos."
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "FALLO GRAVE: la frase del comentario de arriba NO esta en el cambio. Solo esta escrita en prosa dentro del campo 'cambio' y en 'texto_nuevo'/'texto_viejo' de nivel superior, que van vacios (\"\"). En el array 'cambios' hay una UNICA entrada: las dos prefix_rule. Eso es exactamente el motivo por el que el material dice que la vuelta anterior se rechazo ('tiene que estar de verdad en el cambio, no solo anunciada').",
+   "El campo 'codigo' solo trae las dos lineas de prefix_rule: la frase sobre los mandos que bloquean, esperar le cuesta cupo igual que trabajar, medido hoy 2026-09-28, 21.726 unidades esperando una ronda hasta quedarse sin cupo, no aparece en ningun sitio del diff.",
+   "La propia propuesta pide NECESITO_LEER del comentario de cabecera y admite confianza 'media', es decir, entrega un trabajo a medio hacer en el punto que el material marca como OBLIGATORIO."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno en los vecinos declarados: las dos prefix_rule tienen la forma exacta del ancla (comillas dobles, decision=allow) y no tocan ninguna de las catorce prohibiciones de git, asi que el conteo de SIETE permisos (arranca, trabaja, equipo, pit, director, cruzado, resultado) cuadra y la vigia vigias/test_vigia_codex_sigue_sin_manos.py, que ya acepta los tres mandos nuevos, deberia seguir verde."
+  ],
+  "que_falta": [
+   "Una entrada MAS en 'cambios' que anada al comentario de cabecera la frase pedida, con texto_viejo anclado a una linea real de ese comentario y texto_nuevo con la frase dentro.",
+   "Texto literal de la frase en el diff: mandos que bloquean no son para Codex cuando trabaja solo, porque esperar le cuesta cupo igual que trabajar, medido hoy 2026-09-28, 21.726 unidades esperando una ronda hasta quedarse sin cupo.",
+   "Y con ella, mensaje de cierre con QUE seadies ('Regla 2' del contrato) al guardar."
+  ],
+  "resumen_para_el_jefe": "Las dos lineas de permisos estan bien y no rompen nada, pero le falta justo lo que el encargo marca como obligatorio: la frase del comentario de arriba solo esta anunciada en prosa, no esta en el cambio, que es el mismo fallo por el que se rechazo la vuelta anterior; hay que anadirla como una entrada real del diff."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 32575 a 17865 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 35798 a 14948 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 36115 a 14960 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 36317 a 15028 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}
