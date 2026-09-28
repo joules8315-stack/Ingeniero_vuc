@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion reintentar_tras_el_arreglo en cuerpo/capataz.py, justo despues de agregar_orden, que deje pendiente la orden y borre su huella de HUELLAS_QUE_FALLARON.jsonl.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "agregar_orden",
+  "texto_viejo": "    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, 'memoria', 'ORDENES.json')\n    with open(ruta, 'w', encoding='utf-8') as f:\n        json.dump(lista, f, indent=2, ensure_ascii=False)\n    return (True, 'agregada ' + str(orden_id))",
+  "texto_nuevo": "    carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    ruta = os.path.join(carpeta_proyecto, 'memoria', 'ORDENES.json')\n    with open(ruta, 'w', encoding='utf-8') as f:\n        json.dump(lista, f, indent=2, ensure_ascii=False)\n    return (True, 'agregada ' + str(orden_id))\n\n\ndef reintentar_tras_el_arreglo(id_orden, id_arreglo):\n    \"\"\"Deja pendiente la orden y borra su huella de HUELLAS_QUE_FALLARON.jsonl.\n\n    Nunca lanza: ante cualquier error devuelve False.\n    \"\"\"\n    try:\n        lista = leer_lista()\n        encontrada = None\n        for orden in lista:\n            if isinstance(orden, dict) and orden.get('id') == id_orden:\n                encontrada = orden\n                break\n        if encontrada is None:\n            return False\n        encontrada['estado'] = 'pendiente'\n        encontrada['paso_fallido'] = ''\n        encontrada['fallos_seguidos'] = 0\n        depende = encontrada.get('depende')\n        if not isinstance(depende, list):\n            depende = []\n        if id_arreglo not in depende:\n            depende.append(id_arreglo)\n        encontrada['depende'] = depende\n        carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        ruta = os.path.join(carpeta_proyecto, 'memoria', 'ORDENES.json')\n        with open(ruta, 'w', encoding='utf-8') as f:\n            json.dump(lista, f, indent=2, ensure_ascii=False)\n        huella = huella_de(encontrada)\n        ruta_huellas = os.path.join(carpeta_proyecto, 'memoria', 'HUELLAS_QUE_FALLARON.jsonl')\n        try:\n            with open(ruta_huellas, encoding='utf-8') as f:\n                renglones = f.readlines()\n        except (FileNotFoundError, OSError):\n            return True\n        conservados = []\n        for renglon in renglones:\n            try:\n                dato = json.loads(renglon)\n            except json.JSONDecodeError:\n                conservados.append(renglon)\n                continue\n            if isinstance(dato, dict) and dato.get('huella') == huella:\n                continue\n            conservados.append(renglon)\n        with open(ruta_huellas, 'w', encoding='utf-8') as f:\n            f.writelines(conservados)\n        return True\n    except Exception:\n        return False",
+  "cambios": "",
+  "cambio": "Agregar la funcion reintentar_tras_el_arreglo justo despues de agregar_orden, que busca la orden por id, la deja pendiente con paso_fallido vacio y fallos_seguidos 0, agrega id_arreglo a depende si no esta, reescribe ORDENES.json con indent 2 y ensure_ascii False, y reescribe HUELLAS_QUE_FALLARON.jsonl sin los renglones cuya huella sea huella_de(orden), conservando los demas; devuelve True, y ante cualquier error False.",
+  "codigo": "def reintentar_tras_el_arreglo(id_orden, id_arreglo):\n    \"\"\"Deja pendiente la orden y borra su huella de HUELLAS_QUE_FALLARON.jsonl.\n\n    Nunca lanza: ante cualquier error devuelve False.\n    \"\"\"\n    try:\n        lista = leer_lista()\n        encontrada = None\n        for orden in lista:\n            if isinstance(orden, dict) and orden.get('id') == id_orden:\n                encontrada = orden\n                break\n        if encontrada is None:\n            return False\n        encontrada['estado'] = 'pendiente'\n        encontrada['paso_fallido'] = ''\n        encontrada['fallos_seguidos'] = 0\n        depende = encontrada.get('depende')\n        if not isinstance(depende, list):\n            depende = []\n        if id_arreglo not in depende:\n            depende.append(id_arreglo)\n        encontrada['depende'] = depende\n        carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        ruta = os.path.join(carpeta_proyecto, 'memoria', 'ORDENES.json')\n        with open(ruta, 'w', encoding='utf-8') as f:\n            json.dump(lista, f, indent=2, ensure_ascii=False)\n        huella = huella_de(encontrada)\n        ruta_huellas = os.path.join(carpeta_proyecto, 'memoria', 'HUELLAS_QUE_FALLARON.jsonl')\n        try:\n            with open(ruta_huellas, encoding='utf-8') as f:\n                renglones = f.readlines()\n        except (FileNotFoundError, OSError):\n            return True\n        conservados = []\n        for renglon in renglones:\n            try:\n                dato = json.loads(renglon)\n            except json.JSONDecodeError:\n                conservados.append(renglon)\n                continue\n            if isinstance(dato, dict) and dato.get('huella') == huella:\n                continue\n            conservados.append(renglon)\n        with open(ruta_huellas, 'w', encoding='utf-8') as f:\n            f.writelines(conservados)\n        return True\n    except Exception:\n        return False",
+  "vigia": "vigias/test_vigia_la_tarea_que_fallo_se_reintenta_tras_el_arreglo.py (sus tres pruebas: la orden se deja pendiente y se borra su huella conservando las demas; y con id inexistente devuelve False sin tocar archivos)",
+  "puede_danar": [
+   "cuerpo/capataz.py::agregar_orden (se le anade codigo justo despues, sin tocarla)",
+   "cuerpo/capataz.py::ya_fallo (no se toca, pero comparte el archivo HUELLAS_QUE_FALLARON.jsonl)",
+   "cuerpo/capataz.py::huella_de (no se toca, se usa tal cual)",
+   "cuerpo/codex.py (lo importa cuerpo/privacidad.py; no se toca aqui)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Reescribe memoria/HUELLAS_QUE_FALLARON.jsonl con modo 'w' (trunca y reconstruye): si otro proceso, como ya_fallo, lee o escribe ese jsonl a la vez, hay una ventana en la que el archivo queda vacio o a medias. Es el mismo estilo que ya usa agregar_orden con ORDENES.json, asi que no es una regresion nueva, pero el jsonl es compartido con ya_fallo y ahi si se nota.",
+   "Reescribe el jsonl aunque no haya eliminado ningun renglon (no compara si la lista quedo igual): escribe por escribir, sin ganancia y con el riesgo del punto anterior.",
+   "Ley A-43: la lista no se reordena al reintentar. Si la orden reintentada tiene origen 'forense:', sigue donde estaba y no recupera la prioridad de 'el arreglo de la herramienta va al frente'. El encargo no pedia reordenar, asi que no es violacion del encargo, pero conviene que el jefe lo sepa: la orden reparada puede quedar detras de otras pendientes."
+  ],
+  "que_falta": [
+   "No se incluye el contenido del vigia (vigias/test_vigia_la_tarea_que_fallo_se_reintenta_tras_el_arreglo.py), solo se afirma que pasa: la afirmacion no es verificable aqui. Ademas el propio campo se contradice, dice 'tres pruebas' y describe dos.",
+   "La clave 'huella' de cada renglon del jsonl no aparece en el material; se asume ese nombre. Si el escritor de HUELLAS_QUE_FALLARON.jsonl usa otra clave, la funcion reescribe el archivo y no borra nada, devolviendo True igual: el fallo seria silencioso. Es el unico punto del cambio que depende de algo no visto.",
+   "La huella se calcula despues de mutar la orden (estado, paso_fallido, fallos_seguidos, depende). Hoy es inocuo porque el propio paquete dice que huella_de se saca solo del texto de la orden, y el texto no se toca; queda dicho para que nadie lo lea como error, pero si alguna vez huella_de pasa a incluir el estado, esta linea habra que moverla antes de la mutacion."
+  ],
+  "resumen_para_el_jefe": "Aprobado: la funcion hace justo lo que pedia el encargo, con leer_lista, huella_de, os y json que ya existen, sin tocar agregar_orden ni a ya_fallo, y bien ubicada. Los dos puntos a vigilar son que la clave 'huella' del jsonl no se pudo ver en el material y que una orden forense reintentada no vuelve al frente de la lista."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (28945 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
