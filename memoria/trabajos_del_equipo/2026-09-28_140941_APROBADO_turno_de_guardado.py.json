@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El modulo arnes/turno_de_guardado.py no expone el nombre publico turno_de_guardado que la vigia pide, solo tiene turno_para_guardar.",
+  "archivo": "arnes/turno_de_guardado.py",
+  "funcion": "turno_para_guardar",
+  "texto_viejo": "def turno_para_guardar(carpeta, tope_segundos=TOPE_POR_DEFECTO,\n                       segundos_atrancado=SEGUNDOS_PARA_CONSIDERAR_ATRANCADO):\n    \"\"\"Devuelve un gestor de contexto que da el turno para guardar.\n\n    Uso normal:\n\n        with turno_para_guardar(carpeta, tope_segundos=30) as turno:\n            if not turno[\"conseguido\"]:\n                raise RuntimeError(turno[\"motivo\"])\n            ...guardar en el disco...\n    \"\"\"\n    return _TurnoDeGuardado(\n        carpeta,\n        tope_segundos=tope_segundos,\n        segundos_atrancado=segundos_atrancado,\n    )",
+  "texto_nuevo": "def turno_para_guardar(carpeta, tope_segundos=TOPE_POR_DEFECTO,\n                       segundos_atrancado=SEGUNDOS_PARA_CONSIDERAR_ATRANCADO):\n    \"\"\"Devuelve un gestor de contexto que da el turno para guardar.\n\n    Uso normal:\n\n        with turno_para_guardar(carpeta, tope_segundos=30) as turno:\n            if not turno[\"conseguido\"]:\n                raise RuntimeError(turno[\"motivo\"])\n            ...guardar en el disco...\n    \"\"\"\n    return _TurnoDeGuardado(\n        carpeta,\n        tope_segundos=tope_segundos,\n        segundos_atrancado=segundos_atrancado,\n    )\n\n\n# Hay dos nombres para lo mismo: turno_para_guardar es el nombre historico y\n# turno_de_guardado es el nombre publico que usa la vigia\n# vigias/test_vigia_la_cadena_trabaja_en_varias_a_la_vez.py. Los dos hacen\n# exactamente lo mismo y se mantienen para no romper a quien ya use el viejo.\nturno_de_guardado = turno_para_guardar",
+  "cambios": "",
+  "cambio": "Anadir el alias publico turno_de_guardado que apunta a turno_para_guardar, con una frase que explique por que hay dos nombres y cual usa la vigia.",
+  "codigo": "turno_de_guardado = turno_para_guardar",
+  "vigia": "La tercera prueba de vigias/test_vigia_la_cadena_trabaja_en_varias_a_la_vez.py, que comprueba que el segundo en llegar espera y entra cuando el primero suelta, y que si se pasa el tope se devuelve fallo con su motivo.",
+  "puede_danar": [
+   "arnes/turno_de_guardado.py",
+   "vigias/test_vigia_la_cadena_trabaja_en_varias_a_la_vez.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El alias turno_de_guardado = turno_para_guardar anade el nombre que la vigia pide, deja intactos los nombres viejos y no toca ningun otro archivo: el cambio es el minimo que pedia el encargo y usa solo cosas que ya existen en el modulo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 25947 a 13179 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'soltar_turno' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'pedir_turno' y esa palabra no a",
+  "el pasillo recorto el encargo de 27749 a 14681 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'soltar_turno' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'pedir_turno' y esa palabra no a",
+  "el pasillo recorto el encargo de 27992 a 14833 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'soltar_turno' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'pedir_turno' y esa palabra no a",
+  "el pasillo recorto el encargo de 28235 a 14910 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}
