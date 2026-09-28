@@ -142,6 +142,16 @@ def aplicar_cambio(propuesta, raiz=None):
     # quedando dentro de la comprobacion de humo: asi no se podia crear ni un archivo nuevo.
     # Se devuelve a su sitio (Julio, 2026-09-05: la reparacion no puede romper al vecino).
     if not os.path.exists(archivo):
+        # 2026-09-27: un .py nuevo y roto no debe llegar al disco. Antes de escribir nada,
+        # si termina en .py se comprueba la sintaxis con ast.parse, igual que la rama que
+        # reescribe un archivo que ya existe. Lo vigila
+        # vigias/test_vigia_un_archivo_nuevo_roto_no_llega_al_disco.py.
+        if archivo.endswith(".py"):
+            try:
+                ast.parse(contenido)
+            except SyntaxError as e:
+                _apuntar_log(False, archivo, funcion, f"sintaxis rota: {e}")
+                return False, f"El cambio deja el codigo roto (renglon {e.lineno}): {e.msg}"
         try:
             # la carpeta de un archivo nuevo se crea si falta (medido 2026-09-22, orden 176)
             os.makedirs(os.path.dirname(archivo) or ".", exist_ok=True)
