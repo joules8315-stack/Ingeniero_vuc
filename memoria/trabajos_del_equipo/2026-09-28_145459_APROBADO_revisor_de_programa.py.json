@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La cuenta 4 del revisor (NO HACE LO QUE SE PIDIO) frena en falso porque adivina la intencion; debe pasar a ser AVISO y dejar constancia del hecho medido.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "            if palabra not in viejo and palabra not in nuevo:\n                fallos.append(\"NO HACE LO QUE SE PIDIO: el encargo habla de '%s' y esa palabra \"\n                              \"no aparece ni en el texto viejo ni en el nuevo.\" % palabra)",
+    "texto_nuevo": "            # AVISO, NO FRENO (2026-09-28): esta cuenta adivinaba la INTENCION (confundia\n            # mencionar una pieza con tener que modificarla) y tumbo un cambio ya aprobado.\n            # La intencion es juicio del que revisa, no cuenta del programa\n            # (CONTRATO_CUENTA_O_JUICIO). Por eso pasa a aviso: se dice y se ve, pero no corta.\n            if palabra not in viejo and palabra not in nuevo:\n                fallos.append(\"AVISO: NO HACE LO QUE SE PIDIO: el encargo habla de '%s' y esa palabra \"\n                              \"no aparece ni en el texto viejo ni en el nuevo.\" % palabra)"
+   }
+  ],
+  "cambio": "En la cuenta 4 de revisar(), el mensaje que hoy empieza por 'NO HACE LO QUE SE PIDIO:' pasa a empezar por 'AVISO: NO HACE LO QUE SE PIDIO:' (mismo texto y mismo formateo despues), y se anade encima un comentario corto con el hecho medido de hoy 2026-09-28 y la razon (adivinaba la intencion).",
+  "codigo": "            # AVISO, NO FRENO (2026-09-28): esta cuenta adivinaba la INTENCION (confundia\n            # mencionar una pieza con tener que modificarla) y tumbo un cambio ya aprobado.\n            # La intencion es juicio del que revisa, no cuenta del programa\n            # (CONTRATO_CUENTA_O_JUICIO). Por eso pasa a aviso: se dice y se ve, pero no corta.\n            if palabra not in viejo and palabra not in nuevo:\n                fallos.append(\"AVISO: NO HACE LO QUE SE PIDIO: el encargo habla de '%s' y esa palabra \"\n                              \"no aparece ni en el texto viejo ni en el nuevo.\" % palabra)",
+  "vigia": "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py: la segunda prueba comprueba que el aviso viene marcado; la tercera que un freno de verdad sigue frenando y sin marcar; y la vigia propia del revisor sigue del mismo color.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py (cuenta 4 de revisar)",
+   "quien llama al revisor y separa avisos de frenos",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "vigia propia del revisor"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El mensaje sigue」(anadiendole el prefijo) entrando en la lista `fallos`: correcto segun el material porque el que llama ya separa por prefijo, pero si algun codigo que no viene en el paquete buscara literalmente la cadena 'NO HACE LO QUE SE PIDIO:' con esa posicion o la comparara con `==`, dejaria de encontrarlo. El material afirma que esa separacion ya esta puesta, asi que no lo cuento como fallo, pero es el unico punto de contacto que hay que mirar al correr la ronda.",
+   "El comentario tiene cinco renglones y el encargo pedia 'un comentario corto'. Es mas verboso de lo pedido, pero no anade codigo ni cambia comportamiento: no es motivo de rechazo."
+  ],
+  "que_falta": [
+   "Nada funcional. El `texto_viejo`/`texto_nuevo` de la cabecera de la propuesta vienen vacios; el cambio real viaja en `cambios[0]`, que si esta completo y literal."
+  ],
+  "resumen_para_el_jefe": "Cambia exactamente el ancla que da el material, antepone 'AVISO: ' al mensaje sin tocar ni una letra mas, no anade ni quita ninguna cuenta y anota el hecho con fecha; lo unico a mirar al probarlo es que ningun consumidor busque la cadena vieja por posicion exacta."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 33487 a 17391 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
