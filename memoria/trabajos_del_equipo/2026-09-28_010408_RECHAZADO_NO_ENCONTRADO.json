@@ -1,0 +1,59 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El material no trae el archivo comprobar_pasos.py ni la funcion que llama a pytest sobre la vigia, asi que no se puede copiar el texto literal a sustituir ni saber los nombres reales de las funciones de arnes/memoria_de_pruebas.py que hay que llamar.",
+  "archivo": "NO_ENCONTRADO",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO",
+  "puede_danar": [],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: necesito el archivo comprobar_pasos.py completo (o al menos la funcion donde esta la llamada a pytest sobre la vigia) para copiar el texto literal a sustituir y saber donde enganchar la funcion pequena.",
+   "PREGUUNTA_REQUERIDA: necesito ver las funciones publicas de arnes/memoria_de_pruebas.py (nombres y firmas de las que apuntan y reusan un resultado) para llamarlas bien desde la funcion pequena.",
+   "PREGUUNTA_REQUERIDA: necesito saber la ruta exacta donde debe vivir la vigia nueva y el nombre del archivo de vigia, para crearla."
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "memoria_de_pruebas.leer(raiz, vigia, h) — el propio obrero admite en 'preguntas' que esa funcion no viene en el material",
+   "memoria_de_pruebas.apuntar(raiz, vigia, h, resultado) — igual, API inventada con firma inventada",
+   "El sitio del cambio: mete las funciones en arnes/memoria_de_pruebas.py y desde ahi se hace 'from arnes import memoria_de_pruebas', o sea se importa a si mismo; ademas el encargo es tocar comprobar_pasos y ese archivo no es el suyo"
+  ],
+  "fallos": [
+   "No arregla el diagnostico: la llamada a pytest sigue embebida en comprobar_pasos. Lo que hace es anadir una funcion nueva al lado que nadie llama; el bug sigue exactamente igual.",
+   "El cambio no funciona: si leer/apuntar no existen, el except Exception: pass se come el AttributeError y la funcion SIEMPRE corre pytest. El reuso demanded por el encargo jamas ocurre, y el fallo es invisible.",
+   "No se crea la vigia: el encargo pideexplicitamente la pieza nueva nacida roja, y en 'cambios' no hay ningun archivo de prueba. Sin ella no hay verificacion de nada.",
+   "Ubicar la funcion en el modulo de memoria es la capa equivocada: memoria_de_pruebas no debe ejecutar procesos; esalmacen, y ese archivo esta en la lista de puede_danar que el propio obrero declara.",
+   "Contrato de forma con el reutilizado: la rama de reuso devuelve lo que hay apuntado sin garantia de que tenga la forma {'codigo','salida'} que devuelve la rama nueva. Dos caminos, dos contratos de salida, sin normalizar."
+  ],
+  "riesgo_vecinos": [
+   "arnes/memoria_de_pruebas.py: dos Exceptions anchos y silenciosos convierten cualquier fallo de la memoria en 'no hay nada apuntado', es decir, en corrida silenciosa de pytest en todos los llamadores",
+   "cuerpo/codex.py y cuerpo/privacidad.py quedan declarados como puede_danar sin que el cambio los toque ni justifique por que",
+   "Doble fuente de verdad: la copia embebida en comprobar_pasos y la nueva seguiran corriendo pytest por separado si alguien engancha la nueva,下一刻 divergen"
+  ],
+  "que_falta": [
+   "Saber la ruta real y el texto de comprobar_pakas / del archivo que contiene la llamada embebida, para hacer la extraccion de verdad y no un duplicado",
+   "Los nombres y firmas reales de las funciones de consulta y escritura de la memoria, o NECESITO_LEAR de arnes/memoria_de_pruebas.py",
+   "El archivo de la vigia nacida roja con los tres casos: reusa, corre, y entrega_la_prueba=True corre siempre",
+   "Un except que no traga todo, o al menos distinguir 'no hay nada apuntado' de 'fallo la memoria'"
+  ],
+  "resumen_para_el_jefe": "No se acepta: el codigo duplica en vez de extraer de comprobar_pasos, llama a leer/apuntar que no existen (y se traga el error, asi que el reuso nunca ocurre) y ni siquiera crea la vigia pedida; hace falta leer el archivo de comprobar_pasos y el de la memoria para saber los nombres reales."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (27045 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (27470 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (27528 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (27819 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

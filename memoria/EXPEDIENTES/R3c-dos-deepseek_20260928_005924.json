@@ -1,0 +1,60 @@
+{
+  "orden": {
+    "id": "R3c-dos-deepseek",
+    "titulo": "Cuando la puerta gratis se agote, entran dos puestos de DeepSeek: el 1 escribe y el 2 revisa",
+    "pieza": "cuerpo/capataz.py",
+    "origen": "Julio 2026-09-27: despues de que se acabe opencode, con Big Pickle y grok 4.7 dentro, se sustituye por DeepSeek en dos puestos; el 1 escribe codigo y el 2 ocupa el sitio de los modelos que se van. No debe depender de la memoria de Claude: se programa y se garantiza que se cumpla, por economia, porque las unidades de DeepSeek son mas baratas",
+    "repara": "hoy el que revisa es justo el que se agoto: el bucle lanza siempre escribe deepseek y revisa bigpickle escrito a mano, asi que con la puerta gratis muda las rondas caen a codex o mueren sin auditar",
+    "razon": "Julio se quedo sin su presupuesto el 2026-09-27. Big Pickle y grok 4.7 salen los dos por la misma puerta, la de opencode, y esa puerta arrastra unas 10.600 unidades fijas en cada llamada, medido ese dia con dos pruebas (6 letras y 1.500 letras dieron el mismo peso). Decisiones que tomo Julio ese dia: una sola cuenta de DeepSeek usada dos veces; el disparador es automatico, cuando esa puerta deja de contestar; y si la puerta gratis revive se vuelve a usar porque no cuesta dinero",
+    "encargo": "deepseek1 y deepseek2 entran en la fila como de pago, detras de todo lo gratis, con su apodo y su capacidad, y con su linea de modelo para que no queden de adorno. Funcion nueva que diga si la puerta gratis esta agotada, apoyada en el contador de fallos seguidos que ya se escribe solo, sin que nadie lo suba a mano. El bucle elige la pareja segun esa funcion, en vez de tenerla escrita a mano. En la cascada de revisores, deepseek2 entra antes de codex y de claude, con su guardia de no revisarse a si mismo. La vigia que hoy clava la pareja se ajusta a las dos situaciones, con esta orden de Julio como permiso. Nada se localiza por numero de linea: se busca por nombre.",
+    "vigia": "vigias/test_vigia_cuando_se_acaba_opencode_entran_dos_deepseek.py",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "21f5eb3d1553da77",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-28_005923_SIN_VEREDICTO_NO_ENCONTRADO.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : GPT-OSS 120B (Groq) no le cabe (19950 letras, aguanta 19042) -> se le salta\n  aviso       : PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  diagnostico : El material no trae el archivo del bucle que elige la pareja, ni la cascada de revisores, ni la vigia que clava la pareja, ni el contador de fallos seguidos; solo hay fragmentos sueltos de cuerpo/fallos.py, cuerpo/codex.py y cuerpo/privacidad.py, insuficientes para localizar por nombre los sitios a tocar.\n  toca        : NO_ENCONTRADO funcion NO_ENCONTRADO\n  confianza   : baja\n  PREGUNTA_REQUERIDA: PREGUUNTA_REQUERIDA: ¿en qué archivo y con qué nombre está el bucle que hoy elige la pareja a mano?; PREGUNTA_REQUERIDA: ¿en qué archivo y con qué nombre está la cascada de revisores donde debe entrar deepseek2 antes de codex y claude?; PREGUNTA_REQUERIDA: ¿en qué archivo y con qué nombre está la vigia que hoy clava la pareja?; PREGUNTA_REQUERIDA: ¿en qué archivo y con qué nombre está el contador de fallos seguidos que ya se escribe solo?; PREGUNTA_REQUERIDA: ¿cuál es el apodo y la capacidad exactos de deepseek1 y deepseek2, y cuál es su línea de modelo?\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-28T00:59:24",
+  "analisis": {
+    "que_paso": "El equipo NO aprobo la orden R3c-dos-deepseek (tipo no_aprobo, codigo 0). Se pidio escribe=deepseek y revisa=bigpickle; el obrero deepseek entrego una propuesta con la marca NO_ENCONTRADO y PREGUNTA_REQUERIDA, se reintento y quedo SIN VEREDICTO con AUDITOR (ninguno). No se guardo llave y no se toco codigo. El obrero dijo textualmente que el material no traia ni el bucle que elige la pareja, ni la cascada de revisores, ni la vigia que clava la pareja, ni el contador de fallos seguidos: solo fragmentos sueltos de cuerpo/fallos.py, cuerpo/codex.py y cuerpo/privacidad.py.",
+    "causa_raiz": "Fragmentacion del paquete: el armador entrego al obrero un material que NO incluia la pieza nombrada en la orden (cuerpo/capataz.py, donde vive lanzar_al_equipo con la pareja escrita a mano), ni los otros sitios que el encargo manda tocar (la cascada de revisores en cuerpo/obrero.py auditar(), la vigia y el contador fallos_seguidos). El encargo exige localizar por nombre, pero sin esas piezas completas es imposible. El obrero actuo bien segun las leyes de Julio (nunca inventar -> NO_ENCONTRADO; nunca asumir -> PREGUNTA_REQUERIDA); fallo la herramienta que arma el paquete minimo, que dejo el material incompleto y ademas rompio la causa de fondo antes de pedir llaves (Ley del 2026-08-27).",
+    "donde": "La herramienta que arma el paquete minimo (armador/router del cerebro y su filtro cerebro/trozos.py buscar / cuerpo/obrero.py _filtrar_paquete). El material entregado no contenia cuerpo/capataz.py (lanzar_al_equipo, lineas 23-33) ni cuerpo/obrero.py auditar().",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "cuerpo/capataz.py",
+        "texto": "        \"--escribe\",\n        \"deepseek\",\n        \"--revisa\",\n        \"bigpickle\","
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "        # AL OBRERO SOLO LE LLEGA LO SUYO (Julio, 2026-09-10). Antes le llegaba el bulto entero\n        # y el gratis cortaba la respuesta a la mitad. El filtro le deja la ley, los trozos del\n        # archivo que la tarea nombra (si lo nombra) y quien puede danar."
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "        # Si el obrero dijo NO_ENCONTRADO y PREGUNTA_REQUERIDA, es falta de material, no invento.\n        # Eso sale como PREGUNTA al que reparte, no como rechazo."
+      }
+    ],
+    "no_volver_a": "No mandar al equipo un encargo cuyo paquete no traiga COMPLETA la pieza nombrada (cuerpo/capataz.py) ni los otros sitios que la orden manda tocar; primero se repara el armador para que junte ese material, y recien despues se pide la llave.",
+    "tarea_nueva": {
+      "repara": "El armador entrega solo fragmentos de fallos.py/codex.py/privacidad.py y omite la pieza nombrada en la orden (cuerpo/capataz.py) y los demas sitios que el encargo cita, asi que el equipo siempre devuelve NO_ENCONTRADO",
+      "pieza": "cerebro/trozos.py (buscar) y el armador del paquete / cuerpo/obrero.py _filtrar_paquete",
+      "razon": "Ley del 2026-08-27: si el sistema no puede trabajar se repara la causa de fondo de la herramienta ANTES de pedir llaves; sin el material completo el equipo no puede localizar por nombre y la orden R3c volvera a morir en NO_ENCONTRADO",
+      "encargo": "Que cuando una orden nombre una pieza (cuerpo/capataz.py) y el encargo nombre otros sitios (la cascada de revisores en cuerpo/obrero.py auditar(), la vigia que clava la pareja y el contador fallos_seguidos), el armador traiga esas piezas COMPLETAS en el material del obrero, no fragmentos sueltos de otras piezas. Comprobarlo con una prueba que arme el paquete de R3c y verifique que incluye capataz.py y obrero.py auditar antes de llamar al equipo.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Ninguna cita muestra el armado del paquete ni la ausencia de lanzar_al_equipo/auditar/vigía/contador en el material entregado: la de capataz.py solo son flags del ejecutor, y las de obrero.py describen (e incluso contradicen) un filtro que理论上 ya incluye los trozos del archivo nombrado, sin probar que faltara la pareja escrita a mano.",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R3c-dos-deepseek_20260928_005924.json"
+  }
+}

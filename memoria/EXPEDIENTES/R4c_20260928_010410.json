@@ -1,0 +1,28 @@
+{
+  "orden": {
+    "id": "R4c",
+    "titulo": "El capataz tampoco repite la corrida de la vigia de la orden",
+    "pieza": "cuerpo/capataz.py",
+    "vigia": "vigias/test_vigia_el_capataz_no_repite_la_corrida_de_la_vigia.py",
+    "encargo": "En comprobar_pasos, sacar la llamada a pytest sobre la vigia a una funcion propia y pequena que primero pregunte a arnes/memoria_de_pruebas.py y solo corra si no hay nada que reusar. No se reusa en la rama entrega_la_prueba igual a si, porque ahi hace falta el texto de la salida. La vigia nueva, nacida roja, prueba esa funcion pequena.",
+    "origen": "PLAN_PRIORIDAD_UNO R4, tercera corrida repetida",
+    "repara": "la tercera repeticion de la misma corrida dentro de una orden",
+    "razon": "queda a proposito detras de R3: vale entre 5 y 25 segundos por orden, y R3 vale minutos",
+    "depende": [
+      "R4b"
+    ],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "5746d857a1c14a62",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-28_010408_RECHAZADO_NO_ENCONTRADO.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (27045 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (27470 letras, aguanta 19042) -> se le salta\n  diagnostico : El material no trae el archivo comprobar_pasos.py ni la funcion que llama a pytest sobre la vigia, asi que no se puede copiar el texto literal a sustituir ni saber los nombres reales de las funciones de arnes/memoria_de_pruebas.py que hay que llamar.\n  toca        : NO_ENCONTRADO funcion NO_ENCONTRADO\n  confianza   : baja\n  PREGUNTA_REQUERIDA: PREGUUNTA_REQUERIDA: necesito el archivo comprobar_pasos.py completo (o al menos la funcion donde esta la llamada a pytest sobre la vigia) para copiar el texto literal a sustituir y saber donde enganchar la funcion pequena.; PREGUUNTA_REQUERIDA: necesito ver las funciones publicas de arnes/memoria_de_pruebas.py (nombres y firmas de las que apuntan y reusan un resultado) para llamarlas bien desde la funcion pequena.; PREGUUNTA_REQUERIDA: necesito saber la ruta exacta donde debe vivir la vigia nueva y el nombre del archivo de vigia, para crearla.\n  VEREDICTO   : RECHAZADO\n  *** INVENTO: memoria_de_pruebas.leer(raiz, vigia, h) — el propio obrero admite en 'preguntas' que esa funcion no viene en el material; memoria_de_pruebas.apuntar(raiz, vigia, h, resultado) — igual, API inventada con firma inventada; El sitio del cambio: mete las funciones en arnes/memoria_de_pruebas.py y desde ahi se hace 'from arnes import memoria_de_pruebas', o sea se importa a si mismo; ademas el encargo es tocar comprobar_pasos y ese archivo no es el suyo -> SE DESCARTA\n  fallo       : No arregla el diagnostico: la llamada a pytest sigue embebida en comprobar_pasos. Lo que hace es anadir una funcion nueva al lado que nadie llama; el bug sigue exactamente igual.\n  fallo       : El cambio no funciona: si leer/apuntar no existen, el except Exception: pass se come el AttributeError y la funcion SIEMPRE corre pytest. El reuso demanded por el encargo jamas ocurre, y el fallo es invisible.\n  fallo       : No se crea la vigia: el encargo pideexplicitamente la pieza nueva nacida roja, y en 'cambios' no hay ningun archivo de prueba. Sin ella no hay verificacion de nada.\n  fallo       : Ubicar la funcion en el modulo de memoria es la capa equivocada: memoria_de_pruebas no debe ejecutar procesos; esalmacen, y ese archivo esta en la lista de puede_danar que el propio obrero declara.\n  resumen     : No se acepta: el codigo duplica en vez de extraer de comprobar_pasos, llama a leer/apuntar que no existen (y se traga el error, asi que el reuso nunca ocurre) y ni siquiera crea la vigia pedida; hace falta leer el archivo de comprobar_pasos y el de la memoria para saber los nombres reales.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-28T01:04:10"
+}
