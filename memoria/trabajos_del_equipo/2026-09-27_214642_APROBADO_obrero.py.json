@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "grok47",
+ "propuesta": {
+  "diagnostico": "En trabajar, la llamada a _filtrar_paquete que arma material_obrero no le pasa el parametro funciones, asi que la proteccion de los bloques con la funcion pedida nunca se activa y el recorte suelta el trozo con la funcion.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)",
+  "texto_nuevo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690,\n                                       funciones=_nombres_de_funcion_del_texto(tarea))",
+  "cambio": "Anadir el parametro funciones a la llamada de _filtrar_paquete que arma material_obrero, con la lista que devuelve _nombres_de_funcion_del_texto aplicada a la tarea original (no al encargo con los motivos del rechazo pegados).",
+  "codigo": "funciones=_nombres_de_funcion_del_texto(tarea)",
+  "vigia": "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El arreglo solo anade funciones a la llamada que arma el material, sobre el texto que si esta, usando la tarea original y no el encargo con los rechazos; no inventa ni toca de mas."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (40546 letras, aguanta 19042) -> se le salta",
+  "Big Pickle no contesto en 400.0s (timeout)",
+  "bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "bigpickle no contesto: revisa Grok 4.7 (A-45)",
+  "vueltas_dadas: 1"
+ ]
+}
