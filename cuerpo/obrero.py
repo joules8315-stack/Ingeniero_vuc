@@ -524,7 +524,10 @@ def _filtrar_paquete(paquete, archivo=None, tope=None, funciones=None):
                 ultimo = i
                 break
         if ultimo is not None:
-            del salida[ultimo:]
+            j = ultimo + 1
+            while j < len(salida) and not salida[j].startswith("### `"):
+                j += 1
+            del salida[ultimo:j]
             recortado = True
         else:
             if len(salida) <= cabecera:
