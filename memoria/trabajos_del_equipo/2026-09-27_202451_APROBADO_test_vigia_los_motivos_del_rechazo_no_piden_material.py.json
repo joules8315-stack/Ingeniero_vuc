@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El primer caso de la vigía comprueba que el nombre del archivo que solo aparece en el aviso del revisor no salga en el resultado, pero ese nombre sí sale con razón porque el resultado devuelve los motivos del rechazo tal cual; además el molde no hace que el revisor de programa no frene, y como el texto de mentira del cerebro falso no es código de verdad, el revisor lo frena y ensucia la medida.",
+  "archivo": "vigias/test_vigia_los_motivos_del_rechazo_no_piden_material.py",
+  "funcion": "test_los_motivos_del_rechazo_no_piden_material",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    monkeypatch.setattr(obrero, \"_propuesta_cumple\", lambda p, c: (True, \"\"))\n    monkeypatch.setattr(obrero, \"_validar_en_paquete\", lambda *a, **k: [])\n    monkeypatch.setattr(obrero, \"_filtrar_paquete\", lambda paquete, **k: material)",
+    "texto_nuevo": "    monkeypatch.setattr(obrero, \"_propuesta_cumple\", lambda p, c: (True, \"\"))\n    monkeypatch.setattr(obrero, \"_validar_en_paquete\", lambda *a, **k: [])\n    monkeypatch.setattr(obrero, \"_filtrar_paquete\", lambda paquete, **k: material)\n    import revisor_de_programa\n    monkeypatch.setattr(revisor_de_programa, \"revisar\", lambda *a, **k: [])"
+   },
+   {
+    "texto_viejo": "    # La segunda vuelta SI le pidio al cerebro: hay dos pedidos apuntados.\n    assert len(prompts) >= 2\n\n    # No murio por falta del archivo que solo nombraba el aviso.\n    texto = json.dumps(resultado, ensure_ascii=False)\n    assert \"FALTA_MATERIAL\" not in texto\n    assert \"archivo_que_solo_nombra_el_aviso\" not in texto",
+    "texto_nuevo": "    # La segunda vuelta SI le pidio al cerebro: hay dos pedidos apuntados.\n    assert len(prompts) >= 2\n\n    # No murio por falta del archivo que solo nombraba el aviso.\n    texto = json.dumps(resultado, ensure_ascii=False)\n    assert \"FALTA_MATERIAL\" not in texto"
+   }
+  ],
+  "cambio": "En el molde _preparar, hacer que el revisor de programa no frene (monkeypatch a revisor_de_programa.revisar devolviendo lista vacía), y en el primer caso quitar la comprobación de que el nombre del archivo que solo aparece en el aviso no salga en el texto del resultado, dejando solo la comprobación de que hay dos pedidos apuntados y que no murió por FALTA_MATERIAL.",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_los_motivos_del_rechazo_no_piden_material.py::test_los_motivos_del_rechazo_no_piden_material debe quedar verde: dos pedidos apuntados, sin FALTA_MATERIAL, y sin la comprobación imposible del nombre del archivo del aviso.",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "el monkeypatch solo intercepta si cuerpo/obrero.py llama al revisor a traves del modulo (revisor_de_programa.revisar) y no con un 'from ... import revisar' ya atado en su propio espacio de nombres; si lo ataron directo, el cambio no hace nada",
+   "la lambda devuelve [] porque _validar_en_paquete devuelve lista; si revisar devuelve pareja tipo (ok, avisos) como _propuesta_cumple, [] no se desempaqueta y la vuelta revienta en vez de no frenar",
+   "el parche va en el molde compartido: si el segundo caso tambien lo usa y ahi la muerte por FALTA_MATERIAL la producia ese mismo revisor, ese caso deja de morir y se rompe; hay que correr el archivo entero, no solo la prueba vigilada",
+   "importar revisor_de_programa dentro de la funcion: si el modulo vive en arnes/ y ese directorio no esta en el sys.path de las pruebas, el import peta y cae todo el archivo"
+  ],
+  "que_falta": [
+   "el paquete no trae cuerpo/obrero.py ni arnes/revisor_de_programa.py, asi que no se puede comprobar aqui la forma del return de revisar ni como lo llama el obrero; queda a cargo de la vuelta que corre la prueba"
+  ],
+  "resumen_para_el_jefe": "Arregla justo lo que se le pidio, con las dos cosas del encargo y sin tocar la pieza; lo unico que hay que confirmar al correr es que el revisor se parchee bien y que el segundo caso no deje de morir."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (33057 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
