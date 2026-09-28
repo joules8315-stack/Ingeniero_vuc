@@ -71,13 +71,14 @@ def _texto(valor):
 
 def _hora(valor):
     """Devuelve el valor como numero, o None si no se puede leer como hora."""
+    from datetime import datetime
     if isinstance(valor, bool):
         return None
     if isinstance(valor, (int, float)):
         return float(valor)
     if isinstance(valor, str):
         try:
-            return float(valor.strip())
+            return datetime.strptime(valor.strip(), "%Y-%m-%d %H:%M:%S").timestamp()
         except (ValueError, TypeError):
             return None
     return None
@@ -113,6 +114,7 @@ def huecos(llamadas, tope=TOPE_POR_DEFECTO):
     hora ilegible. Devuelve una lista ordenada de mayor a menor por
     segundos_perdidos, solo con los huecos iguales o mayores que el tope.
     """
+    from datetime import datetime
     if not isinstance(llamadas, list):
         return []
 
@@ -141,12 +143,18 @@ def huecos(llamadas, tope=TOPE_POR_DEFECTO):
         if perdidos < tope:
             continue
 
+        cuando_termino_texto = _texto(antes.get("cuando"))
+        try:
+            cuando_empezo_texto = datetime.fromtimestamp(empezo_despues).strftime("%Y-%m-%d %H:%M:%S")
+        except TypeError:
+            cuando_empezo_texto = ""
+
         encontrados.append(
             {
-                "cuando_termino": termino_antes,
+                "cuando_termino": cuando_termino_texto,
                 "clase_antes": _texto(antes.get("clase")),
                 "quien_antes": _texto(antes.get("quien")),
-                "cuando_empezo_la_siguiente": empezo_despues,
+                "cuando_empezo_la_siguiente": cuando_empezo_texto,
                 "clase_despues": _texto(despues.get("clase")),
                 "quien_despues": _texto(despues.get("quien")),
                 "segundos_perdidos": perdidos,
