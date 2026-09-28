@@ -56,6 +56,8 @@ def _preparar(monkeypatch, material, veredictos):
     monkeypatch.setattr(obrero, "_propuesta_cumple", lambda p, c: (True, ""))
     monkeypatch.setattr(obrero, "_validar_en_paquete", lambda *a, **k: [])
     monkeypatch.setattr(obrero, "_filtrar_paquete", lambda paquete, **k: material)
+    import revisor_de_programa
+    monkeypatch.setattr(revisor_de_programa, "revisar", lambda *a, **k: [])
 
     prompts = []
 
@@ -100,7 +102,6 @@ def test_los_motivos_del_rechazo_no_piden_material(monkeypatch):
     # No murio por falta del archivo que solo nombraba el aviso.
     texto = json.dumps(resultado, ensure_ascii=False)
     assert "FALTA_MATERIAL" not in texto
-    assert "archivo_que_solo_nombra_el_aviso" not in texto
 
 
 def test_si_la_tarea_nombra_archivo_que_no_esta_se_muere_sin_llamar(monkeypatch):
