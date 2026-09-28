@@ -1,0 +1,69 @@
+{
+ "obrero": "gemini4",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "El material proporcionado no contiene la definición completa de la función `pendientes` ni el funcionamiento del registro de pendientes, lo cual es necesario para atender la tarea de listar los 17 pendientes y verificar su cobertura.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "main",
+  "texto_viejo": "    if args and args[0] == \"listar\":\n        p = pendientes()\n        sys.stdout.write( (\"\\n\".join(\"- \" + e[\"texto\"] for e in p)) or \"sin pendientes\\n\")\n        return 0",
+  "texto_nuevo": "    if args and args[0] == \"listar\":\n        p = pendientes()\n        sys.stdout.write( (\"\\n\".join(\"- \" + e[\"texto\"] for e in p)) or \"sin pendientes\\n\")\n        return 0",
+  "cambio": "Se requiere leer el archivo completo de `arnes/candado_legislar.py` para obtener la definición completa de la función `pendientes` y el funcionamiento del registro de pendientes, ya que el material actual está truncado y no permite verificar la cobertura de las instrucciones.",
+  "codigo": "NECESITO_LEER: arnes/candado_legislar.py / La función `pendientes` y el funcionamiento del registro de pendientes no están completos en el material proporcionado, lo cual impide verificar la cobertura de las instrucciones y atender los 17 pendientes. / El contenido completo de la función `pendientes` y el registro de pendientes. / Riesgo de no poder completar la tarea de listar y verificar los pendientes.",
+  "vigia": "vigias/test_vigia_legislar_pendientes.py",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candados_medicion.py",
+   "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "vigias/test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "vigias/test_vigia_legislar_pendientes.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [
+   "¿Cuál es el contenido completo de la función `pendientes` en `arnes/candado_legislar.py`?",
+   "¿Cómo funciona el registro de pendientes en `arnes/candado_legislar.py` para poder verificar la cobertura de las instrucciones?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_cierre.py",
+   "candados_medicion.py",
+   "test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "test_vigia_las_palabras_de_maquina_no_son_ordenes.py",
+   "test_vigia_legislar_pendientes.py",
+   "test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "test_vigia_memoria_completa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El texto_viejo y el texto_nuevo son IDENTICOS: no propone ningun cambio real, solo repite el mismo bloque de codigo.",
+   "No atiende el encargo: el diagnostico pide recuperar las 17 instrucciones completas y buscar su cobertura en contrato, tabla, matriz y vigia. La propuesta no recupera ninguna instruccion ni verifica cobertura alguna.",
+   "El campo 'codigo' no contiene codigo: contiene una peticion NECESITO_LEER disfrazada, que no es una reparacion.",
+   "El diagnostico se contradice con el encargo: el paquete ya dice explicitamente que si falta material se pida con NECESITO_LEER, pero la propuesta no aporta ningun avance sobre los 17 pendientes."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Recuperar el texto completo de cada una de las 17 instrucciones que devuelve 'python arnes/candado_legislar.py listar'.",
+   "Para cada instruccion, buscar evidencia literal de cobertura en contrato, tabla, matriz y vigia.",
+   "Marcar 'ya existe' o 'no aplica' solo con evidencia literal; completar cobertura faltante solo si la instruccion completa lo autoriza.",
+   "Entregar veredicto y lista de pendientes que requieren decision de Julio."
+  ],
+  "resumen_para_el_jefe": "La propuesta no repara nada: texto_viejo y texto_nuevo son identicos y no aborda ninguno de los 17 pendientes; es una peticion de material, no una reparacion."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "vueltas_dadas: 4"
+ ]
+}

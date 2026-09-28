@@ -227,7 +227,7 @@ def main():
         return 0 if ok else 2
     if args and args[0] == "listar":
         p = pendientes()
-        sys.stdout.write(("\n".join("- " + e["texto"][:120] for e in p)) or "sin pendientes\n")
+        sys.stdout.write(("\n".join("- " + e["texto"] for e in p)) or "sin pendientes\n")
         return 0
     if args and args[0] == "marcar-todo" and len(args) >= 3:
         resolucion = args[1]

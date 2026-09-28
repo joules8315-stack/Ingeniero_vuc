@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El recortador de material no protege las funciones de nombre normal porque la coleccion de nombres conocidos se arma mas abajo y solo dentro de la rama de reparar, asi que corta el trozo que trae la funcion pedida.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690,\n                                       funciones=_nombres_de_funcion_del_texto(tarea))\n        if clase != \"crear\":\n            _conocidas = set()\n            if _archivo_tarea:\n                _raiz_proyecto = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), \"..\"))\n                for _ruta_nombrada in _archivo_tarea:\n                    _ruta_resuelta = _ruta_nombrada\n                    if not os.path.isabs(_ruta_resuelta):\n                        _ruta_resuelta = os.path.join(_raiz_proyecto, _ruta_resuelta)\n                    _conocidas |= funciones_que_declara(_ruta_resuelta)\n            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)",
+    "texto_nuevo": "        _conocidas = set()\n        if _archivo_tarea:\n            _raiz_proyecto = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), \"..\"))\n            for _ruta_nombrada in _archivo_tarea:\n                _ruta_resuelta = _ruta_nombrada\n                if not os.path.isabs(_ruta_resuelta):\n                    _ruta_resuelta = os.path.join(_raiz_proyecto, _ruta_resuelta)\n                _conocidas |= funciones_que_declara(_ruta_resuelta)\n        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690,\n                                       funciones=_nombres_de_funcion_del_texto(tarea, _conocidas))\n        if clase != \"crear\":\n            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)"
+   }
+  ],
+  "cambio": "Mover el bloque que arma la coleccion _conocidas (leyendo los archivos nombrados) a justo antes de la llamada a _filtrar_paquete y fuera de la rama 'if clase != \"crear\"', pasar _conocidas como segundo argumento a _nombres_de_funcion_del_texto en esa llamada, y en la rama 'if clase != \"crear\"' dejar solo la llamada a falta_en_el_material usando la coleccion ya armada arriba.",
+  "codigo": "        _conocidas = set()\n        if _archivo_tarea:\n            _raiz_proyecto = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), \"..\"))\n            for _ruta_nombrada in _archivo_tarea:\n                _ruta_resuelta = _ruta_nombrada\n                if not os.path.isabs(_ruta_resuelta):\n                    _ruta_resuelta = os.path.join(_raiz_proyecto, _ruta_resuelta)\n                _conocidas |= funciones_que_declara(_ruta_resuelta)\n        material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,\n                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690,\n                                       funciones=_nombres_de_funcion_del_texto(tarea, _conocidas))\n        if clase != \"crear\":\n            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)",
+  "vigia": "vigias/test_vigia_el_material_trae_la_pieza_pedida.py y vigias/test_vigia_el_material_pide_la_funcion_publica.py: comprobar que al pedir una funcion de nombre normal (como 'armar') el material recortado SI trae su 'def armar' y no se dispara FALTA_MATERIAL.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_pide_la_funcion_publica.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Al sacar el bloque de la rama 'if clase != \"crear\"', ahora funciones_que_declara() se llama tambien en tareas de clase 'crear', donde el archivo nombrado todavia puede no existir; si esa funcion no tolera rutas inexistentes, reventaria en la rama crear. El encargo ordena exactamente ese movimiento, asi que no invalida, pero conviene confirmarlo.",
+   "La indentacion de las lineas de continuacion de _filtrar_paquete no se toco y sigue coherente porque la linea 'material_obrero = _filtrar_paquete(' conserva sus 8 espacios; no hay SyntaxError."
+  ],
+  "que_falta": [
+   "Los campos de nivel superior texto_viejo/texto_nuevo vienen vacios; el contenido real esta en 'cambios' y 'codigo'. Cosmético, no afecta al cambio.",
+   "No se muestra el cuerpo de _nombres_de_funcion_del_texto ni de funciones_que_declara en el material, asi que el segundo argumento solo se puede dar por bueno porque el encargo lo nombra explicitamente y la comprobacion por programa dice que los nombres existen."
+  ],
+  "resumen_para_el_jefe": "Mueve el bloque de _conocidas arriba de la llamada al recortador, lo saca de la rama 'crear' y se lo pasa como segundo argumento a _nombres_de_funcion_del_texto, tal como pide el encargo; solo toca cuerpo/obrero.py y no inventa nada; unico punto a confirmar es que funciones_que_declara tolere archivos que aun no existen en tareas de clase 'crear'."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39037 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

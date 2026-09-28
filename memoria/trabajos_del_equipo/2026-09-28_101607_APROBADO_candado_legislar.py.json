@@ -1,0 +1,33 @@
+{
+ "obrero": "groq",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "El comando listar muestra solo los primeros 120 caracteres de cada instrucción pendiente, impidiendo revisar el texto completo.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "main",
+  "texto_viejo": "    if args and args[0] == \"listar\":\n        p = pendientes()\n        sys.stdout.write((\"\\n\".join(\"- \" + e[\"texto\"][:120] for e in p)) or \"sin pendientes\\n\")\n        return 0",
+  "texto_nuevo": "    if args and args[0] == \"listar\":\n        p = pendientes()\n        sys.stdout.write((\"\\n\".join(\"- \" + e[\"texto\"] for e in p)) or \"sin pendientes\\n\")\n        return 0",
+  "cambio": "Mostrar el texto completo de cada instrucción pendiente en el comando listar, eliminando el truncado a 120 caracteres.",
+  "codigo": "    if args and args[0] == \"listar\":\n        p = pendientes()\n        sys.stdout.write((\"\\n\".join(\"- \" + e[\"texto\"] for e in p)) or \"sin pendientes\\n\")\n        return 0",
+  "vigia": "Ejecutar `python arnes/candado_legislar.py listar` y comprobar que la salida contiene la instrucción completa sin recorte (no aparecen '...').",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación para mostrar el texto completo de las instrucciones pendientes en el comando 'listar' es correcta y no introduce fallos."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19163 a 12790 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 19707 a 13291 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 2"
+ ]
+}
