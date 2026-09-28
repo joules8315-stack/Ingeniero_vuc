@@ -1,0 +1,52 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "falta_en_el_material toma la palabra tal cual y solo le quita los signos de los extremos, asi que una ruta citada como sitio (ruta:renglon) se queda pegada y se toma por un archivo distinto que no existe, avisando de que falta aunque el archivo si este en el material",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "falta_en_el_material",
+  "texto_viejo": "    for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n        limpia = palabra.strip(\"()[]{}<>\\\"'`\")\n        if \".py\" in limpia and limpia != \"py\":\n            # descartar la palabra suelta 'py' sin punto ni nombre delante\n            if limpia == \"py\":\n                continue\n            # descartar la extension SUELTA: un punto seguido de py sin ningun\n            # nombre delante. Solo cuenta como archivo si antes del punto hay al\n            # menos una letra, un numero o una raya baja.\n            _punto = limpia.find(\".py\")\n            _nombre = limpia[:_punto]\n            if not any(_c.isalnum() or _c == \"_\" for _c in _nombre):\n                continue\n            archivos.append(limpia)",
+  "texto_nuevo": "    for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n        limpia = palabra.strip(\"()[]{}<>\\\"'`\")\n        if \".py\" in limpia and limpia != \"py\":\n            # descartar la palabra suelta 'py' sin punto ni nombre delante\n            if limpia == \"py\":\n                continue\n            # descartar la extension SUELTA: un punto seguido de py sin ningun\n            # nombre delante. Solo cuenta como archivo si antes del punto hay al\n            # menos una letra, un numero o una raya baja.\n            _punto = limpia.find(\".py\")\n            _nombre = limpia[:_punto]\n            if not any(_c.isalnum() or _c == \"_\" for _c in _nombre):\n                continue\n            # una ruta con numero de renglon detras (ruta:1290) es la MISMA ruta:\n            # el nombre del archivo se corta en los dos puntos.\n            _dos_puntos = limpia.find(\":\")\n            if _dos_puntos != -1:\n                limpia = limpia[:_dos_puntos]\n            archivos.append(limpia)",
+  "cambio": "en falta_en_el_material, al recoger los archivos nombrados en el encargo, cortar el nombre del archivo en los dos puntos para que una ruta citada como sitio (ruta:renglon) cuente como la misma ruta y no como un archivo distinto que falta",
+  "codigo": "            # una ruta con numero de renglon detras (ruta:1290) es la MISMA ruta:\n            # el nombre del archivo se corta en los dos puntos.\n            _dos_puntos = limpia.find(\":\")\n            if _dos_puntos != -1:\n                limpia = limpia[:_dos_puntos]\n            archivos.append(limpia)",
+  "vigia": "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py::test_el_sitio_citado_no_es_un_archivo_que_falte (roja hoy, verde con el cambio) y test_la_ruta_que_de_verdad_no_esta_si_se_avisa (sigue verde)",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El corte usa el PRIMER dos puntos (find) en vez del ultimo: en una ruta absoluta de Windows (C:\\Ingeniero_VUC\\algo.py:1290) deja el nombre en \"C\" y el aviso pasa a decir que falta el archivo \"C\". Antes tambien era un aviso falso, asi que no es una regresion en numero de avisos, pero el mensaje es mas tonto que antes",
+   "archivos[] ahora guarda nombres recortados, y la rama que distingue 'el material nombra el archivo pero no trae la funcion' usa any(a in texto_material for a in archivos): al entrar mejor el nombre, esa rama dispara mas a menudo. Es el comportamiento pedido, pero es el unico punto donde el cambio toca logica que no es solo de recorte"
+  ],
+  "que_falta": [
+   "El docstring de falta_en_el_material no recoge la regla nueva; no es fallo (el arreglo anterior de la extension suelta tampoco lo hizo, hay precedente), pero la lista de reglas queda con una menos de las que el codigo cumple",
+   "No se ha podido comprobar en esta ronda arnes/asignador.py ni arnes/revisor_de_programa.py: quedaban fuera del paquete. El cambio no altera la firma ni el tipo de lo que devuelve, asi que el riesgo es bajo, pero no esta medido"
+  ],
+  "resumen_para_el_jefe": "El recorte en los dos puntos esta en el sitio correcto por texto, convierte ruta:1290 en ruta y quita el aviso falso sin tocar ninguna prueba; solo hay que saber que con rutas de Windows que empiezan por C: el nombre se queda en una letra, cosa que no empeora el numero de avisos pero ensucia el mensaje"
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39109 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
