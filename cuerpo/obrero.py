@@ -310,6 +310,28 @@ Responde SOLO un JSON valido, sin texto alrededor:
 ===== FIN DEL MATERIAL ====="""
 
 
+def separar_avisos_y_frenos(mensajes):
+    """Reparte una lista de mensajes en dos: primero los AVISOS, despues los FRENOS.
+
+    Es aviso todo texto que, quitandole los espacios de delante, empieza por la
+    palabra AVISO seguida de dos puntos. Todo lo demas es freno. No se pierde ni
+    se duplica ningun mensaje. Si no llega una lista, o trae cosas que no son
+    texto, no revienta: devuelve dos listas y sigue.
+    """
+    avisos = []
+    frenos = []
+    if not isinstance(mensajes, (list, tuple)):
+        return avisos, frenos
+    for mensaje in mensajes:
+        if not isinstance(mensaje, str):
+            continue
+        if mensaje.lstrip().startswith("AVISO:"):
+            avisos.append(mensaje)
+        else:
+            frenos.append(mensaje)
+    return avisos, frenos
+
+
 def _prompt_auditor(paquete, propuesta):
     return f"""Eres el AUDITOR. Otro modelo propuso una reparacion. Tu trabajo es buscarle el error,
 no felicitarlo. Se duro y concreto.
@@ -1419,7 +1441,10 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
             _prog_corrio = True
         except Exception:
             _fallos_prog = []
-        if _fallos_prog and _vuelta < 3:
+        _avisos_prog, _frenos_prog = separar_avisos_y_frenos(_fallos_prog)
+        for _aviso_prog in _avisos_prog:
+            avisos.append("AVISO del revisor por programa (no frena): %s" % _aviso_prog)
+        if _frenos_prog and _vuelta < 3:
             motivos_rechazo.extend(str(x) for x in _fallos_prog)
             avisos_totales.append('el revisor de programa freno antes de pagar la revision: ' + '; '.join(str(x) for x in _fallos_prog)[:200])
             continue
