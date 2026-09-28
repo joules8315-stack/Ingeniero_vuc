@@ -1,0 +1,61 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En config/codex/default.rules faltan los permisos de los mandos cruzado y resultado, y el comentario de arriba no explica por que los mandos que bloquean no son para Codex.",
+  "archivo": "config/codex/default.rules",
+  "funcion": "seccion de permisos prefix_rule (junto al renglon del mando director)",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "# Reglas de Codex, guardadas en el proyecto (A-40 y A-48, 2026-09-22). Codex no escribe codigo ni guarda trabajo: solo da ordenes al equipo y al director del Ingeniero, y el programa escribe. Se instalan con python arnes/instalar_reglas_codex.py.",
+    "texto_nuevo": "# Reglas de Codex, guardadas en el proyecto (A-40 y A-48, 2026-09-22). Codex no escribe codigo ni guarda trabajo: solo da ordenes al equipo y al director del Ingeniero, y el programa escribe. Se instalan con python arnes/instalar_reglas_codex.py.\n# Los mandos que bloquean no son para Codex cuando trabaja solo, porque esperar le cuesta cupo igual que trabajar: medido hoy 2026-09-28, 21.726 unidades esperando una ronda hasta quedarse sin cupo. Por eso se le permiten el mando que lanza al fondo (cruzado) y el que consulta el resultado (resultado)."
+   },
+   {
+    "texto_viejo": "prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"director\"], decision=\"allow\")",
+    "texto_nuevo": "prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"director\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"cruzado\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"resultado\"], decision=\"allow\")"
+   }
+  ],
+  "cambio": "Anadir debajo del comentario de cabecera una frase que explique que los mandos que bloquean no son para Codex cuando trabaja solo (esperar cuesta cupo igual que trabajar, medido 2026-09-28, 21.726 unidades esperando una ronda hasta quedarse sin cupo), y anadir dos prefix_rule de allow para los mandos cruzado y resultado justo despues del prefix_rule del mando director, dejando las catorce prohibiciones de git intactas.",
+  "codigo": "prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"director\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"cruzado\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"resultado\"], decision=\"allow\")",
+  "vigia": "vigias/test_vigia_codex_sigue_sin_manos.py (sus cinco pruebas deben seguir verdes; ya acepta los tres mandos nuevos)",
+  "puede_danar": [
+   "config/codex/default.rules",
+   "arnes/instalar_reglas_codex.py",
+   "vigias/test_vigia_codex_sigue_sin_manos.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "default.rules"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "config/codex/default.rules: los dos allow nuevos dependen de la precedencia de prefix_rule; si en el archivo hay una regla mas amplia con patron [\"python\", \"ingeniero.py\"] y decision ask/forbidden, no se ve en el material y podria Taparlos o quedar por debajo. Habria que confirmarlo con el archivo completo.",
+   "arnes/instalar_reglas_codex.py: es quien copia el archivo a la carpeta de Codex. Si valida o lleva lista fija de permisos, el conteo de siete puede descuadrar; hoy no se toca (correcto segun el paquete, pero queda como riesgo asumido).",
+   "El renglon de comentario nuevo es muy largo; si el instalador envuelve lineas, podria partirlo."
+  ],
+  "que_falta": [
+   "No se comprueba que el archivo quede en SIETE permisos y con las CATORCE prohibiciones de git: lo afirma en la prosa, no lo cuenta ni lo muestra.",
+   "La causa declarada era que el archivo del 22 de septiembre NUNCA se instalo (el instalado en la carpeta de Codex es del 21). El cambio solo edita el archivo del proyecto: no se ejecuta python arnes/instalar_reglas_codex.py ni se verifica la copia instalada, que es donde Codex realmente lee los permisos.",
+   "No se corre ni se reporta el resultado de vigias/test_vigia_codex_sigue_sin_manos.py."
+  ],
+  "resumen_para_el_jefe": "El cambio es exactamente el pedido y esta bien ubicado por texto (la cabecera y el renglon del director aparecen literales en el material, con comillas dobles como en el archivo): dos allow mas y un renglon de comentario que contiene la frase obligatoria con la cifra 21.726. Apruebalo, pero que despues se ejecute el instalador y se corra la vigia, porque editar el archivo del proyecto no arregla por si solo la copia instalada que Codex usa."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 33149 a 18873 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.; EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Segurament",
+  "el pasillo recorto el encargo de 37150 a 15207 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "el pasillo recorto el encargo de 37258 a 15239 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "el pasillo recorto el encargo de 37366 a 15273 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}
