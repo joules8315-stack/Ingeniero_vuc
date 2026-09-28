@@ -109,6 +109,11 @@ def falta_en_el_material(material, encargo):
             _nombre = limpia[:_punto]
             if not any(_c.isalnum() or _c == "_" for _c in _nombre):
                 continue
+            # una ruta con numero de renglon detras (ruta:1290) es la MISMA ruta:
+            # el nombre del archivo se corta en los dos puntos.
+            _dos_puntos = limpia.find(":")
+            if _dos_puntos != -1:
+                limpia = limpia[:_dos_puntos]
             archivos.append(limpia)
 
     for archivo in archivos:
