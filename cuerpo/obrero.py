@@ -70,6 +70,29 @@ def disponible():
 
 
 # ─── los prompts: cortos, con el paquete dentro, y prohibicion de inventar ──────────
+def _nombres_de_funcion_del_texto(texto_encargo):
+    """Devuelve los nombres de funcion que un texto nombra.
+
+    Se buscan palabras que empiecen por raya baja (como _prompt_obrero).
+    El nombre se corta en el primer caracter que no puede formar parte de un
+    nombre de Python: solo letras, numeros y rayas bajas desde el principio.
+    Asi un trozo pegado como '_anotar(segundos' se queda en '_anotar'.
+    """
+    funciones = []
+    for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
+        limpia = palabra.strip("()[]{}<>\"'`.:")
+        if limpia.startswith("_") and len(limpia) > 1:
+            corte = len(limpia)
+            for _i, _c in enumerate(limpia):
+                if not (_c.isalnum() or _c == "_"):
+                    corte = _i
+                    break
+            nombre = limpia[:corte]
+            # si despues de cortar no queda mas que la raya baja, no se exige
+            if nombre.startswith("_") and len(nombre) > 1:
+                funciones.append(nombre)
+    return funciones
+
 def falta_en_el_material(material, encargo):
     """Devuelve frases cortas con lo que el encargo nombra y el material no trae.
 
@@ -123,23 +146,7 @@ def falta_en_el_material(material, encargo):
             )
 
     # --- Funciones nombradas en el encargo ---
-    # Se buscan palabras que empiecen por raya baja (como _prompt_obrero).
-    # El nombre se corta en el primer caracter que no puede formar parte de un
-    # nombre de Python: solo letras, numeros y rayas bajas desde el principio.
-    # Asi un trozo pegado como '_anotar(segundos' se queda en '_anotar'.
-    funciones = []
-    for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
-        limpia = palabra.strip("()[]{}<>\"'`.:")
-        if limpia.startswith("_") and len(limpia) > 1:
-            corte = len(limpia)
-            for _i, _c in enumerate(limpia):
-                if not (_c.isalnum() or _c == "_"):
-                    corte = _i
-                    break
-            nombre = limpia[:corte]
-            # si despues de cortar no queda mas que la raya baja, no se exige
-            if nombre.startswith("_") and len(nombre) > 1:
-                funciones.append(nombre)
+    funciones = _nombres_de_funcion_del_texto(texto_encargo)
 
     for funcion in funciones:
         declaracion = "def " + funcion
