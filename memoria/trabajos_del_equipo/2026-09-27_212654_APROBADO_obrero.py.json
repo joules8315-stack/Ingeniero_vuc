@@ -1,0 +1,58 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _filtrar_paquete, al soltar un bloque que se pasa del tope, se borra desde ese bloque hasta el final del material (del salida[ultimo:]), llevandose por delante los bloques protegidos que vengan despues; hay que soltar solo los renglones de ese bloque, desde donde empieza hasta donde empieza el bloque siguiente.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_filtrar_paquete",
+  "texto_viejo": "        if ultimo is not None:\n            del salida[ultimo:]\n            recortado = True",
+  "texto_nuevo": "        if ultimo is not None:\n            j = ultimo + 1\n            while j < len(salida) and not salida[j].startswith(\"### `\"):\n                j += 1\n            del salida[ultimo:j]\n            recortado = True",
+  "cambio": "Sustituir el borrado desde el bloque que se suelta hasta el final por el borrado SOLO de los renglones de ese bloque, desde donde empieza hasta donde empieza el bloque siguiente (el trozo que busca donde termina el bloque ya esta escrito justo al lado, en el bucle de arriba, y se reusa).",
+  "codigo": "        if ultimo is not None:\n            j = ultimo + 1\n            while j < len(salida) and not salida[j].startswith(\"### `\"):\n                j += 1\n            del salida[ultimo:j]\n            recortado = True",
+  "vigia": "vigias/test_vigia_el_recorte_no_se_come_la_funcion_pedida.py::test_el_recorte_no_se_come_la_funcion_pedida (rojo hoy: el recorte se come el trozo con la declaracion pedida cuando va despues del que se suelta) y ::test_el_recorte_conserva_la_ley_y_a_quien_puede_danar; ::test_sin_funcion_pedida_se_comporta_como_hoy sigue verde.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El recorte ahora devuelve MAS material que antes en el caso exacto que se arregla (conserva el bloque protegido que quedaba despues del que se suelta): si algun vecino midia el tamano de la salida presuponiendo el borrado hasta el final, veria mas letras. Los cuatro vecinos citados son otros modulos, no esta funcion, asi que no los toca; el cambio es local a _filtrar_paquete y no cambia firma ni llamantes.",
+   "Los dos casos verdes de la vigia siguen verdes por argumento, no medido: sin funcion pedida el bloque que se suelta es el ultimo, ahi j llega a len(salida) y del salida[ultimo:j] es identico a del salida[ultimo:]; recortado y el aviso se siguen poniendo igual, asi que 'conserva la ley y a quien puede danar' y 'sin funcion pedida se comporta como hoy' no cambian.",
+   "El bucle no puede quedar colgado: j siempre es mayor que ultimo, asi que cada vuelta del while quita al menos un renglon, y la condicion de salida depende solo de len(salida) y del tope."
+  ],
+  "que_falta": [
+   "El campo 'cambio' dice que se reusa el j del bucle de arriba; el codigo lo vuelve a calcular. Da el mismo numero (aqui j ya valia justo el fin de ese bloque), asi que es redundancia, no fallo, pero la descripcion no coincide con el codigo.",
+   "Aguja: la rama else (salida.pop(), una linea por una desde el final) sigue SIN mirar la proteccion. Si el bloque protegido solo, mas la cabecera y la ley, no cabe en el tope, ese bloque se come igual, renglon a renglon. No lo introduce este cambio y la orden es de un solo renglon, pero es el agujero que queda vivo detrás de este arreglo.",
+   "Los dos nombres de los casos verdes de la vigia no salen en el material (el paquete solo dice 'un caso rojo y dos verdes'). El archivo si esta confirmado y existe. Si los nombres estan mal, solo es una errata en el campo vigia: no rompe nada."
+  ],
+  "resumen_para_el_jefe": "El cambio esta bien puesto y bien hecho: borra solo el bloque que se suelta en vez de todo lo que venia despues, asi que el bloque protegido ya no se come; nada inventado, ningun vecino roto y los dos casos verdes siguen igual porque sin funcion pedida el borrado es el de antes. Ademas no cuelga. Solo queda vivo el agujero viejo de la rama else, que se come el bloque protegido a renglon por renglon si ese bloque solo no cabe en el tope, y eso ya es otra orden."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (37432 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
