@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La rama que crea un archivo que NO existe escribe el contenido en modo w sin comprobar la sintaxis con ast.parse, a diferencia de la rama que reescribe un archivo existente.",
+  "archivo": "cuerpo/aplicador.py",
+  "funcion": "aplicar_cambio",
+  "texto_viejo": "    if not os.path.exists(archivo):\n        try:\n            # la carpeta de un archivo nuevo se crea si falta (medido 2026-09-22, orden 176)\n            os.makedirs(os.path.dirname(archivo) or \".\", exist_ok=True)\n            with open(archivo, \"w\", encoding=\"utf-8\") as f:\n                f.write(contenido)\n            _apuntar_log(True, archivo, funcion, \"archivo creado\")\n            return True, \"Archivo creado.\"\n        except Exception as e:\n            _apuntar_log(False, archivo, funcion, f\"no se pudo crear: {e}\")\n            return False, f\"No se pudo crear el archivo: {e}\"",
+  "texto_nuevo": "    if not os.path.exists(archivo):\n        # 2026-09-27: un .py nuevo y roto no debe llegar al disco. Antes de escribir nada,\n        # si termina en .py se comprueba la sintaxis con ast.parse, igual que la rama que\n        # reescribe un archivo que ya existe. Lo vigila\n        # vigias/test_vigia_un_archivo_nuevo_roto_no_llega_al_disco.py.\n        if archivo.endswith(\".py\"):\n            try:\n                ast.parse(contenido)\n            except SyntaxError as e:\n                _apuntar_log(False, archivo, funcion, f\"sintaxis rota: {e}\")\n                return False, f\"El cambio deja el codigo roto (renglon {e.lineno}): {e.msg}\"\n        try:\n            # la carpeta de un archivo nuevo se crea si falta (medido 2026-09-22, orden 176)\n            os.makedirs(os.path.dirname(archivo) or \".\", exist_ok=True)\n            with open(archivo, \"w\", encoding=\"utf-8\") as f:\n                f.write(contenido)\n            _apuntar_log(True, archivo, funcion, \"archivo creado\")\n            return True, \"Archivo creado.\"\n        except Exception as e:\n            _apuntar_log(False, archivo, funcion, f\"no se pudo crear: {e}\")\n            return False, f\"No se pudo crear el archivo: {e}\"",
+  "cambio": "En la rama que crea un archivo que NO existe, antes de crear la carpeta y escribir el contenido, si el archivo termina en .py se comprueba el contenido con ast.parse; si hay SyntaxError no se escribe nada, se apunta con _apuntar_log en falso y se devuelve False con el aviso que nombra el renglon con e.lineno y el motivo con e.msg. Si el codigo esta bien, o si el archivo no termina en .py, se crea igual que hoy.",
+  "codigo": "        if archivo.endswith(\".py\"):\n            try:\n                ast.parse(contenido)\n            except SyntaxError as e:\n                _apuntar_log(False, archivo, funcion, f\"sintaxis rota: {e}\")\n                return False, f\"El cambio deja el codigo roto (renglon {e.lineno}): {e.msg}\"",
+  "vigia": "vigias/test_vigia_un_archivo_nuevo_roto_no_llega_al_disco.py::test_un_py_nuevo_roto_no_llega_al_disco — exige ok falso, que el archivo no exista en disco y que el aviso contenga la palabra renglon.",
+  "puede_danar": [
+   "arnes/copista.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_aplicador.py",
+   "vigias/test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "copista.py",
+   "test_vigia_aplicador.py",
+   "test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "VIGIAS EXISTENTES: si test_vigia_aplicador.py o test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py crean un .py nuevo con texto en prosa como contenido de prueba (p.ej. 'contenido de prueba', 'texto nuevo'), esa prueba pasara antes y ahora sera rechazada por sintaxis: hay que correrlas, no suponarlas.",
+   "copista.py y codex.py solo pasan el contenido hasta aqui; no cambian, pero cualquier flujo suyo que cree .py con fragmento o marcador de posicion (codigo indentado, '...', 'pass  # TODO') pasara a fallar donde antes se creaba.",
+   "Un .py nuevo legitimo con cookie de codificacion distinto de utf-8 con acentos, o con BOM inicial, es texto str y ast.parse lo rechaza (encoding declaration in Unicode string / U+FEFF): rejection falsa en ese caso, aunque la rama que reescribe tiene el mismo limite.",
+   "El chequeo se hace antes de makedirs, asi que no deja carpeta vacia ni archivo a medias: el vecino del mensaje 'Archivo creado.' y del log 'archivo creado' queda intacto."
+  ],
+  "que_falta": [
+   "Ejecutar de verdad vigias/test_vigia_aplicador.py y vigias/test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py; el _comprobado_por_programa solo garantiza nombres e import, no comportamiento de esas pruebas.",
+   "El except solo captura SyntaxError: un codigo que no sea str (TypeError) o con bytes nulos (ValueError) ahora escapa de aplicar_cambio, donde antes el write estaba dentro de try/except Exception. Mismo agujero que la rama vecina, asi que no es regresion, pero se cierra con (SyntaxError, ValueError, TypeError) si se quiere el mismo comportamiento que el write anterior.",
+   "El comentario nuevo ocupa 4 lineas; el repo lo tolera, pero se podia dejar en 2 sin perder la fecha y la referencia al vigia."
+  ],
+  "resumen_para_el_jefe": "El cambio inserta la comprobacion de ast.parse en el texto correcto y con la misma condicion que la rama que ya reescribe, no toca ninguna ley del contrato y cumple lo que exige el vigia; aprueba, con la unica reserva real de que haya que correr las dos vigias de aplicador por si crean .py con texto de relleno que ahora sera rechazado."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (35376 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

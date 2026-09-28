@@ -1,0 +1,29 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la vigia que exige que un .py nuevo con sintaxis rota no llegue al disco; hoy la rama de creacion escribe sin ast.parse, asi que la vigia nace roja a proposito.",
+  "archivo": "vigias/test_vigia_un_archivo_nuevo_roto_no_llega_al_disco.py",
+  "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"VIGIA — UN .py NUEVO Y ROTO NO LLEGA AL DISCO.\n\nJulio/Claude, 2026-09-27. `cuerpo/aplicador.py::aplicar_cambio` tiene dos ramas:\n\n  · la rama que REESCRIBE un archivo que YA existe SI comprueba la sintaxis con\n    ast.parse y devuelve el renglon donde esta el error;\n  · la rama que CREA un archivo que NO existe escribe el texto en disco SIN\n    comprobar la sintaxis.\n\nEsta vigia NACE ROJA A PROPOSITO: en esta ronda solo se crea la vigia, y el arreglo\nque la pone verde entra en la ronda siguiente. No se toca ningun otro archivo.\n\nQUE SE VIGILA AQUI:\n  · un .py nuevo con codigo roto NO se crea: ok falso, sin archivo en disco, y el\n    aviso nombra el renglon del error\n  · un .py nuevo bien escrito SI se crea y queda en disco\n  · un archivo nuevo que NO termina en .py (por ejemplo NOTAS.md) se crea igual que hoy\n\nNo se llama a ninguna IA y no se lanza ningun proceso: todo pasa en tmp_path.\n\"\"\"\nimport os\nimport sys\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nsys.path.insert(0, os.path.join(AQUI, \"cuerpo\"))\nimport pytest\n\nfrom cuerpo import aplicador  # noqa: E402\n\n\n@pytest.fixture(autouse=True)\ndef _sin_log(tmp_path, monkeypatch):\n    \"\"\"El aplicador apunta en memoria/APLICACIONES.log; se desvia para no ensuciar el real.\"\"\"\n    monkeypatch.setattr(aplicador, \"_apuntar_log\", lambda *a, **k: None)\n    yield\n\n\ndef test_un_py_nuevo_roto_no_llega_al_disco(tmp_path):\n    \"\"\"Un .py nuevo con sintaxis rota NO debe quedar en disco y el aviso debe nombrar el renglon.\"\"\"\n    f = str(tmp_path / \"nuevo_roto.py\")\n    codigo_roto = \"def f(:\\n    return 1\\n\"\n    ok, msg = aplicador.aplicar_cambio({\"archivo\": f, \"codigo\": codigo_roto})\n    assert not ok, \"un .py nuevo con sintaxis rota no puede darse por aplicado: \" + str(msg)\n    assert not os.path.exists(f), \"el .py roto llego al disco; la rama de creacion no comprueba la sintaxis\"\n    assert \"renglon\" in str(msg).lower(), \"el aviso debe nombrar el renglon del error: \" + str(msg)\n\n\ndef test_un_py_nuevo_bien_escrito_si_se_crea(tmp_path):\n    \"\"\"Un .py nuevo con codigo valido SI se crea y queda en disco.\"\"\"\n    f = str(tmp_path / \"nuevo_bien.py\")\n    codigo_bien = \"def f():\\n    return 1\\n\"\n    ok, msg = aplicador.aplicar_cambio({\"archivo\": f, \"codigo\": codigo_bien})\n    assert ok, \"un .py nuevo bien escrito debe crearse: \" + str(msg)\n    assert os.path.exists(f), \"no quedo el archivo en disco\"\n    with open(f, encoding=\"utf-8\") as fh:\n        assert \"def f():\" in fh.read(), \"no quedo el codigo aprobado\"\n\n\ndef test_un_archivo_que_no_es_codigo_se_crea_igual(tmp_path):\n    \"\"\"Un archivo nuevo que NO termina en .py se crea igual que hoy, sin comprobar sintaxis.\"\"\"\n    f = str(tmp_path / \"NOTAS.md\")\n    texto = \"esto no es Python: solo son notas\\n\"\n    ok, msg = aplicador.aplicar_cambio({\"archivo\": f, \"codigo\": texto})\n    assert ok, \"un archivo que no es codigo debe crearse igual: \" + str(msg)\n    assert os.path.exists(f), \"no quedo el archivo en disco\"\n    with open(f, encoding=\"utf-8\") as fh:\n        assert \"esto no es Python\" in fh.read(), \"no quedo el texto aprobado\"\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "La redireccion del fixture (monkeypatch.setattr sobre aplicador._aportar_log / _aportar_log segun el molde) depende de que ese atributo exista con ese nombre exacto; el material si lo nombra, asi que solo es un punto de confirmacion, no un fallo.",
+   "El doble sys.path.insert con la misma raiz (una linea suelta y otra via la constante AQUI) es redundante pero inofensivo: no altera el sys.path de forma que rompa a los otros vigilias, porque el efecto es idempotente y el modulo esta en su propio directorio de pruebas."
+  ],
+  "que_falta": [
+   "Se asume que aplicador.aplicar_cambio devuelve una tupla de dos valores (ok, msg). El material dice que se espera 'ok' falso y que hay 'aviso devuelto', pero no fija la forma exacta del retorno. Si devolviera un dict o un solo string, las tres pruebas}darian error de desempaquetado en vez de fallar. Como la vigia nace roja a proposito, no bloquea nada, pero la ronda que la ponga verde deberia confirmar esa forma antes de tocar la rama de creacion."
+  ],
+  "resumen_para_el_jefe": "APROBADO: crea exactamente el archivo pedido, en la ruta pedida, con las tres pruebas en tmp_path, sin tocar ningun otro archivo y sin inventar nombres; lo unico a confirmar en la ronda siguiente es que aplicar_cambio devuelva (ok, msg)."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (37076 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}
