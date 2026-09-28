@@ -413,7 +413,7 @@ TOPE_REVISOR = 12000   # A-38 (Julio 2026-09-19): el revisor recibe solo el camb
                       # A partir de aqui el cerebro se apaga: corta la respuesta a la mitad.
 
 
-def _filtrar_paquete(paquete, archivo=None, tope=None):
+def _filtrar_paquete(paquete, archivo=None, tope=None, funciones=None):
     """Recorta el paquete a lo minimo que necesita el cerebro que lo recibe.
 
     Medido el 2026-09-10 (Julio: "a un cerebro solo le llega lo suyo"): al auditor le
@@ -495,11 +495,32 @@ def _filtrar_paquete(paquete, archivo=None, tope=None):
              "archivo que hace falta.")
     tope_trabajo = tope - len(aviso) - 1
     recortado = False
+    # Los nombres de funcion que la tarea pide son LO NECESARIO: sus bloques no se sueltan.
+    _pedidas = []
+    if funciones:
+        if isinstance(funciones, str):
+            _pedidas = [funciones]
+        else:
+            try:
+                _pedidas = [f for f in funciones if f]
+            except Exception:
+                _pedidas = []
+    def _trae_funcion_pedida(lineas):
+        for ln in lineas:
+            for f in _pedidas:
+                if ln.startswith("def " + f):
+                    return True
+        return False
     while len("\n".join(salida)) > tope_trabajo and len(salida) > len(bloques["__cabecera__"]):
         cabecera = len(bloques["__cabecera__"])
         ultimo = None
         for i in range(len(salida) - 1, cabecera - 1, -1):
             if salida[i].startswith("### `"):
+                j = i + 1
+                while j < len(salida) and not salida[j].startswith("### `"):
+                    j += 1
+                if _trae_funcion_pedida(salida[i:j]):
+                    continue
                 ultimo = i
                 break
         if ultimo is not None:
@@ -510,7 +531,7 @@ def _filtrar_paquete(paquete, archivo=None, tope=None):
                 break
             salida.pop()
             recortado = True
-    if recortado:
+    if recortado or len("\n".join(salida)) > tope_trabajo:
         salida.append(aviso)
     return "\n".join(salida)
 
