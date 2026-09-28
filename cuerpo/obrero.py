@@ -1295,7 +1295,7 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
         material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,
                                        tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)
         if clase != "crear":
-            faltantes = falta_en_el_material(material_obrero, encargo)
+            faltantes = falta_en_el_material(material_obrero, tarea)
             if faltantes:
                 return {"_error": "FALTA_MATERIAL: " + "; ".join(faltantes) + " NECESITO_LEER: " + (_archivo_tarea[0] if _archivo_tarea else "el archivo que falta") + " motivo: sin ese trozo no se puede tocar lo que se pide decide: si se puede escribir el cambio o hay que pedir mas material riesgo: si no se lee, se paga una pregunta que nadie puede contestar"}
         crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,
