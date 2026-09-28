@@ -1,0 +1,66 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Las dos pruebas rojas son falsas: _texto_regla no extrae las palabras de la lista entre corchetes y _PREFIJOS_ALLOW no incluye los tres mandos nuevos; ademas la prueba de ganchos exige un matcher 'Bash' que Codex no usa.",
+  "archivo": "vigias/test_vigia_codex_sigue_sin_manos.py",
+  "funcion": "_texto_regla",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _texto_regla(linea):\n    \"\"\"Saca el texto de la orden de una linea de regla, sin la parte de decision.\"\"\"\n    # Quita la parte decision = \"...\"\n    limpia = re.sub(r'decision\\s*=\\s*[\"\\']?\\w+[\"\\']?', \"\", linea, flags=re.IGNORECASE)\n    # Quita el prefijo allow/forbidden si va al principio\n    limpia = re.sub(r'^(allow|forbidden)\\b[:\\s]*', \"\", limpia, flags=re.IGNORECASE)\n    return limpia.strip().strip('\"\\'').strip()",
+    "texto_nuevo": "def _texto_regla(linea):\n    \"\"\"Saca el texto de la orden de una linea de regla, sin la parte de decision.\"\"\"\n    # Si la regla trae una lista entre corchetes, devuelve las palabras\n    # entre comillas unidas por espacios (formato actual de las reglas).\n    dentro = re.search(r'\\[(.*?)\\]', linea)\n    if dentro:\n        palabras = re.findall(r'[\"\\']([^\"\\']+)[\"\\']', dentro.group(1))\n        if palabras:\n            return \" \".join(palabras)\n    # Quita la parte decision = \"...\"\n    limpia = re.sub(r'decision\\s*=\\s*[\"\\']?\\w+[\"\\']?', \"\", linea, flags=re.IGNORECASE)\n    # Quita el prefijo allow/forbidden si va al principio\n    limpia = re.sub(r'^(allow|forbidden)\\b[:\\s]*', \"\", limpia, flags=re.IGNORECASE)\n    return limpia.strip().strip('\"\\'').strip()"
+   },
+   {
+    "texto_viejo": "    encontrado = False\n    for gancho in ganchos:\n        if not isinstance(gancho, dict):\n            continue\n        matcher = str(gancho.get(\"matcher\", \"\"))\n        comando = str(gancho.get(\"command\", \"\"))\n        if \"Bash\" in matcher and \"candado_terminal\" in comando:\n            encontrado = True\n            break\n\n    assert encontrado, (\n        \"FALLO: hooks.json no tiene un gancho PreToolUse para Bash que corra \"\n        \"candado_terminal. Sin ese candado Codex quedaria sin frenos en la terminal.\"\n    )",
+    "texto_nuevo": "    # 2026-09-28: se deja de exigir la marca de herramienta (matcher) porque\n    # Codex no las usa; el candado de la terminal SI esta puesto y corre.\n    encontrado = False\n    for gancho in ganchos:\n        if not isinstance(gancho, dict):\n            continue\n        comando = str(gancho.get(\"command\", \"\"))\n        if \"candado_terminal\" in comando:\n            encontrado = True\n            break\n\n    assert encontrado, (\n        \"FALLO: hooks.json no tiene un gancho PreToolUse que corra \"\n        \"candado_terminal. Sin ese candado Codex quedaria sin frenos en la terminal.\"\n    )"
+   }
+  ],
+  "cambio": "1) Reescribir _texto_regla para extraer las palabras entre comillas del trozo entre corchetes y devolverlas unidas por espacios, conservando el comportamiento antiguo si no hay corchetes. 2) En la prueba de ganchos, dejar de exigir el matcher 'Bash' y comprobar solo que algun gancho PreToolUse corra candado_terminal, con comentario fechado 2026-09-28. 3) Ampliar _PREFIJOS_ALLOW con los mandos director, cruzado y resultado, con un comentario fechado 2026-09-28 indicando que se amplia por ORDEN DE JULIO de ese dia.",
+  "codigo": "def _texto_regla(linea):\n    \"\"\"Saca el texto de la orden de una linea de regla, sin la parte de decision.\"\"\"\n    dentro = re.search(r'\\[(.*?)\\]', linea)\n    if dentro:\n        palabras = re.findall(r'[\"\\']([^\"\\']+)[\"\\']', dentro.group(1))\n        if palabras:\n            return \" \".join(palabras)\n    limpia = re.sub(r'decision\\s*=\\s*[\"\\']?\\w+[\"\\']?', \"\", linea, flags=re.IGNORECASE)\n    limpia = re.sub(r'^(allow|forbidden)\\b[:\\s]*', \"\", limpia, flags=re.IGNORECASE)\n    return limpia.strip().strip('\"\\'').strip()",
+  "vigia": "test_vigia_codex_sigue_sin_manos.py: la prueba de reglas de permiso (debe quedar verde con las reglas actuales y roja si entra una regla que no es mando del Ingeniero) y la prueba de ganchos (verde con el candado de terminal presente, roja si desaparece).",
+  "puede_danar": [
+   "vigias/test_vigia_codex_sigue_sin_manos.py (las otras tres pruebas verdes del archivo)",
+   "guardia de guardado que usa estas pruebas como vecindario"
+  ],
+  "preguntas": [
+   "NECESITO_LEER: vigias/test_vigia_codex_sigue_sin_manos.py / motivo: no tengo el bloque literal de _PREFIJOS_ALLOW ni el nombre exacto de la prueba de reglas de permiso / que decide: el texto_viejo y texto_nuevo exactos para ampliar la lista con director, cruzado y resultado y colocar el comentario de ORDEN DE JULIO 2026-09-28 / riesgo: sin ese bloque literal no puedo copiar el texto tal cual y el cambio se descartaria."
+  ],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El bloque `cambios` trae solo 2 de las 3 piezas exigidas: NO existe la ampliacion de _PREFIJOS_ALLOW con director, cruzado y resultado. El `cambio` en prosa la promete y el `codigo` solo contiene _texto_regla, pero un parche no es una promesa: el texto viejo/nuevo de esa lista no aparece por ningun lado.",
+   "Falta el comentario obligatorio con fecha 2026-09-28 y la frase de ORDEN DE JULIO, que el material exige poner JUSTO donde vive la lista de mandos. Es el punto que la vuelta anterior quedo en duda por faltarle, y es el que hace falta para que manana nadie lo revierta.",
+   "Consecuencia medida, no teorica: tras este parche la prueba de reglas de permiso sigue roja. El material dice que el archivo de reglas trae reglas de codex, cruzado y director (6 cada una), y sin la lista ampliada esas reglas legitimas seguiran tripping la comprobacion de prefijos. No se cumple el criterio de aceptacion 'el archivo entero queda verde'.",
+   "El material es explicito de que falla exactamente este caso: 'Ahi es donde se agregan los tres mandos nuevos, no solo en el mensaje de fallo: si esa lista no los trae, la prueba sigue roja igual' y 'Son estos dos, y hay que tocar los dos'. Se toco uno.",
+   "La peticion NECESITO_LEER no sustituye el trabajo: lo que hacia falta era CONTAR cuantos prefijos hay en la lista, no copiar el bloque al pie de la letra. Preguntar por el texto exacto para no cambiar nada de fondo es justamente lo que el material advertia que frena la reparacion."
+  ],
+  "riesgo_vecinos": [
+   "test_vigia_codex_sigue_sin_manos.py, las otras tres pruebas verdes del archivo: no se tocan, correcto.",
+   "guardia de guardado que usa estas pruebas como vecindario: al quedar una prueba en rojo sigue bloqueando cambios correctos, que es el problema original del paquete y no se resuelve.",
+   "riesgo menor en el cambio de ganchos: al quitar por completo la lectura de `matcher`, la prueba pasaria aunque el gancho no fuera de antes de herramienta, si la lista `ganchos` no llega ya filtrada desde arriba. El mensaje de aserto sigue prometiendo 'PreToolUse'; conviene confirmar en el archivo que la lista es la de PreToolUse."
+  ],
+  "que_falta": [
+   "El cambio real (texto_viejo/texto_nuevo) sobre _PREFIJOS_ALLOW: anadir director, cruzado y resultado con la MISMA forma que las cuatro entradas actuales, replicando cada uno de los prefijos que haya hoy, sean uno o varios, sin quitar ninguna entrada existente.",
+   "El comentario con 2026-09-28 y la frase de ampliacion por ORDEN DE JULIO de ese dia, colocado en el punto donde vive la lista de mandos.",
+   "Comprobar antes de escribir cuantos prefijos hay hoy en _PREFIJOS_ALLOW, que es la unica cosa que faltaba del material y que se resuelve leyendo el archivo.",
+   "Verificar que `ganchos` en la prueba de ganchos es la lista de ganchos de antes de usar herramienta; si no lo es, el filtro debe ir dentro."
+  ],
+  "resumen_para_el_jefe": "Arregla bien el extractor de reglas y la prueba de ganchos, pero deja sin tocar la lista de mandos permitidos y su comentario de ORDEN DE JULIO, que el paquete exige; sin eso la prueba de reglas sigue en rojo y la vuelta se pierde otra vez."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 23301 a 11140 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de '_PREFIJOS_ALLOW' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal",
+  "el pasillo recorto el encargo de 29365 a 14563 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de '_PREFIJOS_ALLOW' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "el pasillo recorto el encargo de 29490 a 14657 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de '_PREFIJOS_ALLOW' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "el pasillo recorto el encargo de 29615 a 14751 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}
