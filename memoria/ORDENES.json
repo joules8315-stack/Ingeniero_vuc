@@ -1,5 +1,23 @@
 [
   {
+    "id": "R19-el-material-pide-la-funcion-publica",
+    "titulo": "El material pide la funcion que el encargo nombra, aunque no empiece con raya baja",
+    "pieza": "cuerpo/obrero.py",
+    "origen": "la cadena corriendo sola, 2026-09-28",
+    "repara": "La comprobacion que pide material solo reconoce nombres de funcion que empiezan con raya baja (_nombres_de_funcion_del_texto). Una funcion publica nombrada en el encargo, como comprobar_pasos, es invisible: no se pide nunca, el paquete no la trae, el obrero inventa una firma y el revisor lo tumba por invento. Comprobado con el codigo a la vista: con el encargo de R4c la funcion devuelve lista vacia.",
+    "razon": "Medido el 2026-09-28: la cadena corriendo sola fallo dos veces seguidas en R4c por esto, y cada fallo es una ronda pagada que termina rechazada por invento. Es el cuello de botella que queda para que la cadena camine sin una persona detras.",
+    "encargo": "Tres trozos pequenos en cuerpo/obrero.py, uno por ronda. Trozo A: la funcion _nombres_de_funcion_del_texto gana un parametro opcional llamado conocidas, que por defecto vale None. Sigue devolviendo lo que devuelve hoy (los nombres que empiezan con raya baja) y ademas, cuando conocidas trae nombres, devuelve tambien las palabras del texto que aparecen en esa coleccion. No repite nombres. Nunca lanza. Trozo B: falta_en_el_material gana el mismo parametro opcional conocidas y se lo pasa al extractor, sin cambiar ninguna otra regla. Trozo C: en la funcion trabajar, antes de comprobar el material, se arma la coleccion conocidas leyendo con ast el archivo que el encargo nombra y juntando los nombres de sus FunctionDef y ClassDef, reusando lo que ya hace arnes/revisor_de_programa.py en su funcion _piezas. Si el archivo no se puede leer o no hay ninguno nombrado, conocidas queda vacia y todo sigue como hoy.",
+    "vigia": "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "repara": "la entrega incompleta del material que obligo al obrero a inventar la API",
     "pieza": "cuerpo/capataz.py",
     "razon": "aplica la ley de Julio (2026-09-25): si el material no trae la pieza, se PEGA el trozo literal DENTRO del encargo; ademas corrige el nombre (la pieza es cuerpo/capataz.py, no comprobar_pasos.py) y da la API real (recordar para reusar, apuntar para guardar), que es distinto de la orden R4c que confio en el paquete",
@@ -133,10 +151,10 @@
     "vigia": "vigias/test_vigia_cuando_se_acaba_opencode_entran_dos_deepseek.py",
     "depende": [],
     "modo": "IA",
-    "estado": "fallida",
-    "paso_fallido": "no_aprobo",
-    "fallos_seguidos": 1,
-    "nota": "",
+    "estado": "esperando",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "EN ESPERA POR ORDEN DE JULIO (2026-09-27): no se toca la puerta gratis, se le exprime el saldo hasta la ultima gota. Entra sola cuando esa puerta deje de contestar. La cadena la tomo por error el 2026-09-28 porque la espera vivia solo en el chat.",
     "prueba_real": "",
     "comando": ""
   },
