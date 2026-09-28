@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba de reglas de permiso esta roja en falso porque _texto_regla no extrae el texto entre corchetes y _PREFIJOS_ALLOW solo tiene cuatro mandos permitidos.",
+  "archivo": "vigias/test_vigia_codex_sigue_sin_manos.py",
+  "funcion": "_texto_regla",
+  "texto_viejo": "def _texto_regla(linea):\n    \"\"\"Saca el texto de la orden de una linea de regla, sin la parte de decision.\"\"\"\n    # Quita la parte decision = \"...\"\n    limpia = re.sub(r'decision\\s*=\\s*[\"\\']?\\w+[\"\\']?', \"\", linea, flags=re.IGNORECASE)\n    # Quita el prefijo allow/forbidden si va al principio\n    limpia = re.sub(r'^(allow|forbidden)\\b[:\\s]*', \"\", limpia, flags=re.IGNORECASE)\n    return limpia.strip().strip('\"\\'').strip()",
+  "texto_nuevo": "def _texto_regla(linea):\n    \"\"\"Saca el texto de la orden de una linea de regla, sin la parte de decision.\"\"\"\n    # Si el renglon trae corchetes, saca de ahi las palabras entre comillas y unelas por espacio.\n    m = re.search(r'\\[(.*?)\\]', linea)\n    if m:\n        palabras = re.findall(r'[\"\\']([^\"\\']+)[\"\\']', m.group(1))\n        if palabras:\n            return \" \".join(palabras)\n    # Si no trae corchetes, se queda con lo de hoy, para no romper formatos viejos.\n    limpia = re.sub(r'decision\\s*=\\s*[\"\\']?\\w+[\"\\']?', \"\", linea, flags=re.IGNORECASE)\n    limpia = re.sub(r'^(allow|forbidden)\\b[:\\s]*', \"\", limpia, flags=re.IGNORECASE)\n    return limpia.strip().strip('\"\\'').strip()",
+  "cambios": [
+   {
+    "texto_viejo": "def _texto_regla(linea):\n    \"\"\"Saca el texto de la orden de una linea de regla, sin la parte de decision.\"\"\"\n    # Quita la parte decision = \"...\"\n    limpia = re.sub(r'decision\\s*=\\s*[\"\\']?\\w+[\"\\']?', \"\", linea, flags=re.IGNORECASE)\n    # Quita el prefijo allow/forbidden si va al principio\n    limpia = re.sub(r'^(allow|forbidden)\\b[:\\s]*', \"\", limpia, flags=re.IGNORECASE)\n    return limpia.strip().strip('\"\\'').strip()",
+    "texto_nuevo": "def _texto_regla(linea):\n    \"\"\"Saca el texto de la orden de una linea de regla, sin la parte de decision.\"\"\"\n    # Si el renglon trae corchetes, saca de ahi las palabras entre comillas y unelas por espacio.\n    m = re.search(r'\\[(.*?)\\]', linea)\n    if m:\n        palabras = re.findall(r'[\"\\']([^\"\\']+)[\"\\']', m.group(1))\n        if palabras:\n            return \" \".join(palabras)\n    # Si no trae corchetes, se queda con lo de hoy, para no romper formatos viejos.\n    limpia = re.sub(r'decision\\s*=\\s*[\"\\']?\\w+[\"\\']?', \"\", linea, flags=re.IGNORECASE)\n    limpia = re.sub(r'^(allow|forbidden)\\b[:\\s]*', \"\", limpia, flags=re.IGNORECASE)\n    return limpia.strip().strip('\"\\'').strip()"
+   },
+   {
+    "texto_viejo": "_PREFIJOS_ALLOW = (\n    \"python ingeniero.py arranca\",\n    \"python ingeniero.py trabaja\",\n    \"python ingeniero.py equipo\",\n    \"python ingeniero.py pit\",\n)",
+    "texto_nuevo": "# 2026-09-28: la lista se amplia por ORDEN DE JULIO de ese dia, porque Codex se quedo sin cupo\n# esperando una ronda (21.726 unidades para no entregar nada) al tener permitidos solo los mandos\n# que bloquean. El mando del director es su papel; cruzado lanza al fondo y resultado consulta como\n# quedo, y ninguno de los tres le da manos: sigue sin poder escribir codigo y git sigue prohibido.\n_PREFIJOS_ALLOW = (\n    \"python ingeniero.py arranca\",\n    \"python ingeniero.py trabaja\",\n    \"python ingeniero.py equipo\",\n    \"python ingeniero.py pit\",\n    \"python ingeniero.py director\",\n    \"python ingeniero.py cruzado\",\n    \"python ingeniero.py resultado\",\n)"
+   }
+  ],
+  "cambio": "Reescribir _texto_regla para extraer las palabras entre comillas dentro de corchetes, y ampliar _PREFIJOS_ALLOW a siete mandos con el comentario de la orden de Julio del 2026-09-28.",
+  "codigo": "def _texto_regla(linea):\n    \"\"\"Saca el texto de la orden de una linea de regla, sin la parte de decision.\"\"\"\n    m = re.search(r'\\[(.*?)\\]', linea)\n    if m:\n        palabras = re.findall(r'[\"\\']([^\"\\']+)[\"\\']', m.group(1))\n        if palabras:\n            return \" \".join(palabras)\n    limpia = re.sub(r'decision\\s*=\\s*[\"\\']?\\w+[\"\\']?', \"\", linea, flags=re.IGNORECASE)\n    limpia = re.sub(r'^(allow|forbidden)\\b[:\\s]*', \"\", limpia, flags=re.IGNORECASE)\n    return limpia.strip().strip('\"\\'').strip()\n\n# 2026-09-28: la lista se amplia por ORDEN DE JULIO de ese dia, porque Codex se quedo sin cupo\n# esperando una ronda (21.726 unidades para no entregar nada) al tener permitidos solo los mandos\n# que bloquean. El mando del director es su papel; cruzado lanza al fondo y resultado consulta como\n# quedo, y ninguno de los tres le da manos: sigue sin poder escribir codigo y git sigue prohibido.\n_PREFIJOS_ALLOW = (\n    \"python ingeniero.py arranca\",\n    \"python ingeniero.py trabaja\",\n    \"python ingeniero.py equipo\",\n    \"python ingeniero.py pit\",\n    \"python ingeniero.py director\",\n    \"python ingeniero.py cruzado\",\n    \"python ingeniero.py resultado\",\n)",
+  "vigia": "La prueba de las reglas de permiso en vigias/test_vigia_codex_sigue_sin_manos.py debe pasar de roja a verde; si se mete una regla que no es un mando del Ingeniero o se permite git, debe ponerse roja otra vez.",
+  "puede_danar": [
+   "vigias/test_vigia_codex_sigue_sin_manos.py",
+   "arnes/guardia_de_guardado.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "guardia_de_guardado.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El test de los ganchos queda intacto (no se toco ninguna de sus lineas), pero comparte helpers del mismo archivo: si la rama nueva de corchetes cambiara el texto que ese test espera, el rojo de ganchos se moveria. El guardiao `if palabras:` hace que solo cambie cuando HAY comillas dentro de corchetes, y sin corchetes se conserva el comportamiento viejo, asi que el riesgo queda acotado.",
+   "arnes/guardia_de_guardado.py no se toca: el cambio es solo sobre el archivo de la prueba, como pide el paquete."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion cumple el encargo punto por punto: las dos causas del falso rojo del material estan arregladas, la lista queda en siete textos con git sigue prohibido y sin manos para Codex, no inventa nada y no toca al vecino de ganchos. Aprobable sin vueltas."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 36303 a 17714 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
