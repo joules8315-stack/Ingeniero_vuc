@@ -291,9 +291,24 @@ def test_hooks_json_valido_con_pre_tool_use_bash():
     for gancho in ganchos:
         if not isinstance(gancho, dict):
             continue
+        # Formato viejo: el comando viene directo en el grupo.
         comando = str(gancho.get("command", ""))
         if "candado_terminal" in comando:
             encontrado = True
+            break
+        # Formato actual: el grupo trae una lista de entradas bajo 'hooks'
+        # y es en cada entrada donde vive el comando.
+        entradas = gancho.get("hooks")
+        if not isinstance(entradas, list):
+            continue
+        for entrada in entradas:
+            if not isinstance(entrada, dict):
+                continue
+            comando = str(entrada.get("command", ""))
+            if "candado_terminal" in comando:
+                encontrado = True
+                break
+        if encontrado:
             break
 
     assert encontrado, (
