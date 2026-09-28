@@ -15289,5 +15289,118 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.9
+ },
+ {
+  "id": 316,
+  "cuando": "2026-09-28 14:39",
+  "proyecto": "ingeniero",
+  "problema": "cuerpo/obrero.py: los mensajes del revisor por programa cortan la ronda aunque sean solo avisos",
+  "flujos": [
+   "obrero",
+   "programa",
+   "ronda"
+  ],
+  "piezas": [
+   "cuerpo/obrero.py"
+  ],
+  "trozos": [
+   "cuerpo/obrero.py:1185-1224",
+   "cuerpo/obrero.py:1249-1288",
+   "cuerpo/obrero.py:313-365",
+   "cuerpo/obrero.py:1-40",
+   "cuerpo/obrero.py:1409-1448",
+   "cuerpo/obrero.py:1377-1416"
+  ],
+  "leyes": [
+   "CONTRATO_MENOS_IA_MAS_PROGRAMA.md",
+   "CONTRATO_VARIOS_CAMBIOS_EN_UNA_RONDA.md",
+   "CONTRATO_AL_CEREBRO_SOLO_LO_SUYO.md",
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md",
+   "CONTRATO_EL_FABRICANTE_DE_HABILIDADES.md",
+   "CONTRATO_LA_PIEZA_SE_ENTREGA_ENTERA.md"
+  ],
+  "vigias": [
+   "memoria/trabajos_sin_revisar/test_vigia_el_sabotaje_es_programa.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py.FRENADO_POR_EL_GUARDIA.2",
+   "memoria/trabajos_sin_revisar/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "vigias/test_vigia_al_cerrar_una_ronda_arranca_la_siguiente.py",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "vigias/test_vigia_el_obrero_puede_entregar_varios_trozos.py",
+   "vigias/test_vigia_el_obrero_repara_por_texto.py",
+   "vigias/test_vigia_el_programa_revisa_antes_que_la_ia.py",
+   "vigias/test_vigia_el_revisor_de_programa_revisa_cada_trozo.py",
+   "vigias/test_vigia_el_revisor_de_programa_suma_los_trozos.py",
+   "vigias/test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "vigias/test_vigia_el_sabotaje_es_programa.py",
+   "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
+   "vigias/test_vigia_menos_ia_mas_programa.py",
+   "vigias/test_vigia_programa_antes_que_ia.py",
+   "vigias/test_vigia_revisor_de_programa.py",
+   "vigias/test_vigia_varios_cambios_en_una_ronda.py",
+   "vigias/test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "lineas_paquete": 501,
+  "lineas_proyecto": 376995,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
+ },
+ {
+  "id": 317,
+  "cuando": "2026-09-28 14:42",
+  "proyecto": "ingeniero",
+  "problema": "arnes/instalar_reglas_codex.py funcion instalar_reglas_codex: solo instala el documento de reglas y no la lista de permisos",
+  "flujos": [
+   "lista",
+   "funcion",
+   "codex"
+  ],
+  "piezas": [
+   "cuerpo/codex.py",
+   "skills/lista_blanca.py",
+   "arnes/instalar_reglas_codex.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "arnes/instalar_reglas_codex.py:1-40",
+   "arnes/instalar_reglas_codex.py:96-202"
+  ],
+  "leyes": [
+   "CONTRATO_LA_LISTA_BLANCA_NO_ES_UNA_PUERTA_TRASERA.md",
+   "CONTRATO_SE_BUSCA_POR_FUNCION.md",
+   "CONTRATO_AL_CEREBRO_SOLO_LO_SUYO.md",
+   "CONTRATO_LA_PIEZA_SE_ENTREGA_ENTERA.md",
+   "CONTRATO_NADIE_ENTRA_SIN_ARNES.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_precios_parsea_lista.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_webc_precios_de_lista.py",
+   "memoria/trabajos_sin_revisar/test_vigia_codex_sigue_sin_manos.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_el_revisor_ve_la_funcion_tocada.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_la_pieza_que_le_pregunta_a_codex.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "vigias/test_vigia_codex_sigue_sin_manos.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_paquete_trae_la_funcion_entera.py",
+   "vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py",
+   "vigias/test_vigia_el_puente_pone_los_candados_a_codex.py",
+   "vigias/test_vigia_el_recorte_no_se_come_la_funcion_pedida.py",
+   "vigias/test_vigia_el_revisor_ve_la_funcion_tocada.py",
+   "vigias/test_vigia_el_texto_repetido_se_busca_en_su_funcion.py",
+   "vigias/test_vigia_la_lista_blanca_no_crece_sola.py",
+   "vigias/test_vigia_la_lista_blanca_no_es_una_puerta_trasera.py",
+   "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
+   "vigias/test_vigia_las_reglas_de_codex.py",
+   "vigias/test_vigia_si_big_pickle_falla_revisa_codex.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "lineas_paquete": 353,
+  "lineas_proyecto": 377593,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
  }
 ]

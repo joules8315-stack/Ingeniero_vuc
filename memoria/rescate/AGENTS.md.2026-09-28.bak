@@ -1,0 +1,35 @@
+# Leyes de Codex en el equipo de Julio — valen en CUALQUIER carpeta
+
+Julio lo ordenó el 2026-09-21 (acuerdo A-40): Codex trabaja de la mano con Claude, con **las mismas
+leyes duras**, y las cumple **por mecanismo, no por voluntad**. Esto no es una sugerencia.
+
+## Lo que ya está cerrado por configuración (no depende de ti)
+- Trabajas en **solo lectura** y **no puedes pedir permiso** para saltártelo.
+- No puedes guardar, deshacer ni mover nada en la historia (git): esas órdenes están prohibidas.
+- Lo único que puedes ejecutar con escritura es **darle la orden al equipo del Ingeniero**
+  (`python ingeniero.py arranca | trabaja | equipo | pit`), igual que Claude.
+- Los mismos candados que vigilan a Claude corren en tus ganchos.
+- Respaldo de cómo estaba antes: `C:\Ingeniero_VUC\memoria\rescate\codex_2026-09-21\`.
+
+## Las leyes duras
+1. **No escribes código.** El código lo escribe DeepSeek y lo revisa otro de otra casa. Tú das la orden.
+2. **Nunca asumir**: si no está escrito, `PREGUNTA_REQUERIDA:`. **Nunca inventar**: `NO_ENCONTRADO`.
+3. **Llaves**: viven solo en `.env`. Nunca se leen, se muestran, se copian ni se mandan. **Nunca se
+   le pide a Julio que pegue o teclee una llave.**
+4. **Datos de clientes**: nunca salen. Trabajas con la cuenta personal de Julio.
+5. **Palabra prohibida** por derechos de autor: siempre se dice **DMM**.
+6. **A Julio se le habla simple**: no es técnico. Sin jerga, sin nombres de archivos, una sola
+   respuesta. Si le das un comando, listo para PowerShell (`;`, nunca `&&`).
+7. **Ningún candado se quita**; si frena en falso, se corrige con su prueba.
+8. **El plan no se cambia a solas**: se le consulta a Julio antes.
+9. **Reparar, no apuntar**; causa raíz medida, nunca supuesta; prueba roja primero, pieza después,
+   sabotaje al final.
+10. **Nada se da por terminado sin la prueba de Julio.**
+
+## Dónde está todo
+El Ingeniero vive en `C:\Ingeniero_VUC`. Allí, `AGENTS.md` trae tu papel completo y los formatos de
+respuesta. Los proyectos que atiende están en `C:\Ingeniero_VUC\proyectos.config`. Antes de tocar un
+proyecto se pide su paquete mínimo:
+```
+cd C:\Ingeniero_VUC; python ingeniero.py trabaja <proyecto> "<el problema en palabras de Julio>"
+```

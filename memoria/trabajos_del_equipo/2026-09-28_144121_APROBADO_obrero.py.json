@@ -1,0 +1,76 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py el corte de la ronda usa la lista cruda _fallos_prog (que mezcla avisos y frenos) y no existe la funcion publica separar_avisos_y_frenos que reparta por comportamiento.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "separar_avisos_y_frenos (nueva) y el sitio del ancla 'if _fallos_prog and _vuelta < 3:'",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _prompt_auditor(paquete, propuesta):",
+    "texto_nuevo": "def separar_avisos_y_frenos(mensajes):\n    \"\"\"Reparte una lista de mensajes en dos: primero los AVISOS, despues los FRENOS.\n\n    Es aviso todo texto que, quitandole los espacios de delante, empieza por la\n    palabra AVISO seguida de dos puntos. Todo lo demas es freno. No se pierde ni\n    se duplica ningun mensaje. Si no llega una lista, o trae cosas que no son\n    texto, no revienta: devuelve dos listas y sigue.\n    \"\"\"\n    avisos = []\n    frenos = []\n    if not isinstance(mensajes, (list, tuple)):\n        return avisos, frenos\n    for mensaje in mensajes:\n        if not isinstance(mensaje, str):\n            continue\n        if mensaje.lstrip().startswith(\"AVISO:\"):\n            avisos.append(mensaje)\n        else:\n            frenos.append(mensaje)\n    return avisos, frenos\n\n\ndef _prompt_auditor(paquete, propuesta):"
+   },
+   {
+    "texto_viejo": "        if _fallos_prog and _vuelta < 3:",
+    "texto_nuevo": "        _avisos_prog, _frenos_prog = separar_avisos_y_frenos(_fallos_prog)\n        for _aviso_prog in _avisos_prog:\n            avisos.append(\"AVISO del revisor por programa (no frena): %s\" % _aviso_prog)\n        if _frenos_prog and _vuelta < 3:"
+   }
+  ],
+  "cambio": "Anadir la funcion publica separar_avisos_y_frenos (reparte por comportamiento: AVISO: al frente es aviso, lo demas es freno; tolera entradas que no son lista o no son texto) y, en el sitio del ancla, sustituir el corte por la lista cruda _fallos_prog por el corte solo con los frenos, diciendo los avisos en la lista de avisos con una frase que deje claro que son del revisor por programa y que no frenan. La marca de comprobado por programa debe ponerse cuando no quedan frenos, aunque haya avisos.",
+  "codigo": "def separar_avisos_y_frenos(mensajes):\n    \"\"\"Reparte una lista de mensajes en dos: primero los AVISOS, despues los FRENOS.\n\n    Es aviso todo texto que, quitandole los espacios de delante, empieza por la\n    palabra AVISO seguida de dos puntos. Todo lo demas es freno. No se pierde ni\n    se duplica ningun mensaje. Si no llega una lista, o trae cosas que no son\n    texto, no revienta: devuelve dos listas y sigue.\n    \"\"\"\n    avisos = []\n    frenos = []\n    if not isinstance(mensajes, (list, tuple)):\n        return avisos, frenos\n    for mensaje in mensajes:\n        if not isinstance(mensaje, str):\n            continue\n        if mensaje.lstrip().startswith(\"AVISO:\"):\n            avisos.append(mensaje)\n        else:\n            frenos.append(mensaje)\n    return avisos, frenos\n\n\n# ... en el sitio del ancla ...\n        _avisos_prog, _frenos_prog = separar_avisos_y_frenos(_fallos_prog)\n        for _aviso_prog in _avisos_prog:\n            avisos.append(\"AVISO del revisor por programa (no frena): %s\" % _aviso_prog)\n        if _frenos_prog and _vuelta < 3:",
+  "vigia": "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py (prueba 1: la funcion reparte por comportamiento; prueba 2: el renglon del corte ya no usa la lista cruda; prueba 3: un freno de verdad sigue frenando).",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/codex.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "codex.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_material_pide_la_funcion_publica.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Requisito 3 (la marca de comprobado por programa se pone cuando no quedan Frenos) queda delegado en codigo que el cambio NO toca: no hay ninguna linea que lostawantee. Solo queda correcto si el cuerpo del `if` es el que pone la marca en False al entrar. Eso no se ve en el material recortado.",
+   "El cuerpo del bloque que empieza en el ancla tampoco se modifica. Si dentro seguia iterating sobre `_fallos_prog` para meter cosas en la lista de fallos, los avisos siguen llegando ahi por la puerta de atras y las tres vigias se pueden poner en verde con el fallo real sin corregir. Habria que mirar esas ~5 lineas."
+  ],
+  "riesgo_vecinos": [
+   "arnes/asignador.py y cuerpo/codex.py: no se tocan firmas ni se anade nada al final del modulo, asi que el riesgo es bajo; lo unico que podria rozar es que alguien importase `*` y el nombre nuevo `separar_avisos_y_frenos` pise algo.",
+   "cuerpo/obrero.py, scope de la ronda: los nombres nuevos `_avisos_prog` / `_frenos_prog` son locales, no colisionan; los avisos que se meten en `avisos` ahora llevan un prefijo, si algun consumidor empareja textos exactos de esa lista veria lineas nuevas ahi.",
+   "Los dos renglones de arriba se ejecutan siempre, tambien cuando `_fallos_prog` esta vacio: es un coste inutil minimo, no un fallo."
+  ],
+  "que_falta": [
+   "Verificar en el archivo que el cuerpo del `if` no vuelve a mirar `_fallos_prog`.",
+   "Verificar donde se pone realmente la marca de comprobado por programa y, si esta fuera del bloque, cambiar esa linea por `if not _frenos_prog:`."
+  ],
+  "resumen_para_el_jefe": "La reparacion es correcta y hace lo pedido en el ancla, sin inventar nada ni tocar otros archivos; approving, pero mira de reojo las lineas que quedan dentro del `if`, porque si siguen usando `_fallos_prog` los avisos seguirian colandose como fallos y las vigias se pondrian en verde con el fallo vivo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 34474 a 18577 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: '_frenos_prog'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (36837 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

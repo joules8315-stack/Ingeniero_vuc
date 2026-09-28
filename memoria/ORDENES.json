@@ -1,5 +1,23 @@
 [
   {
+    "id": "R6b-los-turnos-entran-en-el-guardado",
+    "titulo": "El guardado pide turno, asi que dos rondas a la vez ya no se pisan",
+    "pieza": "arnes/guardia_de_guardado.py",
+    "encargo": "En arnes/guardia_de_guardado.py, el guardado tiene que pedir TURNO antes de escribir y soltarlo al terminar, usando la pieza que ya existe, arnes/turno_de_guardado.py, que da turno entre procesos con tope de tiempo y no se queda atrancada. Hecho medido el 2026-09-28: con dos rondas lanzadas a la vez, dos procesos de guardado se pisaron por el archivo de bloqueo de git y el guardado quedo trabado 7 minutos, y volvio a pasar a las 14:45. La ley que manda es CONTRATO_LA_MULTITAREA_ES_LA_FORMA_DE_TRABAJAR.md punto tres: lo unico que va en fila es escribir y guardar, y se resuelve con turnos, con tope, y pasarse del tope es fallo, no espera eterna. Si el turno no se consigue dentro del tope, NO se guarda a ciegas: se dice el motivo en palabras simples y se devuelve fallo, para que el trabajo quede apartado y se reintente. No se toca ninguna otra cuenta del guardia ni ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_guardado_pide_turno.py",
+    "origen": "julio",
+    "repara": "que dos rondas en paralelo se pisen en el guardado y dejen el repositorio bloqueado",
+    "razon": "orden de Julio del 2026-09-28: la multitarea es maxima prioridad, y sin turnos en el guardado el paralelo rompe lo que ya funciona",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "R22-paquete-compacto-sin-ruido",
     "titulo": "El paquete y la respuesta viajan compactos y sin ruido",
     "pieza": "cerebro/router.py",
