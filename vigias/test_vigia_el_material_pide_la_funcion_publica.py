@@ -39,6 +39,35 @@ def test_lo_de_siempre_sigue_funcionando():
     assert "_prompt_obrero" in nombres
 
 
+def test_no_se_exige_una_funcion_que_no_existe():
+    """Con conocidas en posicion, el aviso nombra la que existe y NO la inventada."""
+    from cuerpo.obrero import falta_en_el_material
+
+    material = "el material trae cuerpo/obrero.py y nada mas"
+    encargo = "En falta_en_el_material, sacar la llamada a _raya_baja_inventada a una funcion propia"
+
+    avisos_con = falta_en_el_material(material, encargo, {"falta_en_el_material"})
+    assert any("falta_en_el_material" in aviso for aviso in avisos_con)
+    assert not any("_raya_baja_inventada" in aviso for aviso in avisos_con)
+
+    avisos_sin = falta_en_el_material(material, encargo)
+    assert any("_raya_baja_inventada" in aviso for aviso in avisos_sin)
+
+
+def test_el_obrero_le_pasa_las_conocidas_a_la_comprobacion():
+    """El obrero entrega a falta_en_el_material la lista de funciones que existen de verdad."""
+    import re
+    from pathlib import Path
+
+    texto = Path("cuerpo/obrero.py").read_text(encoding="utf-8")
+    patron = re.compile(r"falta_en_el_material\s*\(([^)]*)\)", re.S)
+    llamadas = patron.findall(texto)
+    assert llamadas, "no aparece ninguna llamada a falta_en_el_material en cuerpo/obrero.py"
+    assert any(len([a for a in re.split(r",(?![^\[\]{}()]*[\]})])", args) if a.strip()]) >= 3
+               for args in llamadas), \
+        "ninguna llamada a falta_en_el_material le pasa TRES argumentos (las conocidas)"
+
+
 def test_falta_en_el_material_avisa_solo_con_conocidas():
     """Con conocidas avisa que falta la funcion; sin conocidas no dice nada de ella."""
     material = "el material trae cuerpo/capataz.py y nada mas"
