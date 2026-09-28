@@ -1,5 +1,23 @@
 [
   {
+    "id": "R17-archivo-nuevo-roto",
+    "titulo": "Un archivo nuevo con el codigo roto no aterriza en el disco",
+    "pieza": "cuerpo/aplicador.py",
+    "vigia": "vigias/test_vigia_un_archivo_nuevo_roto_no_llega_al_disco.py",
+    "origen": "lo vio el revisor el 2026-09-27 y se comprobo a ojo en el codigo",
+    "repara": "Un archivo nuevo con la sintaxis rota se escribe en el disco como si fuera bueno, y nadie avisa",
+    "razon": "La rama que sobrescribe un archivo SI comprueba la sintaxis antes de dejarlo y deshace si esta roto, pero la rama que CREA un archivo nuevo escribe directo sin comprobar nada. Por ahi puede entrar una prueba nueva rota que luego deja ciega a la bateria, y cada vez que pasa se pierde la vuelta entera",
+    "depende": [],
+    "modo": "IA",
+    "encargo": "En cuerpo/aplicador.py, la rama que crea un archivo que todavia no existe escribe el contenido con open y devuelve que se creo, sin comprobar la sintaxis. La rama que sobrescribe si lo hace: escribe en un archivo temporal, lo pasa por el lector de sintaxis de Python y, si esta roto, lo borra y devuelve el aviso con el numero de renglon. Hace falta que la rama de crear haga la misma comprobacion cuando el archivo termina en py: si el codigo esta roto, NO se crea nada en el disco y se devuelve el mismo tipo de aviso con el renglon. Lo que no se toca: los archivos que no son de codigo se siguen creando igual, se conserva que la carpeta se crea si falta, y se conserva el apunte en el registro. Su vigia nace ROJA y exige que un archivo nuevo con el codigo roto no aparezca en el disco y que se devuelva el aviso, y que uno bien escrito si se cree.",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "R13b",
     "titulo": "Un trozo pegado en el encargo no es una funcion que falte",
     "pieza": "cuerpo/obrero.py",
