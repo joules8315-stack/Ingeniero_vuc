@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba recorre los grupos de ganchos y les pide directamente la clave 'command', pero los grupos traen el comando dentro de una lista de entradas bajo la clave 'hooks', un nivel mas abajo, asi que nunca encuentra el candado_terminal.",
+  "archivo": "vigias/test_vigia_codex_sigue_sin_manos.py",
+  "funcion": "test_hooks_json_valido_con_pre_tool_use_bash",
+  "texto_viejo": "    encontrado = False\n    for gancho in ganchos:\n        if not isinstance(gancho, dict):\n            continue\n        comando = str(gancho.get(\"command\", \"\"))\n        if \"candado_terminal\" in comando:\n            encontrado = True\n            break",
+  "texto_nuevo": "    encontrado = False\n    for gancho in ganchos:\n        if not isinstance(gancho, dict):\n            continue\n        # Formato viejo: el comando viene directo en el grupo.\n        comando = str(gancho.get(\"command\", \"\"))\n        if \"candado_terminal\" in comando:\n            encontrado = True\n            break\n        # Formato actual: el grupo trae una lista de entradas bajo 'hooks'\n        # y es en cada entrada donde vive el comando.\n        entradas = gancho.get(\"hooks\")\n        if not isinstance(entradas, list):\n            continue\n        for entrada in entradas:\n            if not isinstance(entrada, dict):\n                continue\n            comando = str(entrada.get(\"command\", \"\"))\n            if \"candado_terminal\" in comando:\n                encontrado = True\n                break\n        if encontrado:\n            break",
+  "cambio": "En la prueba test_hooks_json_valido_con_pre_tool_use_bash, dentro del bucle que recorre los ganchos, ademas de mirar la clave 'command' del grupo (formato viejo), mirar la lista de entradas bajo la clave 'hooks' del grupo y buscar 'candado_terminal' en el comando de cada entrada (formato actual de tres niveles).",
+  "codigo": "    encontrado = False\n    for gancho in ganchos:\n        if not isinstance(gancho, dict):\n            continue\n        # Formato viejo: el comando viene directo en el grupo.\n        comando = str(gancho.get(\"command\", \"\"))\n        if \"candado_terminal\" in comando:\n            encontrado = True\n            break\n        # Formato actual: el grupo trae una lista de entradas bajo 'hooks'\n        # y es en cada entrada donde vive el comando.\n        entradas = gancho.get(\"hooks\")\n        if not isinstance(entradas, list):\n            continue\n        for entrada in entradas:\n            if not isinstance(entrada, dict):\n                continue\n            comando = str(entrada.get(\"command\", \"\"))\n            if \"candado_terminal\" in comando:\n                encontrado = True\n                break\n        if encontrado:\n            break",
+  "vigia": "Ejecutar la vigia vigias/test_vigia_codex_sigue_sin_manos.py: las cinco pruebas deben quedar verdes; y si se quita el candado_terminal de los ganchos de hooks.json, la prueba test_hooks_json_valido_con_pre_tool_use_bash debe ponerse roja otra vez.",
+  "puede_danar": [
+   "test_hooks_json_valido_con_pre_tool_use_bash",
+   "vigias/test_vigia_codex_sigue_sin_manos.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno real: la reasignacion de la variable local `comando` en el bucle interno no se usa despues, asi que no contamina el `assert encontrado`; el `break` interno sale del bucle de entradas y el `if encontrado: break` posterior sale del bucle de grupos, como debe. No se toca ninguna otra prueba del archivo."
+  ],
+  "que_falta": [
+   "Nada bloqueante. Opcional: ejecutar de verdad la vigia para confirmar las cinco en verde (la propuesta lo deja como comprobacion pendiente, no como fallo)."
+  ],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo pedido: baja un nivel mas a mirar el comando dentro de la lista 'hooks' de cada grupo, sin tocar ninguna otra prueba ni cambiar el nombre; aprobada, se verifica con la vigia."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 20818 a 12956 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
