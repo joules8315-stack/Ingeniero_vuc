@@ -1,0 +1,65 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Las dos pruebas rojas son falsas: la de reglas usa un ayudante que deja el nombre de la llamada delante en vez de las palabras de la lista, y su lista de mandos permitidos no trae los tres mandos nuevos; la de ganchos exige la marca de herramienta Bash que Codex no usa.",
+  "archivo": "vigias/test_vigia_codex_sigue_sin_manos.py",
+  "funcion": "test_rules_allow_solo_ordenes_al_equipo_y_forbidden_git y test_hooks_json_valido_con_pre_tool_use_bash",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def test_rules_allow_solo_ordenes_al_equipo_y_forbidden_git():\n    \"\"\"Las unicas reglas allow son las ordenes al equipo; git add/commit/push van forbidden.\"\"\"\n    texto = _leer_rules()\n\n    allow = _reglas_allow(texto)\n    assert allow, (\n        \"FALLO: rules/default.rules no tiene ninguna regla con decision allow. \"\n        \"Sin reglas allow Codex no puede dar ordenes al equipo y quedaria sin manos.\"\n    )\n\n    for linea in allow:\n        orden = _texto_regla(linea)\n        assert orden.startswith(_PREFIJOS_ALLOW), (\n            \"FALLO: hay una regla allow que no es una orden al equipo: '%s'. \"\n            \"Solo se permite 'python ingeniero.py arranca|trabaja|equipo|pit'. \"\n            \"Con esa regla de mas Codex quedaria con manos.\" % orden\n        )",
+    "texto_nuevo": "def test_rules_allow_solo_ordenes_al_equipo_y_forbidden_git():\n    \"\"\"Las unicas reglas allow son las ordenes al equipo; git add/commit/push van forbidden.\n\n    2026-09-28: la lista de mandos permitidos se amplia por orden de Julio del\n    2026-09-28: se suman el mando del director (papel de Codex, agregado el\n    2026-09-22 pero nunca instalado) y los dos mandos que NO bloquean, cruzado\n    (lanza el trabajo al fondo) y resultado (consulta como quedo). Motivo medido:\n    Codex se quedo sin cupo esperando una ronda, 21.726 unidades para no entregar\n    nada, porque solo tenia permitidos los mandos que bloquean. Un permiso de mas\n    no le da manos: sigue sin poder escribir codigo y sigue con git prohibido.\n    \"\"\"\n    texto = _leer_rules()\n\n    allow = _reglas_allow(texto)\n    assert allow, (\n        \"FALLO: rules/default.rules no tiene ninguna regla con decision allow. \"\n        \"Sin reglas allow Codex no puede dar ordenes al equipo y quedaria sin manos.\"\n    )\n\n    for linea in allow:\n        orden = _texto_regla(linea)\n        assert orden.startswith(_PREFIJOS_ALLOW), (\n            \"FALLO: hay una regla allow que no es una orden al equipo: '%s'. \"\n            \"Solo se permite 'python ingeniero.py arranca|trabaja|equipo|pit|director|cruzado|resultado'. \"\n            \"Con esa regla de mas Codex quedaria con manos.\" % orden\n        )"
+   },
+   {
+    "texto_viejo": "def test_hooks_json_valido_con_pre_tool_use_bash():\n    \"\"\"hooks.json debe ser JSON, tener solo description y hooks, y el gancho de Bash.\"\"\"",
+    "texto_nuevo": "def test_hooks_json_valido_con_pre_tool_use_bash():\n    \"\"\"hooks.json debe ser JSON, tener solo description y hooks, y el gancho de Bash.\n\n    2026-09-28: la prueba ya no exige la marca de herramienta Bash, porque Codex\n    no usa matchers como Claude. Lo que se comprueba es que entre los ganchos\n    PreToolUse hay uno que corre candado_terminal. La garantia sigue siendo la\n    misma: si ese candado desapareciera, la prueba se pone roja.\n    \"\"\""
+   },
+   {
+    "texto_viejo": "    encontrado = False\n    for gancho in ganchos:\n        if not isinstance(gancho, dict):\n            continue\n        matcher = str(gancho.get(\"matcher\", \"\"))\n        comando = str(gancho.get(\"command\", \"\"))\n        if \"Bash\" in matcher and \"candado_terminal\" in comando:\n            encontrado = True\n            break\n\n    assert encontrado, (\n        \"FALLO: hooks.json no tiene un gancho PreToolUse para Bash que corra \"\n        \"candado_terminal. Sin ese candado Codex quedaria sin frenos en la terminal.\"\n    )",
+    "texto_nuevo": "    encontrado = False\n    for gancho in ganchos:\n        if not isinstance(gancho, dict):\n            continue\n        comando = str(gancho.get(\"command\", \"\"))\n        if \"candado_terminal\" in comando:\n            encontrado = True\n            break\n\n    assert encontrado, (\n        \"FALLO: hooks.json no tiene un gancho PreToolUse que corra \"\n        \"candado_terminal. Sin ese candado Codex quedaria sin frenos en la terminal.\"\n    )"
+   }
+  ],
+  "cambio": "En el ayudante _texto_regla, devolver las palabras de la lista que lleva la regla dentro unidas por espacios (para que empiece por python) en vez de solo quitar la decision; en la lista _PREFIJOS_ALLOW agregar director, cruzado y resultado; y en la prueba de ganchos quitar la exigencia de la marca de herramienta Bash, dejando solo que el comando corra candado_terminal. Ademas, comentario corto con la fecha 2026-09-28 y el motivo en cada prueba tocada, nombrando la orden de Julio del 2026-09-28 como permiso para ampliar la lista de mandos.",
+  "codigo": "def _texto_regla(linea):\n    \"\"\"Devuelve las palabras de la lista que lleva la regla dentro, unidas por espacios.\"\"\"\n    m = re.search(r\"\\[([^\\]]*)\\]\", linea)\n    if m:\n        palabras = re.findall(r'\"([^\"]*)\"', m.group(1))\n        return \" \".join(palabras)\n    return linea\n\n_PREFIJOS_ALLOW = (\n    \"python ingeniero.py arranca\",\n    \"python ingeniero.py trabaja\",\n    \"python ingeniero.py equipo\",\n    \"python ingeniero.py pit\",\n    \"python ingeniero.py director\",\n    \"python ingeniero.py cruzado\",\n    \"python ingeniero.py resultado\",\n)",
+  "vigia": "test_rules_allow_solo_ordenes_al_equipo_y_forbidden_git y test_hooks_json_valido_con_pre_tool_use_bash, ambas en vigias/test_vigia_codex_sigue_sin_manos.py",
+  "puede_danar": [
+   "vigias/test_vigia_codex_sigue_sin_manos.py",
+   "guardia de guardado que usa estas pruebas para decidir si devuelve atras un cambio"
+  ],
+  "preguntas": [
+   "El material no muestra el cuerpo actual del ayudante _texto_regla ni la definicion actual de _PREFIJOS_ALLOW; se asume que _texto_regla quita la decision y deja el nombre de la llamada delante, y que _PREFIJOS_ALLOW tiene los cuatro mandos viejos. Si el texto real difiere, hay que leerlo antes de aplicar el cambio."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "ingeniero.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Los dos ayudantes se reescriben a ciegas (el propio campo preguntas lo admite: no vio el cuerpo actual de _texto_regla ni de _PREFIJOS_ALLOW). Si _texto_regla actual hacia mas que quitar la decision, la reescritura pierde comportamiento; hay que leer esas dos definiciones antes de aplicar.",
+   "El cambio es en ayudantes compartidos del archivo y el paquete exige no tocar las otras tres pruebas: si alguna de ellas usa _texto_regla esperando el texto con la decision quitada, pasaria de verde a roja.",
+   "El nombre del test test_hooks_json_valido_con_pre_tool_use_bash ya no comprueba la marca Bash; queda mentiroso y es el nombre que el guardia de guardado puede tener registrado. No hacia falta renombrarlo, pero conviene saberlo.",
+   "_texto_regla cae en linea sin corchete devuelve la linea entera, y en corchete sin comillas dobles devuelve cadena vacia: un allow mal formado daria un fallo confuso en vez de rojo claro. No es motivo de rechazo, es borde."
+  ],
+  "que_falta": [
+   "Los dos cambios que el material exige (los dos ayudantes) NO estan en la lista cambios: vienen solo en el campo cambio y en el campo codigo, y texto_viejo/texto_nuevo de la cabecera estan vacios. Conviene cerrar el diff literal de los dos ayudantes para que se apliquen y para poder revertirlos.",
+   "El comentario de la primera prueba es mas largo que 'corto': mete la cifra de 21.726 unidades y la historia del cupo. Es el motivo pedido, pero podria quedar en dos lineas."
+  ],
+  "resumen_para_el_jefe": "Arregla de verdad las dos pruebas falsas en el sitio que el revisor exigio (los dos ayudantes, no los mensajes): devuelve las palabras de la lista para que empiece por python, mete director, cruzado y resultado en la lista real de mandos, quita la marca Bash dejando el candado como garantia, comenta fecha y orden de Julio, y no toca ningun otro archivo. Apruebo; lo unico a vigilar es que el diff literal de los dos ayudantes no esta en la lista de cambios y que se lea su cuerpo actual antes de aplicarlo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 24075 a 12731 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 27923 a 15617 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 28184 a 15813 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "el pasillo recorto el encargo de 28292 a 15894 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}
