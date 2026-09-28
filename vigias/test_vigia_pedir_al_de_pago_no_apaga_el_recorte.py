@@ -94,6 +94,12 @@ def _montar(monkeypatch):
 
     apuntes = []
 
+    # --- Paso 0: el cerebro prestado devuelve pareja no vacia ---
+    def prestar_cerebro_falso(*args, **kwargs):
+        return object(), ""
+
+    monkeypatch.setattr(obrero, "prestar_cerebro", prestar_cerebro_falso)
+
     # --- Paso 1: el recortador falso ---
     def recortar_prompt_falso(texto, tope):
         apuntes.append((len(texto), tope))
