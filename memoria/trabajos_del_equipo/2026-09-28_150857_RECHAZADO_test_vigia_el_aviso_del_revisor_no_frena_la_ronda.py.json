@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta agregar en el archivo de vigias la prueba test_4_el_mensaje_de_no_hace_lo_que_se_pidio_es_aviso, que nace roja porque hoy separar_avisos_y_frenos clasifica el mensaje 'NO HACE LO QUE SE PIDIO: ...' como freno en vez de aviso.",
+  "archivo": "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "test_4_el_mensaje_de_no_hace_lo_que_se_pidio_es_aviso",
+  "puede_danar": [
+   "las tres pruebas verdes del archivo de vigias si se toca algo de lo existente",
+   "cuerpo/obrero.py si se modifica en esta vuelta (no autorizado)"
+  ],
+  "preguntas": [
+   "PREGUNTA_REQUERIDA: el material no trae el contenido actual de vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py (ni sus imports, ni el ayudante, ni las tres pruebas verdes). Necesito verlo entero para saber donde anclar la prueba nueva sin tocar lo existente."
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Toca cuerpo/obrero.py, archivo que el plan NO manda tocar: la unica ruta de acceso de este encargo es vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py y solo anadir una prueba. El propio paquete cierra con 'esto es TODO lo que hace falta. No abras nada mas' y avisa de que hoy el obrero solo puede entregar un archivo. Es una violacion directa de CONTRATO_RUTA_DE_ACCESO.",
+   "El cambio en separar_avisos_y_frenos es exactamente lo que el material identifica como rompiendo vecinos: 'hay TRES vigias que fijan ese texto tal cual, y cambiarlo las rompe a todas'. El paquete avisa del peligro y aun asi lo ejecuta en la misma entrega, sin poder comprobarlas.",
+   "Con ese cambio la prueba nueva nace VERDE, no roja. El encargo es explicito: 'Hoy esa prueba sale roja... Dilo asi en el mensaje de la prueba, para que quien la lea entienda que la reparacion va en cuerpo/obrero.py y no aqui'. El docstring escrito queda desmentido por el propio codigo que se entrega junto a el.",
+   "El diagnostico se parte: da por bueno que el clasificador de avisos sea el fallo a reparar, cuando el material dice que el programa cuenta y que el juicio es de quien llama. Arreglarlo aqui no es hacer el trabajo pedido, es cambiar la pieza equivocada."
+  ],
+  "riesgo_vecinos": [
+   "Las tres vigias que fijan el texto 'NO HACE LO QUE SE PIDIO' como cuenta que no frena: cambiar la clasificacion las pone rojas y en esta vuelta no hay manos para arreglarlas.",
+   "Cualquier otro llamador de separar_avisos_y_frenos que dependa de que solo 'AVISO:' cuente como aviso; la docstring de la funcion sigue diciendo 'Es aviso todo texto que... empieza por la palabra AVISO seguida de dos puntos' y ahora el codigo hace otra cosa (docstring desalineada con el comportamiento)."
+  ],
+  "que_falta": [
+   "La entrega debe limitarse al archivo de vigias: anadir test_4_el_mensaje_de_no_hace_lo_que_se_pidio_es_aviso y dejarla salir en rojo.",
+   "Nada de cambios en cuerpo/obrero.py en esta vuelta; la reparacion de esa funcion es una entrega posterior, cuando el diagnostico de la prueba roja lo justifique."
+  ],
+  "resumen_para_el_jefe": "La prueba nueva esta bien escrita, pero el obrero se llevo tambien cuerpo/obrero.py, archivo que el plan no autorizaba y que el propio material advierte que rompe las tres vigias que hoy estan verdes; ademas asi la prueba nace verde cuando el encargo exigia que naciera roja. Que entregue solo el archivo de vigias."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 40527 a 18677 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'CONTRATO_CUENTA_O_JUICIO' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "el pasillo recorto el encargo de 42753 a 17173 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO CARGA: el archivo se queda sin arrancar. Primera razon: EL ARCHIVO NO CARGA: error de sintaxis en la linea 121; USA UN NOMBRE QUE NO EXISTE: 'separar_avisos_y_frenos'. No se importa, no se define y",
+  "el pasillo recorto el encargo de 43000 a 17259 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 43316 a 17364 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}
