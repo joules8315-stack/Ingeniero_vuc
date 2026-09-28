@@ -1324,7 +1324,8 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
         if _vistos:
             _archivo_tarea = _vistos
         material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,
-                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)
+                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690,
+                                       funciones=_nombres_de_funcion_del_texto(tarea))
         if clase != "crear":
             faltantes = falta_en_el_material(material_obrero, tarea)
             if faltantes:
