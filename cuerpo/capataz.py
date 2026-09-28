@@ -803,6 +803,57 @@ def agregar_orden(orden):
     return (True, 'agregada ' + str(orden_id))
 
 
+def reintentar_tras_el_arreglo(id_orden, id_arreglo):
+    """Deja pendiente la orden y borra su huella de HUELLAS_QUE_FALLARON.jsonl.
+
+    Nunca lanza: ante cualquier error devuelve False.
+    """
+    try:
+        lista = leer_lista()
+        encontrada = None
+        for orden in lista:
+            if isinstance(orden, dict) and orden.get('id') == id_orden:
+                encontrada = orden
+                break
+        if encontrada is None:
+            return False
+        encontrada['estado'] = 'pendiente'
+        encontrada['paso_fallido'] = ''
+        encontrada['fallos_seguidos'] = 0
+        depende = encontrada.get('depende')
+        if not isinstance(depende, list):
+            depende = []
+        if id_arreglo not in depende:
+            depende.append(id_arreglo)
+        encontrada['depende'] = depende
+        carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        ruta = os.path.join(carpeta_proyecto, 'memoria', 'ORDENES.json')
+        with open(ruta, 'w', encoding='utf-8') as f:
+            json.dump(lista, f, indent=2, ensure_ascii=False)
+        huella = huella_de(encontrada)
+        ruta_huellas = os.path.join(carpeta_proyecto, 'memoria', 'HUELLAS_QUE_FALLARON.jsonl')
+        try:
+            with open(ruta_huellas, encoding='utf-8') as f:
+                renglones = f.readlines()
+        except (FileNotFoundError, OSError):
+            return True
+        conservados = []
+        for renglon in renglones:
+            try:
+                dato = json.loads(renglon)
+            except json.JSONDecodeError:
+                conservados.append(renglon)
+                continue
+            if isinstance(dato, dict) and dato.get('huella') == huella:
+                continue
+            conservados.append(renglon)
+        with open(ruta_huellas, 'w', encoding='utf-8') as f:
+            f.writelines(conservados)
+        return True
+    except Exception:
+        return False
+
+
 def forense(orden, resultado, raiz=None):
     """Analiza un fallo con el perito, comprueba sus citas, lo juzga y deja tarea nueva. Nunca lanza."""
     if raiz is None:
