@@ -1,0 +1,79 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El material no trae el archivo completo de arnes/juez_de_la_prueba.py ni el cuerpo entero de comprobar_pasos en cuerpo/capataz.py, y los textos viejos citados no aparecen literalmente en el material, por lo que no se puede proponer el cambio sin adivinar.",
+  "archivo": "NO_ENCONTRADO",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "baja",
+  "NECESITO_LEER": [
+   {
+    "archivo": "arnes/juez_de_la_prueba.py",
+    "motivo": "es donde vive la funcion que corre la vigia y donde hay que guardar el resultado junto con la huella del archivo probado; el material solo trae un trozo de las lineas 49-59 y no la funcion completa",
+    "que_decide": "donde y como se guarda el resultado de la vigia con la huella del archivo, y como se consulta antes de volver a correrla",
+    "riesgo": "sin el archivo completo se adivina el texto viejo y el trabajo se descarta otra vez"
+   },
+   {
+    "archivo": "cuerpo/capataz.py",
+    "motivo": "el material solo trae trozos sueltos (49-59, 525-601, 968-978) y no la funcion completa comprobar_pasos ni el cuerpo entero de recoger_lo_frenado; los textos viejos citados no aparecen literalmente",
+    "que_decide": "como hacer que comprobar_pasos y recoger_lo_frenado reusen el resultado guardado por el juez en vez de correr la vigia otra vez",
+    "riesgo": "sin la funcion completa no se puede copiar el texto viejo literal y el cambio se rechaza"
+   },
+   {
+    "archivo": "cuerpo/obrero.py",
+    "motivo": "el material solo trae trozos (49-59, 543-558, 968-978, 1263-1273) y no la funcion completa que llama al juez en la linea 1268",
+    "que_decide": "como se invoca al juez desde obrero y con que datos (archivo probado, huella) para que el resultado quede guardado",
+    "riesgo": "sin la funcion completa no se sabe que firma tiene la llamada ni que se le pasa al juez"
+   }
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "La función arnes.juez_de_la_prueba.correr_o_reusar: la propia propuesta lo admite en 'preguntas' ('¿Qué función exacta de arnes/juez_de_la_prueba.py debe exponer el reuso...?') y en ninguna parte del cambio se crea, se implementa ni se edita ese archivo. El 'cambio' la llama 'nuevo ayudante' pero no lo aporta.",
+   "La variable `pieza` como argumento de la llamada: no aparece en el texto viejo (que sólo usa raiz, vigia, entorno) ni se declara en el ámbito de recoger_lo_frenado."
+  ],
+  "fallos": [
+   "No arregla el diagnóstico: el diagnóstico dice 'tres veces sin reutilizar' y el encargo pide que la segunda Y la tercera reusen. El cambio toca un solo sitio (recoger_lo_frenado, 548-553). comprobar_pasos línea 973 sigue lanzando pytest directamente y jamás verá el reuso.",
+   "No guarda nada. El encargo es literalmente 'Guardar el resultado de correr una vigía junto con la huella del archivo probado'. No hay memoria, ni archivo, ni huella, ni serialización: sólo se cambia quién ejecuta. Sin lo que guardar, no hay reuso posible aunque la función existiera.",
+   "Rompe en runtime: `from arnes import juez_de_la_prueba` sí existe, pero `juez_de_la_prueba.correr_o_reusar` casi seguro no (el propio autor no lo sabe y marca confianza 'baja'). En cuanto se ejecuta, AttributeError y la vigía se cae.",
+   "No se define qué entra en la huella. Reusar por la huella del archivo probado deja 'verde de mentira' justo como mata CONTRATO_ENCHUFADO_SE_PRUEBA_EJECUTANDO y CONTRATO_UNA_OPINION_NO_ES_PRUEBA: si cambia la vigía, el código probado, sus imports o el entorno/árbol, se daría por buena una prueba de un código distinto. Es la línea que el encargo pone enmayúscula.",
+   "La propuesta se contradice con la ley del material: pide el nombre exacto de la función y el algoritmo de huella como PREGUNTAS, es decir, reconoce que no sabe lo que hace, pero aun así entrega un cambio cerrado que no puede funcionar.",
+   "Salta el contrato de la sección 5: 'Antes de sellar, declara cual de estos revisaste'. No declara ninguno de los archivos de A QUIÉN PUEDE DAÑAR, pese a que tocar arnes/juez_de_la_prueba.py es justamente lo que exige revisar las tres vigías que la vigilan.",
+   "El resultado cacheado debe ser un CompletedProcess; no dice cómo se reconstruye (returncode, stdout, stderr, timeout) ni cómo se comporta si el reuso devuelve algo incompleto."
+  ],
+  "riesgo_vecinos": [
+   "arnes/juez_de_la_prueba.py está vigilada por test_vigia_el_cruzado_corre_la_prueba, test_vigia_el_juez_busca_su_prueba y test_vigia_el_juez_de_la_prueba: es el archivo donde debe vivir la memoria y donde nadie ha declarado haber revisado a esos tres.",
+   "cuerpo/obrero.py línea 1268 es la fuente de la corrida y seguiría intacta: si el juez cachea desde dentro, la segunda vez queCorra el obrero en la misma sesión devolvería la primera, que es justo un verde reusado no pedido por el encargo (el encargo sólo pide la segunda y la tercera).",
+   "Un reuso guardado por ruta sin hashing del árbol permite dar por válida una prueba hecha sobre otra rama u otrocheckout: fallo silencioso defiesta de CI, no ruido de error.",
+   "cuerpo/capataz.py: sustituir el bloque por una sola línea rompe la lectura posterior de prueba.stdout/stderr si el reutilizado no devuelve un objeto con la misma forma."
+  ],
+  "que_falta": [
+   "El archivo donde se guarda el par (resultado, huella): ruta, formato y qué se guarda exactamente.",
+   "La implementación real de la función de reuso en arnes/juez_de_la_prueba.py, o el nombre exacto de la función existente que hay que usar.",
+   "La conversión del segundo sitio, comprobar_pasos en capataz.py línea 973.",
+   "La definición de qué se hashea: pieza probada + vigía + código bajo prueba + entorno. Con sólo la pieza, el contrato de pruebas ejecutadas queda violado.",
+   "Declaración de los vecinos revisados, que el contrato exige antes de sellar.",
+   "El tratamiento de las demás preguntas del encargo, que son bloqueantes y no se pueden devolver como duda con un cambio que ya dice 'reemplazo esta llamada'."
+  ],
+  "resumen_para_el_jefe": "Rechazada: el cambio llama a una función que nadie crea (juez_de_la_prueba.correr_o_reusar), no guarda ni memoria ni huella, y sólo tapa uno de los tres puntos donde se repite la vigía, así que ni funciona ni cumple el encargo de no dar por buena la prueba de un código distinto."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 31956 a 17721 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 32588 a 14549 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 32868 a 14642 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 33070 a 14698 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

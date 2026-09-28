@@ -1,0 +1,65 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La propuesta anterior se rechazo por traer NO_ENCONTRADO y por no traer texto_nuevo; hay que entregar el codigo nuevo que comprueba invento_algo contra el codigo de la propuesta, sin marcas NO_ENCONTRADO y con texto_nuevo real.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "auditar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    if isinstance(propuesta, dict) and str(propuesta.get('_juez_de_la_prueba') or '').strip():\n        auditoria = {\n            'veredicto': 'APROBADO',\n            'invento_algo': False,\n            'que_invento': [],\n            'fallos': [],\n            'riesgo_vecinos': [],\n            'que_falta': [],\n            'resumen_para_el_jefe': ('el juez de la prueba ya lo demostro: la prueba estaba roja antes, '\n                                     'quedo verde despues y volvio a roja al deshacer el cambio; '\n                                     'por eso esta ronda no paga revision de IA'),\n        }\n        return auditoria, 'juez de la prueba (programa)', avisos",
+    "texto_nuevo": "    if isinstance(propuesta, dict) and str(propuesta.get('_juez_de_la_prueba') or '').strip():\n        auditoria = {\n            'veredicto': 'APROBADO',\n            'invento_algo': False,\n            'que_invento': [],\n            'fallos': [],\n            'riesgo_vecinos': [],\n            'que_falta': [],\n            'resumen_para_el_jefe': ('el juez de la prueba ya lo demostro: la prueba estaba roja antes, '\n                                     'quedo verde despues y volvio a roja al deshacer el cambio; '\n                                     'por eso esta ronda no paga revision de IA'),\n        }\n        return auditoria, 'juez de la prueba (programa)', avisos\n    # ANTES DE DESCARTAR NADA: un PROGRAMA comprueba la marca invento_algo. Por cada nombre de\n    # que_invento, si ese nombre APARECE DECLARADO dentro del propio codigo que la propuesta\n    # trae (una constante, una funcion, una clase...), NO es invento: es la reparacion haciendo\n    # su trabajo. Se quita de la lista y no se descarta por eso. Si tras quitar los falsos no\n    # queda ninguno, invento_algo pasa a falso. Se deja escrito cuantos rechazos en falso se\n    # quitaron, para poder medirlo. Inventar sigue siendo usar algo que no existe en ninguna\n    # parte y que la propuesta tampoco crea: eso se sigue frenando igual.\n    if isinstance(propuesta, dict) and propuesta.get('invento_algo'):\n        _falsos = _quitar_inventos_falsos(propuesta)\n        if _falsos:\n            avisos.append('invento_algo: se quitaron %d rechazos en falso (el nombre si se declara '\n                          'dentro del propio codigo de la propuesta)' % _falsos)"
+   },
+   {
+    "texto_viejo": "def _propuesta_cumple(propuesta, clase):",
+    "texto_nuevo": "def _quitar_inventos_falsos(propuesta):\n    \"\"\"Un PROGRAMA, no una IA: quita de que_invento los nombres que la propia propuesta declara.\n\n    Si el nombre aparece DECLARADO dentro del codigo que la propuesta trae (una constante, una\n    funcion, una clase, un import con alias...), entonces NO es invento: es la reparacion\n    haciendo su trabajo. Se quita de la lista y no se descarta por eso. Si tras quitar los\n    falsos no queda ninguno, invento_algo pasa a falso. Devuelve cuantos rechazos en falso se\n    quitaron, para poder medirlo. Inventar sigue siendo usar algo que no existe en ninguna\n    parte y que la propuesta tampoco crea: eso se sigue frenando igual.\n    \"\"\"\n    if not isinstance(propuesta, dict):\n        return 0\n    nombres = propuesta.get('que_invento')\n    if not isinstance(nombres, list) or not nombres:\n        return 0\n    codigo = '\\n'.join(str(propuesta.get(k) or '') for k in ('codigo', 'texto_nuevo'))\n    if not codigo.strip():\n        return 0\n    quedan = []\n    quitados = 0\n    for nombre in nombres:\n        n = str(nombre or '').strip()\n        if not n:\n            continue\n        declarado = re.search(\n            r'(?m)^\\s*(?:def|class)\\s+' + re.escape(n) + r'\\b'\n            r'|^\\s*' + re.escape(n) + r'\\s*='\n            r'|^\\s*(?:from\\s+\\S+\\s+)?import\\s+.*\\b' + re.escape(n) + r'\\b',\n            codigo)\n        if declarado:\n            quitados += 1\n        else:\n            quedan.append(nombre)\n    propuesta['que_invento'] = quedan\n    if not quedan:\n        propuesta['invento_algo'] = False\n    return quitados\n\n\ndef _propuesta_cumple(propuesta, clase):"
+   }
+  ],
+  "cambio": "Anadir en cuerpo/obrero.py la funcion _quitar_inventos_falsos (que recorre que_invento y quita los nombres que la propia propuesta declara en su codigo/texto_nuevo, apagando invento_algo si no queda ninguno y devolviendo cuantos rechazos en falso se quitaron) y llamarla dentro de auditar justo despues del atajo del juez de la prueba, dejando el aviso con el numero de falsos quitados.",
+  "codigo": "def _quitar_inventos_falsos(propuesta):\n    \"\"\"Un PROGRAMA, no una IA: quita de que_invento los nombres que la propia propuesta declara.\n\n    Si el nombre aparece DECLARADO dentro del codigo que la propuesta trae (una constante, una\n    funcion, una clase, un import con alias...), entonces NO es invento: es la reparacion\n    haciendo su trabajo. Se quita de la lista y no se descarta por eso. Si tras quitar los\n    falsos no queda ninguno, invento_algo pasa a falso. Devuelve cuantos rechazos en falso se\n    quitaron, para poder medirlo. Inventar sigue siendo usar algo que no existe en ninguna\n    parte y que la propuesta tampoco crea: eso se sigue frenando igual.\n    \"\"\"\n    if not isinstance(propuesta, dict):\n        return 0\n    nombres = propuesta.get('que_invento')\n    if not isinstance(nombres, list) or not nombres:\n        return 0\n    codigo = '\\n'.join(str(propuesta.get(k) or '') for k in ('codigo', 'texto_nuevo'))\n    if not codigo.strip():\n        return 0\n    quedan = []\n    quitados = 0\n    for nombre in nombres:\n        n = str(nombre or '').strip()\n        if not n:\n            continue\n        declarado = re.search(\n            r'(?m)^\\s*(?:def|class)\\s+' + re.escape(n) + r'\\b'\n            r'|^\\s*' + re.escape(n) + r'\\s*='\n            r'|^\\s*(?:from\\s+\\S+\\s+)?import\\s+.*\\b' + re.escape(n) + r'\\b',\n            codigo)\n        if declarado:\n            quitados += 1\n        else:\n            quedan.append(nombre)\n    propuesta['que_invento'] = quedan\n    if not quedan:\n        propuesta['invento_algo'] = False\n    return quitados",
+  "vigia": "Una prueba que arme una propuesta con invento_algo=True y que_invento=['_quitar_inventos_falsos','NO_EXISTE'] y codigo que declare _quitar_inventos_falsos: debe devolver 1, dejar que_invento=['NO_EXISTE'] e invento_algo=True; y otra con solo nombres declarados debe devolver el total y dejar invento_algo=False.",
+  "puede_danar": [
+   "auditar",
+   "_propuesta_cumple",
+   "el bucle de reintentos que lee invento_algo y que_invento",
+   "el aviso que se muestra al jefe"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La ubicacion de los cambios no es verificable: tanto texto_viejo como texto_nuevo de la propuesta vienen vacios en la cabecera, y el propio bloque 'cambios' no existe en ningun archivo del material (el material solo cita cuerpo/obrero.py lineas 1320-1321, 222-223 y el contrato). El anclaje 'despues del atajo del juez de la prueba' no aparece en el material, asi que no se puede confirmar que el punto de insercion sea real ni que el texto_viejo exista.",
+   "La busqueda de 'declarado' es demasiado laxa: el patron de import usa \\b como borde, de modo que un nombre pedido como 'os' o 're' se consideraria declarado solo por un import no relacionado, y 'constante' exige ^\\s*NOMBRE\\s*= que no cubre annotated assignments ni dict/decoradores; puede dejar falsos inventos o quitar reales sin detalle.",
+   "La mutacion es sobre el dict de la propuesta original: propuesta['que_invento'] = quedan y propuesta['invento_algo'] = False reescriben el JSON del revisor en memoria; si ese dict se cachea, se registra o se vuelve a pasar al ciclo de reintentos (revisado en puede_danar), el aviso queda contando falsos que ya no existen y la segunda vuelta ve invento_algo=False con una lista vacia.",
+   "No distingue mayusculas/minusculas ni prefijos de atributo: re.escape sobre el nombre literal no captura 'NOMBRE' definido como 'nombre' ni 'a.b.funcion', con lo que la cuenta del aviso no refleja los rechazos en falso reales que se quitan."
+  ],
+  "riesgo_vecinos": [
+   "El bucle de reintentos que lee invento_algo y que_invento: al mutar la propuesta, una segunda vuelta sobre la misma propuesta no vuelve a contar los falsos quitados y el aviso puede quedar desincronizado con la realidad.",
+   "El atajo '_juez_de_la_prueba': el nuevo bloque se inserta despues de su return, asi que una propuesta con esa marca nunca pasa por _quitar_inventos_falsos y su lista de inventos queda sin limpiar (posible perdida de informacion para el jefe, que es justo lo que el encargo pedia).",
+   "auditar: los avisos se acumulan en la lista compartida 'avisos'; anadir un aviso solo cuando _falsos > 0 deja el camino de 'quedaron falsos por quitar' sin mensaje, que es el caso que mas conviene avisar."
+  ],
+  "que_falta": [
+   "Los textosold/texto_nuevo reales de la cabecera, que hoy van vacios: sin ellos no se puede verificar ni la ubicacion ni que el cambio se aplique.",
+   "Una prueba ejecutable adjunta; la 'vigia' esta escrita en condicional pero no hay evidencia de que se haya corrido, pese a marcar _comprobado_por_programa=true.",
+   "Comprobacion de que 're' esta importado en el modulo donde se inserta la funcion, dado que la busqueda se hace con re.search."
+  ],
+  "resumen_para_el_jefe": "La logica del programa es razonable y no inventa nada, pero llega sin texto ancla real (ambos campos van vacios), asi que no se puede aplicar ni verificar la ubicacion, y ademas muta la propuesta del revisor y no cubre el atajo del juez de la prueba; mandala a rellenar anclaje y pruebas antes de pagarla."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 30716 a 17563 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 31607 a 17926 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "el pasillo recorto el encargo de 31666 a 17945 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "el pasillo recorto el encargo de 31725 a 17966 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}

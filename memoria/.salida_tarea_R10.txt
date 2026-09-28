@@ -1,0 +1,18 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-28_131725_DUDOSO_candado_legislar.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : el pasillo recorto el encargo de 21079 a 16473 letras para que le quepa a un cerebro gratis (tope medido: 19042)
+  aviso       : el pasillo recorto el encargo de 21756 a 16981 letras para que le quepa a un cerebro gratis (tope medido: 19042)
+  aviso       : vueltas_dadas: 2
+  diagnostico : apuntar_lo_que_dijo_julio parte el mensaje en frases por renglon y por punto, apunta cada trozo por separado, y no quita las comillas, con lo que se pierde el mensaje completo y se apuntan citas de otros.
+  toca        : arnes/candado_legislar.py funcion apuntar_lo_que_dijo_julio
+  confianza   : media
+  PREGUNTA_REQUERIDA: Si el mensaje entero supera el limite del ledger, se recorta a 400 como hace marcar, o se recorta a MINIMO_LETRAS o a otro tope antes de apuntar?
+  VEREDICTO   : DUDOSO
+  fallo       : No cumple el '(recortado a lo que quepa)' que pide el encargo: el texto_nuevo/codigo no recorta en ningun punto. Sale del texto: if len(mensaje) < MINIMO_LETRAS: return 0 ... apuntar(mensaje, fuente="julio"). El propio obrero lo admite en 'preguntas' y lo deja sin resolver; el material no incluye apuntar, asi que no se puede confirmar que el recorte este aguas arriba. Si no lo esta, un mensaje largo entra entero en el ledger y eso si toca a 'pendientes' y al 'candado de cierre'.
+  fallo       : Las regex de comillas se rompen con comillas desbalanceadas. 'sin_citas = re.sub(r"'[^']*'", " ", sin_citas)' parte por pares: con un numero IMPAR de apostofos se come texto real. Ejemplo con el propio material: texto = "Actualiza el README de Ana's y borra 'esto'". Hay 3 apostrofos; el regex casa desde el de "Ana's" hasta el de antes de "esto" y borra "s y borra ", dejando apuntar(mensaje) == "Actualiza el README de Ana esto": una instruccion mutilada guardada como si fuera la de Julio. Con comillas dobles impares pasa igual.
+  fallo       : El vigia que propone el obrero prueba justo el caso que el codigo no resuelve: un 'trozo entre comillas simples con apostrofo dentro' hace que '[^']*' termine en el apostrofo interno y deje el resto de la cita dentro del mensaje. El test tal como esta descrito no lo pasa.
+  fallo       : Cambia la semantica del valor de retorno: antes devolvia cuantas ordenes habia (0..N), ahora 0 o 1. El material no muestra quien lo consume, pero el propio cambio declara que puede danar 'main (modo desde-julio)' y 'candado de cierre'; si alguno lo leia como cuenta, ahora siempre ve 1. Queda como riesgo, no como fallo probado.
+  resumen     : La reparacion acierta el fondo (mensaje entero, una sola entrada, sin lo entrecomillado) y no inventa nada ni toca vecino, pero deja sin hacer el 'recortado a lo que quepa' que pide el encargo y su regex de comillas corrompe el texto si hay un apostrofo o comilla desparejada; decidle el tope y arregla eso antes de dar por buena.
+
+EL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.

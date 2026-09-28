@@ -1,0 +1,28 @@
+{
+  "orden": {
+    "id": "R4",
+    "titulo": "La misma prueba no se corre cuatro veces",
+    "origen": "PLAN_PRIORIDAD_UNO 2026-09-25",
+    "repara": "la vigia de una orden se corre hasta cuatro veces por ronda, con tope de 300 s cada vez, y todas dicen lo mismo",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "R5"
+    ],
+    "modo": "IA",
+    "razon": "son minutos repetidos en cada orden, para nada; es de lo que mas tiempo quita",
+    "encargo": "Guardar el resultado de correr una vigia junto con la huella del archivo probado, y reusarlo mientras ese archivo no cambie. Hoy la misma vigia se corre en arnes/juez_de_la_prueba.py (llamado desde cuerpo/obrero.py linea 1268), otra vez en cuerpo/capataz.py linea 973 dentro de comprobar_pasos, y otra vez en cuerpo/capataz.py lineas 548-553 dentro de recoger_lo_frenado. Que la segunda y la tercera reusen el resultado de la primera si el archivo no cambio. Si cambio, se corre de nuevo: nunca se da por buena una prueba de un codigo distinto.",
+    "vigia": "vigias/test_vigia_la_misma_prueba_no_se_corre_dos_veces.py",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "fc01a369879f395c",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-28_133805_RECHAZADO_NO_ENCONTRADO.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : el pasillo recorto el encargo de 31956 a 17721 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : el pasillo recorto el encargo de 32588 a 14549 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  diagnostico : El material no trae el archivo completo de arnes/juez_de_la_prueba.py ni el cuerpo entero de comprobar_pasos en cuerpo/capataz.py, y los textos viejos citados no aparecen literalmente en el material, por lo que no se puede proponer el cambio sin adivinar.\n  toca        : NO_ENCONTRADO funcion NO_ENCONTRADO\n  confianza   : baja\n  VEREDICTO   : RECHAZADO\n  *** INVENTO: La función arnes.juez_de_la_prueba.correr_o_reusar: la propia propuesta lo admite en 'preguntas' ('¿Qué función exacta de arnes/juez_de_la_prueba.py debe exponer el reuso...?') y en ninguna parte del cambio se crea, se implementa ni se edita ese archivo. El 'cambio' la llama 'nuevo ayudante' pero no lo aporta.; La variable `pieza` como argumento de la llamada: no aparece en el texto viejo (que sólo usa raiz, vigia, entorno) ni se declara en el ámbito de recoger_lo_frenado. -> SE DESCARTA\n  fallo       : No arregla el diagnóstico: el diagnóstico dice 'tres veces sin reutilizar' y el encargo pide que la segunda Y la tercera reusen. El cambio toca un solo sitio (recoger_lo_frenado, 548-553). comprobar_pasos línea 973 sigue lanzando pytest directamente y jamás verá el reuso.\n  fallo       : No guarda nada. El encargo es literalmente 'Guardar el resultado de correr una vigía junto con la huella del archivo probado'. No hay memoria, ni archivo, ni huella, ni serialización: sólo se cambia quién ejecuta. Sin lo que guardar, no hay reuso posible aunque la función existiera.\n  fallo       : Rompe en runtime: `from arnes import juez_de_la_prueba` sí existe, pero `juez_de_la_prueba.correr_o_reusar` casi seguro no (el propio autor no lo sabe y marca confianza 'baja'). En cuanto se ejecuta, AttributeError y la vigía se cae.\n  fallo       : No se define qué entra en la huella. Reusar por la huella del archivo probado deja 'verde de mentira' justo como mata CONTRATO_ENCHUFADO_SE_PRUEBA_EJECUTANDO y CONTRATO_UNA_OPINION_NO_ES_PRUEBA: si cambia la vigía, el código probado, sus imports o el entorno/árbol, se daría por buena una prueba de un código distinto. Es la línea que el encargo pone enmayúscula.\n  resumen     : Rechazada: el cambio llama a una función que nadie crea (juez_de_la_prueba.correr_o_reusar), no guarda ni memoria ni huella, y sólo tapa uno de los tres puntos donde se repite la vigía, así que ni funciona ni cumple el encargo de no dar por buena la prueba de un código distinto.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-28T13:38:05"
+}

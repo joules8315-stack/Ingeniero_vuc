@@ -1,0 +1,17 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-28_132656_DUDOSO_obrero.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : el pasillo recorto el encargo de 30716 a 17563 letras para que le quepa a un cerebro gratis (tope medido: 19042)
+  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta
+  aviso       : el pasillo recorto el encargo de 31607 a 17926 letras para que le quepa a un cerebro gratis (tope medido: 19042)
+  diagnostico : La propuesta anterior se rechazo por traer NO_ENCONTRADO y por no traer texto_nuevo; hay que entregar el codigo nuevo que comprueba invento_algo contra el codigo de la propuesta, sin marcas NO_ENCONTRADO y con texto_nuevo real.
+  toca        : cuerpo/obrero.py funcion auditar
+  confianza   : media
+  VEREDICTO   : DUDOSO
+  fallo       : La ubicacion de los cambios no es verificable: tanto texto_viejo como texto_nuevo de la propuesta vienen vacios en la cabecera, y el propio bloque 'cambios' no existe en ningun archivo del material (el material solo cita cuerpo/obrero.py lineas 1320-1321, 222-223 y el contrato). El anclaje 'despues del atajo del juez de la prueba' no aparece en el material, asi que no se puede confirmar que el punto de insercion sea real ni que el texto_viejo exista.
+  fallo       : La busqueda de 'declarado' es demasiado laxa: el patron de import usa \b como borde, de modo que un nombre pedido como 'os' o 're' se consideraria declarado solo por un import no relacionado, y 'constante' exige ^\s*NOMBRE\s*= que no cubre annotated assignments ni dict/decoradores; puede dejar falsos inventos o quitar reales sin detalle.
+  fallo       : La mutacion es sobre el dict de la propuesta original: propuesta['que_invento'] = quedan y propuesta['invento_algo'] = False reescriben el JSON del revisor en memoria; si ese dict se cachea, se registra o se vuelve a pasar al ciclo de reintentos (revisado en puede_danar), el aviso queda contando falsos que ya no existen y la segunda vuelta ve invento_algo=False con una lista vacia.
+  fallo       : No distingue mayusculas/minusculas ni prefijos de atributo: re.escape sobre el nombre literal no captura 'NOMBRE' definido como 'nombre' ni 'a.b.funcion', con lo que la cuenta del aviso no refleja los rechazos en falso reales que se quitan.
+  resumen     : La logica del programa es razonable y no inventa nada, pero llega sin texto ancla real (ambos campos van vacios), asi que no se puede aplicar ni verificar la ubicacion, y ademas muta la propuesta del revisor y no cubre el atajo del juez de la prueba; mandala a rellenar anclaje y pruebas antes de pagarla.
+
+EL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.

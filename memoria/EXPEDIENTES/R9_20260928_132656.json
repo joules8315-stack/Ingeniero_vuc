@@ -1,0 +1,68 @@
+{
+  "orden": {
+    "id": "R9",
+    "titulo": "Crear no es inventar: que lo compruebe un programa",
+    "origen": "PLAN_PRIORIDAD_UNO 2026-09-25; fallo real de hoy: el revisor rechazo la reparacion del cierre por inventar dos constantes y una funcion que la propia reparacion creaba",
+    "repara": "el revisor marca como INVENTO cualquier nombre nuevo que la reparacion crea, y el trabajo se descarta entero; asi casi ninguna reparacion puede aprobarse",
+    "pieza": "cuerpo/obrero.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "es el freno que hace fracasar las reparaciones una detras de otra: la ley ya dice CREAR NO ES INVENTAR en las lineas 186-203, pero se le confia al criterio del revisor gratis, que la ignora, y encima el pasillo recorta el encargo (hoy de 19997 a 12406 letras) y esa parte de la ley puede ni llegarle",
+    "encargo": "Despues de que el revisor conteste, y ANTES de descartar nada, que un PROGRAMA compruebe la marca invento_algo (cuerpo/obrero.py lineas 1320-1321 la imprime; viene del JSON del revisor, linea 222-223). Por cada nombre de la lista que_invento: si ese nombre APARECE DECLARADO dentro del propio codigo que la propuesta trae (por ejemplo se crea ahi una constante o una funcion con ese nombre), entonces NO es invento: es la reparacion haciendo su trabajo. En ese caso se quita de la lista y no se descarta por eso. Si despues de quitar los falsos no queda ninguno, invento_algo pasa a falso. Que quede escrito en el aviso cuantos rechazos en falso se quitaron, para poder medirlo. Inventar sigue siendo usar algo que no existe en ninguna parte y que la propuesta tampoco crea: eso se sigue frenando igual.",
+    "vigia": "vigias/test_vigia_crear_no_es_inventar_lo_comprueba_un_programa.py",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "a0bb92e6a4337748",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-28_132656_DUDOSO_obrero.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : el pasillo recorto el encargo de 30716 a 17563 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : el pasillo recorto el encargo de 31607 a 17926 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  diagnostico : La propuesta anterior se rechazo por traer NO_ENCONTRADO y por no traer texto_nuevo; hay que entregar el codigo nuevo que comprueba invento_algo contra el codigo de la propuesta, sin marcas NO_ENCONTRADO y con texto_nuevo real.\n  toca        : cuerpo/obrero.py funcion auditar\n  confianza   : media\n  VEREDICTO   : DUDOSO\n  fallo       : La ubicacion de los cambios no es verificable: tanto texto_viejo como texto_nuevo de la propuesta vienen vacios en la cabecera, y el propio bloque 'cambios' no existe en ningun archivo del material (el material solo cita cuerpo/obrero.py lineas 1320-1321, 222-223 y el contrato). El anclaje 'despues del atajo del juez de la prueba' no aparece en el material, asi que no se puede confirmar que el punto de insercion sea real ni que el texto_viejo exista.\n  fallo       : La busqueda de 'declarado' es demasiado laxa: el patron de import usa \\b como borde, de modo que un nombre pedido como 'os' o 're' se consideraria declarado solo por un import no relacionado, y 'constante' exige ^\\s*NOMBRE\\s*= que no cubre annotated assignments ni dict/decoradores; puede dejar falsos inventos o quitar reales sin detalle.\n  fallo       : La mutacion es sobre el dict de la propuesta original: propuesta['que_invento'] = quedan y propuesta['invento_algo'] = False reescriben el JSON del revisor en memoria; si ese dict se cachea, se registra o se vuelve a pasar al ciclo de reintentos (revisado en puede_danar), el aviso queda contando falsos que ya no existen y la segunda vuelta ve invento_algo=False con una lista vacia.\n  fallo       : No distingue mayusculas/minusculas ni prefijos de atributo: re.escape sobre el nombre literal no captura 'NOMBRE' definido como 'nombre' ni 'a.b.funcion', con lo que la cuenta del aviso no refleja los rechazos en falso reales que se quitan.\n  resumen     : La logica del programa es razonable y no inventa nada, pero llega sin texto ancla real (ambos campos van vacios), asi que no se puede aplicar ni verificar la ubicacion, y ademas muta la propuesta del revisor y no cubre el atajo del juez de la prueba; mandala a rellenar anclaje y pruebas antes de pagarla.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-28T13:26:56",
+  "analisis": {
+    "que_paso": "La orden R9 (modo IA: deepseek escribe, bigpickle revisa) pedia insertar en la funcion auditar de cuerpo/obrero.py un PROGRAMA que, antes de descartar, comprobara la marca invento_algo contra el propio codigo de la propuesta. DeepSeek fallo dos veces: primero trajo la marca NO_ENCONTRADO y sin texto_nuevo (rechazo automatico), y en el reintento el revisor lo dejo en DUDOSO porque la propuesta llego con texto_viejo y texto_nuevo VACIOS: no se puede verificar donde se aplica el cambio. No se guardo llave y no se pudo tocar codigo.",
+    "causa_raiz": "El encargo mandaba anclar el nuevo bloque 'despues del atajo del juez de la prueba', pero el material entregado a la IA solo citaba las lineas 1320-1321 y 222-223 (y el contrato): nunca incluyo el renglon exacto de ese atajo ni el cuerpo real de auditar. Al no venir el ancla en el material, la IA no tenia un texto_viejo real que copiar y lo dejo vacio, con lo que el revisor no pudo confirmar la ubicacion y freno el trabajo. Se pidio una REPARACION quirurgica sobre codigo EXISTENTE por modo IA sin pegarle dentro el renglon ancla, rompiendo la Ley del Ancla de un Renglon y la regla 3 (si el material no trae la pieza, se pega el trozo DENTRO del encargo). El recorte del pasillo (30716->17563 letras) agravo la perdida de la parte de la ley 'CREAR NO ES INVENTAR' que la orden queria proteger.",
+    "donde": "cuerpo/obrero.py, funcion auditar (punto de insercion pedido junto al atajo del juez de la prueba, linea 1154; la marca invento se imprime en 1496-1497). El origen del fallo esta en el material/encargo de R9 (memoria/ORDENES.json), que no llevo el renglon ancla.",
+    "quien_fallo": "diseno",
+    "no_volver_a": "Cuando una orden repara codigo que YA existe por modo IA, el encargo debe pegar dentro el renglon ancla exacto (y su bloque) del archivo, nunca solo numeros de linea: sin texto_viejo real el revisor no puede verificar la ubicacion y frena el trabajo.",
+    "citas": [
+      {
+        "archivo": "cuerpo/obrero.py:1154",
+        "texto": "    if isinstance(propuesta, dict) and str(propuesta.get('_juez_de_la_prueba') or '').strip():"
+      },
+      {
+        "archivo": "cuerpo/obrero.py:432",
+        "texto": "            return False, \"la propuesta NO cumple porque trae la marca NO_ENCONTRADO\""
+      },
+      {
+        "archivo": "cuerpo/obrero.py:1497",
+        "texto": "        L.append(f\"  *** INVENTO: {'; '.join(a.get('que_invento', []))} -> SE DESCARTA\")"
+      },
+      {
+        "archivo": "CLAUDE.md",
+        "texto": "el ancla es **UN SOLO RENGLON, exacto, que aparezca UNA sola vez en el archivo**"
+      },
+      {
+        "archivo": "CLAUDE.md",
+        "texto": "**Si el material no trae la pieza, se pega el trozo DENTRO del encargo.**"
+      }
+    ],
+    "tarea_nueva": {
+      "repara": "que el armador del paquete/encargo, cuando la orden toque codigo EXISTENTE, pegue DENTRO del material el renglon ancla exacto y el bloque que le sigue, en vez de citar solo numeros de linea",
+      "pieza": "el filtro que arma el encargo del obrero (cuerpo/obrero.py, lineas ~1354-1359) junto con el encargo de R9 en memoria/ORDENES.json",
+      "razon": "el DUDOSO no vino de inventar sino de que la propuesta llego con texto_viejo/texto_nuevo vacios porque el ancla ('atajo del juez de la prueba', obrero.py:1154) nunca estuvo en el material; sin ancla real ninguna reparacion de codigo existente por IA puede verificarse",
+      "encargo": "Reescribir el material de R9 incluyendo LITERAL el trozo de funcion auditar con el renglon unico if isinstance(propuesta, dict) and str(propuesta.get('_juez_de_la_prueba') or '').strip(): (obrero.py:1154) mas el bloque que retorna APROBADO, para que la propuesta traiga un texto_viejo real y verificable justo despues de ese atajo; comprobar el ancla con findstr /c antes de mandar el encargo",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "citas",
+    "motivo": "citas que no existen: [{\"archivo\": \"cuerpo/obrero.py:1154\", \"texto\": \"    if isinstance(propuesta, dict) and str(propuesta.get('_juez_de_la_prueba') or '').strip():\", \"por_que\": \"el archivo no existe\"}, {\"archivo\": \"cuerpo/obrero.py:432\", \"texto\": \"            return False, \\\"la propuesta NO cumple porque trae la marca NO_ENCONTRADO\\\"\", \"por_que\": \"el archivo no existe\"}, {\"archivo\": \"cuerpo/obrero.py:1497\", \"texto\": \"        L.append(f\\\"  *** INVENTO: {'; '.join(a.get('que_invento', []))} -> SE DESCARTA\\\")\", \"por_qu",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R9_20260928_132656.json"
+  }
+}

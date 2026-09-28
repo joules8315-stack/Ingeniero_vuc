@@ -1,0 +1,66 @@
+{
+  "orden": {
+    "id": "R10",
+    "titulo": "Un mensaje de Julio es UNA instruccion, no veinte",
+    "origen": "PLAN_PRIORIDAD_UNO 2026-09-25; medido hoy: 113 pendientes salidos de 3 o 4 mensajes",
+    "repara": "cada frase de un mensaje de Julio se apunta como una instruccion aparte, y hasta el texto que escribio Claude se apunta cuando Julio lo cita; por eso la lista crece sin parar y el cierre se atasca",
+    "pieza": "arnes/candado_legislar.py",
+    "depende": [
+      "R0"
+    ],
+    "modo": "IA",
+    "razon": "un mensaje de Julio son una o dos ordenes, no veinte frases; con 113 apuntes nadie puede legislar y el cierre no termina nunca",
+    "encargo": "En apuntar_lo_que_dijo_julio (arnes/candado_legislar.py linea 141): hoy parte el mensaje en frases y apunta cada una. Cambialo para que apunte el MENSAJE COMPLETO como UNA sola instruccion (recortado a lo que quepa), no frase por frase. Y que NO apunte lo que va entre comillas dentro del mensaje, porque eso es Julio citando lo que ya dijo otro. No toques parece_una_orden ni pendientes ni marcar.",
+    "vigia": "vigias/test_vigia_un_mensaje_de_julio_es_una_instruccion.py",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "2d0e90bf36d22a5d",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-28_131725_DUDOSO_candado_legislar.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : el pasillo recorto el encargo de 21079 a 16473 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  aviso       : el pasillo recorto el encargo de 21756 a 16981 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  aviso       : vueltas_dadas: 2\n  diagnostico : apuntar_lo_que_dijo_julio parte el mensaje en frases por renglon y por punto, apunta cada trozo por separado, y no quita las comillas, con lo que se pierde el mensaje completo y se apuntan citas de otros.\n  toca        : arnes/candado_legislar.py funcion apuntar_lo_que_dijo_julio\n  confianza   : media\n  PREGUNTA_REQUERIDA: Si el mensaje entero supera el limite del ledger, se recorta a 400 como hace marcar, o se recorta a MINIMO_LETRAS o a otro tope antes de apuntar?\n  VEREDICTO   : DUDOSO\n  fallo       : No cumple el '(recortado a lo que quepa)' que pide el encargo: el texto_nuevo/codigo no recorta en ningun punto. Sale del texto: if len(mensaje) < MINIMO_LETRAS: return 0 ... apuntar(mensaje, fuente=\"julio\"). El propio obrero lo admite en 'preguntas' y lo deja sin resolver; el material no incluye apuntar, asi que no se puede confirmar que el recorte este aguas arriba. Si no lo esta, un mensaje largo entra entero en el ledger y eso si toca a 'pendientes' y al 'candado de cierre'.\n  fallo       : Las regex de comillas se rompen con comillas desbalanceadas. 'sin_citas = re.sub(r\"'[^']*'\", \" \", sin_citas)' parte por pares: con un numero IMPAR de apostofos se come texto real. Ejemplo con el propio material: texto = \"Actualiza el README de Ana's y borra 'esto'\". Hay 3 apostrofos; el regex casa desde el de \"Ana's\" hasta el de antes de \"esto\" y borra \"s y borra \", dejando apuntar(mensaje) == \"Actualiza el README de Ana esto\": una instruccion mutilada guardada como si fuera la de Julio. Con comillas dobles impares pasa igual.\n  fallo       : El vigia que propone el obrero prueba justo el caso que el codigo no resuelve: un 'trozo entre comillas simples con apostrofo dentro' hace que '[^']*' termine en el apostrofo interno y deje el resto de la cita dentro del mensaje. El test tal como esta descrito no lo pasa.\n  fallo       : Cambia la semantica del valor de retorno: antes devolvia cuantas ordenes habia (0..N), ahora 0 o 1. El material no muestra quien lo consume, pero el propio cambio declara que puede danar 'main (modo desde-julio)' y 'candado de cierre'; si alguno lo leia como cuenta, ahora siempre ve 1. Queda como riesgo, no como fallo probado.\n  resumen     : La reparacion acierta el fondo (mensaje entero, una sola entrada, sin lo entrecomillado) y no inventa nada ni toca vecino, pero deja sin hacer el 'recortado a lo que quepa' que pide el encargo y su regex de comillas corrompe el texto si hay un apostrofo o comilla desparejada; decidle el tope y arregla eso antes de dar por buena.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-28T13:17:29",
+  "analisis": {
+    "que_paso": "La orden R10 (reescribir apuntar_lo_que_dijo_julio para que apunte el MENSAJE COMPLETO como UNA sola instruccion, sin lo entrecomillado, en vez de partirlo en frases) se mando al equipo (deepseek escribe, bigpickle revisa) y volvio con VEREDICTO DUDOSO: no se guardo llave y no se pudo tocar codigo. El auditor levanto dos reparos: (1) que el codigo propuesto \"no recorta en ningun punto\" y por eso abrio una PREGUNTA_REQUERIDA sobre el tope; y (2) que quitar las comillas con regex corrompe el texto si hay comillas o apostrofos impares (ej. \"Ana's ... 'esto'\").",
+    "causa_raiz": "El pasillo entrego a la mesa un encargo recortado (21079->16473 letras) y sin el cuerpo de apuntar(), donde vive el recorte texto[:2000]; por eso el auditor no pudo confirmar que \"recortado a lo que quepa\" ya estaba hecho y marco DUDOSO, dejando ademas una PREGUNTA_REQUERIDA sobre un tope que ya estaba respondido. El material incompleto, no el codigo, freno la orden.",
+    "donde": "arnes/candado_legislar.py",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "arnes/candado_legislar.py",
+        "texto": "d[_h(texto)] = {\"texto\": texto[:2000], \"fuente\": fuente, \"cuando\": time.time(),"
+      },
+      {
+        "archivo": "arnes/candado_legislar.py",
+        "texto": "    \"\"\"Registra una instruccion como PENDIENTE de legislar. Devuelve cuantas hay pendientes.\"\"\""
+      },
+      {
+        "archivo": "arnes/candado_legislar.py",
+        "texto": "        for trozo in renglon.split(\".\"):"
+      },
+      {
+        "archivo": "arnes/candado_legislar.py",
+        "texto": "    \"\"\"Apunta SOLAS las ordenes que vengan en lo que Julio acaba de escribir. Devuelve cuantas."
+      }
+    ],
+    "no_volver_a": "No mandar al equipo un encargo recortado ni sin el cuerpo de la funcion que ya hace el trabajo (apuntar recorta texto[:2000]): un material incompleto produce un DUDOSO por algo que ya estaba resuelto.",
+    "tarea_nueva": {
+      "repara": "El pasillo recorto el encargo (21079->16473) y no incluyo el cuerpo de apuntar(), asi el auditor no pudo ver que texto[:2000] ya recorta y veto por algo resuelto",
+      "pieza": "el armador/pasillo del paquete del equipo (el que recorta el encargo al tope del cerebro gratis)",
+      "razon": "cada funcion que se llama y no se adjunta cuenta como fragmentacion (LA MEMORIA NO MIENTE NI OLVIDA) y genera vetos falsos que atascan el cierre",
+      "encargo": "Cuando el encargo nombre una funcion a cambiar, incluir SIEMPRE en el material el cuerpo de las funciones que esa funcion llama (aqui: apuntar), y no recortar el encargo por debajo de lo que la pieza necesita para poder verificarse; si el encargo no cabe en el cerebro gratis, mandarlo a uno de pago antes que mutilarlo",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Ninguna cita muestra la entrega truncada (21079->16473) ni que el recorte texto[:2000] este dentro de apuntar(), y las demas solo son docstrings y un split de renglones, sin relacion con que el auditor marcara DUDOSO o dejara la PREGUNTA_REQUERIDA.",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R10_20260928_131729.json"
+  }
+}

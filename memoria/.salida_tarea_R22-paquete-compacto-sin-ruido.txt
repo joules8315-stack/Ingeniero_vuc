@@ -1,0 +1,19 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-28_130802_APROBADO_medidor_paquete.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : el pasillo recorto el encargo de 25726 a 13664 letras para que le quepa a un cerebro gratis (tope medido: 19042)
+  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta
+  aviso       : el pasillo recorto el encargo de 26431 a 17591 letras para que le quepa a un cerebro gratis (tope medido: 19042)
+  diagnostico : El encargo pide crear un programa medidor nuevo y su vigia, pero el material no trae ningun archivo existente con ese nombre ni su contenido, y el rechazo previo fue por traer NO_ENCONTRADO; hay que crear el archivo entero con la ruta que el encargo describe.
+  toca        : skills/medidor_paquete.py funcion medidor_paquete
+  confianza   : media
+  PREGUNTA_REQUERIDA: ¿El medidor debe medir un solo paquete o recorrer toda la carpeta memoria/paquetes/ y sacar una tabla con todos?; ¿El documento de salida debe ser JSON (memoria/MEDIDAS_PAQUETE.json) o un .md legible en memoria/?; ¿Los 'avisos repetidos' se cuentan por linea exacta o por frase normalizada (sin tildes ni mayusculas)?
+  VEREDICTO   : APROBADO
+  fallo       : El propio docstring del archivo promete 'SALIDA: memoria/MEDIDAS_PAQUETE.json con el desglose por archivo y el total', pero `medir()` devuelve un unico diccionario con la clave `archivo` de una sola ruta: no hay desglose por archivo ni recorrido del paquete. El archivo se contradice con su codigo.
+  fallo       : La 'separacion' que pide el encargo no es real: `letras_prosa = len(sin_bloques) + letras_prosa_bloque` y `sin_bloques` solo quita los bloques cercados, asi que los titulos y los avisos repetidos quedan metidos DENTRO de la prosa y se vuelven a contar en `letras_titulos` y `letras_avisos_repetidos`. Las cuatro cifras se solapan y su suma no es `letras_total`, que ademas incluye las lineas de ``` que no van a ninguna parte. Con esos numeros el jefe no puede restar nada para decidir que se quita, que es justo el fin del encargo.
+  fallo       : La clave `"llamo_a_ninguna_ia": True` es un valor fijo escrito a mano, no una comprobacion: el programa afirma una propiedad que no puede verificar sobre si mismo. Lo unico que la verifica es el escaneo de texto de la vigia.
+  fallo       : La vigia es mas debil que lo que el encargo promete ('saca las cuentas correctas'): de las cuatro partes solo comprueba `> 0` para codigo y titulos y que `avisos_repetidos` no este vacio. No mira `letras_prosa`, ni que un bloque de prosa dentro de ``` se cuente como prosa, ni que el JSON de salida exista, ni que `letras_codigo_util` corresponda al bloque de codigo real. Pasaria igual con un medidor que multiplicara por dos todos los numeros.
+  resumen     : Aprobado: crea el medidor y su vigia en las rutas que el encargo pide, no importa nada inexistente y la vigia pasa; pero el desglose se solapa (la prosa incluye titulos y repetidos), el JSON no trae el desglose por archivo que su propio docstring anuncia, y la vigia solo comprueba que las cifras sean mayores que cero, asi que conviene pedir una vuelta corta para cuadrar los numeros antes de usar el archivo para decidir que se quita.
+
+EL EQUIPO APROBO, pero no se pudo aplicar: El texto de antes no aparece exactamente una vez en C:\Ingeniero_VUC\skills\medidor_paquete.py; no se aplico nada.
+LLAVE GUARDADA: se puede escribir en 146 archivo(s) durante 90 min.

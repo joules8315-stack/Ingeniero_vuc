@@ -1,0 +1,65 @@
+{
+  "orden": {
+    "repara": "la entrega incompleta del material que obligo al obrero a inventar la API",
+    "pieza": "cuerpo/capataz.py",
+    "razon": "aplica la ley de Julio (2026-09-25): si el material no trae la pieza, se PEGA el trozo literal DENTRO del encargo; ademas corrige el nombre (la pieza es cuerpo/capataz.py, no comprobar_pasos.py) y da la API real (recordar para reusar, apuntar para guardar), que es distinto de la orden R4c que confio en el paquete",
+    "encargo": "Reemitir R4c pegando DENTRO del encargo el trozo literal de cuerpo/capataz.py lineas 1054-1108 (comprobar_pasos, Paso 3 vigia_verde) y las firmas reales de arnes/memoria_de_pruebas.py: recordar(raiz, objetivos, ventana_segundos=1800) para reusar y apuntar(raiz, objetivos, paso, detalle) para guardar. Extraer la llamada a pytest a una funcion propia y pequena en cuerpo/capataz.py (NO en memoria_de_pruebas.py) que primero pregunte con recordar y solo corra pytest si no hay nada fresco que reusar, apuntando el resultado con apuntar; sin reuso en la rama entrega_la_prueba=si porque ahi hace falta el texto de la salida. Crear la vigia nueva vigias/test_vigia_el_capataz_no_repite_la_corrida_de_la_vigia.py nacida roja que pruebe esa funcion pequena.",
+    "modo": "IA",
+    "id": "R4c-F010655",
+    "origen": "forense:R4c",
+    "depende": [
+      "R19-el-material-pide-la-funcion-publica"
+    ],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0
+  },
+  "huella": "c645c205ad55d2cd",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-28_131135_SIN_VEREDICTO_capataz.py.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : el pasillo recorto el encargo de 38984 a 18989 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  aviso       : el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'recordar'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: '_ResultadoVigia'. No se importa, no se define y no \n  aviso       : el pasillo recorto el encargo de 40126 a 14341 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  diagnostico : El encargo pide reemitir R4c con el trozo literal de comprobar_pasos (Paso 3 vigia_verde) y las firmas reales de memoria_de_pruebas.py, pero el material solo trae la firma de apuntar y no la de recordar, ni el cuerpo completo de memoria_de_pruebas.py, ni el archivo vigias/test_vigia_el_capataz_no_repite_la_corrida_de_la_vigia.py.\n  toca        : cuerpo/capataz.py funcion comprobar_pasos\n  confianza   : baja\n  PREGUNTA_REQUERIDA: NECESITO_LEER: arnes/memoria_de_pruebas.py / motivo: el material solo trae la firma de apuntar y un fragmento de _estado_de_archivo, pero no la firma ni el cuerpo de recordar(raiz, objetivos, ventana_segundos=1800) / que decide: si se puede reusar una corrida fresca antes de lanzar pytest / riesgo: sin esa firma no se puede escribir la llamada correcta y el codigo revienta con NameError.; NECESITO_LEER: cuerpo/capataz.py / motivo: el material trae comprobar_pasos pero no el resto del archivo, y hay que crear una funcion pequena nueva en ese archivo / que decide: donde encaja la funcion y que imports ya existen / riesgo: duplicar imports o romper el archivo al insertar la funcion.; NECESITO_LEER: vigias/test_vigia_el_capataz_no_repite_la_corrida_de_la_vigia.py / motivo: el encargo pide crear esa vigia nueva nacida roja, pero no existe en el material / que decide: el contenido exacto de la prueba / riesgo: crear una vigia que no pruebe la funcion pequena o que no nazca roja.\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-28T13:11:36",
+  "analisis": {
+    "que_paso": "Se reemitio R4c (R4c-F010655) pegando dentro del encargo el trozo literal de cuerpo/capataz.py y las firmas de arnes/memoria_de_pruebas.py (recordar y apuntar). El encargo salio grande (38984 y 40126 letras). El pasillo lo recorto a 18989 y a 14341 letras para que le cupiera a un cerebro gratis (tope medido 19042), y en ese recorte se cayo justo la firma pegada de recordar. El obrero deepseek, sin esa firma, invento la API: uso los nombres 'recordar' y '_ResultadoVigia' sin importarlos ni definirlos. El revisor de programa freno ANTES de pagar la revision de bigpickle ('USA UN NOMBRE QUE NO EXISTE'). El equipo NO aprobo (VEREDICTO ?), no se guardo llave, y el obrero termino pidiendo NECESITO_LEER de arnes/memoria_de_pruebas.py: justo la pieza que se le habia pegado y que el recorte le arranco.",
+    "causa_raiz": "La ley de Julio manda pegar el trozo literal DENTRO del encargo cuando el material no lo trae; eso engorda el encargo por encima del tope del cerebro gratis (19042 letras). El filtro del pasillo (arnes/asignador.py: recortar_prompt -> _recortar_material) recorta el encargo para que quepa, pero solo protege las secciones nombradas '### `archivo`'; una firma pegada como texto suelto dentro del encargo NO es una seccion nombrada, asi que el recorte la tira. El propio codigo advierte que 'recortar por lo bruto es trampa: si se cae el trozo a reparar, el encargo cabe y NO SIRVE PARA NADA', y eso es exactamente lo que ocurrio. Choque de diseno entre 'pegar la pieza dentro del encargo' y 'recortar para que le quepa al gratis': el segundo derrota al primero en silencio y obliga al obrero a inventar.",
+    "donde": "arnes/asignador.py — recortar_prompt (EL FILTRO DEL PASILLO) y _recortar_material, que conservan solo lo nombrado como seccion '### `archivo`' y no la firma pegada literal dentro del encargo. La firma existia de verdad en arnes/memoria_de_pruebas.py (def recordar, linea 254).",
+    "quien_fallo": "diseno",
+    "no_volver_a": "Si se pega un trozo literal dentro del encargo, el recorte del pasillo debe protegerlo igual que a un archivo nombrado; y si el encargo con el trozo pegado no le cabe al cerebro gratis, se manda al de pago o se frena la vuelta, nunca se recorta la pieza pegada en silencio.",
+    "citas": [
+      {
+        "archivo": "arnes/asignador.py",
+        "texto": "# Lo que aguanta el encargo entero. Los cerebros gratis medidos aguantan 19.042 y 20.169"
+      },
+      {
+        "archivo": "arnes/asignador.py",
+        "texto": "trozo que hay que reparar, el encargo cabe y NO SIRVE PARA NADA. Por eso el recorte se hace"
+      },
+      {
+        "archivo": "arnes/asignador.py",
+        "texto": "    \"\"\"EL FILTRO DEL PASILLO (2026-09-10): un solo recorte para las 9 puertas."
+      },
+      {
+        "archivo": "arnes/asignador.py",
+        "texto": "    Conserva, en orden: (1) las secciones '### `archivo`' que el problema NOMBRA (entera, si"
+      },
+      {
+        "archivo": "arnes/memoria_de_pruebas.py",
+        "texto": "def recordar(raiz, objetivos, ventana_segundos=1800):"
+      }
+    ],
+    "tarea_nueva": {
+      "repara": "que el pasillo NUNCA recorte el trozo literal pegado dentro del encargo, y que si con ese trozo el encargo no le cabe al cerebro gratis se derive al de pago o se frene la vuelta, en vez de recortar en silencio",
+      "pieza": "arnes/asignador.py",
+      "razon": "R4c confio en que el obrero (IA) reescribiera con la firma pegada; esta tarea es distinta: es un arreglo de PROGRAMA en el pasillo para que la pieza pegada quede blindada del recorte, atacando la causa de fondo (el recorte tira lo pegado) y no el sintoma (la IA invento)",
+      "encargo": "En arnes/asignador.py, en recortar_prompt/_recortar_material: marcar el trozo literal pegado dentro del encargo (p.ej. entre marcas ===== PEGADO ... ===== FIN PEGADO) como INTOCABLE, igual que las secciones '### `archivo`' nombradas, para que el recorte por partes jamas lo elimine. Si aun asi el prompt pasa del tope del gratis, NO recortar el pegado: derivar la vuelta a un cerebro de pago (o frenarla con aviso claro) porque recortar la pieza pegada deja al obrero inventando la API. Crear la vigia nueva vigias/test_vigia_el_recorte_no_se_come_el_trozo_pegado.py nacida roja que pruebe que un encargo con trozo pegado que pasa del tope conserva el pegado entero.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Las citas solo acreditan el tope de 19.042, la existencia del filtro y el comentario de advertencia, pero ninguna cita demuestra la 'ley de Julio' que obliga a pegar el trozo dentro del encargo ni que la firma suelta fuera efectivamente eliminada (la lista de secciones conservadas esta truncada y trunca en '(1)', asi que no se descarta que proteja mas elementos).",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R4c-F010655_20260928_131136.json"
+  }
+}
