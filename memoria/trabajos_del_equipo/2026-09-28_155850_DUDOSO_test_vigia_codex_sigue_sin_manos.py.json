@@ -1,0 +1,65 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Las dos pruebas rojas son falsas: _texto_regla no extrae las palabras de la lista entre corchetes y _PREFIJOS_ALLOW solo tiene cuatro mandos; ademas la prueba de ganchos exige la marca 'Bash' que Codex no usa.",
+  "archivo": "vigias/test_vigia_codex_sigue_sin_manos.py",
+  "funcion": "_texto_regla",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _texto_regla(linea):\n    \"\"\"Saca el texto de la orden de una linea de regla, sin la parte de decision.\"\"\"\n    # Quita la parte decision = \"...\"\n    limpia = re.sub(r'decision\\s*=\\s*[\"\\']?\\w+[\"\\']?', \"\", linea, flags=re.IGNORECASE)\n    # Quita el prefijo allow/forbidden si va al principio\n    limpia = re.sub(r'^(allow|forbidden)\\b[:\\s]*', \"\", limpia, flags=re.IGNORECASE)\n    return limpia.strip().strip('\"\\'').strip()",
+    "texto_nuevo": "def _texto_regla(linea):\n    \"\"\"Saca el texto de la orden de una linea de regla, sin la parte de decision.\n\n    2026-09-28: el formato de rules cambio a llamadas con lista de palabras\n    entre corchetes; se extraen las palabras entre comillas de esa lista y se\n    unen por espacios para que el resultado empiece por 'python'.\n    \"\"\"\n    # Formato nuevo: extrae las palabras entre comillas dentro de los corchetes.\n    m = re.search(r'\\[(.*?)\\]', linea)\n    if m:\n        palabras = re.findall(r'[\"\\']([^\"\\']+)[\"\\']', m.group(1))\n        if palabras:\n            return \" \".join(palabras)\n    # Formato antiguo: quita la parte decision = \"...\"\n    limpia = re.sub(r'decision\\s*=\\s*[\"\\']?\\w+[\"\\']?', \"\", linea, flags=re.IGNORECASE)\n    # Quita el prefijo allow/forbidden si va al principio\n    limpia = re.sub(r'^(allow|forbidden)\\b[:\\s]*', \"\", limpia, flags=re.IGNORECASE)\n    return limpia.strip().strip('\"\\'').strip()"
+   },
+   {
+    "texto_viejo": "_PREFIJOS_ALLOW = (\n    \"python \",\n    \"ingeniero.py \",\n    \"arranca\",\n    \"trabaja\",\n    \"equipo\",\n    \"pit\",\n)",
+    "texto_nuevo": "_PREFIJOS_ALLOW = (\n    \"python \",\n    \"ingeniero.py \",\n    \"arranca\",\n    \"trabaja\",\n    \"equipo\",\n    \"pit\",\n    \"director\",\n    \"cruzado\",\n    \"resultado\",\n)"
+   },
+   {
+    "texto_viejo": "    encontrado = False\n    for gancho in ganchos:\n        if not isinstance(gancho, dict):\n            continue\n        matcher = str(gancho.get(\"matcher\", \"\"))\n        comando = str(gancho.get(\"command\", \"\"))\n        if \"Bash\" in matcher and \"candado_terminal\" in comando:\n            encontrado = True\n            break\n\n    assert encontrado, (\n        \"FALLO: hooks.json no tiene un gancho PreToolUse para Bash que corra \"\n        \"candado_terminal. Sin ese candado Codex quedaria sin frenos en la terminal.\"\n    )",
+    "texto_nuevo": "    # 2026-09-28: Codex no usa la marca de herramienta 'Bash' como Claude;\n    # basta con que exista un gancho PreToolUse que corra candado_terminal.\n    encontrado = False\n    for gancho in ganchos:\n        if not isinstance(gancho, dict):\n            continue\n        comando = str(gancho.get(\"command\", \"\"))\n        if \"candado_terminal\" in comando:\n            encontrado = True\n            break\n\n    assert encontrado, (\n        \"FALLO: hooks.json no tiene un gancho PreToolUse que corra \"\n        \"candado_terminal. Sin ese candado Codex quedaria sin frenos en la terminal.\"\n    )"
+   }
+  ],
+  "cambio": "En _texto_regla extraer las palabras entre comillas dentro de los corchetes y unirlas por espacios (con respaldo al formato antiguo si no hay corchetes); en _PREFIJOS_ALLOW agregar los tres mandos nuevos (director, cruzado, resultado) por orden de Julio del 2026-09-28; en la prueba de ganchos dejar de exigir la marca 'Bash' y solo comprobar que exista un gancho PreToolUse que corra candado_terminal.",
+  "codigo": "def _texto_regla(linea):\n    \"\"\"Saca el texto de la orden de una linea de regla, sin la parte de decision.\n\n    2026-09-28: el formato de rules cambio a llamadas con lista de palabras\n    entre corchetes; se extraen las palabras entre comillas de esa lista y se\n    unen por espacios para que el resultado empiece por 'python'.\n    \"\"\"\n    m = re.search(r'\\[(.*?)\\]', linea)\n    if m:\n        palabras = re.findall(r'[\"\\']([^\"\\']+)[\"\\']', m.group(1))\n        if palabras:\n            return \" \".join(palabras)\n    limpia = re.sub(r'decision\\s*=\\s*[\"\\']?\\w+[\"\\']?', \"\", linea, flags=re.IGNORECASE)\n    limpia = re.sub(r'^(allow|forbidden)\\b[:\\s]*', \"\", limpia, flags=re.IGNORECASE)\n    return limpia.strip().strip('\"\\'').strip()\n\n_PREFIJOS_ALLOW = (\n    \"python \",\n    \"ingeniero.py \",\n    \"arranca\",\n    \"trabaja\",\n    \"equipo\",\n    \"pit\",\n    \"director\",\n    \"cruzado\",\n    \"resultado\",\n)",
+  "vigia": "test_rules_allow_solo_ordenes_al_equipo_y_forbidden_git y test_hooks_json_valido_con_pre_tool_use_bash",
+  "puede_danar": [
+   "vigias/test_vigia_codex_sigue_sin_manos.py",
+   "guardia de guardado que usa estas pruebas",
+   "reglas de permiso de Codex (rules/default.rules)",
+   "candado de la terminal (candado_terminal)"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "ingeniero.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El material pide de forma expresa y por cada prueba cambiada: \"Deja en cada prueba que cambies un comentario corto con la fecha de hoy y el motivo, y nombra la orden de Julio como el permiso para ampliar la lista de mandos, para que nadie la reduzca despues sin saber lo que costo\". Los dos cambios de codigo llevan comentario con fecha (2026-09-28) y motivo, pero el que anade director/cruzado/resultado a _PREFIJOS_ALLOW no lleva ninguno: ahi es precisamente donde el material pide blindar la lista. La frase \"por orden de Julio del 2026-09-28\" solo aparece en el campo 'cambio' (resumen al jefe), no en el archivo, que es donde el material la quiere."
+  ],
+  "riesgo_vecinos": [
+   "Si la lista `ganchos` no venia ya filtrada a PreToolUse antes del bucle, el nuevo chequeo (que ya no mira ni matcher ni tipo de evento) daria por bueno un gancho PostToolUse que corra candado_terminal. El texto viejo tampoco lo comprobaba dentro del bucle, asi que probablemente el filtrado estaba aguas arriba, pero el material recortado no lo muestra y hay que confirmarlo.",
+   "Teorico: si una regla forbidden metiera dentro del corchete una palabra permitida delante (p.ej. [\"arranca\",\"git\"]), el texto extraido empieza por \"arranca\" y pasaria como permitida; con el formato viejo daba rojo. No es fallo del obrero, es consecuencia del algoritmo que el material le prescribe, pero conviene saberlo."
+  ],
+  "que_falta": [
+   "Comentario junto a los tres mandos nuevos en _PREFIJOS_ALLOW con la fecha 2026-09-28 y la orden de Julio como permiso (fix de una linea).",
+   "Constancia de que `ganchos` se sigue seleccionando como PreToolUse antes del recorrido; si no, hay que filtrar por evento dentro del bucle."
+  ],
+  "resumen_para_el_jefe": "Repara el fondo correctamente y no inventa nada: extrae las palabras de la lista entre corchetes con respaldo al formato viejo, mete los tres mandos que pide Julio y deja de exigir la marca 'Bash'; solo se le cae el comentario con la orden de Julio que el material exige, y hay que confirmar que `ganchos` ya viene filtrada a PreToolUse. Nota: la cuenta del material (\"SIETE textos\") es de mandos, no de entradas; con los 2 prefijos el total correcto es 9, que es lo que deja el obrero."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 24113 a 11407 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 29425 a 15484 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "el pasillo recorto el encargo de 29533 a 15565 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "el pasillo recorto el encargo de 29641 a 15645 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}
