@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "El mando de la cadena en ingeniero.py llama al motor con una sola tarea a la vez en lugar de calcular cuantas van a la vez desde la cola y los nucleos.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO: el material solo trae el trozo de main() hasta la linea 296 y ahi se corta; no aparece el renglon ancla 'if cmd == pit and len(sys.argv) >= 3:' ni la llamada al motor (bucle) que hay que modificar. Sin ver el texto literal actual de esa llamada no se puede proponer el cambio sin adivinar, que es justo el fallo que hizo rechazar el trabajo anterior.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "vigias/test_vigia_la_cadena_trabaja_en_varias_a_la_vez.py (primera prueba): cambia el motor por uno falso, pone el mando con un proyecto de mentira, llama al mando y comprueba que el valor de cuantas a la vez con el que se llamo al motor es mayor que uno.",
+  "puede_danar": [
+   "ingeniero.py (mando de la cadena)",
+   "cuerpo/capataz.py (listas_para_correr, solo lectura)",
+   "cuerpo/capataz.py (bucle, se le pasa en_paralelo)"
+  ],
+  "preguntas": [],
+  "confianza": "baja",
+  "NECESITO_LEER": "ingeniero.py / motivo: el material solo trae main() hasta la linea 296 y no incluye el renglon ancla 'if cmd == pit and len(sys.argv) >= 3:' ni la llamada al motor / que decide: el texto literal exacto que hay que sustituir para pasar varias tareas a la vez y calcular el numero desde listas_para_correr() y os.cpu_count() / riesgo: sin verlo, cualquier texto_viejo propuesto no existira en el archivo y el trabajo se vuelve a rechazar"
+ },
+ "auditoria": {},
+ "avisos": [
+  "el pasillo recorto el encargo de 40270 a 13231 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 43901 a 15177 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 44103 a 15142 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 44305 a 15216 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}
