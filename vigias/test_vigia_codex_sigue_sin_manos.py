@@ -146,11 +146,18 @@ def test_config_approval_policy_never():
 
 # Prefijos permitidos para las reglas con decision allow.
 # Son las ordenes al equipo, igual que Claude: arranca, trabaja, equipo, pit.
+# 2026-09-28: la lista se amplia por ORDEN DE JULIO de ese dia, porque Codex se quedo sin cupo
+# esperando una ronda (21.726 unidades para no entregar nada) al tener permitidos solo los mandos
+# que bloquean. El mando del director es su papel; cruzado lanza al fondo y resultado consulta como
+# quedo, y ninguno de los tres le da manos: sigue sin poder escribir codigo y git sigue prohibido.
 _PREFIJOS_ALLOW = (
     "python ingeniero.py arranca",
     "python ingeniero.py trabaja",
     "python ingeniero.py equipo",
     "python ingeniero.py pit",
+    "python ingeniero.py director",
+    "python ingeniero.py cruzado",
+    "python ingeniero.py resultado",
 )
 
 
@@ -179,9 +186,14 @@ def _reglas_forbidden(texto):
 
 def _texto_regla(linea):
     """Saca el texto de la orden de una linea de regla, sin la parte de decision."""
-    # Quita la parte decision = "..."
+    # Si el renglon trae corchetes, saca de ahi las palabras entre comillas y unelas por espacio.
+    m = re.search(r'\[(.*?)\]', linea)
+    if m:
+        palabras = re.findall(r'["\']([^"\']+)["\']', m.group(1))
+        if palabras:
+            return " ".join(palabras)
+    # Si no trae corchetes, se queda con lo de hoy, para no romper formatos viejos.
     limpia = re.sub(r'decision\s*=\s*["\']?\w+["\']?', "", linea, flags=re.IGNORECASE)
-    # Quita el prefijo allow/forbidden si va al principio
     limpia = re.sub(r'^(allow|forbidden)\b[:\s]*', "", limpia, flags=re.IGNORECASE)
     return limpia.strip().strip('"\'').strip()
 
