@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba test_hooks_json_valido_con_pre_tool_use_bash exige una marca 'Bash' en el matcher del gancho PreToolUse, pero Codex no usa marcas de herramienta: sus ganchos son ordenes de terminal sin marca, asi que la prueba queda roja en falso aunque el candado_terminal SI esta puesto y corre.",
+  "archivo": "vigias/test_vigia_codex_sigue_sin_manos.py",
+  "funcion": "test_hooks_json_valido_con_pre_tool_use_bash",
+  "texto_viejo": "    encontrado = False\n    for gancho in ganchos:\n        if not isinstance(gancho, dict):\n            continue\n        matcher = str(gancho.get(\"matcher\", \"\"))\n        comando = str(gancho.get(\"command\", \"\"))\n        if \"Bash\" in matcher and \"candado_terminal\" in comando:\n            encontrado = True\n            break\n\n    assert encontrado, (\n        \"FALLO: hooks.json no tiene un gancho PreToolUse para Bash que corra \"\n        \"candado_terminal. Sin ese candado Codex quedaria sin frenos en la terminal.\"\n    )",
+  "texto_nuevo": "    # 2026-09-28: se deja de exigir la marca de herramienta (matcher \"Bash\")\n    # porque Codex no usa marcas de herramienta: sus ganchos son ordenes de\n    # terminal sin marca. El candado_terminal SI esta puesto y SI corre (es el\n    # primero de los ganchos PreToolUse). Mientras esta prueba estuvo roja, el\n    # guardia de guardado devolvio atras dos cambios correctos que el equipo ya\n    # habia aprobado. La garantia se mantiene: si el candado desapareciera de\n    # los ganchos, esta prueba se pone roja otra vez.\n    encontrado = False\n    for gancho in ganchos:\n        if not isinstance(gancho, dict):\n            continue\n        comando = str(gancho.get(\"command\", \"\"))\n        if \"candado_terminal\" in comando:\n            encontrado = True\n            break\n\n    assert encontrado, (\n        \"FALLO: hooks.json no tiene un gancho PreToolUse que corra \"\n        \"candado_terminal. Sin ese candado Codex quedaria sin frenos en la terminal.\"\n    )",
+  "cambios": "",
+  "cambio": "En la prueba test_hooks_json_valido_con_pre_tool_use_bash, quitar la exigencia de la marca de herramienta (matcher con \"Bash\") y dejar solo la comprobacion de que algun gancho PreToolUse corre candado_terminal, anadiendo un comentario corto con la fecha 2026-09-28 explicando por que se deja de exigir la marca.",
+  "codigo": "    # 2026-09-28: se deja de exigir la marca de herramienta (matcher \"Bash\")\n    # porque Codex no usa marcas de herramienta: sus ganchos son ordenes de\n    # terminal sin marca. El candado_terminal SI esta puesto y SI corre (es el\n    # primero de los ganchos PreToolUse). Mientras esta prueba estuvo roja, el\n    # guardia de guardado devolvio atras dos cambios correctos que el equipo ya\n    # habia aprobado. La garantia se mantiene: si el candado desapareciera de\n    # los ganchos, esta prueba se pone roja otra vez.\n    encontrado = False\n    for gancho in ganchos:\n        if not isinstance(gancho, dict):\n            continue\n        comando = str(gancho.get(\"command\", \"\"))\n        if \"candado_terminal\" in comando:\n            encontrado = True\n            break\n\n    assert encontrado, (\n        \"FALLO: hooks.json no tiene un gancho PreToolUse que corra \"\n        \"candado_terminal. Sin ese candado Codex quedaria sin frenos en la terminal.\"\n    )",
+  "vigia": "Ejecutar la vigia vigias/test_vigia_codex_sigue_sin_manos.py: las cinco pruebas deben quedar verdes. Ademas, si se quitara el candado_terminal de los ganchos PreToolUse de hooks.json, la prueba test_hooks_json_valido_con_pre_tool_use_bash debe ponerse roja otra vez.",
+  "puede_danar": [
+   "test_hooks_json_valido_con_pre_tool_use_bash",
+   "vigias/test_vigia_codex_sigue_sin_manos.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "hooks.js"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El docstring de la prueba sigue diciendo «y el gancho de Bash», ya desalineado con lo que la prueba comprueba ahora: ruido menor, no rompe nada y el encargo prohibia tocar mas de esa prueba.",
+   "La comprobacion se apoya solo en el texto del campo command; si hooks.json metiera candado_terminal en un gancho de otra herramienta la prueba pasaria, pero el propio material confirma que el candado es el primero de los PreToolUse, asi que no es riesgo real."
+  ],
+  "que_falta": [
+   "El campo _fuera_del_paquete cita «hooks.js» y el material solo habla de hooks.json: hay que confirmar si ese archivo existe; el codigo del parche no lo usa, asi que no afecta a la reparacion, pero la referencia queda sin respaldo."
+  ],
+  "resumen_para_el_jefe": "El parche hace justo lo pedido en el sitio correcto: quita la exigencia de la marca Bash, deja la garantia intacta (si el candado desaparece se pone roja) y no toca ninguna otra prueba; aprobado, solo hay que confirmar un nombre de archivo de paso en un campo de metadatos."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 21157 a 13118 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
