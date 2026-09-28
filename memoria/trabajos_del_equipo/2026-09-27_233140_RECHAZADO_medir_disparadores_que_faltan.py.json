@@ -1,0 +1,71 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion _hora intenta convertir la hora con float en vez de leerla con strptime, y falta el import de datetime, por lo que devuelve None siempre y huecos sale vacio.",
+  "archivo": "arnes/medir_disparadores_que_faltan.py",
+  "funcion": "_hora",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "import json\nimport sys\nfrom pathlib import Path",
+    "texto_nuevo": "import json\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path"
+   },
+   {
+    "texto_viejo": "def _hora(valor):\n    \"\"\"Devuelve el valor como numero, o None si no se puede leer como hora.\"\"\"\n    if isinstance(valor, bool):\n        return None\n    if isinstance(valor, (int, float)):\n        return float(valor)\n    if isinstance(valor, str):\n        try:\n            return float(valor.strip())\n        except (ValueError, TypeError):\n            return None\n    return None",
+    "texto_nuevo": "def _hora(valor):\n    \"\"\"Devuelve el valor como numero, o None si no se puede leer como hora.\"\"\"\n    if isinstance(valor, bool):\n        return None\n    if isinstance(valor, (int, float)):\n        return float(valor)\n    if isinstance(valor, str):\n        try:\n            return datetime.strptime(valor.strip(), \"%Y-%m-%d %H:%M:%S\").timestamp()\n        except (ValueError, TypeError):\n            return None\n    return None"
+   },
+   {
+    "texto_viejo": "        encontrados.append(\n            {\n                \"cuando_termino\": termino_antes,\n                \"clase_antes\": _texto(antes.get(\"clase\")),\n                \"quien_antes\": _texto(antes.get(\"quien\")),\n                \"cuando_empezo_la_siguiente\": empezo_despues,\n                \"clase_despues\": _texto(despues.get(\"clase\")),\n                \"quien_despues\": _texto(despues.get(\"quien\")),\n                \"segundos_perdidos\": perdidos,\n            }\n        )",
+    "texto_nuevo": "        encontrados.append(\n            {\n                \"cuando_termino\": _texto(antes.get(\"cuando\")),\n                \"clase_antes\": _texto(antes.get(\"clase\")),\n                \"quien_antes\": _texto(antes.get(\"quien\")),\n                \"cuando_empezo_la_siguiente\": datetime.fromtimestamp(empezo_despues).strftime(\"%Y-%m-%d %H:%M:%S\"),\n                \"clase_despues\": _texto(despues.get(\"clase\")),\n                \"quien_despues\": _texto(despues.get(\"quien\")),\n                \"segundos_perdidos\": perdidos,\n            }\n        )"
+   }
+  ],
+  "cambio": "Anadir el import de datetime, cambiar _hora para leer el texto con strptime en formato '%Y-%m-%d %H:%M:%S' y devolver timestamp, y en huecos guardar cuando_termino como el texto original de la hora y cuando_empezo_la_siguiente como texto formateado con espacio.",
+  "codigo": "import json\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\n\n\ndef _hora(valor):\n    \"\"\"Devuelve el valor como numero, o None si no se puede leer como hora.\"\"\"\n    if isinstance(valor, bool):\n        return None\n    if isinstance(valor, (int, float)):\n        return float(valor)\n    if isinstance(valor, str):\n        try:\n            return datetime.strptime(valor.strip(), \"%Y-%m-%d %H:%M:%S\").timestamp()\n        except (ValueError, TypeError):\n            return None\n    return None\n\n\n# dentro de huecos, al armar cada hueco:\n        encontrados.append(\n            {\n                \"cuando_termino\": _texto(antes.get(\"cuando\")),\n                \"clase_antes\": _texto(antes.get(\"clase\")),\n                \"quien_antes\": _texto(antes.get(\"quien\")),\n                \"cuando_empezo_la_siguiente\": datetime.fromtimestamp(empezo_despues).strftime(\"%Y-%m-%d %H:%M:%S\"),\n                \"clase_despues\": _texto(despues.get(\"clase\")),\n                \"quien_despues\": _texto(despues.get(\"quien\")),\n                \"segundos_perdidos\": perdidos,\n            }\n        )",
+  "vigia": "vigias/test_vigia_una_respuesta_dispara_la_accion_siguiente.py, que exige dos huecos de 1110 y 570 segundos.",
+  "puede_danar": [
+   "arnes/medir_lo_que_puede_hacer_un_programa.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "medir_lo_que_puede_hacer_un_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "La clave \"cuando\" leida como `antes.get(\"cuando\")` en el diccionario del registro anterior: no aparece en ningun sitio del material, y por el nombre casi seguro es la hora de INICIO de esa llamada, no la de fin, que es justo lo que la clave `cuando_termino` debe guardar.",
+   "El campo `codigo` incluye la linea de comentario `# dentro de huecos, al armar cada hueco:` seguida de codigo indentado a nivel de modulo: eso no es un archivo valido."
+  ],
+  "fallos": [
+   "`datetime.fromtimestamp(empezo_despues)` va sin guarda. `empezo_despues` viene de `_hora`, que ahora SI puede devolver None cuando la hora no entra en el formato; en ese caso `fromtimestamp(None)` lanza TypeError y el script revienta. Antes ese valor iba crudo al JSON y un None no pasaba nada. Traduce justo el fallo que el encargo dice tolerar (\"sin acusar y sin reventar\") en un fallo mas gordo.",
+   "El encargo pide que `cuando_termino` guarde \"el texto original de la hora en que TERMINO la llamada de antes\"; la propuesta guarda la hora de INICIO de esa misma llamada. Si la ficha tiene inicio y fin, el dato publicado queda mal rotulado y el documento sigue sin ser correcto, que es la mitad del encargo.",
+   "El diagnostico dice que falta el import de datetime y ya lo reconoce, asi que la causa raiz de `_hora` si esta bien atacada; el problema es que la reparacion no termina de cerrar el hueco."
+  ],
+  "riesgo_vecinos": [
+   "La rama que formatea `cuando_empezo_la_siguiente` no tiene alternativa: cualquier registro con hora ilegible que llegue a la lista de halls ahora tumba el script entero, y con ella la midicion de los 6 flujos del cuaderno.",
+   "El bloque `codigo` de la propuesta, si se pega tal cual, es un SyntaxError; el parche valido esta solo en `cambios`."
+  ],
+  "que_falta": [
+   "Envolver el formateo con una guarda (o solo ejecutarlo si `empezo_despues` no es None) y dejar el valor crudo cuando no se pueda formatear.",
+   "Averiguar con el archivo real que clave del registro previo es la de FIN y usarla, en vez de suponer `antes` -> `cuando`.",
+   "Confirmar que el texto de `cuando_empezo_la_siguiente` sale del mismo reloj que la entrada del cuaderno y no de una zona horaria desplazada."
+  ],
+  "resumen_para_el_jefe": "Arregla `_hora` como toca, pero en el hueco mete la hora de inicio en vez de la de fin (clave inventada) y formatea la hora siguiente sin guarda, con lo que un `None` de `_hora` ahora tumba el script."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20172 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'datetime'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (21831 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'datetime'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (21949 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'datetime'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (22067 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

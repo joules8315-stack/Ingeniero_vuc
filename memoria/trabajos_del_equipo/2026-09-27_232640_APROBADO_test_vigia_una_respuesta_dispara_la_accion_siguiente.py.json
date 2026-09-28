@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En la vigia, la funcion _cuatro_llamadas usa la letra T entre fecha y hora en las cuatro llamadas, y el cuaderno real escribe un espacio, asi que el programa no puede leer ninguna hora.",
+  "archivo": "vigias/test_vigia_una_respuesta_dispara_la_accion_siguiente.py",
+  "funcion": "_cuatro_llamadas",
+  "texto_viejo": "def _cuatro_llamadas():\n    return [\n        _llamada(\"reparar\", \"uno\", \"2026-09-01T10:00:00\", 10),\n        _llamada(\"auditar\", \"dos\", \"2026-09-01T10:00:30\", 20),\n        _llamada(\"reparar\", \"uno\", \"2026-09-01T10:20:00\", 60),\n        _llamada(\"auditar\", \"dos\", \"2026-09-01T10:30:00\", 30),\n    ]",
+  "texto_nuevo": "def _cuatro_llamadas():\n    return [\n        _llamada(\"reparar\", \"uno\", \"2026-09-01 10:00:00\", 10),\n        _llamada(\"auditar\", \"dos\", \"2026-09-01 10:00:30\", 20),\n        _llamada(\"reparar\", \"uno\", \"2026-09-01 10:20:00\", 60),\n        _llamada(\"auditar\", \"dos\", \"2026-09-01 10:30:00\", 30),\n    ]",
+  "cambio": "Sustituir la letra T por un espacio en las cuatro horas de mentira de _cuatro_llamadas, dejando todo lo demas igual.",
+  "codigo": "def _cuatro_llamadas():\n    return [\n        _llamada(\"reparar\", \"uno\", \"2026-09-01 10:00:00\", 10),\n        _llamada(\"auditar\", \"dos\", \"2026-09-01 10:00:30\", 20),\n        _llamada(\"reparar\", \"uno\", \"2026-09-01 10:20:00\", 60),\n        _llamada(\"auditar\", \"dos\", \"2026-09-01 10:30:00\", 30),\n    ]",
+  "vigia": "vigias/test_vigia_una_respuesta_dispara_la_accion_siguiente.py, que debe seguir midiendo dos huecos: el primero 1110 segundos y el segundo 570 segundos.",
+  "puede_danar": [
+   "arnes/medir_disparadores_que_faltan.py",
+   "arnes/medir_lo_que_puede_hacer_un_programa.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "medir_lo_que_puede_hacer_un_programa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ninguno real: solo se tocan las cuatro cadenas de fecha de _cuatro_llamadas; arnes/medir_disparadores_que_faltan.py, arnes/medir_lo_que_puede_hacer_un_programa.py y cuerpo/codex.py no se modifican y son los unicos cruces declarados en la ley",
+   "Aviso no bloqueante: si otras funciones del mismo archivo siguen usando la T, la vigia puede seguir roja por ahi; el paquete prohibe expresamente tocar nada mas en esa vigia, asi que no es fallo de este cambio"
+  ],
+  "que_falta": [
+   "Nada obligatorio; la aritmetica cuadra con la ley: (10:20:00-10:00:30)-60 = 1110 y (10:30:00-10:20:00)-30 = 570, los dos huecos que la vigia exige"
+  ],
+  "resumen_para_el_jefe": "Aprobado: sustituye la T por espacio en las cuatro horas de mentira, exactamente los cuatro valores pedidos, sin tocar nada mas, y con eso los huecos salen 1110 y 570 como exige la vigia."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

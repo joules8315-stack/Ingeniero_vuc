@@ -1,0 +1,60 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion _hora solo convierte numeros y no lee el texto de fecha del cuaderno, y huecos devuelve los momentos como numeros en vez del texto de fin y del texto de inicio de la siguiente llamada, por eso salen cero huecos.",
+  "archivo": "arnes/medir_disparadores_que_faltan.py",
+  "funcion": "_hora",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _hora(valor):\n    \"\"\"Devuelve el valor como numero, o None si no se puede leer como hora.\"\"\"\n    if isinstance(valor, bool):\n        return None\n    if isinstance(valor, (int, float)):\n        return float(valor)\n    if isinstance(valor, str):\n        try:\n            return float(valor.strip())\n        except (ValueError, TypeError):\n            return None\n    return None",
+    "texto_nuevo": "def _hora(valor):\n    \"\"\"Devuelve el valor como numero, o None si no se puede leer como hora.\"\"\"\n    from datetime import datetime\n    if isinstance(valor, bool):\n        return None\n    if isinstance(valor, (int, float)):\n        return float(valor)\n    if isinstance(valor, str):\n        try:\n            return datetime.strptime(valor.strip(), \"%Y-%m-%d %H:%M:%S\").timestamp()\n        except (ValueError, TypeError):\n            return None\n    return None"
+   },
+   {
+    "texto_viejo": "    if not isinstance(llamadas, list):\n        return []\n\n    # Se queda solo con las llamadas que tienen hora legible.\n    legibles = []\n    for llamada in llamadas:\n        if not isinstance(llamada, dict):\n            continue\n        termino = _hora(llamada.get(\"cuando\"))\n        if termino is None:\n            continue\n        legibles.append((termino, llamada))\n\n    # Se ordena por hora antes de medir.\n    legibles.sort(key=lambda par: par[0])\n\n    encontrados = []\n    for indice in range(len(legibles) - 1):\n        termino_antes, antes = legibles[indice]\n        termino_despues, despues = legibles[indice + 1]\n\n        empezo_antes = termino_antes - _segundos(antes.get(\"segundos\"))\n        empezo_despues = termino_despues - _segundos(despues.get(\"segundos\"))\n\n        perdidos = empezo_despues - termino_antes\n        if perdidos < tope:\n            continue\n\n        encontrados.append(\n            {\n                \"cuando_termino\": termino_antes,\n                \"clase_antes\": _texto(antes.get(\"clase\")),\n                \"quien_antes\": _texto(antes.get(\"quien\")),\n                \"cuando_empezo_la_siguiente\": empezo_despues,\n                \"clase_despues\": _texto(despues.get(\"clase\")),\n                \"quien_despues\": _texto(despues.get(\"quien\")),\n                \"segundos_perdidos\": perdidos,\n            }\n        )\n\n    encontrados.sort(key=lambda h: h[\"segundos_perdidos\"], reverse=True)\n    return encontrados",
+    "texto_nuevo": "    from datetime import datetime\n    if not isinstance(llamadas, list):\n        return []\n\n    # Se queda solo con las llamadas que tienen hora legible.\n    legibles = []\n    for llamada in llamadas:\n        if not isinstance(llamada, dict):\n            continue\n        termino = _hora(llamada.get(\"cuando\"))\n        if termino is None:\n            continue\n        legibles.append((termino, llamada))\n\n    # Se ordena por hora antes de medir.\n    legibles.sort(key=lambda par: par[0])\n\n    encontrados = []\n    for indice in range(len(legibles) - 1):\n        termino_antes, antes = legibles[indice]\n        termino_despues, despues = legibles[indice + 1]\n\n        empezo_antes = termino_antes - _segundos(antes.get(\"segundos\"))\n        empezo_despues = termino_despues - _segundos(despues.get(\"segundos\"))\n\n        perdidos = empezo_despues - termino_antes\n        if perdidos < tope:\n            continue\n\n        cuando_termino_texto = _texto(antes.get(\"cuando\"))\n        try:\n            cuando_empezo_texto = datetime.fromtimestamp(empezo_despues).strftime(\"%Y-%m-%d %H:%M:%S\")\n        except TypeError:\n            cuando_empezo_texto = \"\"\n\n        encontrados.append(\n            {\n                \"cuando_termino\": cuando_termino_texto,\n                \"clase_antes\": _texto(antes.get(\"clase\")),\n                \"quien_antes\": _texto(antes.get(\"quien\")),\n                \"cuando_empezo_la_siguiente\": cuando_empezo_texto,\n                \"clase_despues\": _texto(despues.get(\"clase\")),\n                \"quien_despues\": _texto(despues.get(\"quien\")),\n                \"segundos_perdidos\": perdidos,\n            }\n        )\n\n    encontrados.sort(key=lambda h: h[\"segundos_perdidos\"], reverse=True)\n    return encontrados"
+   }
+  ],
+  "cambio": "En _hora, importar datetime dentro de la funcion y leer el texto con strptime en formato '%Y-%m-%d %H:%M:%S' devolviendo timestamp, con None si falla. En huecos, importar datetime dentro de la funcion, guardar cuando_termino como el texto tal cual del campo cuando, y cuando_empezo_la_siguiente como el texto formateado con espacio, vacio si la conversion falla con TypeError.",
+  "codigo": "def _hora(valor):\n    \"\"\"Devuelve el valor como numero, o None si no se puede leer como hora.\"\"\"\n    from datetime import datetime\n    if isinstance(valor, bool):\n        return None\n    if isinstance(valor, (int, float)):\n        return float(valor)\n    if isinstance(valor, str):\n        try:\n            return datetime.strptime(valor.strip(), \"%Y-%m-%d %H:%M:%S\").timestamp()\n        except (ValueError, TypeError):\n            return None\n    return None\n\n\ndef huecos(llamadas, tope=TOPE_POR_DEFECTO):\n    from datetime import datetime\n    if not isinstance(llamadas, list):\n        return []\n    legibles = []\n    for llamada in llamadas:\n        if not isinstance(llamada, dict):\n            continue\n        termino = _hora(llamada.get(\"cuando\"))\n        if termino is None:\n            continue\n        legibles.append((termino, llamada))\n    legibles.sort(key=lambda par: par[0])\n    encontrados = []\n    for indice in range(len(legibles) - 1):\n        termino_antes, antes = legibles[indice]\n        termino_despues, despues = legibles[indice + 1]\n        empezo_antes = termino_antes - _segundos(antes.get(\"segundos\"))\n        empezo_despues = termino_despues - _segundos(despues.get(\"segundos\"))\n        perdidos = empezo_despues - termino_antes\n        if perdidos < tope:\n            continue\n        cuando_termino_texto = _texto(antes.get(\"cuando\"))\n        try:\n            cuando_empezo_texto = datetime.fromtimestamp(empezo_despues).strftime(\"%Y-%m-%d %H:%M:%S\")\n        except TypeError:\n            cuando_empezo_texto = \"\"\n        encontrados.append(\n            {\n                \"cuando_termino\": cuando_termino_texto,\n                \"clase_antes\": _texto(antes.get(\"clase\")),\n                \"quien_antes\": _texto(antes.get(\"quien\")),\n                \"cuando_empezo_la_siguiente\": cuando_empezo_texto,\n                \"clase_despues\": _texto(despues.get(\"clase\")),\n                \"quien_despues\": _texto(despues.get(\"quien\")),\n                \"segundos_perdidos\": perdidos,\n            }\n        )\n    encontrados.sort(key=lambda h: h[\"segundos_perdidos\"], reverse=True)\n    return encontrados",
+  "vigia": "vigias/test_vigia_una_respuesta_dispara_la_accion_siguiente.py, que hoy da cero huecos y debe dar dos, uno de 1110 segundos y otro de 570.",
+  "puede_danar": [
+   "arnes/medir_lo_que_puede_hacer_un_programa.py",
+   "cerebro/protocolo.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "medir_lo_que_puede_hacer_un_programa.py",
+   "protocolo.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "arnes/medir_lo_que_puede_hacer_un_programa.py y las vigias listadas en puede_daren no se tocan, pero _hora deja de aceptar texto numerico (float(texto)): si algun llamante guarda 'cuando' como cadena numerica, esas llamadas pasan a ser ilegibles y desaparecen de 'legibles' en silencio. Es justo lo que pide el encargo ('Deja de usar float sobre el texto'), asi que no es fallo, pero conviene confirmarlo con test_vigia_memoria_completa.py.",
+   "strptime y fromtimestamp usan la zona horaria local para fechas naive: la conversion *_hora -> fromtimestamp es coherente consigo misma, pero los 1110/570 segundos de la vigia dependen de que cuadernocriba hora local y no UTC."
+  ],
+  "que_falta": [
+   "El cambio se limita a los dos trozos pedidos: no toca la cabecera, no toca la vigia ni otros archivos, y no altera el calculo de 'segundos_perdidos' (sigue siendo numero).",
+   "_comprobado_por_programa cubre sintaxis y nombres, no el resultado numerico: no consta que se haya ejecutado la vigia para confirmar 1110 y 570."
+  ],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo pedido en los dos trozos y con las dos lineas de import dentro de cada funcion como exigia el paquete; el unico riesgo real es que al quitar float() sobre texto, una fecha guardada como cadena numerica pasaria inadvertida, y conviene confirmar con la vigia que salen 1110 y 570."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (25696 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (28081 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

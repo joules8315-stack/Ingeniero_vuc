@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion _hora intenta convertir la hora con float, por lo que una hora como '2026-09-01 10:00:00' devuelve None y huecos nunca encuentra huecos; ademas cuando_termino y cuando_empezo_la_siguiente deben guardar el texto original de la hora, no los segundos.",
+  "archivo": "arnes/medir_disparadores_que_faltan.py",
+  "funcion": "_hora",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _hora(valor):\n    \"\"\"Devuelve el valor como numero, o None si no se puede leer como hora.\"\"\"\n    if isinstance(valor, bool):\n        return None\n    if isinstance(valor, (int, float)):\n        return float(valor)\n    if isinstance(valor, str):\n        try:\n            return float(valor.strip())\n        except (ValueError, TypeError):\n            return None\n    return None",
+    "texto_nuevo": "def _hora(valor):\n    \"\"\"Devuelve el valor como numero, o None si no se puede leer como hora.\"\"\"\n    if isinstance(valor, bool):\n        return None\n    if isinstance(valor, (int, float)):\n        return float(valor)\n    if isinstance(valor, str):\n        try:\n            momento = datetime.strptime(valor.strip(), \"%Y-%m-%d %H:%M:%S\")\n            return momento.timestamp()\n        except (ValueError, TypeError):\n            return None\n    return None"
+   },
+   {
+    "texto_viejo": "import json\nimport sys\nfrom pathlib import Path",
+    "texto_nuevo": "import json\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path"
+   },
+   {
+    "texto_viejo": "        encontrados.append(\n            {\n                \"cuando_termino\": termino_antes,\n                \"clase_antes\": _texto(antes.get(\"clase\")),\n                \"quien_antes\": _texto(antes.get(\"quien\")),\n                \"cuando_empezo_la_siguiente\": empezo_despues,\n                \"clase_despues\": _texto(despues.get(\"clase\")),\n                \"quien_despues\": _texto(despues.get(\"quien\")),\n                \"segundos_perdidos\": perdidos,\n            }\n        )",
+    "texto_nuevo": "        encontrados.append(\n            {\n                \"cuando_termino\": _texto(antes.get(\"cuando\")),\n                \"clase_antes\": _texto(antes.get(\"clase\")),\n                \"quien_antes\": _texto(antes.get(\"quien\")),\n                \"cuando_empezo_la_siguiente\": datetime.fromtimestamp(empezo_despues).strftime(\"%Y-%m-%d %H:%M:%S\"),\n                \"clase_despues\": _texto(despues.get(\"clase\")),\n                \"quien_despues\": _texto(despues.get(\"quien\")),\n                \"segundos_perdidos\": perdidos,\n            }\n        )"
+   }
+  ],
+  "cambio": "1) Anadir 'from datetime import datetime' a las importaciones. 2) En _hora, sustituir el intento de float(valor.strip()) por datetime.strptime(valor.strip(), '%Y-%m-%d %H:%M:%S').timestamp(), manteniendo el resto igual. 3) En huecos, al construir cada hueco, guardar cuando_termino como el texto original de la hora en que termino la llamada de antes (antes.get('cuando')) y cuando_empezo_la_siguiente como la hora en que empezo la siguiente formateada con '%Y-%m-%d %H:%M:%S' a partir de empezo_despues.",
+  "codigo": "from datetime import datetime\n\n\ndef _hora(valor):\n    \"\"\"Devuelve el valor como numero, o None si no se puede leer como hora.\"\"\"\n    if isinstance(valor, bool):\n        return None\n    if isinstance(valor, (int, float)):\n        return float(valor)\n    if isinstance(valor, str):\n        try:\n            momento = datetime.strptime(valor.strip(), \"%Y-%m-%d %H:%M:%S\")\n            return momento.timestamp()\n        except (ValueError, TypeError):\n            return None\n    return None\n\n\n# dentro de huecos, al construir cada hueco:\n#   \"cuando_termino\": _texto(antes.get(\"cuando\")),\n#   \"cuando_empezo_la_siguiente\": datetime.fromtimestamp(empezo_despues).strftime(\"%Y-%m-%d %H:%M:%S\"),",
+  "vigia": "vigias/test_vigia_una_respuesta_dispara_la_accion_siguiente.py, que exige dos huecos, uno de 1110 segundos y otro de 570, sobre el cuaderno de verdad.",
+  "puede_danar": [
+   "arnes/medir_lo_que_puede_hacer_un_programa.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "medir_lo_que_puede_hacer_un_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "La clave del tiempo dentro de cada llamada se asume como \"cuando\" (antes.get(\"cuando\")). El material no nombra ese campo; si de verdad se llama hora/momento/ts, _texto devuelve vacio y cuando_termino queda mudo sin que la vigia (que mira conteo y segundos) se entere. Es el unico punto ciego real del arreglo.",
+   "_hora deja de aceptar cadenas numericas (\"1748000000\"): ahora pasan a None. Es lo que pide el encargo (\"si el texto no se puede leer con ese formato, devuelve None\"), pero si algun vecino de arnes/medir_lo_que_puede_hacer_un_programa.py o cuerpo/codex.py正常使用 _hora con cadenas de numeros, ahi si pierde algo. La firma y el tipo de retorno (float o None) no cambian, asi que la API sigue igual.",
+   "Meter from datetime import datetime puede ensombrecer el nombre si el archivo ya usaba import datetime con datetime.timedelta/utcnow en otra parte; no hay texto que lo confirme ni que lo desmienta."
+  ],
+  "que_falta": [
+   "No hay constancia de haber corrido vigias/test_vigia_una_respuesta_dispara_la_accion_siguiente.py: los dos huecos (1110 y 570) son la prueba de que _hora ya no devuelve None, y eso no esta demostrado.",
+   "El bloque \"codigo\" es un fragmento con comentarios, no el archivo entero; y texto_viejo/texto_nuevo de arriba van vacios. Sirve como descripcion, no como parche aplicable tal cual."
+  ],
+  "resumen_para_el_jefe": "El arreglo hace exactamente lo pedido (strptime con ese formato, timestamp, None sin reventar, los dos campos de tiempo en texto, segundos intactos, sin tocar vigia ni otros archivos) y no inventa nada; lo unico a verificar antes de darlo por bueno es que la clave del tiempo en el cuaderno se llame de verdad \"cuando\" y que la vigia pase en verde."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19930 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'datetime'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (21388 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'datetime'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (21506 letras, aguanta 19042) -> se le salta",
+  "el juez de la prueba lo freno antes de pagar la revision: antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba no paso (codigo 1). Al deshacer el cambio: la prueba no paso (codigo 1).",
+  "GPT-OSS 120B (Groq) no le cabe (21662 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

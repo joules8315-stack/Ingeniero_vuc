@@ -1,5 +1,23 @@
 [
   {
+    "id": "R16b-arranca-sola-la-ronda-siguiente",
+    "titulo": "Cuando una ronda termina, la siguiente arranca sola",
+    "pieza": "cuerpo/capataz.py",
+    "origen": "medida de la orden R16, 2026-09-27",
+    "repara": "Entre una revision que ya contesto y la ronda siguiente hay huecos de 14 a 62 minutos una y otra vez, porque el paso siguiente lo tiene que dar una persona. Estan contados en memoria/MEDIDA_DISPARADORES_QUE_FALTAN.md.",
+    "razon": "Definicion de economico que dio Julio el 2026-09-27, punto 5: que todo este conectado y que las respuestas tengan disparadores, para que se tomen acciones instantaneas",
+    "encargo": "El bucle que encadena ordenes YA existe: es la funcion bucle en cuerpo/capataz.py, que se lanza con el mando pit. Primer paso, y sin gastar IA: averiguar y dejar por escrito por que hoy no se usa, si por algo que falla o por decision. Segundo paso: que al cerrar una ronda aprobada arranque sola la orden siguiente de la lista, sin que nadie se acuerde, respetando el tope de tiempo y el candado de equipo. Tercer paso: que el bucle pare solo cuando no quede orden lista, cuando el saldo se acabe o cuando Julio lo pare.",
+    "vigia": "vigias/test_vigia_al_cerrar_una_ronda_arranca_la_siguiente.py",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "R18-el-aviso-no-es-el-encargo",
     "titulo": "El aviso del rechazo no es el encargo, y una ruta con numero de renglon es la misma ruta",
     "pieza": "cuerpo/obrero.py",
@@ -66,7 +84,7 @@
     ],
     "modo": "PROGRAMA",
     "encargo": "Primer paso, sin gastar ninguna IA: un programa que recorre las ordenes ya cerradas y las llamadas del mes y nombra los puntos donde una respuesta llego y la accion siguiente no salio sola, con el tiempo que se perdio en cada uno. Deja el resultado en un documento de la carpeta memoria. Su vigia comprueba que no llama a ninguna IA y que con datos de prueba nombra bien esos puntos. Con esa lista se decide cual disparador se construye primero, y eso va en una orden aparte.",
-    "estado": "pendiente",
+    "estado": "hecha",
     "paso_fallido": "",
     "fallos_seguidos": 0,
     "nota": "",

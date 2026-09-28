@@ -1,0 +1,61 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En arnes/medir_disparadores_que_faltan.py falta el import de datetime, _hora usa float sobre el texto en vez de strptime, y huecos guarda numeros en cuando_termino y cuando_empezo_la_siguiente en vez del texto de fin y del texto de inicio con formato, sin capturar TypeError.",
+  "archivo": "arnes/medir_disparadores_que_faltan.py",
+  "funcion": "imports, _hora y huecos",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "import json\nimport sys\nfrom pathlib import Path",
+    "texto_nuevo": "import json\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path"
+   },
+   {
+    "texto_viejo": "def _hora(valor):\n    \"\"\"Devuelve el valor como numero, o None si no se puede leer como hora.\"\"\"\n    if isinstance(valor, bool):\n        return None\n    if isinstance(valor, (int, float)):\n        return float(valor)\n    if isinstance(valor, str):\n        try:\n            return float(valor.strip())\n        except (ValueError, TypeError):\n            return None\n    return None",
+    "texto_nuevo": "def _hora(valor):\n    \"\"\"Devuelve el valor como numero, o None si no se puede leer como hora.\"\"\"\n    if isinstance(valor, bool):\n        return None\n    if isinstance(valor, (int, float)):\n        return float(valor)\n    if isinstance(valor, str):\n        try:\n            return datetime.strptime(valor.strip(), \"%Y-%m-%d %H:%M:%S\").timestamp()\n        except (ValueError, TypeError):\n            return None\n    return None"
+   },
+   {
+    "texto_viejo": "        encontrados.append(\n            {\n                \"cuando_termino\": termino_antes,\n                \"clase_antes\": _texto(antes.get(\"clase\")),\n                \"quien_antes\": _texto(antes.get(\"quien\")),\n                \"cuando_empezo_la_siguiente\": empezo_despues,\n                \"clase_despues\": _texto(despues.get(\"clase\")),\n                \"quien_despues\": _texto(despues.get(\"quien\")),\n                \"segundos_perdidos\": perdidos,\n            }\n        )",
+    "texto_nuevo": "        try:\n            cuando_empezo_texto = datetime.fromtimestamp(empezo_despues).strftime(\"%Y-%m-%d %H:%M:%S\")\n        except (ValueError, TypeError, OSError):\n            cuando_empezo_texto = \"\"\n\n        encontrados.append(\n            {\n                \"cuando_termino\": _texto(antes.get(\"cuando\")),\n                \"clase_antes\": _texto(antes.get(\"clase\")),\n                \"quien_antes\": _texto(antes.get(\"quien\")),\n                \"cuando_empezo_la_siguiente\": cuando_empezo_texto,\n                \"clase_despues\": _texto(despues.get(\"clase\")),\n                \"quien_despues\": _texto(despues.get(\"quien\")),\n                \"segundos_perdidos\": perdidos,\n            }\n        )"
+   }
+  ],
+  "cambio": "Agregar 'from datetime import datetime' junto a los imports; en _hora reemplazar float(valor.strip()) por datetime.strptime(valor.strip(), '%Y-%m-%d %H:%M:%S').timestamp() manteniendo la captura de ValueError y TypeError; en huecos guardar cuando_termino como el texto crudo del campo cuando de la llamada anterior, y cuando_empezo_la_siguiente como la hora de inicio de la siguiente formateada con strftime, con texto vacio si la conversion falla capturando ValueError, TypeError y OSError.",
+  "codigo": "from datetime import datetime\n\n# en _hora:\nreturn datetime.strptime(valor.strip(), \"%Y-%m-%d %H:%M:%S\").timestamp()\n\n# en huecos, antes de encontrados.append:\ntry:\n    cuando_empezo_texto = datetime.fromtimestamp(empezo_despues).strftime(\"%Y-%m-%d %H:%M:%S\")\nexcept (ValueError, TypeError, OSError):\n    cuando_empezo_texto = \"\"\n\n# y en el diccionario:\n\"cuando_termino\": _texto(antes.get(\"cuando\")),\n\"cuando_empezo_la_siguiente\": cuando_empezo_texto,",
+  "vigia": "vigias/test_vigia_una_respuesta_dispara_la_accion_siguiente.py debe pasar de cero huecos a dos huecos, uno de 1110 segundos y otro de 570, con cuando_termino y cuando_empezo_la_siguiente como texto con formato.",
+  "puede_danar": [
+   "arnes/medir_lo_que_puede_hacer_un_programa.py",
+   "cerebro/protocolo.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "medir_lo_que_puede_hacer_un_programa.py",
+   "protocolo.py",
+   "test_vigia_memoria_completa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple los tres cambios solicitados sin inventar ni romper vecinos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (24100 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'datetime'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (26245 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'datetime'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (26363 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'datetime'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) no le cabe (26481 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}
