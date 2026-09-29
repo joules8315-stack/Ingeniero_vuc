@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "lanzar_al_equipo no acepta el parametro carpeta y siempre lanza el trabajo con cwd=raiz, por lo que dos tareas a la vez comparten carpeta y el guardia de una ve el trabajo a medias de la otra.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "lanzar_al_equipo",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def lanzar_al_equipo(proyecto, orden, tope_segundos=900):",
+    "texto_nuevo": "def lanzar_al_equipo(proyecto, orden, tope_segundos=900, carpeta=None):"
+   },
+   {
+    "texto_viejo": "    proceso = subprocess.Popen(\n        comando,\n        cwd=raiz,\n        stdout=archivo,\n        stderr=subprocess.STDOUT,\n        env=entorno,\n    )",
+    "texto_nuevo": "    proceso = subprocess.Popen(\n        comando,\n        cwd=carpeta if carpeta is not None else raiz,\n        stdout=archivo,\n        stderr=subprocess.STDOUT,\n        env=entorno,\n    )"
+   }
+  ],
+  "cambio": "Anadir el parametro carpeta=None al final de la firma de lanzar_al_equipo y usar carpeta como cwd cuando venga, manteniendo raiz cuando no venga. No se toca el calculo de raiz ni el archivo de salida ni el comando, entorno, etiqueta, medidor de avance ni topes de tiempo.",
+  "codigo": "def lanzar_al_equipo(proyecto, orden, tope_segundos=900, carpeta=None):\n\n    proceso = subprocess.Popen(\n        comando,\n        cwd=carpeta if carpeta is not None else raiz,\n        stdout=archivo,\n        stderr=subprocess.STDOUT,\n        env=entorno,\n    )",
+  "vigia": "vigias/test_vigia_la_tarea_trabaja_en_su_propia_carpeta.py: los dos casos rojos (acepta el parametro carpeta y con carpeta lanza con cwd=carpeta) deben ponerse verdes, y el tercero (sin carpeta usa la principal) debe seguir verde. Al deshacer el arreglo, los dos primeros deben volver a rojo.",
+  "puede_danar": [
+   "cuerpo/capataz.py:lanzar_al_equipo",
+   "cualquier llamador de lanzar_al_equipo que dependa de la firma actual (no se ve en el material)",
+   "vigias/test_vigia_la_tarea_trabaja_en_su_propia_carpeta.py (solo como comprobacion, no se modifica)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El campo superior texto_viejo/texto_nuevo viene vacio en la propuesta: si el programa que aplica los cambios usara esos dos campos en vez de la lista cambios, aplicaria un borrado. No es fallo de fondo de la reparacion, pero conviene que se aplique solo desde cambios, que es lo que trae los dos textos literales exactos del material.",
+   "Firma anadida al final con valor por defecto, parametro nuevo opcional: ningun llamador existente se rompe por esto, y la unica llamada nueva es la de la prueba, que es justo lo que se pide."
+  ],
+  "que_falta": [
+   "El diagnostico habla de que dos tareas a la vez se pisan y el guardia ve el trabajo a medias; este cambio solo HABILITA la carpeta, no la conecta. Eso es lo que el encargo pide expresamente (no tocar la funcion bucle, conectar el taller va en otra ronda), asi que no es fallo, pero la sintoma concurrency sigue viva hasta esa otra ronda y conviene no darla por cerrada."
+  ],
+  "resumen_para_el_jefe": "El cambio es exactamente el que pedia el encargo: anade carpeta al final de la firma y usa esa carpeta como sitio de trabajo solo cuando viene, sin tocar raiz, la salida, el comando ni el entorno; nada inventado, un solo archivo y una sola funcion, y al deshacerlo los dos casos rojos vuelven a rojo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 39030 a 13788 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
