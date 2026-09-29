@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El freno _frenar escribe un bloqueo para motivos que exigen a Codex guardar en la historia o dejar constancia, cosas que tiene prohibidas, y hay que convertirlos en aviso que deja pasar.",
+  "archivo": "arnes/puente_codex.py",
+  "funcion": "_frenar",
+  "texto_viejo": "def _frenar(evento, motivo):\n    \"\"\"Escribe el JSON de freno que Codex entiende. Nunca lanza.\"\"\"\n    motivo = _recortar(motivo)\n    if evento == EVENTO_PRE_TOOL_USE:\n        _escribir_json({\n            \"hookSpecificOutput\": {\n                \"hookEventName\": EVENTO_PRE_TOOL_USE,\n                \"permissionDecision\": \"deny\",\n                \"permissionDecisionReason\": motivo,\n            }\n        })\n    else:\n        _escribir_json({\n            \"decision\": \"block\",\n            \"reason\": motivo,\n        })",
+  "texto_nuevo": "def _es_de_los_dos_casos(motivo):\n    \"\"\"Reconoce los motivos que exigen a Codex guardar o dejar constancia.\n\n    Medido el 2026-09-28: Codex desperto con cupo a las 15:14 y contesto bien,\n    pero su turno se lo llevo un freno que le exigia dejar constancia; gasto\n    7.689 unidades en eso. Y esa tarde, seis veces seguidas, contesto lo mismo\n    a Julio: que el aviso le exige guardar un registro y que su sesion no tiene\n    permiso. Guardar en la historia y dejar constancia son cosas que Codex tiene\n    PROHIBIDAS a proposito: no guarda, y la constancia es papeleo de quien dirige.\n    Un freno que no se puede satisfacer lo para siempre, por diseno, y ademas le\n    cuesta cupo. Por eso estos motivos pasan como aviso, no como freno.\n    \"\"\"\n    texto = (motivo or \"\").lower()\n    pistas = (\n        \"sin guardar\",\n        \"hay que guardar\",\n        \"guardar el trabajo\",\n        \"guardar un registro\",\n        \"guardar en la historia\",\n        \"sin legislar\",\n        \"instrucciones sin legislar\",\n        \"dejar constancia\",\n        \"falta dejar constancia\",\n    )\n    return any(pista in texto for pista in pistas)\n\n\ndef _frenar(evento, motivo):\n    \"\"\"Escribe el JSON de freno que Codex entiende. Nunca lanza.\n\n    Si el motivo pide guardar o dejar constancia, no se frena: se deja pasar\n    con el mismo texto del motivo por delante y una frase corta que dice que\n    eso queda para quien supervisa. Los demas frenos se quedan intactos.\n    \"\"\"\n    motivo = _recortar(motivo)\n    if _es_de_los_dos_casos(motivo):\n        _escribir_salida_arreglada(\n            motivo + \"\\n\\nEso queda para quien supervisa.\",\n            evento,\n        )\n        return\n    if evento == EVENTO_PRE_TOOL_USE:\n        _escribir_json({\n            \"hookSpecificOutput\": {\n                \"hookEventName\": EVENTO_PRE_TOOL_USE,\n                \"permissionDecision\": \"deny\",\n                \"permissionDecisionReason\": motivo,\n            }\n        })\n    else:\n        _escribir_json({\n            \"decision\": \"block\",\n            \"reason\": motivo,\n        })",
+  "cambio": "En _frenar, antes de escribir el bloqueo, comprobar si el motivo habla de guardar o de dejar constancia; si es asi, dejar pasar con el mismo formato de salida normal (via _escribir_salida_arreglada) y el motivo por delante mas una frase corta. El resto de frenos no cambia.",
+  "codigo": "def _es_de_los_dos_casos(motivo):\n    \"\"\"Reconoce los motivos que exigen a Codex guardar o dejar constancia.\n\n    Medido el 2026-09-28: Codex desperto con cupo a las 15:14 y contesto bien,\n    pero su turno se lo llevo un freno que le exigia dejar constancia; gasto\n    7.689 unidades en eso. Y esa tarde, seis veces seguidas, contesto lo mismo\n    a Julio: que el aviso le exige guardar un registro y que su sesion no tiene\n    permiso. Guardar en la historia y dejar constancia son cosas que Codex tiene\n    PROHIBIDAS a proposito: no guarda, y la constancia es papeleo de quien dirige.\n    Un freno que no se puede satisfacer lo para siempre, por diseno, y ademas le\n    cuesta cupo. Por eso estos motivos pasan como aviso, no como freno.\n    \"\"\"\n    texto = (motivo or \"\").lower()\n    pistas = (\n        \"sin guardar\",\n        \"hay que guardar\",\n        \"guardar el trabajo\",\n        \"guardar un registro\",\n        \"guardar en la historia\",\n        \"sin legislar\",\n        \"instrucciones sin legislar\",\n        \"dejar constancia\",\n        \"falta dejar constancia\",\n    )\n    return any(pista in texto for pista in pistas)\n\n\ndef _frenar(evento, motivo):\n    \"\"\"Escribe el JSON de freno que Codex entiende. Nunca lanza.\n\n    Si el motivo pide guardar o dejar constancia, no se frena: se deja pasar\n    con el mismo texto del motivo por delante y una frase corta que dice que\n    eso queda para quien supervisa. Los demas frenos se quedan intactos.\n    \"\"\"\n    motivo = _recortar(motivo)\n    if _es_de_los_dos_casos(motivo):\n        _escribir_salida_arreglada(\n            motivo + \"\\n\\nEso queda para quien supervisa.\",\n            evento,\n        )\n        return\n    if evento == EVENTO_PRE_TOOL_USE:\n        _escribir_json({\n            \"hookSpecificOutput\": {\n                \"hookEventName\": EVENTO_PRE_TOOL_USE,\n                \"permissionDecision\": \"deny\",\n                \"permissionDecisionReason\": motivo,\n            }\n        })\n    else:\n        _escribir_json({\n            \"decision\": \"block\",\n            \"reason\": motivo,\n        })",
+  "vigia": "Una prueba que llame a _frenar con un motivo que mencione 'sin guardar' o 'dejar constancia' y compruebe que NO se escribe deny/block sino salida normal con el motivo y la frase de que queda para quien supervisa; y otra que llame con un motivo de terminal o de escribir archivos y compruebe que sigue escribiendo deny/block igual que antes.",
+  "puede_danar": [
+   "arnes/puente_codex.py",
+   "cuerpo/codex.py",
+   "cerebro/trozos.py",
+   "cuerpo/respuestas.py",
+   "cuerpo/privacidad.py",
+   "cuerpo/fallos.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "trozos.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El aviso se emite como texto plano por _escribir_texto (el motivo no es JSON, así que _escribir_salida_arreglada cae en su rama de exception). El propio docstring de esa funcion en el material avisa de que Codex descarta lo que no va dentro de hookSpecificOutput con su evento: el aviso cumple su funcion de no frenar, pero puede no llegar a verse Codex. No rompe a los vecinos (codex.py, trozos.py, respuestas.py, privacidad.py, fallos.py) porque no cambia firmas ni la forma de los otros Frenos.",
+   "Las pistas 'sin guardar', 'sin legislar', 'instrucciones sin legislar' no se pueden verificar contra el material; no son fallos por sí solas y, de ser literales de motivos reales, caen dentro de las dos cosas prohibidas, pero conviene confirmarlas con un grep de los motivos reales."
+  ],
+  "que_falta": [
+   "Ningún prueba ejecutada de las dos ramas del vigia (motivo de los dos casos -> sin deny/block; motivo de terminal o escritura de archivos -> deny/block intacto). _comprobado_por_programa solo valida nombres y carga, no comportamiento.",
+   "Falta decidir si el aviso debe ir envuelto en hookSpecificOutput.additionalContext para que Codex lo lea de verdad, en lugar de texto plano."
+  ],
+  "resumen_para_el_jefe": "El cambio hace lo pedido y solo toca el archivo indicado; lo unico pendiente es confirmar en ejecucion que los otros frenos siguen igual y que el aviso, al salir como texto plano, realmente lo ve Codex."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: '_es_de_los_dos_casos'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "vueltas_dadas: 2"
+ ]
+}
