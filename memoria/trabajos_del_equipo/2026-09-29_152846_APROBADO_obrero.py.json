@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El tope del pasillo se calcula con min(_capas) en _preguntar_con_relevo, cortando el material a la medida del cerebro mas pequeno de la fila, en vez de usar el maximo.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_preguntar_con_relevo",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "            _tope_pasillo = min(_capas)",
+    "texto_nuevo": "            _tope_pasillo = tope_del_pasillo(_capas)"
+   }
+  ],
+  "cambio": "Crear la funcion suelta tope_del_pasillo(capacidades) arriba en el archivo, junto a las demas funciones sueltas, que devuelve la capacidad MAS GRANDE de la lista (0 si viene vacia o si no queda ningun numero util), y sustituir en _preguntar_con_relevo el renglon del ancla para que use esa pieza con la lista _capas en lugar de min(_capas).",
+  "codigo": "def tope_del_pasillo(capacidades):\n    \"\"\"Devuelve la capacidad MAS GRANDE de la fila, no la mas pequena.\n\n    POR QUE EL MAXIMO: el reparto de mas abajo ya manda el trabajo al cerebro que SI\n    aguanta, asi que recortar antes a la medida del mas chico tira material para nada.\n    Si la lista viene vacia (o no queda ningun numero util) devuelve 0, que significa\n    no recortar nada.\n    \"\"\"\n    if not isinstance(capacidades, (list, tuple)):\n        return 0\n    _utiles = [c for c in capacidades if isinstance(c, (int, float)) and not isinstance(c, bool)]\n    if not _utiles:\n        return 0\n    return max(_utiles)\n",
+  "vigia": "vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py comprueba que la pieza existe y tres casos: con [5000, 20000, 60000] devuelve 60000; con [12000] devuelve 12000; con la lista vacia devuelve 0.",
+  "puede_danar": [
+   "vigias/test_vigia_se_reparte_por_capacidad.py",
+   "vigias/test_vigia_pedir_al_de_pago_no_apaga_el_recorte.py",
+   "vigias/test_vigia_el_pasillo_recorta_el_hecho.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "medir_el_pasillo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Arregla de verdad el recorte (min por max mediante la pieza nueva que el encargo pedia crear), el campo codigo va solo con la funcion nueva sin renglones sueltos y la lista de vecinos trae los cinco de verdad, asi que no repite los dos frenos de la vuelta anterior."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 34659 a 13010 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 38896 a 16188 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 2"
+ ]
+}
