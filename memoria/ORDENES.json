@@ -1,5 +1,23 @@
 [
   {
+    "id": "R26-el-encargo-viaja-por-archivo",
+    "titulo": "El encargo se le pasa al equipo por archivo, no por la linea de comandos",
+    "pieza": "ingeniero.py",
+    "encargo": "El mando que le da la orden al equipo tiene que aceptar que el texto del encargo venga en un ARCHIVO, no solo escrito en la linea de comandos. Se agrega una marca nueva, por ejemplo --encargo-archivo seguida de la ruta, y si viene, el texto se lee de ese archivo tal cual, en utf-8, y se usa igual que si lo hubieran escrito a mano. Si la ruta no existe, se dice en una frase simple y no se gasta nada. Lo de hoy sigue funcionando igual para no romper a nadie. HECHO MEDIDO 2026-09-28: la terminal de Windows le arranca TODAS las comillas dobles al texto que se pasa como argumento, incluso pasandolo por una variable. Comprobado: el renglon prefix_rule con sus comillas llega convertido en el mismo renglon sin ninguna comilla. Consecuencia medida el mismo dia: el obrero no puede copiar un renglon literal ni reconocer un ancla que lleve comillas, y por eso se perdieron alrededor de la mitad de las vueltas de la tarde: unas se cayeron por HUMO (solo cambio comentarios), otras porque el texto viejo no aparecia en el archivo, y una por inventarse el formato de un archivo que no podia ver. Tambien es la razon por la que los anclas se eligen a mano sin comillas, que es una limitacion absurda. Ley que lo respalda: CONTRATO_TOPE_MEDIDO_Y_CORTE_A_MINIMA_EXPRESION.md (el material llega completo) y la regla de Julio de que si el material no trae la pieza se pega el trozo dentro del encargo, que hoy es imposible cuando el trozo lleva comillas. SOLO se toca ingeniero.py.",
+    "vigia": "vigias/test_vigia_el_encargo_viaja_por_archivo.py",
+    "origen": "julio",
+    "repara": "que el texto del encargo llegue mutilado y el obrero no pueda copiar ningun renglon literal",
+    "razon": "medido el 2026-09-28: la mitad de las vueltas de la tarde se cayeron por esto, y es la causa de que los anclas no puedan llevar comillas",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "R25-el-guardado-compara-el-color-no-exige-verde",
     "titulo": "El guardado compara con el color de antes, en vez de exigir verde absoluto",
     "pieza": "arnes/guardia_de_guardado.py",
