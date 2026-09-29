@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "Cuando la lista archivos_rojos queda vacia y la corrida se corto por tiempo, _vigias devuelve el renglon de resumen sin explicar que no se pudo terminar de comprobar por tiempo.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "    if not archivos_rojos:\n        # No se pudo identificar el archivo rojo: se frena como antes.\n        return False, ultima[0].strip()",
+  "texto_nuevo": "    if not archivos_rojos:\n        # No se pudo identificar el archivo rojo: se frena como antes.\n        # Si ademas la corrida se corto por tiempo, el mensaje tiene que decir\n        # que NO SE PUDO TERMINAR DE COMPROBAR POR TIEMPO.\n        hubo_corte = False\n        for linea in salida.splitlines():\n            if linea.strip().startswith(\"bateria en paralelo: grupo cortado por tiempo:\"):\n                hubo_corte = True\n                break\n        if not hubo_corte and ultima:\n            partes = ultima[0].strip().split()\n            # Forma: bateria en paralelo: N grupos, R rojos, C cortados por tiempo\n            if (len(partes) >= 9\n                    and partes[0] == \"bateria\"\n                    and partes[1] == \"en\"\n                    and partes[2] == \"paralelo:\"\n                    and partes[-3:] == [\"cortados\", \"por\", \"tiempo\"]):\n                try:\n                    if int(partes[-4]) > 0:\n                        hubo_corte = True\n                except ValueError:\n                    pass\n        if hubo_corte:\n            return False, (\n                \"NO SE PUDO TERMINAR DE COMPROBAR POR TIEMPO: la bateria se corto \"\n                \"antes de terminar, por eso no se guarda. \" + ultima[0].strip()\n            )\n        return False, ultima[0].strip()",
+  "cambio": "En _vigias, dentro del camino de archivos_rojos vacia, detectar si la corrida se corto por tiempo (renglon 'bateria en paralelo: grupo cortado por tiempo:' en salida, o ultimo renglon con forma de resumen y numero de cortados > 0) y, en ese caso, devolver False con un mensaje que diga que NO SE PUDO TERMINAR DE COMPROBAR POR TIEMPO; si no hubo corte, conservar exactamente el return False, ultima[0].strip() de hoy.",
+  "codigo": "        hubo_corte = False\n        for linea in salida.splitlines():\n            if linea.strip().startswith(\"bateria en paralelo: grupo cortado por tiempo:\"):\n                hubo_corte = True\n                break\n        if not hubo_corte and ultima:\n            partes = ultima[0].strip().split()\n            if (len(partes) >= 9\n                    and partes[0] == \"bateria\"\n                    and partes[1] == \"en\"\n                    and partes[2] == \"paralelo:\"\n                    and partes[-3:] == [\"cortados\", \"por\", \"tiempo\"]):\n                try:\n                    if int(partes[-4]) > 0:\n                        hubo_corte = True\n                except ValueError:\n                    pass\n        if hubo_corte:\n            return False, (\n                \"NO SE PUDO TERMINAR DE COMPROBAR POR TIEMPO: la bateria se corto \"\n                \"antes de terminar, por eso no se guarda. \" + ultima[0].strip()\n            )\n        return False, ultima[0].strip()",
+  "vigia": "vigias/test_vigia_el_guardado_dice_cuando_no_pudo_probar.py::test_guardado_frena_y_dice_que_no_pudo_terminar_por_tiempo",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py::_vigias",
+   "vigias/test_vigia_el_guardado_dice_cuando_no_pudo_probar.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38153 a 18160 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

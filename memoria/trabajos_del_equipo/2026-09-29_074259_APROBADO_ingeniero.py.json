@@ -1,0 +1,52 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El bucle de marcas no reconoce --encargo-archivo y el renglon del ancla sigue armando tarea juntando los argumentos, asi que el texto del archivo nunca llega a router.armar.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "        _partes = list(sys.argv[3:])\n        _quien = {\"--escribe\": None, \"--revisa\": None}\n        _resto = []\n        _i = 0\n        _crear = False\n        while _i < len(_partes):\n            _p = _partes[_i]\n            if _p == \"--crear\":",
+    "texto_nuevo": "        _partes = list(sys.argv[3:])\n        _quien = {\"--escribe\": None, \"--revisa\": None}\n        _resto = []\n        _i = 0\n        _crear = False\n        # 2026-09-29: la terminal de Windows arranca TODAS las comillas dobles del texto que\n        # viaja como argumento, asi que el encargo necesita viajar en un archivo. Marca nueva\n        # --encargo-archivo <ruta>: se aparta igual que las otras y su texto sale del archivo.\n        _encargo_archivo = None\n        while _i < len(_partes):\n            _p = _partes[_i]\n            if _p == \"--encargo-archivo\" and _i + 1 < len(_partes):\n                _encargo_archivo = _partes[_i + 1]\n                _i += 2\n                continue\n            if _p == \"--crear\":"
+   },
+   {
+    "texto_viejo": "        proy, tarea = sys.argv[2], \" \".join(_resto)",
+    "texto_nuevo": "        proy = sys.argv[2]\n        if _encargo_archivo is not None:\n            try:\n                with open(_encargo_archivo, \"r\", encoding=\"utf-8\") as _f:\n                    tarea = _f.read()\n            except Exception:\n                print(\"No pude leer el archivo del encargo: %s\" % _encargo_archivo)\n                print(\"Revisa que la ruta exista y que se pueda abrir, y vuelve a intentarlo.\")\n                return 1\n        else:\n            tarea = \" \".join(_resto)"
+   }
+  ],
+  "cambio": "Anadir la marca --encargo-archivo al bucle de marcas (apartando marca y ruta para que no se cuelen en el texto) y cablear el renglon del ancla para que tarea salga de leer ese archivo en utf-8 cuando la marca venga, y siga juntando los argumentos cuando no venga; si la ruta no se puede leer, avisar en una frase simple y terminar sin gastar.",
+  "codigo": "        _partes = list(sys.argv[3:])\n        _quien = {\"--escribe\": None, \"--revisa\": None}\n        _resto = []\n        _i = 0\n        _crear = False\n        # 2026-09-29: la terminal de Windows arranca TODAS las comillas dobles del texto que\n        # viaja como argumento, asi que el encargo necesita viajar en un archivo. Marca nueva\n        # --encargo-archivo <ruta>: se aparta igual que las otras y su texto sale del archivo.\n        _encargo_archivo = None\n        while _i < len(_partes):\n            _p = _partes[_i]\n            if _p == \"--encargo-archivo\" and _i + 1 < len(_partes):\n                _encargo_archivo = _partes[_i + 1]\n                _i += 2\n                continue\n            if _p == \"--crear\":\n                # marca SUELTA, sin valor detras: la enciende Julio a mano y nada mas.\n                # NO se deduce de las palabras de la tarea. CONTRATO_CREAR_PIEZA_NUEVA\n                # regla 5: una pieza nueva se crea CON AUTORIZACION de Julio.\n                _crear = True\n                _i += 1\n                continue\n            if _p in _quien and _i + 1 < len(_partes):\n                _quien[_p] = _partes[_i + 1].strip()\n                _i += 2\n                continue\n            _resto.append(_p)\n            _i += 1\n        proy = sys.argv[2]\n        if _encargo_archivo is not None:\n            try:\n                with open(_encargo_archivo, \"r\", encoding=\"utf-8\") as _f:\n                    tarea = _f.read()\n            except Exception:\n                print(\"No pude leer el archivo del encargo: %s\" % _encargo_archivo)\n                print(\"Revisa que la ruta exista y que se pueda abrir, y vuelve a intentarlo.\")\n                return 1\n        else:\n            tarea = \" \".join(_resto)",
+  "vigia": "vigias/test_vigia_el_encargo_viaja_por_archivo.py: la prueba roja (el texto llega completo desde el archivo, con comillas y tres renglones, mirando lo que recibe cerebro.router.armar) y la verde (la forma de siempre sigue funcionando) tienen que quedar las dos verdes.",
+  "puede_danar": [
+   "cerebro.router.armar (recibe el texto del encargo)",
+   "arnes.portero.decidir (decide con ese texto)",
+   "cuerpo.obrero (recibe el encargo ya armado)",
+   "el flujo de siempre cuando no viene la marca --encargo-archivo"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Cuando la marca viene accompanied de texto suelto, _resto se descarta tal cual pide el encargo (tarea sale del archivo); ningun vecino existente cambia porque la rama sin marca queda identica a la de antes",
+   "Si la marca llega sola, sin ruta detras, cae en _resto y el texto lo lleva como palabra suelta en vez de avisar; mismo comportamiento que ya tienen --escribe/--revisa, no es este arreglo el que lo introduce"
+  ],
+  "que_falta": [
+   "No quita el salto de linea final del archivo; si algun dia eso molesta al router habra que decidirlo con el encargo, aqui el 'tal cual' lo pide asi",
+   "El mensaje de error sale antes de la llamada, pero no se ve en el material que no haya gasto antes de esa linea; conviene que la vigia lo compruebe"
+  ],
+  "resumen_para_el_jefe": "Esta vez si cablearon la variable: el bucle aparta la marca y la ruta, y el ancla lee el archivo en utf-8 cuando viene, y si no viene sigue juntando los argumentos como siempre; lo unico a mirar es que la marca sin ruta no avisa."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 31257 a 18672 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
