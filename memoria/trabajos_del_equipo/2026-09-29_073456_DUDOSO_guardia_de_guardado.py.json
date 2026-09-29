@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _vigias, cuando no hay archivos rojos identificables y la comprobacion se corto por tiempo, se devuelve solo el resumen de grupos sin explicar que no se pudo terminar por tiempo.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "    if not archivos_rojos:",
+  "texto_nuevo": "    if not archivos_rojos:\n        # Corte por tiempo: la bateria devuelve salida PARCIAL y pytest -q no alcanza\n        # a escribir el resumen final con los FAILED, asi que la lista de rojos sale\n        # vacia aunque la comprobacion no haya terminado. Se reconoce por dos senales:\n        # un renglon que empieza por 'bateria en paralelo: grupo cortado por tiempo:'\n        # o el ultimo renglon no vacio con la forma\n        # 'bateria en paralelo: N grupos, R rojos, C cortados por tiempo' con C > 0.\n        # Ojo: las palabras 'cortados por tiempo' salen SIEMPRE, incluso con cero;\n        # hay que leer el numero y comprobar que es mayor que cero.\n        _cortado_por_tiempo = False\n        for _l in salida.splitlines():\n            if _l.startswith(\"bateria en paralelo: grupo cortado por tiempo:\"):\n                _cortado_por_tiempo = True\n                break\n        if not _cortado_por_tiempo and ultima and ultima[0].strip():\n            _m = re.search(r\"bateria en paralelo:\\s*\\d+\\s*grupos,\\s*\\d+\\s*rojos,\\s*(\\d+)\\s*cortados por tiempo\", ultima[0])\n            if _m and int(_m.group(1)) > 0:\n                _cortado_por_tiempo = True\n        if _cortado_por_tiempo:\n            return False, (\"las vigias NO terminaron de comprobarse por tiempo: no se guarda sin probar. \"\n                           \"La comprobacion se corto por tiempo y no se pudo saber si algo se rompio; \"\n                           \"hay que ver que vigia se cuelga o subir el tope medido\")",
+  "cambios": [],
+  "cambio": "En _vigias, antes de devolver False con el ultimo renglon cuando no hay archivos rojos, detectar el corte por tiempo (renglon 'bateria en paralelo: grupo cortado por tiempo:' o ultimo renglon con C cortados por tiempo > 0) y en ese caso devolver False con un mensaje que diga claramente que NO SE PUDO TERMINAR DE COMPROBAR POR TIEMPO. Si no hubo corte por tiempo, conservar exactamente el comportamiento actual.",
+  "codigo": "    if not archivos_rojos:\n        _cortado_por_tiempo = False\n        for _l in salida.splitlines():\n            if _l.startswith(\"bateria en paralelo: grupo cortado por tiempo:\"):\n                _cortado_por_tiempo = True\n                break\n        if not _cortado_por_tiempo and ultima and ultima[0].strip():\n            _m = re.search(r\"bateria en paralelo:\\s*\\d+\\s*grupos,\\s*\\d+\\s*rojos,\\s*(\\d+)\\s*cortados por tiempo\", ultima[0])\n            if _m and int(_m.group(1)) > 0:\n                _cortado_por_tiempo = True\n        if _cortado_por_tiempo:\n            return False, (\"las vigias NO terminaron de comprobarse por tiempo: no se guarda sin probar. \"\n                           \"La comprobacion se corto por tiempo y no se pudo saber si algo se rompio; \"\n                           \"hay que ver que vigia se cuelga o subir el tope medido\")",
+  "vigia": "La prueba que hoy esta roja por su motivo correcto: comprobar que cuando la salida de la bateria trae 'bateria en paralelo: grupo cortado por tiempo:' o un ultimo renglon con C cortados por tiempo > 0 y no hay archivos rojos, _vigias devuelve False con un mensaje que menciona que no se pudo terminar de comprobar por tiempo; y que sin corte por tiempo se conserva el mensaje actual con el ultimo renglon.",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py:_vigias",
+   "guardado de trabajos que hoy pasan por el camino de 'no se pudo identificar'",
+   "mensajes que lee el usuario al guardar"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El diagnostico y el encargo dependen de una forma exacta de renglon ('grupo cortado por tiempo:' y 'N grupos, R rojos, C cortados por tiempo') que NO aparece en ningun sitio del material entregado: el material solo muestra la llamada bateria_en_paralelo.correr(...) y el ejemplo de timeout de pytest. Sin comprobar contra la salida real, el arreglo puede no detectar nada y quedarse mudo igual que antes, que es justo el fallo que dice reparar.",
+   "La ruta de corte real que ya existe en el archivo es subprocess.TimeoutExpired (return False, 'las vigias NO terminaron en 15 minutos'), y esa no se toca: si el tope real que revienta es ese, el mensaje nuevo nunca sale.",
+   "La deteccion se apoya en que el renglon EMPIECE por 'bateria en paralelo: grupo cortado por tiempo:' y en que el ULTIMO renglon no vacio tenga esa forma. Pytest con -q imprime lineas de progreso y de resumen despues; si el renglon final es el de_FAILED o el de resumen de pytest, el startswith y la ultima[] fallan. Es un supuesto no medido sobre la forma de la salida."
+  ],
+  "riesgo_vecinos": [
+   "El mensaje que se devuelve hoy (ultima[0].strip()) es el que ve el usuario al guardar y el que leen los expedientes de fallos; sustituirlo por un texto generico hace que se pierda el detalle de que grupo se corto, que es justo lo que hace falta para diagnosticar la vigia colgada.",
+   "Devuelve el mismo False de siempre, asi que no frena de nuevo a lo que ya se frenaba: no rompe al vecino, pero tampoco anade la parada que el diagnostico pedia."
+  ],
+  "que_falta": [
+   "El texto literal de la salida real de la bateria (al menos el renglon de corte) para poder anclar el detectors en algo que existe.",
+   "Un caso de prueba que construya esa salida y compruebe el mensaje nuevo, y otro que compruebe que sin corte por tiempo sigue saliendo el mensaje de antes con el ultimo renglon."
+  ],
+  "resumen_para_el_jefe": "El codigo no inventa nada y no rompe a nadie, pero su razon de funcionar se apoya en una forma de texto que no esta en el material, asi que puede no detectar el corte y dejar el fallo igual; falta ver la salida real de la bateria antes de aprobarlo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 37008 a 19026 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
