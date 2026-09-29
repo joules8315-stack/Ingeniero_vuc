@@ -1,0 +1,61 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El archivo ESTADO_ACTUAL_MVP.md tiene una ruta canonica falsa (Desktop en vez de dev), no avisa de la ley de fotos vigente, ni del desfase entre lo desplegado y el disco, ni de la orden de no subir nada.",
+  "archivo": "ESTADO_ACTUAL_MVP.md",
+  "funcion": "Aviso al principio (justo despues del primer parrafo) y secciones 'Commit y estado', 'Cerrado' y 'Arranque'",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "Este archivo es el resumen corto para nuevos chats/agentes. No reemplaza `OBJETIVO_MVP.md`; solo indica el estado operativo actual.",
+    "texto_nuevo": "Este archivo es el resumen corto para nuevos chats/agentes. No reemplaza `OBJETIVO_MVP.md`; solo indica el estado operativo actual.\n\n## AVISO 2026-09-29\n\n- La ley que manda hoy sobre fotos, compresion, topes, borrado y modo sin internet es `LEY_DE_LAS_FOTOS_2026-09-29.md`. Lo que este archivo o `OBJETIVO_MVP.md` digan sobre esos asuntos CEDE ante esa ley.\n- La ruta canonica cambio: era `C:\\Users\\USER\\Desktop\\Foto_info_repo\\Foto_informe--main` y es `C:\\Users\\USER\\dev\\Foto_info_repo\\Foto_informe--main`. Este archivo la tuvo MAL cinco meses. Apuntar a la copia equivocada ya costo dias de trabajo.\n- Lo desplegado es `a387091` del 23-jul-2026 y el disco va por `2f7c551` del 01-sep-2026: son 14 reparaciones hechas y sin subir. Toda queja hay que situarla primero: si es sobre la version desplegada o sobre la del disco.\n- Por orden de Julio del 2026-09-29 no se sube nada hasta que este TODO reparado y probado de verdad. Despues se le avisa para que el lo pruebe con sus ojos."
+   },
+   {
+    "texto_viejo": "- Ruta canonica unica: `C:\\Users\\USER\\Desktop\\Foto_info_repo\\Foto_informe--main`.",
+    "texto_nuevo": "- Ruta canonica unica: `C:\\Users\\USER\\dev\\Foto_info_repo\\Foto_informe--main` (antes decia `Desktop` y era falso; corregido el 2026-09-29)."
+   },
+   {
+    "texto_viejo": "1. Ir a `C:\\Users\\USER\\Desktop\\Foto_info_repo\\Foto_informe--main`.",
+    "texto_nuevo": "1. Ir a `C:\\Users\\USER\\dev\\Foto_info_repo\\Foto_informe--main`."
+   }
+  ],
+  "cambio": "Agregar aviso al principio con la ley de fotos vigente, el cambio de ruta canonica, el desfase desplegado/disco y la orden de no subir; y corregir Desktop por dev en la ruta canonica y en el paso de arranque.",
+  "codigo": "",
+  "vigia": "Leer ESTADO_ACTUAL_MVP.md y comprobar que el aviso aparece justo despues del primer parrafo, que no queda ninguna aparicion de `Desktop\\Foto_info_repo` y que las dos menciones de la ruta dicen `dev`.",
+  "puede_danar": [
+   "ESTADO_ACTUAL_MVP.md",
+   "OBJETIVO_MVP.md (solo por referencia, no se toca)"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La VIGIA es imposible de cumplir por el PROPIO cambio que propone: pide que 'no quede ninguna aparicion de `Desktop\\Foto_info_repo`', pero el punto b) del encargo obliga a escribir ESA ruta vieja ('era `C:\\Users\\USER\\Desktop\\Foto_info_repo\\Foto_informe--main` y es `...\\dev\\...`'), y el cambio 1 la escribe. Tal cual, esa comprobacion da FALLA sobre un archivo correcto.",
+   "La VIGIA tambien cuenta mal: dice 'las dos menciones de la ruta dicen `dev`', pero despues del cambio hay CUATRO menciones de la ruta en el archivo (dos en el aviso, una de ellas deliberadamente Desktop; mas la de 'Cerrado' y la del arranque), y solo tres dicen dev."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno real: es un documento markdown, ningun programa lo importa, y OBJETIVO_MVP.md queda solo como referencia sin tocarse, tal como declara puede_danar."
+  ],
+  "que_falta": [
+   "Reescribir SOLO la vigia, sin tocar los tres cambios: algo del estilo 'comprobar que el aviso aparece justo despues del primer parrafo con sus cuatro puntos, que el renglon de ruta canonica y el paso 1 del arranque dicen dev con la nota (antes decia Desktop y era falso; corregido el 2026-09-29), y que la UNICA mencion de Desktop que queda es la del aviso, donde se declara la ruta equivocada'.",
+   "Los tres `cambios` no necesitan retoque: cubren los seis puntos a) a f) del encargo."
+  ],
+  "resumen_para_el_jefe": "El contenido esta bien y completo: los seis puntos pedidos estan escritos, sin inventar commits, fechas ni rutas, sin borrar nada y sin tocar otro archivo. Lo unico que hay que mandar de vuelta es la frase de la vigia, porque se contradice sola (exige que no quede ninguna mencion de la ruta vieja, cuando el aviso que ella misma ordena escribir la menciona a proposito) y porque cuenta dos menciones donde quedaran cuatro; se corrige esa oracion y se aprueba tal cual."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 30201 a 18678 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'start_backend_8000' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'arranca_todo' y esa palab",
+  "el pasillo recorto el encargo de 34992 a 15284 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'start_backend_8000' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'arranca_todo' y esa palab",
+  "el pasillo recorto el encargo de 36207 a 18957 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'start_backend_8000' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'arranca_todo' y esa palab",
+  "el pasillo recorto el encargo de 37422 a 18956 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}
