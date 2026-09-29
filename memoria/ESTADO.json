@@ -1,120 +1,18 @@
 {
  "proyecto": "foto_informe",
- "problema": "FI1 vigia: necesito el flujo real de tomar y guardar una foto en la pantalla conectada. NECESITO_LEER: app_web.html, funcion processPhoto completa, el manejador del control de camara/subida que la llama y la funcion que guarda el informe diario / motivo: crear una prueba de pantalla que reproduzca que tomar foto saca al usuario o no guarda / que decide: selectores, evento y resultado observable de FI1 / riesgo: inventar una prueba o hacerla fallar por montaje. Excluir el flujo sin internet, compresion y otros objetivos.",
+ "problema": "FI1 vigia minima. NECESITO_LEER: rv3_prueba_7_crear_19.py lineas 1-40 y 123-169; app_web.html lineas 1217-1219 completas / motivo: unir el montaje ejecutable real, el paso existente de subir fotos por pantalla y la captura de camara / que decide: escribir una sola vigia FI1 sin inventar / riesgo: el pasillo vuelve a cortar el montaje. No incluir contratos largos, otras pruebas ni flujo offline.",
  "flujos": [
+  "offline",
   "real",
-  "prueba",
-  "informes"
+  "table"
  ],
- "paquete": "C:\\Ingeniero_VUC\\memoria\\paquetes\\foto_informe__fi1_vigia__necesito_el_flujo_real_de_tom.md",
+ "paquete": "C:\\Ingeniero_VUC\\memoria\\paquetes\\foto_informe__fi1_vigia_minima__necesito_leer__rv3_pru.md",
  "decision_pendiente": "",
  "vigias_antes": "",
  "vigias_despues": "",
  "prueba_humana": "PENDIENTE",
  "ultimo_sello": "",
  "historial": [
-  {
-   "cuando": "2026-09-29 07:00",
-   "campo": "paquete",
-   "de": "C:\\Ingeniero_VUC\\memoria\\paquetes\\ingeniero__vigias_test_vig",
-   "a": "C:\\Ingeniero_VUC\\memoria\\paquetes\\ingeniero__arnes_guardia_d"
-  },
-  {
-   "cuando": "2026-09-29 07:00",
-   "campo": "flujos",
-   "de": "['codex', 'cuenta']",
-   "a": "['funcion', 'frena', 'bateria']"
-  },
-  {
-   "cuando": "2026-09-29 07:09",
-   "campo": "problema",
-   "de": "arnes/guardia_de_guardado.py funcion _vigias: cuando la bate",
-   "a": "arnes/guardia_de_guardado.py funcion _vigias: traer la funci"
-  },
-  {
-   "cuando": "2026-09-29 07:09",
-   "campo": "flujos",
-   "de": "['funcion', 'frena', 'bateria']",
-   "a": "['equipo', 'funcion', 'llama']"
-  },
-  {
-   "cuando": "2026-09-29 08:48",
-   "campo": "problema",
-   "de": "arnes/guardia_de_guardado.py funcion _vigias: traer la funci",
-   "a": "el equipo dice FALTA_MATERIAL porque la herramienta solo mir"
-  },
-  {
-   "cuando": "2026-09-29 08:48",
-   "campo": "paquete",
-   "de": "C:\\Ingeniero_VUC\\memoria\\paquetes\\ingeniero__arnes_guardia_d",
-   "a": "C:\\Ingeniero_VUC\\memoria\\paquetes\\ingeniero__el_equipo_dice_"
-  },
-  {
-   "cuando": "2026-09-29 08:48",
-   "campo": "flujos",
-   "de": "['equipo', 'funcion', 'llama']",
-   "a": "['equipo', 'herramienta', 'material']"
-  },
-  {
-   "cuando": "2026-09-29 08:48",
-   "campo": "problema",
-   "de": "el equipo dice FALTA_MATERIAL porque la herramienta solo mir",
-   "a": "skills/falta_en_el_material.py funcion revisar completa: deb"
-  },
-  {
-   "cuando": "2026-09-29 08:48",
-   "campo": "paquete",
-   "de": "C:\\Ingeniero_VUC\\memoria\\paquetes\\ingeniero__el_equipo_dice_",
-   "a": "C:\\Ingeniero_VUC\\memoria\\paquetes\\ingeniero__skills_falta_en"
-  },
-  {
-   "cuando": "2026-09-29 08:48",
-   "campo": "flujos",
-   "de": "['equipo', 'herramienta', 'material']",
-   "a": "['skills', 'cuenta', 'prueba']"
-  },
-  {
-   "cuando": "2026-09-29 08:50",
-   "campo": "problema",
-   "de": "skills/falta_en_el_material.py funcion revisar completa: deb",
-   "a": "arnes/guardia_de_guardado.py funcion _vigias: cuando la bate"
-  },
-  {
-   "cuando": "2026-09-29 08:50",
-   "campo": "paquete",
-   "de": "C:\\Ingeniero_VUC\\memoria\\paquetes\\ingeniero__skills_falta_en",
-   "a": "C:\\Ingeniero_VUC\\memoria\\paquetes\\ingeniero__arnes_guardia_d"
-  },
-  {
-   "cuando": "2026-09-29 08:50",
-   "campo": "flujos",
-   "de": "['skills', 'cuenta', 'prueba']",
-   "a": "['funcion', 'guardado', 'bateria']"
-  },
-  {
-   "cuando": "2026-09-29 08:51",
-   "campo": "problema",
-   "de": "arnes/guardia_de_guardado.py funcion _vigias: cuando la bate",
-   "a": "skills/falta_en_el_material.py funcion revisar: el paquete t"
-  },
-  {
-   "cuando": "2026-09-29 08:51",
-   "campo": "paquete",
-   "de": "C:\\Ingeniero_VUC\\memoria\\paquetes\\ingeniero__arnes_guardia_d",
-   "a": "C:\\Ingeniero_VUC\\memoria\\paquetes\\ingeniero__skills_falta_en"
-  },
-  {
-   "cuando": "2026-09-29 08:51",
-   "campo": "flujos",
-   "de": "['funcion', 'guardado', 'bateria']",
-   "a": "['trozos', 'skills', 'revisar']"
-  },
-  {
-   "cuando": "2026-09-29 08:52",
-   "campo": "problema",
-   "de": "skills/falta_en_el_material.py funcion revisar: el paquete t",
-   "a": "arnes/guardia_de_guardado.py funcion _vigias: cuando la bate"
-  },
   {
    "cuando": "2026-09-29 08:52",
    "campo": "paquete",
@@ -372,6 +270,108 @@
    "campo": "flujos",
    "de": "['prueba']",
    "a": "['real', 'prueba', 'informes']"
+  },
+  {
+   "cuando": "2026-09-29 13:36",
+   "campo": "proyecto",
+   "de": "foto_informe",
+   "a": "ingeniero"
+  },
+  {
+   "cuando": "2026-09-29 13:36",
+   "campo": "problema",
+   "de": "FI1 vigia: necesito el flujo real de tomar y guardar una fot",
+   "a": "Solo lectura: leer la respuesta mas reciente enviada a Codex"
+  },
+  {
+   "cuando": "2026-09-29 13:36",
+   "campo": "paquete",
+   "de": "C:\\Ingeniero_VUC\\memoria\\paquetes\\foto_informe__fi1_vigia__n",
+   "a": "C:\\Ingeniero_VUC\\memoria\\paquetes\\ingeniero__solo_lectura__l"
+  },
+  {
+   "cuando": "2026-09-29 13:36",
+   "campo": "flujos",
+   "de": "['real', 'prueba', 'informes']",
+   "a": "['codex', 'canal', 'julio']"
+  },
+  {
+   "cuando": "2026-09-29 13:36",
+   "campo": "proyecto",
+   "de": "ingeniero",
+   "a": "foto_informe"
+  },
+  {
+   "cuando": "2026-09-29 13:36",
+   "campo": "problema",
+   "de": "Solo lectura: leer la respuesta mas reciente enviada a Codex",
+   "a": "FI1 vigia: necesito el flujo real de tomar y guardar una fot"
+  },
+  {
+   "cuando": "2026-09-29 13:36",
+   "campo": "paquete",
+   "de": "C:\\Ingeniero_VUC\\memoria\\paquetes\\ingeniero__solo_lectura__l",
+   "a": "C:\\Ingeniero_VUC\\memoria\\paquetes\\foto_informe__fi1_vigia__n"
+  },
+  {
+   "cuando": "2026-09-29 13:36",
+   "campo": "flujos",
+   "de": "['codex', 'canal', 'julio']",
+   "a": "['real', 'prueba', 'informes']"
+  },
+  {
+   "cuando": "2026-09-29 13:39",
+   "campo": "problema",
+   "de": "FI1 vigia: necesito el flujo real de tomar y guardar una fot",
+   "a": "FI1 vigia: entregar exactamente la funcion processPhoto comp"
+  },
+  {
+   "cuando": "2026-09-29 13:39",
+   "campo": "paquete",
+   "de": "C:\\Ingeniero_VUC\\memoria\\paquetes\\foto_informe__fi1_vigia__n",
+   "a": "C:\\Ingeniero_VUC\\memoria\\paquetes\\foto_informe__fi1_vigia__e"
+  },
+  {
+   "cuando": "2026-09-29 13:39",
+   "campo": "flujos",
+   "de": "['real', 'prueba', 'informes']",
+   "a": "['real']"
+  },
+  {
+   "cuando": "2026-09-29 13:41",
+   "campo": "problema",
+   "de": "FI1 vigia: entregar exactamente la funcion processPhoto comp",
+   "a": "FI1 vigia: el paquete ya trae openDesktopCamera y captureDes"
+  },
+  {
+   "cuando": "2026-09-29 13:41",
+   "campo": "paquete",
+   "de": "C:\\Ingeniero_VUC\\memoria\\paquetes\\foto_informe__fi1_vigia__e",
+   "a": "C:\\Ingeniero_VUC\\memoria\\paquetes\\foto_informe__fi1_vigia__e"
+  },
+  {
+   "cuando": "2026-09-29 13:41",
+   "campo": "flujos",
+   "de": "['real']",
+   "a": "['real', 'prueba', 'table']"
+  },
+  {
+   "cuando": "2026-09-29 13:43",
+   "campo": "problema",
+   "de": "FI1 vigia: el paquete ya trae openDesktopCamera y captureDes",
+   "a": "FI1 vigia minima. NECESITO_LEER: rv3_prueba_7_crear_19.py li"
+  },
+  {
+   "cuando": "2026-09-29 13:43",
+   "campo": "paquete",
+   "de": "C:\\Ingeniero_VUC\\memoria\\paquetes\\foto_informe__fi1_vigia__e",
+   "a": "C:\\Ingeniero_VUC\\memoria\\paquetes\\foto_informe__fi1_vigia_mi"
+  },
+  {
+   "cuando": "2026-09-29 13:43",
+   "campo": "flujos",
+   "de": "['real', 'prueba', 'table']",
+   "a": "['offline', 'real', 'table']"
   }
  ],
  "tarea": "organizar_fallos_raiz_y_planificar",

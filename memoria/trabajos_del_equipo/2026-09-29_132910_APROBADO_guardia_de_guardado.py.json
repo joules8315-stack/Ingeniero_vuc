@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El mensaje de freno devuelve solo el resumen de la bateria y no nombra las pruebas rojas que frenan el guardado, que ya estan en guardados_que_frenan.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, list(esperando), conocidas_de_antes)\n    if guardados_que_frenan:\n        # Al menos uno ya estaba guardado y no espera arreglo: es romper algo que estaba verde. Frenar.\n        return False, ultima[0].strip()",
+  "texto_nuevo": "    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, list(esperando), conocidas_de_antes)\n    if guardados_que_frenan:\n        # Al menos uno ya estaba guardado y no espera arreglo: es romper algo que estaba verde. Frenar.\n        return False, (\"pruebas rojas que frenan el guardado: \" + \", \".join(guardados_que_frenan)\n                       + \" | \" + ultima[0].strip())",
+  "cambios": [],
+  "cambio": "En el freno por rojas ya guardadas, devolver False pero con un mensaje que incluya los nombres de guardados_que_frenan separados por coma y espacio, precedidos de una frase que diga que son las pruebas rojas que frenan el guardado, dejando detras el resumen actual.",
+  "codigo": "        return False, (\"pruebas rojas que frenan el guardado: \" + \", \".join(guardados_que_frenan)\n                       + \" | \" + ultima[0].strip())",
+  "vigia": "vigias/test_vigia_el_guardado_dice_que_roja_lo_frena.py, que exige que el mensaje contenga test_vigia_la_que_frena.py",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "vigias/test_vigia_el_guardado_dice_que_roja_lo_frena.py",
+   "el otro camino de freno por tiempo",
+   "la bateria en paralelo",
+   "el bucle que saca los archivos rojos",
+   "el camino de dejar pasar"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Si alguna prueba o codigo vecino compara el mensaje por igualdad exacta (o mira que empiece por el resumen), el prefijo nuevo lo rompe; por substring sigue encontrandose porque el resumen antiguo queda detras, tras ' | '",
+   "Si rojas_que_frenan devolviera algo que no sean cadenas (por ejemplo pares o tuplas), ', '.join reventaria en runtime; el material llega cortado justo antes de esa llamada y no lo deja ver",
+   "El camino de freno por tiempo y el de 'no se pudo identificar el archivo rojo' no se tocan: siguen devolviendo su propio mensaje"
+  ],
+  "que_falta": [
+   "Ver el cuerpo de rojas_que_frenan para confirmar que devuelve una lista de cadenas de ruta de prueba; es el unico punto donde el cambio podria fallar al ejecutarse"
+  ],
+  "resumen_para_el_jefe": "El cambio hace justo lo pedido: el freno de rojas ya guardadas ahora nombra las pruebas que lo frenan y conserva el resumen de antes detras, sin tocar los otros caminos de freno; solo falta ver que rojas_que_frenan devuelva cadenas."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 32996 a 17821 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El valor por defecto de en_paralelo en la funcion bucle es 1, por lo que la tanda solo lleva una orden y las piezas distintas van en fila.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "def bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):",
+  "texto_nuevo": "def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):",
+  "cambios": "",
+  "cambio": "Cambiar el valor por defecto de en_paralelo de 1 a 2 en la firma de la funcion bucle.",
+  "codigo": "def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):",
+  "vigia": "vigias/test_vigia_el_loop_del_pit.py, caso test_dos_piezas_distintas_corren_a_la_vez: pasa de roja a verde con el cambio y vuelve a roja si se deshace; test_misma_pieza_va_en_fila sigue verde.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "vigias/test_vigia_el_loop_del_pit.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Al pasar a 2, dos ordenes de piezas distintas se ejecutan a la vez en el mismo proceso: si dos escribieran el mismo archivo se pisarian, pero el vigia afirma que test_misma_pieza_va_en_fila sigue verde (listas_para_correr no devuelve dos ordenes de la misma pieza), asi que el riesgo queda cubierto por la prueba",
+   "La firma cambia para todos los llamantes de bucle que no pasen en_paralelo; el material no deja ver si hay alguno que pase 1 a proposito, pero el encargo prohibe tocar mas lineas y el propio paquete pide este unico cambio"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio es exactamente el renglon que pedia el paquete (el 1 pasa a 2 en la firma de bucle), sin prosa, sin lineas de mas y sin tocar la prueba; se aprueba y que la pruebe la vigia."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 30521 a 13568 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
