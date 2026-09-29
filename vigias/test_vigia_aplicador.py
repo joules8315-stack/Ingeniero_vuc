@@ -136,3 +136,26 @@ def test_un_archivo_con_marca_BOM_se_puede_editar(tmp_path):
     datos = f.read_bytes()
     assert "def nueva():" in datos.decode("utf-8-sig"), "no quedo el cambio"
     assert datos.count(b"\xef\xbb\xbf") <= 1, "la marca BOM quedo duplicada"
+
+
+def test_un_archivo_con_marca_BOM_se_puede_editar_por_varios_pedazos(tmp_path):
+    """fallo real 2026-09-28: aplicar_cambios (varios pedazos) tiraba todo cambio aprobado a ingeniero.py por la marca BOM."""
+    f = tmp_path / "con_bom.py"
+    f.write_bytes(b"\xef\xbb\xbf" + "def vieja():\n    return 1\n".encode("utf-8"))
+    propuesta = {
+        "cambios": [
+            {
+                "archivo": str(f),
+                "texto_viejo": "def vieja():",
+                "texto_nuevo": "def nueva():",
+            }
+        ]
+    }
+    ok, msg = aplicador.aplicar_cambios(propuesta)
+    assert ok, (
+        "un archivo con marca BOM no se pudo editar por el camino de varios pedazos; asi se tira todo cambio aprobado a ingeniero.py: "
+        + str(msg)
+    )
+    datos = f.read_bytes()
+    assert "def nueva():" in datos.decode("utf-8-sig"), "no quedo el cambio"
+    assert datos.count(b"\xef\xbb\xbf") == 1, "la marca BOM no quedo exactamente una vez"
