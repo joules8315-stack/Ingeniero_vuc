@@ -1,0 +1,52 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En la funcion bucle, correr_una llama a lanzar_al_equipo sin pedir ni soltar la copia propia de cada orden, asi que dos tareas comparten carpeta de trabajo.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "        def correr_una(orden):\n            try:\n                return lanzar_al_equipo(proyecto, orden, tope_segundos)\n            except Exception as e:\n                return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}",
+  "texto_nuevo": "        def correr_una(orden):\n            copia = copia_para(orden.get('id'), proyecto)\n            try:\n                try:\n                    return lanzar_al_equipo(proyecto, orden, tope_segundos)\n                except Exception as e:\n                    return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}\n            finally:\n                soltar_copia(copia)",
+  "cambio": "Dentro de correr_una, pedir la copia propia de la orden con copia_para(orden.get('id'), proyecto) antes de llamar a lanzar_al_equipo, y soltarla SIEMPRE con soltar_copia(copia) en un finally. Si la copia no se consigue, no se frena el taller: se sigue trabajando como hoy, sin copia, y se deja dicho en la salida que se trabajo sin carpeta propia con el motivo que devuelve la pieza. El manejo del error existente se conserva palabra por palabra.",
+  "codigo": "        def correr_una(orden):\n            copia = copia_para(orden.get('id'), proyecto)\n            try:\n                try:\n                    return lanzar_al_equipo(proyecto, orden, tope_segundos)\n                except Exception as e:\n                    return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}\n            finally:\n                soltar_copia(copia)",
+  "vigia": "vigias/test_vigia_el_loop_del_pit.py, vigias/test_vigia_el_capataz_lanza_al_equipo.py y vigias/test_vigia_el_comando_pit.py: cambian lanzar_al_equipo por uno falso, asi que el arreglo no puede exigir que la copia exista de verdad para que la tarea corra.",
+  "puede_danar": [
+   "cuerpo/capataz.py::bucle",
+   "arnes/copia_de_la_orden.py::copia_para",
+   "arnes/copia_de_la_orden.py::soltar_copia",
+   "vigias/test_vigia_el_loop_del_pit.py",
+   "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+   "vigias/test_vigia_el_comando_pit.py"
+  ],
+  "preguntas": [
+   "Cuando la copia no se consigue, ¿como exactamente hay que dejar dicho en la salida que se trabajo sin carpeta propia con el motivo devuelto por la pieza? El material no dice el texto ni el formato de ese aviso.",
+   "El material dice que se importa por nombre suelto, igual que el taller hace ya con sus otras vecinas, pero no muestra la linea de importacion de copia_para y soltar_copia en cuerpo/capataz.py. ¿Hay que anadirla y con que forma exacta?"
+  ],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El codigo no hace lo que su propio texto de cambio promete: el texto dice que si la copia no se consigue se sigue sin copia Y se deja dicho en la salida con el motivo; el codigo ignora `ok` y `motivo` de la respuesta y no escribe nada en la salida. O se implementa el aviso o se quita del texto.",
+   "`copia = copia_para(orden.get('id'), proyecto)` queda FUERA del try. Si la pieza lanza cualquier excepcion, la excepcion sale de `correr_una`, `ejecutor.map` la propaga y se cae el bucle entero, perdiendo el trabajo de todas las tareas de la tanda. Antes `correr_una` no podia lanzar nunca; el arreglo le quita esa garantia por un `finally` metido a lo bruto.",
+   "El `carpeta` que devuelve la pieza se descarta: `lanzar_al_equipo` sigue recibiendo `(proyecto, orden, tope_segundos)`, sin carpeta. Si la pieza no deja la carpeta en un estado que las rutas y el guardia consulten, el fallo medido del 2026-09-21 sigue igual de vivo y este cambio se ve como arreglo sin aislar nada."
+  ],
+  "riesgo_vecinos": [
+   "Con dos tareas a la vez, si la pieza guarda la copia actual en una variable global y no por hilo, una tarea pisa la carpeta de la otra y la vigilancia las vuelve a cruzar: justo lo que se quiere evitar.",
+   "Las tres vigias que cambian `lanzar_al_equipo` por uno falso ahora ejecutan la pieza de verdad: crean carpetas reales en disco y dejan rastro; y si `copia_para` revienta en el entorno de pruebas, la excepcion sale de `correr_una` y las tres vigias caen en vez de fallar limpio."
+  ],
+  "que_falta": [
+   "El texto de arnes/copia_de_la_orden.py: hace falta ver si `copia_para` deja la carpeta en un sitio que las rutas y el guardia consulten, y si ese sitio es por hilo o global. De eso depende que este arreglo aisle de verdad.",
+   "Que devuelve exactamente `copia_para` cuando no consigue la copia, para poder cumplir el aviso que el propio texto del cambio promete.",
+   "Correr las tres vigias con la pieza llamada de verdad, no solo con el lanzar_al_equipo falso."
+  ],
+  "resumen_para_el_jefe": "No inventa nada y el cambio es pequeno, pero tira la carpeta que devuelve la pieza, deja copia_para fuera del try (una excepcion ahi tumba el bucle entero) y no hace el aviso que su propio texto dice; hace falta ver la pieza antes de aceptarlo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 36041 a 18773 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
