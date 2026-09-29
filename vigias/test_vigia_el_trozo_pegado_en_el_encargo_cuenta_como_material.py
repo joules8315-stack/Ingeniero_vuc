@@ -33,6 +33,33 @@ def _traer_falta_en_el_material():
     return falta_en_el_material
 
 
+# Encargo del CASO 3: nombra el archivo y el nombre _BateriaFalsa, y pega el trozo
+# con la palabra class, no def. El trozo esta pegado en el encargo, asi que no falta nada.
+ENCARGO_CON_CLASE_PEGADA = (
+    "Hay que arreglar cuerpo/saludos.py, nombre _BateriaFalsa.\n"
+    "El trozo que hay que cambiar va pegado aqui debajo:\n"
+    "\n"
+    "class _BateriaFalsa:\n"
+    "    def correr(self):\n"
+    "        return 1\n"
+)
+
+
+def test_caso_3_clase_pegada_en_el_encargo_cuenta_como_material():
+    """CASO 3 (nace ROJO): una CLASE pegada en el encargo NO debe contar como falta.
+
+    Hoy la funcion busca 'def ' + nombre, y en el trozo pegado pone 'class _BateriaFalsa',
+    asi que no reconoce la clase y devuelve frases diciendo que falta. Debe devolver
+    lista vacia porque el trozo esta pegado en el encargo.
+    """
+    falta_en_el_material = _traer_falta_en_el_material()
+    resultado = falta_en_el_material(MATERIAL_INUTIL, ENCARGO_CON_CLASE_PEGADA)
+    assert resultado == [], (
+        "el trozo con la clase esta pegado en el encargo y no debe faltar nada, "
+        "pero devolvio: " + repr(resultado)
+    )
+
+
 def test_caso_1_trozo_pegado_en_el_encargo_cuenta_como_material():
     """CASO 1 (nace ROJO): el trozo pegado en el encargo NO debe contar como falta.
 
