@@ -1,0 +1,28 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la vigia que comprueba que el encargo pasado con --encargo-archivo llega completo (con comillas y renglones) a router.armar, y que la forma actual por argumentos sigue funcionando.",
+  "archivo": "vigias/test_vigia_el_encargo_viaja_por_archivo.py",
+  "texto_nuevo": "import os\nimport sys\n\n# Arranque: meter en sys.path la carpeta que esta un nivel arriba de vigias,\n# para poder importar ingeniero.py y el paquete cerebro.\n_AQUI = os.path.dirname(os.path.abspath(__file__))\n_RAIZ = os.path.dirname(_AQUI)\nif _RAIZ not in sys.path:\n    sys.path.insert(0, _RAIZ)\n\n\n# Texto del encargo con TRES renglones y comillas dobles por dentro.\n# El renglon del medio lleva una palabra entre comillas dobles: es justo lo que\n# la terminal de Windows se come hoy, asi que la vigia lo mira de frente.\n_ENCARGO = (\n    'renglon uno sin comillas\\n'\n    'renglon dos con \"palabra\" entre comillas dobles\\n'\n    'renglon tres final\\n'\n)\n\n\ndef _montar_falso_armar(monkeypatch):\n    \"\"\"Sustituye SOLO cerebro.router.armar por una falsa que apunta el texto.\n\n    Devuelve la lista donde queda apuntado el texto que llego. La falsa\n    devuelve un texto cualquiera para que el mando pueda seguir; lo que pase\n    despues da igual, porque lo que se vigila es el texto apuntado.\n    \"\"\"\n    from cerebro import router as _r\n\n    apuntado = []\n\n    def _armar_falso(proy, tarea):\n        apuntado.append(tarea)\n        return \"paquete de mentira\"\n\n    monkeypatch.setattr(_r, \"armar\", _armar_falso)\n    return apuntado\n\n\ndef test_el_encargo_llega_completo_desde_archivo(tmp_path, monkeypatch):\n    \"\"\"Prueba 1 (HOY ROJA): el texto llega COMPLETO desde el archivo.\n\n    Se escribe el encargo en un archivo de la carpeta temporal, se pasa con la\n    marca --encargo-archivo y se comprueba que a router.armar le llega\n    EXACTAMENTE el contenido del archivo, con sus comillas y sus tres renglones.\n    Hoy sale roja porque esa marca no existe: llegaria el nombre de la marca y\n    la ruta, no el texto.\n    \"\"\"\n    import ingeniero\n\n    ruta_encargo = tmp_path / \"encargo.txt\"\n    ruta_encargo.write_text(_ENCARGO, encoding=\"utf-8\")\n\n    apuntado = _montar_falso_armar(monkeypatch)\n\n    monkeypatch.setattr(\n        sys,\n        \"argv\",\n        [\n            \"ingeniero.py\",\n            \"equipo\",\n            \"proyecto_de_mentira\",\n            \"--encargo-archivo\",\n            str(ruta_encargo),\n        ],\n    )\n\n    try:\n        ingeniero.main()\n    except Exception:\n        # Si el mando revienta DESPUES de apuntar el texto, da igual: lo que se\n        # vigila es el texto que llego, no que el mando termine.\n        pass\n\n    assert apuntado, \"router.armar no fue llamado: el texto no llego a ninguna parte\"\n    assert apuntado[0] == _ENCARGO, (\n        \"el texto del encargo no llego completo desde el archivo; \"\n        \"llego: %r\" % (apuntado[0],)\n    )\n\n\ndef test_el_encargo_por_argumentos_sigue_funcionando(tmp_path, monkeypatch):\n    \"\"\"Prueba 2 (VERDE HOY): lo de siempre no se rompe.\n\n    Mismo montaje, pero el encargo va escrito en los argumentos como se hace\n    hoy. El texto que llega a router.armar tiene que ser ese mismo texto.\n    \"\"\"\n    import ingeniero\n\n    apuntado = _montar_falso_armar(monkeypatch)\n\n    monkeypatch.setattr(\n        sys,\n        \"argv\",\n        [\n            \"ingeniero.py\",\n            \"equipo\",\n            \"proyecto_de_mentira\",\n            \"renglon uno sin comillas\",\n            \"renglon dos con\",\n            \"palabra\",\n            \"entre comillas dobles\",\n            \"renglon tres final\",\n        ],\n    )\n\n    try:\n        ingeniero.main()\n    except Exception:\n        pass\n\n    assert apuntado, \"router.armar no fue llamado: el texto no llego a ninguna parte\"\n    assert apuntado[0] == (\n        \"renglon uno sin comillas renglon dos con palabra entre comillas dobles \"\n        \"renglon tres final\"\n    ), \"el encargo pasado por argumentos no llego como antes; llego: %r\" % (apuntado[0],)\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Test 1 y 2 capturan solo Exception; si main() hiciera sys.exit() tras llamar a armar (SystemExit es BaseException) la prueba reventaria aunque el texto haya llegado bien. El material no dice que main() llame a sys.exit, asi que es riesgo, no fallo.",
+   "La asercion de test 1 compara con la cadena exacta, incluido el \\n final: una implementacion correcta que lea con .read() pasa, pero una que aplique .strip() fallaria. El material exige EXACTAMENTE el contenido del archivo, asi que la prueba codifica bien la ley; queda como aviso para el obrero de la ronda siguiente.",
+   "El texto esperado en test 2 asume que el empalme es con un espacio. El material lo dice ('juntando con espacios lo que queda de los argumentos'), asi que esta bien, pero es la unica dependencia de la prueba 2 con el detalle de la implementacion."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el encargo: crea solo el archivo pedido, nace roja por --encargo-archivo, falsa unicamente router.armar como exige el material, y la prueba 2 queda verde con el empalme por espacios documentado; unico riesgo menor es no capturar SystemExit."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 42192 a 14777 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
