@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El montaje falsea atributos inexistentes (bateria, _vecinas) en el modulo guardia_de_guardado, pero la pieza los importa por nombre suelto dentro de _vigias, asi que hay que inyectarlos en sys.modules con las claves bateria_en_paralelo y vecinas.",
+  "archivo": "vigias/test_vigia_el_guardado_dice_que_roja_lo_frena.py",
+  "funcion": "test_el_guardado_dice_que_roja_lo_frena",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    # 1. La bateria falsa: un archivo rojo y el renglon de resumen como ultimo renglon.\n    salida = (\n        \"FAILED vigias/test_vigia_la_que_frena.py::test_algo\\n\"\n        \"bateria en paralelo: 1 grupos, 1 rojos, 0 cortados por tiempo\\n\"\n    )\n    monkeypatch.setattr(guardia_de_guardado, \"bateria\", _BateriaFalsa(salida))",
+    "texto_nuevo": "    # 1. La bateria falsa: un archivo rojo y el renglon de resumen como ultimo renglon.\n    #    La pieza hace `import bateria_en_paralelo` DENTRO de _vigias, asi que el falso\n    #    tiene que estar en sys.modules con esa clave, no como atributo de la pieza.\n    salida = (\n        \"FAILED vigias/test_vigia_la_que_frena.py::test_algo\\n\"\n        \"bateria en paralelo: 1 grupos, 1 rojos, 0 cortados por tiempo\\n\"\n    )\n    monkeypatch.setitem(sys.modules, \"bateria_en_paralelo\", _BateriaFalsa(salida))"
+   },
+   {
+    "texto_viejo": "    # 2. Las vecinas: la carpeta entera de vigias, para no salir por el camino de\n    #    \"solo cambiaron documentos\".\n    monkeypatch.setattr(\n        guardia_de_guardado,\n        \"_vecinas\",\n        lambda *args, **kwargs: [\"vigias\"],\n    )",
+    "texto_nuevo": "    # 2. Las vecinas: la carpeta entera de vigias, para no salir por el camino de\n    #    \"solo cambiaron documentos\". La pieza hace `vecinas.elegir(raiz)` con vecinas\n    #    importado por nombre suelto dentro de _vigias, asi que va en sys.modules.\n    class _VecinasFalsas:\n        def elegir(self, raiz):\n            return [\"vigias/\"]\n\n    monkeypatch.setitem(sys.modules, \"vecinas\", _VecinasFalsas())"
+   }
+  ],
+  "cambio": "Sustituir los dos monkeypatch.setattr sobre atributos inexistentes (bateria y _vecinas) por monkeypatch.setitem sobre sys.modules con las claves bateria_en_paralelo y vecinas, dejando intacto el falseo de subprocess.run, la raiz temporal y los dos assert.",
+  "codigo": "    monkeypatch.setitem(sys.modules, \"bateria_en_paralelo\", _BateriaFalsa(salida))\n\n    class _VecinasFalsas:\n        def elegir(self, raiz):\n            return [\"vigias/\"]\n\n    monkeypatch.setitem(sys.modules, \"vecinas\", _VecinasFalsas())",
+  "vigia": "vigias/test_vigia_el_guardado_dice_que_roja_lo_frena.py — debe quedar ROJA por el segundo assert (el mensaje no nombra la prueba roja), no por AttributeError.",
+  "puede_danar": [
+   "vigias/test_vigia_el_guardado_dice_que_roja_lo_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El arreglo corrige el montaje para que coincida con los imports internos de la pieza; no usa nada inexistente y deja la prueba roja por su motivo de verdad."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38236 a 16107 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 45217 a 16200 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 2"
+ ]
+}
