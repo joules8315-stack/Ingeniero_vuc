@@ -154,5 +154,25 @@ def informe(t=None):
     return "\n".join(L)
 
 
+def tiene_veredicto(ruta):
+    """Devuelve True solo si el documento trae veredicto del equipo.
+
+    Un documento trae veredicto cuando en su texto aparecen las dos palabras
+    APROBADO y EQUIPO, sin distinguir mayusculas de minusculas. Si falta una
+    de las dos, no trae veredicto. Nunca revienta: ante la duda, False.
+    """
+    if not ruta:
+        return False
+    try:
+        if not os.path.isfile(ruta):
+            return False
+        with open(ruta, "r", encoding="utf-8", errors="replace") as f:
+            texto = f.read()
+    except Exception:
+        return False
+    texto = texto.upper()
+    return "APROBADO" in texto and "EQUIPO" in texto
+
+
 if __name__ == "__main__":
     sys.stdout.write(informe() + "\n")
