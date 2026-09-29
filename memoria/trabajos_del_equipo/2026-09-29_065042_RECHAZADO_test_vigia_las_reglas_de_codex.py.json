@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La vigia lee el carne con reglas viejas: exige exactamente cinco permisos allow y busca las ordenes de git como texto pegado, cuando el carne ya tiene ocho permisos y escribe las ordenes entre corchetes y comillas.",
+  "archivo": "vigias/test_vigia_las_reglas_de_codex.py",
+  "funcion": "test_allow_son_exactamente_cinco_y_las_de_ingeniero",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def test_allow_son_exactamente_cinco_y_las_de_ingeniero():\n    texto = _leer_reglas()\n    allow = _lineas_allow(texto)\n    assert len(allow) == 5, \"se esperaban 5 lineas con decision=\\\"allow\\\", hay %d\" % len(allow)\n    esperadas = [\n        \"python ingeniero.py arranca\",\n        \"python ingeniero.py trabaja\",\n        \"python ingeniero.py equipo\",\n        \"python ingeniero.py pit\",\n        \"python ingeniero.py director\",\n    ]\n    for esperada in esperadas:\n        encontrada = False\n        for linea in allow:\n            if esperada in linea:\n                encontrada = True\n                break\n        assert encontrada, \"falta la regla allow para: %s\" % esperada",
+    "texto_nuevo": "# 2026-09-29: Codex tiene permiso para avisar desde hoy (tres permisos nuevos, ocho en total).\n# El carne escribe las ordenes entre corchetes y comillas, no como texto pegado.\ndef test_allow_son_exactamente_los_ocho_del_carne():\n    texto = _leer_reglas()\n    allow = _lineas_allow(texto)\n    esperadas = [\n        \"python ingeniero.py arranca\",\n        \"python ingeniero.py trabaja\",\n        \"python ingeniero.py equipo\",\n        \"python ingeniero.py pit\",\n        \"python ingeniero.py director\",\n        \"python arnes/canal.py enviar\",\n        \"python ingeniero.py cruzado\",\n        \"python ingeniero.py resultado\",\n    ]\n    assert len(allow) == len(esperadas), \\\n        \"se esperaban %d lineas con decision=\\\"allow\\\", hay %d\" % (len(esperadas), len(allow))\n    for esperada in esperadas:\n        encontrada = False\n        for linea in allow:\n            if esperada in linea:\n                encontrada = True\n                break\n        assert encontrada, \"falta la regla allow para: %s\" % esperada"
+   },
+   {
+    "texto_viejo": "    prohibidos = [\"git add\", \"commit\", \"push\", \"reset\", \"restore\", \"checkout\"]",
+    "texto_nuevo": "    # 2026-09-29: el carne escribe las ordenes entre corchetes y comillas,\n    # asi: prefix_rule(pattern=[\"git\", \"add\"], decision=\"forbidden\").\n    prohibidos = [\n        [\"git\", \"add\"],\n        [\"git\", \"commit\"],\n        [\"git\", \"push\"],\n        [\"git\", \"reset\"],\n        [\"git\", \"restore\"],\n        [\"git\", \"checkout\"],\n    ]"
+   }
+  ],
+  "cambio": "En la prueba de permisos: renombrarla a test_allow_son_exactamente_los_ocho_del_carne, exigir los ocho permisos del carne (incluidos arnes/canal.py enviar, cruzado y resultado) y comprobar que cada uno aparece. En la prueba de git: cambiar la lista de prohibidos de texto pegado a pares de palabras entre corchetes y comillas, para que reconozca el formato real del carne.",
+  "codigo": "# 2026-09-29: Codex tiene permiso para avisar desde hoy (tres permisos nuevos, ocho en total).\n# El carne escribe las ordenes entre corchetes y comillas, no como texto pegado.\ndef test_allow_son_exactamente_los_ocho_del_carne():\n    texto = _leer_reglas()\n    allow = _lineas_allow(texto)\n    esperadas = [\n        \"python ingeniero.py arranca\",\n        \"python ingeniero.py trabaja\",\n        \"python ingeniero.py equipo\",\n        \"python ingeniero.py pit\",\n        \"python ingeniero.py director\",\n        \"python arnes/canal.py enviar\",\n        \"python ingeniero.py cruzado\",\n        \"python ingeniero.py resultado\",\n    ]\n    assert len(allow) == len(esperadas), \\\n        \"se esperaban %d lineas con decision=\\\"allow\\\", hay %d\" % (len(esperadas), len(allow))\n    for esperada in esperadas:\n        encontrada = False\n        for linea in allow:\n            if esperada in linea:\n                encontrada = True\n                break\n        assert encontrada, \"falta la regla allow para: %s\" % esperada\n\n# 2026-09-29: el carne escribe las ordenes entre corchetes y comillas,\n# asi: prefix_rule(pattern=[\"git\", \"add\"], decision=\"forbidden\").\nprohibidos = [\n    [\"git\", \"add\"],\n    [\"git\", \"commit\"],\n    [\"git\", \"push\"],\n    [\"git\", \"reset\"],\n    [\"git\", \"restore\"],\n    [\"git\", \"checkout\"],\n]",
+  "vigia": "La propia prueba del archivo: test_allow_son_exactamente_los_ocho_del_carne (antes test_allow_son_exactamente_cinco_y_las_de_ingeniero) y la prueba de ordenes de git prohibidas. Deben quedar verdes, junto con la que ya estaba verde; la del instalador sigue roja.",
+  "puede_danar": [
+   "vigias/test_vigia_las_reglas_de_codex.py",
+   "config/codex/default.rules (solo se lee, no se toca)"
+  ],
+  "preguntas": [
+   "El bucle que usa la lista 'prohibidos' no aparece en el material: NECESITO_LEER: vigias/test_vigia_las_reglas_de_codex.py / necesito ver el bucle completo que recorre 'prohibidos' para adaptarlo al formato de pares [\"git\", \"add\"] / decide si la prueba de git queda verde o sigue roja / riesgo: cambiar la lista sin tocar el bucle deja la prueba roja o verde falsa."
+  ],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La prueba de git ahora define 'prohibidos' como lista de listas, pero el bucle que la recorre no se ha modificado; probablemente la prueba seguirá fallando o dará falsos positivos."
+  ],
+  "riesgo_vecinos": [
+   "vigias/test_vigia_las_reglas_de_codex.py (prueba de git prohibidas)"
+  ],
+  "que_falta": [
+   "Adaptar el código que procesa la lista 'prohibidos' para aceptar pares [\"git\", \"add\"] en lugar de strings simples."
+  ],
+  "resumen_para_el_jefe": "Rechazado: la alteración de 'prohibidos' rompe la lógica existente y la prueba de git no queda corregida."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 26040 a 18934 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 30424 a 15707 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 30679 a 15791 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "el pasillo recorto el encargo de 30787 a 15825 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}
