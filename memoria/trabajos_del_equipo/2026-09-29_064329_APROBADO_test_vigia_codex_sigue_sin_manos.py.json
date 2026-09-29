@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La lista _PREFIJOS_ALLOW de la vigia no contempla la orden de dejar recados (python arnes/canal.py enviar) que ya esta permitida en el carne de Codex, y el mensaje de error de la prueba sigue nombrando solo arranca, trabaja, equipo y pit.",
+  "archivo": "vigias/test_vigia_codex_sigue_sin_manos.py",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    \"python ingeniero.py resultado\",",
+    "texto_nuevo": "    \"python ingeniero.py resultado\",\n    # 2026-09-29: sin esta orden Codex no puede avisar cuando se traba y se queda\n    # esperando, gastando cupo. El permiso ya esta en config/codex/default.rules.\n    \"python arnes/canal.py enviar\","
+   }
+  ],
+  "cambio": "Anadir a la lista _PREFIJOS_ALLOW el prefijo de la orden de dejar recados, con un comentario corto con la fecha 2026-09-29 y el motivo. Ademas, actualizar el mensaje de error que dice que solo se permite arranca, trabaja, equipo y pit para que nombre las ordenes que de verdad se permiten hoy.",
+  "codigo": "    \"python arnes/canal.py enviar\",",
+  "vigia": "vigias/test_vigia_codex_sigue_sin_manos.py: las cinco pruebas deben quedar verdes, en particular la que comprueba las ordenes permitidas con startswith contra _PREFIJOS_ALLOW.",
+  "puede_danar": [
+   "vigias/test_vigia_codex_sigue_sin_manos.py (la prueba de ordenes permitidas)",
+   "config/codex/default.rules (referenciado, no se toca)"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: el mensaje de error que nombra arranca, trabaja, equipo y pit no aparece en el material; necesito su texto literal exacto para poder sustituirlo. NECESITO_LEER: vigias/test_vigia_codex_sigue_sin_manos.py / motivo: falta el texto literal del mensaje de error y de la lista _PREFIJOS_ALLOW completa / que decide: el texto_viejo exacto de los dos cambios / riesgo: si no se copia literal, el trabajo se descarta."
+  ],
+  "confianza": "baja",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El campo 'cambio' promete DOS cosas (anadir el prefijo Y actualizar el mensaje de error de la linea 215) pero 'cambios' trae solo UNA. El mensaje que dice 'Solo se permite python ingeniero.py arranca|trabaja|equipo|pit' sigue como estaba: no se entrega. No es fallo de fondo (el texto literal no viene en el material y el obrero lo pidio con PREGUNTA_REQUERIDA), pero el director tiene que saber que esa mitad queda PENDIENTE, no hecha."
+  ],
+  "riesgo_vecinos": [
+   "Vecino no nombrado en puede_danar y MEDIDO: vigias/test_vigia_las_reglas_de_codex.py:48 (test_allow_son_exactamente_cinco_y_las_de_ingeniero) exige len(allow) == 5 sobre config/codex/default.rules, y ese archivo tiene HOY 8 lineas allow (arranca, trabaja, equipo, pit, director, canal enviar, cruzado, resultado). Esa prueba ya estaba roja ANTES de este cambio (7 antes de la regla del canal): este cambio ni la rompe ni la arregla, pero mientras siga roja el candado de guardado no va a dejar pasar el trabajo."
+  ],
+  "que_falta": [
+   "Orden aparte, con el texto literal del mensaje de la linea 215, para que nombre las ordenes que de verdad se permiten hoy (falta en el material; por eso el obrero no lo pudo hacer).",
+   "Al文件名 del comentario el obrero puso 'config/codex/default.rules' y es cierto (linea 8 de ese archivo, con la regla del canal ya puesta): no hay invencion."
+  ],
+  "resumen_para_el_jefe": "El cambio central esta bien y es verdad: anade 'python arnes/canal.py enviar' a la lista, la ancla literal coincide, y con la logica de la prueba esa linea nueva SI pone verde la prueba roja; no inventa nada. Ojo dos cosas: el mensaje de error NO se actualizo (falta su texto, hay que pedirlo aparte) y hay otra prueba vecina ya roja de antes que dice que hay 5 permisos y ahora hay 8, y esa va a frenar el guardado."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 29679 a 18747 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
