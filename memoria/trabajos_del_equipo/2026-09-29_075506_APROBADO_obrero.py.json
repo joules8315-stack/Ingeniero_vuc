@@ -1,0 +1,48 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "separar_avisos_y_frenos solo reconoce como aviso lo que empieza por AVISO:, y su cabecera dice lo mismo, asi que el mensaje del revisor que empieza por NO HACE LO QUE SE PIDIO se clasifica como freno y tumba la ronda.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "separar_avisos_y_frenos",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    Es aviso todo texto que, quitandole los espacios de delante, empieza por la\n    palabra AVISO seguida de dos puntos. Todo lo demas es freno. No se pierde ni\n    se duplica ningun mensaje. Si no llega una lista, o trae cosas que no son\n    texto, no revienta: devuelve dos listas y sigue.",
+    "texto_nuevo": "    Es aviso todo texto que, quitandole los espacios de delante, empieza por la\n    palabra AVISO seguida de dos puntos, y tambien el que empieza por NO HACE LO\n    QUE SE PIDIO: ese mensaje lo escribe el revisor cuando OPINA que el obrero\n    entrego otra cosa, es un juicio sobre la intencion y no una averia\n    comprobada, asi que no frena la ronda. Todo lo demas es freno. No se pierde\n    ni se duplica ningun mensaje. Si no llega una lista, o trae cosas que no son\n    texto, no revienta: devuelve dos listas y sigue."
+   },
+   {
+    "texto_viejo": "        if mensaje.lstrip().startswith(\"AVISO:\"):",
+    "texto_nuevo": "        if mensaje.lstrip().startswith((\"AVISO:\", \"NO HACE LO QUE SE PIDIO:\")):"
+   }
+  ],
+  "cambio": "En la cabecera de separar_avisos_y_frenos, anadir que tambien es aviso el texto que empieza por NO HACE LO QUE SE PIDIO; y en el bucle, cambiar la condicion para que reconozca los dos prefijos, conservando el resto igual.",
+  "codigo": "        if mensaje.lstrip().startswith((\"AVISO:\", \"NO HACE LO QUE SE PIDIO:\")):",
+  "vigia": "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py, caso test_4_el_mensaje_de_no_hace_lo_que_se_pidio_es_aviso",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "quien llame a separar_avisos_y_frenos y cuente con que ese mensaje frene la ronda"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Menor, no bloqueante: el prefijo se reconoce solo con dos puntos al final; si el revisor escribiera 'NO HACE LO QUE SE PIDIO' sin dos puntos, seguiria siendo freno. La prueba que vigila usa dos puntos, asi que hoy el arreglo cumple lo pedido."
+  ],
+  "resumen_para_el_jefe": "El arreglo toca justo la linea ancla de la funcion, hace pasar a AVISO el mensaje del revisor y actualiza la cabecera; el texto viejo que cita coincide literal con el material, no inventa nada y no rompe los otros tres casos de la prueba."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38977 a 16790 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 42132 a 18956 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 2"
+ ]
+}
