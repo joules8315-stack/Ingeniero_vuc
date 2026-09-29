@@ -1,0 +1,12 @@
+[
+ {
+  "archivo": "cuerpo/aplicador.py",
+  "viejo": "        if ruta not in contenidos:\n            if os.path.exists(ruta):\n                # 2026-09-29: ingeniero.py empieza con la marca BOM (EF BB BF); leida con utf-8\n                # queda como U+FEFF dentro del texto y ast.parse revienta con 'invalid\n                # non-printable character U+FEFF' en el renglon 1, tirando todo cambio aprobado.\n                # Se lee con utf-8-sig para que la marca no entre en el texto. Lo vigila\n                # vigias/test_vigia_aplicador.py\n                with open(ruta, 'r', encoding='utf-8-sig') as f:\n                    contenidos[ruta] = f.read()\n            else:\n                contenidos[ruta] = ''",
+  "nuevo": "        if ruta not in contenidos:\n            if os.path.exists(ruta):\n                with open(ruta, 'r', encoding='utf-8') as f:\n                    contenidos[ruta] = f.read()\n            else:\n                contenidos[ruta] = ''"
+ },
+ {
+  "archivo": "cuerpo/aplicador.py",
+  "viejo": "    for ruta, texto in contenidos.items():\n        dir_archivo = os.path.dirname(ruta) or '.'\n        fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix='.tmp')\n        try:\n            # 2026-09-29: la marca BOM tiene que quedar como estaba: no se agrega a los archivos\n            # que no la tienen ni se le quita a los que si. Se lee la marca del original y se\n            # escribe con utf-8-sig solo si el original la tenia. Lo vigila\n            # vigias/test_vigia_aplicador.py\n            tenia_bom = False\n            if os.path.exists(ruta):\n                with open(ruta, 'rb') as fb:\n                    tenia_bom = fb.read(3) == b'\\xef\\xbb\\xbf'\n            with os.fdopen(fd, 'w', encoding='utf-8-sig' if tenia_bom else 'utf-8') as f:\n                f.write(texto)\n            os.replace(tmp_path, ruta)",
+  "nuevo": "    for ruta, texto in contenidos.items():\n        dir_archivo = os.path.dirname(ruta) or '.'\n        fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix='.tmp')\n        try:\n            with os.fdopen(fd, 'w', encoding='utf-8') as f:\n                f.write(texto)\n            os.replace(tmp_path, ruta)"
+ }
+]

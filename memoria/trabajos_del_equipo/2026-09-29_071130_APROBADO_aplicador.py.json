@@ -1,0 +1,52 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "aplicar_cambios lee el archivo con encoding utf-8, por lo que la marca BOM (EF BB BF) de ingeniero.py queda como U+FEFF dentro del texto y ast.parse revienta con 'invalid non-printable character U+FEFF' en el renglon 1, tirando todo cambio aprobado sobre ingeniero.py",
+  "archivo": "cuerpo/aplicador.py",
+  "funcion": "aplicar_cambios",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "        if ruta not in contenidos:\n            if os.path.exists(ruta):\n                with open(ruta, 'r', encoding='utf-8') as f:\n                    contenidos[ruta] = f.read()\n            else:\n                contenidos[ruta] = ''",
+    "texto_nuevo": "        if ruta not in contenidos:\n            if os.path.exists(ruta):\n                # 2026-09-29: ingeniero.py empieza con la marca BOM (EF BB BF); leida con utf-8\n                # queda como U+FEFF dentro del texto y ast.parse revienta con 'invalid\n                # non-printable character U+FEFF' en el renglon 1, tirando todo cambio aprobado.\n                # Se lee con utf-8-sig para que la marca no entre en el texto. Lo vigila\n                # vigias/test_vigia_aplicador.py\n                with open(ruta, 'r', encoding='utf-8-sig') as f:\n                    contenidos[ruta] = f.read()\n            else:\n                contenidos[ruta] = ''"
+   },
+   {
+    "texto_viejo": "    for ruta, texto in contenidos.items():\n        dir_archivo = os.path.dirname(ruta) or '.'\n        fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix='.tmp')\n        try:\n            with os.fdopen(fd, 'w', encoding='utf-8') as f:\n                f.write(texto)\n            os.replace(tmp_path, ruta)",
+    "texto_nuevo": "    for ruta, texto in contenidos.items():\n        dir_archivo = os.path.dirname(ruta) or '.'\n        fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix='.tmp')\n        try:\n            # 2026-09-29: la marca BOM tiene que quedar como estaba: no se agrega a los archivos\n            # que no la tienen ni se le quita a los que si. Se lee la marca del original y se\n            # escribe con utf-8-sig solo si el original la tenia. Lo vigila\n            # vigias/test_vigia_aplicador.py\n            tenia_bom = False\n            if os.path.exists(ruta):\n                with open(ruta, 'rb') as fb:\n                    tenia_bom = fb.read(3) == b'\\xef\\xbb\\xbf'\n            with os.fdopen(fd, 'w', encoding='utf-8-sig' if tenia_bom else 'utf-8') as f:\n                f.write(texto)\n            os.replace(tmp_path, ruta)"
+   }
+  ],
+  "cambio": "leer el archivo con utf-8-sig para que la marca BOM no entre en el texto que se le pasa a ast.parse, y al escribir conservar la marca BOM tal como estaba en el original (utf-8-sig si la tenia, utf-8 si no)",
+  "codigo": "with open(ruta, 'r', encoding='utf-8-sig') as f:\n    contenidos[ruta] = f.read()\n...\ntenia_bom = False\nif os.path.exists(ruta):\n    with open(ruta, 'rb') as fb:\n        tenia_bom = fb.read(3) == b'\\xef\\xbb\\xbf'\nwith os.fdopen(fd, 'w', encoding='utf-8-sig' if tenia_bom else 'utf-8') as f:\n    f.write(texto)",
+  "vigia": "vigias/test_vigia_aplicador.py: aplicar un cambio aprobado sobre ingeniero.py (que tiene BOM) y comprobar que se aplica y que el archivo sigue empezando con EF BB BF; aplicar sobre un .py sin BOM y comprobar que NO se le agrega la marca",
+  "puede_danar": [
+   "aplicar_cambios (cuerpo/aplicador.py)",
+   "aplicar_cambio (cuerpo/aplicador.py)",
+   "ingeniero.py (todo cambio aprobado sobre el)",
+   "cualquier .py del proyecto que pase por aplicar_cambios"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "aplicar_cambio (cuerpo/aplicador.py) queda sin tocar: si esa ruta tambien abre con encoding='utf-8' (lectura y/o escritura), sigue Rompiendo con U+FEFF al escribir, y al escribir con utf-8 plano le QUITA la marca a ingeniero.py. El material no trae ese texto, asi que no se puede confirmar que este tapping lo cubra; el cambio solo garantiza el camino que pasa por aplicar_cambios.",
+   "Al reescribir todos los archivos de contenidos, la deteccion de BOM (fb.read(3) == b'\\xef\\xbb\\xbf') se hace con el original aun en disco (antes de os.replace), asi que no hay carrera con el .tmp: correcto. El unico caso raro es escribir texto vacio sobre un archivo con BOM, donde utf-8-sig no emite la marca y el .py queda de 0 bytes; irrelevante para un cambio aprobado real."
+  ],
+  "que_falta": [
+   "El texto_viejo/texto_nuevo no se puede contrastar contra el material (el recorte no incluye el cuerpo de aplicador.py), pero el header declara _comprobado_por_programa y el diagnostico calca literalmente la descripcion del paquete, asi que la ubicacion se acepta por texto.",
+   "No se explica que pasa con ingeniero.py cuando el cambio aprobado no modifica su texto: si el bucle reescribe todo, la BOM se conserva porque se repone; conviene que la vigia cubra tambien el caso 'se reescribe sin cambio de texto'."
+  ],
+  "resumen_para_el_jefe": "El arreglo es correcto y minimo: lee con utf-8-sig para que U+FEFF no llegue a ast.parse y repone la BOM al escribir solo si el original la tenia, que es literalmente lo que pedia el paquete; unico cabo suelto es que la otra ruta de escritura (aplicar_cambio) no aparece tocada y podria seguir borrando la marca."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 33318 a 17295 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

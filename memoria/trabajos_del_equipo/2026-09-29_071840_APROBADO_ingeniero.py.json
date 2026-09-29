@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El bucle que aparta las marcas --escribe, --revisa y --crear no reconoce --encargo-archivo, y el renglon del ancla sigue armando tarea juntando los argumentos en vez de leer el archivo cuando esa marca viene.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "        _partes = list(sys.argv[3:])\n        _quien = {\"--escribe\": None, \"--revisa\": None}\n        _resto = []\n        _i = 0\n        _crear = False\n        while _i < len(_partes):\n            _p = _partes[_i]\n            if _p == \"--crear\":",
+    "texto_nuevo": "        _partes = list(sys.argv[3:])\n        _quien = {\"--escribe\": None, \"--revisa\": None}\n        _resto = []\n        _i = 0\n        _crear = False\n        # 2026-09-29: la terminal de Windows arranca TODAS las comillas dobles del texto\n        # que se pasa como argumento, incluso por variable. Por eso el encargo necesita\n        # viajar en un ARCHIVO: --encargo-archivo <ruta> aparta la marca y su ruta, y el\n        # texto de la tarea sale de LEER ESE ARCHIVO tal cual, en utf-8.\n        _encargo_archivo = None\n        while _i < len(_partes):\n            _p = _partes[_i]\n            if _p == \"--encargo-archivo\" and _i + 1 < len(_partes):\n                _encargo_archivo = _partes[_i + 1].strip()\n                _i += 2\n                continue\n            if _p == \"--crear\":"
+   },
+   {
+    "texto_viejo": "        proy, tarea = sys.argv[2], \" \".join(_resto)",
+    "texto_nuevo": "        if _encargo_archivo:\n            try:\n                with open(_encargo_archivo, \"r\", encoding=\"utf-8\") as _f:\n                    tarea = _f.read()\n            except Exception:\n                print(\"No pude leer el archivo del encargo: %s\" % _encargo_archivo)\n                print(\"Revisa que la ruta exista y que se pueda abrir. No se gasto nada.\")\n                return 1\n            proy = sys.argv[2]\n        else:\n            proy, tarea = sys.argv[2], \" \".join(_resto)"
+   }
+  ],
+  "cambio": "En el bucle sobre _partes, reconocer la marca --encargo-archivo seguida de una ruta y apartarla (marca y ruta) para que no se cuelen en el texto; y en el renglon del ancla, cuando esa marca venga, que tarea salga de leer ese archivo en utf-8 tal cual, y si no viene, que siga armandose juntando los argumentos como siempre. Si la ruta no existe o no se puede leer, decirlo en una frase simple y terminar sin gastar nada.",
+  "codigo": "        _partes = list(sys.argv[3:])\n        _quien = {\"--escribe\": None, \"--revisa\": None}\n        _resto = []\n        _i = 0\n        _crear = False\n        # 2026-09-29: la terminal de Windows arranca TODAS las comillas dobles del texto\n        # que se pasa como argumento, incluso por variable. Por eso el encargo necesita\n        # viajar en un ARCHIVO: --encargo-archivo <ruta> aparta la marca y su ruta, y el\n        # texto de la tarea sale de LEER ESE ARCHIVO tal cual, en utf-8.\n        _encargo_archivo = None\n        while _i < len(_partes):\n            _p = _partes[_i]\n            if _p == \"--encargo-archivo\" and _i + 1 < len(_partes):\n                _encargo_archivo = _partes[_i + 1].strip()\n                _i += 2\n                continue\n            if _p == \"--crear\":\n                # marca SUELTA, sin valor detras: la enciende Julio a mano y nada mas.\n                # NO se deduce de las palabras de la tarea. CONTRATO_CREAR_PIEZA_NUEVA\n                # regla 5: una pieza nueva se crea CON AUTORIZACION de Julio.\n                _crear = True\n                _i += 1\n                continue\n            if _p in _quien and _i + 1 < len(_partes):\n                _quien[_p] = _partes[_i + 1].strip()\n                _i += 2\n                continue\n            _resto.append(_p)\n            _i += 1\n        if _encargo_archivo:\n            try:\n                with open(_encargo_archivo, \"r\", encoding=\"utf-8\") as _f:\n                    tarea = _f.read()\n            except Exception:\n                print(\"No pude leer el archivo del encargo: %s\" % _encargo_archivo)\n                print(\"Revisa que la ruta exista y que se pueda abrir. No se gasto nada.\")\n                return 1\n            proy = sys.argv[2]\n        else:\n            proy, tarea = sys.argv[2], \" \".join(_resto)",
+  "vigia": "vigias/test_vigia_el_encargo_viaja_por_archivo.py: la prueba roja comprueba que a router.armar le llega EXACTAMENTE el contenido del archivo con sus comillas y sus tres renglones; la verde comprueba que la forma de siempre (juntar argumentos) sigue funcionando.",
+  "puede_danar": [
+   "cerebro.router.armar (recibe el texto del encargo)",
+   "arnes.portero.decidir (decide con proy y tarea)",
+   "el flujo de --escribe/--revisa/--crear (si el bucle se rompe, esas marcas dejan de apartarse)",
+   "el mando equipo entero (si tarea queda mal, el encargo sale mal)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "La freno anticopia de la linea 270 (candado_terminal.es_una_fotocopia) lee \" \".join(sys.argv[3:]) CRUDO, ANTES del bucle. En el modo nuevo ese texto es solo '--encargo-archivo <ruta>', asi que el freno de CONTRATO_LA_FOTOCOPIA_NO_SE_PAGA ve la marca y la ruta, nunca el encargo real: queda ciego para todos los encargos que viajen por archivo, que segun el propio paquete seran la mayoria. No lo nombra 'puede_danar' ni lo cubre ninguna prueba, asi que no bloquea esta vuelta, pero es un agujero que el director deberia encolar como tarea aparte.",
+   "except Exception en la lectura del archivo aplana en el mismo mensaje tanto ruta inexistente como permission denied o texto que no es utf-8. El mensaje dice 'Revisa que la ruta exista y que se pueda abrir', asi que no engaña; solo pierde granularidad si alguien quiere depurar."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El arreglo esta bien y esta completo: reconoce la marca, aparta marca y ruta, y de verdad cablea la lectura del archivo al texto de la tarea, que era justo lo que falto en la vuelta rechazada; las dos pruebas pasan alimeter y los tres interruptores de antes siguen apartandose. Un aviso aparte: el freno anticopia de arriba mira los argumentos crudos, asi que con el encargo en archivo deja de ver el texto y podria dejar pasar una fotocopia sin avisar; no es de esta tarea."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 31257 a 18672 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

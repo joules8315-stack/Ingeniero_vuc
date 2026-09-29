@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta una prueba que vigile el camino de varios pedazos (aplicar_cambios) con un archivo que empieza con la marca BOM, porque la prueba existente solo cubre aplicar_cambio en singular.",
+  "archivo": "vigias/test_vigia_aplicador.py",
+  "funcion": "test_un_archivo_con_marca_BOM_se_puede_editar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    datos = f.read_bytes()\n    assert \"def nueva():\" in datos.decode(\"utf-8-sig\"), \"no quedo el cambio\"\n    assert datos.count(b\"\\xef\\xbb\\xbf\") <= 1, \"la marca BOM quedo duplicada\"",
+    "texto_nuevo": "    datos = f.read_bytes()\n    assert \"def nueva():\" in datos.decode(\"utf-8-sig\"), \"no quedo el cambio\"\n    assert datos.count(b\"\\xef\\xbb\\xbf\") <= 1, \"la marca BOM quedo duplicada\"\n\n\ndef test_un_archivo_con_marca_BOM_se_puede_editar_por_varios_pedazos(tmp_path):\n    \"\"\"fallo real 2026-09-28: aplicar_cambios (varios pedazos) tiraba todo cambio aprobado a ingeniero.py por la marca BOM.\"\"\"\n    f = tmp_path / \"con_bom.py\"\n    f.write_bytes(b\"\\xef\\xbb\\xbf\" + \"def vieja():\\n    return 1\\n\".encode(\"utf-8\"))\n    propuesta = {\n        \"cambios\": [\n            {\n                \"archivo\": str(f),\n                \"texto_viejo\": \"def vieja():\",\n                \"texto_nuevo\": \"def nueva():\",\n            }\n        ]\n    }\n    ok, msg = aplicador.aplicar_cambios(propuesta)\n    assert ok, (\n        \"un archivo con marca BOM no se pudo editar por el camino de varios pedazos; asi se tira todo cambio aprobado a ingeniero.py: \"\n        + str(msg)\n    )\n    datos = f.read_bytes()\n    assert \"def nueva():\" in datos.decode(\"utf-8-sig\"), \"no quedo el cambio\"\n    assert datos.count(b\"\\xef\\xbb\\xbf\") == 1, \"la marca BOM no quedo exactamente una vez\""
+   }
+  ],
+  "cambio": "Anadir al final del archivo una prueba nueva llamada test_un_archivo_con_marca_BOM_se_puede_editar_por_varios_pedazos que llama a aplicador.aplicar_cambios (plural) con una propuesta que trae la clave cambios, comprueba que devuelve ok, que el cambio quedo escrito y que la marca BOM aparece exactamente una vez.",
+  "codigo": "def test_un_archivo_con_marca_BOM_se_puede_editar_por_varios_pedazos(tmp_path):\n    \"\"\"fallo real 2026-09-28: aplicar_cambios (varios pedazos) tiraba todo cambio aprobado a ingeniero.py por la marca BOM.\"\"\"\n    f = tmp_path / \"con_bom.py\"\n    f.write_bytes(b\"\\xef\\xbb\\xbf\" + \"def vieja():\\n    return 1\\n\".encode(\"utf-8\"))\n    propuesta = {\n        \"cambios\": [\n            {\n                \"archivo\": str(f),\n                \"texto_viejo\": \"def vieja():\",\n                \"texto_nuevo\": \"def nueva():\",\n            }\n        ]\n    }\n    ok, msg = aplicador.aplicar_cambios(propuesta)\n    assert ok, (\n        \"un archivo con marca BOM no se pudo editar por el camino de varios pedazos; asi se tira todo cambio aprobado a ingeniero.py: \"\n        + str(msg)\n    )\n    datos = f.read_bytes()\n    assert \"def nueva():\" in datos.decode(\"utf-8-sig\"), \"no quedo el cambio\"\n    assert datos.count(b\"\\xef\\xbb\\xbf\") == 1, \"la marca BOM no quedo exactamente una vez\"",
+  "vigia": "La propia prueba nueva: al ejecutarse comprueba que aplicar_cambios acepta un archivo con BOM, escribe el cambio y deja la marca una sola vez.",
+  "puede_danar": [
+   "vigias/test_vigia_aplicador.py",
+   "cuerpo/aplicador.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "con_bom.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "La lista cambios lleva un solo pedazo aunque la prueba se llama por_varios_pedazos: funcionalmente esta bien (el fallo era leer sin utf-8-sig, que revienta con cualquier lista, incluso de uno) y el encargo pedia行使 el camino en plural, no dos pedazos. Solo queda el nombre mas ambicioso que la prueba.",
+   "La prueba no vigila el caso inverso al que se pide (que se cuelgue la marca en un archivo que NO la tenia); no lo pedia el encargo, asi que no es falta para aprobar.",
+   "El texto de anclaje (las tres lineas del final de la prueba que ya existe) no se puede comparar con el material porque vino recortado; si no aparece exactamente una vez, la maquina lo dira con su propio mensaje y no se aplicara nada. Los nombres si estan comprobado por programa."
+  ],
+  "resumen_para_el_jefe": "APROBADO: anade al final la prueba que faltaba, por el camino de varios pedazos, y corre de verdad: si alguien vuelve a leer sin utf-8-sig revienta el assert de que se pudo, y si al escribir se le cae la marca el cuenta Fallaria; no toca ninguna otra prueba y no inventa nada."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 35738 a 18151 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

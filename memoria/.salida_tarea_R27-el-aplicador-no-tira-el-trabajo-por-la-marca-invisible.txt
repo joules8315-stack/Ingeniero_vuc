@@ -1,0 +1,14 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-29_071130_APROBADO_aplicador.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : el pasillo recorto el encargo de 33318 a 17295 letras para que le quepa a un cerebro gratis (tope medido: 19042)
+  aviso       : vueltas_dadas: 1
+  diagnostico : aplicar_cambios lee el archivo con encoding utf-8, por lo que la marca BOM (EF BB BF) de ingeniero.py queda como U+FEFF dentro del texto y ast.parse revienta con 'invalid non-printable character U+FEFF' en el renglon 1, tirando todo cambio aprobado sobre ingeniero.py
+  toca        : cuerpo/aplicador.py funcion aplicar_cambios
+  confianza   : alta
+  VEREDICTO   : APROBADO
+  resumen     : El arreglo es correcto y minimo: lee con utf-8-sig para que U+FEFF no llegue a ast.parse y repone la BOM al escribir solo si el original la tenia, que es literalmente lo que pedia el paquete; unico cabo suelto es que la otra ruta de escritura (aplicar_cambio) no aparece tocada y podria seguir borrando la marca.
+
+APLICADO en disco (lo escribio el equipo): cuerpo/aplicador.py
+GUARDADO AL MOMENTO: guardado en la historia: cuerpo/aplicador.py
+LLAVE GUARDADA: se puede escribir en 41 archivo(s) durante 90 min.
