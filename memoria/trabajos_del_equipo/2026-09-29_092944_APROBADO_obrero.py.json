@@ -1,0 +1,49 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "falta_en_el_material solo reconoce 'def ' + nombre, asi que una clase pegada en el encargo (class _BateriaFalsa:) no cuenta como material y devuelve que falta la funcion",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "falta_en_el_material",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    - Una funcion falta si su renglon de declaracion no aparece ni en el material\n      ni en el encargo.",
+    "texto_nuevo": "    - Una funcion falta si su renglon de declaracion no aparece ni en el material\n      ni en el encargo. Vale tanto 'def ' + nombre como 'class ' + nombre: una\n      clase pegada cuenta como material igual que una funcion pegada."
+   },
+   {
+    "texto_viejo": "    for funcion in funciones:\n        declaracion = \"def \" + funcion\n        if declaracion not in texto_material and declaracion not in texto_encargo:",
+    "texto_nuevo": "    for funcion in funciones:\n        declaracion_def = \"def \" + funcion\n        declaracion_class = \"class \" + funcion\n        if (declaracion_def not in texto_material and declaracion_def not in texto_encargo\n                and declaracion_class not in texto_material and declaracion_class not in texto_encargo):"
+   }
+  ],
+  "cambio": "En falta_en_el_material, que el nombre se de por presente si aparece 'def ' + nombre O 'class ' + nombre, buscando en los dos textos (material y encargo); y actualizar el texto de cabecera de la funcion para que diga que tambien vale la palabra class.",
+  "codigo": "    for funcion in funciones:\n        declaracion_def = \"def \" + funcion\n        declaracion_class = \"class \" + funcion\n        if (declaracion_def not in texto_material and declaracion_def not in texto_encargo\n                and declaracion_class not in texto_material and declaracion_class not in texto_encargo):",
+  "vigia": "vigias/test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py, caso test_caso_3_clase_pegada_en_el_encargo_cuenta_como_material (hoy rojo, debe quedar verde) y los casos 1 y 2 deben seguir verdes",
+  "puede_danar": [
+   "falta_en_el_material",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El arreglo renombra la variable 'declaracion' a 'declaracion_def'. Si ese renglón se volvia a usar mas abajo dentro de la misma funcion (por ejemplo al componer el mensaje de 'nombra el archivo pero no trae la funcion'), quedaria sin definir y la funcion reventaria. El material no enseña esa parte de la funcion; lo detectan los tres casos de la prueba existente, que es la que debe seguir verde."
+  ],
+  "que_falta": [
+   "El texto de cabecera que se cambia no aparece literal en el paquete minimo, asi que no se puede confirmar que el reemplazo pegue al caracter. Si no coincide, la cabecera se queda sin actualizar y la parte funcional sigue bien: solo queda sin el aviso de que tambien vale 'class '."
+  ],
+  "resumen_para_el_jefe": "El arreglo hace exactamente lo pedido: nombre presente si aparece 'def ' o 'class ' delante, buscando en material y encargo, con cuatro combinaciones y 'solo con que se cumpla una ya no falta'. No inventa archivos ni funciones, no toca mas de un archivo ni mas de una funcion, no crea pruebas y no desactiva candados. Aprueba; unica vigilancia: que la variable vieja 'declaracion' no se use mas abajo en esa misma funcion, y que la cabecera se actualice solo si el texto viejo coincide al caracter."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 27844 a 16180 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
