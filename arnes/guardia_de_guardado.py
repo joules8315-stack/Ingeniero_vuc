@@ -439,7 +439,8 @@ def _vigias(raiz):
     guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, list(esperando), conocidas_de_antes)
     if guardados_que_frenan:
         # Al menos uno ya estaba guardado y no espera arreglo: es romper algo que estaba verde. Frenar.
-        return False, ultima[0].strip()
+        return False, ("pruebas rojas que frenan el guardado: " + ", ".join(guardados_que_frenan)
+                       + " | " + ultima[0].strip())
     # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.
     try:
         ruta_conocidas = os.path.join(raiz, "memoria", ".rojas_conocidas.json")
