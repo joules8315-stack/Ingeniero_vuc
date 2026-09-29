@@ -179,9 +179,14 @@ def soltar_copia(copia, correr_uno=None):
     apuntada, se quita, se pide que se retire la copia de trabajo y se
     devuelve verdadero; si no esta apuntada, se devuelve falso sin hacer nada.
     """
+    if isinstance(copia, dict):
+        ruta_copia = copia.get('carpeta')
+    else:
+        ruta_copia = copia
+
     orden_id = None
     for clave, ruta in list(_LIBRETA.items()):
-        if ruta == copia:
+        if str(ruta) == str(ruta_copia):
             orden_id = clave
             break
 
@@ -190,8 +195,8 @@ def soltar_copia(copia, correr_uno=None):
 
     del _LIBRETA[orden_id]
 
-    raiz = os.path.dirname(os.path.dirname(os.path.dirname(str(copia))))
-    palabras = ['git', 'worktree', 'remove', '--force', str(copia)]
+    raiz = os.path.dirname(os.path.dirname(os.path.dirname(str(ruta_copia))))
+    palabras = ['git', 'worktree', 'remove', '--force', str(ruta_copia)]
     try:
         _correr(palabras, raiz, correr_uno)
     except Exception:
