@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "correr_una lanza el trabajo sin pedir ni usar la carpeta propia de la orden, y no protege la peticion de carpeta dentro del try, por lo que no se aisla el trabajo ni se conserva la garantia de no propagar excepciones.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "correr_una",
+  "texto_viejo": "        def correr_una(orden):\n            try:\n                return lanzar_al_equipo(proyecto, orden, tope_segundos)\n            except Exception as e:\n                return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}",
+  "texto_nuevo": "        def correr_una(orden):\n            try:\n                copia = copia_para(orden.get('id'), raiz)\n                if copia.get('ok'):\n                    resultado = lanzar_al_equipo(proyecto, orden, tope_segundos, carpeta=copia.get('carpeta'))\n                else:\n                    resultado = lanzar_al_equipo(proyecto, orden, tope_segundos)\n                    resultado['salida'] = 'SIN CARPETA: se trabajo sin carpeta propia (' + str(copia.get('motivo')) + ')\\n' + resultado.get('salida', '')\n                return resultado\n            except Exception as e:\n                return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}",
+  "cambios": "",
+  "cambio": "Dentro de correr_una, pedir la carpeta con copia_para, pasarla a lanzar_al_equipo cuando se consiga, y si no se consigue lanzar sin carpeta anadiendo delante en la salida un renglon que diga que se trabajo sin carpeta propia; todo dentro del try para conservar el diccionario de error.",
+  "codigo": "        def correr_una(orden):\n            try:\n                copia = copia_para(orden.get('id'), raiz)\n                if copia.get('ok'):\n                    resultado = lanzar_al_equipo(proyecto, orden, tope_segundos, carpeta=copia.get('carpeta'))\n                else:\n                    resultado = lanzar_al_equipo(proyecto, orden, tope_segundos)\n                    resultado['salida'] = 'SIN CARPETA: se trabajo sin carpeta propia (' + str(copia.get('motivo')) + ')\\n' + resultado.get('salida', '')\n                return resultado\n            except Exception as e:\n                return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}",
+  "vigia": "Una prueba que llame a correr_una con una orden y compruebe que lanzar_al_equipo recibe carpeta cuando copia_para devuelve ok, que sin ok la salida empieza por el renglon de sin carpeta, y que si copia_para revienta se devuelve el diccionario de error del capataz sin propagar la excepcion.",
+  "puede_danar": [
+   "cuerpo/capataz.py (bucle y correr_una)",
+   "arnes/copia_de_la_orden.py (copia_para, soltar_copia)",
+   "lanzar_al_equipo (cuerpo/capataz.py)",
+   "el taller entero: si se propaga una excepcion se cae la tanda de todas las tareas"
+  ],
+  "preguntas": [
+   "El material no muestra el texto literal completo del renglon que hay que anadir delante de la salida cuando no se consigue la carpeta (queda cortado en 'que se trabajo sin ca'); se ha redactado un texto equivalente, pero conviene confirmar el texto exacto deseado.",
+   "El material no muestra si dentro de bucle existe una variable 'raiz' disponible en el ambito de correr_una para pasarla a copia_para; si no existe, hay que decidir de donde se obtiene la raiz."
+  ],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "No llama a soltar_copia en ningun sitio y no hay finally: el encargo dice 'pida su propia carpeta, TRABAJE DENTRO DE ELLA y la suelte siempre al terminar', y este cambio solo cubre pedir y trabajar dentro. Si lanzar_al_equipo no suelta por su cuenta, la copia se queda tomada y el objetivo no se cumple.",
+   "Redacta un texto propio ('SIN CARPETA: se trabajo sin carpeta propia (...)') en lugar del renglon literal que el propio propuesta dice que esta en el material y que queda cortado en 'que se trabajo sin ca'. Si el texto pedido es literal, el cambio no cumple el encargo aunque parezca equivalente.",
+   "Cuando no hay carpeta, la tarea se lanza igual y puede terminar marcada HECHA: solo se le antepone un renglón de aviso en la salida, asi que un trabajo sin aislamiento propio puede contar como bueno."
+  ],
+  "riesgo_vecinos": [
+   "tipo_de_fallo() y forense() reciben la salida con el renglón 'SIN CARPETA: ...' pegado delante: puede cambiar el tipo de fallo con el que se anota la huella y el paso que reporta el forense de esa orden.",
+   "bucle() consume el retorno de correr_una con resultado.get('guardado') y resultado.get('salida', ''): la forma del diccionario no cambia, pero el valor de 'salida' ahora empieza siempre distinto cuando falta carpeta, y eso es justo lo que leen las dos ramas de exito y de fallo."
+  ],
+  "que_falta": [
+   "El material esta cortado justo antes de decir que hace lanzar_al_equipo con la carpeta que recibe. Sin ese renglon no se puede decidir si falta la llamada a soltar_copia o si ya la hace la pieza de al lado.",
+   "No se ve 'raiz' ni en la firma de bucle ni en el trozo mostrado, y la firma es bucle(proyecto, en_paralelo, tope_segundos, aviso). El programa dice que el nombre existe en el archivo, pero eso no dice que quede al alcance de correr_una; si no es un nombre de modulo, la llamada a copia_para revienta y todas las tareas caen al diccionario de error.",
+   "El texto literal que se debe anteponer a la salida no se puede comparar: llega truncado en el material."
+  ],
+  "resumen_para_el_jefe": "El cambio hace justo lo que pedia el diagnostico, no inventa nada y no rompe el bucle, pero no suelta la copia y escribe su propio texto en vez del renglon literal; el material llega cortado en el punto que decide esas dos cosas, asi que falta confirmar si lanzar_al_equipo suelta solo y de donde sale la raiz antes de darlo por bueno."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 35801 a 13575 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
