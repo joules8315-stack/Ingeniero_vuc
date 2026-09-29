@@ -136,7 +136,8 @@ def falta_en_el_material(material, encargo, conocidas=None):
       codigo pegado (un renglon que, quitandole los espacios de delante, empiece
       por 'def ' o por 'class ').
     - Una funcion falta si su renglon de declaracion no aparece ni en el material
-      ni en el encargo.
+      ni en el encargo. Vale tanto 'def ' + nombre como 'class ' + nombre: una
+      clase pegada cuenta como material igual que una funcion pegada.
     - Si el encargo no nombra ni archivos ni funciones, lista vacia.
     - Ante algo vacio o raro, lista vacia. Nunca revienta.
     """
@@ -194,8 +195,10 @@ def falta_en_el_material(material, encargo, conocidas=None):
         funciones = [f for f in funciones if f in conocidas]
 
     for funcion in funciones:
-        declaracion = "def " + funcion
-        if declaracion not in texto_material and declaracion not in texto_encargo:
+        declaracion_def = "def " + funcion
+        declaracion_class = "class " + funcion
+        if (declaracion_def not in texto_material and declaracion_def not in texto_encargo
+                and declaracion_class not in texto_material and declaracion_class not in texto_encargo):
             # distinguir si el archivo si esta pero la funcion no
             if archivos and any(a in texto_material for a in archivos):
                 faltantes.append(
