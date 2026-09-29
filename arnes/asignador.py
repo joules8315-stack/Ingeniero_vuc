@@ -226,6 +226,103 @@ def _nombres(texto):
     return nombres
 
 
+def identificadores(texto):
+    """Devuelve un CONJUNTO (set) con los nombres de funcion o de cosa que el texto nombra,
+    todos en minusculas. Nunca revienta: si le llega algo vacio, None, o que no es texto,
+    devuelve un conjunto vacio."""
+    if not isinstance(texto, str) or not texto:
+        return set()
+    EXTENSIONES = (".py", ".js", ".ts", ".css", ".sql", ".html", ".md", ".json")
+    PALABRAS_COMUNES = {
+        "arreglar", "pantalla", "celular", "porque", "guarda", "nada", "mas",
+        "para", "como", "cuando", "donde", "esta", "este", "esto", "esos",
+        "esas", "unos", "unas", "pero", "solo", "todo", "toda", "todos",
+        "todas", "hace", "hacer", "tiene", "tener", "puede", "poder", "debe",
+        "deber", "sobre", "entre", "desde", "hasta", "segun", "cada", "otro",
+        "otra", "otros", "otras", "mismo", "misma", "tambien", "ademas",
+        "entonces", "luego", "despues", "antes", "ahora", "aqui", "alli",
+        "alla", "muy", "poco", "mucho", "bien", "mal", "siempre", "nunca",
+        "jamas", "quiza", "quizas", "tal", "vez", "veces", "cosa", "cosas",
+        "parte", "partes", "lugar", "forma", "modo", "manera", "caso", "casos",
+        "tipo", "tipos", "clase", "clases", "grupo", "grupos", "lista", "listas",
+        "dato", "datos", "valor", "valores", "nombre", "nombres", "texto",
+        "textos", "palabra", "palabras", "frase", "frases", "linea", "lineas",
+        "renglon", "renglones", "archivo", "archivos", "funcion", "funciones",
+        "codigo", "codigos", "programa", "programas", "sistema", "sistemas",
+        "usuario", "usuarios", "cliente", "clientes", "empresa", "empresas",
+        "negocio", "negocios", "amigo", "amiga", "amigos", "amigas", "dueno",
+        "duena", "duenos", "duenas", "jefe", "jefa", "jefes", "jefas",
+        "trabajo", "trabajos", "tarea", "tareas", "encargo", "encargos",
+        "pedido", "pedidos", "peticion", "peticiones", "solicitud", "solicitudes",
+        "respuesta", "respuestas", "pregunta", "preguntas", "aviso", "avisos",
+        "error", "errores", "fallo", "fallos", "problema", "problemas",
+        "solucion", "soluciones", "arreglo", "arreglos", "reparacion",
+        "reparaciones", "cambio", "cambios", "mejora", "mejoras", "nuevo",
+        "nueva", "nuevos", "nuevas", "viejo", "vieja", "viejos", "viejas",
+        "bueno", "buena", "buenos", "buenas", "malo", "mala", "malos",
+        "malas", "grande", "grandes", "pequeno", "pequena", "pequenos",
+        "pequenas", "primero", "primera", "primeros", "primeras", "ultimo",
+        "ultima", "ultimos", "ultimas", "siguiente", "siguientes", "anterior",
+        "anteriores", "unico", "unica", "unicos", "unicas", "varios", "varias",
+        "alguno", "alguna", "algunos", "algunas", "ninguno", "ninguna",
+        "ningunos", "ningunas", "cualquiera", "cualesquiera", "quien", "quienes",
+        "cual", "cuales", "cuanto", "cuanta", "cuantos", "cuantas",
+    }
+    encontrados = set()
+    for palabra in re.findall(r"[A-Za-z_][A-Za-z0-9_]*", texto):
+        if len(palabra) < 3:
+            continue
+        if palabra.lower() in PALABRAS_COMUNES:
+            continue
+        if palabra.lower().endswith(EXTENSIONES):
+            continue
+        tiene_mayuscula_en_medio = any(c.isupper() for c in palabra[1:])
+        tiene_raya_baja_en_medio = "_" in palabra[1:-1]
+        if tiene_mayuscula_en_medio or tiene_raya_baja_en_medio:
+            encontrados.add(palabra.lower())
+    for m in re.finditer(r"(?:funcion|funci\u00f3n|def|class)\s+([A-Za-z_][A-Za-z0-9_]*)", texto):
+        palabra = m.group(1)
+        if len(palabra) < 3:
+            continue
+        if palabra.lower().endswith(EXTENSIONES):
+            continue
+        encontrados.add(palabra.lower())
+    return encontrados
+
+
+def trozo_que_contiene(texto, aguja, presupuesto):
+    """Devuelve un pedazo del texto, de como maximo presupuesto letras, que CONTIENE la aguja,
+    dejando contexto por delante y por detras A PARTES IGUALES. Nunca revienta."""
+    if not isinstance(texto, str):
+        return ""
+    if not isinstance(presupuesto, int) or presupuesto <= 0:
+        return ""
+    if len(texto) <= presupuesto:
+        return texto
+    if not isinstance(aguja, str) or not aguja:
+        return texto[:presupuesto]
+    pos = texto.find(aguja)
+    if pos < 0:
+        return texto[:presupuesto]
+    largo_aguja = len(aguja)
+    if largo_aguja >= presupuesto:
+        return texto[pos:pos + presupuesto]
+    sobra = presupuesto - largo_aguja
+    antes = sobra // 2
+    despues = sobra - antes
+    inicio = pos - antes
+    fin = pos + largo_aguja + despues
+    if inicio < 0:
+        fin += -inicio
+        inicio = 0
+    if fin > len(texto):
+        inicio -= fin - len(texto)
+        fin = len(texto)
+        if inicio < 0:
+            inicio = 0
+    return texto[inicio:fin]
+
+
 def _seccionar(material):
     """[(nombre, desde_material, hasta_seccion)] para cada '### `archivo`' del material."""
     marcas = [(m.start(), m.end(), m.group(1)) for m in re.finditer(r"^### `([^`]+)`",
