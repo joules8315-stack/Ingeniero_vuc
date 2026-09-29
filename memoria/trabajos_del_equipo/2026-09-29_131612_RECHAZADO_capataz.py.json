@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El parametro en_paralelo vale 1 por defecto, asi que la tanda siempre lleva una sola orden y los trabajos de piezas distintas van en fila en vez de a la vez.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "def bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):\n    \"\"\"Corre las ordenes sola hasta que se para por una de las tres causas:\n    tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos\n    del mismo tipo en la misma pieza.\"\"\"",
+  "texto_nuevo": "def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):\n    \"\"\"Corre las ordenes sola hasta que se para por una de las tres causas:\n    tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos\n    del mismo tipo en la misma pieza.\n    en_paralelo arranca en 2 porque la maquina de correr a la vez ya esta puesta aqui abajo y\n    listas_para_correr ya impide que dos ordenes de la misma pieza caigan en la misma tanda; el numero\n    se sube MIDIENDO, no adivinando.\"\"\"",
+  "cambios": "",
+  "cambio": "Cambiar el valor por defecto del parametro en_paralelo de 1 a 2 en la cabecera de la funcion bucle, y anadir una sola frase al docstring que explique por que arranca en 2.",
+  "codigo": "def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):\n    \"\"\"Corre las ordenes sola hasta que se para por una de las tres causas:\n    tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos\n    del mismo tipo en la misma pieza.\n    en_paralelo arranca en 2 porque la maquina de correr a la vez ya esta puesta aqui abajo y\n    listas_para_correr ya impide que dos ordenes de la misma pieza caigan en la misma tanda; el numero\n    se sube MIDIENDO, no adivinando.\"\"\"",
+  "vigia": "vigias/test_vigia_el_loop_del_pit.py, caso test_dos_piezas_distintas_corren_a_la_vez (hoy rojo) y caso test_misma_pieza_va_en_fila (debe seguir verde).",
+  "puede_danar": [
+   "cuerpo/capataz.py: bucle",
+   "cualquier llamador de bucle que dependa del valor por defecto 1",
+   "listas_para_correr (no se toca, pero su contrato de no repetir pieza en la misma tanda es lo que sostiene el cambio)"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El encargo dice literalmente 'LO QUE TIENE QUE QUEDAR, y es practicamente una sola palabra', y el paquete advierte que la vuelta anterior 'SE APROBO EN EL FONDO y se freno por UNA frase de mas'. La propuesta vuelve a anadir texto: tres lineas nuevas de prosa en el docstring de bucle. Eso es exactamente el freno que ya costo una vuelta, y el numero de la firma (1 -> 2) es el unico cambio que hace falta.",
+   "La frase 'listas_para_correr ya impide que dos ordenes de la misma pieza caigan en la misma tanda' se apoya en una funcion que el material corta a la mitad (solo se ven lista, resultado, piezas_en_resultado, piezas_corriendo). Dejar escrita en el codigo una afirmacion sobre el contrato de otra funcion que no esta completa en el material es dejar una deuda para el que lea el docstring luego.",
+   "El campo 'cambios' va vacio y el encargo es un unico cambio de palabra; no es el fallo, pero confirma que el docstring se metio como extra."
+  ],
+  "riesgo_vecinos": [
+   "cuerpo/capataz.py: bucle -> el docstring es texto literal; cualquier comprobacion que compare el texto de la funcion (el propio watcher vigia el loop) puede cambiar de veredicto por las lineas anadidas.",
+   "cualquier llamador de bucle que use el valor por defecto: a partir de ahora entrega tanda de 2. El material no incluye ningun llamador, asi que ese riesgo queda sin medir; es el riesgo que el encargo acepta, pero conviene decirlo explicitamente al approve."
+  ],
+  "que_falta": [
+   "El material esta cortado en 'SOBRE EL TEXTO ===== FIN =====': la regla sobre que se puede o no escribir en el texto de la funcion no se puede leer. Con lo que si se ve, anadir prosa al docstring no lo pide nadie.",
+   "Los llamadores de bucle no vienen en el material, asi que no se puede comprobar que ninguno dependa del 1 por defecto."
+  ],
+  "resumen_para_el_jefe": "El numero 1->2 esta bien puesto y arregla el problema, pero el obrero volvio a anadir las tres lineas de explicacion al docstring, que es justo la frase de mas que ya freno la vuelta anterior: quita el docstring nuevo y deja solo el 2."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 26273 a 14110 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'piezas_en_resultado' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'piezas_corriendo' y esa ",
+  "el pasillo recorto el encargo de 31394 a 15580 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'piezas_en_resultado' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'piezas_corriendo' y esa ",
+  "el pasillo recorto el encargo de 32392 a 15817 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'piezas_en_resultado' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'piezas_corriendo' y esa ",
+  "el pasillo recorto el encargo de 33390 a 16133 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}

@@ -3,5 +3,8 @@
  "para": "deepseek",
  "texto": "Encargo en fila para cuando se retome (no lo empieces sin que Julio lo apruebe): cerrar la decision de Julio del 2026-09-27 sobre la espera maxima de 400 segundos. Tres pasos: 1) en cuerpo/cuotas.py, que espera_de_bigpickle respete TECHO_ESPERA en todas sus salidas, incluida la de cuando no hay filas, que hoy devuelve 600. 2) en cuerpo/bigpickle.py, bajar TIMEOUT_POR_DEFECTO de 600 a 400. 3) reescribir vigias/test_vigia_a_big_pickle_se_le_espera_lo_que_tarda.py, cuyo caso sin filas exige 600, anotando como razon la decision de Julio del 2026-09-27; y en vigias/test_vigia_a_nadie_se_le_espera_mas_de_lo_medido.py cambiar los dos casos de Big Pickle de 300 a 400. Medicion que lo respalda: la respuesta buena mas lenta de Big Pickle tardo 314 segundos, asi que con 400 no se pierde ninguna de las 163 medidas.",
  "cuando": "2026-09-27 13:36",
- "leido": false
+ "leido": false,
+ "respondido": true,
+ "respondido_por": "desconocido",
+ "respondido_cuando": "2026-09-29 13:20"
 }
