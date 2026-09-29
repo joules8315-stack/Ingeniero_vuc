@@ -1,0 +1,39 @@
+{
+ "obrero": "groq",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "La función revisar no reconoce palabras con guion bajo inicial como _vigias",
+  "archivo": "skills/falta_en_el_material.py",
+  "funcion": "revisar",
+  "texto_viejo": "    for w in _palabras(problema):\n        if any(w in b for b in bajos) or w.lower() in texto.lower() or w.lower() in problema.lower():\n            hay.append(w)\n        else:\n            faltan.append(w)",
+  "texto_nuevo": "    for w in _palabras(problema):\n        w_norm = w.lstrip('_')\n        if any(w_norm in b for b in bajos) or w_norm in texto.lower() or w_norm in problema.lower():\n            hay.append(w)\n        else:\n            faltan.append(w)",
+  "cambio": "Agregar normalización de palabras quitando guion bajo inicial antes de comparar",
+  "codigo": "for w in _palabras(problema):\n    w_norm = w.lstrip('_')\n    if any(w_norm in b for b in bajos) or w_norm in texto.lower() or w_norm in problema.lower():\n        hay.append(w)\n    else:\n        faltan.append(w)",
+  "vigia": "test que verifica que revisar reconoce palabras con guion bajo inicial (p.ej., _vigias) cuando están presentes en el paquete",
+  "puede_danar": [
+   "cerebro/protocolo.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "protocolo.py",
+   "test_vigia_memoria_completa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación normaliza las palabras quitando el guion bajo inicial antes de compararlas, solucionando el problema de reconocimiento de nombres con guion bajo."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

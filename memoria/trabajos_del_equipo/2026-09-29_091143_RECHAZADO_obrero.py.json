@@ -1,0 +1,40 @@
+{
+ "obrero": "groq",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Las clases pegadas en el encargo no se contabilizan como material presente",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "falta_en_el_material",
+  "texto_viejo": "    for funcion in funciones:\n        declaracion = \"def \" + funcion\n        if declaracion not in texto_material and declaracion not in texto_encargo:\n            # distinguir si el archivo si esta pero la funcion no\n            if archivos and any(a in texto_material for a in archivos):\n                faltantes.append(\n                    \"el material nombra el archivo pero no trae la funcion \"\n                    + funcion\n                )\n            else:\n                faltantes.append(\n                    \"el material no trae la funcion \" + funcion\n                )",
+  "texto_nuevo": "    for funcion in funciones:\n        declaracion_def = \"def \" + funcion\n        declaracion_class = \"class \" + funcion\n        if (declaracion_def not in texto_material and declaracion_def not in texto_encargo and\n                declaracion_class not in texto_material and declaracion_class not in texto_encargo):\n            # distinguir si el archivo si esta pero la funcion no\n            if archivos and any(a in texto_material for a in archivos):\n                faltantes.append(\n                    \"el material nombra el archivo pero no trae la funcion \"\n                    + funcion\n                )\n            else:\n                faltantes.append(\n                    \"el material no trae la funcion \" + funcion\n                )",
+  "cambio": "Agregar detección de declaraciones de clase al validar funciones faltantes",
+  "codigo": "for funcion in funciones:\n    declaracion_def = \"def \" + funcion\n    declaracion_class = \"class \" + funcion\n    if (declaracion_def not in texto_material and declaracion_def not in texto_encargo and\n            declaracion_class not in texto_material and declaracion_class not in texto_encargo):\n        if archivos and any(a in texto_material for a in archivos):\n            faltantes.append(\n                \"el material nombra el archivo pero no trae la funcion \" + funcion\n            )\n        else:\n            faltantes.append(\n                \"el material no trae la funcion \" + funcion\n            )",
+  "vigia": "test_caso_3_clase_pegada_en_el_encargo_cuenta_como_material",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El cambio no arregla lo que dice el diagnóstico. El diagnóstico indica que las 'clases pegadas en el encargo no se contabilizan como material presente'. La reparación propuesta añade la comprobación de 'class ' a la lógica existente que solo comprobaba 'def '. Sin embargo, la lógica de 'faltantes.append(\"el material nombra el archivo pero no trae la funcion \" + funcion)' o 'faltantes.append(\"el material no trae la funcion \" + funcion)' se aplica a 'funciones', no a 'clases'. Por lo tanto, aunque se detecte una clase, se seguirá reportando como una 'función' faltante, lo cual no es correcto y no soluciona el problema de contabilizar clases como material."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación propuesta no soluciona el problema de contabilizar clases como material, ya que sigue tratándolas como funciones faltantes."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19157 a 13762 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)) -> se reintenta",
+  "el pasillo recorto el encargo de 19883 a 16646 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "el pasillo recorto el encargo de 20899 a 18466 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) fallo (no es cuota): contesto vacio",
+  "el pasillo recorto el encargo de 20082 a 16844 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 20333 a 17096 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}
