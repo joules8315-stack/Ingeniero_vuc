@@ -16982,5 +16982,152 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.9
+ },
+ {
+  "id": 346,
+  "cuando": "2026-09-29 13:09",
+  "proyecto": "foto_informe",
+  "problema": "Recuperar en solo lectura el encargo de Julio contenido en memoria/ORDEN_PARA_CODEX_FOTO_INFORME.md: resultado esperado, ley completa, doce ordenes, mediciones existentes y dos trampas. NECESITO_LEER: memoria/ORDEN_PARA_CODEX_FOTO_INFORME.md / motivo: Julio remite expresamente a esta orden / que decide: alcance y orden del trabajo de Foto Informe / riesgo: repetir diagnosticos o invadir el trabajo de Claude. No construir ni modificar Foto Informe; primero confirmar el objetivo con Julio.",
+  "flujos": [
+   "orden",
+   "informes"
+  ],
+  "piezas": [
+   "rv3_forense_informes_de_julio.py",
+   "rv3_prueba_6_orden.py",
+   "rv3_prueba_el_orden_manda.py",
+   "rv3_prueba_el_word_respeta_el_orden.py",
+   "rv3_vigia_al_arrancar_cargan_los_informes.py",
+   "rv3_vigia_generar_con_informes_sin_asignar.py"
+  ],
+  "trozos": [
+   "rv3_forense_informes_de_julio.py:1-40",
+   "rv3_forense_informes_de_julio.py:140-177",
+   "rv3_prueba_el_orden_manda.py:1-40",
+   "rv3_prueba_6_orden.py:1-40",
+   "rv3_prueba_6_orden.py:161-200",
+   "rv3_prueba_el_word_respeta_el_orden.py:1-40"
+  ],
+  "leyes": [
+   "ESTADO_ACTUAL_MVP.md",
+   "PROMPT_MATRIZ_CONFORMIDAD_RV2.md",
+   "TABLA_VERDAD_CONSOLIDACION_RV2_RV3_2026_06_30.md",
+   "CONTRATO_DOS_LLAVES.md"
+  ],
+  "vigias": [
+   "test_vigia_offline_subir_informes_manual.py"
+  ],
+  "lineas_paquete": 447,
+  "lineas_proyecto": 444041,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
+ },
+ {
+  "id": 347,
+  "cuando": "2026-09-29 13:12",
+  "proyecto": "foto_informe",
+  "problema": "Leer completa la orden para Codex que Julio ya dejo escrita en memoria, incluyendo la ley, las doce ordenes, las mediciones y las dos trampas. Trabajo solo de lectura. NECESITO_LEER: C:\\Ingeniero_VUC\\memoria\\ORDEN_PARA_CODEX_FOTO_INFORME.md / motivo: es la orden expresa que dirige todo Foto Informe / que decide: alcance, secuencia y limites / riesgo: ejecutar fuera de orden, repetir diagnosticos o pisar el trabajo de Claude.",
+  "flujos": [
+   "orden",
+   "informes"
+  ],
+  "piezas": [
+   "rv3_forense_informes_de_julio.py",
+   "rv3_prueba_6_orden.py",
+   "rv3_prueba_el_orden_manda.py",
+   "rv3_prueba_el_word_respeta_el_orden.py",
+   "rv3_vigia_al_arrancar_cargan_los_informes.py",
+   "rv3_vigia_generar_con_informes_sin_asignar.py"
+  ],
+  "trozos": [
+   "rv3_forense_informes_de_julio.py:1-40",
+   "rv3_forense_informes_de_julio.py:140-177",
+   "rv3_prueba_el_orden_manda.py:129-168",
+   "rv3_prueba_el_orden_manda.py:1-40",
+   "rv3_prueba_6_orden.py:129-168",
+   "rv3_prueba_el_word_respeta_el_orden.py:1-40"
+  ],
+  "leyes": [
+   "ESTADO_ACTUAL_MVP.md",
+   "PROMPT_MATRIZ_CONFORMIDAD_RV2.md",
+   "TABLA_VERDAD_CONSOLIDACION_RV2_RV3_2026_06_30.md",
+   "CONTRATO_DOS_LLAVES.md"
+  ],
+  "vigias": [
+   "test_vigia_offline_subir_informes_manual.py"
+  ],
+  "lineas_paquete": 449,
+  "lineas_proyecto": 444041,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
+ },
+ {
+  "id": 348,
+  "cuando": "2026-09-29 13:13",
+  "proyecto": "ingeniero",
+  "problema": "Solo lectura: entregar completo el contenido de memoria/ORDEN_PARA_CODEX_FOTO_INFORME.md, escrito por Claude por orden de Julio. Debe incluir encabezado, ley, doce ordenes, mediciones y dos trampas. NECESITO_LEER: memoria/ORDEN_PARA_CODEX_FOTO_INFORME.md / motivo: contiene el encargo vigente de Codex para Foto Informe / que decide: todo el trabajo y su orden / riesgo: omitir instrucciones y repetir diagnosticos.",
+  "flujos": [
+   "codex",
+   "julio",
+   "dos"
+  ],
+  "piezas": [
+   "cuerpo/codex.py",
+   "skills/julio_pudo_trabajar.py",
+   "memoria/ORDEN_PARA_CODEX_FOTO_INFORME.md"
+  ],
+  "trozos": [
+   "memoria/ORDEN_PARA_CODEX_FOTO_INFORME.md:65-104",
+   "cuerpo/codex.py:1-40",
+   "skills/julio_pudo_trabajar.py:65-81",
+   "cuerpo/codex.py:138-228"
+  ],
+  "leyes": [
+   "CONTRATO_A_JULIO_NO_SE_LE_PIDE_FIRMAR_LO_QUE_NO_PUEDE_JUZGAR.md",
+   "CONTRATO_DOS_TRABAJANDO.md",
+   "CONTRATO_EL_DISPARADOR_VA_EN_LOS_DOS_SENTIDOS.md",
+   "memoria/PLAN_PROGRAMAS_2026-09-15.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "PLAN_MAESTRO_2026-09-11.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_onboarding_no_pregunta_dos_veces.py",
+   "memoria/trabajos_sin_revisar/test_vigia_codex_sigue_sin_manos.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_diccionario_de_julio.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_la_pieza_que_le_pregunta_a_codex.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py.FRENADO_POR_EL_GUARDIA.2",
+   "memoria/trabajos_sin_revisar/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py",
+   "vigias/test_vigia_autorizacion_de_julio.py",
+   "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+   "vigias/test_vigia_big_pickle_descansa_tras_dos_fallos.py",
+   "vigias/test_vigia_codex_sigue_sin_manos.py",
+   "vigias/test_vigia_diccionario_de_julio.py",
+   "vigias/test_vigia_el_objetivo_no_va_dos_veces.py",
+   "vigias/test_vigia_el_puente_arregla_el_formato_para_codex.py",
+   "vigias/test_vigia_el_puente_pone_los_candados_a_codex.py",
+   "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "vigias/test_vigia_la_misma_prueba_no_se_corre_dos_veces.py",
+   "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
+   "vigias/test_vigia_las_reglas_de_codex.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
+   "vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py",
+   "vigias/test_vigia_si_big_pickle_falla_revisa_codex.py"
+  ],
+  "lineas_paquete": 386,
+  "lineas_proyecto": 381666,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
  }
 ]

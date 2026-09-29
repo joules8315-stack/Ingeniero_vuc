@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _preguntar_con_relevo el tope del pasillo se calcula con min(_capas), cortando el material a la medida del cerebro mas pequeno de la fila, cuando el reparto ya manda el trabajo al que si aguanta.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_preguntar_con_relevo",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "            _tope_pasillo = min(_capas)",
+    "texto_nuevo": "            _tope_pasillo = tope_del_pasillo(_capas)"
+   }
+  ],
+  "cambio": "Crear arriba la funcion suelta tope_del_pasillo(capacidades) que devuelve la capacidad MAXIMA de la lista (0 si viene vacia o no sirve nada), y en _preguntar_con_relevo sustituir el renglon del ancla para que use esa pieza con la lista _capas en lugar de min(_capas).",
+  "codigo": "def tope_del_pasillo(capacidades):\n    \"\"\"Devuelve la capacidad MAS GRANDE de la fila, no la mas pequena.\n\n    POR QUE EL MAXIMO: el reparto de mas abajo ya manda el trabajo al cerebro que SI\n    aguanta el tamano, asi que recortar antes a la medida del mas chico tira material\n    para nada. Cortar por el minimo deja al revisor sin el trozo que si iba pegado.\n\n    - lista vacia -> 0 (no recortar nada)\n    - si no es lista, o trae cosas que no son numeros, se salta lo que no sirva;\n      si no queda nada, devuelve 0.\n    \"\"\"\n    if not isinstance(capacidades, (list, tuple)):\n        return 0\n    validas = [c for c in capacidades if isinstance(c, (int, float)) and not isinstance(c, bool)]\n    if not validas:\n        return 0\n    return max(validas)\n",
+  "vigia": "vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py comprueba que la pieza existe y tres casos: [5000, 20000, 60000] -> 60000; [12000] -> 12000; lista vacia -> 0.",
+  "puede_danar": [
+   "vigias/test_vigia_se_reparte_por_capacidad.py",
+   "vigias/test_vigia_pedir_al_de_pago_no_apaga_el_recorte.py",
+   "vigias/test_vigia_el_pasillo_recorta_el_hecho.py",
+   "vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py",
+   "medir_el_pasillo.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Los cinco vecinos quedan nombrados tal cual los pedia el paquete; el material ya midio que en los tres que entran de verdad por el pasillo las capacidades son iguales, asi que max y min coinciden y no cambian de comportamiento. Queda elFifth y medir_el_pasillo.py sin tocar, que es lo pedido."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Arregla de fondo lo pedido (maximo en vez de minimo), el campo codigo trae solo la pieza nueva completa desde la columna cero y la lista de vecinos es la verdadera: se puede aplicar tal cual."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 39750 a 16828 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 43754 a 18956 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 2"
+ ]
+}

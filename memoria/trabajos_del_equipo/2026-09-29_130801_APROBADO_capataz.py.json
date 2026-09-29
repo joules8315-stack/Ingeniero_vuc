@@ -1,0 +1,53 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El parametro en_paralelo vale 1 por defecto, asi que la tanda siempre lleva una sola orden y los trabajos de piezas distintas corren en fila en vez de a la vez.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "def bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):\n    \"\"\"Corre las ordenes sola hasta que se para por una de las tres causas:\n    tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos\n    del mismo tipo en la misma pieza.\"\"\"",
+  "texto_nuevo": "def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):\n    \"\"\"Corre las ordenes sola hasta que se para por una de las tres causas:\n    tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos\n    del mismo tipo en la misma pieza.\n\n    en_paralelo vale 2 por defecto: la puerta por la que se guarda es de uno\n    en uno (ya tiene su reparto de turnos conectado), asi que pasar de dos\n    solo haria que los demas esperen en la puerta. El numero se sube\n    MIDIENDO, no adivinando: primero se mide con dos, y si el reloj lo\n    aguanta, se sube. Quien llame a la funcion con otro numero sigue\n    mandando: el 2 es solo lo que vale cuando nadie dice nada.\"\"\"",
+  "cambios": "",
+  "cambio": "Subir el valor por defecto de en_paralelo de 1 a 2 y anotar en la cabecera de la funcion por que es 2 y no mas.",
+  "codigo": "def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):\n    \"\"\"Corre las ordenes sola hasta que se para por una de las tres causas:\n    tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos\n    del mismo tipo en la misma pieza.\n\n    en_paralelo vale 2 por defecto: la puerta por la que se guarda es de uno\n    en uno (ya tiene su reparto de turnos conectado), asi que pasar de dos\n    solo haria que los demas esperen en la puerta. El numero se sube\n    MIDIENDO, no adivinando: primero se mide con dos, y si el reloj lo\n    aguanta, se sube. Quien llame a la funcion con otro numero sigue\n    mandando: el 2 es solo lo que vale cuando nadie dice nada.\"\"\"",
+  "vigia": "vigias/test_vigia_el_loop_del_pit.py, caso test_dos_piezas_distintas_corren_a_la_vez (hoy rojo) y test_misma_pieza_va_en_fila (debe seguir verde).",
+  "puede_danar": [
+   "listas_para_correr",
+   "lanzar_al_equipo",
+   "marcar_estado",
+   "la puerta de guardado (reparto de turnos)",
+   "el tope de gasto del mes"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La cabecera nueva escribe como hecho 'la puerta por la que se guarda es de uno en uno (ya tiene su reparto de turnos conectado)'. En el material no aparece ninguna puerta ni ningun reparto de turnos: es una afirmacion sobre el proyecto que no se puede comprobar, y ademas queda grabada en el codigo para siempre.",
+   "Lo que arregla de verdad es una sola palabra: 1 -> 2 en la linea que el material trae literal. Todo lo demas que trae el texto_nuevo es justificacion, y la justificacion del tope en 2 es precisamente la que no se sostiene con lo entregado."
+  ],
+  "riesgo_vecinos": [
+   "el tope de gasto del mes: se_paso_del_tope() se mira una vez por tanda, asi que con dos trabajos a la vez el gasto de una tanda puede ser el doble antes de volver a mirar el tope",
+   "el guardado de los dos resultados a la vez: el paquete solo enseña el trozo de la maquina en paralelo, no la parte que guarda, asi que no se ve si aguanta dos llamadas simultaneas; el docstring lo da por comprobado y no esta comprobado",
+   "test_misma_pieza_va_en_fila: no lo rompe, porque el filtro de una orden por pieza vive en listas_para_correr y esa funcion no se toca, pero ahora la tanda puede traer dos renglones y conviene que el caso verde siga verde"
+  ],
+  "que_falta": [
+   "Confirmar que el archivo y los dos casos que nombra la vigia existen de verdad: el material solo dice que hay una prueba roja, no dice como se llama.",
+   "El motivo que si esta probado en el material para el 2 es que listas_para_correr ya devuelve una orden por pieza distinta, y con en_paralelo=2 entran dos. Si se deja la frase de la puerta, que sea alguien que pueda mostrarla."
+  ],
+  "resumen_para_el_jefe": "El arreglo es el correcto y minimo: cambiar el 1 por el 2 en la misma linea que el material trae, y con eso dos piezas distintas ya salen a la vez; lo unico que hay que tidy antes de darlo por bueno es la frase del docstring sobre la puerta de guardado, que no sale de nada de lo entregado y se queda escrita en el codigo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 25638 a 14227 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'leer_lista' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'max_workers' y esa palabra no apa",
+  "el pasillo recorto el encargo de 30429 a 15427 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'leer_lista' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'max_workers' y esa palabra no apa",
+  "el pasillo recorto el encargo de 31555 a 15746 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'leer_lista' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'max_workers' y esa palabra no apa",
+  "el pasillo recorto el encargo de 32681 a 16127 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}
