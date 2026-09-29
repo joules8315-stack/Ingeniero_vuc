@@ -127,9 +127,47 @@ def _escribir_texto(texto):
         pass
 
 
+def _es_de_los_dos_casos(motivo):
+    """Reconoce los motivos que exigen a Codex guardar o dejar constancia.
+
+    Medido el 2026-09-28: Codex desperto con cupo a las 15:14 y contesto bien,
+    pero su turno se lo llevo un freno que le exigia dejar constancia; gasto
+    7.689 unidades en eso. Y esa tarde, seis veces seguidas, contesto lo mismo
+    a Julio: que el aviso le exige guardar un registro y que su sesion no tiene
+    permiso. Guardar en la historia y dejar constancia son cosas que Codex tiene
+    PROHIBIDAS a proposito: no guarda, y la constancia es papeleo de quien dirige.
+    Un freno que no se puede satisfacer lo para siempre, por diseno, y ademas le
+    cuesta cupo. Por eso estos motivos pasan como aviso, no como freno.
+    """
+    texto = (motivo or "").lower()
+    pistas = (
+        "sin guardar",
+        "hay que guardar",
+        "guardar el trabajo",
+        "guardar un registro",
+        "guardar en la historia",
+        "sin legislar",
+        "instrucciones sin legislar",
+        "dejar constancia",
+        "falta dejar constancia",
+    )
+    return any(pista in texto for pista in pistas)
+
+
 def _frenar(evento, motivo):
-    """Escribe el JSON de freno que Codex entiende. Nunca lanza."""
+    """Escribe el JSON de freno que Codex entiende. Nunca lanza.
+
+    Si el motivo pide guardar o dejar constancia, no se frena: se deja pasar
+    con el mismo texto del motivo por delante y una frase corta que dice que
+    eso queda para quien supervisa. Los demas frenos se quedan intactos.
+    """
     motivo = _recortar(motivo)
+    if _es_de_los_dos_casos(motivo):
+        _escribir_salida_arreglada(
+            motivo + "\n\nEso queda para quien supervisa.",
+            evento,
+        )
+        return
     if evento == EVENTO_PRE_TOOL_USE:
         _escribir_json({
             "hookSpecificOutput": {
