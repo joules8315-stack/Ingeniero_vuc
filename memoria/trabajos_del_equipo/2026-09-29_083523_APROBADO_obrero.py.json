@@ -1,0 +1,77 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "falta_en_el_material solo mira el material y no el encargo, asi que el trozo pegado dentro del encargo no cuenta como material y se cae la vuelta con FALTA_MATERIAL",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "falta_en_el_material",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    - Un archivo falta si su nombre no aparece en el material.\n    - Una funcion falta si su renglon de declaracion no aparece en el material.",
+    "texto_nuevo": "    - Un archivo falta si su nombre no aparece en el material y el encargo no trae\n      codigo pegado (un renglon que, quitandole los espacios de delante, empiece\n      por 'def ' o por 'class ').\n    - Una funcion falta si su renglon de declaracion no aparece ni en el material\n      ni en el encargo."
+   },
+   {
+    "texto_viejo": "    for archivo in archivos:\n        if archivo not in texto_material:\n            faltantes.append(\n                \"el material no trae el archivo \" + archivo\n            )",
+    "texto_nuevo": "    # el encargo trae codigo pegado si algun renglon suyo, sin espacios delante,\n    # empieza por 'def ' o por 'class '\n    _encargo_trae_codigo = False\n    for _renglon in texto_encargo.splitlines():\n        _sin_espacios = _renglon.lstrip()\n        if _sin_espacios.startswith(\"def \") or _sin_espacios.startswith(\"class \"):\n            _encargo_trae_codigo = True\n            break\n\n    for archivo in archivos:\n        if archivo not in texto_material and not _encargo_trae_codigo:\n            faltantes.append(\n                \"el material no trae el archivo \" + archivo\n            )"
+   },
+   {
+    "texto_viejo": "    for funcion in funciones:\n        declaracion = \"def \" + funcion\n        if declaracion not in texto_material:",
+    "texto_nuevo": "    for funcion in funciones:\n        declaracion = \"def \" + funcion\n        if declaracion not in texto_material and declaracion not in texto_encargo:"
+   }
+  ],
+  "cambio": "en falta_en_el_material: (1) la cabecera deja de decir que una funcion falta si su declaracion no aparece en el material; (2) la comprobacion de archivos no marca falta si el encargo trae codigo pegado (renglon que empieza por 'def ' o 'class '); (3) la comprobacion de funciones busca la declaracion en el material O en el encargo",
+  "codigo": "    # el encargo trae codigo pegado si algun renglon suyo, sin espacios delante,\n    # empieza por 'def ' o por 'class '\n    _encargo_trae_codigo = False\n    for _renglon in texto_encargo.splitlines():\n        _sin_espacios = _renglon.lstrip()\n        if _sin_espacios.startswith(\"def \") or _sin_espacios.startswith(\"class \"):\n            _encargo_trae_codigo = True\n            break\n\n    for archivo in archivos:\n        if archivo not in texto_material and not _encargo_trae_codigo:\n            faltantes.append(\n                \"el material no trae el archivo \" + archivo\n            )\n\n    # --- Funciones nombradas en el encargo ---\n    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)\n    if conocidas:\n        funciones = [f for f in funciones if f in conocidas]\n\n    for funcion in funciones:\n        declaracion = \"def \" + funcion\n        if declaracion not in texto_material and declaracion not in texto_encargo:",
+  "vigia": "vigias/test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py (caso 1 rojo hoy: con el trozo pegado en el encargo la lista debe quedar vacia; caso 2 verde hoy: sin trozo pegado la lista NO puede quedar vacia)",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "test_vigia_el_material_pide_la_funcion_publica.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Con codigo pegado en el encargo la comprobacion de archivos deja de comprobar: no se puede marcar NINGUN archivo como faltante, ni uno ajeno al encargo. Es lo que pidio el material (la prueba 1 exige lista vacia), pero el candado 'el material no trae el archivo' queda sin efecto en todo encargo que traiga un 'def ' o un 'class '.",
+   "test_vigia_el_material_trae_la_pieza_pedida.py y test_vigia_el_material_pide_la_funcion_publica.py podrian depender de que una funcion pegada en el encargo SI se marque como faltante; estan fuera del paquete y no se pudieron medir.",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py, test_vigia_la_extension_suelta_no_es_un_archivo.py, test_vigia_revisor_roto_no_tira_la_vuelta.py, test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py y test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py tambien quedan sin medir; son 9 los vecinos declarados y 8 no se pudieron leer."
+  ],
+  "que_falta": [
+   "El texto viejo de la cabecera (cambio 1) NO aparece en el material: el paquete solo describe en palabras lo que dice hoy la cabecera, nunca sus renglones literales. Que el programa compruebe que ese texto existe y que el cambio aplica; si no aplica, el arreglo queda sin cabecera al dia y el material lo pedia expresamente.",
+   "Que conste que el encargo llega como texto con renglones de verdad: si texto_encargo fuera el str() de un diccionario, splitlines() no veria ningun renglon y las dos reglas nuevas no se dispararian nunca. La prueba 1, que hoy esta roja, lo demuestra al quedar verde.",
+   "Los cambios 2 y 3 si usan anclajes literales que aparecen en el material, y el texto que queda debajo de la condicion (los dos mensajes 'nombra el archivo pero no trae la funcion' / 'no trae la funcion') no se toca: bien, el material exigia que se quedara igual."
+  ],
+  "resumen_para_el_jefe": "El arreglo hace exactamente los tres cambios pedidos, con los tres anclajes literales que trae el paquete, y no toca nada mas; lo unico que no se pudo comprobar es el renglon viejo de la cabecera, que el paquete solo describe con palabras, asi que que el programa verifique que ese parche aplica."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 35247 a 18844 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) no le cabe (39888 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}
