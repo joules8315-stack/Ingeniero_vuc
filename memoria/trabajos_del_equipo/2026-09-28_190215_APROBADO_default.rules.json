@@ -1,0 +1,62 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En config/codex/default.rules solo estan permitidos arranca, trabaja, equipo, pit y director; faltan los permisos de cruzado, resultado y canal enviar, y falta el segundo renglon de comentario que explique por que no se permiten los mandos que bloquean.",
+  "archivo": "config/codex/default.rules",
+  "funcion": "seccion de prefix_rule (permisos)",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "# Reglas de Codex, guardadas en el proyecto (A-40 y A-48, 2026-09-22). Codex no escribe codigo ni guarda trabajo: solo da ordenes al equipo y al director del Ingeniero, y el programa escribe. Se instalan con python arnes/instalar_reglas_codex.py.",
+    "texto_nuevo": "# Reglas de Codex, guardadas en el proyecto (A-40 y A-48, 2026-09-22). Codex no escribe codigo ni guarda trabajo: solo da ordenes al equipo y al director del Ingeniero, y el programa escribe. Se instalan con python arnes/instalar_reglas_codex.py.\n# Los mandos que bloquean no son para Codex cuando trabaja solo, porque esperar le cuesta cupo igual que trabajar: medido hoy 2026-09-28, 21.726 unidades esperando una ronda hasta quedarse sin cupo. Por eso se le permiten el mando que lanza al fondo y el que consulta el resultado."
+   },
+   {
+    "texto_viejo": "prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"director\"], decision=\"allow\")",
+    "texto_nuevo": "prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"director\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"cruzado\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"resultado\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"arnes/canal.py\", \"enviar\"], decision=\"allow\")"
+   }
+  ],
+  "cambio": "Agregar debajo del comentario de arriba un segundo renglon de comentario con la frase pedida, y agregar tres prefix_rule de allow (cruzado, resultado y canal enviar) justo despues del prefix_rule del director, sin tocar nada mas.",
+  "codigo": "# Los mandos que bloquean no son para Codex cuando trabaja solo, porque esperar le cuesta cupo igual que trabajar: medido hoy 2026-09-28, 21.726 unidades esperando una ronda hasta quedarse sin cupo. Por eso se le permiten el mando que lanza al fondo y el que consulta el resultado.\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"cruzado\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"ingeniero.py\", \"resultado\"], decision=\"allow\")\nprefix_rule(pattern=[\"python\", \"arnes/canal.py\", \"enviar\"], decision=\"allow\")",
+  "vigia": "vigias/test_vigia_codex_sigue_sin_manos.py (sus cinco pruebas deben seguir verdes; ya acepta cruzado, resultado y canal enviar).",
+  "puede_danar": [
+   "config/codex/default.rules",
+   "arnes/instalar_reglas_codex.py",
+   "Codex (permisos de mandos)"
+  ],
+  "preguntas": [
+   "El material no trae el archivo config/codex/default.rules completo: solo trae el renglon ancla del director. ¿Se confirma que el renglon del director es exactamente prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"director\"], decision=\"allow\") y que va solo, sin otros prefix_rule alrededor, para poder insertar los tres nuevos justo debajo?",
+   "El material no trae el nombre exacto del archivo del canal dentro de arnes (se dice 'se llama canal' y 'vive en la carpeta arnes'). ¿El archivo es arnes/canal.py y el mando se invoca como python arnes/canal.py enviar?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "canal.py",
+   "default.rules"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "La extension .py de arnes/canal.py es lo unico inferido: el material solo dice que el programa vive en la carpeta arnes y se llama canal. La forma python arnes/canal.py enviar concuerda con el comentario del propio archivo (arnés/instalar_reglas_codex.py) y con el patron de las otras reglas, asi que no es un invento, pero es el punto a confirmar contra el archivo real antes de instalar.",
+   "Si el vigia cuenta permisos o exige orden concreto, el bloque queda con los tres nuevos pegados al director, que es donde se anade; el conteo da ocho (arranca, trabaja, equipo, pit, director, cruzado, resultado, enviar) como pide el paquete."
+  ],
+  "que_falta": [
+   "No se pudo ejecutar la verificacion real contra config/codex/default.rules ni contra vigias/test_vigia_codex_sigue_sin_manos.py, porque el paquete recorta ambos archivos; el obrero lo declara en _fuera_del_paquete y en vez de adivinar pregunta. Es lo correcto."
+  ],
+  "resumen_para_el_jefe": "El cambio hace exactamente lo pedido: tres permisos de allow (cruzado, resultado y canal enviar) pegados al ancla del director, mas el segundo renglon de comentario con la frase y las 21.726 unidades; no toca prohibiciones y no inventa nada, salvo la suposicion de que el archivo del canal es arnes/canal.py, que conviene confirmar."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 33384 a 18845 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.; EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Segurament",
+  "el pasillo recorto el encargo de 37801 a 15345 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "el pasillo recorto el encargo de 37909 a 15382 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 37967 a 15401 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}
