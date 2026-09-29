@@ -49,7 +49,12 @@ def aplicar_cambios(propuesta, raiz=None):
             ruta = os.path.normpath(os.path.join(raiz, ruta))
         if ruta not in contenidos:
             if os.path.exists(ruta):
-                with open(ruta, 'r', encoding='utf-8') as f:
+                # 2026-09-29: ingeniero.py empieza con la marca BOM (EF BB BF); leida con utf-8
+                # queda como U+FEFF dentro del texto y ast.parse revienta con 'invalid
+                # non-printable character U+FEFF' en el renglon 1, tirando todo cambio aprobado.
+                # Se lee con utf-8-sig para que la marca no entre en el texto. Lo vigila
+                # vigias/test_vigia_aplicador.py
+                with open(ruta, 'r', encoding='utf-8-sig') as f:
                     contenidos[ruta] = f.read()
             else:
                 contenidos[ruta] = ''
@@ -71,7 +76,15 @@ def aplicar_cambios(propuesta, raiz=None):
         dir_archivo = os.path.dirname(ruta) or '.'
         fd, tmp_path = tempfile.mkstemp(dir=dir_archivo, suffix='.tmp')
         try:
-            with os.fdopen(fd, 'w', encoding='utf-8') as f:
+            # 2026-09-29: la marca BOM tiene que quedar como estaba: no se agrega a los archivos
+            # que no la tienen ni se le quita a los que si. Se lee la marca del original y se
+            # escribe con utf-8-sig solo si el original la tenia. Lo vigila
+            # vigias/test_vigia_aplicador.py
+            tenia_bom = False
+            if os.path.exists(ruta):
+                with open(ruta, 'rb') as fb:
+                    tenia_bom = fb.read(3) == b'\xef\xbb\xbf'
+            with os.fdopen(fd, 'w', encoding='utf-8-sig' if tenia_bom else 'utf-8') as f:
                 f.write(texto)
             os.replace(tmp_path, ruta)
             _apuntar_log(True, ruta, '?', 'cambio aplicado en ronda')
