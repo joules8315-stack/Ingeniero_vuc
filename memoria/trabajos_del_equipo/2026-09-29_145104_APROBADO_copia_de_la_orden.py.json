@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "soltar_copia compara el diccionario que devuelve copia_para contra las rutas de la libreta, asi que nunca coincide y siempre devuelve False",
+  "archivo": "arnes/copia_de_la_orden.py",
+  "funcion": "soltar_copia",
+  "texto_viejo": "    orden_id = None\n    for clave, ruta in list(_LIBRETA.items()):\n        if ruta == copia:\n            orden_id = clave\n            break\n\n    if orden_id is None:\n        return False\n\n    del _LIBRETA[orden_id]\n\n    raiz = os.path.dirname(os.path.dirname(os.path.dirname(str(copia))))\n    palabras = ['git', 'worktree', 'remove', '--force', str(copia)]",
+  "texto_nuevo": "    if isinstance(copia, dict):\n        ruta_copia = copia.get('carpeta')\n    else:\n        ruta_copia = copia\n\n    orden_id = None\n    for clave, ruta in list(_LIBRETA.items()):\n        if str(ruta) == str(ruta_copia):\n            orden_id = clave\n            break\n\n    if orden_id is None:\n        return False\n\n    del _LIBRETA[orden_id]\n\n    raiz = os.path.dirname(os.path.dirname(os.path.dirname(str(ruta_copia))))\n    palabras = ['git', 'worktree', 'remove', '--force', str(ruta_copia)]",
+  "cambio": "En soltar_copia, aceptar tanto un diccionario (usando su clave 'carpeta') como una ruta suelta, comparar con str() en ambos lados, y usar esa ruta extraida tambien para calcular la raiz y para el comando de retirar la copia de trabajo",
+  "codigo": "    if isinstance(copia, dict):\n        ruta_copia = copia.get('carpeta')\n    else:\n        ruta_copia = copia\n\n    orden_id = None\n    for clave, ruta in list(_LIBRETA.items()):\n        if str(ruta) == str(ruta_copia):\n            orden_id = clave\n            break\n\n    if orden_id is None:\n        return False\n\n    del _LIBRETA[orden_id]\n\n    raiz = os.path.dirname(os.path.dirname(os.path.dirname(str(ruta_copia))))\n    palabras = ['git', 'worktree', 'remove', '--force', str(ruta_copia)]",
+  "vigia": "vigias/test_vigia_cada_orden_tiene_su_propia_copia.py, tercer caso: soltar dos veces devuelve True la primera y False la segunda; y los otros dos casos (misma orden misma carpeta, dos ordenes distintas carpetas distintas) siguen verdes",
+  "puede_danar": [
+   "arnes/copia_de_la_orden.py (funcion soltar_copia)",
+   "vigias/test_vigia_cada_orden_tiene_su_propia_copia.py (si el arreglo no respeta el contrato de la libreta)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 24221 a 15318 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}
