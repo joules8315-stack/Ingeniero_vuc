@@ -65,19 +65,22 @@ def test_el_guardado_dice_que_roja_lo_frena(tmp_path, monkeypatch):
     import guardia_de_guardado
 
     # 1. La bateria falsa: un archivo rojo y el renglon de resumen como ultimo renglon.
+    #    La pieza hace `import bateria_en_paralelo` DENTRO de _vigias, asi que el falso
+    #    tiene que estar en sys.modules con esa clave, no como atributo de la pieza.
     salida = (
         "FAILED vigias/test_vigia_la_que_frena.py::test_algo\n"
         "bateria en paralelo: 1 grupos, 1 rojos, 0 cortados por tiempo\n"
     )
-    monkeypatch.setattr(guardia_de_guardado, "bateria", _BateriaFalsa(salida))
+    monkeypatch.setitem(sys.modules, "bateria_en_paralelo", _BateriaFalsa(salida))
 
     # 2. Las vecinas: la carpeta entera de vigias, para no salir por el camino de
-    #    "solo cambiaron documentos".
-    monkeypatch.setattr(
-        guardia_de_guardado,
-        "_vecinas",
-        lambda *args, **kwargs: ["vigias"],
-    )
+    #    "solo cambiaron documentos". La pieza hace `vecinas.elegir(raiz)` con vecinas
+    #    importado por nombre suelto dentro de _vigias, asi que va en sys.modules.
+    class _VecinasFalsas:
+        def elegir(self, raiz):
+            return ["vigias/"]
+
+    monkeypatch.setitem(sys.modules, "vecinas", _VecinasFalsas())
 
     # 3. git dice que el archivo YA estaba guardado: returncode 0, sin salida.
     def _run_falso(*args, **kwargs):
