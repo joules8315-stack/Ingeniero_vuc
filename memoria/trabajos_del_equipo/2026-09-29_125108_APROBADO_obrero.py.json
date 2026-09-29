@@ -1,0 +1,85 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _preguntar_con_relevo se recorta el encargo al minimo de las capacidades de la fila, tirando material aunque el cerebro que escribe aguante mas; falta la pieza tope_del_pasillo que devuelva el maximo.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "tope_del_pasillo (nueva) y _preguntar_con_relevo",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _prompt_auditor(paquete, propuesta):",
+    "texto_nuevo": "def tope_del_pasillo(capacidades):\n    \"\"\"Devuelve el tope al que se puede recortar el material: la capacidad MAS GRANDE.\n\n    POR QUE EL MAXIMO Y NO EL MINIMO: el reparto de mas abajo ya manda el trabajo al\n    cerebro que SI aguanta, asi que recortar antes a la medida del mas chico tira\n    material para nada. Medido el 2026-09-29, cuatro veces: encargos cortados de 45.226\n    a 15.921 letras y de 34.992 a 15.284 murieron en DUDOSO porque al revisor le falto\n    el trozo que SI iba pegado.\n\n    Reglas:\n    - Devuelve la capacidad MAS GRANDE de la lista, no la mas pequena.\n    - Lista vacia -> 0, que significa no recortar nada.\n    - Si no es una lista, o trae cosas que no son numeros, se salta lo que no sirva;\n      si no queda nada, devuelve 0. Nunca revienta.\n    \"\"\"\n    if not isinstance(capacidades, (list, tuple)):\n        return 0\n    _buenas = []\n    for _c in capacidades:\n        if isinstance(_c, bool):\n            continue\n        if isinstance(_c, (int, float)):\n            _buenas.append(_c)\n    if not _buenas:\n        return 0\n    return max(_buenas)\n\n\ndef _prompt_auditor(paquete, propuesta):"
+   },
+   {
+    "texto_viejo": "            _tope_pasillo = min(_capas)",
+    "texto_nuevo": "            _tope_pasillo = tope_del_pasillo(_capas)"
+   }
+  ],
+  "cambio": "Crear la funcion suelta tope_del_pasillo(capacidades) arriba en cuerpo/obrero.py, junto a las demas funciones sueltas (antes de _prompt_auditor), que devuelve la capacidad MAS GRANDE de la lista (0 si vacia o si no queda ningun numero valido, sin reventar). Y en _preguntar_con_relevo sustituir la linea que hoy hace min(_capas) por una llamada a tope_del_pasillo(_capas). Nada mas cambia de ese bloque.",
+  "codigo": "def tope_del_pasillo(capacidades):\n    \"\"\"Devuelve el tope al que se puede recortar el material: la capacidad MAS GRANDE.\n\n    POR QUE EL MAXIMO Y NO EL MINIMO: el reparto de mas abajo ya manda el trabajo al\n    cerebro que SI aguanta, asi que recortar antes a la medida del mas chico tira\n    material para nada. Medido el 2026-09-29, cuatro veces: encargos cortados de 45.226\n    a 15.921 letras y de 34.992 a 15.284 murieron en DUDOSO porque al revisor le falto\n    el trozo que SI iba pegado.\n\n    Reglas:\n    - Devuelve la capacidad MAS GRANDE de la lista, no la mas pequena.\n    - Lista vacia -> 0, que significa no recortar nada.\n    - Si no es una lista, o trae cosas que no son numeros, se salta lo que no sirva;\n      si no queda nada, devuelve 0. Nunca revienta.\n    \"\"\"\n    if not isinstance(capacidades, (list, tuple)):\n        return 0\n    _buenas = []\n    for _c in capacidades:\n        if isinstance(_c, bool):\n            continue\n        if isinstance(_c, (int, float)):\n            _buenas.append(_c)\n    if not _buenas:\n        return 0\n    return max(_buenas)\n\n\n# --- uso en _preguntar_con_relevo ---\n            _tope_pasillo = tope_del_pasillo(_capas)",
+  "vigia": "vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py (ya existe, hoy roja): comprueba que tope_del_pasillo existe y que con [5000, 20000, 60000] devuelve 60000, con [12000] devuelve 12000 y con [] devuelve 0. No se toca.",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "test_vigia_el_material_pide_la_funcion_publica.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El campo `codigo` de la raiz trae una linea de mas: '# --- uso en _preguntar_con_relevo ---' seguida de '            _tope_pasillo = tope_del_pasillo(_capas)' con 12 espacios a nivel de modulo. Hoy no rompe nada porque con `cambios` lleno aplicador.aplicar_propuesta (cuerpo/aplicador.py:30-37) solo mira los trozos y el revisor (arnes/revisor_de_programa.py:244-255) se salta el `codigo`; pero cuerpo/aplicador.py:235 sobreescribe el archivo ENTERO con `codigo` cuando falta `texto_viejo`: si algun dia esa propuesta pasa por aplicar_cambio, se borra cuerpo/obrero.py entero. Es una mina, no un fallo de fondo: la prosa del arreglo es correcta.",
+   "`puede_danar` se queda corto: deja fuera a los vecinos de VERDAD de este renglon, que son los que se leen de verdad: vigias/test_vigia_se_reparte_por_capacidad.py, vigias/test_vigia_pedir_al_de_pago_no_apaga_el_recorte.py, vigias/test_vigia_el_pasillo_recorta_el_hecho.py, vigias/test_vigia_al_cerebro_solo_llega_lo_suyo.py y medir_el_pasillo.py. No los rompen (ver riesgo_vecinos), pero el que aprueba tiene derecho a saber que existen."
+  ],
+  "riesgo_vecinos": [
+   "COMPROBADO, NO ROMPEN: los tres vecinos que de verdad entran por _preguntar_con_relevo usan capacidades IGUALES para todos (19042 en test_vigia_el_pasillo_recorta_el_hecho.py:63 y en test_vigia_pedir_al_de_pago_no_apaga_el_recorte.py:65), asi que max y min dan el mismo numero y las llamadas al recorte siguen siendo las de antes. En test_vigia_se_reparte_por_capacidad.py los prompts son 'x'*N sin bloque '===== MATERIAL', y asignador.recortar_prompt (arnes/asignador.py:294-298) no toca un prompt sin ese bloque: la trimming no ocurre hoy ni con el arreglo, y el reparto lo decide igual cuotas.rankear, asi que los casos A/B/C/D/G siguen viendo lo mismo.",
+   "RIESGO REAL, no un fallo: con tope=max el prompt sale mas grande, asi que un gratis pequeno se va a saltar mas a menudo en cuotas.rankear (cuerpo/obrero.py:997 y el aviso de 'se le salta' en 1002-1005). Es justo lo que pide el encargo (el reparto de mas abajo ya mide), pero cambia cuando se recorta de verdad y cuando se acaba yendo al de pago.",
+   "El aviso de cuerpo/obrero.py:975-977 seguira diciendo 'para que le quepa a un cerebro gratis (tope medido: N)' con un N que ya no es el del gratis mas pequeno. El encargo prohibe tocar ese aviso, asi que no es culpa de este arreglo, pero queda un texto que ya no describe lo que pasa."
+  ],
+  "que_falta": [
+   "El bloque de comentario de cuerpo/obrero.py:950-964 sigue afirmando lo contrario de lo que ahora hace el codigo ('El tope es la capacidad real MEDIDA del gratis mas pequeno... garantiza que ningun gratis quede fuera por tamano'). El encargo prohibe tocarlo en este arreglo: queda para una orden aparte.",
+   "Comprobado que la pieza nueva entra bien: los dos texto_viejo aparecen EXACTAMENTE una vez en el archivo (grep -c: 1 y 1), asi que aplicador.aplicar_cambios no se para con 'no aparece exactamente una vez'; 'def _prompt_auditor(paquete, propuesta):' esta en cuerpo/obrero.py:350 sin sangrar (nivel de modulo) y '_tope_pasillo = min(_capas)' en cuerpo/obrero.py:969, asi que la pieza queda al nivel del modulo y ast.parse no se rompe.",
+   "Comprobado que la vigia queda verde: tope_del_pasillo devuelve 60000, 12000 y 0 para los tres casos de vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py, y se salta bool sin reventar.",
+   "El sabotaje (A-43) deshace bien: cuerpo/capataz.py:467-475 invierte cada trozo de `cambios`, y al revertir queda el archivo igual que antes, con la vigia en rojo otra vez."
+  ],
+  "resumen_para_el_jefe": "El arreglo hace lo que pide el paquete y no rompe a ningun vecino (los tres que entran de verdad por el pasillo usan capacidades iguales, asi que max y min coinciden); solo hay que quitar del campo `codigo` la linea suelta con sangria y completar la lista de vecinos, y aprobado."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 29940 a 18335 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) tardo demasiado -> pasa el turno",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 32495 a 18957 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "se pidio generar a deepseek y no esta disponible: contesto gemini4",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de '_preguntar_con_relevo' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "se pidio generar a deepseek y no esta disponible: contesto gemini4",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "vueltas_dadas: 4"
+ ]
+}
