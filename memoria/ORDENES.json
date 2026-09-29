@@ -1,5 +1,23 @@
 [
   {
+    "id": "H3-el-empaquetador-respeta-necesito-leer",
+    "titulo": "Cuando se pide un trozo con NECESITO_LEER, el paquete lo entrega",
+    "origen": "Codex por el canal, 2026-09-29 13:20, trabajando en Foto Informe FI1",
+    "repara": "se pidio literalmente el trozo de app_web.html con processPhoto, el manejador de camara y el guardado, y el paquete entrego leyes y pruebas vecinas, sin ninguno de esos tramos. Dos vueltas del equipo perdidas: la primera SIN_VEREDICTO y la segunda DUDOSO, sin guardar nada. La causa YA estaba medida en la memoria de fallos: el repartidor entrega el archivo NOMBRADO recortado a sus primeros 80 renglones, min(80, lineas), no entero; con router.py de 636 renglones ya tumbo la orden 29 por lo mismo",
+    "pieza": "cerebro/router.py",
+    "encargo": "Que cuando el encargo nombra una funcion concreta de un archivo concreto, el paquete traiga la rebanada literal de ESA funcion en su archivo anfitrion, y no un recorte ciego de los primeros 80 renglones ni solo leyes y pruebas vecinas. Medido hoy con el caso de Codex: processPhoto vive en el renglon 2381 de app_web.html, que tiene 2.462 renglones, asi que un recorte de 80 renglones nunca lo alcanza. Primero su prueba, roja por su motivo; despues el arreglo.",
+    "vigia": "vigias/test_vigia_el_paquete_trae_la_funcion_que_se_pide.py",
+    "razon": "es la causa medida de que el trabajo de Foto Informe este parado, y ya tumbo tambien la orden 29: falla en las dos manos a la vez",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "FI13-entrar-una-vez-con-internet-y-despues-sin-el",
     "titulo": "TRABAJO ESPECIAL, APARTE: como se entra a la aplicacion descargada sin internet",
     "origen": "Julio 2026-09-29. El dijo: no lo trabajemos ahora, deja anotado esto para un trabajo especial",
