@@ -18,7 +18,7 @@ SIN_AVANCE_SEGUNDOS = 660
 TOPE_DURO_SEGUNDOS = 3000
 
 
-def lanzar_al_equipo(proyecto, orden, tope_segundos=900):
+def lanzar_al_equipo(proyecto, orden, tope_segundos=900, carpeta=None):
     raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     comando = [
         sys.executable,
@@ -39,7 +39,7 @@ def lanzar_al_equipo(proyecto, orden, tope_segundos=900):
     archivo = open(os.path.join(raiz, 'memoria', '.salida_tarea_' + str(orden.get('id', '')) + '.txt'), 'w', encoding='utf-8', errors='replace')
     proceso = subprocess.Popen(
         comando,
-        cwd=raiz,
+        cwd=carpeta if carpeta is not None else raiz,
         stdout=archivo,
         stderr=subprocess.STDOUT,
         env=entorno,
