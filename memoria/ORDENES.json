@@ -1,5 +1,43 @@
 [
   {
+    "id": "H6-que-no-se-muerda-la-cola",
+    "titulo": "Que la reparacion de frenos no se muerda la cola: se consulta el camino que ya fallo, tambien a mano",
+    "origen": "Julio 2026-09-29: revisa que no vaya a quedar en bucles interminables de morderse la cola, y dejalo expreso en el metodo; se logra si revisa el camino que tomo y por que fallo, que aprenda de sus errores",
+    "repara": "MEDIDO HOY, y es el hallazgo: el freno del bucle YA EXISTE (cuerpo/capataz.py: huella_de, anotar_huella_fallida, ya_fallo, sobre memoria/HUELLAS_QUE_FALLARON.jsonl, con 40 caminos escritos) pero SOLO lo escribe y lo consulta el ciclo automatico. El ultimo camino apuntado es del 2026-09-28: HOY no se apunto ni uno, porque todas las rondas se lanzaron a mano. El freno estuvo ciego todo el dia, y por eso se repitio DOS veces el mismo camino equivocado y se perdieron seis vueltas. Ademas la huella se calcula sobre el texto del encargo, asi que basta reescribir la frase para que el mismo error pase por nuevo",
+    "pieza": "arnes/metodo.py",
+    "encargo": "Que el registro de caminos que fallaron se escriba y se CONSULTE tambien en las rondas lanzadas a mano, no solo en el ciclo automatico, y que la huella se calcule sobre la PIEZA y el MODO de arreglarla (el renglon que se cambia) en vez del texto del encargo, para que reescribir la frase no cuele el mismo error como nuevo. Y se anaden los cuatro limites que Julio pidio expresos, todos escritos ya en METODO_ANTE_UN_PROBLEMA.md: 1) un camino que ya fallo no se vuelve a intentar; 2) EL AVANCE SE MIDE EN HECHOS NUEVOS, no en intentos, asi que un intento que falla sin dejar un hecho nuevo (una medicion, el nombre de una roja, un motivo) se para, y este es el limite que no se puede burlar porque no cuenta vueltas sino aprendizaje; 3) tres frenos encadenados y se SUBE en vez de bajar, porque la cadena dice que la causa esta mas arriba; 4) tres caminos distintos fallidos y el diagnostico esta mal, asi que se vuelve a MEDIR en vez de probar un cuarto. Se reusa lo que ya existe, no se duplica: huella_de, anotar_huella_fallida, ya_fallo y el PARADO por tres fallos del mismo tipo que ya tiene la funcion bucle. Primero su prueba, roja por su motivo.",
+    "vigia": "vigias/test_vigia_no_se_muerde_la_cola.py",
+    "depende": [
+      "H5-un-programa-obliga-el-metodo-de-Julio"
+    ],
+    "razon": "sin esto, reparar cada freno con el metodo gira para siempre; y el freno que lo evitaba ya existia y hoy estuvo ciego, que es la prueba de que el problema no es de diseno sino de que nadie lo consulta",
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
+    "id": "H5-un-programa-obliga-el-metodo-de-Julio",
+    "titulo": "Un programa obliga el metodo de Julio en la unica puerta por la que pasan TODAS las IA",
+    "origen": "Julio 2026-09-29: necesito que el metodo no dependa de tu memoria, y que exista un programa que te obligue, de modo que sea preciso",
+    "repara": "el metodo de Julio (1 cual es el problema, 2 que lo causa y cual es la causa raiz, 3 donde esta y a quien puede danar, 4 cuando se ejecuta: legislar, candado, vigias, y si lo puede hacer un programa) hoy vive en documentos, o sea en la memoria de quien lea. Medido hoy: se perdieron SEIS vueltas por saltarse el paso 2. Y hallazgo que decide el diseno: los candados de Claude son de Claude, Codex y las demas IA NO pasan por ellos, asi que un gancho de Claude no obliga a nadie mas",
+    "pieza": "arnes/metodo.py",
+    "encargo": "DONDE VA: dentro del comando equipo de ingeniero.py, que es la UNICA puerta por la que pasan todas las IA para pedir una reparacion, incluido el ciclo automatico. Es el mismo razonamiento ya probado en el guardado: la unica puerta por la que pasan todos es la que NO ejecuta la IA. QUE EXIGE antes de dejar arrancar la ronda, y si falta algo NO se llama a ningun cerebro (ahi es donde se quema el dinero): 1) el problema con las palabras de quien lo reporto; 2) la EVIDENCIA medida: que se midio, con que y que contesto; 3) que no repita un CAMINO CERRADO ya escrito en la lista de trabajos; 4) a quien puede danar y el flujo; 5) la prueba declarada con promesa de sabotaje; 6) lo que NO se toca; 7) quien es la mano mas barata que puede hacerlo. DECISION DE JULIO: FRENA, no avisa. Y cuando frena, la IA aplica el MISMO metodo al freno y lo repara, sin avisarle a Julio. Si un freno no dice por que freno, lo primero que se repara es DARLE VOZ al freno: cada freno es un problema nuevo y siempre hay algo que reparar. Primero su prueba, roja por su motivo.",
+    "vigia": "vigias/test_vigia_el_metodo_frena_el_encargo_mal_preparado.py",
+    "razon": "sin un programa que lo obligue, el metodo depende de la memoria de la IA, y la evidencia de hoy es que esa memoria no sirve: seis vueltas perdidas por saltarse un paso",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "H4-el-candado-de-memoria-avisa-sin-cobrar-peaje",
     "titulo": "El aviso de la memoria avisa una vez y deja pasar, en vez de obligar a repetir cada accion",
     "origen": "Julio 2026-09-29: que no te deja hacerlo y porque, y como resolverlo",
