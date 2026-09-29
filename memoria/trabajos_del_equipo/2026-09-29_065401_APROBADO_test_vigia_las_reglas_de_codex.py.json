@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La prueba test_allow_son_exactamente_cinco_y_las_de_ingeniero quedo vieja: espera 5 permisos allow y busca frases sin comillas ni comas, cuando el carne ya tiene 8 permisos y los renglones reales traen comillas y comas.",
+  "archivo": "vigias/test_vigia_las_reglas_de_codex.py",
+  "funcion": "test_allow_son_exactamente_cinco_y_las_de_ingeniero",
+  "texto_viejo": "def test_allow_son_exactamente_cinco_y_las_de_ingeniero():\n    texto = _leer_reglas()\n    allow = _lineas_allow(texto)\n    assert len(allow) == 5, \"se esperaban 5 lineas con decision=\\\"allow\\\", hay %d\" % len(allow)\n    esperadas = [\n        \"python ingeniero.py arranca\",\n        \"python ingeniero.py trabaja\",\n        \"python ingeniero.py equipo\",\n        \"python ingeniero.py pit\",\n        \"python ingeniero.py director\",\n    ]\n    for esperada in esperadas:\n        encontrada = False\n        for linea in allow:\n            if esperada in linea:\n                encontrada = True\n                break\n        assert encontrada, \"falta la regla allow para: %s\" % esperada",
+  "texto_nuevo": "# 2026-09-29: Codex tiene permiso para avisar desde hoy (Julio pidio que pueda avisar\n# cuando se traba, porque esperar tambien gasta cupo). El carne paso de 5 a 8 permisos.\ndef test_allow_son_exactamente_ocho_y_las_de_ingeniero():\n    texto = _leer_reglas()\n    allow = _lineas_allow(texto)\n    assert len(allow) == 8, \"se esperaban 8 lineas con decision=\\\"allow\\\", hay %d\" % len(allow)\n    esperadas = [\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"arranca\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"trabaja\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"equipo\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"pit\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"director\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"arnes/canal.py\", \"enviar\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"cruzado\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"resultado\"], decision=\"allow\")',\n    ]\n    for esperada in esperadas:\n        encontrada = False\n        for linea in allow:\n            if esperada in linea:\n                encontrada = True\n                break\n        assert encontrada, \"falta la regla allow para: %s\" % esperada",
+  "cambios": [],
+  "cambio": "Renombrar la prueba a test_allow_son_exactamente_ocho_y_las_de_ingeniero, subir el conteo de 5 a 8, comparar contra los renglones reales del carne (con comillas y comas) y dejar un comentario con la fecha 2026-09-29 y el motivo.",
+  "codigo": "# 2026-09-29: Codex tiene permiso para avisar desde hoy (Julio pidio que pueda avisar\n# cuando se traba, porque esperar tambien gasta cupo). El carne paso de 5 a 8 permisos.\ndef test_allow_son_exactamente_ocho_y_las_de_ingeniero():\n    texto = _leer_reglas()\n    allow = _lineas_allow(texto)\n    assert len(allow) == 8, \"se esperaban 8 lineas con decision=\\\"allow\\\", hay %d\" % len(allow)\n    esperadas = [\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"arranca\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"trabaja\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"equipo\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"pit\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"director\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"arnes/canal.py\", \"enviar\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"cruzado\"], decision=\"allow\")',\n        'prefix_rule(pattern=[\"python\", \"ingeniero.py\", \"resultado\"], decision=\"allow\")',\n    ]\n    for esperada in esperadas:\n        encontrada = False\n        for linea in allow:\n            if esperada in linea:\n                encontrada = True\n                break\n        assert encontrada, \"falta la regla allow para: %s\" % esperada",
+  "vigia": "La propia prueba test_allow_son_exactamente_ocho_y_las_de_ingeniero: verde con los 8 permisos del carne y roja si aparece cualquier otro permiso allow que no sea uno de esos ocho.",
+  "puede_danar": [
+   "vigias/test_vigia_las_reglas_de_codex.py (las otras tres pruebas del archivo deben quedar del mismo color: una verde y dos rojas)",
+   "config/codex/default.rules (no se toca, pero la prueba lo vigila)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El renombrado de la prueba rompe solo si algun otro archivo la invocara por su nombre string; el material no menciona ninguna referencia asi, y el encargo pedia el renombrado explicitamente."
+  ],
+  "que_falta": [
+   "No se aporta corrida que muestre el color de las otras tres pruebas del mismo archivo, que es lo unico que queda por medir."
+  ],
+  "resumen_para_el_jefe": "Arregla de verdad la prueba vieja: los ocho permisos esperados estan copiados literalmente del material, el conteo sube a 8 y el doble chequeo (cantidad mas texto) sigue poniendola roja ante un noveno permiso; solo toca esa prueba de ese archivo, como se pidio."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 34003 a 14002 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 37948 a 15273 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 38178 a 15358 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 3"
+ ]
+}
