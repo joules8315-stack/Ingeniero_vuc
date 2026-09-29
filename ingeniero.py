@@ -292,8 +292,16 @@ def main():
         _resto = []
         _i = 0
         _crear = False
+        # 2026-09-29: la terminal de Windows arranca TODAS las comillas dobles del texto que
+        # viaja como argumento, asi que el encargo necesita viajar en un archivo. Marca nueva
+        # --encargo-archivo <ruta>: se aparta igual que las otras y su texto sale del archivo.
+        _encargo_archivo = None
         while _i < len(_partes):
             _p = _partes[_i]
+            if _p == "--encargo-archivo" and _i + 1 < len(_partes):
+                _encargo_archivo = _partes[_i + 1]
+                _i += 2
+                continue
             if _p == "--crear":
                 # marca SUELTA, sin valor detras: la enciende Julio a mano y nada mas.
                 # NO se deduce de las palabras de la tarea. CONTRATO_CREAR_PIEZA_NUEVA
@@ -307,7 +315,17 @@ def main():
                 continue
             _resto.append(_p)
             _i += 1
-        proy, tarea = sys.argv[2], " ".join(_resto)
+        proy = sys.argv[2]
+        if _encargo_archivo is not None:
+            try:
+                with open(_encargo_archivo, "r", encoding="utf-8") as _f:
+                    tarea = _f.read()
+            except Exception:
+                print("No pude leer el archivo del encargo: %s" % _encargo_archivo)
+                print("Revisa que la ruta exista y que se pueda abrir, y vuelve a intentarlo.")
+                return 1
+        else:
+            tarea = " ".join(_resto)
         _generador, _auditor = _quien["--escribe"], _quien["--revisa"]
         # PIEZA 3 (Julio, 2026-09-06): SE PUEDE PEDIR CREAR, NO SOLO REPARAR.
         # Por que: obrero._prompt_obrero YA sabia escribir el encargo de ANALISTA (crear un
