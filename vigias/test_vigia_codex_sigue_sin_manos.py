@@ -158,6 +158,9 @@ _PREFIJOS_ALLOW = (
     "python ingeniero.py director",
     "python ingeniero.py cruzado",
     "python ingeniero.py resultado",
+    # 2026-09-29: sin esta orden Codex no puede avisar cuando se traba y se queda
+    # esperando, gastando cupo. El permiso ya esta en config/codex/default.rules.
+    "python arnes/canal.py enviar",
 )
 
 
