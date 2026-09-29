@@ -362,6 +362,31 @@ def _vigias(raiz):
                 archivos_rojos.append(archivo)
     if not archivos_rojos:
         # No se pudo identificar el archivo rojo: se frena como antes.
+        # Si ademas la corrida se corto por tiempo, el mensaje tiene que decir
+        # que NO SE PUDO TERMINAR DE COMPROBAR POR TIEMPO.
+        hubo_corte = False
+        for linea in salida.splitlines():
+            if linea.strip().startswith("bateria en paralelo: grupo cortado por tiempo:"):
+                hubo_corte = True
+                break
+        if not hubo_corte and ultima:
+            partes = ultima[0].strip().split()
+            # Forma: bateria en paralelo: N grupos, R rojos, C cortados por tiempo
+            if (len(partes) >= 9
+                    and partes[0] == "bateria"
+                    and partes[1] == "en"
+                    and partes[2] == "paralelo:"
+                    and partes[-3:] == ["cortados", "por", "tiempo"]):
+                try:
+                    if int(partes[-4]) > 0:
+                        hubo_corte = True
+                except ValueError:
+                    pass
+        if hubo_corte:
+            return False, (
+                "NO SE PUDO TERMINAR DE COMPROBAR POR TIEMPO: la bateria se corto "
+                "antes de terminar, por eso no se guarda. " + ultima[0].strip()
+            )
         return False, ultima[0].strip()
     # Preguntarle a git cuales de esos archivos son NUEVOS (nunca guardados).
     nuevos = []
