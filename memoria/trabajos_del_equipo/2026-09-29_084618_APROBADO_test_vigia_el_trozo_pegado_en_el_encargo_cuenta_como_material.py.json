@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El caso nuevo con una CLASE pegada en el encargo no se reconoce porque la comprobacion solo busca 'def ' + nombre, y hay que anadirlo al archivo de vigia sin tocar los dos casos existentes.",
+  "archivo": "vigias/test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+  "funcion": "final del archivo (tras test_caso_1_trozo_pegado_en_el_encargo_cuenta_como_material)",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _traer_falta_en_el_material():\n    \"\"\"Importa la pieza dentro de la prueba, sin tocar nada mas.\"\"\"\n    from cuerpo.obrero import falta_en_el_material\n    return falta_en_el_material",
+    "texto_nuevo": "def _traer_falta_en_el_material():\n    \"\"\"Importa la pieza dentro de la prueba, sin tocar nada mas.\"\"\"\n    from cuerpo.obrero import falta_en_el_material\n    return falta_en_el_material\n\n\n# Encargo del CASO 3: nombra el archivo y el nombre _BateriaFalsa, y pega el trozo\n# con la palabra class, no def. El trozo esta pegado en el encargo, asi que no falta nada.\nENCARGO_CON_CLASE_PEGADA = (\n    \"Hay que arreglar cuerpo/saludos.py, nombre _BateriaFalsa.\\n\"\n    \"El trozo que hay que cambiar va pegado aqui debajo:\\n\"\n    \"\\n\"\n    \"class _BateriaFalsa:\\n\"\n    \"    def correr(self):\\n\"\n    \"        return 1\\n\"\n)\n\n\ndef test_caso_3_clase_pegada_en_el_encargo_cuenta_como_material():\n    \"\"\"CASO 3 (nace ROJO): una CLASE pegada en el encargo NO debe contar como falta.\n\n    Hoy la funcion busca 'def ' + nombre, y en el trozo pegado pone 'class _BateriaFalsa',\n    asi que no reconoce la clase y devuelve frases diciendo que falta. Debe devolver\n    lista vacia porque el trozo esta pegado en el encargo.\n    \"\"\"\n    falta_en_el_material = _traer_falta_en_el_material()\n    resultado = falta_en_el_material(MATERIAL_INUTIL, ENCARGO_CON_CLASE_PEGADA)\n    assert resultado == [], (\n        \"el trozo con la clase esta pegado en el encargo y no debe faltar nada, \"\n        \"pero devolvio: \" + repr(resultado)\n    )"
+   }
+  ],
+  "cambio": "Anadir al final del archivo de vigia el texto del encargo nuevo (ENCARGO_CON_CLASE_PEGADA) con la clase pegada, y la funcion de prueba nueva test_caso_3_clase_pegada_en_el_encargo_cuenta_como_material que comprueba que falta_en_el_material devuelve lista vacia. No se tocan los casos 1 y 2.",
+  "codigo": "# Encargo del CASO 3: nombra el archivo y el nombre _BateriaFalsa, y pega el trozo\n# con la palabra class, no def. El trozo esta pegado en el encargo, asi que no falta nada.\nENCARGO_CON_CLASE_PEGADA = (\n    \"Hay que arreglar cuerpo/saludos.py, nombre _BateriaFalsa.\\n\"\n    \"El trozo que hay que cambiar va pegado aqui debajo:\\n\"\n    \"\\n\"\n    \"class _BateriaFalsa:\\n\"\n    \"    def correr(self):\\n\"\n    \"        return 1\\n\"\n)\n\n\ndef test_caso_3_clase_pegada_en_el_encargo_cuenta_como_material():\n    \"\"\"CASO 3 (nace ROJO): una CLASE pegada en el encargo NO debe contar como falta.\n\n    Hoy la funcion busca 'def ' + nombre, y en el trozo pegado pone 'class _BateriaFalsa',\n    asi que no reconoce la clase y devuelve frases diciendo que falta. Debe devolver\n    lista vacia porque el trozo esta pegado en el encargo.\n    \"\"\"\n    falta_en_el_material = _traer_falta_en_el_material()\n    resultado = falta_en_el_material(MATERIAL_INUTIL, ENCARGO_CON_CLASE_PEGADA)\n    assert resultado == [], (\n        \"el trozo con la clase esta pegado en el encargo y no debe faltar nada, \"\n        \"pero devolvio: \" + repr(resultado)\n    )",
+  "vigia": "test_caso_3_clase_pegada_en_el_encargo_cuenta_como_material: comprueba que falta_en_el_material devuelve lista vacia cuando el encargo trae pegada una clase con 'class _BateriaFalsa'. Hoy sale ROJO porque la comprobacion solo busca 'def _BateriaFalsa'.",
+  "puede_danar": [
+   "cuerpo/obrero.py (falta_en_el_material, que aun no se arregla en esta ronda)",
+   "vigias/test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py (los casos 1 y 2 que deben seguir verdes)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El texto de anclaje es la ayudante _traer_falta_en_el_material, que segun el material esta mas arriba que los casos 1 y 2: el caso 3 queda insertado en medio de los existentes. No rompe nada (el programa ya comprobo que el archivo carga) pero conviene revisarlo al aplicar."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Anade solo el caso 3 al archivo de vigia, sin tocar los casos 1 y 2 ni cuerpo/obrero.py, y nace rojo por la razon correcta: la comprobacion solo busca 'def ' y el encargo pega 'class _BateriaFalsa'."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 33398 a 17305 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 36423 a 18956 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de '_traer_falta_en_el_material' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'MATERIAL_INUTIL'",
+  "el pasillo recorto el encargo de 36815 a 19082 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) no le cabe (19082 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 3"
+ ]
+}

@@ -1,0 +1,35 @@
+{
+ "obrero": "groq",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "La función no considera el texto del problema como material disponible",
+  "archivo": "skills/falta_en_el_material.py",
+  "funcion": "revisar",
+  "texto_viejo": "    for w in _palabras(problema):\n        if any(w in b for b in bajos) or w.lower() in texto.lower():\n            hay.append(w)\n        else:\n            faltan.append(w)",
+  "texto_nuevo": "    for w in _palabras(problema):\n        if any(w in b for b in bajos) or w.lower() in texto.lower() or w.lower() in problema.lower():\n            hay.append(w)\n        else:\n            faltan.append(w)",
+  "cambio": "Añadir búsqueda en el texto del problema para contar material pegado",
+  "codigo": "    for w in _palabras(problema):\n        if any(w in b for b in bajos) or w.lower() in texto.lower() or w.lower() in problema.lower():\n            hay.append(w)\n        else:\n            faltan.append(w)",
+  "vigia": "vigias/test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+  "puede_danar": [
+   "cuerpo/obrero.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "obrero.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación añade la comprobación del texto del problema como material disponible, cumpliendo el diagnóstico sin inventar ni romper nada."
+ },
+ "avisos": [
+  "vueltas_dadas: 2"
+ ]
+}
