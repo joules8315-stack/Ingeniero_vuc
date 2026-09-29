@@ -1,5 +1,23 @@
 [
   {
+    "id": "R27-el-aplicador-no-tira-el-trabajo-por-la-marca-invisible",
+    "titulo": "El que guarda el cambio no puede tirar un trabajo aprobado por una marca invisible al principio del archivo",
+    "pieza": "cuerpo/aplicador.py",
+    "encargo": "MEDIDO 2026-09-28 con el trabajo APROBADO de las 19:53 sobre ingeniero.py: el equipo aprobo el arreglo y la maquina contesto 'Sintaxis rota en ingeniero.py (renglon 1); no se aplico nada', y no guardo nada. El archivo NO esta roto: compila perfectamente. Lo que pasa es que ingeniero.py empieza con una marca invisible de tres bytes (la marca de orden de bytes, EF BB BF). aplicar_cambios lo lee con encoding utf-8, por lo que esa marca queda dentro del texto como el caracter U+FEFF, y despues llama a ast.parse sobre ese texto: ast.parse REVIENTA con 'invalid non-printable character U+FEFF' en el renglon 1. Comprobado leyendo el archivo y llamando a ast.parse: falla renglon 1, mensaje exacto ese. De los archivos .py del proyecto solo UNO tiene esa marca, y es justo ingeniero.py, el mando principal, que es el archivo que mas se repara. Consecuencia: TODO cambio aprobado sobre ingeniero.py se tira a la basura despues de haberse pagado. ARREGLO: el chequeo de sintaxis no debe fallar por esa marca invisible, y al escribir el archivo la marca tiene que quedar como estaba, sin agregarla a los archivos que no la tienen ni quitarsela a los que si. SOLO se toca cuerpo/aplicador.py.",
+    "vigia": "vigias/test_vigia_el_aplicador_no_tira_por_la_marca_invisible.py",
+    "origen": "julio",
+    "repara": "que el trabajo que el equipo ya aprobo y se pago no llegue nunca al disco",
+    "razon": "medido el 2026-09-28: el arreglo aprobado de las 19:53 se tiro entero por esto, y es la razon de que el mando principal no se pueda reparar",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "R26-el-encargo-viaja-por-archivo",
     "titulo": "El encargo se le pasa al equipo por archivo, no por la linea de comandos",
     "pieza": "ingeniero.py",

@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El material solo documenta elegir(raiz) y correr(raiz, objetivo, procesos=4, tope=600) con Resultado(returncode, stdout, stderr), pero NO incluye las llamadas literales del guardado ni el formato de memoria/.rojas_conocidas.json, asi que no puedo escribir el medidor sin inventar.",
+  "archivo": "arnes/medir_las_rojas_del_guardado.py",
+  "texto_nuevo": "NECESITO_LEER: arnes/guardia_de_guardado.py / motivo: el rechazo exige usar las llamadas literales del guardado a elegir y correr, y el material no las trae / decide: como seleccionar las vecinas de la pieza indicada y con que parametros exactos llamar a correr / riesgo: volver a inventar funciones o parametros (pieza) que no existen.\nNECESITO_LEER: memoria/.rojas_conocidas.json / motivo: el medidor debe leer la foto existente y comparar nombres rojos observados contra nombres ausentes de la foto / decide: el formato real del archivo (claves, estructura) para parsearlo sin inventar / riesgo: leer mal la foto y reportar ausencias falsas.\nNECESITO_LEER: arnes/vecinas.py (cuerpo completo de elegir) / motivo: el material solo muestra la firma y el docstring, no como usa el estado de git ni que devuelve exactamente / decide: como obtener las vecinas de la pieza indicada sin pasar un parametro pieza inexistente / riesgo: llamar a elegir con argumentos inventados y romper la medicion.",
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "No se entrega código que arregle el diagnóstico; la propuesta se limita a solicitar archivos faltantes sin proporcionar la solución requerida.",
+   "No se implementa la lógica de medición usando las funciones existentes (elegir, correr, Resultado)."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Implementar la medición de rojas del guardado leyendo las llamadas literales del guardado y el formato de memoria/.rojas_conocidas.json.",
+   "Utilizar la función elegir(raiz) y correr(raiz, objetivo, procesos=4, tope=600) sin inventar parámetros o funciones."
+  ],
+  "resumen_para_el_jefe": "La propuesta solo pide más archivos y no soluciona el problema, por lo que debe rechazarse."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "vueltas_dadas: 4"
+ ]
+}

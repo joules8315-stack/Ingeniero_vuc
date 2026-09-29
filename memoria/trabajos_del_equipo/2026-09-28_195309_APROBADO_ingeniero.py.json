@@ -1,0 +1,58 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El bucle que aparta las marcas (--escribe, --revisa, --crear) no reconoce la marca nueva --encargo-archivo, y el renglon del ancla arma tarea juntando los argumentos en vez de leer el archivo cuando esa marca viene.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "            if _p in _quien and _i + 1 < len(_partes):\n                _quien[_p] = _partes[_i + 1].strip()\n                _i += 2\n                continue\n            _resto.append(_p)\n            _i += 1",
+    "texto_nuevo": "            if _p in _quien and _i + 1 < len(_partes):\n                _quien[_p] = _partes[_i + 1].strip()\n                _i += 2\n                continue\n            if _p == \"--encargo-archivo\" and _i + 1 < len(_partes):\n                # 2026-09-28: la terminal de Windows arranca las comillas dobles del texto\n                # que se pasa como argumento, asi que el encargo necesita viajar en un archivo.\n                _ruta_encargo = _partes[_i + 1]\n                _i += 2\n                continue\n            _resto.append(_p)\n            _i += 1"
+   },
+   {
+    "texto_viejo": "        proy, tarea = sys.argv[2], \" \".join(_resto)",
+    "texto_nuevo": "        if _ruta_encargo is not None:\n            try:\n                with open(_ruta_encargo, \"r\", encoding=\"utf-8\") as _f:\n                    tarea = _f.read()\n            except Exception:\n                print(\"No se pudo leer el archivo del encargo: %s\" % _ruta_encargo)\n                return 1\n            proy = sys.argv[2]\n        else:\n            proy, tarea = sys.argv[2], \" \".join(_resto)"
+   },
+   {
+    "texto_viejo": "        _crear = False\n        while _i < len(_partes):",
+    "texto_nuevo": "        _crear = False\n        _ruta_encargo = None\n        while _i < len(_partes):"
+   }
+  ],
+  "cambio": "Anadir el reconocimiento de la marca --encargo-archivo en el bucle sobre _partes (apartando marca y ruta para que no se cuelen en el texto), inicializar _ruta_encargo a None, y cablear el renglon del ancla para que tarea valga el contenido del archivo leido en utf-8 cuando la marca venga, y siga valiendo lo de siempre cuando no venga. Si la ruta no existe o no se puede leer, se dice en una frase simple y el mando termina sin gastar nada.",
+  "codigo": "            if _p == \"--encargo-archivo\" and _i + 1 < len(_partes):\n                # 2026-09-28: la terminal de Windows arranca las comillas dobles del texto\n                # que se pasa como argumento, asi que el encargo necesita viajar en un archivo.\n                _ruta_encargo = _partes[_i + 1]\n                _i += 2\n                continue\n\n        if _ruta_encargo is not None:\n            try:\n                with open(_ruta_encargo, \"r\", encoding=\"utf-8\") as _f:\n                    tarea = _f.read()\n            except Exception:\n                print(\"No se pudo leer el archivo del encargo: %s\" % _ruta_encargo)\n                return 1\n            proy = sys.argv[2]\n        else:\n            proy, tarea = sys.argv[2], \" \".join(_resto)",
+  "vigia": "vigias/test_vigia_el_encargo_viaja_por_archivo.py: la prueba roja (test_el_encargo_llega_completo_desde_archivo) debe quedar verde comprobando que a router.armar le llega exactamente el contenido del archivo con sus comillas y sus tres renglones; la verde (forma de siempre) debe seguir verde; y las vecinas del mismo archivo, del mismo color que antes.",
+  "puede_danar": [
+   "el mando equipo de ingeniero.py (rama que arma tarea y llama al portero y al router)",
+   "la forma de siempre de pasar el encargo por argumentos (si _ruta_encargo no se inicializa o el else se rompe)",
+   "el mensaje de error al usuario cuando la ruta no se puede leer"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "La forma de siempre se conserva: si la marca no viene, _ruta_encargo queda en None y entra el else, que es el renglon del ancla tal cual estaba. No se rompe el paso del encargo por argumentos.",
+   "El renglon del ancla deja de estar pegado al margen (queda dentro del else, con 4 espacios mas). Sigue apareciendo una sola vez, pero una busqueda literal de ese texto con su sangria anterior ya no lo encuentra: el paquete del proximo turno podria no traerlo y quien lea tendria que buscarlo por otra via.",
+   "La lectura del archivo ocurre en el renglon del ancla, o sea antes de llamar a nadie, asi que la ruta mala se dice y se sale sin gastar (correcto segun lo pedido)."
+  ],
+  "que_falta": [
+   "Si la marca viene sola, sin ruta detras, la comprobacion exige que exista el siguiente token: entonces --encargo-archivo se cuela en el texto del encargo en vez de avisar. Es un caso que el encargo no pide, pero avisar seria mas limpio.",
+   "return 1 solo devuelve codigo 1 si main se invoca con sys.exit(main()); con un simple main() se sale igual pero con codigo 0. El material no deja ver como se llama, asi que no se puede dar por comprobado.",
+   "Con abrir(..., 'r') los finales de linea \\r\\n del archivo se convierten en \\n (traduccion universal). Si la vigia compara literalmente contra el contenido leido con el mismo modo, no molesta; si compara bytes, podria dar falso.",
+   "Por la causa medida (la terminal arranca las comillas dobles), una ruta con espacios se partiria en dos trozos y el archivo no se encontraria. No es fallo de este arreglo, pero convendria dejar escrito que la ruta no lleva espacios."
+  ],
+  "resumen_para_el_jefe": "Esta vez si cablea la variable que la vuelta anterior dejo suelta: reconoce la marca, aparta marca y ruta del texto, y la tarea sale de leer el archivo tal cual, dejando intacta la forma de siempre; aprobado, con tres detalles menores apuntados."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 34309 a 18369 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

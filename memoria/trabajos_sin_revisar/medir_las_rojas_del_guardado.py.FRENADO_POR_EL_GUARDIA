@@ -1,0 +1,37 @@
+# arnes/medir_las_rojas_del_guardado.py
+#
+# BLOQUEO PREVIO A GENERAR.
+#
+# La tarea pide un programa local que mida "igual que el guardado": recibir una pieza,
+# obtener sus pruebas vecinas con la herramienta existente, correr el grupo con el ejecutor
+# existente, mostrar los nombres rojos, los ausentes en la foto y el tiempo transcurrido.
+#
+# Para escribirlo sin inventar nada necesito los TROZOS LITERALES de
+# arnes/guardia_de_guardado.py donde:
+#   1) llama a vecinas.elegir(...)  -> con que argumentos exactos y como trata el None
+#   2) llama a bateria_en_paralelo.correr(...) -> con que argumentos exactos
+#      (raiz, objetivo, procesos, tope) y como lee returncode/stdout/stderr
+#   3) carga .rojas_conocidas.json -> ruta exacta, encoding, forma del JSON
+#      (claves, si es lista o dict) y como extrae los nombres rojos
+#
+# El paquete vigente (memoria/paquetes/ingeniero__arnes_guardia_de_guardado_py__necesito_l.md)
+# solo trae la cabecera del problema, la lista de afectados y la memoria de fallos.
+# Los trozos 1-3 NO estan en el material. Sin ellos, cualquier codigo que escriba seria
+# una simulacion, y la tarea prohibe explicitamente resultados simulados y funciones
+# imaginarias.
+#
+# Interfaces que SI estan documentadas y que usare cuando llegue el material:
+#   elegir(raiz) -> list | None
+#   correr(raiz, objetivo, procesos=4, tope=600) -> (returncode, stdout, stderr)
+#
+# NECESITO_LEER: memoria/paquetes/ingeniero__arnes_guardia_de_guardado_py__necesito_l.md
+#   motivo      : faltan los trozos literales de guardia_de_guardado.py
+#   que decide  : los argumentos exactos de vecinas.elegir y bateria_en_paralelo.correr,
+#                 y el formato de .rojas_conocidas.json
+#   riesgo      : sin ellos el medidor seria inventado y no mediria igual que el guardado
+
+raise SystemExit(
+    "BLOQUEO: falta el material con los trozos literales de "
+    "arnes/guardia_de_guardado.py (vecinas.elegir, bateria_en_paralelo.correr, "
+    "lectura de .rojas_conocidas.json). No se genera codigo invalido."
+)

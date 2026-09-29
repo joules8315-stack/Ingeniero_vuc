@@ -1,0 +1,30 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El material del paquete vigente no trae los trozos literales de arnes/guardia_de_guardado.py (llamadas a vecinas.elegir, bateria_en_paralelo.correr y lectura de .rojas_conocidas.json), por lo que no puedo escribir el medidor sin inventar llamadas; lo entrego como bloqueo previo en vez de codigo invalido.",
+  "archivo": "arnes/medir_las_rojas_del_guardado.py",
+  "texto_nuevo": "# arnes/medir_las_rojas_del_guardado.py\n#\n# BLOQUEO PREVIO A GENERAR.\n#\n# La tarea pide un programa local que mida \"igual que el guardado\": recibir una pieza,\n# obtener sus pruebas vecinas con la herramienta existente, correr el grupo con el ejecutor\n# existente, mostrar los nombres rojos, los ausentes en la foto y el tiempo transcurrido.\n#\n# Para escribirlo sin inventar nada necesito los TROZOS LITERALES de\n# arnes/guardia_de_guardado.py donde:\n#   1) llama a vecinas.elegir(...)  -> con que argumentos exactos y como trata el None\n#   2) llama a bateria_en_paralelo.correr(...) -> con que argumentos exactos\n#      (raiz, objetivo, procesos, tope) y como lee returncode/stdout/stderr\n#   3) carga .rojas_conocidas.json -> ruta exacta, encoding, forma del JSON\n#      (claves, si es lista o dict) y como extrae los nombres rojos\n#\n# El paquete vigente (memoria/paquetes/ingeniero__arnes_guardia_de_guardado_py__necesito_l.md)\n# solo trae la cabecera del problema, la lista de afectados y la memoria de fallos.\n# Los trozos 1-3 NO estan en el material. Sin ellos, cualquier codigo que escriba seria\n# una simulacion, y la tarea prohibe explicitamente resultados simulados y funciones\n# imaginarias.\n#\n# Interfaces que SI estan documentadas y que usare cuando llegue el material:\n#   elegir(raiz) -> list | None\n#   correr(raiz, objetivo, procesos=4, tope=600) -> (returncode, stdout, stderr)\n#\n# NECESITO_LEER: memoria/paquetes/ingeniero__arnes_guardia_de_guardado_py__necesito_l.md\n#   motivo      : faltan los trozos literales de guardia_de_guardado.py\n#   que decide  : los argumentos exactos de vecinas.elegir y bateria_en_paralelo.correr,\n#                 y el formato de .rojas_conocidas.json\n#   riesgo      : sin ellos el medidor seria inventado y no mediria igual que el guardado\n\nraise SystemExit(\n    \"BLOQUEO: falta el material con los trozos literales de \"\n    \"arnes/guardia_de_guardado.py (vecinas.elegir, bateria_en_paralelo.correr, \"\n    \"lectura de .rojas_conocidas.json). No se genera codigo invalido.\"\n)\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple con la regla de bloquear cuando falta material sin inventar nada ni romper contratos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}
