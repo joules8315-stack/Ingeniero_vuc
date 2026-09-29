@@ -471,55 +471,77 @@ def main():
     except Exception:
         pass
 
-    archivos = _lo_que_se_va_a_guardar(raiz)
-
-    llaves = _hay_llaves(raiz, archivos)
-    if llaves:
-        _apuntar(raiz, "FRENADO: intento de guardar llaves -> " + ", ".join(llaves[:4]))
-        sys.stderr.write(
-            "\nGUARDIA: NO SE GUARDA. Ibas a subir un archivo de LLAVES:\n"
-            + "".join("   " + x + "\n" for x in llaves[:6])
-            + "\n  Una clave subida NO se puede desubir. Ya paso una vez.\n"
-              "  Sacala del guardado y ponla en la lista de lo que nunca se sube.\n\n")
-        return 1
-
-    paso, mensaje = _vigias(raiz)
-    if not paso:
-        _apuntar(raiz, "FRENADO: vigias rojas -> " + mensaje)
-        sys.stderr.write(
-            "\nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n"
-            "   " + mensaje + "\n\n"
-            "  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n"
-            "  Arreglalo y vuelve a guardar.\n\n")
-        return 1
-
-    # EL BALANCE (Julio, 2026-09-02): cada guardado apunta si fue del equipo o a mano, para que
-    # nadie tenga que contar a mano cuanto trabaja cada quien (memoria/BALANCE.log).
-    # Y EL FRENO (Julio, 2026-09-12): apuntar sin frenar es lo mismo que no saber. Codigo sin
-    # veredicto del equipo no se guarda, lo escriba quien lo escriba; solo abre la llave de Julio
-    # con un motivo de 20 letras o mas. Por eso se conecta aqui, en la unica puerta por la que
-    # pasa todo guardado (la ejecuta git y no la IA).
+    turno = None
     try:
-        cub = _cubierto_por_equipo(archivos)
-        llave_de_julio = os.environ.get("JULIO_LO_AUTORIZA", "")
-        se_puede, motivo = se_puede_guardar_sin_equipo(cub, llave_de_julio)
-        if not se_puede:
-            _apuntar(raiz, "FRENADO: trabajo a solas -> " + motivo)
+        import turno_de_guardado
+        turno = turno_de_guardado.pedir_turno(os.path.join(raiz, "memoria"), tope_segundos=600)
+        if not turno.get("conseguido"):
+            _apuntar(raiz, "FRENADO: sin turno -> " + str(turno.get("motivo", "")))
             sys.stderr.write(
-                "\nGUARDIA: NO SE GUARDA. " + motivo + "\n\n"
-                "  Pidele al equipo que revises esta tarea y vuelve a guardar:\n"
-                "     python ingeniero.py equipo <proyecto> \"<la misma tarea el equipo>\"\n\n")
+                "\nGUARDIA: NO SE GUARDA. No se consiguio el turno:\n"
+                "   " + str(turno.get("motivo", "")) + "\n\n"
+                "  Otro guardado esta en curso. Espera y vuelve a guardar.\n\n")
             return 1
-        if cub is True:
-            _apuntar_balance(raiz, "equipo", archivos)
-        elif cub is False:
-            _apuntar_balance(raiz, "a_mano", archivos)
-    except Exception:
-        pass
+    except Exception as e:
+        _apuntar(raiz, "AVISO: fallo al pedir turno -> " + str(e))
+        turno = None
 
-    _apuntar(raiz, "OK: %d archivo(s) | %s" % (len(archivos), mensaje))
-    sys.stderr.write("GUARDIA: verde. " + mensaje + "\n")
-    return 0
+    try:
+        archivos = _lo_que_se_va_a_guardar(raiz)
+
+        llaves = _hay_llaves(raiz, archivos)
+        if llaves:
+            _apuntar(raiz, "FRENADO: intento de guardar llaves -> " + ", ".join(llaves[:4]))
+            sys.stderr.write(
+                "\nGUARDIA: NO SE GUARDA. Ibas a subir un archivo de LLAVES:\n"
+                + "".join("   " + x + "\n" for x in llaves[:6])
+                + "\n  Una clave subida NO se puede desubir. Ya paso una vez.\n"
+                  "  Sacala del guardado y ponla en la lista de lo que nunca se sube.\n\n")
+            return 1
+
+        paso, mensaje = _vigias(raiz)
+        if not paso:
+            _apuntar(raiz, "FRENADO: vigias rojas -> " + mensaje)
+            sys.stderr.write(
+                "\nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n"
+                "   " + mensaje + "\n\n"
+                "  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n"
+                "  Arreglalo y vuelve a guardar.\n\n")
+            return 1
+
+        # EL BALANCE (Julio, 2026-09-02): cada guardado apunta si fue del equipo o a mano, para que
+        # nadie tenga que contar a mano cuanto trabaja cada quien (memoria/BALANCE.log).
+        # Y EL FRENO (Julio, 2026-09-12): apuntar sin frenar es lo mismo que no saber. Codigo sin
+        # veredicto del equipo no se guarda, lo escriba quien lo escriba; solo abre la llave de Julio
+        # con un motivo de 20 letras o mas. Por eso se conecta aqui, en la unica puerta por la que
+        # pasa todo guardado (la ejecuta git y no la IA).
+        try:
+            cub = _cubierto_por_equipo(archivos)
+            llave_de_julio = os.environ.get("JULIO_LO_AUTORIZA", "")
+            se_puede, motivo = se_puede_guardar_sin_equipo(cub, llave_de_julio)
+            if not se_puede:
+                _apuntar(raiz, "FRENADO: trabajo a solas -> " + motivo)
+                sys.stderr.write(
+                    "\nGUARDIA: NO SE GUARDA. " + motivo + "\n\n"
+                    "  Pidele al equipo que revises esta tarea y vuelve a guardar:\n"
+                    "     python ingeniero.py equipo <proyecto> \"<la misma tarea el equipo>\"\n\n")
+                return 1
+            if cub is True:
+                _apuntar_balance(raiz, "equipo", archivos)
+            elif cub is False:
+                _apuntar_balance(raiz, "a_mano", archivos)
+        except Exception:
+            pass
+
+        _apuntar(raiz, "OK: %d archivo(s) | %s" % (len(archivos), mensaje))
+        sys.stderr.write("GUARDIA: verde. " + mensaje + "\n")
+        return 0
+    finally:
+        if turno is not None:
+            try:
+                turno_de_guardado.soltar_turno(turno)
+            except Exception:
+                pass
 
 
 if __name__ == "__main__":
