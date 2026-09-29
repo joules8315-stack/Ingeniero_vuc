@@ -269,7 +269,8 @@ def identificadores(texto):
         "cual", "cuales", "cuanto", "cuanta", "cuantos", "cuantas",
     }
     encontrados = set()
-    for palabra in re.findall(r"[A-Za-z_][A-Za-z0-9_]*", texto):
+    limpio = re.sub(r"[\w/]+\.(?:py|js|ts|css|sql|html|md|json)", " ", texto)
+    for palabra in re.findall(r"[A-Za-z_][A-Za-z0-9_]*", limpio):
         if len(palabra) < 3:
             continue
         if palabra.lower() in PALABRAS_COMUNES:
