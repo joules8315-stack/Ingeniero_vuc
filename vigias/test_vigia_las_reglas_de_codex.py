@@ -42,16 +42,21 @@ def test_las_reglas_de_codex_existen():
     assert os.path.isfile(RUTA_REGLAS), "falta config/codex/default.rules"
 
 
-def test_allow_son_exactamente_cinco_y_las_de_ingeniero():
+# 2026-09-29: Codex tiene permiso para avisar desde hoy (Julio pidio que pueda avisar
+# cuando se traba, porque esperar tambien gasta cupo). El carne paso de 5 a 8 permisos.
+def test_allow_son_exactamente_ocho_y_las_de_ingeniero():
     texto = _leer_reglas()
     allow = _lineas_allow(texto)
-    assert len(allow) == 5, "se esperaban 5 lineas con decision=\"allow\", hay %d" % len(allow)
+    assert len(allow) == 8, "se esperaban 8 lineas con decision=\"allow\", hay %d" % len(allow)
     esperadas = [
-        "python ingeniero.py arranca",
-        "python ingeniero.py trabaja",
-        "python ingeniero.py equipo",
-        "python ingeniero.py pit",
-        "python ingeniero.py director",
+        'prefix_rule(pattern=["python", "ingeniero.py", "arranca"], decision="allow")',
+        'prefix_rule(pattern=["python", "ingeniero.py", "trabaja"], decision="allow")',
+        'prefix_rule(pattern=["python", "ingeniero.py", "equipo"], decision="allow")',
+        'prefix_rule(pattern=["python", "ingeniero.py", "pit"], decision="allow")',
+        'prefix_rule(pattern=["python", "ingeniero.py", "director"], decision="allow")',
+        'prefix_rule(pattern=["python", "arnes/canal.py", "enviar"], decision="allow")',
+        'prefix_rule(pattern=["python", "ingeniero.py", "cruzado"], decision="allow")',
+        'prefix_rule(pattern=["python", "ingeniero.py", "resultado"], decision="allow")',
     ]
     for esperada in esperadas:
         encontrada = False
