@@ -68,7 +68,8 @@ def revisar(problema="", paquete=None):
     bajos = [p.split("/")[-1].lower() for p in piezas]
     faltan, hay = [], []
     for w in _palabras(problema):
-        if any(w in b for b in bajos) or w.lower() in texto.lower() or w.lower() in problema.lower():
+        w_norm = w.lstrip('_')
+        if any(w_norm in b for b in bajos) or w_norm in texto.lower() or w_norm in problema.lower():
             hay.append(w)
         else:
             faltan.append(w)
