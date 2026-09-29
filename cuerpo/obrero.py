@@ -132,8 +132,11 @@ def falta_en_el_material(material, encargo, conocidas=None):
       'def ' + nombre tal cual aparece en el encargo.
     - Las funciones se comprueban SIEMPRE, haya o no archivos en el encargo.
     - La palabra suelta 'py' (sin punto ni nombre delante) no es un archivo.
-    - Un archivo falta si su nombre no aparece en el material.
-    - Una funcion falta si su renglon de declaracion no aparece en el material.
+    - Un archivo falta si su nombre no aparece en el material y el encargo no trae
+      codigo pegado (un renglon que, quitandole los espacios de delante, empiece
+      por 'def ' o por 'class ').
+    - Una funcion falta si su renglon de declaracion no aparece ni en el material
+      ni en el encargo.
     - Si el encargo no nombra ni archivos ni funciones, lista vacia.
     - Ante algo vacio o raro, lista vacia. Nunca revienta.
     """
@@ -170,8 +173,17 @@ def falta_en_el_material(material, encargo, conocidas=None):
                 limpia = limpia[:_dos_puntos]
             archivos.append(limpia)
 
+    # el encargo trae codigo pegado si algun renglon suyo, sin espacios delante,
+    # empieza por 'def ' o por 'class '
+    _encargo_trae_codigo = False
+    for _renglon in texto_encargo.splitlines():
+        _sin_espacios = _renglon.lstrip()
+        if _sin_espacios.startswith("def ") or _sin_espacios.startswith("class "):
+            _encargo_trae_codigo = True
+            break
+
     for archivo in archivos:
-        if archivo not in texto_material:
+        if archivo not in texto_material and not _encargo_trae_codigo:
             faltantes.append(
                 "el material no trae el archivo " + archivo
             )
@@ -183,7 +195,7 @@ def falta_en_el_material(material, encargo, conocidas=None):
 
     for funcion in funciones:
         declaracion = "def " + funcion
-        if declaracion not in texto_material:
+        if declaracion not in texto_material and declaracion not in texto_encargo:
             # distinguir si el archivo si esta pero la funcion no
             if archivos and any(a in texto_material for a in archivos):
                 faltantes.append(
