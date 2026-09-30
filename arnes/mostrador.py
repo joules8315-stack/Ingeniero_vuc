@@ -96,8 +96,8 @@ def lo_que_pide(texto_respuesta):
         if pos < 0:
             continue
         resto = renglon[pos + len(PALABRA_PIDE) + 1:]
-        # El PRIMER pedazo, antes de la barra inclinada, es lo que se pide.
-        primero = resto.split("/", 1)[0]
+        # El PRIMER pedazo, antes de la barra RODEADA DE ESPACIOS, es lo que se pide.
+        primero = resto.split(" / ", 1)[0]
         primero = primero.strip()
         if not primero:
             continue
