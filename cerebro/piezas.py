@@ -150,7 +150,50 @@ def funcion_completa(ruta_abs, nombre):
             desde = hasta = i
             break
     if not desde:
-        return None
+        # CAMINO DE RESERVA (2026-09-29): la busqueda de siempre solo mira un lenguaje y exige
+        # columna cero. Las funciones de Foto Informe empiezan con otra palabra, van SANGRADAS
+        # y caben enteras en UN SOLO RENGLON. Solo se entra aqui si lo de arriba no encontro
+        # nada: si encontro, todo sigue exactamente igual que hoy.
+        formas_js = (
+            "function " + nombre + "(",
+            "async function " + nombre + "(",
+            "const " + nombre + " =",
+            "let " + nombre + " =",
+            "var " + nombre + " =",
+            nombre + " = function",
+            nombre + " = async",
+            nombre + ": function",
+            nombre + ": async",
+        )
+        for i, linea in enumerate(lineas, 1):
+            limpia = linea.lstrip()
+            if not limpia.startswith(formas_js):
+                continue
+            # En las formas con igual o dos puntos, para no confundir una funcion con un dato
+            # cualquiera, el renglon solo vale si ademas trae la palabra function o la flecha.
+            if ("=" in limpia or ":" in limpia) and "function" not in limpia and "=>" not in limpia:
+                continue
+            desde = hasta = i
+            break
+        if not desde:
+            return None
+        # DONDE TERMINA: se cuentan las llaves desde el renglon de la declaracion. Si la cuenta
+        # vuelve a cero en ese mismo renglon, la funcion cabe en UN SOLO RENGLON y empieza y
+        # termina ahi. Si se llega al final sin cerrar, se toma el final del archivo.
+        cuenta = 0
+        abrio = False
+        for j in range(desde - 1, len(lineas)):
+            cuenta += lineas[j].count("{") - lineas[j].count("}")
+            if lineas[j].count("{"):
+                abrio = True
+            if abrio and cuenta <= 0:
+                hasta = j + 1
+                break
+        else:
+            hasta = len(lineas)
+        if not abrio:
+            hasta = desde
+        return {"desde": desde, "hasta": hasta, "texto": "\n".join(lineas[desde - 1:hasta])}
     # DENTRO DE UN TEXTO NO SE CORTA (2026-08-31, cazado usando esto mismo). Muchas piezas son
     # casi todo un texto entre comillas triples, y sus renglones van pegados al margen. Con la
     # regla a secas de "columna cero termina la pieza", `_prompt_obrero` llegaba de 2 renglones
