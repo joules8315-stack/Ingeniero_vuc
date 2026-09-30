@@ -145,6 +145,54 @@ def huerfanas(raiz):
     return limpias
 
 
+def emparejar_por_nombre(lista, primeras_fechas, limite):
+    """Empareja nombres pelados con las fechas de la historia por NOMBRE FINAL de ruta.
+
+    La lista de piezas sin dueno trae nombres pelados (solo el archivo con su
+    terminacion) y la historia trae rutas completas. Aqui se queda, para cada
+    nombre final de ruta, la fecha MAS ANTIGUA de todas las rutas que acaben en
+    ese nombre, porque esa es la de su nacimiento. Ante la duda NO se frena:
+    si de un nombre no se sabe ninguna fecha, no cuenta. Nunca revienta.
+    """
+    try:
+        if not lista or not primeras_fechas or limite is None:
+            return []
+        if not isinstance(lista, (list, tuple)):
+            return []
+        if not isinstance(primeras_fechas, dict):
+            return []
+        mas_antigua = {}
+        for ruta, fecha in primeras_fechas.items():
+            try:
+                if not isinstance(ruta, str):
+                    continue
+                nombre_final = ruta.replace("\\", "/").rsplit("/", 1)[-1]
+                if not nombre_final:
+                    continue
+                if not hasattr(fecha, "year"):
+                    continue
+                anterior = mas_antigua.get(nombre_final)
+                if anterior is None or fecha < anterior:
+                    mas_antigua[nombre_final] = fecha
+            except Exception:
+                continue
+        nacidas = []
+        for nombre in lista:
+            try:
+                if not isinstance(nombre, str):
+                    continue
+                fecha = mas_antigua.get(nombre)
+                if fecha is None:
+                    continue
+                if fecha >= limite:
+                    nacidas.append(nombre)
+            except Exception:
+                continue
+        return nacidas
+    except Exception:
+        return []
+
+
 def recien_nacidas(raiz, dias=2):
     """Devuelve las huerfanas que nacieron dentro de los ultimos `dias`.
 
@@ -200,19 +248,7 @@ def recien_nacidas(raiz, dias=2):
         if linea not in primera_fecha:
             primera_fecha[linea] = fecha_actual
 
-    nacidas = []
-    for nombre in lista:
-        try:
-            ruta_relativa = os.path.relpath(nombre, raiz).replace(os.sep, "/")
-        except Exception:
-            ruta_relativa = nombre.replace(os.sep, "/")
-        fecha = primera_fecha.get(ruta_relativa)
-        if fecha is None:
-            # No se sabe: ante la duda NO se frena.
-            continue
-        if fecha >= limite:
-            nacidas.append(nombre)
-    return nacidas
+    return emparejar_por_nombre(lista, primera_fecha, limite)
 
 
 def se_puede_cerrar(raiz):
