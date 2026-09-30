@@ -217,6 +217,30 @@ def caso_6_no_revienta_con_basura():
         )
 
 
+def test_caso_1_la_funcion_existe():
+    caso_1_la_funcion_existe()
+
+
+def test_caso_2_empareja_nombre_pelado_con_ruta_completa():
+    caso_2_empareja_nombre_pelado_con_ruta_completa()
+
+
+def test_caso_3_lo_viejo_no_cuenta():
+    caso_3_lo_viejo_no_cuenta()
+
+
+def test_caso_4_lo_que_no_se_sabe_no_cuenta():
+    caso_4_lo_que_no_se_sabe_no_cuenta()
+
+
+def test_caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua():
+    caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua()
+
+
+def test_caso_6_no_revienta_con_basura():
+    caso_6_no_revienta_con_basura()
+
+
 def main():
     """Corre los seis casos y dice el resultado. Devuelve 0 si todo verde, 1 si algo rojo."""
     casos = [
