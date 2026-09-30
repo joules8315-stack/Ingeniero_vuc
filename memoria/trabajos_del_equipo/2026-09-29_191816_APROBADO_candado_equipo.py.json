@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El candado deja pasar como 'documento libre' cualquier archivo que no sea codigo, incluidos los documentos .md que viven dentro de un proyecto de Julio, sin exigir veredicto del equipo.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "main",
+  "texto_viejo": "    if os.path.splitext(fp)[1].lower() not in CODIGO:\n        _apuntar_frenada(fp, \"DEJO PASAR: documento libre\")\n        return 0                                    # documentos: libres",
+  "texto_nuevo": "    if os.path.splitext(fp)[1].lower() not in CODIGO:\n        # CERRADO (Julio, 2026-09-29): escribir la ley de un proyecto tambien es trabajo del\n        # proyecto, y por eso pasa por el equipo igual que el codigo. La permision vieja, la de\n        # que los documentos eran libres, queda DEROGADA: Julio la derogo el 2026-09-29 despues\n        # de que se usara para meter un documento a mano dos veces el mismo dia.\n        _rel_doc = fp.replace(\"\\\\\", \"/\").lower()\n        if (os.path.splitext(fp)[1].lower() == \".md\" and not _fuera_de_casa\n                and \"/memoria/\" not in _rel_doc):\n            _apuntar_frenada(fp, \"FRENADO: documento del proyecto sin veredicto del equipo\")\n            sys.stderr.write(MENSAJE.format(fp=fp))\n            return 2\n        _apuntar_frenada(fp, \"DEJO PASAR: documento libre\")\n        return 0                                    # documentos: libres",
+  "cambios": "",
+  "cambio": "Sustituir el paso libre incondicional de los documentos no-codigo por una comprobacion de tres casos: si es .md, esta dentro de una casa y su ruta no pasa por /memoria/, se frena con motivo 'FRENADO: documento del proyecto sin veredicto del equipo', se escribe el MENSAJE de freno en stderr y se devuelve 2; en cualquier otro caso no-codigo se mantiene el sello 'DEJO PASAR: documento libre' y se devuelve 0; si es codigo, sigue el camino de siempre.",
+  "codigo": "    if os.path.splitext(fp)[1].lower() not in CODIGO:\n        # CERRADO (Julio, 2026-09-29): escribir la ley de un proyecto tambien es trabajo del\n        # proyecto, y por eso pasa por el equipo igual que el codigo. La permision vieja, la de\n        # que los documentos eran libres, queda DEROGADA: Julio la derogo el 2026-09-29 despues\n        # de que se usara para meter un documento a mano dos veces el mismo dia.\n        _rel_doc = fp.replace(\"\\\\\", \"/\").lower()\n        if (os.path.splitext(fp)[1].lower() == \".md\" and not _fuera_de_casa\n                and \"/memoria/\" not in _rel_doc):\n            _apuntar_frenada(fp, \"FRENADO: documento del proyecto sin veredicto del equipo\")\n            sys.stderr.write(MENSAJE.format(fp=fp))\n            return 2\n        _apuntar_frenada(fp, \"DEJO PASAR: documento libre\")\n        return 0                                    # documentos: libres",
+  "vigia": "vigias/test_vigia_el_documento_del_proyecto_no_es_libre.py — su primer caso (documento .md dentro de un proyecto se frena y devuelve 2) pasa de rojo a verde; sus otros dos casos (documento .md en la carpeta temporal del sistema y documento .md dentro de la carpeta de memoria de la herramienta) siguen verdes devolviendo 0.",
+  "puede_danar": [
+   "arnes/candado_equipo.py (el guardian del equipo, que se dispara en CADA escritura de cualquier archivo)",
+   "la herramienta entera, si el freno se aplica de mas y le impide escribir sus propios apuntes o borradores temporales"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio corrige el paso libre de .md dentro del proyecto sin introducir código inexistente ni afectar a otros casos."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 39855 a 17923 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "Big Pickle no contesto en 400.0s (timeout)",
+  "bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "Codex termino con codigo 1: OpenAI Codex v0.155.1\n--------\nworkdir: C:\\Ingeniero_VUC\nmodel: gpt-6-astra\nprovider: openai\napproval: never\nsandbox: read-only\nreasoning effort: low\nreasoning summaries: none\nsession id: 01a0efa1-aec2-78b0-a54e-dcab78040d79\n--------\nuser\nEres el AUDITOR. Otro modelo propuso una reparacion. Tu traba",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "el pasillo recorto el encargo de 45539 a 15675 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "Codex termino con codigo 1: OpenAI Codex v0.155.1\n--------\nworkdir: C:\\Ingeniero_VUC\nmodel: gpt-6-astra\nprovider: openai\napproval: never\nsandbox: read-only\nreasoning effort: low\nreasoning summaries: none\nsession id: 01a0efa7-5a6e-7212-9990-baa8aebc64b2\n--------\nuser\nEres el AUDITOR. Otro modelo propuso una reparacion. Tu traba",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "el pasillo recorto el encargo de 45678 a 15721 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "Codex termino con codigo 1: OpenAI Codex v0.155.1\n--------\nworkdir: C:\\Ingeniero_VUC\nmodel: gpt-6-astra\nprovider: openai\napproval: never\nsandbox: read-only\nreasoning effort: low\nreasoning summaries: none\nsession id: 01a0efac-d13e-76b1-8226-9ab34489b0de\n--------\nuser\nEres el AUDITOR. Otro modelo propuso una reparacion. Tu traba",
+  "bigpickle no estaba: revisa groq con solo lo necesario (A-38)",
+  "vueltas_dadas: 3"
+ ]
+}

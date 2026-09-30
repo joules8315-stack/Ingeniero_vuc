@@ -1,0 +1,68 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El recorte sabe quedarse con el trozo de la funcion pedida, pero nadie le pasa la lista de nombres de funcion como cuarto dato (agujas), asi que sigue cortando por el principio y la funcion pedida se pierde.",
+  "archivo": "arnes/asignador.py",
+  "funcion": "recortar_prompt",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    nombres = _nombres(cabeza)\n\n    for _ in range(4):\n        material_corto = _recortar_material(material, presupuesto, nombres)",
+    "texto_nuevo": "    nombres = _nombres(cabeza)\n    agujas = identificadores(cabeza)\n\n    for _ in range(4):\n        material_corto = _recortar_material(material, presupuesto, nombres, agujas)"
+   },
+   {
+    "texto_viejo": "    nombres = _nombres(_obj + \" \" + str(f.get(\"archivo\") or \"\"))",
+    "texto_nuevo": "    nombres = _nombres(_obj + \" \" + str(f.get(\"archivo\") or \"\"))\n    agujas = identificadores(_obj + \" \" + str(f.get(\"archivo\") or \"\"))"
+   },
+   {
+    "texto_viejo": "        trozo = _recortar_material(trozo, sitio, nombres)",
+    "texto_nuevo": "        trozo = _recortar_material(trozo, sitio, nombres, agujas)"
+   }
+  ],
+  "cambio": "En recortar_prompt, ademas del conjunto de nombres de archivo que ya se saca de la cabecera, sacar tambien el conjunto de nombres de funcion de esa misma cabecera con identificadores(cabeza), y pasarlo como cuarto dato (agujas) a _recortar_material. En la parte que arma el paquete, sacar tambien el conjunto de nombres de funcion del MISMO texto del que ya se sacan los nombres de archivo, y pasarlo como cuarto dato a _recortar_material. Solo se AGREGA un dato a cada llamada; no se cambia la cabecera, ni el tope, ni las cuatro vueltas de ajuste.",
+  "codigo": "    nombres = _nombres(cabeza)\n    agujas = identificadores(cabeza)\n\n    for _ in range(4):\n        material_corto = _recortar_material(material, presupuesto, nombres, agujas)\n\n# ... y en la parte que arma el paquete:\n\n    nombres = _nombres(_obj + \" \" + str(f.get(\"archivo\") or \"\"))\n    agujas = identificadores(_obj + \" \" + str(f.get(\"archivo\") or \"\"))\n\n# ... y mas abajo:\n\n        trozo = _recortar_material(trozo, sitio, nombres, agujas)",
+  "vigia": "vigias/test_vigia_el_recorte_conserva_el_trozo_de_la_funcion.py (sus tres casos: el resultado contiene el renglon que declara la funcion pedida, no pasa del tope, y la cabecera llega entera) y vigias/test_vigia_el_pasillo_conserva_la_funcion_nombrada.py (sus diez comprobaciones).",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "cuerpo/obrero.py",
+   "arnes/revisor_de_programa.py",
+   "cerebro/trozos.py",
+   "cerebro/piezas.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "mapa/inventario.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "La segunda llamada pasa identificadores() sobre un texto hecho de nombre de objeto y ruta de archivo, que puede no contener el nombre de la funcion pedida; si ese camino no lo cubre, el arreglo sirve para un caso y no para el otro. No rompe nada, pero la promesa de que ese camino mejora no esta medida por el material.",
+   "Se introduce un nombre local nuevo 'agujas' dentro de recortar_prompt y dentro de la parte que arma el paquete; el material no deja ver si ese identificador ya se usaba ahi con otro sentido. Colision seria un fallo real, y no se puede comprobar con este paquete."
+  ],
+  "que_falta": [
+   "El cuerpo de _recortar_material: solo se ve la firma. El material afirma que el cuarto dato ya esta puesto y es el que hay que mandar, asi que la certeza es del paquete, no mia.",
+   "No se ve si tras el recorte el texto que se reevalua vuelve a pasar por _recortar_material con agujas o por otra via sin ellas; si hay una tercera llamada sin el dato, el fallo persiste ahi y esta ronda no lo cierra. El material solo lista dos llamadas."
+  ],
+  "resumen_para_el_jefe": "El arreglo hace exactamente lo pedido: dos renglones que agregan el dato de funciones a las dos llamadas del recorte, usando piezas que existen, sin tocar topes ni cabecera; lo unico que queda por verificar es si existe una tercera llamada que se quede sin ese dato."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38845 a 17960 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (44396 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "GPT-OSS 120B (Groq) no le cabe (44800 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "GPT-OSS 120B (Groq) no le cabe (45204 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

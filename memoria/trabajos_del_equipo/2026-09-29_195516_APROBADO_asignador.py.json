@@ -1,0 +1,77 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El recorte, cuando una seccion nombrada no cabe entera, se queda con su PRINCIPIO y tira el trozo donde vive la funcion pedida; hay que conservar el pedazo que contiene la aguja nombrada.",
+  "archivo": "arnes/asignador.py",
+  "funcion": "_recortar_material",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _recortar_material(material, presupuesto, nombres):",
+    "texto_nuevo": "def _recortar_material(material, presupuesto, nombres, agujas=None):"
+   },
+   {
+    "texto_viejo": "        elif prio == 0 and presupuesto - usado > 100:\n            elegidos.append((a, a + (presupuesto - usado)))\n            ultimo = a + (presupuesto - usado)\n            usado = presupuesto",
+    "texto_nuevo": "        elif prio == 0 and presupuesto - usado > 100:\n            sitio = presupuesto - usado\n            texto_seccion = material[a:b]\n            aguja_real = None\n            if agujas:\n                bajo = texto_seccion.lower()\n                mejor = None\n                for ag in agujas:\n                    pos = bajo.find(str(ag).lower())\n                    if pos != -1 and (mejor is None or pos < mejor):\n                        mejor = pos\n                        aguja_real = texto_seccion[pos:pos + len(str(ag))]\n            if aguja_real is not None:\n                pedazo = trozo_que_contiene(texto_seccion, aguja_real, sitio)\n                pos = texto_seccion.find(pedazo)\n                if pos != -1:\n                    elegidos.append((a + pos, a + pos + len(pedazo)))\n                    ultimo = a + pos + len(pedazo)\n                    usado = presupuesto\n                else:\n                    elegidos.append((a, a + sitio))\n                    ultimo = a + sitio\n                    usado = presupuesto\n            else:\n                elegidos.append((a, a + sitio))\n                ultimo = a + sitio\n                usado = presupuesto"
+   },
+   {
+    "texto_viejo": "    nombres = _nombres(cabeza)",
+    "texto_nuevo": "    nombres = _nombres(cabeza)\n    agujas = identificadores(cabeza)"
+   },
+   {
+    "texto_viejo": "        material_corto = _recortar_material(material, presupuesto, nombres)",
+    "texto_nuevo": "        material_corto = _recortar_material(material, presupuesto, nombres, agujas)"
+   }
+  ],
+  "cambio": "La funcion _recortar_material acepta un cuarto dato opcional 'agujas'; cuando una seccion nombrada no cabe entera, en vez de quedarse con su principio usa trozo_que_contiene para conservar la ventana que contiene la aguja nombrada; recortar_prompt saca tambien los identificadores de la cabeza y se los pasa.",
+  "codigo": "def _recortar_material(material, presupuesto, nombres, agujas=None):\n    ...\n        elif prio == 0 and presupuesto - usado > 100:\n            sitio = presupuesto - usado\n            texto_seccion = material[a:b]\n            aguja_real = None\n            if agujas:\n                bajo = texto_seccion.lower()\n                mejor = None\n                for ag in agujas:\n                    pos = bajo.find(str(ag).lower())\n                    if pos != -1 and (mejor is None or pos < mejor):\n                        mejor = pos\n                        aguja_real = texto_seccion[pos:pos + len(str(ag))]\n            if aguja_real is not None:\n                pedazo = trozo_que_contiene(texto_seccion, aguja_real, sitio)\n                pos = texto_seccion.find(pedazo)\n                if pos != -1:\n                    elegidos.append((a + pos, a + pos + len(pedazo)))\n                    ultimo = a + pos + len(pedazo)\n                    usado = presupuesto\n                else:\n                    elegidos.append((a, a + sitio))\n                    ultimo = a + sitio\n                    usado = presupuesto\n            else:\n                elegidos.append((a, a + sitio))\n                ultimo = a + sitio\n                usado = presupuesto\n\n# en recortar_prompt:\n    nombres = _nombres(cabeza)\n    agujas = identificadores(cabeza)\n    for _ in range(4):\n        material_corto = _recortar_material(material, presupuesto, nombres, agujas)",
+  "vigia": "vigias/test_vigia_el_recorte_conserva_el_trozo_de_la_funcion.py (primer caso hoy rojo: el recorte debe contener el renglon que declara processPhoto) y vigias/test_vigia_el_pasillo_conserva_la_funcion_nombrada.py (sus diez comprobaciones deben seguir verdes).",
+  "puede_danar": [
+   "arnes/asignador.py (lo importa cuerpo/obrero.py)",
+   "arnes/revisor_de_programa.py",
+   "cerebro/protocolo.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "mapa/inventario.py",
+   "vigias/test_vigia_el_recorte_conserva_el_trozo_de_la_funcion.py",
+   "vigias/test_vigia_el_pasillo_conserva_la_funcion_nombrada.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "protocolo.py",
+   "revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Verificado en el archivo real: los tres trozos literales existen y coinciden EXACTAMENTE (asignador.py:338 la firma, 369-372 el elif de 4 renglones, 403 'nombres = _nombres(cabeza)' con las 4 vueltas justo debajo, 404-405). Ubicacion correcta.",
+   "Verificado que las dos piezas que usa existen y TIENEN la firma que el cambio supone: identificadores(texto) en 229 y trozo_que_contiene(texto, aguja, presupuesto) en 294. Y 'trozo_que_contiene' SIEMPRE devuelve un pedazo que es recorte del texto recibido, por eso el texto_seccion.find(pedazo) que hace el obrero no puede dar -1 en lo normal: no hay invention ni llamada rota.",
+   "Recorre la prueba del vigia de verdad: seccion de 10725 letras, presupuesto util 5795, la ley se come 1448, la aguja processPhoto cae en 4591 y la ventana sale 2424-6771, o sea el renglón 'function processPhoto(foto) {' queda dentro; el total sigue en 5795 + separador, no pasa del tope, y la cabecera llega entera. Los tres casos quedan verdes y las diez comprobaciones del otro vigia no se tocan porque las dos piezas no se tocan.",
+   "El vecino de asignador.py:208 (la otra llamada a _recortar_material, la del camino de piezas) sigue con tres datos y no se rompe, porque el cuarto dato es opcional. Aviso, no dano: ese camino NO queda reparado, solo el pasillo, que es lo que pedia el encargo.",
+   "Ruido de fondo, no bloquea: el juego de agujas sale de identificadores(cabeza) y en el pasillo real la cabecera trae tambien el esquema JSON, la propuesta anterior y el fallo; por ahi salen cosas como 'json'. Si esa aguja aparece en la seccion ANTES de la pedida, la ventana se centra ahi y la funcion pedida puede quedar fuera. La regla que eligio (la de menor posicion) es justo la que pidio el encargo, asi que no es fallo del obrero, pero conviene tenerlo en el radar del caso real.",
+   "Repite tres veces el mismo bloque de 3 renglones de la rama 'principio' (una en la rama con aguja y otra en la de seguridad). Es codigo de mas, no distinto: no rompe nada, pero deja la funcion mas larga de lo necesario."
+  ],
+  "que_falta": [
+   "Opcional y sin阻塞: el docstring de _recortar_material (339-345) sigue diciendo que se conserva 'el principio del material'; ya no es exacto. El encargo prohibia tocarlo, asi que dejarlo asi es lo correcto.",
+   "Opcional: se podria dejar una sola rama de 'principio' en vez de dos copias. Es limpieza, no reparacion; si el arbitro lo pide, que lo pida en otra vuelta, no en esta."
+  ],
+  "resumen_para_el_jefe": "Reparacion correcta y medida: no inventa nada, los tres trozos están donde deben, la aguja buscada sobrevive al recorte y ninguna de las diez comprobaciones vecinas se toca; solo queda un aviso de fondo, que el juego de agujas sale de toda la cabecera y podria centrarse en un nombre equivocado, cosa que el encargo pidió así."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38181 a 17848 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (45706 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'material_corto' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'recortar_prompt' y esa palabr",
+  "GPT-OSS 120B (Groq) no le cabe (45955 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'material_corto' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'recortar_prompt' y esa palabr",
+  "GPT-OSS 120B (Groq) no le cabe (46204 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El trozo B se queda con el PRINCIPIO de la seccion nombrada cuando no cabe entera, en vez de conservar el pedazo que contiene la funcion nombrada por el encargo.",
+  "archivo": "arnes/asignador.py",
+  "funcion": "_recortar_material",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _recortar_material(material, presupuesto, nombres):",
+    "texto_nuevo": "def _recortar_material(material, presupuesto, nombres, agujas=None):"
+   },
+   {
+    "texto_viejo": "        elif prio == 0 and presupuesto - usado > 100:\n            elegidos.append((a, a + (presupuesto - usado)))\n            ultimo = a + (presupuesto - usado)\n            usado = presupuesto",
+    "texto_nuevo": "        elif prio == 0 and presupuesto - usado > 100:\n            queda = presupuesto - usado\n            texto_sec = material[a:b]\n            aguja_real = None\n            if agujas:\n                bajo = texto_sec.lower()\n                mejor = None\n                for ag in agujas:\n                    pos = bajo.find(str(ag).lower())\n                    if pos != -1 and (mejor is None or pos < mejor):\n                        mejor = pos\n                        aguja_real = texto_sec[pos:pos + len(str(ag))]\n            if aguja_real is not None:\n                pedazo = trozo_que_contiene(texto_sec, aguja_real, queda)\n                pos = texto_sec.find(pedazo)\n                if pos != -1:\n                    elegidos.append((a + pos, a + pos + len(pedazo)))\n                    ultimo = a + pos + len(pedazo)\n                    usado += len(pedazo)\n                else:\n                    elegidos.append((a, a + queda))\n                    ultimo = a + queda\n                    usado = presupuesto\n            else:\n                elegidos.append((a, a + queda))\n                ultimo = a + queda\n                usado = presupuesto"
+   }
+  ],
+  "cambio": "Anadir un cuarto dato opcional `agujas` a `_recortar_material` y, cuando una seccion nombrada no cabe entera, conservar el pedazo que contiene la primera aguja que aparezca (comparando sin distinguir mayusculas) usando la pieza existente `trozo_que_contiene`; si no hay agujas o no se encuentra ninguna, se mantiene el comportamiento de hoy (el principio).",
+  "codigo": "def _recortar_material(material, presupuesto, nombres, agujas=None):\n    ...\n        elif prio == 0 and presupuesto - usado > 100:\n            queda = presupuesto - usado\n            texto_sec = material[a:b]\n            aguja_real = None\n            if agujas:\n                bajo = texto_sec.lower()\n                mejor = None\n                for ag in agujas:\n                    pos = bajo.find(str(ag).lower())\n                    if pos != -1 and (mejor is None or pos < mejor):\n                        mejor = pos\n                        aguja_real = texto_sec[pos:pos + len(str(ag))]\n            if aguja_real is not None:\n                pedazo = trozo_que_contiene(texto_sec, aguja_real, queda)\n                pos = texto_sec.find(pedazo)\n                if pos != -1:\n                    elegidos.append((a + pos, a + pos + len(pedazo)))\n                    ultimo = a + pos + len(pedazo)\n                    usado += len(pedazo)\n                else:\n                    elegidos.append((a, a + queda))\n                    ultimo = a + queda\n                    usado = presupuesto\n            else:\n                elegidos.append((a, a + queda))\n                ultimo = a + queda\n                usado = presupuesto",
+  "vigia": "vigias/test_vigia_el_recorte_conserva_el_trozo_de_la_funcion.py (primer caso, hoy ROJO por su propio motivo); y deben seguir verdes las diez comprobaciones de vigias/test_vigia_el_pasillo_conserva_la_funcion_nombrada.py y los otros dos casos (tope y cabecera) de la prueba de este arreglo.",
+  "puede_danar": [
+   "arnes/asignador.py (lo importa cuerpo/obrero.py)",
+   "arnes/revisor_de_programa.py",
+   "cerebro/protocolo.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "mapa/inventario.py",
+   "reparto de material de todas las rondas de todos los proyectos"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "protocolo.py",
+   "revisor_de_programa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Ningun vecino se rompe esta ronda: como todavia nadie manda `agujas`, el codigo nuevo nunca se ejecuta y las comprobaciones del tope y de la cabecera dan exactamente lo mismo que hoy.",
+   "La rama nueva guarda un par de posiciones que empieza despues de `a`, dejando un hueco en el material (el principio de la seccion queda fuera). El encargo dice que la forma de guardar no cambia, pero el consumidor de esos pares tiene que tolerar huecos; eso no se puede comprobar con este material.",
+   "`pos` se usa como nombre local nuevo dentro de la funcion. Si mas abajo, en el mismo bucle, esa misma funcion usa `pos` para otra cosa, se le pisa. No se ve el resto de la funcion en el material."
+  ],
+  "que_falta": [
+   "La cuenta queda como `usado += len(pedazo)` en vez de `usado = presupuesto` de hoy. No pasa del presupuesto (el pedazo es de como maximo lo que queda), pero si sobra sitio, el bucle puede seguir metiendo secciones despues, cosa que hoy no pasaba. El encargo pedia 'igual que hoy'. Merece una linea de confirmacion, no un rechazo.",
+   "El primer caso de la prueba sigue ROJO porque nadie manda `agujas` en esta ronda, tal y como avisa el paquete. Con eso el sabotaje no puede distinguir 'arreglado' de 'sin arreglar': hoy esta rojo y estara rojo igual. La prueba de verdad llega cuando se conecte quien llama.",
+   "Falta un caso con aguja que SI aparezca cerca del final de la seccion, para ver que el pedazo no se sale del tope."
+  ],
+  "resumen_para_el_jefe": "El arreglo esta bien escrito, en el archivo y los dos trozos pedidos, sin inventar nada y sin tocar el presupuesto ni el orden; queda aprobado, pero ahora mismo es inerte porque nadie manda el dato nuevo, asi que la prueba principal seguira en rojo hasta la ronda que conecte a quien llama, y hay que confirmar si el sitio sobrante se puede reutilizar."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38560 a 18701 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (44490 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

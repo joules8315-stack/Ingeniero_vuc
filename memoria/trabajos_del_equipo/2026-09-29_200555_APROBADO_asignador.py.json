@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El recorte no conserva la funcion pedida porque a _recortar_material nunca se le pasa la lista de nombres de funcion (agujas), solo los nombres de archivo.",
+  "archivo": "arnes/asignador.py",
+  "funcion": "recortar_prompt",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    nombres = _nombres(cabeza)\n    for _ in range(4):\n        material_corto = _recortar_material(material, presupuesto, nombres)",
+    "texto_nuevo": "    nombres = _nombres(cabeza)\n    agujas = identificadores(cabeza)\n    for _ in range(4):\n        material_corto = _recortar_material(material, presupuesto, nombres, agujas)"
+   },
+   {
+    "texto_viejo": "        trozo = _recortar_material(trozo, sitio, nombres)",
+    "texto_nuevo": "        trozo = _recortar_material(trozo, sitio, nombres, identificadores(_obj + \" \" + str(f.get(\"archivo\") or \"\")))"
+   }
+  ],
+  "cambio": "En recortar_prompt, sacar tambien el conjunto de nombres de funcion de la cabecera con identificadores(cabeza) y pasarlo como cuarto dato (agujas) a _recortar_material. En la parte que arma el paquete, sacar tambien los nombres de funcion del mismo texto del que ya salen los nombres de archivo y pasarlos como cuarto dato a _recortar_material.",
+  "codigo": "    nombres = _nombres(cabeza)\n    agujas = identificadores(cabeza)\n    for _ in range(4):\n        material_corto = _recortar_material(material, presupuesto, nombres, agujas)\n\n        trozo = _recortar_material(trozo, sitio, nombres, identificadores(_obj + \" \" + str(f.get(\"archivo\") or \"\")))",
+  "vigia": "vigias/test_vigia_el_recorte_conserva_el_trozo_de_la_funcion.py (los tres casos verdes) y vigias/test_vigia_el_pasillo_conserva_la_funcion_nombrada.py (las diez comprobaciones verdes)",
+  "puede_danar": [
+   "reparto de material de todas las rondas de todos los proyectos",
+   "arnes/asignador.py",
+   "cuerpo/obrero.py",
+   "arnes/revisor_de_programa.py",
+   "cerebro/trozos.py",
+   "cerebro/piezas.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "mapa/inventario.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "revisor_de_programa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Al pasar agujas tambien en la llamada que arma el paquete, ahora _recortar_material recibe identificadores donde antes recibia None: cambia que bytes conserva en TODAS las rondas de TODOS los proyectos. Es justamente lo pedido, y las diez comprobaciones del pasillo son el que vigila; si el pasillo se pone rojo, la causa es el cuarto dato, no otra cosa.",
+   "Las agujas de la cabecera se sacan una vez fuera del bucle de las cuatro vueltas, lo cual es correcto porque cabeza no se modifica dentro del bucle; no se recalcula ni se pierde nada."
+  ],
+  "que_falta": [
+   "El contenido de la prueba nueva no viene en el paquete. Si esa prueba llamara a _recortar_material directamente en vez de pasar por recortar_prompt, el primer caso seguiria rojo aunque el cambio sea correcto. Como el paquete dice que uno de los tres casos es 'la cabecera del encargo llega entera', lo esperable es que la prueba pase por recortar_prompt, pero no esta comprobado.",
+   "Falta la prueba de la promesa: deshacer el arreglo y ver que el caso vuelve a rojo, y la corrida verde de los tres casos mas las diez comprobaciones del pasillo."
+  ],
+  "resumen_para_el_jefe": "El cambio hace justo lo pedido y con lo que ya existe: pasa las agujas desde donde salen los nombres de archivo, sin tocar topes ni cabecera; lo unico que falta es mostrar las pruebas en verde y la prueba de que se ponen rojas al deshacerlo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38536 a 17514 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (44670 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (44913 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (45221 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}
