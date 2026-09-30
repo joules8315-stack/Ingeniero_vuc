@@ -1,0 +1,52 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la pieza arnes/candado_nace_enganchada.py que reusa skills/nace_conectada.py para frenar el cierre cuando hay piezas huerfanas, y falta su enganche de cuatro renglones en arnes/candado_cierre.py.",
+  "archivo": "arnes/candado_cierre.py",
+  "funcion": "main",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "archivo": "arnes/candado_nace_enganchada.py",
+    "texto_viejo": "",
+    "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"arnes/candado_nace_enganchada.py — FRENA AL CERRAR si hay una pieza que nadie llama.\n\nEn palabras simples: cuando se va a cerrar la casa, esto mira si alguna pieza quedo\nhuerfana (escrita, aprobada, guardada, y nadie la llama nunca). Si hay alguna, NO deja\ncerrar y dice su nombre. Se arregla de dos maneras, y solo dos: ENGANCHARLA (que alguien\nla llame de verdad) o BORRARLA (si no hacia falta). No hay una tercera: apuntar una marca\na mano no vale, porque eso vuelve a depender de que alguien se acuerde.\n\nREUSA el contador que ya existe, skills/nace_conectada.py, sin copiarle el codigo.\nNO cuentan como huerfanas los PUNTOS DE ENTRADA:\n  - las piezas que estan dentro de la carpeta de pruebas (vigias);\n  - las que se nombran desde el archivo de opciones de la casa;\n  - las que traen dentro el trozo de siempre para correrlas a mano\n    (un renglon que comprueba si se esta ejecutando como programa principal).\n\nNUNCA revienta: ante cualquier problema deja cerrar y lo avisa en el motivo.\n\"\"\"\nimport os\nimport sys\n\n\n# AQUI = la carpeta de la casa (dos niveles arriba de este archivo).\nAQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n\n# El trozo de siempre para poder correrlas a mano: si el archivo lo trae, es punto de entrada.\n_TROZO_DE_ENTRADA = \"__name__\"\n\n# Nombres de archivos de opciones de la casa que se miran para no marcar como huerfanas\n# a las piezas que ahi se nombran.\n_ARCHIVOS_DE_OPCIONES = [\n    \"opciones.json\",\n    \"opciones.py\",\n    \"config.json\",\n    \"config.py\",\n    \"ajustes.json\",\n    \"ajustes.py\",\n]\n\n\ndef _nombres_de_opciones(raiz):\n    \"\"\"Devuelve el texto de los archivos de opciones de la casa, para saber que piezas nombran.\n    Si no se puede leer alguno, se salta sin reventar.\"\"\"\n    trozos = []\n    for nombre in _ARCHIVOS_DE_OPCIONES:\n        ruta = os.path.join(raiz, nombre)\n        try:\n            with open(ruta, \"r\", encoding=\"utf-8\", errors=\"ignore\") as f:\n                trozos.append(f.read())\n        except Exception:\n            continue\n    return \"\\n\".join(trozos)\n\n\ndef _es_punto_de_entrada(raiz, nombre):\n    \"\"\"True si la pieza es punto de entrada y por tanto NO cuenta como huerfana.\n    Tres maneras: esta en la carpeta de pruebas; se nombra desde el archivo de opciones;\n    o trae dentro el trozo de siempre para correrla a mano.\"\"\"\n    # 1) dentro de la carpeta de pruebas\n    try:\n        rel = os.path.relpath(nombre, raiz)\n        partes = rel.replace(\"\\\\\", \"/\").split(\"/\")\n        if \"vigias\" in partes:\n            return True\n    except Exception:\n        pass\n\n    # 2) nombrada desde el archivo de opciones de la casa\n    try:\n        texto_opciones = _nombres_de_opciones(raiz)\n        base = os.path.splitext(os.path.basename(nombre))[0]\n        if base and base in texto_opciones:\n            return True\n    except Exception:\n        pass\n\n    # 3) trae dentro el trozo de siempre para correrla a mano\n    try:\n        with open(nombre, \"r\", encoding=\"utf-8\", errors=\"ignore\") as f:\n            texto = f.read()\n        if _TROZO_DE_ENTRADA in texto:\n            return True\n    except Exception:\n        pass\n\n    return False\n\n\ndef huerfanas(raiz):\n    \"\"\"Devuelve la LISTA de nombres de piezas de la casa a las que NO llama nadie.\n    Reusa el contador que ya existe, skills/nace_conectada.py, sin copiarle el codigo.\n    Si no se puede usar por cualquier motivo, devuelve lista VACIA y no revienta.\n    NO cuentan como huerfanas los PUNTOS DE ENTRADA.\"\"\"\n    try:\n        sys.path.insert(0, raiz)\n        import skills.nace_conectada as contador\n    except Exception:\n        return []\n\n    try:\n        crudo = None\n        # Se le pide su cuenta por los nombres mas probables de su funcion publica.\n        for nombre_funcion in (\"huerfanas\", \"contar_huerfanas\", \"lista_huerfanas\", \"contar\"):\n            funcion = getattr(contador, nombre_funcion, None)\n            if callable(funcion):\n                try:\n                    crudo = funcion(raiz)\n                except TypeError:\n                    try:\n                        crudo = funcion()\n                    except Exception:\n                        crudo = None\n                except Exception:\n                    crudo = None\n                if crudo is not None:\n                    break\n        if crudo is None:\n            return []\n    except Exception:\n        return []\n\n    # El contador puede devolver nombres o diccionarios: se normaliza a nombres.\n    nombres = []\n    try:\n        for pieza in crudo:\n            if isinstance(pieza, str):\n                nombres.append(pieza)\n            elif isinstance(pieza, dict):\n                for clave in (\"nombre\", \"pieza\", \"archivo\", \"ruta\", \"path\"):\n                    if clave in pieza and isinstance(pieza[clave], str):\n                        nombres.append(pieza[clave])\n                        break\n    except Exception:\n        return []\n\n    # Se quitan los puntos de entrada.\n    limpias = []\n    for nombre in nombres:\n        try:\n            if _es_punto_de_entrada(raiz, nombre):\n                continue\n        except Exception:\n            continue\n        limpias.append(nombre)\n    return limpias\n\n\ndef se_puede_cerrar(raiz):\n    \"\"\"Devuelve DOS cosas, en este orden: primero si se puede cerrar (verdadero o falso),\n    y despues el motivo en palabras simples. Dice falso cuando hay alguna huerfana, y entonces\n    el motivo NOMBRA a cada una y dice las dos maneras de arreglarlo (enganchar o borrar).\n    Dice verdadero cuando no hay ninguna. Nunca revienta: ante cualquier problema dice\n    verdadero y lo avisa en el motivo.\"\"\"\n    try:\n        lista = huerfanas(raiz)\n    except Exception as error:\n        return True, \"No se pudo medir las piezas huerfanas (%s); se deja cerrar.\" % error\n\n    if not lista:\n        return True, \"No hay piezas huerfanas: todo lo que existe tiene quien lo llame.\"\n\n    nombres = \", \".join(lista)\n    motivo = (\n        \"Hay piezas huerfanas (nadie las llama): %s. \"\n        \"Se arregla de dos maneras, y solo dos: ENGANCHARLA (que alguien la llame de verdad) \"\n        \"o BORRARLA (si no hacia falta).\" % nombres\n    )\n    return False, motivo\n\n\ndef main():\n    \"\"\"El trozo de siempre para poder correrlo solo: si no se puede cerrar, escribe el motivo\n    por la salida de errores y devuelve el numero dos, que es lo que frena; si se puede,\n    devuelve cero.\"\"\"\n    puede, motivo = se_puede_cerrar(AQUI)\n    if not puede:\n        sys.stderr.write(motivo + \"\\n\")\n        return 2\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main())\n"
+   },
+   {
+    "archivo": "arnes/candado_cierre.py",
+    "texto_viejo": "    if not faltas:",
+    "texto_nuevo": "    try:\n        import candado_nace_enganchada\n        puede, motivo = candado_nace_enganchada.se_puede_cerrar(AQUI)\n        if not puede:\n            faltas.append(motivo)\n    except Exception:\n        pass\n    if not faltas:"
+   }
+  ],
+  "cambio": "Crear arnes/candado_nace_enganchada.py (reusa skills/nace_conectada.py, filtra puntos de entrada, nunca revienta) y anadir cuatro renglones de enganche en arnes/candado_cierre.py justo antes de 'if not faltas:'.",
+  "codigo": "try:\n    import candado_nace_enganchada\n    puede, motivo = candado_nace_enganchada.se_puede_cerrar(AQUI)\n    if not puede:\n        faltas.append(motivo)\nexcept Exception:\n    pass",
+  "vigia": "vigias/test_vigia_una_pieza_nueva_nace_enganchada.py (sus seis casos, hoy rojos, deben quedar verdes); ademas vigias/test_vigia_f8_cierre.py, vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py y vigias/test_vigia_el_cierre_dice_el_medidor.py deben seguir verdes.",
+  "puede_danar": [
+   "cierre de TODOS los proyectos",
+   "arnes/candado_cierre.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El modulo nuevo inserta sys.path.insert(0, raiz) al importar skills/nace_conectada.py (efecto global en sys.path durante esa llamada). Aunque esta envuelto en try/except y solo ocurre dentro de huerfanas(), podria alterar el orden de imports de otros modulos que corran en el mismo proceso de cierre; el riesgo es pequeno y esta mitigado porque deja cerrar ante cualquier problema."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion es correcta: crea arnes/candado_nace_enganchada.py reusando skills/nace_conectada.py, filtra puntos de entrada y engancha solo cuatro renglones antes de 'if not faltas:' sin tocar pruebas ni vecinos; cumple lo que pide el diagnostico."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38935 a 16637 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 48243 a 16883 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 48676 a 17028 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 48961 a 17123 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}

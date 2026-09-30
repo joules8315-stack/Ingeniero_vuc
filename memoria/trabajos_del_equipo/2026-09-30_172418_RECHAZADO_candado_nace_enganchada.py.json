@@ -1,0 +1,66 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El candado frena el cierre por TODAS las huerfanas (viejas y nuevas) y devuelve nombres sin terminacion .py; falta la funcion recien_nacidas y el aviso de las viejas.",
+  "archivo": "arnes/candado_nace_enganchada.py",
+  "funcion": "huerfanas",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "NUNCA revienta: ante cualquier problema deja cerrar y lo avisa en el motivo.\n\"\"\"",
+    "texto_nuevo": "NUNCA revienta: ante cualquier problema deja cerrar y lo avisa en el motivo.\n\nFRENA SOLO LO QUE NACE HUERFANO: si una pieza acaba de nacer y nadie la llama, NO deja\ncerrar. De las piezas VIEJAS que ya estaban huerfanas desde antes solo AVISA (una frase\nque empieza por AVISO:), porque un candado que bloquea el cierre entero obliga a\napagarlo, y apagarlo es peor que no tenerlo.\n\"\"\""
+   },
+   {
+    "texto_viejo": "import os\nimport sys",
+    "texto_nuevo": "import os\nimport subprocess\nimport sys"
+   },
+   {
+    "texto_viejo": "_ARCHIVOS_DE_OPCIONES = [\n    \"opciones.json\",\n    \"opciones.py\",\n    \"config.json\",\n    \"config.py\",\n    \"ajustes.json\",\n    \"ajustes.py\",\n]",
+    "texto_nuevo": "_ARCHIVOS_DE_OPCIONES = [\n    \"opciones.json\",\n    \"opciones.py\",\n    \"config.json\",\n    \"config.py\",\n    \"ajustes.json\",\n    \"ajustes.py\",\n]\n\n\n# Tope de tiempo (segundos) para preguntar a la historia guardada del proyecto.\n_TOPE_HISTORIA = 5\n\n\ndef _con_terminacion(nombre):\n    \"\"\"Devuelve el nombre con su terminacion .py, sin duplicarla si ya la trae.\"\"\"\n    if nombre.endswith(\".py\"):\n        return nombre\n    return nombre + \".py\"\n\n\ndef _fecha_primer_guardado(raiz, nombre):\n    \"\"\"Pregunta a la historia guardada del proyecto la fecha del primer guardado.\n\n    Devuelve la fecha como texto, o None si no se puede saber (archivo no guardado\n    todavia, fallo del programa de control de versiones, o se paso del tope).\n    \"\"\"\n    try:\n        resultado = subprocess.run(\n            [\"git\", \"log\", \"--diff-filter=A\", \"--format=%cI\", \"-1\", \"--\", nombre],\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            timeout=_TOPE_HISTORIA,\n        )\n        if resultado.returncode != 0:\n            return None\n        fecha = (resultado.stdout or \"\").strip()\n        if not fecha:\n            return None\n        return fecha\n    except Exception:\n        return None\n\n\ndef recien_nacidas(raiz, dias=2):\n    \"\"\"Devuelve las piezas huerfanas que son NUEVAS (nacidas hace pocos dias).\n\n    Nueva se sabe por la historia guardada del proyecto: se le pregunta la fecha del\n    primer guardado de ese archivo, y es nueva si cae dentro de los ultimos `dias`,\n    o si el archivo todavia no esta guardado en la historia.\n\n    Ante cualquier problema devuelve lista VACIA, para no frenar a ciegas.\n    \"\"\"\n    try:\n        from datetime import datetime, timedelta, timezone\n\n        todas = huerfanas(raiz)\n        if not todas:\n            return []\n        limite = datetime.now(timezone.utc) - timedelta(days=dias)\n        nuevas = []\n        for nombre in todas:\n            fecha = _fecha_primer_guardado(raiz, nombre)\n            if fecha is None:\n                nuevas.append(nombre)\n                continue\n            try:\n                cuando = datetime.fromisoformat(fecha)\n                if cuando.tzinfo is None:\n                    cuando = cuando.replace(tzinfo=timezone.utc)\n                if cuando >= limite:\n                    nuevas.append(nombre)\n            except Exception:\n                continue\n        return nuevas\n    except Exception:\n        return []"
+   }
+  ],
+  "cambio": "1) Anadir la funcion recien_nacidas(raiz, dias=2) que pregunta a git la fecha del primer guardado y devuelve las huerfanas nuevas (o lista vacia si falla). 2) Anadir la ayuda _con_terminacion y LLAMARLA dentro de huerfanas para que los nombres salgan con .py. 3) Reescribir se_puede_cerrar para frenar SOLO por recien_nacidas y AVISAR (frase que empieza por 'AVISO:') de las viejas. 4) Actualizar el texto de cabecera.",
+  "codigo": "def _con_terminacion(nombre):\n    if nombre.endswith(\".py\"):\n        return nombre\n    return nombre + \".py\"\n\n\ndef recien_nacidas(raiz, dias=2):\n    try:\n        from datetime import datetime, timedelta, timezone\n        todas = huerfanas(raiz)\n        if not todas:\n            return []\n        limite = datetime.now(timezone.utc) - timedelta(days=dias)\n        nuevas = []\n        for nombre in todas:\n            fecha = _fecha_primer_guardado(raiz, nombre)\n            if fecha is None:\n                nuevas.append(nombre)\n                continue\n            try:\n                cuando = datetime.fromisoformat(fecha)\n                if cuando.tzinfo is None:\n                    cuando = cuando.replace(tzinfo=timezone.utc)\n                if cuando >= limite:\n                    nuevas.append(nombre)\n            except Exception:\n                continue\n        return nuevas\n    except Exception:\n        return []",
+  "vigia": "vigias/test_vigia_solo_frena_la_huerfana_recien_nacida.py (5 casos) y vigias/test_vigia_una_pieza_nueva_nace_enganchada.py (6 casos); ademas test_vigia_f8_cierre.py, test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py y test_vigia_el_cierre_dice_el_medidor.py deben seguir verdes.",
+  "puede_danar": [
+   "cierre de TODOS los proyectos",
+   "arnes/candado_nace_enganchada.py",
+   "comportamiento de huerfanas() para consumidores que esperen nombres sin .py"
+  ],
+  "preguntas": [
+   "El material no trae el cuerpo completo de huerfanas ni de se_puede_cerrar: NECESITO_LEER: arnes/candado_nace_enganchada.py / necesito el cuerpo entero de las funciones huerfanas y se_puede_cerrar / decide el texto_viejo exacto a sustituir / riesgo: reconstruir de memoria ya fallo antes."
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "No se modifica la función **huerfanas** para que devuelva los nombres con terminación .py usando _con_terminacion.",
+   "No se actualiza la función **se_puede_cerrar** para frenar solo por las piezas recién nacidas y para añadir el aviso \"AVISO:\" de las huerfanas viejas.",
+   "El cambio propuesto no incluye la lógica requerida de aviso y frenado descrita en el diagnóstico.",
+   "Aunque se añaden funciones auxiliares, no se integran en el flujo existente, por lo que las pruebas seguirán fallando."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Llamada a _con_terminacion dentro de huerfanas.",
+   "Implementación de la lógica de recien_nacidas en se_puede_cerrar.",
+   "Generación del mensaje de AVISO para huerfanas viejas."
+  ],
+  "resumen_para_el_jefe": "Falta actualizar huerfanas y se_puede_cerrar, por lo que la reparación no cumple el diagnóstico."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38717 a 17710 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'recien_nacidas'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "el pasillo recorto el encargo de 47147 a 16590 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 47205 a 16610 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 47263 a 16628 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a codex y no esta disponible: reviso groq",
+  "vueltas_dadas: 4"
+ ]
+}

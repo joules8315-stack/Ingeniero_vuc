@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El candado compara el nombre pelado de la huerfana con la ruta completa de la historia, por lo que nunca empareja y la lista de recien nacidas sale vacia.",
+  "archivo": "arnes/candado_nace_enganchada.py",
+  "funcion": "recien_nacidas",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def recien_nacidas(raiz, dias=2):",
+    "texto_nuevo": "def emparejar_por_nombre(lista, primeras_fechas, limite):\n    \"\"\"Empareja nombres pelados con las fechas de la historia por NOMBRE FINAL de ruta.\n\n    La lista de piezas sin dueno trae nombres pelados (solo el archivo con su\n    terminacion) y la historia trae rutas completas. Aqui se queda, para cada\n    nombre final de ruta, la fecha MAS ANTIGUA de todas las rutas que acaben en\n    ese nombre, porque esa es la de su nacimiento. Ante la duda NO se frena:\n    si de un nombre no se sabe ninguna fecha, no cuenta. Nunca revienta.\n    \"\"\"\n    try:\n        if not lista or not primeras_fechas or limite is None:\n            return []\n        if not isinstance(lista, (list, tuple)):\n            return []\n        if not isinstance(primeras_fechas, dict):\n            return []\n        mas_antigua = {}\n        for ruta, fecha in primeras_fechas.items():\n            try:\n                if not isinstance(ruta, str):\n                    continue\n                nombre_final = ruta.replace(\"\\\\\", \"/\").rsplit(\"/\", 1)[-1]\n                if not nombre_final:\n                    continue\n                if not hasattr(fecha, \"year\"):\n                    continue\n                anterior = mas_antigua.get(nombre_final)\n                if anterior is None or fecha < anterior:\n                    mas_antigua[nombre_final] = fecha\n            except Exception:\n                continue\n        nacidas = []\n        for nombre in lista:\n            try:\n                if not isinstance(nombre, str):\n                    continue\n                fecha = mas_antigua.get(nombre)\n                if fecha is None:\n                    continue\n                if fecha >= limite:\n                    nacidas.append(nombre)\n            except Exception:\n                continue\n        return nacidas\n    except Exception:\n        return []\n\n\ndef recien_nacidas(raiz, dias=2):"
+   },
+   {
+    "texto_viejo": "    nacidas = []\n    for nombre in lista:\n        try:\n            ruta_relativa = os.path.relpath(nombre, raiz).replace(os.sep, \"/\")\n        except Exception:\n            ruta_relativa = nombre.replace(os.sep, \"/\")\n        fecha = primera_fecha.get(ruta_relativa)\n        if fecha is None:\n            # No se sabe: ante la duda NO se frena.\n            continue\n        if fecha >= limite:\n            nacidas.append(nombre)\n    return nacidas",
+    "texto_nuevo": "    return emparejar_por_nombre(lista, primera_fecha, limite)"
+   }
+  ],
+  "cambio": "Anadir la funcion emparejar_por_nombre justo delante de recien_nacidas, y sustituir el bucle final de recien_nacidas por una llamada a esa funcion nueva, de modo que el emparejamiento se haga por el NOMBRE FINAL de la ruta (porque la lista de piezas sin dueno da nombres pelados y la historia da rutas completas).",
+  "codigo": "def emparejar_por_nombre(lista, primeras_fechas, limite):\n    \"\"\"Empareja nombres pelados con las fechas de la historia por NOMBRE FINAL de ruta.\n\n    La lista de piezas sin dueno trae nombres pelados (solo el archivo con su\n    terminacion) y la historia trae rutas completas. Aqui se queda, para cada\n    nombre final de ruta, la fecha MAS ANTIGUA de todas las rutas que acaben en\n    ese nombre, porque esa es la de su nacimiento. Ante la duda NO se frena:\n    si de un nombre no se sabe ninguna fecha, no cuenta. Nunca revienta.\n    \"\"\"\n    try:\n        if not lista or not primeras_fechas or limite is None:\n            return []\n        if not isinstance(lista, (list, tuple)):\n            return []\n        if not isinstance(primeras_fechas, dict):\n            return []\n        mas_antigua = {}\n        for ruta, fecha in primeras_fechas.items():\n            try:\n                if not isinstance(ruta, str):\n                    continue\n                nombre_final = ruta.replace(\"\\\\\", \"/\").rsplit(\"/\", 1)[-1]\n                if not nombre_final:\n                    continue\n                if not hasattr(fecha, \"year\"):\n                    continue\n                anterior = mas_antigua.get(nombre_final)\n                if anterior is None or fecha < anterior:\n                    mas_antigua[nombre_final] = fecha\n            except Exception:\n                continue\n        nacidas = []\n        for nombre in lista:\n            try:\n                if not isinstance(nombre, str):\n                    continue\n                fecha = mas_antigua.get(nombre)\n                if fecha is None:\n                    continue\n                if fecha >= limite:\n                    nacidas.append(nombre)\n            except Exception:\n                continue\n        return nacidas\n    except Exception:\n        return []",
+  "vigia": "vigias/test_vigia_la_huerfana_se_empareja_con_su_fecha.py (sus SEIS casos, hoy rojos, deben quedar verdes). Ademas, comprobar en la casa de verdad: (a) que la lista de piezas sin dueno recien nacidas YA NO sale vacia y caza la pieza nacida hoy; (b) que enganchando o borrando esa pieza se puede cerrar. Sabotaje: deshacer el arreglo, correr la prueba y comprobar que los seis casos VUELVEN A ROJO.",
+  "puede_danar": [
+   "cierre de TODOS los proyectos",
+   "arnes/candado_nace_enganchada.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio introduce la función emparejar_por_nombre y la usa en recien_nacidas, corrigiendo el emparejamiento por nombre final sin usar recursos inexistentes y sin afectar a los vecinos."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 37156 a 13765 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 44728 a 16398 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a codex y no esta disponible: reviso groq",
+  "vueltas_dadas: 2"
+ ]
+}

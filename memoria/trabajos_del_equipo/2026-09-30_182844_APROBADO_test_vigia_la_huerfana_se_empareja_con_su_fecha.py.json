@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El corredor de pruebas no recoge ninguno de los seis casos porque sus nombres empiezan por 'caso' y no por 'test'; se anaden seis alias con nombre 'test_' que apuntan a los casos existentes, sin renombrar nada.",
+  "archivo": "vigias/test_vigia_la_huerfana_se_empareja_con_su_fecha.py",
+  "funcion": "main",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def main():\n    \"\"\"Corre los seis casos y dice el resultado. Devuelve 0 si todo verde, 1 si algo rojo.\"\"\"",
+    "texto_nuevo": "def test_caso_1_la_funcion_existe():\n    caso_1_la_funcion_existe()\n\n\ndef test_caso_2_empareja_nombre_pelado_con_ruta_completa():\n    caso_2_empareja_nombre_pelado_con_ruta_completa()\n\n\ndef test_caso_3_lo_viejo_no_cuenta():\n    caso_3_lo_viejo_no_cuenta()\n\n\ndef test_caso_4_lo_que_no_se_sabe_no_cuenta():\n    caso_4_lo_que_no_se_sabe_no_cuenta()\n\n\ndef test_caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua():\n    caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua()\n\n\ndef test_caso_6_no_revienta_con_basura():\n    caso_6_no_revienta_con_basura()\n\n\ndef main():\n    \"\"\"Corre los seis casos y dice el resultado. Devuelve 0 si todo verde, 1 si algo rojo.\"\"\""
+   }
+  ],
+  "cambio": "Anadir seis funciones nuevas cuyos nombres empiezan por 'test_' y que llaman a los seis casos existentes (caso_1_la_funcion_existe, caso_2_empareja_nombre_pelado_con_ruta_completa, caso_3_lo_viejo_no_cuenta, caso_4_lo_que_no_se_sabe_no_cuenta, caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua, caso_6_no_revienta_con_basura), justo antes de la funcion main. No se renombra ni se modifica ningun caso existente.",
+  "codigo": "def test_caso_1_la_funcion_existe():\n    caso_1_la_funcion_existe()\n\n\ndef test_caso_2_empareja_nombre_pelado_con_ruta_completa():\n    caso_2_empareja_nombre_pelado_con_ruta_completa()\n\n\ndef test_caso_3_lo_viejo_no_cuenta():\n    caso_3_lo_viejo_no_cuenta()\n\n\ndef test_caso_4_lo_que_no_se_sabe_no_cuenta():\n    caso_4_lo_que_no_se_sabe_no_cuenta()\n\n\ndef test_caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua():\n    caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua()\n\n\ndef test_caso_6_no_revienta_con_basura():\n    caso_6_no_revienta_con_basura()",
+  "vigia": "Correr el corredor de pruebas sobre vigias/test_vigia_la_huerfana_se_empareja_con_su_fecha.py y comprobar que recoge SEIS casos (no cero) y que los seis quedan VERDES.",
+  "puede_danar": [
+   "vigias/test_vigia_la_huerfana_se_empareja_con_su_fecha.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Se añaden seis funciones/alias test que apuntan a los casos existentes, corrigiendo la falta de detección sin romper nada."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 30130 a 17990 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a codex y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

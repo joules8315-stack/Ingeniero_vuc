@@ -1,0 +1,39 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta la prueba roja ejecutable que invoque armar de cerebro/router.py con dos trozos solapados del mismo archivo y textos iguales en archivos distintos; el material solo trae fragmentos recortados de router.py y trozos.py, no sus funciones completas.",
+  "archivo": "vigias/test_vigia_el_solape_no_duplica_lineas.py",
+  "texto_nuevo": "NECESITO_LEER: cerebro/router.py / motivo: funcion armar completa / que decide: interfaz real de la prueba (firma, parametros, forma del paquete devuelto) / riesgo: inventar la interfaz y que la prueba roja no pruebe la pieza de verdad\nNECESITO_LEER: cerebro/trozos.py / motivo: funcion cortar completa / que decide: esquema de rangos {desde, hasta, texto} con lineas 1-indexadas y solape / riesgo: perder lineas al construir los dos trozos 1-40 y 33-72",
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "test_vigia_el_solape_no_duplica_lineas.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "La función `armar` de `cerebro/router.py` y la función `cortar` de `cerebro/trozos.py` son mencionadas como NECESITO_LEER, pero el material original indica explícitamente que estas funciones ya fueron entregadas completas al pedirlas por nombre. La propuesta asume que no existen o no son completas, lo cual es una invención."
+  ],
+  "fallos": [
+   "El diagnóstico afirma que faltan las funciones `armar` y `cortar` completas, pero el material original indica que 'El paquete ya entrego esas funciones completas al pedirlas por nombre'. La propuesta intenta leer archivos que el material dice que ya están disponibles y completos.",
+   "La propuesta asume que el material solo trae fragmentos recortados de `router.py` y `trozos.py`, cuando el diagnóstico original del problema dice 'El paquete ya entrego esas funciones completas al pedirlas por nombre'.",
+   "La propuesta genera un riesgo de 'inventar la interfaz' y que la prueba roja no pruebe la pieza de verdad, lo cual contradice la premisa del material de que las funciones ya están completas y disponibles."
+  ],
+  "riesgo_vecinos": [
+   "La propuesta podría romper la lógica de `cerebro/router.py` y `cerebro/trozos.py` si las funciones `armar` y `cortar` no existen o no son como las asume la propuesta, ya que el material indica que ya están completas y disponibles."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación inventa la necesidad de leer archivos completos que el material original ya declara como disponibles y completos, basándose en un diagnóstico erróneo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19071 a 11764 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "el pasillo recorto el encargo de 19251 a 11899 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "el revisor de programa freno antes de pagar la revision: USA SIMULADOR (Mock) EN VEZ DE LO REAL: una prueba con simuladores no prueba la pieza de verdad.",
+  "Gemini 2.5 flash-lite dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

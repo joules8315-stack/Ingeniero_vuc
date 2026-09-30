@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El candado frena por todas las huerfanas (viejas y nuevas) y devuelve los nombres sin la terminacion .py, por lo que la casa no puede cerrar y una vigia queda roja.",
+  "archivo": "arnes/candado_nace_enganchada.py",
+  "funcion": "se_puede_cerrar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "        limpias.append(nombre)",
+    "texto_nuevo": "        limpias.append(nombre if nombre.endswith(\".py\") else nombre + \".py\")"
+   },
+   {
+    "texto_viejo": "def se_puede_cerrar(raiz):",
+    "texto_nuevo": "def recien_nacidas(raiz, dias=2):\n    \"\"\"Devuelve las huerfanas que nacieron dentro de los ultimos `dias`.\n\n    Se apoya en la historia guardada del proyecto (git) para saber cuando se guardo\n    por primera vez cada archivo. Si la historia no devuelve fecha, se considera\n    recien nacida (todavia no esta guardada). Ante cualquier fallo devuelve lista\n    vacia para no frenar a ciegas.\n    \"\"\"\n    import subprocess\n    import datetime\n\n    try:\n        lista = huerfanas(raiz)\n    except Exception:\n        return []\n\n    limite = datetime.date.today() - datetime.timedelta(days=dias)\n    nacidas = []\n    for nombre in lista:\n        try:\n            salida = subprocess.run(\n                [\"git\", \"log\", \"--diff-filter=A\", \"--follow\",\n                 \"--format=%ad\", \"--date=short\", \"--\", nombre],\n                cwd=raiz,\n                capture_output=True,\n                text=True,\n                timeout=5,\n            )\n            fechas = [linea.strip() for linea in salida.stdout.splitlines() if linea.strip()]\n            if not fechas:\n                nacidas.append(nombre)\n                continue\n            mas_antigua = min(fechas)\n            fecha = datetime.datetime.strptime(mas_antigua, \"%Y-%m-%d\").date()\n            if fecha >= limite:\n                nacidas.append(nombre)\n        except Exception:\n            nacidas.append(nombre)\n    return nacidas\n\n\ndef se_puede_cerrar(raiz):"
+   },
+   {
+    "texto_viejo": "    try:\n        lista = huerfanas(raiz)\n    except Exception as error:\n        return True, \"No se pudo medir las piezas huerfanas (%s); se deja cerrar.\" % error\n\n    if not lista:\n        return True, \"No hay piezas huerfanas: todo lo que existe tiene quien lo llame.\"\n\n    nombres = \", \".join(lista)\n    motivo = (\n        \"Hay piezas huerfanas (nadie las llama): %s. \"\n        \"Se arregla de dos maneras, y solo dos: ENGANCHARLA (que alguien la llame de verdad) \"\n        \"o BORRARLA (si no hacia falta).\" % nombres\n    )\n    return False, motivo",
+    "texto_nuevo": "    try:\n        lista = huerfanas(raiz)\n    except Exception as error:\n        return True, \"No se pudo medir las piezas huerfanas (%s); se deja cerrar.\" % error\n\n    if not lista:\n        return True, \"No hay piezas huerfanas: todo lo que existe tiene quien lo llame.\"\n\n    nacidas = recien_nacidas(raiz)\n    viejas = [n for n in lista if n not in nacidas]\n\n    if viejas:\n        aviso = (\n            \"AVISO: hay %d piezas huerfanas viejas; hay que ir ENGANCHANDOLAS o BORRANDOLAS.\"\n            % len(viejas)\n        )\n    else:\n        aviso = \"\"\n\n    if not nacidas:\n        if aviso:\n            return True, aviso\n        return True, \"Ninguna pieza nacio huerfana.\"\n\n    nombres = \", \".join(nacidas)\n    motivo = (\n        \"Hay piezas huerfanas recien nacidas (nadie las llama): %s. \"\n        \"Se arregla de dos maneras, y solo dos: ENGANCHARLA (que alguien la llame de verdad) \"\n        \"o BORRARLA (si no hacia falta).\" % nombres\n    )\n    if aviso:\n        motivo = motivo + \" \" + aviso\n    return False, motivo"
+   }
+  ],
+  "cambio": "Tres cambios en arnes/candado_nace_enganchada.py: (1) anadir la terminacion .py a los nombres en la lista de limpias; (2) crear la funcion recien_nacidas justo delante de se_puede_cerrar; (3) reescribir el cuerpo de se_puede_cerrar para frenar solo por las recien nacidas y avisar por las viejas.",
+  "codigo": "def recien_nacidas(raiz, dias=2):\n    \"\"\"Devuelve las huerfanas que nacieron dentro de los ultimos `dias`.\"\"\"\n    import subprocess\n    import datetime\n\n    try:\n        lista = huerfanas(raiz)\n    except Exception:\n        return []\n\n    limite = datetime.date.today() - datetime.timedelta(days=dias)\n    nacidas = []\n    for nombre in lista:\n        try:\n            salida = subprocess.run(\n                [\"git\", \"log\", \"--diff-filter=A\", \"--follow\",\n                 \"--format=%ad\", \"--date=short\", \"--\", nombre],\n                cwd=raiz,\n                capture_output=True,\n                text=True,\n                timeout=5,\n            )\n            fechas = [linea.strip() for linea in salida.stdout.splitlines() if linea.strip()]\n            if not fechas:\n                nacidas.append(nombre)\n                continue\n            mas_antigua = min(fechas)\n            fecha = datetime.datetime.strptime(mas_antigua, \"%Y-%m-%d\").date()\n            if fecha >= limite:\n                nacidas.append(nombre)\n        except Exception:\n            nacidas.append(nombre)\n    return nacidas",
+  "vigia": "vigias/test_vigia_solo_frena_la_huerfana_recien_nacida.py (cinco casos) y vigias/test_vigia_una_pieza_nueva_nace_enganchada.py (seis casos); ademas vigias/test_vigia_f8_cierre.py, vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py y vigias/test_vigia_el_cierre_dice_el_medidor.py.",
+  "puede_danar": [
+   "el cierre de TODOS los proyectos",
+   "arnes/candado_nace_enganchada.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Implementa los tres cambios solicitados, corrige el bloqueo y añade la extensión .py sin introducir elementos inexistentes ni afectar a otros componentes."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 39704 a 18510 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 48891 a 16843 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a codex y no esta disponible: reviso groq",
+  "vueltas_dadas: 2"
+ ]
+}

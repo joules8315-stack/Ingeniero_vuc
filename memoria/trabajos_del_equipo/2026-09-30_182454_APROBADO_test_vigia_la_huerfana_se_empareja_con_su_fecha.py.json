@@ -1,0 +1,70 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Los seis casos de la prueba se llaman empezando por 'caso_' y el corredor solo recoge los que empiezan por 'test_', asi que no se ejecuta ninguno.",
+  "archivo": "vigias/test_vigia_la_huerfana_se_empareja_con_su_fecha.py",
+  "funcion": "caso_1_la_funcion_existe, caso_2_empareja_nombre_pelado_con_ruta_completa, caso_3_lo_viejo_no_cuenta, caso_4_lo_que_no_se_sabe_no_cuenta, caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua, caso_6_no_revienta_con_basura y la lista 'casos' de la funcion final",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def caso_1_la_funcion_existe():",
+    "texto_nuevo": "def test_caso_1_la_funcion_existe():"
+   },
+   {
+    "texto_viejo": "def caso_2_empareja_nombre_pelado_con_ruta_completa():",
+    "texto_nuevo": "def test_caso_2_empareja_nombre_pelado_con_ruta_completa():"
+   },
+   {
+    "texto_viejo": "def caso_3_lo_viejo_no_cuenta():",
+    "texto_nuevo": "def test_caso_3_lo_viejo_no_cuenta():"
+   },
+   {
+    "texto_viejo": "def caso_4_lo_que_no_se_sabe_no_cuenta():",
+    "texto_nuevo": "def test_caso_4_lo_que_no_se_sabe_no_cuenta():"
+   },
+   {
+    "texto_viejo": "def caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua():",
+    "texto_nuevo": "def test_caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua():"
+   },
+   {
+    "texto_viejo": "def caso_6_no_revienta_con_basura():",
+    "texto_nuevo": "def test_caso_6_no_revienta_con_basura():"
+   },
+   {
+    "texto_viejo": "    casos = [\n        (\"1. La funcion existe\", caso_1_la_funcion_existe),\n        (\"2. Empareja nombre pelado con ruta completa\", caso_2_empareja_nombre_pelado_con_ruta_completa),\n        (\"3. Lo viejo no cuenta\", caso_3_lo_viejo_no_cuenta),\n        (\"4. Lo que no se sabe no cuenta\", caso_4_lo_que_no_se_sabe_no_cuenta),\n        (\"5. Si aparece en varias rutas manda la mas antigua\", caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua),\n        (\"6. No revienta con basura\", caso_6_no_revienta_con_basura),\n    ]",
+    "texto_nuevo": "    casos = [\n        (\"1. La funcion existe\", test_caso_1_la_funcion_existe),\n        (\"2. Empareja nombre pelado con ruta completa\", test_caso_2_empareja_nombre_pelado_con_ruta_completa),\n        (\"3. Lo viejo no cuenta\", test_caso_3_lo_viejo_no_cuenta),\n        (\"4. Lo que no se sabe no cuenta\", test_caso_4_lo_que_no_se_sabe_no_cuenta),\n        (\"5. Si aparece en varias rutas manda la mas antigua\", test_caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua),\n        (\"6. No revienta con basura\", test_caso_6_no_revienta_con_basura),\n    ]"
+   }
+  ],
+  "cambio": "Anadir el prefijo 'test_' a los seis nombres de funcion de caso y actualizar la lista 'casos' de la funcion final para que llame a los nuevos nombres.",
+  "codigo": "def test_caso_1_la_funcion_existe():\ndef test_caso_2_empareja_nombre_pelado_con_ruta_completa():\ndef test_caso_3_lo_viejo_no_cuenta():\ndef test_caso_4_lo_que_no_se_sabe_no_cuenta():\ndef test_caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua():\ndef test_caso_6_no_revienta_con_basura():\n\n    casos = [\n        (\"1. La funcion existe\", test_caso_1_la_funcion_existe),\n        (\"2. Empareja nombre pelado con ruta completa\", test_caso_2_empareja_nombre_pelado_con_ruta_completa),\n        (\"3. Lo viejo no cuenta\", test_caso_3_lo_viejo_no_cuenta),\n        (\"4. Lo que no se sabe no cuenta\", test_caso_4_lo_que_no_se_sabe_no_cuenta),\n        (\"5. Si aparece en varias rutas manda la mas antigua\", test_caso_5_si_aparece_en_varias_rutas_manda_la_mas_antigua),\n        (\"6. No revienta con basura\", test_caso_6_no_revienta_con_basura),\n    ]",
+  "vigia": "Correr el corredor de pruebas sobre vigias/test_vigia_la_huerfana_se_empareja_con_su_fecha.py: antes recogia 0 casos ('no tests ran in 0.22s'), despues debe recoger 6 casos y los 6 deben quedar VERDES.",
+  "puede_danar": [
+   "La funcion final del propio archivo que llama a los seis casos por su nombre (se actualiza en el septimo cambio)",
+   "Nada mas: son nombres internos de un solo archivo de prueba y nadie los llama desde fuera"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Renombra correctamente las seis funciones a 'test_*' y actualiza la lista de casos, cumpliendo el diagnóstico sin introducir inventos ni afectar a vecinos."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 27905 a 14318 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'caso_1_la_funcion_existe'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'caso_2_empareja_nombre_pelado_con_r",
+  "el pasillo recorto el encargo de 35267 a 16420 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'caso_1_la_funcion_existe'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'caso_2_empareja_nombre_pelado_con_r",
+  "el pasillo recorto el encargo de 36140 a 16569 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'caso_1_la_funcion_existe'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'caso_2_empareja_nombre_pelado_con_r",
+  "el pasillo recorto el encargo de 37013 a 16909 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a codex y no esta disponible: reviso groq",
+  "vueltas_dadas: 4"
+ ]
+}

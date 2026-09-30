@@ -1,0 +1,65 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El candado frena por TODAS las huerfanas (28, 27 viejas) en vez de solo por las recien nacidas, y los nombres vienen sin terminacion .py.",
+  "archivo": "arnes/candado_nace_enganchada.py",
+  "funcion": "modulo completo (docstring, imports, funciones de huerfanas y de cierre)",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "# -*- coding: utf-8 -*-\n\"\"\"arnes/candado_nace_enganchada.py — FRENA AL CERRAR si hay una pieza que nadie llama.\n\nEn palabras simples: cuando se va a cerrar la casa, esto mira si alguna pieza quedo\nhuerfana (escrita, aprobada, guardada, y nadie la llama nunca). Si hay alguna, NO deja\ncerrar y dice su nombre. Se arregla de dos maneras, y solo dos: ENGANCHARLA (que alguien\nla llame de verdad) o BORRARLA (si no hacia falta). No hay una tercera: apuntar una marca\na mano no vale, porque eso vuelve a depender de que alguien se acuerde.\n\nREUSA el contador que ya existe, skills/nace_conectada.py, sin copiarle el codigo.\nNO cuentan como huerfanas los PUNTOS DE ENTRADA:\n  - las piezas que estan dentro de la carpeta de pruebas (vigias);\n  - las que se nombran desde el archivo de opciones de la casa;\n  - las que traen dentro el trozo de siempre para correrlas a mano\n    (un renglon que comprueba si se esta ejecutando como programa principal).\n\nNUNCA revienta: ante cualquier problema deja cerrar y lo avisa en el motivo.\n\"\"\"\nimport os\nimport sys",
+    "texto_nuevo": "# -*- coding: utf-8 -*-\n\"\"\"arnes/candado_nace_enganchada.py — FRENA AL CERRAR si una pieza NACE huerfana.\n\nEn palabras simples: cuando se va a cerrar la casa, esto mira si alguna pieza quedo\nhuerfana (escrita, aprobada, guardada, y nadie la llama nunca). De las huerfanas, SOLO\nfrena por las que acaban de NACER (segun la historia guardada del proyecto); de las\nVIEJAS solo AVISA, con una frase que empieza por 'AVISO:'. Se arregla de dos maneras, y\nsolo dos: ENGANCHARLA (que alguien la llame de verdad) o BORRARLA (si no hacia falta).\nNo hay una tercera: apuntar una marca a mano no vale, porque eso vuelve a depender de\nque alguien se acuerde.\n\nPor que solo se frena lo que nace: un candado que bloquea el cierre entero por piezas\nviejas obliga a apagarlo, y apagarlo es peor que no tenerlo.\n\nREUSA el contador que ya existe, skills/nace_conectada.py, sin copiarle el codigo.\nNO cuentan como huerfanas los PUNTOS DE ENTRADA:\n  - las piezas que estan dentro de la carpeta de pruebas (vigias);\n  - las que se nombran desde el archivo de opciones de la casa;\n  - las que traen dentro el trozo de siempre para correrlas a mano\n    (un renglon que comprueba si se esta ejecutando como programa principal).\n\nNUNCA revienta: ante cualquier problema deja cerrar y lo avisa en el motivo.\n\"\"\"\nimport os\nimport subprocess\nimport sys"
+   },
+   {
+    "texto_viejo": "def _huerfanas(raiz):\n    \"\"\"Devuelve la lista de piezas huerfanas de la casa, sin duplicados.\"\"\"",
+    "texto_nuevo": "def _con_terminacion(nombre):\n    \"\"\"Devuelve el nombre con su terminacion .py, sin ponerla dos veces.\"\"\"\n    if nombre.endswith(\".py\"):\n        return nombre\n    return nombre + \".py\"\n\n\ndef _huerfanas(raiz):\n    \"\"\"Devuelve la lista de piezas huerfanas de la casa, sin duplicados, con .py.\"\"\""
+   },
+   {
+    "texto_viejo": "def se_puede_cerrar(raiz=None):\n    \"\"\"Dice si la casa puede cerrarse. Devuelve (puede, motivo).\"\"\"",
+    "texto_nuevo": "def recien_nacidas(raiz, dias=2):\n    \"\"\"Devuelve las huerfanas que son NUEVAS, mirando la historia guardada.\n\n    Se le pregunta a la historia (git) la fecha del primer guardado de cada archivo.\n    Es nueva si esa fecha cae dentro de los ultimos 'dias', o si el archivo todavia\n    no esta guardado en la historia. Si algo falla, devuelve lista VACIA.\n    \"\"\"\n    try:\n        huerfanas = _huerfanas(raiz)\n    except Exception:\n        return []\n    nuevas = []\n    for nombre in huerfanas:\n        try:\n            resultado = subprocess.run(\n                [\"git\", \"log\", \"--diff-filter=A\", \"--format=%ct\", \"--\", nombre],\n                cwd=raiz,\n                capture_output=True,\n                text=True,\n                timeout=5,\n            )\n            salida = (resultado.stdout or \"\").strip()\n            if not salida:\n                nuevas.append(nombre)\n                continue\n            primera = int(salida.splitlines()[-1])\n            import time\n            if (time.time() - primera) <= dias * 86400:\n                nuevas.append(nombre)\n        except Exception:\n            continue\n    return nuevas\n\n\ndef se_puede_cerrar(raiz=None):\n    \"\"\"Dice si la casa puede cerrarse. Devuelve (puede, motivo).\"\"\""
+   },
+   {
+    "texto_viejo": "    try:\n        huerfanas = _huerfanas(raiz)\n    except Exception:\n        return True, \"AVISO: no se pudo mirar las huerfanas; se deja cerrar.\"\n    if not huerfanas:\n        return True, \"No hay piezas huerfanas.\"\n    nombres = \", \".join(huerfanas)\n    motivo = (\n        \"Hay piezas huerfanas: \" + nombres + \". \"\n        \"Se arregla ENGANCHANDOLA (que alguien la llame) o BORRARLA.\"\n    )\n    return False, motivo",
+    "texto_nuevo": "    try:\n        huerfanas = _huerfanas(raiz)\n    except Exception:\n        return True, \"AVISO: no se pudo mirar las huerfanas; se deja cerrar.\"\n    if not huerfanas:\n        return True, \"No hay piezas huerfanas.\"\n    try:\n        nacidas = recien_nacidas(raiz)\n    except Exception:\n        nacidas = []\n    viejas = [n for n in huerfanas if n not in nacidas]\n    aviso = \"\"\n    if viejas:\n        aviso = (\n            \" AVISO: quedan \" + str(len(viejas)) + \" piezas huerfanas viejas (\"\n            + \", \".join(viejas) + \"); hay que ir ENGANCHANDOLAS o BORRANDOLAS.\"\n        )\n    if nacidas:\n        motivo = (\n            \"Hay piezas huerfanas recien nacidas: \" + \", \".join(nacidas) + \". \"\n            \"Se arregla ENGANCHANDOLA (que alguien la llame) o BORRARLA.\"\n            + aviso\n        )\n        return False, motivo\n    return True, \"No hay piezas huerfanas recien nacidas.\" + aviso"
+   }
+  ],
+  "cambio": "1) Anadir import subprocess. 2) Anadir helper _con_terminacion y usarlo en _huerfanas para que devuelva nombres con .py. 3) Anadir funcion recien_nacidas(raiz, dias=2) que consulta git log --diff-filter=A con timeout y devuelve [] si falla. 4) Reescribir se_puede_cerrar para frenar solo por recien_nacidas y anadir frase AVISO: con las viejas en ambos casos. 5) Actualizar docstring del modulo.",
+  "codigo": "import subprocess\n\ndef _con_terminacion(nombre):\n    if nombre.endswith(\".py\"):\n        return nombre\n    return nombre + \".py\"\n\ndef recien_nacidas(raiz, dias=2):\n    try:\n        huerfanas = _huerfanas(raiz)\n    except Exception:\n        return []\n    nuevas = []\n    for nombre in huerfanas:\n        try:\n            resultado = subprocess.run(\n                [\"git\", \"log\", \"--diff-filter=A\", \"--format=%ct\", \"--\", nombre],\n                cwd=raiz, capture_output=True, text=True, timeout=5)\n            salida = (resultado.stdout or \"\").strip()\n            if not salida:\n                nuevas.append(nombre); continue\n            primera = int(salida.splitlines()[-1])\n            import time\n            if (time.time() - primera) <= dias * 86400:\n                nuevas.append(nombre)\n        except Exception:\n            continue\n    return nuevas",
+  "vigia": "vigias/test_vigia_solo_frena_la_huerfana_recien_nacida.py (5 casos) y vigias/test_vigia_una_pieza_nueva_nace_enganchada.py (6 casos); ademas test_vigia_f8_cierre.py, test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py y test_vigia_el_cierre_dice_el_medidor.py.",
+  "puede_danar": [
+   "cierre de TODOS los proyectos",
+   "arnes/candado_nace_enganchada.py"
+  ],
+  "preguntas": [
+   "El material no muestra el cuerpo completo de _huerfanas ni de se_puede_cerrar; los textos_viejos se han reconstruido del fragmento visible. Si el archivo real difiere, hay que ajustar los textos literales."
+  ],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La función _con_terminacion se define pero nunca se usa dentro de _huerfanas, por lo que los nombres de piezas siguen sin la terminación .py y la prueba que verifica eso seguirá fallando.",
+   "Al no modificar la lógica de _huerfanas para aplicar la terminación, el módulo no cumple el requisito de devolver nombres con .py."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Integrar _con_terminacion en la implementación de _huerfanas para que devuelva los nombres con la terminación .py."
+  ],
+  "resumen_para_el_jefe": "Rechazado: falta aplicar la terminación .py a los nombres de huerfanas, por lo que el arreglo no soluciona el problema descrito."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 40404 a 18490 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 47342 a 16186 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 47400 a 16205 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 47458 a 16225 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a codex y no esta disponible: reviso groq",
+  "vueltas_dadas: 4"
+ ]
+}

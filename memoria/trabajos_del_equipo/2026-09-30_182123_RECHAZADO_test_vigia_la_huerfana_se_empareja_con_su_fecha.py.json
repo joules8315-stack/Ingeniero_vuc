@@ -1,0 +1,63 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Los seis casos de la prueba se llaman 'caso_N_...' y el corredor solo recoge funciones que empiezan por 'test_', asi que no se ejecuta ninguno.",
+  "archivo": "vigias/test_vigia_la_huerfana_se_empareja_con_su_fecha.py",
+  "funcion": "caso_2_empareja_nombre_pelado_con_ruta_completa",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def caso_2_empareja_nombre_pelado_con_ruta_completa():",
+    "texto_nuevo": "def test_caso_2_empareja_nombre_pelado_con_ruta_completa():"
+   },
+   {
+    "texto_viejo": "def caso_3_lo_viejo_no_cuenta():",
+    "texto_nuevo": "def test_caso_3_lo_viejo_no_cuenta():"
+   }
+  ],
+  "cambio": "Renombrar los seis casos anadiendo el prefijo 'test_' delante de 'caso_N_...' (caso_1..caso_6) y actualizar la funcion final que los llama por su nombre para que use los nombres nuevos.",
+  "codigo": "def test_caso_2_empareja_nombre_pelado_con_ruta_completa():\n    ...\n\ndef test_caso_3_lo_viejo_no_cuenta():\n    ...",
+  "vigia": "El propio corredor de pruebas: debe recoger SEIS casos (antes cero) y los seis deben quedar VERDES.",
+  "puede_danar": [
+   "arnes/candado_nace_enganchada.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [
+   "PREGUUNTA_REQUERIDA: el material solo muestra los cuerpos de caso_2 y caso_3; faltan los nombres exactos de caso_1, caso_4, caso_5 y caso_6 y el nombre exacto de la funcion final que los llama, para poder renombrarlos y actualizar la llamada sin inventar."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_nace_enganchada.py",
+   "codex.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Renombra SOLO 2 de los 6 casos (caso_2 y caso_3). El diagnostico, el encargo y la vigia piden los seis, en los renglones 67, 81, 110, 135, 160 y 186 que el propio material da. Con este cambio el corredor seguiría recogiendo 2 casos, no 6: la prueba sigue sin medir lo que dice medir y la vigia no se cumple.",
+   "No actualiza la funcion final que llama a los seis casos por su nombre. El campo 'cambio' lo menciona en texto, pero NO esta en la lista 'cambios', que es la que se aplica. Quedan llamadas al nombre viejo de caso_2 y caso_3 y a los otros cuatro sin renombrar: al correr esa funcion a mano revienta con NameError. El material avisa exactamente de ese peligro.",
+   "Se rinde en 4 de los 6 casos con una PREGUNTA_REQUERIDA en vez de hacer el trabajo: el material ya dice cuales son ('los que hoy empiezan por la palabra caso y un numero') y da sus renglones.",
+   "Los dos 'texto_viejo' que usa ('def caso_2_empareja_nombre_pelado_con_ruta_completa():' y 'def caso_3_lo_viejo_no_cuenta():') no se pueden verificar: en el material recibido no viene ninguna linea del archivo de prueba. Si no son literales exactos, el cambio no aplica y no se renombra nada, sin avisar."
+  ],
+  "riesgo_vecinos": [
+   "La funcion final del mismo archivo que llama a los seis casos por su nombre: con 2 renombrados y 4 sin tocar, quedan llamadas que ya no existen.",
+   "El campo 'puede_danar' nombra arnes/candado_nace_enganchada.py y cuerpo/codex.py, que la propuesta no toca; por el aviso interno de la otra IA esos archivos estan reservados y el revisor por programa exige que toda palabra con raya baja nombrada aparezca dentro del cambio: nombrarlos sin tocarlos puede frenar la vuelta."
+  ],
+  "que_falta": [
+   "Los otros cuatro casos (renglones 67, 135, 160, 186) con su nombre literal, tomados del archivo.",
+   "El nombre literal de la funcion final que los llama y el cambio que la actualiza, o la orden de quitarla.",
+   "La cuenta que pide el encargo: cuantos casos cogio el corredor antes (cero) y despues, y como quedaron los seis."
+  ],
+  "resumen_para_el_jefe": "Renombra solo 2 de los 6 casos y deja sin actualizar la funcion que los llama, asi que la prueba sigue incompleta y el que la corria a mano se rompe."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'caso_2_empareja_nombre_pelado_con_ruta_completa'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'caso_3_lo_vi",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'caso_2_empareja_nombre_pelado_con_ruta_completa'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'caso_3_lo_vi",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'caso_2_empareja_nombre_pelado_con_ruta_completa'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'caso_3_lo_vi",
+  "vueltas_dadas: 4"
+ ]
+}
