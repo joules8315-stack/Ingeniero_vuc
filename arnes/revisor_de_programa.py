@@ -708,6 +708,11 @@ def revisar(propuesta, tarea=""):
         # palabra del encargo, aunque solo contara como esta hoy otro archivo, y tiro una vigia ya aprobada.
         # Al crear no se puede separar lo pedido del contexto: ese juicio es del revisor de IA.
         _creando_archivo_nuevo = contenido_archivo is None and not (viejo or "").strip()
+        # FRENADA EN FALSO CAZADA EL 2026-09-30: el encargo nombra piezas dentro del apartado de lo
+        # que NO SE TOCA, precisamente para protegerlas, y el revisor las exigia igual. Decir "esto
+        # no se toca" hacia que el trabajo se rechazara, y hubo que renunciar a proteger al vecino
+        # para que pasara. Se quita ese apartado del texto antes de buscar palabras obligatorias.
+        limpia = re.sub(r"(?is)NO SE TOCA\s*:.*?(?=\n[A-Z][A-Z ]{2,}\s*:|\Z)", " ", limpia)
         for palabra in set(re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\b", limpia)):
             if _creando_archivo_nuevo:
                 break
