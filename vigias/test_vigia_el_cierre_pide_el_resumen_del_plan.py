@@ -139,12 +139,14 @@ def test_caso_5_con_plan_aprobado_sin_resumen_no_se_cierra_y_con_resumen_si(tmp_
         "POR QUE SE REPARA: Julio dijo que el resumen no puede depender de la memoria.\n"
     )
 
-    # aprobar devuelve un numero (el numero del plan aprobado).
-    numero = puerta_del_plan.aprobar(carpeta, plan)
-    assert isinstance(numero, int), (
-        "aprobar tiene que devolver un numero (el numero del plan aprobado), "
-        "no un diccionario ni otra cosa. Devolvio: %r" % (numero,)
+    # aprobar recibe primero el texto del plan y despues la carpeta, y
+    # devuelve un diccionario con la clave 'ok' y el numero dentro.
+    resultado = puerta_del_plan.aprobar(plan, carpeta)
+    assert isinstance(resultado, dict) and "ok" in resultado, (
+        "aprobar tiene que devolver un diccionario con la clave 'ok' y el numero "
+        "del plan aprobado dentro. Devolvio: %r" % (resultado,)
     )
+    numero = resultado["ok"]
 
     se_puede, motivo = puerta_del_plan.puede_cerrar(carpeta)
     assert se_puede is False, (
