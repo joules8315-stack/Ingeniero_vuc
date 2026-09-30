@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "La funcion _trae_no_encontrado marca rendirse en cuanto la marca aparece como subtexto en cualquier campo, incluido texto_nuevo que es el archivo entero, y debe distinguir por DONDE aparece.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_trae_no_encontrado",
+  "texto_viejo": "def _trae_no_encontrado(propuesta, campos):\n    \"\"\"UN PROGRAMA, no una IA: la marca NO_ENCONTRADO no puede colarse como si fuera contenido.\n\n    Julio, 2026-09-15: la marca se detecta como SUBTEXTO en cualquier campo, en las DOS ramas\n    (crear y reparar). Si cualquiera de los campos que _propuesta_cumple ya revisa trae la\n    marca, la propuesta NO cumple.\n    \"\"\"\n    for campo in campos:\n        if \"NO_ENCONTRADO\" in str(propuesta.get(campo) or \"\"):\n            return True\n    return False",
+  "texto_nuevo": "def _trae_no_encontrado(propuesta, campos):\n    \"\"\"UN PROGRAMA, no una IA: la marca NO_ENCONTRADO no puede colarse como si fuera contenido.\n\n    Julio, 2026-09-15: la marca se detecta como SUBTEXTO en cualquier campo, en las DOS ramas\n    (crear y reparar). Si cualquiera de los campos que _propuesta_cumple ya revisa trae la\n    marca, la propuesta NO cumple.\n\n    ARREGLO (2026-09-30): se mira DONDE aparece la marca, no solo si aparece. En el campo\n    \"archivo\" (una ruta) cualquier aparicion es rendirse. En los demas campos (codigo) solo\n    es rendirse si el valor recortado ES la marca, EMPIEZA por la marca, o el valor tiene\n    TRES renglones o menos y la marca aparece dentro. Hoy se perdio una ronda entera (dos\n    llamadas al cerebro de pago) por no hacer esta distincion.\n    \"\"\"\n    for campo in campos:\n        valor = str(propuesta.get(campo) or \"\")\n        if campo == \"archivo\":\n            if \"NO_ENCONTRADO\" in valor:\n                return True\n            continue\n        limpio = valor.strip()\n        if limpio == \"NO_ENCONTRADO\":\n            return True\n        if limpio.startswith(\"NO_ENCONTRADO\"):\n            return True\n        if len(valor.splitlines()) <= 3 and \"NO_ENCONTRADO\" in valor:\n            return True\n    return False",
+  "cambio": "En _trae_no_encontrado, sustituir el recorrido que marca rendirse por cualquier aparicion de la marca, por la regla nueva: en el campo \"archivo\" cualquier aparicion cuenta; en los demas campos solo cuenta si el valor recortado es exactamente la marca, empieza por la marca, o el valor tiene tres renglones o menos y la marca aparece dentro. Actualizar el docstring para dejar escrito el arreglo y la ronda perdida de hoy.",
+  "codigo": "def _trae_no_encontrado(propuesta, campos):\n    \"\"\"UN PROGRAMA, no una IA: la marca NO_ENCONTRADO no puede colarse como si fuera contenido.\n\n    Julio, 2026-09-15: la marca se detecta como SUBTEXTO en cualquier campo, en las DOS ramas\n    (crear y reparar). Si cualquiera de los campos que _propuesta_cumple ya revisa trae la\n    marca, la propuesta NO cumple.\n\n    ARREGLO (2026-09-30): se mira DONDE aparece la marca, no solo si aparece. En el campo\n    \"archivo\" (una ruta) cualquier aparicion es rendirse. En los demas campos (codigo) solo\n    es rendirse si el valor recortado ES la marca, EMPIEZA por la marca, o el valor tiene\n    TRES renglones o menos y la marca aparece dentro. Hoy se perdio una ronda entera (dos\n    llamadas al cerebro de pago) por no hacer esta distincion.\n    \"\"\"\n    for campo in campos:\n        valor = str(propuesta.get(campo) or \"\")\n        if campo == \"archivo\":\n            if \"NO_ENCONTRADO\" in valor:\n                return True\n            continue\n        limpio = valor.strip()\n        if limpio == \"NO_ENCONTRADO\":\n            return True\n        if limpio.startswith(\"NO_ENCONTRADO\"):\n            return True\n        if len(valor.splitlines()) <= 3 and \"NO_ENCONTRADO\" in valor:\n            return True\n    return False",
+  "vigia": "vigias/test_vigia_la_marca_dentro_del_codigo_no_es_rendirse.py (los SIETE casos; el primero hoy rojo debe quedar verde y los otros seis seguir verdes) y vigias/test_vigia_falta_material_no_llama_a_la_ia.py (todos sus casos, hoy verdes).",
+  "puede_danar": [
+   "cuerpo/obrero.py::_propuesta_cumple",
+   "cuerpo/obrero.py::trabajar",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py",
+   "vigias/test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {},
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39097 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (45045 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (45103 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (45161 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

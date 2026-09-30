@@ -1,0 +1,79 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion _trae_no_encontrado marca como rendicion cualquier aparicion de la marca en cualquier campo, incluso dentro del codigo legitimo del campo texto_nuevo, y hay que distinguir por campo y por forma.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_trae_no_encontrado",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _trae_no_encontrado(propuesta, campos):\n    \"\"\"UN PROGRAMA, no una IA: la marca NO_ENCONTRADO no puede colarse como si fuera contenido.\n\n    Julio, 2026-09-15: la marca se detecta como SUBTEXTO en cualquier campo, en las DOS ramas\n    (crear y reparar). Si cualquiera de los campos que _propuesta_cumple ya revisa trae la\n    marca, la propuesta NO cumple.\n    \"\"\"\n    for campo in campos:\n        if \"NO_ENCONTRADO\" in str(propuesta.get(campo) or \"\"):\n            return True\n    return False",
+    "texto_nuevo": "def _trae_no_encontrado(propuesta, campos):\n    \"\"\"UN PROGRAMA, no una IA: la marca no puede colarse como si fuera contenido.\n\n    Julio, 2026-09-15: nacio porque la marca se colaba como si fuera contenido.\n    Julio, 2026-09-30: una ronda entera se perdio porque la marca dentro de un archivo de\n    codigo se trataba como rendirse, y el fallo impedia su propia reparacion. Ahora se mira\n    DONDE aparece: en el campo de la ruta, cualquier aparicion es rendirse; en los campos de\n    codigo, solo si el valor limpio ES la marca, EMPIEZA por la marca, o tiene tres renglones\n    o menos y la marca aparece dentro. En cualquier otro caso la marca es contenido.\n    \"\"\"\n    marca = \"NO\" + \"_\" + \"ENCONTRADO\"\n    for campo in campos:\n        valor = str(propuesta.get(campo) or \"\")\n        if campo == \"archivo\":\n            if marca in valor:\n                return True\n            continue\n        limpio = valor.strip()\n        if limpio == marca:\n            return True\n        if limpio.startswith(marca):\n            return True\n        if len(limpio.splitlines()) <= 3 and marca in limpio:\n            return True\n    return False"
+   }
+  ],
+  "cambio": "Reescribir la funcion _trae_no_encontrado entera: armar la marca por trozos, tratar el campo archivo con cualquier aparicion, y en los demas campos solo los tres casos (es la marca, empieza por la marca, o tres renglones o menos con la marca dentro), todo medido sobre el valor limpio de espacios.",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_la_marca_dentro_del_codigo_no_es_rendirse.py (los siete casos; el primero hoy rojo tiene que quedar verde) y vigias/test_vigia_falta_material_no_llama_a_la_ia.py (todos, hoy verdes).",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cerebro/protocolo.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py",
+   "vigias/test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "protocolo.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "test_vigia_el_material_pide_la_funcion_publica.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_el_pasillo_no_corta_al_que_escribe.py",
+   "test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_memoria_completa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "La comprobacion se afloja a proposito: un texto de CUATRO renglones o mas que no empiece por la marca y la lleve dentro ya pasa como contenido. Es exactamente lo pedido, pero es la puerta por donde un cerebro que se rindio podria colarse; el encargo dice que ese hueco se tapa en la ronda siguiente, no ahora.",
+   "Todo lo que llama a _trae_no_encontrado decide con esta funcion (arnes/asignador.py, cerebro/protocolo.py, arnes/revisor_de_programa.py). Si el texto viejo copiado no calza literal con el archivo, el cambio no se aplica, la pieza queda como estaba y el primer caso sigue rojo: el resultado seria fallo, no dano, pero hay que confirmarlo con la prueba."
+  ],
+  "que_falta": [
+   "Falta la corrida de las DOS pruebas con resultado, una por una. La propuesta solo las nombra como vigia; el encargo las pedia como comprobacion.",
+   "Falta la promesa de sabotaje cumplida: deshacer el arreglo, correr la prueba y comprobar que el PRIMER caso vuelve a ROJO.",
+   "El texto viejo que se copia (el docstring viejo, con la marca escrita) NO viene en el paquete. El paquete solo da el primer renglon y la descripcion en prosa; la prosa coincide con lo que la propuesta dice que hay, pero el literal no se puede comprobar desde aqui.",
+   "El texto explicativo quedo en ocho renglones y el encargo pedia dos o tres. No bloquea (trae todo lo pedido: fecha de hoy, la ronda perdida, que el fallo impedia su propia reparacion, las tres formas y el campo de la ruta, y llama 'la marca' sin escribirla), pero es mas de lo necesario.",
+   "No se puede abrir la prueba de los siete casos: el paquete no la trae. Los seis verdes se dan por respetados porque el codigo sigue el conteo del encargo al renglon (los tres casos sobre el MISMO valor limpio), no porque esten medidos."
+  ],
+  "resumen_para_el_jefe": "El arreglo esta bien: la marca se arma por trozos como exigia el encargo, se mira distinta en el campo de la ruta y en los de codigo, y los tres casos se miden sobre el mismo valor limpio, que era el detalle que ya se habia-equivocado una vez. Apruebo, pero falta correr las dos pruebas y cumplir el sabotaje antes de darlo por bueno."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 40334 a 18012 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (49660 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "La funcion _trae_no_encontrado marca rendicion en cuanto la marca aparece como subtexto en cualquier campo, incluso dentro del codigo legitimo del campo texto_nuevo, y hay que distinguir por campo y por forma.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_trae_no_encontrado",
+  "texto_viejo": "def _trae_no_encontrado(propuesta, campos):\n    \"\"\"UN PROGRAMA, no una IA: la marca NO_ENCONTRADO no puede colarse como si fuera contenido.\n\n    Julio, 2026-09-15: la marca se detecta como SUBTEXTO en cualquier campo, en las DOS ramas\n    (crear y reparar). Si cualquiera de los campos que _propuesta_cumple ya revisa trae la\n    marca, la propuesta NO cumple.\n    \"\"\"\n    for campo in campos:\n        if \"NO_ENCONTRADO\" in str(propuesta.get(campo) or \"\"):\n            return True\n    return False",
+  "texto_nuevo": "def _trae_no_encontrado(propuesta, campos):\n    \"\"\"UN PROGRAMA, no una IA: la marca no puede colarse como si fuera contenido.\n\n    Julio, 2026-09-30: una ronda entera se perdio porque la marca dentro de un archivo de\n    codigo (campo texto_nuevo) se trataba como rendicion, y el fallo impedia su propia\n    reparacion. Ahora se mira DONDE aparece: en el campo \"archivo\" cualquier aparicion es\n    rendicion; en los campos de codigo solo si el valor limpio ES la marca, EMPIEZA por la\n    marca, o tiene TRES renglones o menos y la marca aparece dentro. En cualquier otro caso\n    la marca es contenido legitimo.\n    \"\"\"\n    marca = \"NO\" + \"_\" + \"ENCONTRADO\"\n    for campo in campos:\n        valor = str(propuesta.get(campo) or \"\")\n        if campo == \"archivo\":\n            if marca in valor:\n                return True\n            continue\n        limpio = valor.strip()\n        if limpio == marca:\n            return True\n        if limpio.startswith(marca):\n            return True\n        if marca in valor and len(valor.splitlines()) <= 3:\n            return True\n    return False",
+  "cambio": "En _trae_no_encontrado: definir la variable local marca armada por trozos, tratar el campo \"archivo\" con la regla estricta (cualquier aparicion) y los demas campos con las tres reglas (valor limpio igual a la marca, valor limpio que empieza por la marca, o tres renglones o menos con la marca dentro); actualizar el texto explicativo sin escribir la marca entera.",
+  "codigo": "def _trae_no_encontrado(propuesta, campos):\n    \"\"\"UN PROGRAMA, no una IA: la marca no puede colarse como si fuera contenido.\n\n    Julio, 2026-09-30: una ronda entera se perdio porque la marca dentro de un archivo de\n    codigo (campo texto_nuevo) se trataba como rendicion, y el fallo impedia su propia\n    reparacion. Ahora se mira DONDE aparece: en el campo \"archivo\" cualquier aparicion es\n    rendicion; en los campos de codigo solo si el valor limpio ES la marca, EMPIEZA por la\n    marca, o tiene TRES renglones o menos y la marca aparece dentro. En cualquier otro caso\n    la marca es contenido legitimo.\n    \"\"\"\n    marca = \"NO\" + \"_\" + \"ENCONTRADO\"\n    for campo in campos:\n        valor = str(propuesta.get(campo) or \"\")\n        if campo == \"archivo\":\n            if marca in valor:\n                return True\n            continue\n        limpio = valor.strip()\n        if limpio == marca:\n            return True\n        if limpio.startswith(marca):\n            return True\n        if marca in valor and len(valor.splitlines()) <= 3:\n            return True\n    return False",
+  "vigia": "vigias/test_vigia_la_marca_dentro_del_codigo_no_es_rendirse.py (los siete casos: el primero hoy rojo debe quedar verde y los otros seis seguir verdes) y vigias/test_vigia_falta_material_no_llama_a_la_ia.py (todos sus casos, hoy verdes).",
+  "puede_danar": [
+   "cuerpo/obrero.py::_propuesta_cumple",
+   "cuerpo/obrero.py::trabajar",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "todas las rondas de todos los proyectos"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {},
+ "avisos": [
+  "el pasillo recorto el encargo de 37431 a 17502 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (44862 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (44920 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (44978 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

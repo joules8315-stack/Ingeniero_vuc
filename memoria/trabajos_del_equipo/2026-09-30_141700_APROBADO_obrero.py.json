@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion _trae_no_encontrado solo mira los cuatro campos sueltos (archivo, codigo, texto_viejo, texto_nuevo) y no revisa dentro de la lista 'cambios', por lo que un trabajo rendido entregado como lista pasa sin ser detectado.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_trae_no_encontrado",
+  "texto_viejo": "    marca = \"NO\" + \"_\" + \"ENCONTRADO\"\n    for campo in campos:\n        valor = str(propuesta.get(campo) or \"\")\n        if campo == \"archivo\":\n            if marca in valor:\n                return True\n            continue\n        limpio = valor.strip()\n        if limpio == marca:\n            return True\n        if limpio.startswith(marca):\n            return True\n        if len(limpio.splitlines()) <= 3 and marca in limpio:\n            return True\n    return False",
+  "texto_nuevo": "    marca = \"NO\" + \"_\" + \"ENCONTRADO\"\n    for campo in campos:\n        valor = str(propuesta.get(campo) or \"\")\n        if campo == \"archivo\":\n            if marca in valor:\n                return True\n            continue\n        limpio = valor.strip()\n        if limpio == marca:\n            return True\n        if limpio.startswith(marca):\n            return True\n        if len(limpio.splitlines()) <= 3 and marca in limpio:\n            return True\n    cambios = propuesta.get(\"cambios\")\n    if isinstance(cambios, list):\n        for elemento in cambios:\n            if not isinstance(elemento, dict):\n                continue\n            for campo in (\"texto_viejo\", \"texto_nuevo\"):\n                limpio = str(elemento.get(campo) or \"\").strip()\n                if limpio == marca:\n                    return True\n                if limpio.startswith(marca):\n                    return True\n                if len(limpio.splitlines()) <= 3 and marca in limpio:\n                    return True\n    return False",
+  "cambio": "Anadir al final de _trae_no_encontrado, antes del return False, un recorrido de la lista 'cambios' que aplique a texto_viejo y texto_nuevo de cada elemento diccionario la misma regla que ya se aplica a los campos de codigo.",
+  "codigo": "    cambios = propuesta.get(\"cambios\")\n    if isinstance(cambios, list):\n        for elemento in cambios:\n            if not isinstance(elemento, dict):\n                continue\n            for campo in (\"texto_viejo\", \"texto_nuevo\"):\n                limpio = str(elemento.get(campo) or \"\").strip()\n                if limpio == marca:\n                    return True\n                if limpio.startswith(marca):\n                    return True\n                if len(limpio.splitlines()) <= 3 and marca in limpio:\n                    return True",
+  "vigia": "vigias/test_vigia_la_lista_de_cambios_tambien_se_revisa.py",
+  "puede_danar": [
+   "_propuesta_cumple",
+   "trabajar",
+   "auditar"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Aprieta algo mas de lo pedido en la lista: ahora un trabajo entregado por 'cambios' con un texto_viejo/texto_nuevo corto que mencione la marca se rechaza. Es exactamente la misma regla que ya se aplica a los campos sueltos y la que el encargo pide, pero el cambio de comportamiento es real para las rondas que entregaban su trabajo por la lista.",
+   "Un elemento de la lista que no sea diccionario se salta con 'continue'. Es lo correcto para no reventar con basura, pero si la rendicion llegara como texto plano dentro de la lista pasaria; hoy el material solo describe elementos con texto viejo y texto nuevo, asi que no es fallo.",
+   "La clave de ruta de cada elemento de la lista no se mira, solo texto_viejo y texto_nuevo. El encargo pedia justo eso, pero queda otro sitio por donde una rendicion podria colarse si un elemento trae su propia ruta como NO_ENCONTRADO."
+  ],
+  "que_falta": [
+   "El docstring de la funcion sigue diciendo que la marca se mira en 'los campos de codigo' y no menciona la lista de cambios. No rompe nada y tocarlo seria cambiar mas de lo necesario, pero el texto queda mintiendo sobre lo que la funcion hace.",
+   "puede_danar nombra funciones que no aparecen dentro del codigo del cambio. El material avisó de que el revisor por programa rechaza cuando se nombra una funcion fuera del cambio (pasó ya en esta reparacion). Si el programa lo lee asi, esto se rechaza por maquina aunque este bien: conviene quitar esos nombres del metadato y dejar solo la frase."
+  ],
+  "resumen_para_el_jefe": "El arreglo es el correcto y minimo: recorre la lista de cambios con la misma regla de la marca que ya usaba en los campos sueltos, sin tocar una linea de mas; el unico riesgo real es que el revisor por programa lo rechace por los nombres de funciones puestos en puede_danar, que conviene quitar."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 37292 a 18480 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

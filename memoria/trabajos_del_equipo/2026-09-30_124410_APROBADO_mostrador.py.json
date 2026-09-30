@@ -1,0 +1,35 @@
+{
+ "obrero": "deepseek",
+ "auditor": "juez de la prueba (programa)",
+ "propuesta": {
+  "diagnostico": "La funcion lo_que_pide parte la peticion por la barra inclinada a secas, y una ruta de archivo lleva barras dentro, asi que de una peticion de archivo dentro de carpeta sale solo el nombre de la carpeta.",
+  "archivo": "arnes/mostrador.py",
+  "funcion": "lo_que_pide",
+  "texto_viejo": "        # El PRIMER pedazo, antes de la barra inclinada, es lo que se pide.\n        primero = resto.split(\"/\", 1)[0]",
+  "texto_nuevo": "        # El PRIMER pedazo, antes de la barra RODEADA DE ESPACIOS, es lo que se pide.\n        primero = resto.split(\" / \", 1)[0]",
+  "cambio": "En lo_que_pide, donde hoy se parte por la barra inclinada a secas, partir por la barra rodeada de espacios (espacio, barra, espacio), tomando el PRIMER pedazo igual que hoy.",
+  "codigo": "        # El PRIMER pedazo, antes de la barra RODEADA DE ESPACIOS, es lo que se pide.\n        primero = resto.split(\" / \", 1)[0]",
+  "vigia": "vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py: correr los ocho casos y comprobar que el caso 2 pasa a verde (se esperaba cerebro/piezas.py y salia cerebro) y que los otros siete siguen verdes; deshacer el arreglo y comprobar que el caso 2 vuelve a rojo.",
+  "puede_danar": [
+   "arnes/mostrador.py:lo_que_pide",
+   "los otros siete casos verdes de vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true,
+  "_juez_de_la_prueba": "antes de tocar nada: la prueba no paso (codigo 1). Con el cambio puesto: la prueba paso. Al deshacer el cambio: la prueba no paso (codigo 1)."
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "el juez de la prueba ya lo demostro: la prueba estaba roja antes, quedo verde despues y volvio a roja al deshacer el cambio; por eso esta ronda no paga revision de IA"
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 31715 a 18242 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

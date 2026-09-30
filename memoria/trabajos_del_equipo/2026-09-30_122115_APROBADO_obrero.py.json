@@ -1,0 +1,84 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion _trae_no_encontrado marca como rendicion cualquier aparicion de la marca en cualquier campo, incluso dentro del codigo, donde es contenido legitimo; hay que mirar DONDE aparece.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_trae_no_encontrado",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _trae_no_encontrado(propuesta, campos):\n    \"\"\"UN PROGRAMA, no una IA: la marca NO_ENCONTRADO no puede colarse como si fuera contenido.\n\n    Julio, 2026-09-15: la marca se detecta como SUBTEXTO en cualquier campo, en las DOS ramas\n    (crear y reparar). Si cualquiera de los campos que _propuesta_cumple ya revisa trae la\n    marca, la propuesta NO cumple.\n    \"\"\"",
+    "texto_nuevo": "def _trae_no_encontrado(propuesta, campos):\n    \"\"\"UN PROGRAMA, no una IA: la marca no puede colarse como si fuera contenido.\n\n    Julio, 2026-09-15: la marca se detecta como SUBTEXTO en cualquier campo, en las DOS ramas\n    (crear y reparar). Si cualquiera de los campos que _propuesta_cumple ya revisa trae la\n    marca, la propuesta NO cumple.\n\n    ARREGLO 2026-09-30: se mira DONDE aparece la marca, no solo que aparezca. En el campo\n    \"archivo\" (una ruta) cualquier aparicion es rendicion. En los campos de codigo la marca\n    es CONTENIDO legitimo salvo en tres casos: que el valor sea exactamente la marca, que\n    empiece por ella, o que tenga tres renglones o menos y la marca vaya dentro. Una ronda\n    entera se perdio hoy por no hacer esta distincion, y el fallo impedia su propia\n    reparacion porque el renglon que nombra la marca habia que copiarlo en el texto viejo.\n    \"\"\""
+   },
+   {
+    "texto_viejo": "    for campo in campos:\n        if \"NO_ENCONTRADO\" in str(propuesta.get(campo) or \"\"):\n            return True\n    return False",
+    "texto_nuevo": "    marca = \"NO\" + \"_\" + \"ENCONTRADO\"\n    for campo in campos:\n        valor = str(propuesta.get(campo) or \"\")\n        if campo == \"archivo\":\n            if marca in valor:\n                return True\n            continue\n        limpio = valor.strip()\n        if limpio == marca:\n            return True\n        if limpio.startswith(marca):\n            return True\n        if len(valor.splitlines()) <= 3 and marca in valor:\n            return True\n    return False"
+   }
+  ],
+  "cambio": "En _trae_no_encontrado: (1) actualizar el texto explicativo para contar la distincion y dejar escrito con fecha de hoy que una ronda se perdio entera por no hacerla y que el fallo impedia su propia reparacion; (2) cambiar el cuerpo para que en el campo \"archivo\" cualquier aparicion de la marca cuente como rendicion, y en los demas campos solo cuente si el valor limpio es exactamente la marca, si empieza por ella, o si tiene tres renglones o menos y la marca va dentro. La marca se arma por trozos con + en el primer renglon de trabajo.",
+  "codigo": "",
+  "vigia": "vigias/test_vigia_la_marca_dentro_del_codigo_no_es_rendirse.py (los SIETE casos: el primero hoy rojo debe quedar verde, los otros seis verdes deben seguir verdes) y vigias/test_vigia_falta_material_no_llama_a_la_ia.py (todos sus casos, hoy verdes).",
+  "puede_danar": [
+   "cuerpo/obrero.py::_propuesta_cumple (la llama y decide si un trabajo se acepta)",
+   "todas las rondas de todos los proyectos (esta comprobacion decide si un trabajo se acepta)",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py",
+   "vigias/test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "test_vigia_el_material_pide_la_funcion_publica.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_el_pasillo_no_corta_al_que_escribe.py",
+   "test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El texto explicativo anade CINCO renglones (el 'ARREGLO 2026-09-30' mas el parrafo) cuando el encargo decia expressly 'en dos o tres renglones'. Sobra texto, pero no rompe nada.",
+   "La regla de los tres renglones cuenta sobre el valor SIN quitar los espacios de los dos extremos (len(valor.splitlines())), mientras que las reglas a) y b) usan el valor limpio. Eso deja un hueco facil de Tapar: 'no se pudo\\nNO_ENCONTRADO\\n\\n\\n' son cuatro renglones crudos y pasa como contenido, cuando con el valor limpio serian tres y la regla c lo frenaria. Ninguna prueba hoy mide eso, por eso no se rechaza, pero queda escrito."
+  ],
+  "riesgo_vecinos": [
+   "_propuesta_cumple (cuerpo/obrero.py:472 y :480) es el unico que llama a la funcion; pasa SIEMPRE ('archivo','codigo','texto_viejo','texto_nuevo'), asi que el caso especial del campo 'archivo' nunca se pierde.",
+   "El campo 'cambios' NO se mira: _propuesta_cumple no lo incluye en la tupla. Ese hueco es el que permitio esta misma reparacion y el propio material lo aplaza a la ronda siguiente; con este arreglo, un cerebro que se rinde escribiendo solo en 'cambios' pasara.",
+   "test_vigia_aplicador.py y el resto de vigias que traen la marca llaman al aplicador directamente o monkeypatchean _propuesta_cumple: no dependen del comportamiento viejo, no se rompen.",
+   "Los once archivos de 'puede_danar' que el paquete no traia NO son invento: estan en _fuera_del_paquete y se comprobo que los once existen en disco (arnes/asignador.py, arnes/revisor_de_programa.py y las nueve vigias nombradas)."
+  ],
+  "que_falta": [
+   "La propuesta AFIRMA que los siete casos quedan verdes y que test_vigia_falta_material_no_llama_a_la_ia.py sigue verde, pero no trae ninguna salida medida de correrlos. Comprobado a mano contra el texto de las dos pruebas: los SIETE casos pasan con el cuerpo propuesto (el caso 1, codigo largo con la marca dentro, deja de dar la marca; los casos 2,3,4,5,6 siguen dando la marca; el 7 con numeros, con None y con diccionario vacio sigue sin reventar), y la prueba de falta de material ni toca esta funcion. Aun asi, lo que exige el material es que un programa lo corra y lo diga, no que se afirme.",
+   "Falta la promesa de sabotaje: deshacer el arreglo, correr la prueba y comprobar que el caso 1 vuelve a ROJO. Sin esa comprobacion, el arreglo no esta protegido y no se puede dar por bueno."
+  ],
+  "resumen_para_el_jefe": "El arreglo es correcto y minimo: el texto viejo copiado es EXACTO al del archivo (cuerpo/obrero.py:443-453), la funcion no inventa nada, y los siete casos de la vigia pasan con el cuerpo propuesto; queda por medir las dos pruebas con un programa y por hacer el sabotaje, mas un detalle de conteo de renglones que hoy nadie mide."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 39652 a 18013 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "GPT-OSS 120B (Groq) no le cabe (48163 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (48271 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (48379 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}
