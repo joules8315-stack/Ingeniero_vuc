@@ -100,6 +100,10 @@ def _nombres_de_funcion_del_texto(texto_encargo, conocidas=None):
     if conocidas:
         try:
             for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
+                # una palabra con comillas es una etiqueta o texto pegado como
+                # material, no una funcion que se vaya a tocar: no cuenta.
+                if '"' in palabra or "'" in palabra or "`" in palabra:
+                    continue
                 limpia = palabra.strip("()[]{}<>\"'`.:")
                 if limpia in conocidas and limpia not in funciones:
                     funciones.append(limpia)
