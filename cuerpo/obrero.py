@@ -157,11 +157,11 @@ def material_con_lo_que_falta(material, faltantes, archivo, raiz):
         traido = atender(peticiones, raiz)
         if not traido or not traido.strip():
             return material
-        no_esta = "NO" + "_" + "ESTA"
+        no_esta = "NO" + "_" + "ENCONTRADO"
         bloques = []
         actual = None
         for ln in traido.splitlines():
-            if ln.startswith("### "):
+            if ln.startswith("LO QUE PEDISTE: "):
                 if actual is not None:
                     bloques.append(actual)
                 actual = [ln]
