@@ -464,6 +464,19 @@ def _trae_no_encontrado(propuesta, campos):
             return True
         if len(limpio.splitlines()) <= 3 and marca in limpio:
             return True
+    cambios = propuesta.get("cambios")
+    if isinstance(cambios, list):
+        for elemento in cambios:
+            if not isinstance(elemento, dict):
+                continue
+            for campo in ("texto_viejo", "texto_nuevo"):
+                limpio = str(elemento.get(campo) or "").strip()
+                if limpio == marca:
+                    return True
+                if limpio.startswith(marca):
+                    return True
+                if len(limpio.splitlines()) <= 3 and marca in limpio:
+                    return True
     return False
 
 
