@@ -441,14 +441,28 @@ def _maneras_de_leerlo(crudo):
 
 
 def _trae_no_encontrado(propuesta, campos):
-    """UN PROGRAMA, no una IA: la marca NO_ENCONTRADO no puede colarse como si fuera contenido.
+    """UN PROGRAMA, no una IA: la marca no puede colarse como si fuera contenido.
 
-    Julio, 2026-09-15: la marca se detecta como SUBTEXTO en cualquier campo, en las DOS ramas
-    (crear y reparar). Si cualquiera de los campos que _propuesta_cumple ya revisa trae la
-    marca, la propuesta NO cumple.
+    Julio, 2026-09-15: nacio porque la marca se colaba como si fuera contenido.
+    Julio, 2026-09-30: una ronda entera se perdio porque la marca dentro de un archivo de
+    codigo se trataba como rendirse, y el fallo impedia su propia reparacion. Ahora se mira
+    DONDE aparece: en el campo de la ruta, cualquier aparicion es rendirse; en los campos de
+    codigo, solo si el valor limpio ES la marca, EMPIEZA por la marca, o tiene tres renglones
+    o menos y la marca aparece dentro. En cualquier otro caso la marca es contenido.
     """
+    marca = "NO" + "_" + "ENCONTRADO"
     for campo in campos:
-        if "NO_ENCONTRADO" in str(propuesta.get(campo) or ""):
+        valor = str(propuesta.get(campo) or "")
+        if campo == "archivo":
+            if marca in valor:
+                return True
+            continue
+        limpio = valor.strip()
+        if limpio == marca:
+            return True
+        if limpio.startswith(marca):
+            return True
+        if len(limpio.splitlines()) <= 3 and marca in limpio:
             return True
     return False
 
