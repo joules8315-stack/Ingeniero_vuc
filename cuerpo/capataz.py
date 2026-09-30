@@ -300,6 +300,41 @@ def tipo_de_fallo(salida):
     return "otro"
 
 
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+from arnes.copia_de_la_orden import copia_para, soltar_copia
+
+
+def correr_una_orden(proyecto, orden, tope_segundos=900, aviso=print, con_copia=True):
+    if not con_copia:
+        return lanzar_al_equipo(proyecto, orden, tope_segundos)
+    carpeta = None
+    try:
+        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if isinstance(orden, dict):
+            orden_id = str(orden.get('id'))
+        else:
+            orden_id = str(orden)
+        copia = copia_para(orden_id, raiz)
+        if copia.get('ok'):
+            carpeta = copia.get('carpeta')
+            aviso('la orden %s corre en su propia carpeta' % orden_id)
+        else:
+            aviso('sin carpeta propia para la orden %s: %s' % (orden_id, copia.get('motivo')))
+        try:
+            if carpeta:
+                return lanzar_al_equipo(proyecto, orden, tope_segundos, carpeta)
+            return lanzar_al_equipo(proyecto, orden, tope_segundos)
+        finally:
+            try:
+                soltar_copia(copia)
+            except Exception as e:
+                aviso('no se pudo soltar la copia: ' + str(e))
+    except Exception as e:
+        return {'ok': False, 'motivo': str(e), 'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}
+
+
 def bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):
     """Corre las ordenes sola hasta que se para por una de las tres causas:
     tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos
@@ -326,10 +361,7 @@ def bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):
             )
 
         def correr_una(orden):
-            try:
-                return lanzar_al_equipo(proyecto, orden, tope_segundos)
-            except Exception as e:
-                return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}
+            return correr_una_orden(proyecto, orden, tope_segundos, aviso, False)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=len(tanda)) as ejecutor:
             resultados = list(ejecutor.map(correr_una, tanda))
