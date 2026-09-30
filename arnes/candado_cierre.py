@@ -288,6 +288,17 @@ def main():
             faltas.append(motivo)
     except Exception:
         pass
+    try:
+        import arnes.puerta_del_plan as _pdp
+        _puede, _motivo = _pdp.se_puede_cerrar(AQUI)
+        if not _puede:
+            faltas.append(
+                "Falta el resumen del plan: %s. Apuntalo con: "
+                'cd C:\\Ingeniero_VUC; python ingeniero.py resumen-del-plan <numero> "<el resumen>"'
+                % _motivo
+            )
+    except Exception:
+        pass
     if not faltas:
         _apuntar(0)
         return 0
