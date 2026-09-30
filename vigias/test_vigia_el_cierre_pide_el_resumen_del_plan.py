@@ -159,7 +159,7 @@ def test_caso_5_con_plan_aprobado_sin_resumen_no_se_cierra_y_con_resumen_si(tmp_
     )
 
     # anotar_resumen recibe el numero del plan y el texto del resumen.
-    puerta_del_plan.anotar_resumen(carpeta, numero, "Resumen del plan: se hizo lo pedido.")
+    puerta_del_plan.anotar_resumen(numero, "Resumen del plan: se hizo lo pedido.", carpeta)
 
     se_puede_2, motivo_2 = puerta_del_plan.puede_cerrar(carpeta)
     assert se_puede_2 is True, (
