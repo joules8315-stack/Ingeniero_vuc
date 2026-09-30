@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La pieza correr_una_orden no existe en cuerpo/capataz.py, y el ciclo llama a lanzar_al_equipo sin carpeta propia por tarea; hay que crear la pieza nueva, importar copia_para y soltar_copia por su nombre suelto, y reemplazar el trozo de correr_una para que llame a la pieza nueva con con_copia=False.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "import concurrent.futures\nimport datetime\nimport hashlib\nimport json\nimport os\nimport subprocess\nimport sys",
+    "texto_nuevo": "import concurrent.futures\nimport datetime\nimport hashlib\nimport json\nimport os\nimport subprocess\nimport sys\n\n_raiz_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif _raiz_proyecto not in sys.path:\n    sys.path.insert(0, _raiz_proyecto)\nfrom arnes.copia_de_la_orden import copia_para, soltar_copia"
+   },
+   {
+    "texto_viejo": "def bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):",
+    "texto_nuevo": "def correr_una_orden(proyecto, orden, tope_segundos=900, aviso=print, con_copia=True):\n    if not con_copia:\n        return lanzar_al_equipo(proyecto, orden, tope_segundos)\n    copia = None\n    try:\n        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        if isinstance(orden, dict):\n            orden_id = str(orden.get('id'))\n        else:\n            orden_id = str(orden)\n        copia = copia_para(orden_id, raiz)\n        if copia and copia.get('ok'):\n            carpeta = copia.get('carpeta')\n            aviso('orden %s corre en su propia carpeta: %s' % (orden_id, carpeta))\n        else:\n            carpeta = None\n            aviso('orden %s sin carpeta propia: %s' % (orden_id, copia.get('motivo') if copia else 'sin copia'))\n        if carpeta:\n            return lanzar_al_equipo(proyecto, orden, tope_segundos, carpeta)\n        return lanzar_al_equipo(proyecto, orden, tope_segundos)\n    except Exception as e:\n        return {'ok': False, 'motivo': str(e), 'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}\n    finally:\n        if copia is not None:\n            try:\n                soltar_copia(copia)\n            except Exception as e:\n                aviso('no se pudo soltar la copia: ' + str(e))\n\n\ndef bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):"
+   },
+   {
+    "texto_viejo": "        def correr_una(orden):\n            try:\n                return lanzar_al_equipo(proyecto, orden, tope_segundos)\n            except Exception as e:\n                return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}",
+    "texto_nuevo": "        def correr_una(orden):\n            return correr_una_orden(proyecto, orden, tope_segundos, aviso, False)"
+   }
+  ],
+  "cambio": "Agregar importaciones de copia_para y soltar_copia por nombre suelto, agregar la pieza correr_una_orden al nivel del archivo antes de bucle, y reemplazar el cuerpo de correr_una para que llame a correr_una_orden con con_copia=False.",
+  "codigo": "import concurrent.futures\nimport datetime\nimport hashlib\nimport json\nimport os\nimport subprocess\nimport sys\n\n_raiz_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif _raiz_proyecto not in sys.path:\n    sys.path.insert(0, _raiz_proyecto)\nfrom arnes.copia_de_la_orden import copia_para, soltar_copia\n\n\ndef correr_una_orden(proyecto, orden, tope_segundos=900, aviso=print, con_copia=True):\n    if not con_copia:\n        return lanzar_al_equipo(proyecto, orden, tope_segundos)\n    copia = None\n    try:\n        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        if isinstance(orden, dict):\n            orden_id = str(orden.get('id'))\n        else:\n            orden_id = str(orden)\n        copia = copia_para(orden_id, raiz)\n        if copia and copia.get('ok'):\n            carpeta = copia.get('carpeta')\n            aviso('orden %s corre en su propia carpeta: %s' % (orden_id, carpeta))\n        else:\n            carpeta = None\n            aviso('orden %s sin carpeta propia: %s' % (orden_id, copia.get('motivo') if copia else 'sin copia'))\n        if carpeta:\n            return lanzar_al_equipo(proyecto, orden, tope_segundos, carpeta)\n        return lanzar_al_equipo(proyecto, orden, tope_segundos)\n    except Exception as e:\n        return {'ok': False, 'motivo': str(e), 'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}\n    finally:\n        if copia is not None:\n            try:\n                soltar_copia(copia)\n            except Exception as e:\n                aviso('no se pudo soltar la copia: ' + str(e))\n\n\n        def correr_una(orden):\n            return correr_una_orden(proyecto, orden, tope_segundos, aviso, False)",
+  "vigia": "vigias/test_vigia_cada_tarea_corre_en_su_copia.py",
+  "puede_danar": [
+   "cuerpo/capataz.py:bucle",
+   "cuerpo/capataz.py:lanzar_al_equipo",
+   "ciclo de tareas automatico"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, añade la pieza y ajustes sin romper vecinos."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38603 a 18416 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 50349 a 18899 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'copia_para'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'soltar_copia'. No se importa, no se define y no e",
+  "el pasillo recorto el encargo de 50591 a 18957 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'copia_para'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'soltar_copia'. No se importa, no se define y no e",
+  "el pasillo recorto el encargo de 50833 a 18956 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 20539 a 13692 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}

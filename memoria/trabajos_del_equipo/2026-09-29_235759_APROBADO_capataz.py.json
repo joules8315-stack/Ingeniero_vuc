@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La pieza correr_una_orden no existe en cuerpo/capataz.py y el ciclo sigue llamando a lanzar_al_equipo sin carpeta propia, por lo que dos tareas se pisan.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):",
+    "texto_nuevo": "import os as _os\nimport sys as _sys\n_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))\nfrom arnes.copia_de_la_orden import copia_para, soltar_copia\n\n\ndef correr_una_orden(proyecto, orden, tope_segundos=900, aviso=print, con_copia=True):\n    if not con_copia:\n        return lanzar_al_equipo(proyecto, orden, tope_segundos)\n    carpeta = None\n    try:\n        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        if isinstance(orden, dict):\n            orden_id = str(orden.get('id'))\n        else:\n            orden_id = str(orden)\n        copia = copia_para(orden_id, raiz)\n        if copia.get('ok'):\n            carpeta = copia.get('carpeta')\n            aviso('la orden %s corre en su propia carpeta' % orden_id)\n        else:\n            aviso('sin carpeta propia para la orden %s: %s' % (orden_id, copia.get('motivo')))\n        try:\n            if carpeta:\n                return lanzar_al_equipo(proyecto, orden, tope_segundos, carpeta)\n            return lanzar_al_equipo(proyecto, orden, tope_segundos)\n        finally:\n            try:\n                soltar_copia(copia)\n            except Exception as e:\n                aviso('no se pudo soltar la copia: ' + str(e))\n    except Exception as e:\n        return {'ok': False, 'motivo': str(e), 'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}\n\n\ndef bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):"
+   },
+   {
+    "texto_viejo": "        def correr_una(orden):\n            try:\n                return lanzar_al_equipo(proyecto, orden, tope_segundos)\n            except Exception as e:\n                return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}",
+    "texto_nuevo": "        def correr_una(orden):\n            return correr_una_orden(proyecto, orden, tope_segundos, aviso, False)"
+   }
+  ],
+  "cambio": "Agregar importacion de copia_para y soltar_copia al nivel del archivo, agregar la pieza correr_una_orden con quinto dato con_copia=True, y reemplazar el cuerpo de correr_una dentro del bucle para que llame a correr_una_orden con con_copia=False.",
+  "codigo": "import os as _os\nimport sys as _sys\n_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))\nfrom arnes.copia_de_la_orden import copia_para, soltar_copia\n\n\ndef correr_una_orden(proyecto, orden, tope_segundos=900, aviso=print, con_copia=True):\n    if not con_copia:\n        return lanzar_al_equipo(proyecto, orden, tope_segundos)\n    carpeta = None\n    try:\n        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        if isinstance(orden, dict):\n            orden_id = str(orden.get('id'))\n        else:\n            orden_id = str(orden)\n        copia = copia_para(orden_id, raiz)\n        if copia.get('ok'):\n            carpeta = copia.get('carpeta')\n            aviso('la orden %s corre en su propia carpeta' % orden_id)\n        else:\n            aviso('sin carpeta propia para la orden %s: %s' % (orden_id, copia.get('motivo')))\n        try:\n            if carpeta:\n                return lanzar_al_equipo(proyecto, orden, tope_segundos, carpeta)\n            return lanzar_al_equipo(proyecto, orden, tope_segundos)\n        finally:\n            try:\n                soltar_copia(copia)\n            except Exception as e:\n                aviso('no se pudo soltar la copia: ' + str(e))\n    except Exception as e:\n        return {'ok': False, 'motivo': str(e), 'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}\n\n\ndef bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):",
+  "vigia": "vigias/test_vigia_cada_tarea_corre_en_su_copia.py (4 casos) y vigias/test_vigia_el_pit_encadena_solo.py (3 verdes) y vigias/test_vigia_el_loop_del_pit.py (5 verdes + 1 rojo conocido)",
+  "puede_danar": [
+   "cuerpo/capataz.py: bucle",
+   "ciclo que corre las tareas",
+   "arnes/copia_de_la_orden.py (solo se usa, no se toca)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Al replacing el trozo de cinco renglones por una llamada a correr_una_orden, el resguardo try/except que hoy envuelve a lanzar_al_equipo desaparece del camino con_copia=False: si lanzar_al_equipo revienta ahi, hoy el ciclo recibia el diccionario {'guardado': False, ...} y ahora recibiria una excepcion. El encargo ordenaba exactamente ese reemplazo ('simplemente llama a la pieza nueva'), asi que no es desobediencia, pero conviene que la ronda siguiente que enciende las copias no lo tome por Sorpresa.",
+   "sys.path.insert se ejecuta en cada importacion de cuerpo/capataz y anade la raiz otra vez: cosmético, no rompe nada.",
+   "Las importaciones quedan a media altura del archivo (justo antes de bucle), no en la cabecera de siete renglones. Es legal en Python y el programa dijo que el archivo sigue cargando, pero deja dos nombres mas vivos en el modulo de los que dice la cabecera."
+  ],
+  "que_falta": [
+   "El encargo pide expresamente que quien revise diga que corrio las dos pruebas vecinas y con que resultado (3 verdes en test_vigia_el_pit_encadena_solo.py y 5 verdes + 1 rojo conocido en test_vigia_el_loop_del_pit.py). La propuesta las nombra en el campo vigia pero no reporta haberlas corrido, y el tiempo de 0,33 s es justamente la medida que delata el fallo del tercer intento.",
+   "No queda escrito que la prueba de la copia se pone verde: hoy nace roja por hasattr(cuerpo.capataz, 'correr_una_orden') == False, y eso si queda resuelto; falta el sabotage prometido (quitar la pieza y ver rojo otra vez)."
+  ],
+  "resumen_para_el_jefe": "El cambio es exactamente el que pedia el encargo y esta bien: creacion o numero de orden sin asumir diccionario, carpeta como cuarto dato solo cuando existe, copia soltada siempre y error devuelto con los nombres de hoy; lo unico que queda pendiente es que alguien corra y reporte las dos pruebas vecinas y el sabotage."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 39109 a 18415 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 51362 a 18956 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 2"
+ ]
+}

@@ -1,0 +1,65 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la pieza correr_una_orden y sus importaciones en cuerpo/capataz.py, y el trozo de cinco renglones del ciclo no la llama; ademas la copia debe pedirse solo cuando en_paralelo>1 para no romper el vecino.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "importaciones de arriba y bucle (trozo correr_una)",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "import concurrent.futures\nimport datetime\nimport hashlib\nimport json\nimport os\nimport subprocess\nimport sys",
+    "texto_nuevo": "import concurrent.futures\nimport datetime\nimport hashlib\nimport json\nimport os\nimport subprocess\nimport sys\n\n_raiz_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif _raiz_proyecto not in sys.path:\n    sys.path.insert(0, _raiz_proyecto)\nfrom arnes.copia_de_la_orden import copia_para, soltar_copia"
+   },
+   {
+    "texto_viejo": "def lanzar_al_equipo(proyecto, orden, tope_segundos=900, carpeta=None):\n    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))",
+    "texto_nuevo": "def correr_una_orden(proyecto, orden, tope_segundos=900, aviso=print, con_copia=True):\n    copia = None\n    try:\n        carpeta = None\n        if con_copia:\n            raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n            orden_id = str(orden.get('id'))\n            copia = copia_para(orden_id, raiz)\n            if copia.get('ok'):\n                carpeta = copia.get('carpeta')\n                aviso('orden %s corre en su propia carpeta' % orden_id)\n            else:\n                aviso('sin copia para la orden %s: %s' % (orden_id, copia.get('motivo')))\n        return lanzar_al_equipo(proyecto, orden, tope_segundos, carpeta)\n    except Exception as e:\n        return {'ok': False, 'motivo': str(e), 'guardado': False, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}\n    finally:\n        if copia is not None:\n            try:\n                soltar_copia(copia)\n            except Exception as e:\n                aviso('no se pudo soltar la copia: ' + str(e))\n\n\ndef lanzar_al_equipo(proyecto, orden, tope_segundos=900, carpeta=None):\n    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))"
+   },
+   {
+    "texto_viejo": "        def correr_una(orden):\n            try:\n                return lanzar_al_equipo(proyecto, orden, tope_segundos)\n            except Exception as e:\n                return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}",
+    "texto_nuevo": "        def correr_una(orden):\n            return correr_una_orden(proyecto, orden, tope_segundos, aviso, en_paralelo > 1)"
+   }
+  ],
+  "cambio": "Agregar importaciones para exponer copia_para y soltar_copia al nivel del archivo; agregar la pieza nueva correr_una_orden con quinto dato con_copia=True que pide copia solo si con_copia, avisa, lanza con la carpeta y siempre suelta la copia; y reemplazar el trozo correr_una para llamar a correr_una_orden pasando aviso y en_paralelo>1.",
+  "codigo": "import concurrent.futures\nimport datetime\nimport hashlib\nimport json\nimport os\nimport subprocess\nimport sys\n\n_raiz_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif _raiz_proyecto not in sys.path:\n    sys.path.insert(0, _raiz_proyecto)\nfrom arnes.copia_de_la_orden import copia_para, soltar_copia\n\n\ndef correr_una_orden(proyecto, orden, tope_segundos=900, aviso=print, con_copia=True):\n    copia = None\n    try:\n        carpeta = None\n        if con_copia:\n            raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n            orden_id = str(orden.get('id'))\n            copia = copia_para(orden_id, raiz)\n            if copia.get('ok'):\n                carpeta = copia.get('carpeta')\n                aviso('orden %s corre en su propia carpeta' % orden_id)\n            else:\n                aviso('sin copia para la orden %s: %s' % (orden_id, copia.get('motivo')))\n        return lanzar_al_equipo(proyecto, orden, tope_segundos, carpeta)\n    except Exception as e:\n        return {'ok': False, 'motivo': str(e), 'guardado': False, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}\n    finally:\n        if copia is not None:\n            try:\n                soltar_copia(copia)\n            except Exception as e:\n                aviso('no se pudo soltar la copia: ' + str(e))\n\n\n        def correr_una(orden):\n            return correr_una_orden(proyecto, orden, tope_segundos, aviso, en_paralelo > 1)",
+  "vigia": "vigias/test_vigia_cada_tarea_corre_en_su_copia.py (cuatro casos) y vigias/test_vigia_el_pit_encadena_solo.py (tres casos, debe seguir verde y rapido).",
+  "puede_danar": [
+   "bucle (ciclo que corre las tareas)",
+   "lanzar_al_equipo",
+   "arnes/copia_de_la_orden.py (copia_para, soltar_copia)"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "FALLA LA VIGIA NUEVA ENTERA (4 de 4 casos). El encargo escribe orden_id = str(orden.get('id')), pero las cuatro llamadas de la prueba pasan un ENTERO como segundo dato, no un diccionario: capataz.correr_una_orden(\"proyecto_de_mentira\", 7) en test_vigia_cada_tarea_corre_en_su_copia.py:93, y 8, 9 y 10 en las lineas 119, 151 y 179. Al entrar un int, orden.get('id') revienta con AttributeError, el except lo se traga, devuelve el diccionario de error y NO se llama ni a lanzar_al_equipo ni a soltar_copia. Los cuatro casos quedan rojos: el caso 1 falla en 'El lanzamiento no se llamo exactamente una vez' (0 llamadas en vez de 1), y los casos 2, 3 y 4 fallan en que el doble de soltar nunca se llamo. O sea: la pieza nueva nace roja justo en la prueba que la vigila.",
+   "ROMPE AL VECINO QUE EL ENCARGO PROHIBE ROMPER, Y CON EL MISMO SINTOMA DEL TERCER INTENTO. La pieza llama lanzar_al_equipo(proyecto, orden, tope_segundos, carpeta), o sea 4 datos posicionales, SIEMPRE, incluso cuando con_copia es falso y carpeta es nada. El vecino test_vigia_el_pit_encadena_solo.py:81 define su doble como def lanzar_al_equipo_falso(proyecto, orden, tope_segundos=900), que acepta 3 y no 4. Al llamar con 4 sale TypeError, el except lo convierte en {'guardado': False}, el ciclo marca la orden fallida y no se lanza ninguna: el registro se queda en lista vacia y revienta el assert registro['lanzadas'] == ['o-1','o-2','o-3'] y el assert registro['lanzadas'] == ['solo-una']. Ese es, literalmente, el fallo medido del tercer intento que este encargo existe para arreglar: 'assert [] == [solo-una]', o sea que NO se lanzo ninguna tarea. El arreglo lo reproduce.",
+   "ROMPE UN SEGUNDO VECINO QUE TAMPOCO SE NOMBRA. test_vigia_el_loop_del_pit.py:90 (y los otros cinco monkeypatch de esa prueba) define def falsa(proyecto, orden, tope_segundos), tres datos y sin carpeta. Los seis casos de esa prueba pasan por bucle con en_paralelo=1, o sea con_copia falso, y aun asi reciben la llamada de 4 datos, revientan y las ordenes no se lanzan. Ese archivo entero se pone rojo."
+  ],
+  "riesgo_vecinos": [
+   "test_vigia_el_pit_encadena_solo.py:81, doble de lanzar_al_equipo con 3 datos: se rompe entero (3 casos).",
+   "test_vigia_el_loop_del_pit.py:90, doble de lanzar_al_equipo con 3 datos: se rompen sus 6 casos, y no venia en la lista de puede_danar.",
+   "La logica de con_copia queda muerta: con en_paralelo=1 nunca se pide copia, que es lo pedido, pero la llamada a lanzar_al_equipo cambio igual, asi que el camino de una sola tarea NO queda 'exactamente como hoy' como exige el encargo."
+  ],
+  "que_falta": [
+   "Que la llamada a lanzar_al_equipo se haga con 3 datos cuando no hay carpeta, y con 4 solo cuando la hay. Asi el vecino de 3 datos no se entera y la tarea sola corre igual que hoy.",
+   "Que el id se saude sin suponer que orden es un diccionario, porque la prueba le pasa un numero suelto. Algo del estilo de leer el campo id solo si es diccionario y si no usar el valor tal cual, pasado a texto. Con eso los cuatro casos pasan."
+  ],
+  "resumen_para_el_jefe": "Rechazado: la pieza nueva revienta en los cuatro casos de su propia prueba porque da por hecho que la orden es un diccionario y la prueba le pasa un numero, y ademas llama al lanzador con un dato de mas, lo que vuelve a poner rojo al vecino que el encargo decia no romper, con el mismo sintoma exacto del intento anterior."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 40258 a 13559 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 49739 a 19036 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'copia_para'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'soltar_copia'. No se importa, no se define y no e",
+  "el pasillo recorto el encargo de 49981 a 16876 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'copia_para'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'soltar_copia'. No se importa, no se define y no e",
+  "el pasillo recorto el encargo de 50223 a 17009 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}

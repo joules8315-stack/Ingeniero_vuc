@@ -1,0 +1,62 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la pieza correr_una_orden que pida copia solo cuando van a correr dos o mas tareas, y faltan los nombres copia_para y soltar_copia al nivel del archivo; el trozo de cinco renglones del ciclo llama directo al lanzador sin pasar carpeta.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "importaciones del archivo y bucle (trozo 'def correr_una(orden)')",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "import concurrent.futures\nimport datetime\nimport hashlib\nimport json\nimport os\nimport subprocess\nimport sys",
+    "texto_nuevo": "import concurrent.futures\nimport datetime\nimport hashlib\nimport json\nimport os\nimport subprocess\nimport sys\n\n_raiz_capataz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif _raiz_capataz not in sys.path:\n    sys.path.insert(0, _raiz_capataz)\nfrom arnes.copia_de_la_orden import copia_para, soltar_copia"
+   },
+   {
+    "texto_viejo": "        def correr_una(orden):\n            try:\n                return lanzar_al_equipo(proyecto, orden, tope_segundos)\n            except Exception as e:\n                return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}",
+    "texto_nuevo": "        def correr_una(orden):\n            return correr_una_orden(proyecto, orden, tope_segundos, aviso, en_paralelo > 1)"
+   }
+  ],
+  "cambio": "Agregar dos renglones de importacion (raiz en sys.path + traer copia_para y soltar_copia por su nombre) debajo de las siete importaciones; agregar la pieza nueva correr_una_orden al nivel del archivo; y reemplazar el trozo de cinco renglones del ciclo por una llamada a correr_una_orden pasando aviso y (en_paralelo > 1) como quinto dato.",
+  "codigo": "import concurrent.futures\nimport datetime\nimport hashlib\nimport json\nimport os\nimport subprocess\nimport sys\n\n_raiz_capataz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif _raiz_capataz not in sys.path:\n    sys.path.insert(0, _raiz_capataz)\nfrom arnes.copia_de_la_orden import copia_para, soltar_copia\n\n\ndef correr_una_orden(proyecto, orden, tope_segundos=900, aviso=print, con_copia=True):\n    if not con_copia:\n        try:\n            return lanzar_al_equipo(proyecto, orden, tope_segundos)\n        except Exception as e:\n            return {'ok': False, 'motivo': str(e), 'guardado': False, 'codigo': None,\n                    'salida': 'ERROR DEL CAPATAZ: ' + str(e)}\n    copia = None\n    try:\n        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        if isinstance(orden, dict):\n            orden_id = str(orden.get('id'))\n        else:\n            orden_id = str(orden)\n        copia = copia_para(orden_id, raiz)\n        if copia and copia.get('ok'):\n            carpeta = copia.get('carpeta')\n            aviso('la orden %s corre en su propia carpeta: %s' % (orden_id, carpeta))\n        else:\n            carpeta = None\n            aviso('sin copia para la orden %s: %s' % (orden_id, (copia or {}).get('motivo')))\n        if carpeta:\n            return lanzar_al_equipo(proyecto, orden, tope_segundos, carpeta)\n        return lanzar_al_equipo(proyecto, orden, tope_segundos)\n    except Exception as e:\n        return {'ok': False, 'motivo': str(e), 'guardado': False, 'codigo': None,\n                'salida': 'ERROR DEL CAPATAZ: ' + str(e)}\n    finally:\n        if copia is not None:\n            try:\n                soltar_copia(copia)\n            except Exception as e:\n                aviso('no se pudo soltar la copia: ' + str(e))\n\n\n        def correr_una(orden):\n            return correr_una_orden(proyecto, orden, tope_segundos, aviso, en_paralelo > 1)",
+  "vigia": "vigias/test_vigia_cada_tarea_corre_en_su_copia.py (4 casos) y, sin tocarlas, vigias/test_vigia_el_pit_encadena_solo.py (3 casos) y vigias/test_vigia_el_loop_del_pit.py (6 casos).",
+  "puede_danar": [
+   "cuerpo/capataz.py (bucle que corre las tareas)",
+   "arnes/copia_de_la_orden.py (solo se usa, no se toca)",
+   "vigias/test_vigia_el_pit_encadena_solo.py (vecino que ya se rompio en el tercer intento)"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "FALLA LO PRINCIPAL: la pieza nueva correr_una_orden NO esta en la lista 'cambios'. Los dos pedazos que trae son (1) las siete importaciones y (2) el trozo de cinco renglones; la funcion solo aparece en el campo de texto libre 'codigo', y cuerpo/aplicador.py:41-68 (aplicar_cambios) lee UNICAMENTE texto_viejo/texto_nuevo de cada pedazo de 'cambios' y se completely ignora 'codigo' cuando 'cambios' trae elementos (aplicar_propuesta, aplicador.py:30-37, deriva a aplicar_cambios). Al aplicarse tal cual, cuerpo/capataz.py se queda con la importacion y con la llamada, pero SIN la definicion: la vigia sigue naciendo roja en su primer assert (hasattr(capataz,'correr_una_orden') falso) y, peor, el bucle revienta con NameError porque el reemplazo de los cinco renglones se llevo el try/except y ahora la llamada al nombre inexistente no la cubre nadie. El guardia de sintaxis NO lo salva: el archivo resultante es sintacticamente valido.",
+   "FALLA UN VECINO QUE HOY ESTA VERDE: el cambio rompe vigias/test_vigia_el_loop_del_pit.py::test_misma_pieza_va_en_fila. Es el unico de los seis casos que llama al bucle con en_paralelo=2 (linea 153), o sea el unico donde el quinto dato sale verdadero y la pieza pide copia de verdad. En esa prueba copia_para NO esta dobleado, y su doble del lanzador es 'def falsa(proyecto, orden, tope_segundos)' (linea 141), que acepta tres datos: al pasarle la carpeta como cuarto revienta con TypeError, la pieza lo convierte en {'ok': False, 'guardado': False}, la orden nunca se marca 'hecha', el bucle no termina en 'PARADO: TODO HECHO' y además corriendo['maximo'] se queda en 0 porque el cuerpo de falsa nunca llega a ejecutarse. O sea los dos asserts de ese caso se ponen rojos, más la copia real en disco. El paquete solo autoriza que quede roja la prueba de dos piezas a la vez; esta no es esa.",
+   "Lo que el encargo si pedia y esta bien: el numero de orden con isinstance(orden, dict) (casos 7/8/9/10), el lanzador con TRES datos cuando no hay carpeta y con CUATRO solo si la hay, la llave en falso en el quinto dato, el diccionario de fallo con ok/motivo/guardado/salida, y soltar la copia en el finally. Los cuatro casos de la vigia nueva si los pasaria, y la cadena sola (3 casos) queda a salvo porque su bucle corre con en_paralelo=1."
+  ],
+  "riesgo_vecinos": [
+   "vigias/test_vigia_el_loop_del_pit.py::test_misma_pieza_va_en_fila: de verde a rojo por el doble del lanzador de tres datos y por la copia real en disco (el mismo sintoma de los 18 segundos que ya tumbó el tercer intento).",
+   "El campo 'codigo' de la propuesta esta mal formado como vista del archivo entero: son 45 lineas y acaban con 'def correr_una(orden):' a ocho espacios pegado al finally de correr_una_orden, o sea anidada DENTRO de la pieza nueva, no en el ciclo; y si alguien lo aplicara por la via de aplicar_cambio (que si lee 'codigo') borraria de un plumazo las 1129 lineas de cuerpo/capataz.py.",
+   "El diagnostico y el campo 'vigia' prometen que las dos pruebas vecinas se corrieron y quedaron enteras; no hay ninguna medida en la propuesta, y la unica prueba neighbor con en_paralelo mayor que uno es justamente la que se rompe."
+  ],
+  "que_falta": [
+   "Un tercer elemento en 'cambios' que anada de verdad la pieza correr_una_orden al nivel del archivo, con su texto_viejoTaken de verdad (por ejemplo el bloque de las tres constantes o la linea 'def lanzar_al_equipo(proyecto, orden, tope_segundos=900, carpeta=None):'), porque el campo 'codigo' no lo aplica nadie.",
+   "La medida de las dos pruebas vecinas, con numero de casos y segundos, que el paquete exige de quien revise.",
+   "Una manera de que test_misma_pieza_va_en_fila siga verde: o la pieza no pide copia cuando la llamada viene de una prueba (no es unasolution), o el paquete tiene que autorizar expressamente que ese caso se pone rojo y poner su comprobacion en la ronda siguiente, decidlo Julio, no dejarlo escondido."
+  ],
+  "resumen_para_el_jefe": "Rechazada por dos cosas duras: la pieza nueva que arregla todo solo esta en el campo de texto que la maquina no lee, asi que al aplicarse el archivo se queda sin ella y el bucle revienta con nombre inexistente; y ademas el quinto dato 'copia si hay dos' parte en rojo el unico caso verde que corre el bucle con dos tareas a la vez."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 39290 a 13560 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 50439 a 17404 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'orden_id' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "el pasillo recorto el encargo de 50557 a 17442 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'copia_para'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'soltar_copia'. No se importa, no se define y no e",
+  "el pasillo recorto el encargo de 50799 a 17520 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}

@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La pieza correr_una_orden no existe en cuerpo/capataz.py y el ciclo llama a lanzar_al_equipo sin pasarle la carpeta propia de cada tarea, por lo que dos tareas comparten carpeta.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "importaciones de arriba y ciclo que define correr_una",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "import concurrent.futures\nimport datetime\nimport hashlib\nimport json\nimport os\nimport subprocess\nimport sys",
+    "texto_nuevo": "import concurrent.futures\nimport datetime\nimport hashlib\nimport json\nimport os\nimport subprocess\nimport sys\n\nraiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif raiz not in sys.path:\n    sys.path.insert(0, raiz)\nfrom arnes.copia_de_la_orden import copia_para, soltar_copia\n\n\ndef correr_una_orden(proyecto, orden, tope_segundos=900, aviso=print):\n    try:\n        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        orden_id = str(orden.get('id'))\n        copia = copia_para(orden_id, raiz)\n        if copia.get('ok'):\n            carpeta = copia.get('carpeta')\n            aviso('orden %s corre en su propia carpeta' % orden_id)\n        else:\n            carpeta = None\n            aviso('sin carpeta propia: %s' % copia.get('motivo'))\n        try:\n            return lanzar_al_equipo(proyecto, orden, tope_segundos, carpeta)\n        finally:\n            try:\n                soltar_copia(copia)\n            except Exception as e:\n                aviso('no se pudo soltar la copia: %s' % e)\n    except Exception as e:\n        return {'ok': False, 'motivo': str(e), 'guardado': False,\n                'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}"
+   },
+   {
+    "texto_viejo": "        def correr_una(orden):\n            try:\n                return lanzar_al_equipo(proyecto, orden, tope_segundos)\n            except Exception as e:\n                return {'guardado': False, 'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}",
+    "texto_nuevo": "        def correr_una(orden):\n            return correr_una_orden(proyecto, orden, tope_segundos, aviso)"
+   }
+  ],
+  "cambio": "Agregar dos importaciones (copia_para y soltar_copia) al nivel del archivo, agregar la pieza nueva correr_una_orden al nivel del archivo, y reemplazar el cuerpo de correr_una para que llame a correr_una_orden pasandole proyecto, orden, tope_segundos y aviso.",
+  "codigo": "raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\nif raiz not in sys.path:\n    sys.path.insert(0, raiz)\nfrom arnes.copia_de_la_orden import copia_para, soltar_copia\n\n\ndef correr_una_orden(proyecto, orden, tope_segundos=900, aviso=print):\n    try:\n        raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n        orden_id = str(orden.get('id'))\n        copia = copia_para(orden_id, raiz)\n        if copia.get('ok'):\n            carpeta = copia.get('carpeta')\n            aviso('orden %s corre en su propia carpeta' % orden_id)\n        else:\n            carpeta = None\n            aviso('sin carpeta propia: %s' % copia.get('motivo'))\n        try:\n            return lanzar_al_equipo(proyecto, orden, tope_segundos, carpeta)\n        finally:\n            try:\n                soltar_copia(copia)\n            except Exception as e:\n                aviso('no se pudo soltar la copia: %s' % e)\n    except Exception as e:\n        return {'ok': False, 'motivo': str(e), 'guardado': False,\n                'codigo': None, 'salida': 'ERROR DEL CAPATAZ: ' + str(e)}\n\n\ndef correr_una(orden):\n    return correr_una_orden(proyecto, orden, tope_segundos, aviso)",
+  "vigia": "vigias/test_vigia_cada_tarea_corre_en_su_copia.py, que comprueba los cuatro casos: se pasa la carpeta exacta al lanzamiento; se suelta la copia aunque el lanzamiento reviente y se devuelve el diccionario de error; si no hay copia se llama igual con carpeta None; y se suelta la copia cuando todo sale bien.",
+  "puede_danar": [
+   "cuerpo/capataz.py",
+   "ciclo que corre las tareas",
+   "arnes/copia_de_la_orden.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El from arnes.copia_de_la_orden queda al nivel del archivo, o sea que ahora importar cuerpo/capataz depende de que arnes se importe bien; si arnes/copia_de_la_orden.py a su vez importa cuerpo.capataz en su tope, se hace un ciclo de importaciones y se para TODO el ciclo automatico. No se ve en el material, hay que medirlo con la prueba.",
+   "El campo 'codigo' de la propuesta muestra 'def correr_una(orden):' SIN sangria, a nivel de archivo. Si la maquina aplica ese campo en vez de la lista 'cambios', el archivo deja de cargar (SyntaxError). La lista 'cambios' si lleva las tres sangrias correctas; que se aplique esa, no el 'codigo'.",
+   "La prueba del ciclo en su caso de DOS piezas a la vez seguira roja en esta ronda a proposito (el encargo dice que subir el numero va en la ronda siguiente). Si el criterio de 'tarea hecha' corre toda la suite, esta tarea no llegara a verde: el criterio tiene que ser solo la vigia de los cuatro casos."
+  ],
+  "que_falta": [
+   "No hay constancia de que se correria la vigia vigias/test_vigia_cada_tarea_corre_en_su_copia.py con los cuatro casos en verde, ni del sabotaje (quitar la pieza nueva y ver que vuelve a rojo). El diagnostico y el cambio se ven correctos, pero eso esta sin medir.",
+   "Falta medir el ciclo de importaciones del punto 1 de riesgo_vecinos antes de dar esto por bueno."
+  ],
+  "resumen_para_el_jefe": "El cambio hace justo lo pedido y con el nombre de la pieza y de los campos correctos, nada inventado; approving, pero hay que aplicar la lista de cambios (no el campo 'codigo', que va sin sangria) y comprobar que importar arnes desde capataz no crea un ciclo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38888 a 13558 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 46137 a 16197 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 2"
+ ]
+}
