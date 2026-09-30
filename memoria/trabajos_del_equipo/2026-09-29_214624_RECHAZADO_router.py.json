@@ -1,0 +1,60 @@
+{
+ "obrero": "deepseek",
+ "auditor": "codex",
+ "propuesta": {
+  "diagnostico": "El reparto tira los trozos marcados (nombrados) cuando no caben, y en su lugar mete trozos sin marca, por lo que el paquete no trae la funcion pedida.",
+  "archivo": "cerebro/router.py",
+  "funcion": "recortar_por_presupuesto",
+  "texto_viejo": "def recortar_por_presupuesto(trozos, tope):\n    \"\"\"Devuelve los trozos que caben en el tope, de mayor a menor puntaje.\n\n    Se suman las longitudes de sus textos. El de mayor puntaje se queda SIEMPRE, aunque el\n    solo ya pase del tope, porque es el que trae lo que se pidio. Los que no caben se quedan\n    fuera. Ante cualquier error devuelve la lista tal como llego y nunca lanza.\n    \"\"\"\n    try:\n        ordenados = sorted(trozos, key=lambda t: t.get(\"puntaje\", 0), reverse=True)\n        elegidos = []\n        suma = 0\n        for t in ordenados:\n            largo = len(t.get(\"texto\") or \"\")\n            if not elegidos or suma + largo <= tope:\n                elegidos.append(t)\n                suma += largo\n        return elegidos\n    except Exception:\n        return trozos",
+  "texto_nuevo": "def recortar_por_presupuesto(trozos, tope):\n    \"\"\"Devuelve los trozos que caben en el tope, de mayor a menor puntaje.\n\n    Se suman las longitudes de sus textos. Los trozos marcados (los que traen el campo\n    \"_completo\" o \"_nombrado\") entran SIEMPRE, aunque entre todos ya pasen del tope, porque\n    son los que traen lo que el problema nombro. Con el sitio que quede se meten los demas\n    de mayor a menor puntaje, y solo si caben. Si no hubiera ningun marcado, el de mayor\n    puntaje se queda SIEMPRE aunque el solo ya pase del tope. Ante cualquier error devuelve\n    la lista tal como llego y nunca lanza.\n    \"\"\"\n    try:\n        ordenados = sorted(trozos, key=lambda t: t.get(\"puntaje\", 0), reverse=True)\n        marcados = [t for t in ordenados if t.get(\"_completo\") or t.get(\"_nombrado\")]\n        sin_marca = [t for t in ordenados if not (t.get(\"_completo\") or t.get(\"_nombrado\"))]\n        elegidos = list(marcados)\n        suma = sum(len(t.get(\"texto\") or \"\") for t in elegidos)\n        for t in sin_marca:\n            largo = len(t.get(\"texto\") or \"\")\n            if not elegidos or suma + largo <= tope:\n                elegidos.append(t)\n                suma += largo\n        return elegidos\n    except Exception:\n        return trozos",
+  "cambios": [
+   {
+    "texto_viejo": "def recortar_por_presupuesto(trozos, tope):\n    \"\"\"Devuelve los trozos que caben en el tope, de mayor a menor puntaje.\n\n    Se suman las longitudes de sus textos. El de mayor puntaje se queda SIEMPRE, aunque el\n    solo ya pase del tope, porque es el que trae lo que se pidio. Los que no caben se quedan\n    fuera. Ante cualquier error devuelve la lista tal como llego y nunca lanza.\n    \"\"\"\n    try:\n        ordenados = sorted(trozos, key=lambda t: t.get(\"puntaje\", 0), reverse=True)\n        elegidos = []\n        suma = 0\n        for t in ordenados:\n            largo = len(t.get(\"texto\") or \"\")\n            if not elegidos or suma + largo <= tope:\n                elegidos.append(t)\n                suma += largo\n        return elegidos\n    except Exception:\n        return trozos",
+    "texto_nuevo": "def recortar_por_presupuesto(trozos, tope):\n    \"\"\"Devuelve los trozos que caben en el tope, de mayor a menor puntaje.\n\n    Se suman las longitudes de sus textos. Los trozos marcados (los que traen el campo\n    \"_completo\" o \"_nombrado\") entran SIEMPRE, aunque entre todos ya pasen del tope, porque\n    son los que traen lo que el problema nombro. Con el sitio que quede se meten los demas\n    de mayor a menor puntaje, y solo si caben. Si no hubiera ningun marcado, el de mayor\n    puntaje se queda SIEMPRE aunque el solo ya pase del tope. Ante cualquier error devuelve\n    la lista tal como llego y nunca lanza.\n    \"\"\"\n    try:\n        ordenados = sorted(trozos, key=lambda t: t.get(\"puntaje\", 0), reverse=True)\n        marcados = [t for t in ordenados if t.get(\"_completo\") or t.get(\"_nombrado\")]\n        sin_marca = [t for t in ordenados if not (t.get(\"_completo\") or t.get(\"_nombrado\"))]\n        elegidos = list(marcados)\n        suma = sum(len(t.get(\"texto\") or \"\") for t in elegidos)\n        for t in sin_marca:\n            largo = len(t.get(\"texto\") or \"\")\n            if not elegidos or suma + largo <= tope:\n                elegidos.append(t)\n                suma += largo\n        return elegidos\n    except Exception:\n        return trozos"
+   }
+  ],
+  "cambio": "Repartir en dos pasadas: primero entran TODOS los trozos marcados (con \"_completo\" o \"_nombrado\") aunque pasen del tope, y despues, con el sitio que quede, los sin marca de mayor a menor puntaje y solo si caben. Si no hay marcados, se mantiene la regla de hoy (el de mayor puntaje entra siempre).",
+  "codigo": "def recortar_por_presupuesto(trozos, tope):\n    \"\"\"Devuelve los trozos que caben en el tope, de mayor a menor puntaje.\n\n    Se suman las longitudes de sus textos. Los trozos marcados (los que traen el campo\n    \"_completo\" o \"_nombrado\") entran SIEMPRE, aunque entre todos ya pasen del tope, porque\n    son los que traen lo que el problema nombro. Con el sitio que quede se meten los demas\n    de mayor a menor puntaje, y solo si caben. Si no hubiera ningun marcado, el de mayor\n    puntaje se queda SIEMPRE aunque el solo ya pase del tope. Ante cualquier error devuelve\n    la lista tal como llego y nunca lanza.\n    \"\"\"\n    try:\n        ordenados = sorted(trozos, key=lambda t: t.get(\"puntaje\", 0), reverse=True)\n        marcados = [t for t in ordenados if t.get(\"_completo\") or t.get(\"_nombrado\")]\n        sin_marca = [t for t in ordenados if not (t.get(\"_completo\") or t.get(\"_nombrado\"))]\n        elegidos = list(marcados)\n        suma = sum(len(t.get(\"texto\") or \"\") for t in elegidos)\n        for t in sin_marca:\n            largo = len(t.get(\"texto\") or \"\")\n            if not elegidos or suma + largo <= tope:\n                elegidos.append(t)\n                suma += largo\n        return elegidos\n    except Exception:\n        return trozos",
+  "vigia": "vigias/test_vigia_el_presupuesto_no_tira_lo_nombrado.py: cuatro casos sobre listas hechas a mano. Caso 1 (nace rojo): los cuatro pedazos medidos de Julio (99.0/6393 marcado captureDesktopPhoto, 21.55/9023 sin marca, 99.0/14652 marcado processPhoto, 12.76/2842 sin marca) con tope 19000; la lista devuelta TIENE que traer los DOS marcados (6393 y 14652) y el assert dice que hoy se tira lo pedido para meter lo que nadie pidio. Caso 2: un marcado pequeno y dos sin marca pequenos con tope que da para los tres; trae los tres. Caso 3: un marcado que llena el tope el solo y dos sin marca; trae solo el marcado. Caso 4: tres sin marca donde el de mayor puntaje pasa del tope el solo; trae ese primero. Arranque: mete en sys.path la carpeta un nivel arriba de vigias con os.path a partir de __file__ e importa cerebro.router. Sin IA, sin red, sin procesos, resultado siempre igual.",
+  "puede_danar": [
+   "el armado de los paquetes de todos los proyectos",
+   "el tamano final de todo paquete (puede volverse enorme y no caber en ningun cerebro)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El encargo exige crear la prueba en este mismo trabajo. La propuesta solo describe cuatro casos; no entrega el contenido de la prueba ni un cambio que la cree.",
+   "La devolución deja de estar ordenada de mayor a menor puntaje: un marcado con puntaje 1 queda antes que un no marcado con puntaje 100 aunque ambos quepan. Eso contradice la regla de orden que la propia función conserva."
+  ],
+  "riesgo_vecinos": [
+   "Todos los marcados entran sin límite acumulado. Falta comprobar que el paquete resultante pueda recibirse completo y no pierda después las funciones que se intenta conservar."
+  ],
+  "que_falta": [
+   "La prueba ejecutable solicitada y evidencia de que falla antes del arreglo y pasa después.",
+   "Comprobar que, al romper deliberadamente el arreglo, la prueba lo detecta.",
+   "Verificar que el paquete final conserva las dos funciones solicitadas."
+  ],
+  "resumen_para_el_jefe": "La selección propuesta conserva los trozos marcados, pero falta entregar la prueba exigida y altera el orden prometido."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 24925 a 11140 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 32491 a 16522 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 32732 a 16703 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "Big Pickle no contesto en 400.0s (timeout)",
+  "bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "Big Pickle fallo y reviso Codex",
+  "el pasillo recorto el encargo de 32849 a 16789 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "Big Pickle fallo y reviso Codex",
+  "vueltas_dadas: 4"
+ ]
+}

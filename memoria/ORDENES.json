@@ -1,5 +1,23 @@
 [
   {
+    "id": "H11-dos-guardianes-se-contradicen-y-frenan-rondas-buenas",
+    "titulo": "Dos guardianes de la herramienta se contradicen: uno obliga a nombrar las piezas y el otro obliga a no nombrarlas",
+    "origen": "Julio 2026-09-29: las reparaciones siempre quedan a medias, alli volvio a salir otro fallo y nuevamente lo apuntas, no, apuntalo y reparalo de una vez",
+    "repara": "El guardian del material toma por nombre de funcion cualquier palabra del encargo que coincida con una funcion del proyecto, incluidas las ETIQUETAS de un diccionario pegado como material. MEDIDO en vivo el 2026-09-29: con el renglon pegado pedazos.insert(0, {pieza: x, abs: y, rol: z}) contesto que faltaban las funciones pieza y rol, que no son funciones que el encargo vaya a tocar sino etiquetas. Al mismo tiempo el revisor de programa exige que TODA funcion nombrada en el encargo aparezca en el cambio, asi que nombrarlas para calmar al primero hace que frene el segundo. Las dos reglas juntas frenaron DOS rondas ya aprobadas por el equipo el mismo dia.",
+    "pieza": "cuerpo/obrero.py",
+    "encargo": "Que una palabra solo cuente como funcion nombrada cuando el texto la nombra COMO funcion: una palabra que viene entre comillas, o como etiqueta de un diccionario dentro de un trozo de codigo pegado, NO es una funcion que se vaya a tocar. No se apaga ningun guardian, no se le quita la comprobacion de funciones y no se toca el revisor de programa: los dos protegen algo real.",
+    "vigia": "vigias/test_vigia_la_etiqueta_pegada_no_es_una_funcion.py",
+    "razon": "Julio paga cada ronda. Una ronda que se frena por una etiqueta mal leida se paga entera y no deja nada.",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  {
     "id": "H8a-vigia-roja-dos-puertas",
     "titulo": "Prueba roja de las dos puertas",
     "origen": "Julio 2026-09-29 confirmo H8 y ordeno ejecutar",

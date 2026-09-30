@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "El reparto tira los trozos marcados cuando no caben, en vez de quedarse siempre con ellos, y por eso el paquete pierde lo que el problema nombra.",
+  "archivo": "cerebro/router.py",
+  "funcion": "recortar_por_presupuesto",
+  "texto_viejo": "def recortar_por_presupuesto(trozos, tope):\n    \"\"\"Devuelve los trozos que caben en el tope, de mayor a menor puntaje.\n\n    Se suman las longitudes de sus textos. El de mayor puntaje se queda SIEMPRE, aunque el\n    solo ya pase del tope, porque es el que trae lo que se pidio. Los que no caben se quedan\n    fuera. Ante cualquier error devuelve la lista tal como llego y nunca lanza.\n    \"\"\"\n    try:\n        ordenados = sorted(trozos, key=lambda t: t.get(\"puntaje\", 0), reverse=True)\n        elegidos = []\n        suma = 0\n        for t in ordenados:\n            largo = len(t.get(\"texto\") or \"\")\n            if not elegidos or suma + largo <= tope:\n                elegidos.append(t)\n                suma += largo\n        return elegidos\n    except Exception:\n        return trozos",
+  "texto_nuevo": "def recortar_por_presupuesto(trozos, tope):\n    \"\"\"Devuelve los trozos que caben en el tope, de mayor a menor puntaje.\n\n    Se suman las longitudes de sus textos. El de mayor puntaje se queda SIEMPRE, aunque el\n    solo ya pase del tope, porque es el que trae lo que se pidio. Los trozos marcados (los\n    que traen _marcado o _nombrado con algo dentro) se quedan SIEMPRE, aunque no quepan,\n    porque son lo que el problema nombra y sin eso el paquete no sirve. Los que no caben y\n    no estan marcados se quedan fuera. Ante cualquier error devuelve la lista tal como llego\n    y nunca lanza.\n    \"\"\"\n    try:\n        ordenados = sorted(trozos, key=lambda t: t.get(\"puntaje\", 0), reverse=True)\n        elegidos = []\n        suma = 0\n        for t in ordenados:\n            largo = len(t.get(\"texto\") or \"\")\n            marcado = bool(t.get(\"_marcado\") or t.get(\"_nombrado\"))\n            if not elegidos or marcado or suma + largo <= tope:\n                elegidos.append(t)\n                suma += largo\n        return elegidos\n    except Exception:\n        return trozos",
+  "cambios": [],
+  "cambio": "En el recorrido de recortar_por_presupuesto, calcular si el trozo esta marcado (campo _marcado o _nombrado con algo dentro) y quedarse con el SIEMPRE si lo esta, aunque no quepa; los no marcados siguen igual que hoy. Se conserva el orden de mayor a menor puntaje y la regla de que el primero se queda siempre.",
+  "codigo": "        for t in ordenados:\n            largo = len(t.get(\"texto\") or \"\")\n            marcado = bool(t.get(\"_marcado\") or t.get(\"_nombrado\"))\n            if not elegidos or marcado or suma + largo <= tope:\n                elegidos.append(t)\n                suma += largo",
+  "vigia": "vigias/test_vigia_el_presupuesto_no_tira_lo_nombrado.py, primer caso (el medido de Julio): la lista devuelta tiene que traer los DOS marcados, el de 6.393 letras y el de 14.652; los otros tres casos siguen verdes.",
+  "puede_danar": [
+   "el armado de los paquetes de todos los proyectos",
+   "el tamano final de todo paquete (puede volverse enorme si hay muchos marcados)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "SIN_AUDITAR",
+  "_error": "",
+  "resumen_para_el_jefe": "el revisor contesto roto; se conserva la propuesta del obrero"
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 39145 a 18116 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 45422 a 15966 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) fallo (no es cuota): <urlopen error [Errno 11001] getaddrinfo failed>",
+  "Gemini 2.5 flash-lite fallo (no es cuota): <urlopen error [Errno 11001] getaddrinfo failed>",
+  "Gemini 3 preview fallo (no es cuota): <urlopen error [Errno 11001] getaddrinfo failed>",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) fallo (no es cuota): <urlopen error [Errno 11001] getaddrinfo failed>",
+  "Gemini 2.5 flash-lite fallo (no es cuota): <urlopen error [Errno 11001] getaddrinfo failed>",
+  "Gemini 3 preview fallo (no es cuota): <urlopen error [Errno 11001] getaddrinfo failed>",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "se pidio auditar a groq y no esta disponible: reviso ",
+  "GPT-OSS 120B (Groq) fallo (no es cuota): <urlopen error [Errno 11001] getaddrinfo failed>",
+  "Gemini 2.5 flash-lite fallo (no es cuota): <urlopen error [Errno 11001] getaddrinfo failed>",
+  "Gemini 3 preview fallo (no es cuota): <urlopen error [Errno 11001] getaddrinfo failed>",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 2"
+ ]
+}
