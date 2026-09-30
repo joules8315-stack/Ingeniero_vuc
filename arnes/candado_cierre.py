@@ -281,6 +281,13 @@ def main():
     except Exception:
         pass
 
+    try:
+        import candado_nace_enganchada
+        puede, motivo = candado_nace_enganchada.se_puede_cerrar(AQUI)
+        if not puede:
+            faltas.append(motivo)
+    except Exception:
+        pass
     if not faltas:
         _apuntar(0)
         return 0
