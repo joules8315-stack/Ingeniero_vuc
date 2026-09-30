@@ -1,0 +1,92 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El metodo existe pero no es obligatorio: falta el octavo rotulo LE DA A LA APLICACION, las frases no dicen quien fallo, y el comando equipo no llama al metodo.",
+  "archivo": "arnes/metodo.py",
+  "funcion": "ROTULOS",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    (\n        \"MANO\",\n        \"Falta la MANO mas barata. Escribe un renglon que empiece por MANO: \"\n        \"y di quien es la mano mas barata que puede hacer este trabajo, sin \"\n        \"gastar de mas.\",\n    ),\n)",
+    "texto_nuevo": "    (\n        \"MANO\",\n        \"Falta la MANO mas barata. Escribe un renglon que empiece por MANO: \"\n        \"y di quien es la mano mas barata que puede hacer este trabajo, sin \"\n        \"gastar de mas. Quien fallo: reparte.\",\n    ),\n    (\n        \"LE DA A LA APLICACION\",\n        \"Falta LE DA A LA APLICACION. Escribe un renglon que empiece por \"\n        \"LE DA A LA APLICACION: y di que gana la aplicacion en rapidez, en \"\n        \"eficiencia, en precision y en economia, con numero donde lo haya. \"\n        \"Puedes poner NO APLICA en los que no toca, pero diciendo por que. \"\n        \"Quien fallo: informacion.\",\n    ),\n)"
+   },
+   {
+    "texto_viejo": "        \"Falta el PROBLEMA. Escribe un renglon que empiece por PROBLEMA: \"",
+    "texto_nuevo": "        \"Falta el PROBLEMA. Escribe un renglon que empiece por PROBLEMA: \"\n        \"Quien fallo: informacion. \""
+   },
+   {
+    "texto_viejo": "        \"Falta la EVIDENCIA. Escribe un renglon que empiece por EVIDENCIA: \"",
+    "texto_nuevo": "        \"Falta la EVIDENCIA. Escribe un renglon que empiece por EVIDENCIA: \"\n        \"Quien fallo: informacion. \""
+   },
+   {
+    "texto_viejo": "        \"Falta el CAMINO. Escribe un renglon que empiece por CAMINO: \"",
+    "texto_nuevo": "        \"Falta el CAMINO. Escribe un renglon que empiece por CAMINO: \"\n        \"Quien fallo: razonamiento. \""
+   },
+   {
+    "texto_viejo": "        \"Falta el VIGIA. Escribe un renglon que empiece por VIGIA: \"",
+    "texto_nuevo": "        \"Falta el VIGIA. Escribe un renglon que empiece por VIGIA: \"\n        \"Quien fallo: razonamiento. \""
+   },
+   {
+    "texto_viejo": "        \"Falta PUEDE DANAR. Escribe un renglon que empiece por PUEDE DANAR: \"",
+    "texto_nuevo": "        \"Falta PUEDE DANAR. Escribe un renglon que empiece por PUEDE DANAR: \"\n        \"Quien fallo: herramienta. \""
+   },
+   {
+    "texto_viejo": "        \"Falta NO SE TOCA. Escribe un renglon que empiece por NO SE TOCA: \"",
+    "texto_nuevo": "        \"Falta NO SE TOCA. Escribe un renglon que empiece por NO SE TOCA: \"\n        \"Quien fallo: herramienta. \""
+   },
+   {
+    "texto_viejo": "        if _ct.es_una_fotocopia(\" \".join(sys.argv[3:])):\n            sys.stderr.write(_ct.AVISO_FOTOCOPIA)\n            return 2",
+    "texto_nuevo": "        if _ct.es_una_fotocopia(\" \".join(sys.argv[3:])):\n            sys.stderr.write(_ct.AVISO_FOTOCOPIA)\n            return 2\n        try:\n            import metodo as _met\n            _falta = _met.revisar(\" \".join(sys.argv[3:]), AQUI)\n            if _falta:\n                sys.stderr.write(\"FRENO EL METODO: al encargo le falta lo siguiente.\\n\")\n                for _f in _falta:\n                    sys.stderr.write(\"  - \" + str(_f) + \"\\n\")\n                sys.stderr.write(\"Hasta que no se arregle, no se llama a ningun cerebro.\\n\")\n                return 2\n        except Exception:\n            pass"
+   }
+  ],
+  "cambio": "En arnes/metodo.py: agregar la octava pareja LE DA A LA APLICACION al final de ROTULOS y anadir a cada una de las ocho frases el nombre del sospechoso que fallo (informacion, razonamiento, herramienta, reparte). En ingeniero.py: tras el freno de la fotocopia en el comando equipo, llamar a la pieza del metodo con el texto del encargo y la carpeta del proyecto; si devuelve lista con algo, avisar por stderr que freno el metodo, que le falta al encargo una cosa por renglon, y que hasta que no se arregle no se llama a ningun cerebro, y salir devolviendo 2; si la lista viene vacia, seguir igual; todo dentro de un resguardo para que un fallo de la pieza no frene la vuelta.",
+  "codigo": "    (\n        \"LE DA A LA APLICACION\",\n        \"Falta LE DA A LA APLICACION. Escribe un renglon que empiece por \"\n        \"LE DA A LA APLICACION: y di que gana la aplicacion en rapidez, en \"\n        \"eficiencia, en precision y en economia, con numero donde lo haya. \"\n        \"Puedes poner NO APLICA en los que no toca, pero diciendo por que. \"\n        \"Quien fallo: informacion.\",\n    ),\n\n        try:\n            import metodo as _met\n            _falta = _met.revisar(\" \".join(sys.argv[3:]), AQUI)\n            if _falta:\n                sys.stderr.write(\"FRENO EL METODO: al encargo le falta lo siguiente.\\n\")\n                for _f in _falta:\n                    sys.stderr.write(\"  - \" + str(_f) + \"\\n\")\n                sys.stderr.write(\"Hasta que no se arregle, no se llama a ningun cerebro.\\n\")\n                return 2\n        except Exception:\n            pass",
+  "vigia": "vigias/test_vigia_el_metodo_manda_en_la_puerta.py, en sus seis casos: el octavo rotulo es obligatorio; con los ocho puestos la lista sale vacia; cada frase nombra a uno de los cuatro sospechosos; con un encargo vacio la lista trae ocho cosas de mas de quince letras; con basura no revienta; y el comando del equipo llama al metodo mas abajo de donde arranca.",
+  "puede_danar": [
+   "todas las vueltas de todos los proyectos, porque este cambio decide si una vuelta arranca",
+   "el caso 2 de la prueba, que ya esta verde y comprueba que un encargo bien escrito sigue pasando"
+  ],
+  "preguntas": [
+   "El material no muestra el nombre exacto de la funcion que revisa el encargo dentro de arnes/metodo.py (solo se ve la lista ROTULOS). Se asume que la pieza expone una funcion revisar(texto, carpeta) que devuelve la lista de faltas; si el nombre real es otro, hay que decirlo.",
+   "El material no muestra como se llama la variable con la carpeta del proyecto dentro de main() en ingeniero.py; se usa AQUI, que si aparece en el material. Si la carpeta del proyecto es otra variable, hay que decirlo."
+  ],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "Seis textosViejos que el dice tocar y NO existen en ningun sitio. Medido: un grep de todo el repo con las seis cadenas no da ni una vez: 'Falta el PROBLEMA. Escribe un renglon que empiece por PROBLEMA: ', 'Falta la EVIDENCIA. Escribe un renglon que empiece por EVIDENCIA: ', 'Falta el CAMINO. Escribe un renglon que empiece por CAMINO: ', 'Falta la VIGIA. Escribe un renglon que empiece por VIGIA: ', 'Falta PUEDE DANAR. Escribe un renglon que empiece por PUEDE DANAR: ', 'Falta NO SE TOCA. Escribe un renglon que empiece por NO SE TOCA: '. En el archivo de verdad las frases son otras: por ejemplo la de PROBLEMA empieza 'Falta el PROBLEMA con las palabras de quien lo reporto. Escribe un ' y la de NO SE TOCA va partida en dos renglones, 'Escribe un renglon que empiece por NO SE ' / 'TOCA: y di que partes...'. Seis de los ocho cambios no tienen ancla donde anclar."
+  ],
+  "fallos": [
+   "NO ARREGLA EL DIAGNOSTICO. La prueba manda: el caso 3 revisa que CADA frase nombre a un sospechoso. Con solo el ancla de MANO y el rotulo nuevo, seis frases siguen sin nombrar a nadie y ese caso sigue rojo. Si la maquina se niega a aplicar cambios cuyo texto viejo no aparece, no aplica nada y los casos 1, 3 y 4 siguen rojos igual.",
+   "ROMPE UN VECINO QUE NO MENCIONO. Hay OTRA prueba de la misma pieza, vigias/test_vigia_el_metodo_frena_el_encargo_mal_preparado.py, y hoy esta VERDE. Al meter el octavo rotulo obligatorio se pone roja en sus cuatro casos: uno pide que un encargo vacio devuelva SIETE faltas y va a devolver ocho; otro pide que un encargo con los siete rotulos devuelva lista VACIA y va a devolver una; otro pide que quitando EVIDENCIA salga EXACTAMENTE una falta y van a salir dos. El paquete decia que las pruebas no se tocan, asi que esto no se puede arreglar con esta ronda: hay que decidirlo antes, no后发现lo.",
+   "Mete el nombre del sospechoso en MEDIO de la frase en vez de al final. El encargo lo pedia al final. Queda partido: 'Escribe un renglon que empiece por PROBLEMA: Quien fallo: informacion. y cuenta el fallo tal como lo dijo...'. Solo esta bien en MANO y en el rotulo nuevo. Es el texto que Julio lee cuando algo frena, y queda ilegible.",
+   "Pasa AQUI como carpeta del proyecto. En el comando, AQUI es la raiz del repo (por ahi mismo se hacejoin(AQUI, 'arnes')), no la carpeta del proyecto. Hoy revisar() tira el parametro, asi que ninguna prueba se rompe, pero en cuanto se use para mirar los caminos ya fallados va a leer la carpeta equivocada.",
+   "El campo 'codigo' es un revoltillo: mezcla el rotulo nuevo y el bloque try/except pegados, sin el parentesis que cierra la lista de rotulos. Si algo aplica ese campo en vez de la lista 'cambios', el archivo queda con un error de sintaxis y no arranca nada."
+  ],
+  "riesgo_vecinos": [
+   "Las cuatro pruebas verdes de vigias/test_vigia_el_metodo_frena_el_encargo_mal_preparado.py (miden siete, lista vacia, una sola falta, frases utiles).",
+   "El caso 2 de la prueba de la puerta, que hoy esta verde: sigue verde porque revisar() no usa el parametro raiz, pero por casualidad, no porque este bien.",
+   "Lo que si quedo bien y conviene saber: la funcion revisar(encargo, raiz) SI existe en arnes/metodo.py, asi que ese supuesto no fue inventado; el ancla de la puerta en ingeniero.py si coincide renglon por renglon; y el reparto de los ocho sospechosos es exactamente el que se ordena."
+  ],
+  "que_falta": [
+   "El texto de verdad de las seis frases de freno. El paquete solo traia la de MANO, y el obrero debio pedirlo con NECESITO_LEER en vez de escribirlo de memoria. Con ese texto los seis cambios se hacen en un minuto.",
+   "La decision del choque con la otra prueba. No se puede anadir el octavo rotulo sin que esa prueba se ponga roja, y las pruebas no se tocan. Eso es de Julio o del director, no del obrero.",
+   "Que mire las otras pruebas que vigilan la MISMA pieza antes de decir que no rompe a nadie. Hay dos archivos de vigia sobre metodo.py y solo se leyo uno."
+  ],
+  "resumen_para_el_jefe": "Seis de los ocho cambios son a puertas de oro: el texto que dice que va a tocar no existe en el archivo, asi que no se aplican y la prueba sigue roja; y ademas, al anadir el octavo rotulo deja en rojo las cuatro pruebas de la otra vigia de la misma pieza, que hoy estan verdes y que el paquete prohibe tocar."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 39925 a 17925 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 47564 a 16320 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 47766 a 16394 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 47968 a 16455 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}

@@ -1,0 +1,68 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El metodo existe pero lo llama la IA a mano y al frenar no dice quien fallo; ademas la prueba vigia da por ley siete rotulos cuando ahora son ocho.",
+  "archivo": "arnes/metodo.py",
+  "funcion": "ROTULOS",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "ROTULOS = (\n    (\n        \"PROBLEMA\",\n        \"Falta el PROBLEMA con las palabras de quien lo reporto. Escribe un \"\n        \"renglon que empiece por PROBLEMA: y cuenta el fallo tal como lo dijo \"\n        \"la persona que lo sufrio, sin traducirlo a tecnicismos.\",\n    ),\n    (\n        \"EVIDENCIA\",\n        \"Falta la EVIDENCIA medida. Escribe un renglon que empiece por \"\n        \"EVIDENCIA: y di que mediste, con que comando, y que contesto.\",\n    ),\n    (\n        \"CAMINO\",\n        \"Falta el CAMINO ya probado. Escribe un renglon que empiece por \"\n        \"CAMINO: y di que comprobaste que este arreglo no repite un camino \"\n        \"que ya fallo antes.\",\n    ),\n    (\n        \"PUEDE DANAR\",\n        \"Falta a quien PUEDE DANAR. Escribe un renglon que empiece por \"\n        \"PUEDE DANAR: y di a quien le puede hacer dano y por que flujo del \"\n        \"programa pasa ese dano.\",\n    ),\n    (\n        \"VIGIA\",\n        \"Falta la VIGIA declarada. Escribe un renglon que empiece por VIGIA: \"\n        \"y di que prueba lo vigila y promete que la vas a sabotear para ver \"\n        \"que se pone roja.\",\n    ),\n    (\n        \"NO SE TOCA\",\n        \"Falta lo que NO SE TOCA. Escribe un renglon que empiece por NO SE \"\n        \"TOCA: y di que partes del programa se quedan igual y no se van a \"\n        \"cambiar en esta ronda.\",\n    ),\n    (\n        \"MANO\",\n        \"Falta la MANO mas barata. Escribe un renglon que empiece por MANO: \"\n        \"y di quien es la mano mas barata que puede hacer este trabajo, sin \"\n        \"gastar de mas.\",\n    ),\n)",
+    "texto_nuevo": "ROTULOS = (\n    (\n        \"PROBLEMA\",\n        \"Falta el PROBLEMA con las palabras de quien lo reporto. Escribe un \"\n        \"renglon que empiece por PROBLEMA: y cuenta el fallo tal como lo dijo \"\n        \"la persona que lo sufrio, sin traducirlo a tecnicismos. Quien fallo: informacion.\",\n    ),\n    (\n        \"EVIDENCIA\",\n        \"Falta la EVIDENCIA medida. Escribe un renglon que empiece por \"\n        \"EVIDENCIA: y di que mediste, con que comando, y que contesto. Quien fallo: informacion.\",\n    ),\n    (\n        \"CAMINO\",\n        \"Falta el CAMINO ya probado. Escribe un renglon que empiece por \"\n        \"CAMINO: y di que comprobaste que este arreglo no repite un camino \"\n        \"que ya fallo antes. Quien fallo: razonamiento.\",\n    ),\n    (\n        \"PUEDE DANAR\",\n        \"Falta a quien PUEDE DANAR. Escribe un renglon que empiece por \"\n        \"PUEDE DANAR: y di a quien le puede hacer dano y por que flujo del \"\n        \"programa pasa ese dano. Quien fallo: herramienta.\",\n    ),\n    (\n        \"VIGIA\",\n        \"Falta la VIGIA declarada. Escribe un renglon que empiece por VIGIA: \"\n        \"y di que prueba lo vigila y promete que la vas a sabotear para ver \"\n        \"que se pone roja. Quien fallo: razonamiento.\",\n    ),\n    (\n        \"NO SE TOCA\",\n        \"Falta lo que NO SE TOCA. Escribe un renglon que empiece por NO SE \"\n        \"TOCA: y di que partes del programa se quedan igual y no se van a \"\n        \"cambiar en esta ronda. Quien fallo: herramienta.\",\n    ),\n    (\n        \"MANO\",\n        \"Falta la MANO mas barata. Escribe un renglon que empiece por MANO: \"\n        \"y di quien es la mano mas barata que puede hacer este trabajo, sin \"\n        \"gastar de mas. Quien fallo: reparte.\",\n    ),\n    (\n        \"LE DA A LA APLICACION\",\n        \"Falta LE DA A LA APLICACION. Escribe un renglon que empiece por \"\n        \"LE DA A LA APLICACION: y di que gana la aplicacion en rapidez, en \"\n        \"eficiencia, en precision y en economia, con numero donde lo haya; \"\n        \"se puede poner NO APLICA en los que no toca, pero diciendo por que. \"\n        \"Quien fallo: informacion.\",\n    ),\n)"
+   },
+   {
+    "texto_viejo": "    if cmd == \"equipo\" and len(sys.argv) >= 4:",
+    "texto_nuevo": "    if cmd == \"equipo\" and len(sys.argv) >= 4:"
+   }
+  ],
+  "cambio": "En arnes/metodo.py se reemplaza la lista ROTULOS entera por una de ocho parejas, con la octava LE DA A LA APLICACION al final, y cada frase termina nombrando a su sospechoso (informacion, razonamiento, herramienta, reparte). En ingeniero.py, tras el freno de la fotocopia, se agrega el freno del metodo llamando a revisar(encargo, raiz) con resguardo que avisa por stderr y no frena si la pieza falla. En vigias/test_vigia_el_metodo_frena_el_encargo_mal_preparado.py se cambian los tres sitios que dicen siete por ocho y se agrega el rotulo nuevo al ENCARGO_COMPLETO.",
+  "codigo": "# arnes/metodo.py: ROTULOS con ocho parejas (ver texto_nuevo del cambio 1)\n\n# ingeniero.py, justo despues del bloque del candado_terminal:\n        try:\n            import metodo as _metodo\n            _apodo = sys.argv[2]\n            try:\n                import guard_pasado as _gp\n                _raiz = _gp.raiz_del_proyecto(_apodo) or AQUI\n            except Exception:\n                _raiz = AQUI\n            _faltas = _metodo.revisar(\" \".join(sys.argv[3:]), _raiz)\n            if _faltas:\n                sys.stderr.write(\"FRENO EL METODO: el encargo no esta listo.\\n\")\n                for _f in _faltas:\n                    sys.stderr.write(\"  - \" + str(_f) + \"\\n\")\n                sys.stderr.write(\"Hasta que no se arregle no se llama a ningun cerebro.\\n\")\n                return 2\n        except Exception as _e:\n            sys.stderr.write(\"El freno del metodo no pudo mirar el encargo: \" + str(_e) + \"\\n\")\n\n# vigias/test_vigia_el_metodo_frena_el_encargo_mal_preparado.py:\n#   los dos 'assert len(faltas) == 7' pasan a '== 8'\n#   el texto 'SIETE faltas' pasa a 'OCHO faltas'\n#   ENCARGO_COMPLETO gana al final, antes del parentesis de cierre:\n#     \"\\n\"\n#     \"LE DA A LA APLICACION: le da precision al arreglo porque hoy 5 frenos \"\n#     \"de 2.700 dicen quien fallo.\"",
+  "vigia": "vigias/test_vigia_el_metodo_manda_en_la_puerta.py (seis casos, hoy cuatro rojos) y vigias/test_vigia_el_metodo_frena_el_encargo_mal_preparado.py (cuatro casos, hoy verdes, que deben seguir verdes tras ponerla al dia).",
+  "puede_danar": [
+   "todas las vueltas de todos los proyectos, porque decide si una vuelta arranca",
+   "el caso 2 de la prueba vigia, que comprueba que un encargo bien escrito sigue pasando y debe seguir verde"
+  ],
+  "preguntas": [],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": true,
+  "que_invento": [
+   "El segundo cambio declarado en `cambios` es un no-op: texto_viejo y texto_nuevo son identicos en `    if cmd == \"equipo\" and len(sys.argv) >= 4:`, y el codigo del freno del metodo solo aparece en la variable `codigo` como comentario-guia, no como texto insertable. Si se aplica la lista `cambios` tal cual, en ingeniero.py NO se inserta el freno y el encargo queda sin cumplir.",
+   "El reparto de QUIEN FALLO para el rotulo PUEDE DANAR contradice el dato medido del propio paquete: en la EVIDENCIA la herramienta suma 29 de 78 fallos y el reparto pedido lo manda a `herramienta`, pero ese no es un invento de archivo, es una consigna del encargo, asi que solo queda como nota"
+  ],
+  "fallos": [
+   "CAMBIO 2 no es aplicable: el unico cambio declarado para ingeniero.py tiene texto_viejo == texto_nuevo. Tal cual, el freno del metodo no se escribe y el caso que hoy nace rojo por 'el comando del equipo no llama al metodo en ninguna parte' sigue rojo.",
+   "El bloque del freno usa `sys.argv[3:]` unido con espacios para armar el texto del encargo, y `return 2` dentro del `if cmd == \"equipo\"`. Eso concuerda con el encargo, pero el codigo se entrega solo como comentario en `codigo`, no como texto_viejo/texto_nuevo emparejados: el obrero no tiene donde pegarlo sin adivinar el punto de insercion dentro del `if _ct.es_una_fotocopia(...)` que el paquete prohibe tocar de cuerpo.",
+   "Falta decir donde cae exactamente 'justo despues del si que mira si es una fotocopia y de lo que ese si hace': el material solo pega la linea `if _ct.es_una_fotocopia(...)` y no su cuerpo, asi que el punto de insercion no esta determined por texto literal y hay que deducirlo (probablemente al principio del bloque `equipo`, fuera del if de la fotocopia, o justo despues del return de ese bloque).",
+   "La frase del rotulo PROBLEMA queda enredada: anade 'Quien fallo: informacion.' justo despues de 'sin traducirlo a tecnicismos.', dentro de la misma frase que el metodo imprime. El encargo pedia anadirlo AL FINAL DE TODO, lo cual se cumple, pero el resultado lee como dos frases pegadas sin punto y coma; no es fallo de fondo, queda como observacion.",
+   "No se aporta ninguna corrida: el encargo exigia que quien revise dijera que corrio las dos pruebas y con que resultado. La propuesta dice 'confianza: media' y no reporta ninguna ejecucion.",
+   "CAMBIO 3 se entrega en comentario ('los dos assert len(faltas) == 7 pasan a == 8') y no como par texto_viejo/texto_nuevo en la lista `cambios`. Hay texto literal en el material para aplicarlo, pero la propuesta no lo entrega en el formato que el resto de la maquina usa. Mismo problema para el añadido a ENCARGO_COMPLETO: llega como linea de comentario, no como cambio emparejado."
+  ],
+  "riesgo_vecinos": [
+   "El freno devuelve2 y corta antes de cualquier cerebro, asi que cualquier invocacion de `equipo` con encargo incompleto queda sin hacer nada y sin mensaje en la salida normal: quien lance la ronda a mano ve un codigo 2 y nada mas. Es el riesgo que el propio encargo acepto, pero conviene que el aviso a Julio sea visible.",
+   "El resguardo es correcto y cubre el fallo por defecto del encargo, pero el `import metodo as _metodo` dentro del bloque `equipo` depende de que `sys.path.insert` de dos renglones antes se haya ejecutado; si esa linea vive dentro del `if cmd == \"equipo\"` (tal como se pega), el orden es correcto, y si no, el resguardo lo traga en silencio y el freno queda MUERTO, que es justo lo que el tercer-bis prohibe.",
+   "El caso 2 de la prueba que hoy esta verde (encargo bien escrito sigue pasando) depende de que el añadido a ENCARGO_COMPLETO lleve el rotulo nuevo detras del de MANO y no en otro sitio; si se inserta antes del cierre pero sin salto de renglon previo, el metodo puede seguir marcando falta y la prueba se pone roja."
+  ],
+  "que_falta": [
+   "Los dos cambios de engineer.py y de la prueba en formato texto_viejo/texto_nuevo emparejados, que es como se aplica el encargo.",
+   "El punto de insercion literal del freno en ingeniero.py, con el texto de la linea que lo precede y la que lo sigue.",
+   "La corrida de las dos pruebas con su resultado, que el encargo pedia expresamente.",
+   "La linea literal completa del assert con su mensaje 'SIETE faltas', para saber cual de los dos assert cambia a OCHO y cual es solo el numero."
+  ],
+  "resumen_para_el_jefe": "La idea es correcta y respeta el encargo, pero de los tres cambios solo uno llega aplicable: el de ingeniero.py esta declarado con texto viejo igual al nuevo y el del freno llega suelto en un comentario, asi que tal cual la vuelta sigue sin frenarse; falta que se entregue emparejado y con el punto de insercion literal, y falta correr las dos pruebas."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 35961 a 17333 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 48978 a 18957 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 50190 a 18957 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 51402 a 18948 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}
