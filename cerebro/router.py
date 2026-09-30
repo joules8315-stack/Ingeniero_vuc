@@ -34,6 +34,54 @@ TOPE_FUNCION_NOMBRADA = 300
 TOPE_LETRAS_TROZOS = 19000
 
 
+def asegurar_trozo_nombrado(pedazos, pieza, desde, hasta, texto, nombre):
+    """Garantiza que lo que el problema nombra sobreviva al reparto del presupuesto.
+
+    Devuelve una LISTA de pedazos. Si ya hay un pedazo de la MISMA pieza que contiene esos
+    renglones, no agrega nada: a ese pedazo le sube el puntaje a 99.0 y le pone la marca
+    _completo. Si no hay ninguno que lo contenga, agrega al principio un pedazo nuevo con
+    puntaje 99.0, la marca _completo y su direccion. Un pedazo de OTRA pieza nunca cuenta.
+    Nunca revienta: con lista vacia, nada o algo que no es lista, devuelve una lista que al
+    menos trae el pedazo nombrado, y jamas lanza un error. Nunca tira ningun pedazo que ya
+    estuviera.
+    """
+    try:
+        if not isinstance(pedazos, list):
+            pedazos = []
+        for t in pedazos:
+            if not isinstance(t, dict):
+                continue
+            if t.get("pieza") != pieza:
+                continue
+            if t.get("desde") <= desde and t.get("hasta") >= hasta:
+                t["puntaje"] = 99.0
+                t["_completo"] = nombre
+                return pedazos
+        nuevo = {
+            "pieza": pieza,
+            "desde": desde,
+            "hasta": hasta,
+            "texto": texto,
+            "puntaje": 99.0,
+            "_completo": nombre,
+            "direccion": "%s:%s-%s" % (pieza, desde, hasta),
+        }
+        return [nuevo] + list(pedazos)
+    except Exception:
+        try:
+            return [{
+                "pieza": pieza,
+                "desde": desde,
+                "hasta": hasta,
+                "texto": texto,
+                "puntaje": 99.0,
+                "_completo": nombre,
+                "direccion": "%s:%s-%s" % (pieza, desde, hasta),
+            }] + list(pedazos)
+        except Exception:
+            return []
+
+
 def quitar_contenidos(trozos):
     """Devuelve otra lista sin los trozos contenidos dentro de otro de la MISMA pieza.
 
@@ -360,9 +408,10 @@ def armar(apodo, problema, k_trozos=6, saltos=1):
                 _lineas_funcion = _hallazgo["hasta"] - _hallazgo["desde"] + 1
                 if _lineas_funcion > TOPE_FUNCION_NOMBRADA:
                     continue
-                _ya_en_pedazos = any(
-                    t["pieza"] == _ficha_codigo["id"] and t["desde"] <= _hallazgo["desde"]
-                    and t["hasta"] >= _hallazgo["hasta"] for t in pedazos)
+                pedazos = asegurar_trozo_nombrado(
+                    pedazos, _ficha_codigo["id"], _hallazgo["desde"], _hallazgo["hasta"],
+                    _texto_funcion, _palabra)
+                _ya_en_pedazos = True  # la pieza nueva ya garantizo que lo nombrado esta dentro y con prioridad, asi que el si de mas abajo ya no tiene que meter nada
                 if not _ya_en_pedazos and _texto_funcion:
                     pedazos.insert(0, {"pieza": _ficha_codigo["id"], "abs": _ficha_codigo["abs"],
                                        "rol": _ficha_codigo["rol"],
