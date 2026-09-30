@@ -1,0 +1,73 @@
+{
+ "obrero": "deepseek",
+ "auditor": "codex",
+ "propuesta": {
+  "diagnostico": "La vuelta se muere cuando falta una pieza porque nadie atiende la peticion de lectura que lleva el error, y el mostrador que ya existe y esta verde no se llama desde cuerpo/obrero.py.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "falta_en_el_material",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def falta_en_el_material(material, encargo, conocidas=None):",
+    "texto_nuevo": "def material_con_lo_que_falta(material, faltantes, archivo, raiz):\n    \"\"\"El equipo viene en ayuda de la IA: pide lo que necesita y aqui esta.\n\n    Cuando al material le falta una pieza, en vez de morir la vuelta, se le pide\n    al mostrador (arnes/mostrador.py) que traiga SOLO lo pedido, por su nombre y\n    entero, y se pega al final del material dentro de un bloque propio. Asi el\n    codigo no engorde: se anade unicamente lo que la tarea nombro y faltaba.\n\n    Si no hay nada que traer, o si algo falla, devuelve el material TAL CUAL,\n    letra por letra. NUNCA revienta.\n    \"\"\"\n    try:\n        if not faltantes:\n            return material\n        peticiones = []\n        for frase in faltantes:\n            try:\n                nombres = _nombres_de_funcion_del_texto(str(frase), ())\n            except Exception:\n                nombres = []\n            for nombre in nombres:\n                peticiones.append({\"archivo\": archivo, \"nombre\": nombre})\n        if not peticiones:\n            return material\n        from arnes.mostrador import atender\n        traido = atender(peticiones, raiz)\n        if not traido:\n            return material\n        if traido.strip() == \"NO_ESTA\":\n            return material\n        return material + \"\\n\\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\\n\" + traido\n    except Exception:\n        return material\n\n\ndef falta_en_el_material(material, encargo, conocidas=None):"
+   },
+   {
+    "texto_viejo": "        if clase != \"crear\":\n            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)\n            if faltantes:",
+    "texto_nuevo": "        if clase != \"crear\":\n            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)\n            if faltantes:\n                _raiz_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n                _archivo_tarea = \"\"\n                try:\n                    _nombres_tarea = _nombres_de_funcion_del_texto(tarea, _conocidas)\n                    if _nombres_tarea:\n                        _archivo_tarea = _nombres_tarea[0]\n                except Exception:\n                    _archivo_tarea = \"\"\n                material_obrero = material_con_lo_que_falta(\n                    material_obrero, faltantes, _archivo_tarea, _raiz_proyecto\n                )\n                faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)\n            if faltantes:"
+   }
+  ],
+  "cambio": "Anadir la funcion material_con_lo_que_falta justo delante de falta_en_el_material, y dentro del bloque que hoy devuelve el error por falta de material, intentar atender la peticion con el mostrador y volver a comprobar antes de devolver el error.",
+  "codigo": "def material_con_lo_que_falta(material, faltantes, archivo, raiz):\n    \"\"\"El equipo viene en ayuda de la IA: pide lo que necesita y aqui esta.\"\"\"\n    try:\n        if not faltantes:\n            return material\n        peticiones = []\n        for frase in faltantes:\n            try:\n                nombres = _nombres_de_funcion_del_texto(str(frase), ())\n            except Exception:\n                nombres = []\n            for nombre in nombres:\n                peticiones.append({\"archivo\": archivo, \"nombre\": nombre})\n        if not peticiones:\n            return material\n        from arnes.mostrador import atender\n        traido = atender(peticiones, raiz)\n        if not traido or traido.strip() == \"NO_ESTA\":\n            return material\n        return material + \"\\n\\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\\n\" + traido\n    except Exception:\n        return material",
+  "vigia": "vigias/test_vigia_el_mostrador_salva_la_vuelta.py (seis casos, hoy rojos, deben quedar verdes); ademas vigias/test_vigia_falta_material_no_llama_a_la_ia.py, vigias/test_vigia_el_material_pide_la_funcion_publica.py y vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py deben seguir verdes.",
+  "puede_danar": [
+   "todas las vueltas de todos los proyectos",
+   "cuerpo/obrero.py",
+   "arnes/mostrador.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La propuesta busca nombres de funciones y usa el primero como nombre del archivo que debe leer. Son datos distintos: el mostrador recibe una petición dirigida al lugar equivocado.",
+   "Si esa búsqueda no encuentra funciones, entrega un nombre de archivo vacío aunque la tarea sí mencione un archivo. No cumple con tomar el primer archivo nombrado en la tarea.",
+   "Atrapar el error evita que la vuelta se caiga, pero deja el material incompleto y vuelve al rechazo original. La reparación no resuelve la causa indicada."
+  ],
+  "riesgo_vecinos": [
+   "El error afecta al intento de recuperar material en todos los proyectos que pasan por este punto."
+  ],
+  "que_falta": [
+   "Obtener el primer archivo mencionado en la tarea y entregarlo al mostrador.",
+   "Prueba de recuperación dentro de la misma vuelta: no ejecutada.",
+   "Prueba que impide llamar a la IA con material incompleto: no ejecutada.",
+   "Prueba de petición de la función pública: no ejecutada.",
+   "Prueba del mostrador: no ejecutada.",
+   "Falta comprobar que, al retirar la reparación, los seis casos vuelven a fallar."
+  ],
+  "resumen_para_el_jefe": "Confunde el nombre de una función con el archivo que debe leer; por eso puede seguir deteniendo el trabajo sin traer lo que falta."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 34206 a 14615 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 44426 a 17186 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "Big Pickle no contesto en 400.0s (timeout)",
+  "bigpickle no contesto: en esta tarea no se le vuelve a esperar (A-43)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "Big Pickle fallo y reviso Codex",
+  "el pasillo recorto el encargo de 44545 a 17222 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "Big Pickle fallo y reviso Codex",
+  "el pasillo recorto el encargo de 44689 a 17275 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a bigpickle y no esta disponible: reviso None",
+  "Grok no contesto en 240s (timeout)",
+  "Big Pickle fallo y reviso Codex",
+  "vueltas_dadas: 4"
+ ]
+}

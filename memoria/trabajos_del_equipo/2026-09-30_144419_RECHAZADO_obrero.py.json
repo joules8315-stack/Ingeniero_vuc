@@ -1,0 +1,68 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La vuelta se muere cuando falta una pieza porque nadie llama al mostrador que ya existe; hay que anadir material_con_lo_que_falta y llamarla donde se devuelve el error FALTA_MATERIAL.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "falta_en_el_material",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def falta_en_el_material(material, encargo, conocidas=None):",
+    "texto_nuevo": "def material_con_lo_que_falta(material, faltantes, archivo, raiz):\n    \"\"\"El equipo viene en ayuda de la IA: pide lo que necesita y aqui esta.\n\n    Cuando al material le falta una pieza, en vez de morir la vuelta, se le pide\n    al mostrador (arnes/mostrador.py) que traiga SOLO lo pedido, por su nombre y\n    entero, y se pega al final del material. Asi el codigo no engorde: solo se\n    anade lo que la tarea nombro y no venia.\n\n    Recibe el material, la lista de frases de lo que falta, el nombre del archivo\n    que la tarea nombra y la carpeta del proyecto. Devuelve el material con lo\n    atendido pegado, o el material TAL CUAL si no hay nada util. NUNCA revienta.\n    \"\"\"\n    try:\n        if not material or not faltantes:\n            return material\n        if not isinstance(faltantes, (list, tuple)):\n            return material\n        peticiones = []\n        for frase in faltantes:\n            try:\n                texto = str(frase)\n            except Exception:\n                continue\n            for nombre in _nombres_de_funcion_del_texto(texto):\n                peticiones.append({\"archivo\": archivo, \"nombre\": nombre})\n        if not peticiones:\n            return material\n        from arnes.mostrador import atender\n        traido = atender(peticiones, raiz)\n        if not traido or not str(traido).strip():\n            return material\n        if str(traido).strip() == \"NO_ESTA\":\n            return material\n        return (str(material)\n                + \"\\n\\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\\n\"\n                + str(traido))\n    except Exception:\n        return material\n\n\ndef falta_en_el_material(material, encargo, conocidas=None):"
+   },
+   {
+    "texto_viejo": "        if clase != \"crear\":\n            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)\n            if faltantes:",
+    "texto_nuevo": "        if clase != \"crear\":\n            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)\n            if faltantes:\n                _raiz_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n                _archivo_tarea = \"\"\n                for _palabra in str(tarea or \"\").replace(\",\", \" \").replace(\";\", \" \").split():\n                    _limpia = _palabra.strip(\"()[]{}<>\\\"'`\")\n                    if \".py\" in _limpia and _limpia != \"py\":\n                        _archivo_tarea = _limpia\n                        break\n                material_obrero = material_con_lo_que_falta(\n                    material_obrero, faltantes, _archivo_tarea, _raiz_proyecto)\n                faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)\n            if faltantes:"
+   }
+  ],
+  "cambio": "Anadir la funcion material_con_lo_que_falta justo delante de falta_en_el_material, y llamarla dentro del bloque que hoy devuelve el error FALTA_MATERIAL para que el mostrador traiga la pieza y la vuelta siga.",
+  "codigo": "def material_con_lo_que_falta(material, faltantes, archivo, raiz):\n    \"\"\"El equipo viene en ayuda de la IA: pide lo que necesita y aqui esta.\"\"\"\n    try:\n        if not material or not faltantes:\n            return material\n        if not isinstance(faltantes, (list, tuple)):\n            return material\n        peticiones = []\n        for frase in faltantes:\n            try:\n                texto = str(frase)\n            except Exception:\n                continue\n            for nombre in _nombres_de_funcion_del_texto(texto):\n                peticiones.append({\"archivo\": archivo, \"nombre\": nombre})\n        if not peticiones:\n            return material\n        from arnes.mostrador import atender\n        traido = atender(peticiones, raiz)\n        if not traido or not str(traido).strip():\n            return material\n        if str(traido).strip() == \"NO_ESTA\":\n            return material\n        return (str(material)\n                + \"\\n\\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\\n\"\n                + str(traido))\n    except Exception:\n        return material",
+  "vigia": "vigias/test_vigia_el_mostrador_salva_la_vuelta.py (seis casos, hoy rojos, deben quedar verdes); y no deben ponerse rojas vigias/test_vigia_falta_material_no_llama_a_la_ia.py, vigias/test_vigia_el_material_pide_la_funcion_publica.py ni vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py.",
+  "puede_danar": [
+   "cuerpo/obrero.py (todas las vueltas de todos los proyectos)",
+   "arnes/mostrador.py (se le llama desde la vuelta)",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_falta_material_no_llama_a_la_ia.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "_nombres_de_funcion_del_texto (no aparece definido ni importado en el material ni en los cambios propuestos)"
+  ],
+  "fallos": [
+   "Usa 'os' en el cambio 2 (_raiz_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) pero no se añade ningún import de os en los cambios propuestos.",
+   "La función nueva depende de _nombres_de_funcion_del_texto sin definirlo o importarlo. Ese nombre no existe en el paquete mínimo mostrado, por lo que el código usaría algo que no existe."
+  ],
+  "riesgo_vecinos": [
+   "cuerpo/obrero.py: al usar nombres no definidos, aunque el try lo capture, la dependencia oculta no cumple lo que exige la reparación y puede impedir que las vigías detecten el fallo real."
+  ],
+  "que_falta": [
+   "Definir o importar _nombres_de_funcion_del_texto (o mostrar que ya existe en cuerpo/obrero.py con su texto literal).",
+   "Incluir el import necesario de os (o calcular la raíz sin usar os) dentro de los cambios del mismo archivo."
+  ],
+  "resumen_para_el_jefe": "Usa nombres no existentes (_nombres_de_funcion_del_texto y os sin importar), lo que constituye invento de dependencias y hace inviable la reparación tal como se propone."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38069 a 17115 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (47098 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'FALTA_MATERIAL' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "GPT-OSS 120B (Groq) no le cabe (47222 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'FALTA_MATERIAL' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "GPT-OSS 120B (Groq) no le cabe (47346 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

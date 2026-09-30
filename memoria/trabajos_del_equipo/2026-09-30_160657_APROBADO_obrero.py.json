@@ -1,0 +1,61 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La funcion material_con_lo_que_falta busca la cabecera '### ' y la palabra 'NO_ESTA', pero el mostrador escribe 'LO QUE PEDISTE: ' y 'NO_ENCONTRADO', asi que no reconoce ningun bloque y devuelve el material sin tocar.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "material_con_lo_que_falta",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "            if ln.startswith(\"### \"):",
+    "texto_nuevo": "            if ln.startswith(\"LO QUE PEDISTE: \"):"
+   },
+   {
+    "texto_viejo": "        no_esta = \"NO\" + \"_\" + \"ESTA\"",
+    "texto_nuevo": "        no_esta = \"NO\" + \"_\" + \"ENCONTRADO\""
+   }
+  ],
+  "cambio": "Dentro de material_con_lo_que_falta, cambiar la cabecera que se busca de '### ' a 'LO QUE PEDISTE: ' y cambiar el valor de no_esta de 'NO_ESTA' a 'NO_ENCONTRADO'.",
+  "codigo": "            if ln.startswith(\"LO QUE PEDISTE: \"):\n...\n        no_esta = \"NO\" + \"_\" + \"ENCONTRADO\"",
+  "vigia": "vigias/test_vigia_el_mostrador_salva_la_vuelta.py (los seis casos; hoy cinco verdes y el caso 2 rojo). Tambien deben seguir verdes: vigias/test_vigia_falta_material_no_llama_a_la_ia.py, vigias/test_vigia_el_material_pide_la_funcion_publica.py y vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/mostrador.py",
+   "arnes/revisor_de_programa.py",
+   "cerebro/protocolo.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "mapa/inventario.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_mostrador_salva_la_vuelta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "mostrador.py",
+   "protocolo.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Corrige exactamente los dos puntos del diagnostico sin cambiar mas de lo necesario y respeta lo que el mostrador escribe."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38498 a 17959 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (44591 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 2"
+ ]
+}

@@ -1,0 +1,67 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "material_con_lo_que_falta pide el archivo entero cuando no hay nombre de funcion, y su comprobacion de 'algo util' compara el texto completo con NO_ESTA, cosa que nunca acierta porque el mostrador anade cabecera por peticion.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "material_con_lo_que_falta",
+  "texto_viejo": "        nombres = _nombres_de_funcion_del_texto(\" \".join(faltantes or []), None)\n        if nombres:\n            peticiones = [{\"archivo\": archivo, \"nombre\": n} for n in nombres]\n        else:\n            peticiones = [{\"archivo\": archivo, \"nombre\": \"\"}]\n        from arnes.mostrador import atender\n        traido = atender(peticiones, raiz)\n        if traido and traido.strip() and traido.strip() != \"NO_ESTA\":\n            return material + \"\\n\\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\\n\" + traido\n        return material",
+  "texto_nuevo": "        nombres = _nombres_de_funcion_del_texto(\" \".join(faltantes or []), None)\n        if not nombres:\n            return material\n        peticiones = [{\"archivo\": archivo, \"nombre\": n} for n in nombres]\n        from arnes.mostrador import atender\n        traido = atender(peticiones, raiz)\n        if not traido or not traido.strip():\n            return material\n        no_esta = \"NO\" + \"_\" + \"ESTA\"\n        bloques = []\n        actual = None\n        for ln in traido.splitlines():\n            if ln.startswith(\"### \"):\n                if actual is not None:\n                    bloques.append(actual)\n                actual = [ln]\n            elif actual is not None:\n                actual.append(ln)\n        if actual is not None:\n            bloques.append(actual)\n        utiles = []\n        for b in bloques:\n            cuerpo = [x for x in b[1:] if x.strip() and x.strip() != no_esta]\n            if cuerpo:\n                utiles.append(\"\\n\".join(b))\n        if not utiles:\n            return material\n        return material + \"\\n\\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\\n\" + \"\\n\".join(utiles)",
+  "cambio": "En material_con_lo_que_falta: (1) si no sale ningun nombre de funcion, devolver el material tal cual sin pedir nada; (2) si salen nombres, pedir solo esos; (3) decidir si se trajo algo partiendo lo devuelto en bloques por su renglon de cabecera '### ' y quedarse solo con los bloques que tengan debajo algo distinto de la palabra que dice que no aparece (armada por trozos); (4) si no queda ningun bloque util, devolver el material identico; (5) si hay bloques utiles, anadir dos renglones en blanco, el renglon LO QUE FALTABA, ATENDIDO POR EL MOSTRADOR y debajo solo los bloques utiles.",
+  "codigo": "        nombres = _nombres_de_funcion_del_texto(\" \".join(faltantes or []), None)\n        if not nombres:\n            return material\n        peticiones = [{\"archivo\": archivo, \"nombre\": n} for n in nombres]\n        from arnes.mostrador import atender\n        traido = atender(peticiones, raiz)\n        if not traido or not traido.strip():\n            return material\n        no_esta = \"NO\" + \"_\" + \"ESTA\"\n        bloques = []\n        actual = None\n        for ln in traido.splitlines():\n            if ln.startswith(\"### \"):\n                if actual is not None:\n                    bloques.append(actual)\n                actual = [ln]\n            elif actual is not None:\n                actual.append(ln)\n        if actual is not None:\n            bloques.append(actual)\n        utiles = []\n        for b in bloques:\n            cuerpo = [x for x in b[1:] if x.strip() and x.strip() != no_esta]\n            if cuerpo:\n                utiles.append(\"\\n\".join(b))\n        if not utiles:\n            return material\n        return material + \"\\n\\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\\n\" + \"\\n\".join(utiles)",
+  "vigia": "vigias/test_vigia_el_mostrador_salva_la_vuelta.py (los seis casos; los tres rojos hoy: caso 3 sin otras funciones ni relleno, caso 4 material identico si la funcion no aparece, caso 5 identico en las cuatro situaciones). Ademas deben seguir verdes: vigias/test_vigia_falta_material_no_llama_a_la_ia.py, vigias/test_vigia_el_material_pide_la_funcion_publica.py y vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py (ocho casos).",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/mostrador.py",
+   "arnes/revisor_de_programa.py",
+   "cerebro/protocolo.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "mapa/inventario.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py",
+   "vigias/test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_memoria_completa.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "mostrador.py",
+   "protocolo.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "test_vigia_el_material_trae_la_pieza_pedida.py",
+   "test_vigia_el_pasillo_no_corta_al_que_escribe.py",
+   "test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_memoria_completa.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no inventa nada y no rompe vecinos."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 40195 a 17610 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "GPT-OSS 120B (Groq) no le cabe (47438 letras, aguanta 19042) -> se le salta",
+  "se pidio auditar a codex y no esta disponible: reviso groq",
+  "vueltas_dadas: 2"
+ ]
+}

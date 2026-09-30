@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El revisor exige que toda palabra con guion bajo nombrada en el encargo aparezca en el cambio, incluso las que el encargo nombra en el apartado de lo que NO SE TOCA, y por eso rechaza trabajos buenos.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "        _creando_archivo_nuevo = contenido_archivo is None and not (viejo or \"\").strip()\n        for palabra in set(re.findall(r\"\\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\\b\", limpia)):\n            if _creando_archivo_nuevo:",
+  "texto_nuevo": "        _creando_archivo_nuevo = contenido_archivo is None and not (viejo or \"\").strip()\n        # FRENADA EN FALSO CAZADA EL 2026-09-30: el encargo nombra piezas dentro del apartado de lo\n        # que NO SE TOCA, precisamente para protegerlas, y el revisor las exigia igual. Decir \"esto\n        # no se toca\" hacia que el trabajo se rechazara, y hubo que renunciar a proteger al vecino\n        # para que pasara. Se quita ese apartado del texto antes de buscar palabras obligatorias.\n        limpia = re.sub(r\"(?is)NO SE TOCA\\s*:.*?(?=\\n[A-Z][A-Z ]{2,}\\s*:|\\Z)\", \" \", limpia)\n        for palabra in set(re.findall(r\"\\b[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]*\\b\", limpia)):\n            if _creando_archivo_nuevo:",
+  "cambio": "Antes de buscar las palabras con guion bajo que el revisor exige que aparezcan en el cambio, quitar del texto del encargo el apartado 'NO SE TOCA: ...' completo, para que las piezas que el encargo nombra solo para protegerlas no se cuenten como obligatorias.",
+  "codigo": "        limpia = re.sub(r\"(?is)NO SE TOCA\\s*:.*?(?=\\n[A-Z][A-Z ]{2,}\\s*:|\\Z)\", \" \", limpia)",
+  "vigia": "vigias/test_vigia_lo_que_no_se_toca_no_se_exige.py, caso primero (hoy rojo): un encargo que nombra una pieza dentro del apartado NO SE TOCA no debe hacer que el revisor exija esa pieza en el cambio. Los otros tres casos verdes que miden que si se cazan los trabajos que de verdad no hacen lo que se pidio tienen que seguir verdes.",
+  "puede_danar": [
+   "todas las rondas de todos los proyectos",
+   "el apartado 4 de revisar en arnes/revisor_de_programa.py",
+   "los cuatro parches anteriores del mismo apartado"
+  ],
+  "preguntas": [
+   "El apartado 'NO SE TOCA' del encargo, ¿termina siempre en una linea nueva que empieza por mayusculas y dos puntos (como 'VIGIA:' o 'PUEDE DANAR:'), o puede venir al final del texto sin nada detras? Si puede venir en medio sin ese cierre, hay que decidir como se delimita."
+  ],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El cierre del apartado se reconoce solo con `\\n[A-Z][A-Z ]{2,}\\s*:`. Si el encabezado siguiente lleva acento o va en minúsculas (por ejemplo `A QUIÉN PUEDE DAÑAR:`, o `Vigia:`), el cierre NO casa y laalternativa `\\Z` se come TODO lo que venga despues, dejando de exigir palabras de secciones enteras: afloja el candado en silencio y las tres vigias verdes seguirian verdes sin medirlo.",
+   "La parada es perezosa y salta en el PRIMER encabezado en mayusculas, asi que si dentro del propio apartado `NO SE TOCA` hay una linea tipo `ARCHIVO: ...` que continue la lista, la parte protegida que va despues de esa linea vuelve a contar como obligatoria y vuelve la frenada en falso, en silencio.",
+   "`(?i)` hace que tambien case `no se toca` en prosa minúscula; combinado con el punto 1, un encargo que mencione la frase en mitad de otro parrafo sin encabezadoFormal despues pierde medio encargo como obligatoria.",
+   "Toca `limpia`, que es la variable compartida del apartado 4: el material esta truncado justo despues de `if _creando_archivo_nuevo:`, asi que no se puede ver si mas abajo se usa `limpia` para otra comprobacion que este recorte nomenciona."
+  ],
+  "que_falta": [
+   "La pregunta que el propio obrero deja abierta (donde acaba el apartado `NO SE TOCA`) esta contestada a medias: el patron resuelve solo el caso 'seccion al final' (`\\Z`) y 'seccion seguida de VIGIA:/PUEDE DANAR:' en mayusculas, y no el resto.",
+   "No hay medida del alcance del recorte: que cuando el cierre no casa se come secciones que si deben contar. Las tres vigias verdes no la miden, porque esos encargos no llevan apartado `NO SE TOCA`."
+  ],
+  "resumen_para_el_jefe": "Arregla justo la frenada en falso, en el sitio correcto y sin repetir los caminos cerrados, asi que se aprueba; el unico reparo que le pondria es que el cierre del apartado solo reconoce encabezados en mayusculas y, si falla, se come el resto del encargo sin que nada lo delate."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 40541 a 17513 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

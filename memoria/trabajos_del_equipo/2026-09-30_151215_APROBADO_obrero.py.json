@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En cuerpo/obrero.py, cuando falta_en_el_material detecta piezas faltantes, la vuelta devuelve error y muere sin llamar al mostrador arnes/mostrador.py que ya existe y sabe traerlas.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "falta_en_el_material",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def falta_en_el_material(material, encargo, conocidas=None):",
+    "texto_nuevo": "def material_con_lo_que_falta(material, faltantes, archivo, raiz):\n    \"\"\"El equipo viene en ayuda de la IA: pide lo que necesita y aqui esta.\n\n    Cuando al material le falta una pieza que la tarea nombra, en vez de morir\n    la vuelta, se le pide al mostrador (arnes/mostrador.py) que traiga SOLO lo\n    pedido y se anade al final del material. Asi el codigo no engorda: solo se\n    agrega lo que faltaba. Nunca revienta: si algo falla, devuelve el material\n    tal cual.\n    \"\"\"\n    try:\n        if not archivo:\n            return material\n        nombres = _nombres_de_funcion_del_texto(\" \".join(faltantes or []), None)\n        if nombres:\n            peticiones = [{\"archivo\": archivo, \"nombre\": n} for n in nombres]\n        else:\n            peticiones = [{\"archivo\": archivo, \"nombre\": \"\"}]\n        from arnes.mostrador import atender\n        traido = atender(peticiones, raiz)\n        if traido and traido.strip() and traido.strip() != \"NO_ESTA\":\n            return material + \"\\n\\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\\n\" + traido\n        return material\n    except Exception:\n        return material\n\n\ndef falta_en_el_material(material, encargo, conocidas=None):"
+   },
+   {
+    "texto_viejo": "        if clase != \"crear\":\n            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)\n            if faltantes:",
+    "texto_nuevo": "        if clase != \"crear\":\n            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)\n            if faltantes:\n                _raiz_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n                _archivo_tarea = \"\"\n                _nombres_tarea = _nombres_de_funcion_del_texto(tarea, _conocidas)\n                if _nombres_tarea:\n                    _archivo_tarea = _nombres_tarea[0]\n                material_obrero = material_con_lo_que_falta(\n                    material_obrero, faltantes, _archivo_tarea, _raiz_proyecto\n                )\n                faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)\n            if faltantes:"
+   }
+  ],
+  "cambio": "Anadir la funcion material_con_lo_que_falta justo delante de falta_en_el_material, y en el sitio donde la vuelta devolvia el error por material faltante, llamar a esa funcion y volver a comprobar antes de devolver el error.",
+  "codigo": "def material_con_lo_que_falta(material, faltantes, archivo, raiz):\n    \"\"\"El equipo viene en ayuda de la IA: pide lo que necesita y aqui esta.\n\n    Cuando al material le falta una pieza que la tarea nombra, en vez de morir\n    la vuelta, se le pide al mostrador (arnes/mostrador.py) que traiga SOLO lo\n    pedido y se anade al final del material. Asi el codigo no engorda: solo se\n    agrega lo que faltaba. Nunca revienta: si algo falla, devuelve el material\n    tal cual.\n    \"\"\"\n    try:\n        if not archivo:\n            return material\n        nombres = _nombres_de_funcion_del_texto(\" \".join(faltantes or []), None)\n        if nombres:\n            peticiones = [{\"archivo\": archivo, \"nombre\": n} for n in nombres]\n        else:\n            peticiones = [{\"archivo\": archivo, \"nombre\": \"\"}]\n        from arnes.mostrador import atender\n        traido = atender(peticiones, raiz)\n        if traido and traido.strip() and traido.strip() != \"NO_ESTA\":\n            return material + \"\\n\\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\\n\" + traido\n        return material\n    except Exception:\n        return material",
+  "vigia": "vigias/test_vigia_el_mostrador_salva_la_vuelta.py (seis casos, hoy rojos, deben quedar verdes); ademas vigias/test_vigia_falta_material_no_llama_a_la_ia.py, vigias/test_vigia_el_material_pide_la_funcion_publica.py y vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py deben seguir verdes.",
+  "puede_danar": [
+   "todas las vueltas de todos los proyectos que pasan por cuerpo/obrero.py",
+   "el tamano del material que se manda al cerebro (puede crecer sin control)",
+   "la entrega del archivo entero en vez de la pieza pedida",
+   "la vuelta entera si el mostrador reventara (por eso la funcion nueva nunca lanza)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico, no usa código inexistente y no rompe funcionalidades."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 35535 a 14615 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 47084 a 18977 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 20239 a 13508 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a codex y no esta disponible: reviso groq",
+  "vueltas_dadas: 2"
+ ]
+}

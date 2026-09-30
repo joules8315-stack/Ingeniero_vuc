@@ -1,0 +1,61 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La vuelta se muere cuando falta una pieza del material porque nadie atiende la peticion de lectura que lleva el error FALTA_MATERIAL, aunque el mostrador arnes/mostrador.py ya existe y sabe atenderla.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "falta_en_el_material",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def falta_en_el_material(material, encargo, conocidas=None):",
+    "texto_nuevo": "def material_con_lo_que_falta(material, faltantes, archivo, raiz):\n    \"\"\"El equipo viene en ayuda de la IA: pide lo que necesita y aqui esta.\n\n    Cuando al material le falta una pieza, en vez de morir la vuelta, se le\n    pide al mostrador (arnes/mostrador.py) que traiga SOLO lo pedido, por su\n    nombre, y se anade al final del material dentro de un bloque propio.\n    Asi el codigo no engorde: solo viaja lo pedido.\n\n    Nunca revienta: si algo falla, o no hay nada que pedir, o el mostrador no\n    trae nada util, devuelve el material tal cual, letra por letra.\n    \"\"\"\n    try:\n        if not faltantes:\n            return material\n        peticiones = []\n        for frase in faltantes:\n            try:\n                nombres = _nombres_de_funcion_del_texto(str(frase))\n            except Exception:\n                nombres = []\n            for nombre in nombres:\n                peticiones.append({\"archivo\": archivo, \"nombre\": nombre})\n        if not peticiones:\n            return material\n        from arnes.mostrador import atender\n        traido = atender(peticiones, raiz)\n        if not traido:\n            return material\n        if traido.strip() == \"NO_ESTA\":\n            return material\n        return material + \"\\n\\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\\n\" + traido\n    except Exception:\n        return material\n\n\ndef falta_en_el_material(material, encargo, conocidas=None):"
+   },
+   {
+    "texto_viejo": "        if clase != \"crear\":\n            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)\n            if faltantes:",
+    "texto_nuevo": "        if clase != \"crear\":\n            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)\n            if faltantes:\n                _raiz_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n                _archivo_tarea = \"\"\n                try:\n                    _nombres_archivo = re.findall(r\"[\\w./-]+\\.py\", tarea or \"\")\n                    if _nombres_archivo:\n                        _archivo_tarea = _nombres_archivo[0]\n                except Exception:\n                    _archivo_tarea = \"\"\n                material_obrero = material_con_lo_que_falta(\n                    material_obrero, faltantes, _archivo_tarea, _raiz_proyecto\n                )\n                faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)\n            if faltantes:"
+   }
+  ],
+  "cambio": "Anadir la funcion material_con_lo_que_falta justo delante de falta_en_el_material, y en el sitio donde la vuelta se moria, intentar atender la peticion con el mostrador y volver a comprobar si sigue faltando antes de devolver el error.",
+  "codigo": "def material_con_lo_que_falta(material, faltantes, archivo, raiz):\n    \"\"\"El equipo viene en ayuda de la IA: pide lo que necesita y aqui esta.\n\n    Cuando al material le falta una pieza, en vez de morir la vuelta, se le\n    pide al mostrador (arnes/mostrador.py) que traiga SOLO lo pedido, por su\n    nombre, y se anade al final del material dentro de un bloque propio.\n    Asi el codigo no engorde: solo viaja lo pedido.\n\n    Nunca revienta: si algo falla, o no hay nada que pedir, o el mostrador no\n    trae nada util, devuelve el material tal cual, letra por letra.\n    \"\"\"\n    try:\n        if not faltantes:\n            return material\n        peticiones = []\n        for frase in faltantes:\n            try:\n                nombres = _nombres_de_funcion_del_texto(str(frase))\n            except Exception:\n                nombres = []\n            for nombre in nombres:\n                peticiones.append({\"archivo\": archivo, \"nombre\": nombre})\n        if not peticiones:\n            return material\n        from arnes.mostrador import atender\n        traido = atender(peticiones, raiz)\n        if not traido:\n            return material\n        if traido.strip() == \"NO_ESTA\":\n            return material\n        return material + \"\\n\\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\\n\" + traido\n    except Exception:\n        return material",
+  "vigia": "vigias/test_vigia_el_mostrador_salva_la_vuelta.py (seis casos, hoy rojos, deben quedar verdes); ademas vigias/test_vigia_falta_material_no_llama_a_la_ia.py, vigias/test_vigia_el_material_pide_la_funcion_publica.py y vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py deben seguir verdes.",
+  "puede_danar": [
+   "todas las vueltas de todos los proyectos",
+   "el tamano del material que se manda al cerebro",
+   "la entrega del archivo entero en vez de la pieza pedida",
+   "la vuelta entera si el mostrador reventara"
+  ],
+  "preguntas": [],
+  "confianza": "media"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "La reparacion es un no-op silencioso si _nombres_de_funcion_del_texto filtra por su parametro 'conocidas' y con la llamada de una sola posicion (sin _conocidas) devuelve lista vacia siempre: en ese caso no hay peticiones, se devuelve el material intacto y los seis casos siguen rojos sin que nada lo indique.",
+   "Lo mismo si falta_en_el_material devuelve un texto unico y no una lista de frases: el bucle 'for frase in faltantes' recorria letras sueltas, no pedia nada y el arreglo no cambiaria nada.",
+   "El bloque pegado al material se vuelve a pasar por falta_en_el_material; si el mostrador devuelve el cuerpo de la funcion sin la linea 'def', el recomprobado seguira dando faltantes y la vuelta morira igual que hoy.",
+   "Se pide por archivo la primera ruta .py que mencione la tarea, para todas las peticiones: si la funcion nombrada vive en otro archivo, el mostrador no traera nada y el comportamiento sera el de hoy.",
+   "La comprobacion de la marca de ausencia es solo por igualdad exacta ('traido.strip() == \"NO_ESTA\"'); si el mostrador devuelve esa marca junto a texto, pasara como si fuera util y se anadira ruido al material de todos los proyectos."
+  ],
+  "que_falta": [
+   "Correr y reportar las CUATRO pruebas una por una, como pide el paquete: los seis casos de test_vigia_el_mostrador_salva_la_vuelta.py y los tres vigias que hoy estan verdes.",
+   "Hacer la promesa de sabotaje: deshacer el arreglo, correr la prueba y confirmar que los seis casos VUELVEN A ROJO; si alguno sigue verde, la prueba mira a otro nivel.",
+   "Confirmar en el archivo que falta_en_el_material devuelve una lista (y no un texto) y que _nombres_de_funcion_del_texto responde bien cuando se le llama sin la coleccion de nombres conocidos."
+  ],
+  "resumen_para_el_jefe": "El cambio cumple el encargo punto por punto y no usa nada inexistente: el unico riesgo serio es que la extraccion de nombres salga vacia y el arreglo no haga nada, asi que la prueba de seis casos es la que tiene que dar verde."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 34180 a 14615 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 44374 a 17179 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'texto_encargo' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'FALTA_MATERIAL' y esa palabra ",
+  "el pasillo recorto el encargo de 44621 a 17259 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'texto_encargo' y esa palabra no aparece ni en el texto viejo ni en el nuevo.; NO HACE LO QUE SE PIDIO: el encargo habla de 'FALTA_MATERIAL' y esa palabra ",
+  "el pasillo recorto el encargo de 44868 a 17330 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}
