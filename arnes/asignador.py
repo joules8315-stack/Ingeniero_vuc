@@ -205,7 +205,7 @@ def armar_encargo(fallo, material, intento=1):
     # final; se tira el relleno del medio.
     nombres = _nombres(_obj + " " + str(f.get("archivo") or ""))
     if len(trozo) > sitio:
-        trozo = _recortar_material(trozo, sitio, nombres)
+        trozo = _recortar_material(trozo, sitio, nombres, identificadores(_obj + " " + str(f.get("archivo") or "")))
     return cabecera + "\n" + trozo
 
 
@@ -424,8 +424,9 @@ def recortar_prompt(prompt, tope):
     if presupuesto <= 0 or len(material) <= presupuesto:
         return prompt
     nombres = _nombres(cabeza)
+    agujas = identificadores(cabeza)
     for _ in range(4):
-        material_corto = _recortar_material(material, presupuesto, nombres)
+        material_corto = _recortar_material(material, presupuesto, nombres, agujas)
         nuevo = cabeza + material_corto + cola
         if len(nuevo) <= tope:
             return nuevo
