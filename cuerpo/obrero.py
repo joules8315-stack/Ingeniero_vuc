@@ -140,7 +140,16 @@ def material_con_lo_que_falta(material, faltantes, archivo, raiz):
     try:
         if not archivo:
             return material
-        nombres = _nombres_de_funcion_del_texto(" ".join(faltantes or []), None)
+        texto_faltantes = " ".join(faltantes or [])
+        try:
+            en_minusculas = asignador.identificadores(texto_faltantes)
+        except Exception:
+            en_minusculas = set()
+        nombres = _nombres_de_funcion_del_texto(texto_faltantes, None)
+        for palabra in texto_faltantes.split():
+            limpia = palabra.strip("()[]{}<>\"'`.:,;")
+            if limpia and limpia.lower() in en_minusculas and limpia not in nombres:
+                nombres.append(limpia)
         if not nombres:
             return material
         peticiones = [{"archivo": archivo, "nombre": n} for n in nombres]
