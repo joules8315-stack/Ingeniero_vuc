@@ -18261,5 +18261,289 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.9
+ },
+ {
+  "id": 367,
+  "cuando": "2026-09-29 17:15",
+  "proyecto": "ingeniero",
+  "problema": "H8a: crear solo la vigia roja de las dos puertas. Probar que escribir un documento del proyecto sin veredicto se frena; importar piezas internas y llamar sus funciones desde terminal se frena y se apunta; reparar el propio arnes pasa; el candado nuevo no puede apagarse. NECESITO_LEER: arnes/candado_equipo.py main lineas 463-590; arnes/candado_legislar.py lineas 30-200; arnes/candado_terminal.py main completo; vigias/test_vigia_no_se_escribe_a_mano_en_el_proyecto.py si existe / motivo: construir la prueba ejecutable usando el montaje real / que decide: entradas y resultados exactos / riesgo: prueba verde de mentira. Usar memoria temporal.",
+  "flujos": [
+   "piezas",
+   "proyecto",
+   "dos"
+  ],
+  "piezas": [
+   "cerebro/piezas.py",
+   "mapa/auditoria_proyecto.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_legislar.py",
+   "arnes/candado_terminal.py",
+   "ingeniero.py",
+   "mapa/inventario.py"
+  ],
+  "trozos": [
+   "arnes/candado_terminal.py:25-205",
+   "arnes/candado_legislar.py:1-8",
+   "arnes/candado_legislar.py:25-205",
+   "arnes/candado_terminal.py:276-359"
+  ],
+  "leyes": [
+   "CONTRATO_AUDITORIA_DE_PROYECTO.md",
+   "CONTRATO_COMO_EL_INGENIERO_CONSTRUYE_UN_PROYECTO.md",
+   "CONTRATO_DOS_TRABAJANDO.md",
+   "CONTRATO_EL_DISPARADOR_VA_EN_LOS_DOS_SENTIDOS.md",
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md",
+   "CONTRATO_APUNTA_Y_REPARA.md",
+   "CONTRATO_CREAR_PIEZA_NUEVA.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_onboarding_no_pregunta_dos_veces.py",
+   "memoria/trabajos_sin_revisar/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "vigias/test_vigia_big_pickle_caido_no_se_espera_dos_veces.py",
+   "vigias/test_vigia_big_pickle_descansa_tras_dos_fallos.py",
+   "vigias/test_vigia_el_objetivo_no_va_dos_veces.py",
+   "vigias/test_vigia_la_misma_prueba_no_se_corre_dos_veces.py",
+   "vigias/test_vigia_no_se_escribe_en_otro_proyecto.py",
+   "vigias/test_vigia_no_se_le_habla_dos_veces_en_un_turno.py"
+  ],
+  "lineas_paquete": 747,
+  "lineas_proyecto": 399443,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 368,
+  "cuando": "2026-09-29 17:18",
+  "proyecto": "ingeniero",
+  "problema": "H8b: crear el programa candado_sin_puerta_trasera.py para hacer pasar la vigia H8a. NECESITO_LEER: vigias/test_vigia_no_hay_puerta_trasera_por_dentro.py completa; arnes/candado_equipo.py main completa; arnes/candado_terminal.py main completa; configuracion actual de hooks que llama esos candados / motivo: implementar exactamente la interfaz que prueba la vigia y luego conectarla / que decide: entrada, salida, registro de identidad y unico permiso del propio arnes / riesgo: candado no conectado o con otra puerta de apagado. No modificar aun hooks ni otros archivos; una pieza nueva.",
+  "flujos": [
+   "pieza",
+   "nueva",
+   "prueba"
+  ],
+  "piezas": [
+   "memoria/rescate/rv3_prueba_real_velocidad.py",
+   "vigias/test_vigia_no_hay_puerta_trasera_por_dentro.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_terminal.py",
+   "ingeniero.py"
+  ],
+  "trozos": [
+   "vigias/test_vigia_no_hay_puerta_trasera_por_dentro.py:1-80",
+   "arnes/candado_terminal.py:276-359",
+   "arnes/candado_equipo.py:463-590",
+   "arnes/candado_equipo.py:1-40",
+   "arnes/candado_equipo.py:217-249"
+  ],
+  "leyes": [
+   "CONTRATO_CREAR_PIEZA_NUEVA.md",
+   "CONTRATO_ENCHUFADO_SE_PRUEBA_EJECUTANDO.md",
+   "CONTRATO_ENCHUFAR_UNA_PIEZA_DORMIDA.md",
+   "CONTRATO_LA_PIEZA_SE_ENTREGA_ENTERA.md",
+   "CONTRATO_UNA_OPINION_NO_ES_PRUEBA.md",
+   "memoria/paquetes/foto_informe__rv3_prueba_matriz_de_roles_py_no_puede_m.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md",
+   "PLAN_CANDADOS_QUE_NO_SE_VIOLAN.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_rag_encuentra_pieza_correcta.py",
+   "memoria/trabajos_sin_revisar/test_vigia_el_juez_busca_su_prueba.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_el_juez_de_la_prueba.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_la_pieza_que_le_pregunta_a_codex.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_una_prueba_que_no_existe_no_vale.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "vigias/test_vigia_el_cierre_no_para_por_una_prueba_que_espera.py",
+   "vigias/test_vigia_el_cruzado_corre_la_prueba.py",
+   "vigias/test_vigia_el_juez_busca_su_prueba.py",
+   "vigias/test_vigia_el_juez_de_la_prueba.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_pit_mira_la_prueba_antes_de_dar_por_hecho.py",
+   "vigias/test_vigia_el_texto_largo_no_corta_la_pieza.py",
+   "vigias/test_vigia_la_misma_prueba_no_se_corre_dos_veces.py",
+   "vigias/test_vigia_la_pieza_nace_conectada_en_el_pit.py",
+   "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
+   "vigias/test_vigia_la_pieza_se_busca_por_nombre.py",
+   "vigias/test_vigia_no_hay_puerta_trasera_por_dentro.py",
+   "vigias/test_vigia_prueba_real.py",
+   "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py",
+   "vigias/test_vigia_trae_la_pieza_correcta.py",
+   "vigias/test_vigia_un_cambio_no_puede_vaciar_una_prueba.py",
+   "vigias/test_vigia_una_prueba_no_devuelve_en_vez_de_afirmar.py",
+   "vigias/test_vigia_una_prueba_no_escribe_en_la_memoria.py",
+   "vigias/test_vigia_una_prueba_nueva_no_deja_ciega_la_bateria.py",
+   "vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+   "vigias/test_vigia_una_prueba_que_no_existe_no_vale.py",
+   "vigias/test_vigia_una_prueba_que_revienta_no_nace_roja.py",
+   "vigias/test_vigia_una_tarea_que_entrega_la_prueba_se_comprueba_al_reves.py"
+  ],
+  "lineas_paquete": 758,
+  "lineas_proyecto": 400652,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 369,
+  "cuando": "2026-09-29 17:23",
+  "proyecto": "ingeniero",
+  "problema": "H8b reintento tras rechazo. NECESITO_LEER: arnes/autorizacion.py completo; vigias/test_vigia_no_hay_puerta_trasera_por_dentro.py completa; arnes/candado_equipo.py main completa; arnes/candado_terminal.py main completa; archivos de configuracion de hooks que los invocan / motivo: usar la API real de la llave de Julio, el JSON real del gancho y ejecutar los casos H8a / que decide: punto de entrada y autorizacion sin inventar / riesgo: candado muerto o cerrado para Julio. No incluir contratos largos.",
+  "flujos": [
+   "julio",
+   "real",
+   "candado"
+  ],
+  "piezas": [
+   "memoria/rescate/rv3_prueba_real_velocidad.py",
+   "skills/julio_pudo_trabajar.py",
+   "arnes/autorizacion.py",
+   "vigias/test_vigia_no_hay_puerta_trasera_por_dentro.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_terminal.py",
+   "ingeniero.py"
+  ],
+  "trozos": [
+   "vigias/test_vigia_no_hay_puerta_trasera_por_dentro.py:1-80",
+   "arnes/candado_terminal.py:276-359",
+   "arnes/candado_equipo.py:463-590",
+   "arnes/autorizacion.py:1-40",
+   "arnes/candado_equipo.py:439-460",
+   "arnes/candado_terminal.py:193-232"
+  ],
+  "leyes": [
+   "CONTRATO_A_JULIO_NO_SE_LE_PIDE_FIRMAR_LO_QUE_NO_PUEDE_JUZGAR.md",
+   "CONTRATO_AUTONOMIA_CLINE.md",
+   "skills/quien_sirve_de_verdad.py",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_envio_real.py",
+   "memoria/trabajos_sin_revisar/test_vigia_diccionario_de_julio.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py.FRENADO_POR_EL_GUARDIA.2",
+   "memoria/trabajos_sin_revisar/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "vigias/test_vigia_al_perito_no_le_ponen_los_candados_de_julio.py",
+   "vigias/test_vigia_autorizacion_de_julio.py",
+   "vigias/test_vigia_candado_escritura_conectado.py",
+   "vigias/test_vigia_diccionario_de_julio.py",
+   "vigias/test_vigia_el_candado_de_legislar_no_recoge_a_la_maquina.py",
+   "vigias/test_vigia_el_registro_del_candado_no_miente.py",
+   "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "vigias/test_vigia_lo_que_julio_dice_se_apunta_solo.py",
+   "vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py",
+   "vigias/test_vigia_no_hay_puerta_trasera_por_dentro.py",
+   "vigias/test_vigia_prueba_real.py"
+  ],
+  "lineas_paquete": 635,
+  "lineas_proyecto": 401521,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 370,
+  "cuando": "2026-09-29 17:26",
+  "proyecto": "ingeniero",
+  "problema": "H3: cuando un encargo usa NECESITO_LEER con rutas y funciones exactas, el paquete y el material final del equipo deben incluir esos trozos antes de contratos y vecinos. Fallo medido en H8b: se pidieron autorizacion.py completo, H8a completa, mains de dos candados y hooks; el paquete dijo incluirlos, pero el obrero no recibio ninguno e invento nombres. NECESITO_LEER: cerebro/router.py funcion armar completa; cerebro/protocolo.py funcion que recorta el material completa; cerebro/piezas.py funcion_completa; cuerpo/obrero.py tramo que prepara y recorta el encargo / motivo: localizar donde se pierden las peticiones exactas / que decide: prueba roja y reparacion del pasillo / riesgo: seguir gastando vueltas con material ausente.",
+  "flujos": [
+   "piezas",
+   "router",
+   "trozos"
+  ],
+  "piezas": [
+   "cerebro/piezas.py",
+   "cerebro/router.py",
+   "cerebro/trozos.py",
+   "arnes/autorizacion.py",
+   "cerebro/protocolo.py",
+   "cuerpo/obrero.py",
+   "ingeniero.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "mapa/inventario.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cerebro/protocolo.py:1-80",
+   "arnes/autorizacion.py:1-80",
+   "cerebro/piezas.py:129-171",
+   "cuerpo/obrero.py:220-325"
+  ],
+  "leyes": [
+   "cerebro/protocolo.py",
+   "CONTRATO_LEGISLACION_2026-08-24.md",
+   "CONTRATO_ANTES_DE_PREGUNTAR_SE_BUSCA.md",
+   "CONTRATO_CEREBRO_ROTO_SE_APARTA.md"
+  ],
+  "vigias": [
+   "memoria/trabajos_sin_revisar/test_vigia_el_equipo_aplica_varios_trozos.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "vigias/test_vigia_diccionario_router.py",
+   "vigias/test_vigia_el_equipo_aplica_varios_trozos.py",
+   "vigias/test_vigia_el_obrero_puede_entregar_varios_trozos.py",
+   "vigias/test_vigia_el_revisor_de_programa_suma_los_trozos.py",
+   "vigias/test_vigia_el_segundo_sitio_aplica_varios_trozos.py",
+   "vigias/test_vigia_router_contrato_nuevo.py",
+   "vigias/test_vigia_varios_trozos_de_un_archivo_en_una_ronda.py"
+  ],
+  "lineas_paquete": 745,
+  "lineas_proyecto": 402279,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
+ },
+ {
+  "id": 371,
+  "cuando": "2026-09-29 17:28",
+  "proyecto": "ingeniero",
+  "problema": "H2b causa raiz del pasillo: al recortar, conservar completa la funcion nombrada en NECESITO_LEER, no el principio del archivo. NECESITO_LEER: cerebro/piezas.py funcion funcion_completa completa; cerebro/router.py funcion armar completa; cerebro/protocolo.py funciones que preparan y recortan el material para el obrero; cuerpo/obrero.py _prompt_obrero y el sitio que aplica el tope / motivo: H8b y H3 pierden las funciones exactas y entregan comienzos irrelevantes / que decide: donde insertar la prioridad por funcion / riesgo: otro arreglo del tope que no resuelve la seleccion.",
+  "flujos": [
+   "piezas",
+   "router",
+   "obrero"
+  ],
+  "piezas": [
+   "cerebro/piezas.py",
+   "cerebro/router.py",
+   "cuerpo/obrero.py",
+   "cerebro/protocolo.py",
+   "mapa/inventario.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "cerebro/protocolo.py:1-80",
+   "cerebro/router.py:1-40",
+   "cuerpo/obrero.py:220-325",
+   "cuerpo/obrero.py:929-968",
+   "cuerpo/obrero.py:63-69"
+  ],
+  "leyes": [
+   "cerebro/protocolo.py",
+   "CONTRATO_AL_CEREBRO_SOLO_LO_SUYO.md",
+   "CONTRATO_APUNTA_Y_REPARA.md",
+   "CONTRATO_AUDITORIA_DE_PROYECTO.md"
+  ],
+  "vigias": [
+   "vigias/test_vigia_diccionario_router.py",
+   "vigias/test_vigia_el_obrero_puede_entregar_varios_trozos.py",
+   "vigias/test_vigia_el_obrero_repara_por_texto.py",
+   "vigias/test_vigia_router_contrato_nuevo.py"
+  ],
+  "lineas_paquete": 691,
+  "lineas_proyecto": 403089,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.8
  }
 ]

@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion tiene_veredicto en skills/quien_sirve_de_verdad.py, por lo que el vigia reporta 'La habilidad no expone tiene_veredicto'.",
+  "archivo": "skills/quien_sirve_de_verdad.py",
+  "funcion": "tiene_veredicto",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "",
+    "texto_nuevo": "\n\ndef tiene_veredicto(ruta):\n    \"\"\"Devuelve True solo si el documento en 'ruta' trae veredicto del equipo.\n\n    Un documento trae veredicto cuando en su texto aparecen las dos palabras\n    APROBADO y EQUIPO, sin distinguir mayusculas de minusculas. Si falta una de\n    las dos, no trae veredicto. Nunca revienta: ante cualquier duda (ruta vacia,\n    None, no existe, es carpeta, no se puede leer) devuelve False.\n    \"\"\"\n    if not ruta:\n        return False\n    try:\n        with open(ruta, \"r\", encoding=\"utf-8\", errors=\"replace\") as f:\n            texto = f.read()\n    except Exception:\n        return False\n    texto = texto.upper()\n    return (\"APROBADO\" in texto) and (\"EQUIPO\" in texto)\n"
+   }
+  ],
+  "cambio": "Agregar al final del archivo skills/quien_sirve_de_verdad.py la funcion nueva tiene_veredicto(ruta), sin tocar nada de lo ya escrito.",
+  "codigo": "def tiene_veredicto(ruta):\n    \"\"\"Devuelve True solo si el documento en 'ruta' trae veredicto del equipo.\n\n    Un documento trae veredicto cuando en su texto aparecen las dos palabras\n    APROBADO y EQUIPO, sin distinguir mayusculas de minusculas. Si falta una de\n    las dos, no trae veredicto. Nunca revienta: ante cualquier duda (ruta vacia,\n    None, no existe, es carpeta, no se puede leer) devuelve False.\n    \"\"\"\n    if not ruta:\n        return False\n    try:\n        with open(ruta, \"r\", encoding=\"utf-8\", errors=\"replace\") as f:\n            texto = f.read()\n    except Exception:\n        return False\n    texto = texto.upper()\n    return (\"APROBADO\" in texto) and (\"EQUIPO\" in texto)",
+  "vigia": "vigias/test_vigia_no_hay_puerta_trasera_por_dentro.py, caso que hoy esta rojo con 'La habilidad no expone tiene_veredicto'; al agregar la funcion debe pasar a verde. Sabotaje: quitar la funcion y el caso vuelve a rojo.",
+  "puede_danar": [
+   "skills/quien_sirve_de_verdad.py (la habilidad que ya vive ahi; solo se agrega al final, nada existente se modifica)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "skills/quien_sirve_de_verdead.py solo recibe una funcion nueva al final; ninguna linea existente cambia, asi que el resto de la habilidad (y las otras 6 piezas que dependen de skills) quedan intactas"
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo pedido: anade al final de la habilidad la funcion que faltaba, con la regla de las dos palabras y sin reventar nunca; no inventa nada, no toca la prueba ni el candado, y el caso rojo del vigia debe pasar a verde."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 34206 a 11779 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'os'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "el pasillo recorto el encargo de 36826 a 14747 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'os'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "el pasillo recorto el encargo de 36938 a 14782 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 3"
+ ]
+}

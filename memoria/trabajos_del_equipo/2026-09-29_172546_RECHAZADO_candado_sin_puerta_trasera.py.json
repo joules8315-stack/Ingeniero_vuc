@@ -1,0 +1,52 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El pedido llego incompleto y ademas se inventaron nombres de artefactos, clave JSON y funciones; el material no incluye la API de autorizacion, el JSON de ganchos ni H8a, asi que no puedo escribir el candado sin inventar.",
+  "archivo": "arnes/candado_sin_puerta_trasera.py",
+  "texto_nuevo": "",
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "api_autorizacion.py (nombre de archivo que no aparece en el material)",
+   "ganchos.json (nombre de archivo que no aparece en el material)",
+   "h8a.py (nombre de archivo que no aparece en el material)",
+   "la clave 'ganchos' dentro del JSON de ganchos",
+   "los nombres de funcion de la API: autorizar / esta_autorizado / puede",
+   "los puntos de entrada de H8a: main / ejecutar / run",
+   "los nombres canonicos de las dos llamadas internas: llamada_interna_uno / llamada_interna_dos",
+   "entrada.json como nombre del fichero de entrada real"
+  ],
+  "fallos": [
+   "El encargo dice 'usa LITERALMENTE la API de autorizacion, el JSON de los ganchos y H8a incluidos en el paquete' y 'no inventes rutas, archivos, palabras de llave ni funciones'. La propuesta no los lee: adivina tres nombres de archivo y una clave de JSON que no constan en el material. El propio paquete ordena contestar NECESITO_LEER cuando falta un archivo, y avisa de que el material fue recortado.",
+   "La API de autorizacion se carga pero NO se usa: se hace un getattr a ciegas y luego la decision se toma unicamente del campo 'autorizada' que viene en el JSON de entrada. El candado no consulta la API para autorizar nada, asi que la regla central del encargo no se cumple.",
+   "El JSON de ganchos se carga y solo se comprueba que tenga la clave inventada 'ganchos'; despues no vuelve a usarse. Requirement incumplido.",
+   "Las 'dos llamadas internas demostradas' se identifican con dos nombres inventados. Contra llamadas reales el filtro no casa nunca y el candado pasa sin frenar nada.",
+   "No existe la comprobacion exigida de 'no aprobar si el fallo no corresponde al estado previo esperado': no hay ninguna comparacion con el estado previo en ningun punto del flujo.",
+   "ejecutar_h8a_de_verdad trata un retorno None como 'satisfecha', o sea aprueba cuando H8a no ha dicho nada; y no contrasta el resultado de H8a con los casos que este verifica, que es lo que el encargo pide.",
+   "El candado no candea nada: imprime y anade una linea a un jsonl, no bloquea la entrada a un proyecto sin veredicto. No hay ninguna via por la que una IA quede impedida de entrar."
+  ],
+  "riesgo_vecinos": [
+   "Cargar modulos con spec_from_file_location sin registrarlos en sys.modules rompe @dataclass y get_type_hints dentro de api/h8a: los artefactos del paquete pueden reventar al importarse.",
+   "_buscar_artefacto prueba RAIZ_PROYECTO, RAIZ_ARNES y RAIZ_PROYECTO/arnes: puede cargar el fichero equivocado si hay nombres repetidos.",
+   "Anexar a registro_identidad.jsonl dentro del propio arnes crea escritura permanente en cada ejecucion, incluido el caso fallido."
+  ],
+  "que_falta": [
+   "Leer de verdad los tres artefactos del paquete (o devolver NECESITO_LEER con su ruta) antes de escribir codigo que dependa de ellos.",
+   "Usar la API para decidir la autorizacion de las llamadas, no el flag del fichero de entrada.",
+   "Usar el JSON de ganchos para algo mas que comprobar su existencia.",
+   "La comparacion con el estado previo esperado antes de aprobar.",
+   "Contrastar el resultado de H8a contra los casos que H8a verifica, en vez de asumir que retorno None es aprobado."
+  ],
+  "resumen_para_el_jefe": "Adivino los nombres de los tres artefactos del paquete, de la clave del JSON y de las funciones, y luego ni siquiera los usa: la autorizacion sale de un flag del propio fichero de entrada, las dos llamadas se filtran con nombres inventados que nunca casan, y no hay comprobacion del estado previo; ademas avisa el propio paquete que ante un archivo ausente habia que pedir NECESITO_LEER, no escribir codigo en torno a una suposicion."
+ },
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

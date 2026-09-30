@@ -1,0 +1,36 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la funcion tiene_veredicto en skills/quien_sirve_de_verdad.py, por eso el caso rojo dice 'La habilidad no expone tiene_veredicto'.",
+  "archivo": "skills/quien_sirve_de_verdad.py",
+  "funcion": "tiene_veredicto",
+  "texto_viejo": "if __name__ == \"__main__\":\n    sys.stdout.write(informe() + \"\\n\")",
+  "texto_nuevo": "def tiene_veredicto(ruta):\n    \"\"\"Devuelve True solo si el documento trae veredicto del equipo.\n\n    Un documento trae veredicto cuando en su texto aparecen las dos palabras\n    APROBADO y EQUIPO, sin distinguir mayusculas de minusculas. Si falta una\n    de las dos, no trae veredicto. Nunca revienta: ante la duda, False.\n    \"\"\"\n    if not ruta:\n        return False\n    try:\n        if not os.path.isfile(ruta):\n            return False\n        with open(ruta, \"r\", encoding=\"utf-8\", errors=\"replace\") as f:\n            texto = f.read()\n    except Exception:\n        return False\n    texto = texto.upper()\n    return \"APROBADO\" in texto and \"EQUIPO\" in texto\n\n\nif __name__ == \"__main__\":\n    sys.stdout.write(informe() + \"\\n\")",
+  "cambio": "Agregar al final del archivo, justo antes del bloque if __name__ == \"__main__\":, la funcion tiene_veredicto(ruta) que devuelve True solo si el texto del documento contiene APROBADO y EQUIPO (sin distinguir mayusculas), y False en cualquier otro caso (ruta vacia, None, no existe, es carpeta, no se puede leer).",
+  "codigo": "def tiene_veredicto(ruta):\n    \"\"\"Devuelve True solo si el documento trae veredicto del equipo.\n\n    Un documento trae veredicto cuando en su texto aparecen las dos palabras\n    APROBADO y EQUIPO, sin distinguir mayusculas de minusculas. Si falta una\n    de las dos, no trae veredicto. Nunca revienta: ante la duda, False.\n    \"\"\"\n    if not ruta:\n        return False\n    try:\n        if not os.path.isfile(ruta):\n            return False\n        with open(ruta, \"r\", encoding=\"utf-8\", errors=\"replace\") as f:\n            texto = f.read()\n    except Exception:\n        return False\n    texto = texto.upper()\n    return \"APROBADO\" in texto and \"EQUIPO\" in texto",
+  "vigia": "vigias/test_vigia_no_hay_puerta_trasera_por_dentro.py, caso que hoy esta rojo con 'La habilidad no expone tiene_veredicto'; al agregar la funcion debe pasar a verde. Sabotaje: quitar la funcion nueva y comprobar que el caso vuelve a rojo.",
+  "puede_danar": [
+   "skills/quien_sirve_de_verdad.py (la habilidad que ya vive en ese archivo)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "El campo `codigo` trae solo la funcion nueva: quien lo aplique tiene que INSERTAR antes de `if __name__ == \"__main__\":` y no sobreescribir el archivo; el `texto_nuevo` si muestra el resultado completo, asi que el riesgo es del aplicador, no del cambio.",
+   "Opcional: el caso `ruta` vacio se cubre con `if not ruta`, que tambien se lleva por delante un `0`; irrelevante para el uso real, no es motivo de rechazo."
+  ],
+  "resumen_para_el_jefe": "La reparacion es la correcta: anade al final de skills/quien_sirve_de_verdad.py la funcion que faltaba, sin tocar ni un renglon de lo que ya estaba, usando solo os y sys que ya venian importados, y devuelve False ante cualquier duda como pedia el encargo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 35940 a 13776 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

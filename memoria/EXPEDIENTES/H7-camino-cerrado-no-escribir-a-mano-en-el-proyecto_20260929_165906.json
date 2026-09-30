@@ -1,0 +1,68 @@
+{
+  "orden": {
+    "id": "H7-camino-cerrado-no-escribir-a-mano-en-el-proyecto",
+    "titulo": "CAMINO CERRADO: Claude no escribe documentos ni codigo del proyecto a mano, ni cuando el candado lo permite",
+    "origen": "Julio 2026-09-29, con enojo: por que estas escribiendo otra vez a mano",
+    "repara": "Claude escribio METODO_ANTE_UN_PROBLEMA.md dentro del proyecto EL SOLO, dos veces el mismo dia, y la segunda despues de que Julio ya se lo hubiera corregido esa misma jornada. El candado de equipo deja pasar los documentos .md, y por ese hueco se colo. Pero la ley 6 de Julio dice SIEMPRE EN EQUIPO, SIN SALTO, y no hace excepcion con los documentos. Y el error de fondo es peor que la forma: Julio pidio UN PROGRAMA y se le entrego OTRO DOCUMENTO, que es mas memoria, justo lo que el acaba de declarar inservible",
+    "pieza": "arnes/candado_equipo.py",
+    "encargo": "CAMINO CERRADO, queda escrito para no repetirlo: nada que viva dentro de un proyecto de Julio se escribe a solas, tampoco los documentos, tampoco las leyes, tampoco los contratos. Se manda al equipo con su encargo, como el codigo. Lo unico que Claude escribe a solas son los ENCARGOS en su carpeta temporal, que son la manera de dirigir al equipo, y nunca llegan al proyecto. Y la regla madre detras: cuando Julio pide un PROGRAMA, no se le entrega un documento; un documento es memoria, y la evidencia del 2026-09-29 es que la memoria no obliga a nadie. Si el candado de equipo deja pasar los documentos por un hueco, ese hueco se cierra, con su prueba primero.",
+    "vigia": "vigias/test_vigia_no_se_escribe_a_mano_en_el_proyecto.py",
+    "razon": "Julio lo corrigio dos veces el mismo dia, la segunda con enojo; y el hueco del candado lo va a permitir otra vez mientras siga abierto",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "87cd2218ab34c54d",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-29_165901_SIN_VEREDICTO_NO_ENCONTRADO.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : el pasillo recorto el encargo de 35301 a 18834 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  aviso       : PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  diagnostico : El encargo anterior traia NO_ENCONTRADO porque no habia material sobre el candado de equipo ni sobre donde se escribe a solas; el material actual solo trae contratos y el codigo de auditoria, no el candado ni el sitio donde se cierra el hueco.\n  toca        : NO_ENCONTRADO funcion NO_ENCONTRADO\n  confianza   : baja\n  PREGUNTA_REQUERIDA: ¿Donde vive el candado de equipo que deja pasar los documentos, y cual es el archivo y la funcion exactos donde se cierra el hueco?; ¿Que prueba real hay que escribir primero para demostrar que el candado deja pasar un documento, y en que archivo va?\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-09-29T16:59:06",
+  "analisis": {
+    "que_paso": "La orden H7 (cerrar el hueco por donde el candado de equipo deja pasar los documentos .md) se mando al equipo con deepseek escribiendo y bigpickle revisando, pero NO se aprobo. DeepSeek dejo el pedido con la marca NO_ENCONTRADO y una PREGUNTA_REQUERIDA: pedia saber donde vive el candado y donde se cierra el hueco. Codigo 0 pero sin veredicto: no se guardo llave y no se puede tocar codigo. El trabajo quedo archivado en memoria/trabajos_del_equipo/2026-09-29_165901_SIN_VEREDICTO_NO_ENCONTRADO.json.",
+    "causa_raiz": "El paquete que se le entrego al equipo NO traia la pieza a reparar. La propia salida lo dice: \"el material actual solo trae contratos y el codigo de auditoria, no el candado ni el sitio donde se cierra el hueco\". Ademas el pasillo recorto el encargo de 35301 a 18834 letras para que le cupiera a un cerebro gratis (tope 19042). Como el material llego fragmentado, DeepSeek cumplio la ley (nunca inventar) y devolvio NO_ENCONTRADO. El candado y el hueco EXISTEN y son ubicables (arnes/candado_equipo.py: CODIGO no incluye .md, y en el chequeo de extension se hace \"DEJO PASAR: documento libre\" y return 0), pero esa pieza nunca viajo dentro del paquete. Es un fallo de fragmentacion de memoria, no de la IA.",
+    "donde": "El fallo no esta en el codigo del candado sino en el empaquetado que alimenta al equipo. El hueco real a reparar vive en arnes/candado_equipo.py (la tupla CODIGO en la linea 52 no lista .md, y el bloque de la ~linea 521-523 que hace \"DEJO PASAR: documento libre\" y devuelve 0). Pero lo que fallo es la herramienta que arma el paquete y el pasillo que lo recorto: el material entregado no incluyo ese archivo ni el sitio del hueco.",
+    "quien_fallo": "herramienta — el empaquetador que armo el material sin la pieza clave (arnes/candado_equipo.py) y el pasillo que ademas lo recorto de 35301 a 18834 letras para encajarlo en un cerebro gratis. El equipo (deepseek) actuo bien: freno con NO_ENCONTRADO en vez de inventar.",
+    "citas": [
+      {
+        "archivo": "arnes/candado_equipo.py",
+        "texto": "CODIGO = (\".py\", \".js\", \".html\", \".ts\", \".jsx\", \".tsx\", \".css\", \".sql\")"
+      },
+      {
+        "archivo": "arnes/candado_equipo.py",
+        "texto": "    if os.path.splitext(fp)[1].lower() not in CODIGO:"
+      },
+      {
+        "archivo": "arnes/candado_equipo.py",
+        "texto": "        _apuntar_frenada(fp, \"DEJO PASAR: documento libre\")"
+      },
+      {
+        "archivo": "arnes/candado_equipo.py",
+        "texto": "        return 0                                    # documentos: libres"
+      },
+      {
+        "archivo": "arnes/candado_equipo.py",
+        "texto": "  · los documentos .md          — escribir la ley no es programar"
+      }
+    ],
+    "no_volver_a": "No se manda un encargo al equipo sin que el paquete traiga la pieza a reparar completa; si el pasillo la recorta para que le quepa a un cerebro gratis, se manda entera a uno de pago en vez de mutilarla.",
+    "tarea_nueva": {
+      "repara": "El paquete de la orden H7 no incluye arnes/candado_equipo.py, por eso el equipo devuelve NO_ENCONTRADO. Hay que rearmar el material minimo para que traiga ESE archivo (la tupla CODIGO de la linea 52 y el bloque ~521-523 del hueco 'documento libre') y evitar que el pasillo lo recorte para un cerebro gratis.",
+      "pieza": "empaquetador del comando (python ingeniero.py trabaja) y el pasillo que recorta al tope del cerebro gratis",
+      "razon": "Sin la pieza en el paquete, el equipo no puede legislar y seguira frenando con NO_ENCONTRADO; es fallo de fragmentacion (ley 2026-08-27: el paquete trae la pieza COMPLETA), no de la IA.",
+      "encargo": "Regenerar el paquete minimo de H7 incluyendo arnes/candado_equipo.py (linea 52 CODIGO y bloque del hueco 'DEJO PASAR: documento libre'), sin recortar; si excede el tope del cerebro gratis, enrutar a un cerebro de pago y reenviar la MISMA orden al equipo.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "juez",
+    "motivo": "Las citas solo demuestran la politica del candado (los .md pasan el filtro de extension), no que el paquete entregado careciera de esa pieza ni que el archivo existiera fuera de el; ninguna cita muestra el contenido ni la ausencia del archivo en el paquete.",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\H7-camino-cerrado-no-escribir-a-mano-en-el-proyecto_20260929_165906.json"
+  }
+}

@@ -1,0 +1,29 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta el codigo real de cerebro/router.py y cuerpo/obrero.py para saber como se arma y recorta el prompt del obrero, y no puedo inventar la API de armado sin arriesgar otra syntax error o una vigia autoalimentada.",
+  "archivo": "vigias/test_vigia_necesito_leer_llega_al_obrero.py",
+  "texto_nuevo": "NECESITO_LEER: cerebro/router.py / motivo: la vigia debe pasar por el MISMO armado y recorte que usa equipo / que decide: los nombres exactos de las funciones de armado y recorte y como se le pasa el encargo / riesgo: si invento la API, la vigia se autoalimenta con un fallback y pasa en verde siempre, reproduciendo el rechazo anterior.\nNECESITO_LEER: cuerpo/obrero.py / motivo: la vigia debe afirmar que los literales NECESITO_LEER llegan al prompt final del obrero antes de contratos y vecinos / que decide: donde se construye el prompt final, en que orden se pegan contratos, vecinos y material, y como se llama esa funcion / riesgo: sin esto no puedo afirmar el 'antes de contratos y vecinos' que pide el encargo y la vigia no reproducira H8b.\nNECESITO_LEER: vigias/test_vigia_el_paquete_se_corta_a_su_minima_expresion.py / motivo: es la vigia hermana del mismo flujo router y muestra el patron de carpetas y memoria temporales que debo reutilizar / que decide: como se aisla el estado y como se invoca el armado sin tocar archivos reales / riesgo: sin el patron, la vigia puede tocar archivos reales o nacer verde por estado compartido.",
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "No se creo el archivo: la propuesta es un NECESITO_LEER, no una entrega, asi que H3 sigue abierto hasta que llegue el material",
+   "Falta justification mas dura de por que hacen falta los tres: la afirmacion 'antes de contratos y vecinos' se podria haber intentado como comprobacion de orden en el texto fuente de router/obrero, sin llamar a ninguna funcion; solo eso justifies pedir cuerpo/obrero.py, no las tres cosas",
+   "Falta un compromiso de que al recibir el material la vigia nace roja por H8b (paquete declara piezas, prompt final las pierde) y no con un fallback que la autoalimente",
+   "confianza 'baja' sin indicar que parte de la peticion es imprescindible y cual es opcional"
+  ],
+  "resumen_para_el_jefe": "No invento nada: pide correctamente router.py, obrero.py y la vigia hermana, las tres nombradas en el propio material, y la propia ley autoriza pedir material; pero no entrega el archivo y podria haber distilled la prueba a un chequeo de orden en el texto fuente en vez de declarar que no puede hacer nada."
+ },
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "vueltas_dadas: 4"
+ ]
+}

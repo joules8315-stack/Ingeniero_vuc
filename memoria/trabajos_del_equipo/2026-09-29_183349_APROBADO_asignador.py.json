@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El barrido de palabras parte el nombre de archivo app_web.html por el punto y cuenta app_web como identificador; hay que limpiar los nombres de archivo completos antes de barrer.",
+  "archivo": "arnes/asignador.py",
+  "funcion": "identificadores",
+  "texto_viejo": "    for palabra in re.findall(r\"[A-Za-z_][A-Za-z0-9_]*\", texto):",
+  "texto_nuevo": "    limpio = re.sub(r\"[\\w/]+\\.(?:py|js|ts|css|sql|html|md|json)\", \" \", texto)\n    for palabra in re.findall(r\"[A-Za-z_][A-Za-z0-9_]*\", limpio):",
+  "cambio": "Reemplazar el unico renglon del barrido de palabras por dos: uno que haga una copia del texto quitando los nombres de archivo completos (mismo patron de extensiones que ya usa el archivo) sustituyendolos por un espacio, y otro que barra las palabras sobre esa copia limpia en vez de sobre el texto original.",
+  "codigo": "    limpio = re.sub(r\"[\\w/]+\\.(?:py|js|ts|css|sql|html|md|json)\", \" \", texto)\n    for palabra in re.findall(r\"[A-Za-z_][A-Za-z0-9_]*\", limpio):",
+  "vigia": "vigias/test_vigia_el_pasillo_conserva_la_funcion_nombrada.py, caso test_no_cuenta_nombres_de_archivo: con el texto 'Arreglar app_web.html y nada mas' el conjunto devuelto debe quedar vacio (ni app_web, ni app_web.html, ni html), y los otros nueve casos verdes deben seguir verdes.",
+  "puede_danar": [
+   "arnes/asignador.py (funcion identificadores, recien escrita y sin llamadores todavia)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El patron [\\w/]+\\.(?:...) no atrapa extensiones fuera de la lista (por ejemplo .txt o .bak), asi que un nombre asi seguiria soltando pedazos; es limite del encargo, que fijo esa lista, no fallo del arreglo",
+   "El barrido por delante de funcion/def/class se dejo sobre el texto original tal como se pidio, asi que un archivo nombrado justo despues de 'def' o 'funcion' pasaria sin limpiar; hoy ese caso esta verde y no se toca"
+  ],
+  "que_falta": [
+   "El nombre exacto del caso rojo (test_no_cuenta_nombres_de_archivo) no viene en el material, es un nombre supuesto: la comprobacion debe hacerse por el texto 'Arreglar app_web.html y nada mas', no por el nombre del test"
+  ],
+  "resumen_para_el_jefe": "El arreglo es el que se pidio: quita los nombres de archivo antes de barrer, deja el resto del renglon y el barrido por 'def'/'funcion' como estaban, y con el texto del problema devuelve conjunto vacio; aprobado, a comprobar con la prueba que ya existe."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 33680 a 18300 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

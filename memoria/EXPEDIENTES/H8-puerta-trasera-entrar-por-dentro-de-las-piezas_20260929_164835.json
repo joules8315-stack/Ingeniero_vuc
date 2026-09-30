@@ -22,5 +22,43 @@
   "codigo": 0,
   "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-09-29_164831_SIN_VEREDICTO_NO_ENCONTRADO.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : el pasillo recorto el encargo de 32896 a 17305 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  aviso       : PRIVACIDAD: se taparon 1 dato(s) personales antes de mandarlo fuera (ley de Julio: solo codigo a la nube).\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  diagnostico : El material no contiene el codigo de las dos puertas que hay que cerrar (ni el arnes de documentos libres ni la pieza de registro/cierre de ley), asi que no se puede escribir el cambio sin leer esos archivos.\n  toca        : NO_ENCONTRADO funcion NO_ENCONTRADO\n  confianza   : baja\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
   "apartados": [],
-  "fecha": "2026-09-29T16:48:35"
+  "fecha": "2026-09-29T16:48:35",
+  "analisis": {
+    "que_paso": "El equipo NO aprobo la orden H8 (cerrar las dos puertas traseras en arnes/candado_equipo.py). DeepSeek dejo el pedido a mitad y devolvio NO_ENCONTRADO: el material que le llego no traia el codigo de las dos puertas que habia que cerrar. Ademas el pasillo recorto el encargo de 32896 a 17305 letras (tope medido 19042) para que cupiera en un cerebro gratis. Sin veredicto, no se guardo llave y no se pudo tocar codigo.",
+    "causa_raiz": "El armador del paquete trabaja sobre un mapa/indice VIEJO: el mapa registra arnes/candado_equipo.py con 381 lineas (y el paquete lo describe con 196), cuando el archivo real tiene 616 lineas. Por eso los trozos entregados terminan en la linea 195 y nunca alcanzan las dos puertas, que viven mas abajo: la puerta del documento libre en la linea 522 y la del propio arnes en la 526. Como el material no contenia el codigo a cambiar, el obrero cumplio la ley de nunca inventar y marco NO_ENCONTRADO. El recorte del pasillo (32896 -> 17305) agravo la falta de material. No fallo la IA: acerto al negarse.",
+    "donde": "El armador del paquete (cerebro/router.py: armar / a_texto) alimentado por un mapa desactualizado (mapa/MAPA_INGENIERO.json), mas el recorte de medir_el_pasillo.py. Archivo objetivo: arnes/candado_equipo.py (puertas en las lineas 522 y 526, fuera de los trozos entregados).",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "mapa/MAPA_INGENIERO.json:2258",
+        "texto": "\"lineas\": 381,"
+      },
+      {
+        "archivo": "memoria/paquetes/ingeniero__arnes_candado_equipo_py__cerrar_las_puer.md:34",
+        "texto": "### `arnes/candado_equipo.py` — 196 lineas"
+      },
+      {
+        "archivo": "arnes/candado_equipo.py:522",
+        "texto": "        _apuntar_frenada(fp, \"DEJO PASAR: documento libre\")"
+      },
+      {
+        "archivo": "arnes/candado_equipo.py:523",
+        "texto": "        return 0                                    # documentos: libres"
+      }
+    ],
+    "no_volver_a": "No mandar al equipo a reparar un archivo con un paquete armado sobre un mapa viejo: primero se refresca el mapa y se comprueba que los trozos entregados contienen las lineas exactas que hay que cambiar.",
+    "tarea_nueva": {
+      "repara": "Que el armador del paquete detecte cuando las lineas/md5 del mapa no coinciden con el archivo en disco y re-inventarie/re-trozе esa pieza antes de entregar, para que el veredicto SI traiga el codigo real; y que frene con aviso si los trozos aun no cubren las lineas a cambiar.",
+      "pieza": "cerebro/router.py (con mapa/inventario.py)",
+      "razon": "El paquete entrego una version parcial y vieja de arnes/candado_equipo.py (196/381 lineas de 616), ocultando las dos puertas de las lineas 522 y 526, y por eso el obrero solo pudo decir NO_ENCONTRADO.",
+      "encargo": "En cerebro/router.py, antes de armar el paquete, comparar por md5/lineas cada pieza del mapa contra el archivo en disco; si no coincide, re-inventariar y re-trozar esa pieza para que los trozos incluyan las lineas objetivo, y si aun no las cubre, frenar y avisar en vez de entregar material incompleto.",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": false,
+    "paso": "citas",
+    "motivo": "citas que no existen: [{\"archivo\": \"mapa/MAPA_INGENIERO.json:2258\", \"texto\": \"\\\"lineas\\\": 381,\", \"por_que\": \"el archivo no existe\"}, {\"archivo\": \"memoria/paquetes/ingeniero__arnes_candado_equipo_py__cerrar_las_puer.md:34\", \"texto\": \"### `arnes/candado_equipo.py` — 196 lineas\", \"por_que\": \"el archivo no existe\"}, {\"archivo\": \"arnes/candado_equipo.py:522\", \"texto\": \"        _apuntar_frenada(fp, \\\"DEJO PASAR: documento libre\\\")\", \"por_que\": \"el archivo no existe\"}, {\"archivo\": \"arnes/candado_equipo.py:523\", \"texto\": \"  ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\H8-puerta-trasera-entrar-por-dentro-de-las-piezas_20260929_164835.json"
+  }
 }
