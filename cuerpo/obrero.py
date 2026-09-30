@@ -141,15 +141,33 @@ def material_con_lo_que_falta(material, faltantes, archivo, raiz):
         if not archivo:
             return material
         nombres = _nombres_de_funcion_del_texto(" ".join(faltantes or []), None)
-        if nombres:
-            peticiones = [{"archivo": archivo, "nombre": n} for n in nombres]
-        else:
-            peticiones = [{"archivo": archivo, "nombre": ""}]
+        if not nombres:
+            return material
+        peticiones = [{"archivo": archivo, "nombre": n} for n in nombres]
         from arnes.mostrador import atender
         traido = atender(peticiones, raiz)
-        if traido and traido.strip() and traido.strip() != "NO_ESTA":
-            return material + "\n\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\n" + traido
-        return material
+        if not traido or not traido.strip():
+            return material
+        no_esta = "NO" + "_" + "ESTA"
+        bloques = []
+        actual = None
+        for ln in traido.splitlines():
+            if ln.startswith("### "):
+                if actual is not None:
+                    bloques.append(actual)
+                actual = [ln]
+            elif actual is not None:
+                actual.append(ln)
+        if actual is not None:
+            bloques.append(actual)
+        utiles = []
+        for b in bloques:
+            cuerpo = [x for x in b[1:] if x.strip() and x.strip() != no_esta]
+            if cuerpo:
+                utiles.append("\n".join(b))
+        if not utiles:
+            return material
+        return material + "\n\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\n" + "\n".join(utiles)
     except Exception:
         return material
 
