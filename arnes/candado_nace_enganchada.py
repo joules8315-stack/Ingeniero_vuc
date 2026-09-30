@@ -149,9 +149,12 @@ def recien_nacidas(raiz, dias=2):
     """Devuelve las huerfanas que nacieron dentro de los ultimos `dias`.
 
     Se apoya en la historia guardada del proyecto (git) para saber cuando se guardo
-    por primera vez cada archivo. Si la historia no devuelve fecha, se considera
-    recien nacida (todavia no esta guardada). Ante cualquier fallo devuelve lista
+    por primera vez cada archivo. Si la historia no devuelve fecha, NO se considera
+    recien nacida: ante la duda no se bloquea. Ante cualquier fallo devuelve lista
     vacia para no frenar a ciegas.
+
+    Se pregunta a la historia UNA SOLA VEZ por todas las piezas, no una vez por
+    cada pieza, y se busca cada archivo por su ruta completa dentro de la casa.
     """
     import subprocess
     import datetime
@@ -161,27 +164,53 @@ def recien_nacidas(raiz, dias=2):
     except Exception:
         return []
 
+    if not lista:
+        return []
+
     limite = datetime.date.today() - datetime.timedelta(days=dias)
+
+    try:
+        salida = subprocess.run(
+            ["git", "log", "--diff-filter=A", "--format=%ad", "--date=short",
+             "--name-only"],
+            cwd=raiz,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        if salida.returncode != 0:
+            return []
+    except Exception:
+        return []
+
+    # Primera fecha en que aparece cada archivo en la historia (la mas antigua).
+    primera_fecha = {}
+    fecha_actual = None
+    for linea in salida.stdout.splitlines():
+        linea = linea.strip()
+        if not linea:
+            continue
+        try:
+            fecha_actual = datetime.datetime.strptime(linea, "%Y-%m-%d").date()
+            continue
+        except ValueError:
+            pass
+        if fecha_actual is None:
+            continue
+        if linea not in primera_fecha:
+            primera_fecha[linea] = fecha_actual
+
     nacidas = []
     for nombre in lista:
         try:
-            salida = subprocess.run(
-                ["git", "log", "--diff-filter=A", "--follow",
-                 "--format=%ad", "--date=short", "--", nombre],
-                cwd=raiz,
-                capture_output=True,
-                text=True,
-                timeout=5,
-            )
-            fechas = [linea.strip() for linea in salida.stdout.splitlines() if linea.strip()]
-            if not fechas:
-                nacidas.append(nombre)
-                continue
-            mas_antigua = min(fechas)
-            fecha = datetime.datetime.strptime(mas_antigua, "%Y-%m-%d").date()
-            if fecha >= limite:
-                nacidas.append(nombre)
+            ruta_relativa = os.path.relpath(nombre, raiz).replace(os.sep, "/")
         except Exception:
+            ruta_relativa = nombre.replace(os.sep, "/")
+        fecha = primera_fecha.get(ruta_relativa)
+        if fecha is None:
+            # No se sabe: ante la duda NO se frena.
+            continue
+        if fecha >= limite:
             nacidas.append(nombre)
     return nacidas
 
