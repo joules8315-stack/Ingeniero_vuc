@@ -335,7 +335,7 @@ def _seccionar(material):
     return out
 
 
-def _recortar_material(material, presupuesto, nombres):
+def _recortar_material(material, presupuesto, nombres, agujas=None):
     """Recorta `material` a `presupuesto` letras POR PARTES, no por un solo lado.
 
     Conserva, en orden: (1) las secciones '### `archivo`' que el problema NOMBRA (entera, si
@@ -367,9 +367,32 @@ def _recortar_material(material, presupuesto, nombres):
             usado += tam
             ultimo = b
         elif prio == 0 and presupuesto - usado > 100:
-            elegidos.append((a, a + (presupuesto - usado)))
-            ultimo = a + (presupuesto - usado)
-            usado = presupuesto
+            queda = presupuesto - usado
+            texto_sec = material[a:b]
+            aguja_real = None
+            if agujas:
+                bajo = texto_sec.lower()
+                mejor = None
+                for ag in agujas:
+                    pos = bajo.find(str(ag).lower())
+                    if pos != -1 and (mejor is None or pos < mejor):
+                        mejor = pos
+                        aguja_real = texto_sec[pos:pos + len(str(ag))]
+            if aguja_real is not None:
+                pedazo = trozo_que_contiene(texto_sec, aguja_real, queda)
+                pos = texto_sec.find(pedazo)
+                if pos != -1:
+                    elegidos.append((a + pos, a + pos + len(pedazo)))
+                    ultimo = a + pos + len(pedazo)
+                    usado += len(pedazo)
+                else:
+                    elegidos.append((a, a + queda))
+                    ultimo = a + queda
+                    usado = presupuesto
+            else:
+                elegidos.append((a, a + queda))
+                ultimo = a + queda
+                usado = presupuesto
     piezas = [material[a:b] for a, b in sorted(elegidos)]
     piezas = [p for p in piezas if p and p.strip()]
     if not piezas:
