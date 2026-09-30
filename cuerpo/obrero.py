@@ -128,6 +128,32 @@ def funciones_que_declara(ruta):
         return set()
 
 
+def material_con_lo_que_falta(material, faltantes, archivo, raiz):
+    """El equipo viene en ayuda de la IA: pide lo que necesita y aqui esta.
+
+    Cuando al material le falta una pieza que la tarea nombra, en vez de morir
+    la vuelta, se le pide al mostrador (arnes/mostrador.py) que traiga SOLO lo
+    pedido y se anade al final del material. Asi el codigo no engorda: solo se
+    agrega lo que faltaba. Nunca revienta: si algo falla, devuelve el material
+    tal cual.
+    """
+    try:
+        if not archivo:
+            return material
+        nombres = _nombres_de_funcion_del_texto(" ".join(faltantes or []), None)
+        if nombres:
+            peticiones = [{"archivo": archivo, "nombre": n} for n in nombres]
+        else:
+            peticiones = [{"archivo": archivo, "nombre": ""}]
+        from arnes.mostrador import atender
+        traido = atender(peticiones, raiz)
+        if traido and traido.strip() and traido.strip() != "NO_ESTA":
+            return material + "\n\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\n" + traido
+        return material
+    except Exception:
+        return material
+
+
 def falta_en_el_material(material, encargo, conocidas=None):
     """Devuelve frases cortas con lo que el encargo nombra y el material no trae.
 
@@ -1444,6 +1470,16 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
                                        funciones=_nombres_de_funcion_del_texto(tarea, _conocidas))
         if clase != "crear":
             faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)
+            if faltantes:
+                _raiz_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                _archivo_tarea = ""
+                _nombres_tarea = _nombres_de_funcion_del_texto(tarea, _conocidas)
+                if _nombres_tarea:
+                    _archivo_tarea = _nombres_tarea[0]
+                material_obrero = material_con_lo_que_falta(
+                    material_obrero, faltantes, _archivo_tarea, _raiz_proyecto
+                )
+                faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)
             if faltantes:
                 return {"_error": "FALTA_MATERIAL: " + "; ".join(faltantes) + " NECESITO_LEER: " + (_archivo_tarea[0] if _archivo_tarea else "el archivo que falta") + " motivo: sin ese trozo no se puede tocar lo que se pide decide: si se puede escribir el cambio o hay que pedir mas material riesgo: si no se lee, se paga una pregunta que nadie puede contestar"}
         crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,
