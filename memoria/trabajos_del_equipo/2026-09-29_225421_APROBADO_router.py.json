@@ -1,0 +1,38 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El reparto tira los pedazos MARCADOS cuando no caben, en vez de quedarselos siempre, y por eso el paquete pierde lo que el problema nombra.",
+  "archivo": "cerebro/router.py",
+  "funcion": "recortar_por_presupuesto",
+  "texto_viejo": "def recortar_por_presupuesto(trozos, tope):\n    \"\"\"Devuelve los trozos que caben en el tope, de mayor a menor puntaje.\n\n    Se suman las longitudes de sus textos. El de mayor puntaje se queda SIEMPRE, aunque el\n    solo ya pase del tope, porque es el que trae lo que se pidio. Los que no caben se quedan\n    fuera. Ante cualquier error devuelve la lista tal como llego y nunca lanza.\n    \"\"\"\n    try:\n        ordenados = sorted(trozos, key=lambda t: t.get(\"puntaje\", 0), reverse=True)\n        elegidos = []\n        suma = 0\n        for t in ordenados:\n            largo = len(t.get(\"texto\") or \"\")\n            if not elegidos or suma + largo <= tope:\n                elegidos.append(t)\n                suma += largo\n        return elegidos\n    except Exception:\n        return trozos",
+  "texto_nuevo": "def recortar_por_presupuesto(trozos, tope):\n    \"\"\"Devuelve los trozos que caben en el tope, de mayor a menor puntaje.\n\n    Se suman las longitudes de sus textos. El de mayor puntaje se queda SIEMPRE, aunque el\n    solo ya pase del tope, porque es el que trae lo que se pidio. Los trozos MARCADOS (los\n    que traen lo que el problema nombra) se quedan SIEMPRE, aunque no quepan. Los que no\n    caben y no estan marcados se quedan fuera. Ante cualquier error devuelve la lista tal\n    como llego y nunca lanza.\n    \"\"\"\n    try:\n        ordenados = sorted(trozos, key=lambda t: t.get(\"puntaje\", 0), reverse=True)\n        elegidos = []\n        suma = 0\n        for t in ordenados:\n            largo = len(t.get(\"texto\") or \"\")\n            marcado = bool(t.get(\"_completo\") or t.get(\"_nombrado\"))\n            if not elegidos or marcado or suma + largo <= tope:\n                elegidos.append(t)\n                suma += largo\n        return elegidos\n    except Exception:\n        return trozos",
+  "cambio": "Dentro del recorrido de recortar_por_presupuesto, calcular si el trozo esta MARCADO (trae _completo o _nombrado con algo dentro) y, si lo esta, quedarselo siempre aunque no quepa, sumando igual su largo. Los no marcados siguen igual que hoy. El orden de mayor a menor puntaje se conserva porque se sigue recorriendo la lista ya ordenada una sola vez.",
+  "codigo": "            marcado = bool(t.get(\"_completo\") or t.get(\"_nombrado\"))\n            if not elegidos or marcado or suma + largo <= tope:\n                elegidos.append(t)\n                suma += largo",
+  "vigia": "vigias/test_vigia_el_presupuesto_no_tira_lo_nombrado.py, primer caso (el medido de Julio): la lista devuelta tiene que traer los DOS marcados, el de 6.393 letras y el de 14.652; los otros tres casos siguen verdes.",
+  "puede_danar": [
+   "el armado de los paquetes de todos los proyectos",
+   "el tamano final de todo paquete (puede crecer si hay muchos marcados)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El tamano del paquete crece cuando hay marcado que no cabe (aquí 21.045 letras sobre un tope de 19.000); es el coste aceptado por el encargo y esta acotado a los pedazos marcados, pero conviene que el vigia lo deje anotado si aparece."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El arreglo hace lo que pedía: los dos pedazos marcados entran aunque no quepan, los dos sin marca se van, el orden se conserva y solo toca esa función; las dos marcas (_completo y _nombrado) salen del propio material, así que no inventó nada."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 39145 a 18116 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 45517 a 15998 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 45698 a 16057 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 3"
+ ]
+}
