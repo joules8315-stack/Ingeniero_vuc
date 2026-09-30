@@ -113,8 +113,10 @@ def recortar_por_presupuesto(trozos, tope):
     """Devuelve los trozos que caben en el tope, de mayor a menor puntaje.
 
     Se suman las longitudes de sus textos. El de mayor puntaje se queda SIEMPRE, aunque el
-    solo ya pase del tope, porque es el que trae lo que se pidio. Los que no caben se quedan
-    fuera. Ante cualquier error devuelve la lista tal como llego y nunca lanza.
+    solo ya pase del tope, porque es el que trae lo que se pidio. Los trozos MARCADOS (los
+    que traen lo que el problema nombra) se quedan SIEMPRE, aunque no quepan. Los que no
+    caben y no estan marcados se quedan fuera. Ante cualquier error devuelve la lista tal
+    como llego y nunca lanza.
     """
     try:
         ordenados = sorted(trozos, key=lambda t: t.get("puntaje", 0), reverse=True)
@@ -122,7 +124,8 @@ def recortar_por_presupuesto(trozos, tope):
         suma = 0
         for t in ordenados:
             largo = len(t.get("texto") or "")
-            if not elegidos or suma + largo <= tope:
+            marcado = bool(t.get("_completo") or t.get("_nombrado"))
+            if not elegidos or marcado or suma + largo <= tope:
                 elegidos.append(t)
                 suma += largo
         return elegidos
