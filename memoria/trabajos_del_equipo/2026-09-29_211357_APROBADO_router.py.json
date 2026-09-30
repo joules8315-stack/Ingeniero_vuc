@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La pieza asegurar_trozo_nombrado no existe, así que el pedazo que contiene lo nombrado se queda con puntaje bajo y el reparto del presupuesto lo tira; hay que crearla y llamarla desde el sitio donde hoy se comprueba _ya_en_pedazos.",
+  "archivo": "cerebro/router.py",
+  "funcion": "asegurar_trozo_nombrado (nueva) y el sitio donde se calcula _ya_en_pedazos",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "                _ya_en_pedazos = any(\n                    t[\"pieza\"] == _ficha_codigo[\"id\"] and t[\"desde\"] <= _hallazgo[\"desde\"]\n                    and t[\"hasta\"] >= _hallazgo[\"hasta\"] for t in pedazos)",
+    "texto_nuevo": "                pedazos = asegurar_trozo_nombrado(\n                    pedazos, _ficha_codigo[\"id\"], _hallazgo[\"desde\"], _hallazgo[\"hasta\"],\n                    _texto_funcion, _palabra)\n                _ya_en_pedazos = True  # la pieza nueva ya garantizo que lo nombrado esta dentro y con prioridad, asi que el si de mas abajo ya no tiene que meter nada"
+   },
+   {
+    "texto_viejo": "def quitar_contenidos(trozos):",
+    "texto_nuevo": "def asegurar_trozo_nombrado(pedazos, pieza, desde, hasta, texto, nombre):\n    \"\"\"Garantiza que lo que el problema nombra sobreviva al reparto del presupuesto.\n\n    Devuelve una LISTA de pedazos. Si ya hay un pedazo de la MISMA pieza que contiene esos\n    renglones, no agrega nada: a ese pedazo le sube el puntaje a 99.0 y le pone la marca\n    _completo. Si no hay ninguno que lo contenga, agrega al principio un pedazo nuevo con\n    puntaje 99.0, la marca _completo y su direccion. Un pedazo de OTRA pieza nunca cuenta.\n    Nunca revienta: con lista vacia, nada o algo que no es lista, devuelve una lista que al\n    menos trae el pedazo nombrado, y jamas lanza un error. Nunca tira ningun pedazo que ya\n    estuviera.\n    \"\"\"\n    try:\n        if not isinstance(pedazos, list):\n            pedazos = []\n        for t in pedazos:\n            if not isinstance(t, dict):\n                continue\n            if t.get(\"pieza\") != pieza:\n                continue\n            if t.get(\"desde\") <= desde and t.get(\"hasta\") >= hasta:\n                t[\"puntaje\"] = 99.0\n                t[\"_completo\"] = nombre\n                return pedazos\n        nuevo = {\n            \"pieza\": pieza,\n            \"desde\": desde,\n            \"hasta\": hasta,\n            \"texto\": texto,\n            \"puntaje\": 99.0,\n            \"_completo\": nombre,\n            \"direccion\": \"%s:%s-%s\" % (pieza, desde, hasta),\n        }\n        return [nuevo] + list(pedazos)\n    except Exception:\n        try:\n            return [{\n                \"pieza\": pieza,\n                \"desde\": desde,\n                \"hasta\": hasta,\n                \"texto\": texto,\n                \"puntaje\": 99.0,\n                \"_completo\": nombre,\n                \"direccion\": \"%s:%s-%s\" % (pieza, desde, hasta),\n            }] + list(pedazos)\n        except Exception:\n            return []\n\n\ndef quitar_contenidos(trozos):"
+   }
+  ],
+  "cambio": "Agregar la funcion asegurar_trozo_nombrado arriba, junto a las ayudas cortas, y reemplazar los tres renglones que calculan _ya_en_pedazos por una llamada a esa funcion mas _ya_en_pedazos = True con comentario.",
+  "codigo": "def asegurar_trozo_nombrado(pedazos, pieza, desde, hasta, texto, nombre):\n    \"\"\"Garantiza que lo que el problema nombra sobreviva al reparto del presupuesto.\n\n    Devuelve una LISTA de pedazos. Si ya hay un pedazo de la MISMA pieza que contiene esos\n    renglones, no agrega nada: a ese pedazo le sube el puntaje a 99.0 y le pone la marca\n    _completo. Si no hay ninguno que lo contenga, agrega al principio un pedazo nuevo con\n    puntaje 99.0, la marca _completo y su direccion. Un pedazo de OTRA pieza nunca cuenta.\n    Nunca revienta: con lista vacia, nada o algo que no es lista, devuelve una lista que al\n    menos trae el pedazo nombrado, y jamas lanza un error. Nunca tira ningun pedazo que ya\n    estuviera.\n    \"\"\"\n    try:\n        if not isinstance(pedazos, list):\n            pedazos = []\n        for t in pedazos:\n            if not isinstance(t, dict):\n                continue\n            if t.get(\"pieza\") != pieza:\n                continue\n            if t.get(\"desde\") <= desde and t.get(\"hasta\") >= hasta:\n                t[\"puntaje\"] = 99.0\n                t[\"_completo\"] = nombre\n                return pedazos\n        nuevo = {\n            \"pieza\": pieza,\n            \"desde\": desde,\n            \"hasta\": hasta,\n            \"texto\": texto,\n            \"puntaje\": 99.0,\n            \"_completo\": nombre,\n            \"direccion\": \"%s:%s-%s\" % (pieza, desde, hasta),\n        }\n        return [nuevo] + list(pedazos)\n    except Exception:\n        try:\n            return [{\n                \"pieza\": pieza,\n                \"desde\": desde,\n                \"hasta\": hasta,\n                \"texto\": texto,\n                \"puntaje\": 99.0,\n                \"_completo\": nombre,\n                \"direccion\": \"%s:%s-%s\" % (pieza, desde, hasta),\n            }] + list(pedazos)\n        except Exception:\n            return []",
+  "vigia": "vigias/test_vigia_lo_que_se_nombra_sobrevive_al_presupuesto.py, con sus cinco casos: lista vacia agrega el pedazo nombrado con puntaje 99.0 y su marca; si ya hay uno de la misma pieza que lo contiene no agrega nada y le sube el puntaje a 99.0 con su marca; si el que lo contiene es de otra pieza agrega el nombrado de primero; si solo se solapa a medias tambien lo agrega de primero; y con basura no revienta.",
+  "puede_danar": [
+   "el armado de los paquetes de todos los proyectos",
+   "el reparto del presupuesto de trozos",
+   "el orden de los pedazos que ya estaban"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El pedazo nuevo que crea asegurar_trozo_nombrado NO lleva 'abs' ni 'rol', y el renglon que reemplaza si los llevaba. Hoy no rompe a nadie: revise uno por uno a los que leen pedazos y solo usan 'direccion', 'puntaje' y 'texto' (cerebro/router.py:574, cuerpo/medidor.py:59) o con .get ('pieza', 'desde', 'hasta' en test_vigia_no_inventa.py:37-40 y test_vigia_paquete_no_lee_repo_entero.py:48-52). El unico que mira 'abs' de un pedazo es completar_funciones (router.py:723) y corre ANTES, en el renglon 341, asi que nunca ve el pedazo nuevo.",
+   "Se cae el filtro 'and _texto_funcion' del renglon 366: si una funcion nombrada saliera con texto vacio, antes no se metia nada y ahora se mete un pedazo con texto vacio y 99.0. No gasta letras (recortar_por_presupuesto las suma en cero) pero anade un encabezado vacio al paquete. El encargo pidio poner _ya_en_pedazos en verdadero sin condicion, asi que se hizo lo pedido."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Aprobado: las dos piezas que pide el encargo estan, el texto viejo que se reemplaza esta literal en cerebro/router.py:363-365, y los cinco casos de la vigia pasan al traces; el unico apunte es que el pedazo nuevo no copia 'abs' ni 'rol' del renglon que reemplaza, pero ningun vecino los lee."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 32890 a 17894 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 39797 a 16071 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 40081 a 16178 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 40326 a 16259 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}

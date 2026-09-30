@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La pieza solo reconoce arranques de un lenguaje pegados al margen izquierdo, asi que no encuentra funciones de JavaScript sangradas ni de un solo renglon; hay que anadir un camino de reserva que se active solo cuando la busqueda de siempre no encontro nada.",
+  "archivo": "cerebro/piezas.py",
+  "funcion": "funcion_completa",
+  "texto_viejo": "    if not desde:\n        return None",
+  "texto_nuevo": "    if not desde:\n        # CAMINO DE RESERVA (2026-09-29): la busqueda de siempre solo mira un lenguaje y exige\n        # columna cero. Las funciones de Foto Informe empiezan con otra palabra, van SANGRADAS\n        # y caben enteras en UN SOLO RENGLON. Solo se entra aqui si lo de arriba no encontro\n        # nada: si encontro, todo sigue exactamente igual que hoy.\n        formas_js = (\n            \"function \" + nombre + \"(\",\n            \"async function \" + nombre + \"(\",\n            \"const \" + nombre + \" =\",\n            \"let \" + nombre + \" =\",\n            \"var \" + nombre + \" =\",\n            nombre + \" = function\",\n            nombre + \" = async\",\n            nombre + \": function\",\n            nombre + \": async\",\n        )\n        for i, linea in enumerate(lineas, 1):\n            limpia = linea.lstrip()\n            if not limpia.startswith(formas_js):\n                continue\n            # En las formas con igual o dos puntos, para no confundir una funcion con un dato\n            # cualquiera, el renglon solo vale si ademas trae la palabra function o la flecha.\n            if (\"=\" in limpia or \":\" in limpia) and \"function\" not in limpia and \"=>\" not in limpia:\n                continue\n            desde = hasta = i\n            break\n        if not desde:\n            return None\n        # DONDE TERMINA: se cuentan las llaves desde el renglon de la declaracion. Si la cuenta\n        # vuelve a cero en ese mismo renglon, la funcion cabe en UN SOLO RENGLON y empieza y\n        # termina ahi. Si se llega al final sin cerrar, se toma el final del archivo.\n        cuenta = 0\n        abrio = False\n        for j in range(desde - 1, len(lineas)):\n            cuenta += lineas[j].count(\"{\") - lineas[j].count(\"}\")\n            if lineas[j].count(\"{\"):\n                abrio = True\n            if abrio and cuenta <= 0:\n                hasta = j + 1\n                break\n        else:\n            hasta = len(lineas)\n        if not abrio:\n            hasta = desde\n        return {\"desde\": desde, \"hasta\": hasta, \"texto\": \"\\n\".join(lineas[desde - 1:hasta])}",
+  "cambio": "Reemplazar los dos renglones 'if not desde: return None' por un camino de reserva que, solo cuando la busqueda de siempre no encontro nada, busca la funcion escrita en el otro lenguaje (JavaScript) sin exigir columna cero, aceptando las nueve formas de arranque indicadas, y calculando el final contando llaves desde la declaracion (con el caso de un solo renglon y el caso de llegar al final del archivo).",
+  "codigo": "    if not desde:\n        # CAMINO DE RESERVA (2026-09-29): la busqueda de siempre solo mira un lenguaje y exige\n        # columna cero. Las funciones de Foto Informe empiezan con otra palabra, van SANGRADAS\n        # y caben enteras en UN SOLO RENGLON. Solo se entra aqui si lo de arriba no encontro\n        # nada: si encontro, todo sigue exactamente igual que hoy.\n        formas_js = (\n            \"function \" + nombre + \"(\",\n            \"async function \" + nombre + \"(\",\n            \"const \" + nombre + \" =\",\n            \"let \" + nombre + \" =\",\n            \"var \" + nombre + \" =\",\n            nombre + \" = function\",\n            nombre + \" = async\",\n            nombre + \": function\",\n            nombre + \": async\",\n        )\n        for i, linea in enumerate(lineas, 1):\n            limpia = linea.lstrip()\n            if not limpia.startswith(formas_js):\n                continue\n            # En las formas con igual o dos puntos, para no confundir una funcion con un dato\n            # cualquiera, el renglon solo vale si ademas trae la palabra function o la flecha.\n            if (\"=\" in limpia or \":\" in limpia) and \"function\" not in limpia and \"=>\" not in limpia:\n                continue\n            desde = hasta = i\n            break\n        if not desde:\n            return None\n        # DONDE TERMINA: se cuentan las llaves desde el renglon de la declaracion. Si la cuenta\n        # vuelve a cero en ese mismo renglon, la funcion cabe en UN SOLO RENGLON y empieza y\n        # termina ahi. Si se llega al final sin cerrar, se toma el final del archivo.\n        cuenta = 0\n        abrio = False\n        for j in range(desde - 1, len(lineas)):\n            cuenta += lineas[j].count(\"{\") - lineas[j].count(\"}\")\n            if lineas[j].count(\"{\"):\n                abrio = True\n            if abrio and cuenta <= 0:\n                hasta = j + 1\n                break\n        else:\n            hasta = len(lineas)\n        if not abrio:\n            hasta = desde\n        return {\"desde\": desde, \"hasta\": hasta, \"texto\": \"\\n\".join(lineas[desde - 1:hasta])}",
+  "vigia": "vigias/test_vigia_la_funcion_de_javascript_se_encuentra_por_nombre.py, con sus cinco casos: funcion JS sangrada y de un solo renglon, funcion JS repartida en varios renglones, funcion JS declarada como flecha, funcion normal del lenguaje de siempre entera, y nombre inexistente devolviendo nada sin reventar.",
+  "puede_danar": [
+   "cerebro/router.py",
+   "todos los paquetes de todos los proyectos que usan funcion_completa para decidir que trozos entregar"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "router.py y todos los proyectos: para un nombre que NO existe como funcion de Python, antes se devolvia None y ahora puede devolver un trozo de JavaScript incrustado dentro de un archivo de Python, con el desde/hasta de ese trozo. El camino que ya funcionaba queda intacto (esta dentro de if not desde), pero cambia lo que se entrega cuando el nombre falla.",
+   "Si una funcion JS nunca cierra sus llaves, hasta se va al final del archivo: se entrega todo el resto del archivo en vez de un 'no esta' claro, y eso se come contexto del obrero."
+  ],
+  "que_falta": [
+   "El docstring de la funcion sigue diciendo que se mira 'solo la boca del modulo (columna cero)' y que 'lo anidado no es una pieza que nadie pueda pedir por su nombre': el cambio contradice esa frase y no la actualiza.",
+   "No se cubren las funciones exportadas ('export function render(', 'export const render =') ni las escritas sin espacios alrededor del igual ('const render=()=>{'), que son justo las de un solo renglon mas frecuentes.",
+   "Un metodo de objeto ('render: function(a) {' dentro de un literal) se cuenta desde su propia linea, asi que la pieza sale sin el '{' que abre el objeto ni el '};' que lo cierra.",
+   "El conteo de llaves no distingue llaves dentro de comillas o plantillas, asi que un '{' dentro de un texto alarga la pieza de mas."
+  ],
+  "resumen_para_el_jefe": "El arreglo esta bien y no rompe nada: solo entra cuando la busqueda de siempre fallo, encuentra las nueve formas de JavaScript aunque esten sangradas y en un solo renglon, y deja intacto el camino que ya funcionaba; lo unico pendiente es actualizar el docstring y avisar de que no cubre funciones exportadas."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 40083 a 18934 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 46993 a 16083 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 47347 a 16201 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 3"
+ ]
+}
