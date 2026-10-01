@@ -1,0 +1,25 @@
+
+LO QUE YA SE INTENTO Y EL AUDITOR RECHAZO CON RAZON. No se vuelve a hacer:
+
+INTENTO 1, RECHAZADO POR INVENTO: se escribio una prueba que se fabricaba un muneco de mentira de la
+libreta y despues probaba el muneco. Asi la prueba salia VERDE sin que la libreta existiera. Eso es
+una prueba tautologica: se asegura de que su propio muneco funciona y no vigila nada.
+
+PROHIBIDO EN ESTA RONDA, y es lo que tumbo el intento 1:
+- NADA de munecos, imitaciones ni sustitutos de la libreta. Ni uno.
+- NADA de sustituir la pieza por su nombre de paquete. Se carga el ARCHIVO REAL por su RUTA.
+- La prueba NO puede salir verde mientras la libreta no exista. Si sale verde, esta mal escrita.
+
+COMO SE CARGA LA PIEZA, y esto es obligatorio: se arma la ruta hasta arnes/libreta_de_frenos.py
+partiendo de la carpeta de la propia prueba, y se carga ESE archivo por su ruta. Si el archivo no
+esta, la prueba FALLA, y eso es exactamente lo que se busca hoy: nace roja porque la pieza no existe
+todavia.
+
+QUE SIGNIFICA QUE NAZCA ROJA, para que no haya duda: hoy, al correrla, los cuatro casos tienen que
+FALLAR, y fallar diciendo en palabras simples que la libreta no existe. Manana, cuando la libreta se
+escriba, los cuatro pasan a verde sin tocar la prueba. Si hoy sale verde, el trabajo esta mal y se
+rechaza otra vez.
+
+LO QUE SE PUEDE SUSTITUIR, y solo esto: la CARPETA donde la libreta escribe. La prueba le da su
+propia carpeta aparte para no tocar la memoria de verdad. Eso no es un muneco de la libreta: es
+decirle a la libreta de verdad donde escribir.
