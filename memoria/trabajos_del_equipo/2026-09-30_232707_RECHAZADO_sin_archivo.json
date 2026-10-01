@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "deepseek",
+ "propuesta": {
+  "_error": "el cerebro no devolvio JSON",
+  "_crudo": "NECESITO_LEER: arnes/candado_nace_enganchada.py / motivo: el material trae la funcion `huerfanas` RECORTADA (corta en `for nombre in nombres:` dentro del bloque \"Se quitan los puntos de entrada\", y no muestra el resto de la funcion ni las demas funciones del archivo, ni la funcion que decide si es punto de entrada) / que decide: sin ver el tramo que filtra puntos de entrada, el tramo que decide \"viejas vs recien nacidas\" (roja 2) y el tramo que arma la lista final (roja 1), no puedo copiar el texto_viejo literal ni reescribir la funcion entera sin inventar / riesgo: si escribo a ciegas, invento codigo que no existe y el trabajo se descarta otra vez (que es justo el motivo de rechazo anterior)."
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El cambio solo reordena las claves de normalizacion, pero el diagnostico del paquete dice que la roja 3 se debe a que el nombre pelado se le pasa a _es_punto_de_entrada, que intenta ABRIR el archivo. Reordenar claves hace que se prefiera 'ruta' cuando exista, pero NO garantiza que lo que se le pase a _es_punto_de_entrada sea la ruta: si el diccionario trae 'nombre' pero no 'ruta'/'path', sigue pasando el nombre pelado. El cambio no arregla la causa raiz descrita.",
+   "El propio diagnostico del paquete dice que las rojas 1 y 2 NO se midieron y que hay que medirlas antes de tocar. La propuesta no aborda ni roja 1 (pieza_que_llama aparece como huerfana) ni roja 2 (piezas tomadas por viejas en vez de recien nacidas). El encargo pide poner las TRES rojas verdes; esta reparacion solo ataca una y de forma parcial.",
+   "El campo 'vigia' cita 'test_vigia_una_pieza_nueva_nace_enganchada.py caso 4 (roja 3)', pero el paquete dice que la roja 3 es el caso 4 renglon 222 y que hay que dejar los SEIS casos verdes. La propuesta no demuestra ni afirma que las rojas 1 y 2 queden verdes."
+  ],
+  "riesgo_vecinos": [
+   "A QUIEN PUEDE DANAR: 'cierre de sesion'. Si el reordenamiento cambia que piezas se consideran huerfanas, puede alterar el freno de cierre. No se aporta evidencia de que las dos pruebas que hoy estan verdes (test_vigia_solo_frena_la_huerfana_recien_nacida.py y test_vigia_la_huerfana_se_empareja_con_su_fecha.py) sigan verdes."
+  ],
+  "que_falta": [
+   "Arreglar la causa raiz de la roja 3: que a _es_punto_de_entrada se le pase la RUTA (con carpeta y .py), no el nombre pelado, incluso cuando el diccionario no traiga 'ruta'/'path'.",
+   "Medir y arreglar la roja 1: por que una pieza que llama a otra entra en la lista de huerfanas.",
+   "Medir y arreglar la roja 2: por que las piezas de la prueba se toman por viejas en vez de por recien nacidas.",
+   "Evidencia de que los seis casos de test_vigia_una_pieza_nueva_nace_enganchada.py quedan verdes y que las otras dos pruebas siguen verdes."
+  ],
+  "resumen_para_el_jefe": "La reparacion solo reordena claves y no toca la causa raiz de la roja 3 ni las rojas 1 y 2; el encargo pide las tres verdes y esto no las cubre."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19581 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el pasillo recorto el encargo de 23867 a 12555 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}
