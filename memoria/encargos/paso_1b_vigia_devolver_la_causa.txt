@@ -1,0 +1,52 @@
+OBJETIVO: crear la vigia que nace ROJA de la pieza que devuelve la causa al que escribe. Es el paso
+1b del plan que esta en PLAN_DOS_PASOS.md, en la raiz del proyecto ingeniero.
+
+POR QUE, medido hoy 2026-09-30: cuando una ronda se rechaza, hoy se le vuelve a mandar al que escribe
+EL MISMO encargo y se espera otra cosa. Asi no aprende: vuelve a fallar igual. Se comprobo a mano
+cinco veces esta tarde: escribiendo el motivo del rechazo DENTRO del encargo, el equipo paso de
+RECHAZADO a casi aprobado en tres vueltas. Hacerlo a mano depende de que alguien se acuerde, y por eso
+se pierde. Esta pieza lo hace sola.
+
+LO QUE SE CREA EN ESTA RONDA, y solo esto: el archivo
+vigias/test_vigia_la_causa_vuelve_al_que_escribe.py
+
+Esa vigia NACE ROJA a proposito, porque la pieza que vigila, arnes/lo_que_hay_que_corregir.py, todavia
+no existe. La pieza se escribe en la ronda siguiente. Es la ley de la casa: la vigia va primero y nace
+roja por su propio motivo.
+
+QUE TIENE QUE COMPROBAR LA VIGIA, cuatro casos, y cada uno dice en su primer renglon que vigila:
+
+CASO 1, la pieza existe y se puede usar: se carga arnes/lo_que_hay_que_corregir.py por su RUTA y tiene
+una funcion publica que recibe el texto del encargo y la lista de motivos del rechazo, y devuelve el
+encargo con un bloque de correcciones dentro.
+
+CASO 2, los motivos del rechazo aparecen DENTRO del encargo devuelto: se le pasa un encargo de mentira
+y dos motivos de mentira, y los dos motivos tienen que aparecer, con su texto, en lo que devuelve.
+
+CASO 3, el bloque SE REEMPLAZA y NO se acumula: se le pasa el encargo ya corregido una vez, con dos
+motivos nuevos distintos, y lo que devuelve tiene SOLO los dos motivos nuevos. Los viejos ya no estan,
+y el encargo no crecio por tener dos tandas de correcciones pegadas. Esto es lo mas importante del
+caso: si se acumulan, el encargo engorda, el pasillo lo corta y el trabajo se pierde.
+
+CASO 4, el encargo original NO se daña: el texto del objetivo, del ancla y de lo que tiene que quedar
+verde sigue intacto y en su sitio en lo que devuelve. Solo se agrega o se reemplaza el bloque de
+correcciones; nada mas se toca.
+
+COMO SE ESCRIBE LA VIGIA, reglas de la casa que no se negocian:
+- Se carga la pieza por RUTA, no por nombre de paquete.
+- PROHIBIDO fabricar un muneco, una imitacion o un sustituto de la pieza y probar el muneco. Eso ya se
+  rechazo hoy en el paso 1a: la prueba salia verde sin que la pieza existiera, y no vigilaba nada.
+- La prueba NO puede salir verde mientras la pieza no exista. Si sale verde, esta mal escrita.
+- Nada que dependa de la respuesta de un cerebro: datos de mentira fijos, siempre iguales.
+- No se usa texto de triple comilla que lleve dentro otras comillas.
+
+QUE SIGNIFICA QUE NAZCA ROJA: hoy, al correrla, los cuatro casos FALLAN diciendo en palabras simples
+que la pieza no existe. Cuando la pieza se escriba, los cuatro pasan a verde sin tocar la prueba.
+
+A QUIEN PUEDE DANAR: a nadie todavia. En cuanto la pieza exista, pasara a usarse en cada reintento de
+ronda, asi que un fallo ahi afecta a todas las rondas.
+
+LO QUE TIENE QUE QUEDAR VERDE: todo lo que ya estaba verde sigue verde. Esta vigia queda ROJA a
+proposito, y eso es lo correcto en esta ronda.
+
+LIBERTAD: se escribe el archivo entero, es nuevo. No hay texto viejo que respetar.
