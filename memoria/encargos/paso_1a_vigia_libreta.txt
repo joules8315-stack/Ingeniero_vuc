@@ -1,0 +1,50 @@
+OBJETIVO: crear la vigia que nace ROJA de la libreta de frenos. Es el paso 1a del plan que esta
+escrito en PLAN_DOS_PASOS.md, en la raiz del proyecto.
+
+POR QUE, con el numero que manda: hay 2.824 frenos apuntados y solo 5 acabaron sabiendo quien fallo.
+El sistema tuvo 2.824 oportunidades de aprender y aprovecho cinco. La causa de fondo no es que falten
+vigias (casi todos los que frenan ya tienen la suya): es que el freno NO ANOTA SU CAUSA en el momento
+de frenar. Esta es la ley que Julio legislo hoy, 2026-09-30, textual: "el que frena tiene que vigilar
+un aspecto especifico, asi que con saber el nombre del vigia, y que quede apuntado, por programa, no
+a mano, en una lista, sabremos que esta fallando. La lista debe tener la instruccion que se le dio y
+fallo, de modo que podamos corregir."
+
+LO QUE SE CREA EN ESTA RONDA, y solo esto: el archivo
+vigias/test_vigia_la_libreta_de_frenos_apunta_quien_freno.py
+
+Esa vigia NACE ROJA a proposito, porque la pieza que vigila todavia no existe. La pieza se escribe en
+la ronda siguiente. Eso es la ley de la casa: la vigia va primero y nace roja por su propio motivo.
+
+QUE TIENE QUE COMPROBAR LA VIGIA, cuatro casos, y cada uno explica en su primer renglon que vigila:
+
+CASO 1, la libreta existe y se puede usar: se carga arnes/libreta_de_frenos.py por su ruta y tiene
+una funcion publica para apuntar un freno y otra para leer lo apuntado.
+
+CASO 2, un freno apuntado deja los TRES datos escritos: cuando freno, el nombre exacto del que freno,
+y la instruccion que fallo con su texto. Se apunta un freno de mentira y se vuelve a leer: los tres
+datos tienen que estar, y el nombre y el texto tienen que ser los mismos que se metieron.
+
+CASO 3, un freno sin los tres datos es un FRENO MUDO y se reconoce como tal: si se intenta apuntar un
+freno al que le falta el nombre del que freno o el texto de la instruccion, la libreta lo deja
+marcado como mudo, y al leer se puede distinguir cual fue mudo y cual no.
+
+CASO 4, la libreta NO escribe en la memoria de verdad cuando se la prueba: la prueba usa SU PROPIA
+copia, con su carpeta aparte. Esto es obligatorio y ya costo caro: una prueba escribio su copia vacia
+encima de la memoria real y se perdieron 27 de los 32 errores aprendidos.
+
+COMO SE ESCRIBE LA VIGIA, reglas de la casa que no se negocian:
+- La prueba carga la pieza por RUTA, no por nombre de paquete, porque hay dos proyectos con carpetas
+  que se llaman igual y se agarra la equivocada.
+- Nada de esperar respuesta de un cerebro: la prueba es determinista, con datos de mentira fijos. Una
+  prueba que depende de una IA se pone roja sin que el codigo cambie y no vale para nada.
+- No se usa texto de triple comilla que lleve dentro otras comillas.
+- Cada caso dice en su primer renglon QUE vigila, en palabras simples, porque el nombre del vigia es
+  el diagnostico.
+
+A QUIEN PUEDE DANAR: a nadie todavia, porque la pieza que vigila no existe. En cuanto exista, pasara
+a vigilar a todos los candados, que son los que tendran que apuntar sus frenos en ella.
+
+LO QUE TIENE QUE QUEDAR VERDE: todo lo que ya estaba verde sigue verde. Esta vigia nueva queda ROJA
+a proposito, y eso es lo correcto en esta ronda.
+
+LIBERTAD: se escribe el archivo entero, es nuevo. No hay texto viejo que respetar.
