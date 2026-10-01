@@ -1,0 +1,58 @@
+{
+ "obrero": "deepseek",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "La funcion huerfanas normaliza los diccionarios del contador mirando 'pieza' antes que 'ruta', se queda con el nombre pelado y por eso no puede abrir el archivo para detectar el bloque de arranque; ademas no se ha medido por que una pieza que llama a otra entra en la lista ni por que las piezas de la roja 2 se toman por viejas.",
+  "archivo": "arnes/candado_nace_enganchada.py",
+  "funcion": "huerfanas",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "vigias/test_vigia_una_pieza_nueva_nace_enganchada.py",
+  "puede_danar": [
+   "arnes/candado_cierre.py",
+   "arnes/mostrador.py",
+   "mapa/inventario.py",
+   "skills/nace_conectada.py",
+   "vigias/test_vigia_la_huerfana_se_empareja_con_su_fecha.py",
+   "vigias/test_vigia_solo_frena_la_huerfana_recien_nacida.py"
+  ],
+  "preguntas": [
+   "Falta el resto de la funcion huerfanas (desde 'limpias = []' hasta el final) y el resto del archivo arnes/candado_nace_enganchada.py: sin eso no puedo copiar el texto literal que hay que sustituir ni escribir el reemplazo real.",
+   "Falta el contenido de skills/nace_conectada.py para medir por que una pieza que llama a otra entra en la lista de huerfanas (roja 1).",
+   "Falta el contenido de vigias/test_vigia_una_pieza_nueva_nace_enganchada.py para ver que exige exactamente en los casos 2, 3 y 4 y por que las piezas de la roja 2 se toman por viejas.",
+   "Falta el contenido de vigias/test_vigia_solo_frena_la_huerfana_recien_nacida.py y vigias/test_vigia_la_huerfana_se_empareja_con_su_fecha.py para no romperlas al reescribir."
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El cambio propuesto NO es una reparacion: es solo el texto_viejo copiado tal cual. No hay texto_nuevo, no hay reemplazo, no hay nada que cambie el orden de las claves ni que pase la ruta a _es_punto_de_entrada. El diagnostico dice que hay que priorizar la ruta sobre el nombre, pero la propuesta deja el bucle exactamente igual: for clave in (\"nombre\", \"pieza\", \"archivo\", \"ruta\", \"path\").",
+   "No arregla la ROJA 3: el diagnostico identifica que 'pieza' va antes que 'ruta' y por eso se queda con el nombre pelado, pero la propuesta no toca ese orden ni cambia lo que se le pasa a _es_punto_de_entrada. La causa descrita sigue intacta.",
+   "No aborda las ROJAS 1 ni 2. El propio paquete dice que su causa no se midio, pero la propuesta tampoco las mide ni las toca; se limita a repetir el tramo de normalizacion. Las tres pruebas rojas siguen rojas.",
+   "El campo 'texto_viejo' de la propuesta coincide literalmente con el codigo del material, pero no viene acompanado de ningun 'texto_nuevo' ni de instruccion de sustitucion. Tal como esta, aplicar la propuesta no cambia ni una linea del archivo."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno nuevo, porque no hay cambio efectivo. Pero si se aplicara tal cual, el comportamiento actual se mantiene: la ROJA 3 sigue marcando piezas de entrada como huerfanas, lo que puede frenar cierres legitimos."
+  ],
+  "que_falta": [
+   "Un texto_nuevo real que reordene las claves para que 'ruta' y 'path' se miren antes que 'pieza' y 'nombre', o que use la ruta explicitamente al llamar a _es_punto_de_entrada.",
+   "Medir y reparar las ROJAS 1 y 2, o declarar por escrito que la prueba pide algo que el contrato no dice, como el propio paquete autoriza.",
+   "Verificar que las dos pruebas que hoy pasan siguen verdes tras el cambio."
+  ],
+  "resumen_para_el_jefe": "La propuesta no es una reparacion: es el codigo original copiado sin cambio alguno, no arregla ninguna de las tres rojas y no trae texto_nuevo; hay que devolverla para que escriba el reemplazo real."
+ },
+ "avisos": [
+  "Gemini 3 preview dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

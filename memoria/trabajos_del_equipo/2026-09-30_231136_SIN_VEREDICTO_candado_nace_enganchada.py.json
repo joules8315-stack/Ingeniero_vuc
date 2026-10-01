@@ -1,0 +1,43 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "La funcion huerfanas normaliza los diccionarios del contador mirando 'pieza' antes que 'ruta', se queda con el nombre pelado y por eso no puede abrir el archivo para detectar el bloque de arranque; ademas no se ha medido por que una pieza que llama a otra entra en la lista ni por que las piezas de la prueba se toman por viejas.",
+  "archivo": "arnes/candado_nace_enganchada.py",
+  "funcion": "huerfanas",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "vigias/test_vigia_una_pieza_nueva_nace_enganchada.py",
+  "puede_danar": [
+   "arnes/candado_cierre.py",
+   "arnes/mostrador.py",
+   "mapa/inventario.py",
+   "skills/nace_conectada.py",
+   "vigias/test_vigia_la_huerfana_se_empareja_con_su_fecha.py",
+   "vigias/test_vigia_solo_frena_la_huerfana_recien_nacida.py"
+  ],
+  "preguntas": [
+   "Falta el resto de la funcion huerfanas (desde el bucle 'for nombre in nombres:' hasta el final) y el resto del archivo arnes/candado_nace_enganchada.py: sin eso no puedo copiar el texto literal que hay ahora ni entregar la funcion entera reescrita.",
+   "Falta el contenido de skills/nace_conectada.py (la funcion que cuenta huerfanas) para medir por que una pieza que llama a otra entra en la lista (roja 1).",
+   "Falta el contenido de vigias/test_vigia_una_pieza_nueva_nace_enganchada.py (casos 2, 3 y 4) para medir por que las piezas se toman por viejas en vez de recien nacidas (roja 2) y que se espera exactamente en cada caso.",
+   "Falta la funcion que decide si una pieza es punto de entrada (la que abre el archivo y busca el bloque de arranque) para confirmar que recibe la ruta y no el nombre pelado."
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {},
+ "avisos": [
+  "el pasillo recorto el encargo de 19581 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}
