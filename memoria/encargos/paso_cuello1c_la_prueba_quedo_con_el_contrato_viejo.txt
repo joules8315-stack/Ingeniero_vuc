@@ -1,0 +1,97 @@
+OBJETIVO: reescribir la prueba del cuaderno, que quedo con el contrato VIEJO y por eso esta roja
+contra una pieza que esta BIEN, y que ademas NO vigila la ley de las dos vias:
+    vigias/test_vigia_el_cuaderno_esta_conectado_a_la_ronda.py
+
+LO QUE SE MIDIO, y el rojo se repitio DOS VECES para no dar por roto algo que fuera ruido:
+
+    corrida 1: 2 failed, 3 passed
+    corrida 2: 2 failed, 3 passed
+
+    caso 2, renglon 86:  AssertionError: 'motivo' not found in
+                         {'ya_fallo': False, 'guia': '', 'codigo': ''}
+    caso 3, renglon 102: KeyError: 'motivo'
+
+Y UNA COSA PEOR, medida: la palabra codigo no aparece NI UNA VEZ en el archivo de la prueba. O sea
+que la pieza cumple la ley de las dos vias, pero NADIE LA VIGILA. La ley esta cumplida por casualidad.
+
+QUE SIGNIFICA TODO ESO: la pieza arnes/cuaderno_de_la_ronda.py devuelve las tres claves del contrato
+NUEVO (ya_fallo, guia, codigo) y esta BIEN. La prueba sigue pidiendo una clave vieja llamada motivo y
+no comprueba la via del codigo.
+
+LA PIEZA ESTA BIEN Y LA PRUEBA ESTA MAL, y no es opinion: el contrato nuevo es la LEY DE LAS DOS VIAS
+de Julio, legislada el 2026-10-01 en CONTRATO_LAS_DOS_VIAS.md. La guia va por su via, para el cerebro;
+el codigo por la otra, para sus manos; y nunca se mezclan. La clave vieja motivo venia de un encargo
+MIO que pedia que el motivo viajara dentro del encargo, y Julio lo corrigio asi: "si viaja dentro del
+encargo, esto aumenta el paquete, eso contradice lo que dije de las 2 vias".
+
+Asi que se reescribe la PRUEBA. La pieza no se toca.
+
+=== EL CONTRATO QUE LA PRUEBA TIENE QUE EXIGIR, exacto ===
+
+  def antes_de_lanzar(encargo, pieza, raiz):
+      devuelve un diccionario con TRES claves y solo tres:
+         "ya_fallo"   verdadero o falso
+         "guia"       texto. Va por la VIA DE LA GUIA: el motivo del fallo anterior, dicho para que el
+                      cerebro entienda que NO repetir. Vacio si nunca fallo.
+         "codigo"     texto. Va por la VIA DEL CODIGO. SIEMPRE vacio: el cuaderno no transporta codigo
+                      nunca.
+
+  def despues_de_la_ronda(encargo, pieza, motivo, raiz):
+      devuelve verdadero si quedo apuntado, falso si no. Con el motivo vacio NO apunta nada y devuelve
+      falso: una ronda que salio bien no es un camino fallido.
+
+=== LOS SEIS CASOS QUE TIENE QUE TENER LA PRUEBA ===
+
+CASO 1, la pieza existe y tiene sus dos funciones: se carga por su RUTA. (Ya pasa hoy, se conserva.)
+
+CASO 2, un camino nuevo no figura como fallido: con un encargo y una pieza que nadie intento, el
+resultado trae las tres claves; ya_fallo es falso y la GUIA viene vacia. Hoy pide la clave vieja
+motivo: se cambia por guia.
+
+CASO 3, un camino que fallo devuelve su motivo POR LA VIA DE LA GUIA: se apunta un fallo con su texto;
+despues, con el mismo encargo y la misma pieza, ya_fallo es verdadero y el texto aparece en la clave
+GUIA. Hoy lo busca en la clave vieja motivo: se cambia por guia.
+
+CASO 4, NUEVO Y ES EL MAS IMPORTANTE: la clave del codigo viene SIEMPRE vacia. Se comprueba en el caso
+de un camino nuevo Y en el de un camino que ya fallo. Este caso es el que hace cumplir la ley de las
+dos vias: si algun dia el cuaderno transporta codigo, esta prueba se pone roja y avisa. Hoy no existe.
+
+CASO 5, una ronda que salio bien NO se apunta: con el motivo vacio devuelve falso y el cuaderno no
+crece ni un renglon. (Ya pasa hoy, se conserva.)
+
+CASO 6, la prueba NO escribe en el cuaderno de verdad: usa su propia carpeta aparte y el cuaderno del
+proyecto no cambia. (Ya pasa hoy, se conserva.) Obligatorio: ya costo caro dos veces, una prueba
+escribio en la memoria real y se perdieron 27 de 32 errores aprendidos.
+
+=== LO QUE NO SE TOCA ===
+
+La pieza arnes/cuaderno_de_la_ronda.py. Esta bien y cumple la ley.
+
+=== COMO SE ESCRIBE, reglas que no se negocian ===
+
+- Se carga la pieza por RUTA, no por nombre de paquete.
+- PROHIBIDO fabricar un muneco de la pieza y probar el muneco. Lo unico que se sustituye es la CARPETA.
+- Datos de mentira fijos, nada que dependa de la respuesta de un cerebro.
+- No se usa texto de triple comilla que lleve dentro otras comillas.
+
+=== EL ANCLA, un solo renglon, comprobado que aparece UNA sola vez en el archivo ===
+
+    def test_caso_2_un_camino_nuevo_no_figura_como_fallido(self):
+
+Se puede reescribir el archivo de la prueba entero, y es lo mas limpio: hoy tiene cinco casos, tiene
+que tener seis, y dos de los viejos piden una clave que ya no existe.
+
+=== QUE TIENE QUE QUEDAR VERDE ===
+
+    python -m pytest -q vigias/test_vigia_el_cuaderno_esta_conectado_a_la_ronda.py
+Los SEIS casos.
+
+=== A QUIEN PUEDE DANAR ===
+
+A nadie: se corrige una prueba para que exija lo que la ley manda, en vez de lo que pedia un encargo
+equivocado, y se le AGREGA el caso que faltaba. El peligro seria aflojarla: por eso el caso 4 es
+obligatorio y si no esta, se rechaza el trabajo.
+
+=== LIBERTAD ===
+
+Se reescribe el archivo de la prueba entero. La pieza NO se toca.
