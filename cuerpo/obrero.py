@@ -128,6 +128,39 @@ def funciones_que_declara(ruta):
         return set()
 
 
+def pedido_del_obrero_al_mostrador(propuesta, material, raiz):
+    # La llamara el tramo de cuerpo/obrero.py que hoy mira si la propuesta trae la marca de
+    # que no encontro algo Y su pregunta obligatoria (renglon 1537), con ese pedido ya en la mano.
+    # En esta ronda solo se deja escrita y lista; el enganche va en la ronda siguiente.
+    try:
+        from arnes.mostrador import atender, lo_que_pide
+
+        peticiones = lo_que_pide(propuesta)
+        if not peticiones:
+            return material
+
+        traido = atender(peticiones, raiz)
+        if not traido:
+            return material
+
+        bloques = []
+        for bloque in str(traido).split("LO QUE PEDISTE: "):
+            cuerpo = bloque.strip()
+            if not cuerpo:
+                continue
+            if "NO_ENCONTRADO" in cuerpo:
+                continue
+            bloques.append("LO QUE PEDISTE: " + cuerpo)
+
+        utiles = [b for b in bloques if b not in material]
+        if not utiles:
+            return material
+
+        return material + "\n\nLO QUE PEDISTE, ATENDIDO POR EL MOSTRADOR\n" + "\n".join(utiles)
+    except Exception:
+        return material
+
+
 def material_con_lo_que_falta(material, faltantes, archivo, raiz):
     """El equipo viene en ayuda de la IA: pide lo que necesita y aqui esta.
 
