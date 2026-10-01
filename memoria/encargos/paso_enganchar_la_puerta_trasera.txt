@@ -1,0 +1,87 @@
+OBJETIVO: ENGANCHAR el candado de la puerta trasera, que existe desde el 2026-09-29 por orden expresa
+de Julio y NADIE LO LLAMA. Mientras no se llame, la puerta sigue abierta.
+
+LA ORDEN DE JULIO, del 2026-09-29, escrita dentro del propio candado: "cual puerta trasera abriste?
+Buscala" y despues "pon un candado que ni por el putas se pueda abrir".
+
+LO QUE SE MIDIO HOY, 2026-10-01: el candado aparece UNA sola vez en todo el proyecto, su propia
+declaracion. Cero llamadas. Y su propio texto lo admite: "La pieza es NUEVA y todavia no la llama
+nadie: engancharla donde pasan las demas va en otra ronda, con su propia prueba." Esa otra ronda nunca
+llego, y van dos dias.
+
+LA PUERTA SIGUE ABIERTA Y SE VE: en arnes/candado_equipo.py, cuando el archivo que se quiere escribir
+no tiene extension de codigo, se deja pasar sin mas. Ese es el agujero, y el propio candado lo apunta
+189 veces en un solo dia con el sello "DEJO PASAR: documento libre".
+
+=== EL AGUJERO, copiado literal de arnes/candado_equipo.py ===
+
+    if os.path.splitext(fp)[1].lower() not in CODIGO:
+        _apuntar_frenada(fp, "DEJO PASAR: documento libre")
+        return 0                                    # documentos: libres
+
+Se lee asi: si lo que se va a escribir no es codigo, se apunta que se dejo pasar y se deja pasar. Sin
+preguntar nada mas.
+
+=== LA PIEZA QUE CIERRA ESE AGUJERO, copiada literal de arnes/candado_puerta_trasera.py ===
+
+def documento_de_proyecto_puede_pasar(ruta):
+    """Devuelve False si el documento vive en un proyecto de Julio y no trae
+    veredicto del equipo; True solo cuando si lo trae.
+
+    Un documento trae veredicto cuando su texto lleva escrita la palabra
+    APROBADO junto con la palabra EQUIPO. Si no lleva las dos, no trae
+    veredicto.
+
+    El unico sitio que queda fuera de esta regla es el propio arnes, por el
+    motivo escrito arriba: si el candado se rompe, hay que poder arreglarlo.
+
+    Nunca revienta: si la ruta no existe, esta vacia, es None o no se puede
+    leer, devuelve False, porque ante la duda se frena.
+    """
+
+Las dos encajan: una decide dejar pasar documentos sin mirar, y la otra sabe exactamente cuando un
+documento puede pasar y cuando no.
+
+=== LO QUE HAY QUE HACER, en una frase ===
+
+Que en ese tramo, antes de dejar pasar un documento, se le pregunte a
+documento_de_proyecto_puede_pasar si puede. Si dice que si, pasa igual que hoy. Si dice que no, se
+frena con el mensaje de siempre del candado de equipo.
+
+=== COMO TIENE QUE QUEDAR, sin escribirlo por ti ===
+
+- Se trae la pieza de arnes/candado_puerta_trasera.py DENTRO de la funcion, no arriba del archivo, y
+  con la misma forma que el propio archivo ya usa para traer sus vecinas.
+- Si por cualquier motivo no se puede traer o falla, se deja pasar como hoy y se apunta el aviso: un
+  candado que revienta es peor que un candado que avisa. NUNCA puede tumbar el programa.
+- El apunte del freno sigue haciendose, para que quede constancia: hoy dice "DEJO PASAR: documento
+  libre", y cuando frene tiene que decir claramente que lo freno la puerta trasera.
+- El propio arnes sigue libre: eso ya lo resuelve la pieza por dentro, y es a proposito, porque si el
+  candado se rompe hay que poder arreglarlo.
+
+=== EL ANCLA, un solo renglon, comprobado que aparece UNA sola vez en el archivo ===
+
+        _apuntar_frenada(fp, "DEJO PASAR: documento libre")
+
+=== QUE TIENE QUE QUEDAR VERDE ===
+
+    python -m pytest -q vigias/test_vigia_no_hay_puerta_trasera_por_dentro.py
+    python -m pytest -q vigias/test_vigia_el_documento_del_proyecto_no_es_libre.py
+Y las del propio candado de equipo, que hoy estan verdes, siguen verdes:
+    python -m pytest -q vigias/test_vigia_sin_rendijas.py
+
+=== COMO SE SABRA QUE SIRVIO DE VERDAD ===
+
+No basta la prueba verde. Despues de esto, intentar escribir un documento de un proyecto de Julio sin
+veredicto del equipo tiene que FRENAR. Si sigue pasando, el candado esta escrito y no conectado.
+
+=== A QUIEN PUEDE DANAR ===
+
+A quien escriba documentos en los proyectos de Julio sin pasar por el equipo. Eso es justamente lo que
+se viene a cerrar. El riesgo contrario, quedarse sin poder arreglar el propio arnes, esta cubierto: la
+pieza deja el arnes libre a proposito.
+
+=== LIBERTAD ===
+
+Se puede escribir el archivo arnes/candado_equipo.py entero si hace falta. Lo que NO se toca son las
+pruebas ni el candado de la puerta trasera: ese ya esta bien, solo hay que llamarlo.
