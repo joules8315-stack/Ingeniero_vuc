@@ -1,0 +1,90 @@
+OBJETIVO: ENGANCHAR la pieza tope_del_pasillo, que existe en cuerpo/obrero.py, su prueba esta verde, y
+NADIE LA LLAMA. Mientras no se llame, el cortador sigue trabajando igual.
+
+AVISO SOBRE LOS NUMEROS DE RENGLON DE ESTE ENCARGO: estan SOLO para ubicarse al leer. NINGUN numero de
+renglon puede acabar escrito dentro del codigo: las cosas se buscan POR SU NOMBRE. Eso ya costo caro
+una vez, cuando el repartidor localizaba una funcion con dos numeros escritos a mano y se rompia en
+cuanto el archivo cambiaba.
+
+LO QUE SE MIDIO, y es la prueba de que el arreglo no sirve todavia:
+
+1) La pieza aparece UNA sola vez en todo el archivo: su propia declaracion. Cero llamadas.
+
+2) En la ronda de las 11:05 de hoy, DESPUES de escribir la pieza, el aviso del propio sistema decia:
+      "el pasillo recorto el encargo de 24.568 a 13.652 letras para que le quepa a un cerebro gratis
+       (tope medido: 19042)"
+   Sigue recortando con el numero viejo.
+
+3) Comprobado donde se decide el corte de verdad: en la llamada que arma el material del obrero. Ahi,
+   cuando no se pide un generador concreto (que es el caso normal), se usa un tope fijo llamado
+   TOPE_GRATIS, que vale 19000 y esta escrito a mano con este comentario:
+      TOPE_GRATIS = 19000   # MEDIDO 2026-09-09: el mas pequeno de los cerebros gratis aguanta ~19.000.
+
+   Es decir: el tope es, literalmente y por escrito, LA CAPACIDAD DEL MAS CHICO. Eso es lo que la ley
+   de Julio del 2026-09-09 manda cambiar, y lo que la pieza nueva ya sabe calcular.
+
+LA LEY, legislada dos veces y con su causa raiz medida:
+- CONTRATO_EL_PASILLO_SE_REPARTA_POR_CAPACIDAD.md, 2026-09-09. Sus once pruebas estan verdes.
+- CONTRATO_LAS_DOS_VIAS.md, 2026-10-01: si el paquete no engorda no hay nada que cortar; y lo que se
+  corte, se corta a la medida del que escribe.
+
+Y la ley de Julio de hoy: una pieza que nadie llama no protege nada. Nada nace huerfano.
+
+=== LO QUE HAY QUE HACER, en una frase ===
+
+Que el tope que se usa al armar el material salga de la pieza tope_del_pasillo, calculado sobre las
+capacidades de los cerebros de la fila, en vez de salir del numero fijo del mas chico.
+
+=== EL TRAMO QUE SE CAMBIA, copiado literal del archivo ===
+
+                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690,
+
+Se lee asi, en palabras: si alguien pidio un generador concreto, se toma su capacidad, nunca por
+debajo del tope fijo ni por encima de 40000; y si NO se pidio ninguno, que es el caso normal, se usa
+el tope fijo a secas. A ese resultado se le restan 2690 letras, que es el sitio que ocupa el resto del
+pedido.
+
+=== COMO TIENE QUE QUEDAR, dicho sin escribirlo por ti ===
+
+- Cuando se pide un generador concreto: igual que hoy. Eso ya funciona y no se toca.
+- Cuando NO se pide ninguno: el tope sale de tope_del_pasillo, pasandole las capacidades de los
+  cerebros de la fila. Si esa lista viene vacia, la pieza devuelve 0, que significa no recortar; en ese
+  caso se usa el tope fijo de siempre para no quedarse sin ningun limite.
+- El tope de 40000 por arriba se conserva: es el techo de la casa.
+- Lo de restar 2690 se conserva tal cual.
+
+PISTA MEDIDA de donde sacar las capacidades de la fila, y se busca POR NOMBRE, no por renglon: en el
+mismo archivo ya hay un sitio que arma una lista de capacidades de los cerebros de la fila llamando a
+la funcion de capacidad del modulo de cuotas sobre cada turno, y otro que busca el que mas aguanta con
+la misma funcion. Esa es la forma que la casa ya usa: conviene mirarla y reusarla en vez de inventar
+otra.
+
+=== EL ANCLA, un solo renglon, comprobado que aparece UNA sola vez en el archivo ===
+
+TOPE_GRATIS = 19000   # MEDIDO 2026-09-09: el mas pequeno de los cerebros gratis aguanta ~19.000.
+
+Ese renglon NO se borra: sigue haciendo falta como ultimo recurso cuando no se conoce la fila. Es el
+ancla porque es unico y marca de que se esta hablando.
+
+=== QUE TIENE QUE QUEDAR VERDE ===
+
+    python -m pytest -q vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py
+    python -m pytest -q vigias/test_vigia_se_reparte_por_capacidad.py
+    python -m pytest -q vigias/test_vigia_lo_pesado_a_deepseek.py
+Las once, que hoy estan verdes, siguen verdes.
+
+=== COMO SE SABRA QUE SIRVIO DE VERDAD, y esto es lo que Julio pide ===
+
+No basta que la prueba este verde. En la ronda siguiente, el aviso del sistema tiene que decir un tope
+MAYOR que 19042, o dejar de recortar. Si sigue diciendo 19042, la pieza esta escrita pero no conectada,
+y el trabajo no vale.
+
+=== A QUIEN PUEDE DANAR ===
+
+A quien reciba un encargo mas grande del que aguanta. Ese riesgo esta cubierto: el reparto por
+capacidad, que ya esta verde con dos pruebas, elige despues a quien se le entrega. Y el techo de 40000
+se conserva.
+
+=== LIBERTAD ===
+
+Se puede escribir el archivo cuerpo/obrero.py entero. Lo que NO se toca son las pruebas.
