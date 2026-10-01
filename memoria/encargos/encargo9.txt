@@ -1,0 +1,130 @@
+OBJETIVO: reparar el buscador de nombres de cuerpo/obrero.py para que cumpla la ley que YA ESTA
+ESCRITA y hoy esta en rojo, en vigias/test_vigia_el_codigo_pegado_no_pide_funciones.py.
+
+EL FALLO, MEDIDO, Y NO ES NUEVO: esa prueba nacio roja el 2026-09-29 y sigue roja. Cuando un encargo
+trae un trozo de codigo pegado, los DATOS de ese trozo (lo que va entre comas, o los parametros de
+una firma) se toman por funciones y se exige verlas declaradas. La ronda muere antes de empezar
+pidiendo funciones que no existen. Freno tres encargos esa noche, y hoy, 2026-09-30, ha frenado
+cinco rondas mas. Es el freno numero uno de la casa.
+
+LA LEY, con sus cinco casos, tal como los mide la prueba. Dos estan en rojo (el 1 y el 4) y tres en
+verde (el 2, el 3 y el 5). Los cinco tienen que quedar verdes.
+
+En los casos 1 a 4 la lista de palabras conocidas del proyecto que se le pasa es esta: mensajero,
+armar, guardar.
+
+CASO 1, HOY ROJO. En el encargo va pegado este renglon de codigo:
+    return hacer_la_tarea(proyecto, orden, tope, mensajero, False)
+La palabra mensajero NO puede salir en la lista de funciones: ahi es un dato que se le pasa a otra
+funcion, no una funcion que se vaya a tocar.
+
+CASO 2, hoy verde y no puede romperse. En el encargo va pegada esta firma:
+    def hacer_la_tarea(proyecto, orden, tope, mensajero=print):
+La palabra mensajero NO puede salir en la lista: ahi es un dato de la firma.
+
+CASO 3, hoy verde y no puede romperse. El encargo dice en palabras corrientes: "Hay que arreglar la
+funcion armar, que se queda a medias." La palabra armar SI tiene que salir en la lista: viene justo
+detras de la palabra funcion.
+
+CASO 4, HOY ROJO. En el encargo va pegado este renglon:
+    def guardar(cosa):
+La palabra guardar SI tiene que salir en la lista: viene justo detras de def.
+
+CASO 5, hoy verde y no puede romperse. El encargo nombra dos palabras que empiezan por raya baja y
+NO se le pasa ninguna lista de conocidas. Esas palabras SI tienen que salir en la lista.
+
+LA REGLA QUE SALE DE LOS CINCO CASOS, y es la que hay que escribir: una palabra de la lista de
+conocidas cuenta como funcion SOLO cuando el texto la nombra COMO funcion, es decir cuando viene
+justo detras de def o justo detras de la palabra funcion. Si solo aparece dentro de un trozo de
+codigo pegado (como dato tras una coma, o como parametro de una firma), NO cuenta. Y las palabras
+que empiezan por raya baja siguen contando igual que hasta hoy, con lista de conocidas o sin ella.
+
+PISTA DE DONDE ESTA LA PORQUERIA: hoy el texto se parte quitando las comas y los punto y coma, y
+luego se mira palabra por palabra si esta en la lista de conocidas. Partir por las comas es
+justamente lo que convierte un dato de una llamada o de una firma en una palabra suelta que parece
+funcion. Hay que mirar el sitio donde la palabra aparece, no la palabra sola.
+
+EL ANCLA, un solo renglon, comprobado que aparece UNA sola vez en el archivo:
+
+def _nombres_de_funcion_del_texto(texto_encargo, conocidas=None):
+
+Se puede reescribir esa funcion entera. Es la unica que hay que tocar.
+
+EL MATERIAL NO TRAE LA PIEZA, asi que va pegada aqui COMPLETA y literal, copiada del archivo
+(cuerpo/obrero.py, renglones 73 a 113):
+
+def _nombres_de_funcion_del_texto(texto_encargo, conocidas=None):
+    """Devuelve los nombres de funcion que un texto nombra.
+
+    Se buscan palabras que empiecen por raya baja (ejemplo quitado a proposito en esta copia: el repartidor lo pedia como pieza aparte).
+    El nombre se corta en el primer caracter que no puede formar parte de un
+    nombre de Python: solo letras, numeros y rayas bajas desde el principio.
+    Asi un trozo pegado como '_anotar(segundos' se queda en '_anotar'.
+
+    Si se pasa `conocidas` (una coleccion de nombres), ademas se recorren las
+    palabras del texto y se agregan las que aparecen en esa coleccion. Asi una
+    funcion de nombre normal nombrada en el encargo tambien se reconoce. La
+    lista que vuelve no repite ningun nombre. Si `conocidas` es None o viene
+    rara, se porta igual que antes.
+    """
+    funciones = []
+    for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
+        limpia = palabra.strip("()[]{}<>\"'`.:")
+        if limpia.startswith("_") and len(limpia) > 1:
+            corte = len(limpia)
+            for _i, _c in enumerate(limpia):
+                if not (_c.isalnum() or _c == "_"):
+                    corte = _i
+                    break
+            nombre = limpia[:corte]
+            # si despues de cortar no queda mas que la raya baja, no se exige
+            if nombre.startswith("_") and len(nombre) > 1:
+                funciones.append(nombre)
+    if conocidas:
+        try:
+            for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
+                # una palabra con comillas es una etiqueta o texto pegado como
+                # material, no una funcion que se vaya a tocar: no cuenta.
+                if '"' in palabra or "'" in palabra or "`" in palabra:
+                    continue
+                limpia = palabra.strip("()[]{}<>\"'`.:")
+                if limpia in conocidas and limpia not in funciones:
+                    funciones.append(limpia)
+        except Exception:
+            pass
+    return funciones
+
+
+--- fin de la pieza pegada ---
+
+LO QUE YA SE INTENTO Y EL AUDITOR RECHAZO, con razon. No se vuelve a hacer:
+
+INTENTO 1, RECHAZADO: se metio la comprobacion de si viene detras de def o de la palabra funcion,
+pero se siguio metiendo en la lista toda palabra conocida que aparecia en cualquier sitio del texto.
+Resultado: los casos 1 y 2 siguen rojos. La comprobacion de donde aparece la palabra NO es un extra:
+es la UNICA puerta por la que una palabra conocida entra en la lista. Si no viene detras de def ni
+detras de la palabra funcion, no entra, y no hay otro camino.
+
+INTENTO 1, SEGUNDO FALLO RECHAZADO: se devolvio la lista armada desde un conjunto, y eso pierde el
+orden en que los nombres aparecen en el texto. El orden importa para otras pruebas. La lista se
+devuelve en el orden en que los nombres se encuentran leyendo el texto de principio a fin, y sin
+repetir ninguno.
+
+QUE SE COMPRUEBA, y se comprueba corriendo la prueba que ya existe:
+    python -m pytest -q vigias/test_vigia_el_codigo_pegado_no_pide_funciones.py
+Los cinco casos tienen que quedar verdes, no solo los dos que hoy estan rojos.
+
+A QUIEN PUEDE DANAR: a quien dependa de que una palabra conocida nombrada en cualquier sitio del
+encargo se tome por funcion. Eso es justamente lo que se quita, porque es lo que frena las rondas.
+La prueba que vigila que el material traiga la pieza pedida tiene que seguir verde:
+    python -m pytest -q vigias/test_vigia_el_material_trae_la_pieza_pedida.py
+
+LO QUE TIENE QUE QUEDAR VERDE: las dos pruebas de arriba, y lo que ya estaba verde sigue verde.
+
+LIBERTAD: se puede reescribir la funcion entera, o el archivo cuerpo/obrero.py entero si hace falta.
+No hay nada prohibido de tocar mas alla de no cambiar lo que los casos 2, 3 y 5 ya dan por bueno.
+
+INTENTO 2, QUEDO DUDOSO POR ESTO. No se vuelve a hacer: se quito la comprobacion que descarta las
+palabras que vienen entre comillas (dobles, simples o inclinadas). La version de hoy las descarta y
+tiene que seguir descartandolas: una palabra entre comillas es texto, no una funcion. Esa limpieza
+de comillas se conserva tal cual.

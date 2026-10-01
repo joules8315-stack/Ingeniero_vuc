@@ -1,0 +1,47 @@
+{
+ "obrero": "groq",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "Los archivos candado_puerta_trasera.py e instalar_reglas_codex.py no están presentes en el material",
+  "archivo": "NO_ENCONTRADO",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "No se pueden conectar ni eliminar piezas que no existen en el repositorio",
+  "codigo": "",
+  "vigia": "Comprobar la existencia de los archivos candado_puerta_trasera.py e instalar_reglas_codex.py en el árbol del proyecto",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El cambio no arregla el problema descrito en el diagnóstico ni cumple las instrucciones del paquete.",
+   "El encargo exige explícitamente 'Conecten cada pieza necesaria a su uso real o eliminen la que no haga falta'. El obrero se ha limitado a corregir una errata de texto en el archivo de leyes (CONTRATO_CREAR_PIEZA_NUEVA.md) en lugar de realizar el trabajo técnico sobre los archivos .py.",
+   "El obrero admite en su sección de 'preguntas' que no sabe qué hacen las piezas ni dónde van, pero envía la reparación de todas formas sin haber investigado ni ejecutado la conexión o eliminación.",
+   "Completar una frase en un MD no soluciona que dos piezas de código estén huérfanas."
+  ],
+  "riesgo_vecinos": [
+   "Ninguno, porque el cambio es irrelevante para la funcionalidad del sistema."
+  ],
+  "que_falta": [
+   "Conectar candado_puerta_trasera.py e instalar_reglas_codex.py a sus llamadores reales o eliminarlos si no son necesarios, tal como pide el paquete mínimo.",
+   "Responder a las 5 preguntas del contrato para esas piezas antes de decidir su destino, en lugar de simplemente listarlas como dudas."
+  ],
+  "resumen_para_el_jefe": "El obrero ha corregido una errata en un documento de texto en lugar de arreglar el código de las piezas huérfanas que se le pidió."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19545 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 20088 a 11414 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 20126 a 11432 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "el pasillo recorto el encargo de 20257 a 11497 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "En el caso 5 de la prueba, la llamada a anotar_resumen pasa los datos en orden equivocado (carpeta, numero, texto) cuando la pieza los recibe como (numero, texto, raiz), por lo que el resumen no se apunta y el caso queda rojo por su montaje.",
+  "archivo": "vigias/test_vigia_el_cierre_pide_el_resumen_del_plan.py",
+  "funcion": "test_caso_5_con_plan_aprobado_sin_resumen_no_se_cierra_y_con_resumen_si",
+  "texto_viejo": "    puerta_del_plan.anotar_resumen(carpeta, numero, \"Resumen del plan: se hizo lo pedido.\")",
+  "texto_nuevo": "    puerta_del_plan.anotar_resumen(numero, \"Resumen del plan: se hizo lo pedido.\", carpeta)",
+  "cambio": "Reordenar los tres argumentos de la llamada a anotar_resumen en el caso 5: primero el numero del plan, despues el texto del resumen y la carpeta al final, que es el orden que declara la funcion en arnes/puerta_del_plan.py.",
+  "codigo": "puerta_del_plan.anotar_resumen(numero, \"Resumen del plan: se hizo lo pedido.\", carpeta)",
+  "vigia": "vigias/test_vigia_la_puerta_del_plan.py (siete casos verdes, no se toca) y la propia prueba: el caso 5 debe pasar a VERDE y los otros cinco quedarse igual (uno verde y cuatro rojos a proposito).",
+  "puede_danar": [
+   "vigias/test_vigia_el_cierre_pide_el_resumen_del_plan.py (solo el caso 5)"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Reordena los argumentos de anotar_resumen en el caso 5, corrige el diagnóstico y no afecta a otros tests."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 28777 a 17445 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a codex y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

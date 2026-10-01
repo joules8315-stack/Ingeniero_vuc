@@ -1,0 +1,60 @@
+OBJETIVO: reparar la causa de fondo que hoy tumba rondas enteras de toda la casa, en
+cuerpo/obrero.py, dentro de la funcion falta_en_el_material.
+
+EL FALLO, MEDIDO HOY, TRES VECES: el repartidor de material da por hecho que toda palabra del
+encargo que empieza por raya baja es una funcion, y exige verla declarada con def. Cuando el encargo
+trae un trozo de codigo pegado, las variables de paso de ese trozo (que llevan raya baja delante)
+se toman por funciones y la ronda muere antes de empezar con FALTA_MATERIAL, pidiendo funciones que
+no existen ni pueden existir.
+
+Ya hay una defensa escrita para eso: cuando se conoce la lista de funciones que el archivo declara
+de verdad, se deja solo las que estan en esa lista. El problema es que esa defensa SOLO actua si la
+lista viene con algo dentro. Si la lista viene vacia (porque no se pudo averiguar que declara el
+archivo), no se filtra nada y entonces se exige TODA palabra con raya baja. Es justo al contrario de
+lo que conviene: cuando menos se sabe, mas se exige.
+
+Le pasa a Codex y me pasa a mi. Es el freno numero uno del dia.
+
+LA CURA: cuando no se conoce la lista de funciones declaradas, no se exige ninguna palabra con raya
+baja, porque sin esa lista no hay forma de distinguir una funcion de una variable de paso. Es decir,
+el filtro se aplica SIEMPRE: solo se exigen las que estan en la lista de conocidas, y si la lista
+esta vacia, no se exige ninguna.
+
+EL ANCLA, un solo renglon, comprobado que aparece UNA sola vez en el archivo:
+
+    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)
+
+ESTO ES EL TEXTO VIEJO, EXACTO, copiado del archivo (renglones 250 a 252 de cuerpo/obrero.py, con su
+sangria de 4 y 8 espacios):
+
+    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)
+    if conocidas:
+        funciones = [f for f in funciones if f in conocidas]
+
+COMO TIENE QUE QUEDAR:
+
+    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)
+    # LA CURA (2026-09-30): el filtro se aplica SIEMPRE. Antes, con la lista de conocidas vacia no
+    # se filtraba nada y se exigia TODA palabra con raya baja del encargo: las variables de paso de
+    # un trozo pegado se tomaban por funciones y la ronda moria con FALTA_MATERIAL pidiendo
+    # funciones que no existen. Sin la lista no hay forma de distinguir funcion de variable, asi que
+    # no se exige ninguna: cuando menos se sabe, menos se exige, no mas.
+    funciones = [f for f in funciones if f in (conocidas or ())]
+
+POR QUE ASI Y NO DE OTRA FORMA: no se toca el buscador de nombres, que sirve para otras cosas (para
+decidir que trozos viajan en el material). Solo se cambia a QUIEN se le exige estar declarado, que
+es lo unico que frena la ronda.
+
+QUE SE COMPRUEBA:
+1. Que con la lista de conocidas con algo dentro, el resultado es el mismo que antes.
+2. Que con la lista de conocidas vacia o ausente, ya no se exige ninguna palabra con raya baja.
+3. Que los avisos de archivo que falta siguen saliendo igual: eso no se toca.
+
+A QUIEN PUEDE DANAR: a quien dependa de que se avise de una funcion que falta cuando no se conoce lo
+que declara el archivo. Se pierde ese aviso en ese caso, y a cambio deja de frenarse el trabajo por
+una falsa alarma. El aviso de archivo que falta sigue intacto.
+
+LO QUE TIENE QUE QUEDAR VERDE: todas las pruebas de la casa.
+
+LIBERTAD: se puede escribir el archivo cuerpo/obrero.py entero si hace falta. No hay nada prohibido
+de tocar mas alla de no cambiar lo que la funcion decide en los demas casos.

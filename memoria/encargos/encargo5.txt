@@ -1,0 +1,204 @@
+OBJETIVO: reparar la causa de fondo que hoy tumba rondas enteras de toda la casa, en
+cuerpo/obrero.py, dentro de la funcion falta_en_el_material.
+
+EL FALLO, MEDIDO HOY, CUATRO VECES: el repartidor de material da por hecho que toda palabra del
+encargo que empieza por raya baja es una funcion, y exige verla declarada con def. Cuando el encargo
+trae un trozo de codigo pegado, las variables de paso de ese trozo (que llevan raya baja delante) se
+toman por funciones y la ronda muere antes de empezar con FALTA_MATERIAL, pidiendo funciones que no
+existen ni pueden existir.
+
+Ya hay una defensa escrita para eso: cuando se conoce la lista de funciones que el archivo declara
+de verdad, se deja solo las que estan en esa lista. El problema es que esa defensa SOLO actua si la
+lista viene con algo dentro. Si la lista viene vacia (porque no se pudo averiguar que declara el
+archivo), no se filtra nada y entonces se exige TODA palabra con raya baja. Es justo al contrario de
+lo que conviene: cuando menos se sabe, mas se exige.
+
+Le pasa a Codex y me pasa a mi. Es el freno numero uno del dia.
+
+LA CURA: cuando no se conoce la lista de funciones declaradas, no se exige ninguna palabra con raya
+baja, porque sin esa lista no hay forma de distinguir una funcion de una variable de paso. Es decir,
+el filtro se aplica SIEMPRE: solo se exigen las que estan en la lista de conocidas, y si la lista
+esta vacia, no se exige ninguna.
+
+EL ANCLA, un solo renglon, comprobado que aparece UNA sola vez en el archivo:
+
+    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)
+
+ESTO ES EL TEXTO VIEJO, EXACTO, copiado del archivo (renglones 250 a 252 de cuerpo/obrero.py, con su
+sangria de 4 y 8 espacios):
+
+    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)
+    if conocidas:
+        funciones = [f for f in funciones if f in conocidas]
+
+COMO TIENE QUE QUEDAR:
+
+    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)
+    # LA CURA (2026-09-30): el filtro se aplica SIEMPRE. Antes, con la lista de conocidas vacia no
+    # se filtraba nada y se exigia TODA palabra con raya baja del encargo: las variables de paso de
+    # un trozo pegado se tomaban por funciones y la ronda moria con FALTA_MATERIAL pidiendo
+    # funciones que no existen. Sin la lista no hay forma de distinguir funcion de variable, asi que
+    # no se exige ninguna: cuando menos se sabe, menos se exige, no mas.
+    funciones = [f for f in funciones if f in (conocidas or ())]
+
+POR QUE ASI Y NO DE OTRA FORMA: no se toca el buscador de nombres, que sirve para otras cosas (para
+decidir que trozos viajan en el material). Solo se cambia a QUIEN se le exige estar declarado, que
+es lo unico que frena la ronda.
+
+EL MATERIAL NO TRAE LAS PIEZAS, asi que van pegadas aqui COMPLETAS y literales, copiadas del
+archivo. Primero el buscador de nombres (renglones 73 a 113), que NO se toca y va solo para que se
+entienda de donde salen los nombres; despues la funcion que si se cambia (renglones 184 a 274).
+
+--- PIEZA 1, no se toca, solo para entender: cuerpo/obrero.py renglones 73 a 113 ---
+
+def _nombres_de_funcion_del_texto(texto_encargo, conocidas=None):
+    """Devuelve los nombres de funcion que un texto nombra.
+
+    Se buscan palabras que empiecen por raya baja (el nombre de ejemplo de esta explicacion se quita aqui a proposito, para que el repartidor no lo pida como pieza aparte).
+    El nombre se corta en el primer caracter que no puede formar parte de un
+    nombre de Python: solo letras, numeros y rayas bajas desde el principio.
+    Asi un trozo pegado como '_anotar(segundos' se queda en '_anotar'.
+
+    Si se pasa `conocidas` (una coleccion de nombres), ademas se recorren las
+    palabras del texto y se agregan las que aparecen en esa coleccion. Asi una
+    funcion de nombre normal nombrada en el encargo tambien se reconoce. La
+    lista que vuelve no repite ningun nombre. Si `conocidas` es None o viene
+    rara, se porta igual que antes.
+    """
+    funciones = []
+    for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
+        limpia = palabra.strip("()[]{}<>\"'`.:")
+        if limpia.startswith("_") and len(limpia) > 1:
+            corte = len(limpia)
+            for _i, _c in enumerate(limpia):
+                if not (_c.isalnum() or _c == "_"):
+                    corte = _i
+                    break
+            nombre = limpia[:corte]
+            # si despues de cortar no queda mas que la raya baja, no se exige
+            if nombre.startswith("_") and len(nombre) > 1:
+                funciones.append(nombre)
+    if conocidas:
+        try:
+            for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
+                # una palabra con comillas es una etiqueta o texto pegado como
+                # material, no una funcion que se vaya a tocar: no cuenta.
+                if '"' in palabra or "'" in palabra or "`" in palabra:
+                    continue
+                limpia = palabra.strip("()[]{}<>\"'`.:")
+                if limpia in conocidas and limpia not in funciones:
+                    funciones.append(limpia)
+        except Exception:
+            pass
+    return funciones
+
+
+--- PIEZA 2, LA QUE SE CAMBIA: cuerpo/obrero.py renglones 184 a 274 ---
+
+def falta_en_el_material(material, encargo, conocidas=None):
+    """Devuelve frases cortas con lo que el encargo nombra y el material no trae.
+
+    Reglas:
+    - Los nombres de funcion se buscan con su raya baja incluida: se busca
+      'def ' + nombre tal cual aparece en el encargo.
+    - Las funciones se comprueban SIEMPRE, haya o no archivos en el encargo.
+    - La palabra suelta 'py' (sin punto ni nombre delante) no es un archivo.
+    - Un archivo falta si su nombre no aparece en el material y el encargo no trae
+      codigo pegado (un renglon que, quitandole los espacios de delante, empiece
+      por 'def ' o por 'class ').
+    - Una funcion falta si su renglon de declaracion no aparece ni en el material
+      ni en el encargo. Vale tanto 'def ' + nombre como 'class ' + nombre: una
+      clase pegada cuenta como material igual que una funcion pegada.
+    - Si el encargo no nombra ni archivos ni funciones, lista vacia.
+    - Ante algo vacio o raro, lista vacia. Nunca revienta.
+    """
+    if not material or not encargo:
+        return []
+
+    try:
+        texto_material = str(material)
+        texto_encargo = str(encargo)
+    except Exception:
+        return []
+
+    faltantes = []
+
+    # --- Archivos nombrados en el encargo ---
+    archivos = []
+    for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
+        limpia = palabra.strip("()[]{}<>\"'`")
+        if ".py" in limpia and limpia != "py":
+            # descartar la palabra suelta 'py' sin punto ni nombre delante
+            if limpia == "py":
+                continue
+            # descartar la extension SUELTA: un punto seguido de py sin ningun
+            # nombre delante. Solo cuenta como archivo si antes del punto hay al
+            # menos una letra, un numero o una raya baja.
+            _punto = limpia.find(".py")
+            _nombre = limpia[:_punto]
+            if not any(_c.isalnum() or _c == "_" for _c in _nombre):
+                continue
+            # una ruta con numero de renglon detras (ruta:1290) es la MISMA ruta:
+            # el nombre del archivo se corta en los dos puntos.
+            _dos_puntos = limpia.find(":")
+            if _dos_puntos != -1:
+                limpia = limpia[:_dos_puntos]
+            archivos.append(limpia)
+
+    # el encargo trae codigo pegado si algun renglon suyo, sin espacios delante,
+    # empieza por 'def ' o por 'class '
+    _encargo_trae_codigo = False
+    for _renglon in texto_encargo.splitlines():
+        _sin_espacios = _renglon.lstrip()
+        if _sin_espacios.startswith("def ") or _sin_espacios.startswith("class "):
+            _encargo_trae_codigo = True
+            break
+
+    for archivo in archivos:
+        if archivo not in texto_material and not _encargo_trae_codigo:
+            faltantes.append(
+                "el material no trae el archivo " + archivo
+            )
+
+    # --- Funciones nombradas en el encargo ---
+    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)
+    if conocidas:
+        funciones = [f for f in funciones if f in conocidas]
+
+    for funcion in funciones:
+        declaracion_def = "def " + funcion
+        declaracion_class = "class " + funcion
+        if (declaracion_def not in texto_material and declaracion_def not in texto_encargo
+                and declaracion_class not in texto_material and declaracion_class not in texto_encargo):
+            # distinguir si el archivo si esta pero la funcion no
+            if archivos and any(a in texto_material for a in archivos):
+                faltantes.append(
+                    "el material nombra el archivo pero no trae la funcion "
+                    + funcion
+                )
+            else:
+                faltantes.append(
+                    "el material no trae la funcion " + funcion
+                )
+
+    # Si el encargo no nombra ni archivos ni funciones, lista vacia
+    if not archivos and not funciones:
+        return []
+
+    return faltantes
+
+--- fin de las piezas pegadas ---
+
+QUE SE COMPRUEBA:
+1. Que con la lista de conocidas con algo dentro, el resultado es el mismo que antes.
+2. Que con la lista de conocidas vacia o ausente, ya no se exige ninguna palabra con raya baja.
+3. Que los avisos de archivo que falta siguen saliendo igual: eso no se toca.
+
+A QUIEN PUEDE DANAR: a quien dependa de que se avise de una funcion que falta cuando no se conoce lo
+que declara el archivo. Se pierde ese aviso en ese caso, y a cambio deja de frenarse el trabajo por
+una falsa alarma. El aviso de archivo que falta sigue intacto.
+
+LO QUE TIENE QUE QUEDAR VERDE: todas las pruebas de la casa.
+
+LIBERTAD: se puede escribir el archivo cuerpo/obrero.py entero si hace falta. No hay nada prohibido
+de tocar mas alla de no cambiar lo que la funcion decide en los demas casos.

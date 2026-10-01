@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El caso 5 llama a puerta_del_plan.aprobar con los argumentos al revés (carpeta, plan) y espera un int, cuando la pieza recibe (texto_plan, raiz) y devuelve un diccionario con clave 'ok'.",
+  "archivo": "vigias/test_vigia_el_cierre_pide_el_resumen_del_plan.py",
+  "funcion": "test_caso_5_con_plan_aprobado_sin_resumen_no_se_cierra_y_con_resumen_si",
+  "texto_viejo": "    # aprobar devuelve un numero (el numero del plan aprobado).\n    numero = puerta_del_plan.aprobar(carpeta, plan)\n    assert isinstance(numero, int), (\n        \"aprobar tiene que devolver un numero (el numero del plan aprobado), \"\n        \"no un diccionario ni otra cosa. Devolvio: %r\" % (numero,)\n    )",
+  "texto_nuevo": "    # aprobar recibe primero el texto del plan y despues la carpeta, y\n    # devuelve un diccionario con la clave 'ok' y el numero dentro.\n    resultado = puerta_del_plan.aprobar(plan, carpeta)\n    assert isinstance(resultado, dict) and \"ok\" in resultado, (\n        \"aprobar tiene que devolver un diccionario con la clave 'ok' y el numero \"\n        \"del plan aprobado dentro. Devolvio: %r\" % (resultado,)\n    )\n    numero = resultado[\"ok\"]",
+  "cambio": "Invertir el orden de los argumentos de puerta_del_plan.aprobar (primero el texto del plan, despues la carpeta) y recoger el numero desde la clave 'ok' del diccionario que devuelve, en lugar de esperar un int.",
+  "codigo": "    resultado = puerta_del_plan.aprobar(plan, carpeta)\n    assert isinstance(resultado, dict) and \"ok\" in resultado, (\n        \"aprobar tiene que devolver un diccionario con la clave 'ok' y el numero \"\n        \"del plan aprobado dentro. Devolvio: %r\" % (resultado,)\n    )\n    numero = resultado[\"ok\"]",
+  "vigia": "vigias/test_vigia_la_puerta_del_plan.py (siete casos verdes) y la propia vigias/test_vigia_el_cierre_pide_el_resumen_del_plan.py: el caso 5 pasa a verde y los otros cinco se quedan como estan (uno verde y cuatro rojos a proposito).",
+  "puede_danar": [
+   "vigias/test_vigia_el_cierre_pide_el_resumen_del_plan.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Se invierte el orden de los argumentos y se adapta la aserción al diccionario con clave 'ok', cumpliendo el diagnóstico sin introducir código inexistente ni afectar otras pruebas."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 28679 a 16347 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "se pidio auditar a codex y no esta disponible: reviso groq",
+  "vueltas_dadas: 1"
+ ]
+}

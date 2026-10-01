@@ -1,0 +1,48 @@
+OBJETIVO: dar veredicto al enganche YA ESCRITO del comando resumen-del-plan en ingeniero.py.
+
+Esos renglones estan en disco desde una ronda anterior pero sin huella de revision, y por eso el
+guardia de guardado no deja guardar NADA. No hay que inventar nada nuevo: hay que revisar lo que ya
+esta y, si esta bien, aprobarlo tal como esta.
+
+EL MATERIAL NO TRAE LA PIEZA, asi que va pegado aqui literal. Esto es lo que HAY AHORA en
+ingeniero.py, dentro de la funcion main, entre la rama "arranca" y la rama "trabaja"
+(renglones 256 a 276, con su sangria de 4 espacios):
+
+    if cmd == "arranca":
+        return arranca()
+
+    if cmd == "resumen-del-plan":
+        if len(sys.argv) < 4:
+            print('Uso: python ingeniero.py resumen-del-plan <numero> "<el resumen>"')
+            return 1
+        try:
+            import arnes.puerta_del_plan as _pdp
+            _num = sys.argv[2]
+            _texto = " ".join(sys.argv[3:])
+            _ok = _pdp.apuntar_resumen(_num, _texto, AQUI)
+            if _ok:
+                print("Apuntado el resumen del plan %s." % _num)
+                return 0
+            print("No se pudo apuntar el resumen del plan %s." % _num)
+            return 1
+        except Exception as _e:
+            print("No se pudo apuntar el resumen: %s" % _e)
+            return 1
+    if cmd == "trabaja" and len(sys.argv) >= 4:
+
+LO QUE TIENE QUE QUEDAR IGUAL: el texto de arriba no se cambia. El cambio aprobado es ese mismo
+texto, copiado tal cual. Si se ve un defecto real, se dice cual y se rechaza; no se reescribe por
+gusto ni se le cambia el estilo.
+
+QUE SE REVISA, en palabras:
+1. Que el comando nuevo no le pise el nombre a ningun otro comando de la casa.
+2. Que si falta el numero o el resumen, avise como se usa y no reviente.
+3. Que si la pieza del plan no esta o falla, lo diga en palabras simples y devuelva fallo, sin
+   tumbar el programa entero.
+4. Que no rompa a los vecinos: las ramas de antes y de despues siguen igual.
+
+A QUIEN PUEDE DANAR: a quien use el programa principal por la terminal. Si el nombre del comando
+choca con otro, ese otro deja de responder.
+
+LO QUE TIENE QUE QUEDAR VERDE: todas las pruebas de la casa, y en especial la que vigila que el
+cierre pida el resumen del plan.

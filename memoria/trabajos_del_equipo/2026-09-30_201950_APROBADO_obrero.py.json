@@ -1,0 +1,33 @@
+{
+ "obrero": "groq",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "El filtro de funciones solo se aplicaba cuando la lista de conocidas no estaba vacía, permitiendo que se exigieran palabras con raya baja inexistentes.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "falta_en_el_material",
+  "texto_viejo": "    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)\n    if conocidas:\n        funciones = [f for f in funciones if f in conocidas]",
+  "texto_nuevo": "    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)\n    # LA CURA (2026-09-30): el filtro se aplica SIEMPRE. Antes, con la lista de conocidas vacia no\n    # se filtraba nada y se exigia TODA palabra con raya baja del encargo: las variables de paso de\n    # un trozo pegado se tomaban por funciones y la ronda moria con FALTA_MATERIAL pidiendo\n    # funciones que no existen. Sin la lista no hay forma de distinguir funcion de variable, asi que\n    # no se exige ninguna: cuando menos se sabe, menos se exige, no mas.\n    funciones = [f for f in funciones if f in (conocidas or ())]",
+  "cambio": "Aplicar filtro de funciones siempre, incluso cuando la lista de conocidas está vacía.",
+  "codigo": "    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)\n    # LA CURA (2026-09-30): el filtro se aplica SIEMPRE. Antes, con la lista de conocidas vacia no\n    # se filtraba nada y se exigia TODA palabra con raya baja del encargo: las variables de paso de\n    # un trozo pegado se tomaban por funciones y la ronda moria con FALTA_MATERIAL pidiendo\n    # funciones que no existen. Sin la lista no hay forma de distinguir funcion de variable, asi que\n    # no se exige ninguna: cuando menos se sabe, menos se exige, no mas.\n    funciones = [f for f in funciones if f in (conocidas or ())]",
+  "vigia": "Prueba que al procesar un encargo con variables de paso que empiezan con '_' y una lista de conocidas vacía, no se solicitan funciones inexistentes.",
+  "puede_danar": [
+   "cuerpo/obrero.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación aplica el filtro de funciones correctamente, solucionando el problema de exigencia de funciones inexistentes cuando la lista de conocidas está vacía."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19596 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

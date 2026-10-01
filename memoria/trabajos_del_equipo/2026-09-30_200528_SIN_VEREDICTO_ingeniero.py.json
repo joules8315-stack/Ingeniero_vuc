@@ -1,0 +1,42 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "El bloque del comando resumen-del-plan usa cinco nombres de paso que empiezan por raya baja (variables, no funciones), lo que dispara el aviso falso del repartidor de material; hay que renombrarlos sin raya baja.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    if cmd == \"resumen-del-plan\":\n        if len(sys.argv) < 4:\n            print('Uso: python ingeniero.py resumen-del-plan <numero> \"<el resumen>\"')\n            return 1\n        try:\n            import arnes.puerta_del_plan as pdp\n            numero = sys.argv[2]\n            resumen = \" \".join(sys.argv[3:])\n            apuntado = pdp.apuntar_resumen(numero, resumen, AQUI)\n            if apuntado:\n                print(\"Apuntado el resumen del plan %s.\" % numero)\n                return 0\n            print(\"No se pudo apuntar el resumen del plan %s.\" % numero)\n            return 1\n        except Exception as fallo:\n            print(\"No se pudo apuntar el resumen: %s\" % fallo)\n            return 1",
+    "texto_nuevo": "    if cmd == \"resumen-del-plan\":\n        if len(sys.argv) < 4:\n            print('Uso: python ingeniero.py resumen-del-plan <numero> \"<el resumen>\"')\n            return 1\n        try:\n            import arnes.puerta_del_plan as pdp\n            numero = sys.argv[2]\n            resumen = \" \".join(sys.argv[3:])\n            apuntado = pdp.apuntar_resumen(numero, resumen, AQUI)\n            if apuntado:\n                print(\"Apuntado el resumen del plan %s.\" % numero)\n                return 0\n            print(\"No se pudo apuntar el resumen del plan %s.\" % numero)\n            return 1\n        except Exception as fallo:\n            print(\"No se pudo apuntar el resumen: %s\" % fallo)\n            return 1"
+   }
+  ],
+  "cambio": "NO_ENCONTRADO: el material no trae el texto literal actual del bloque (con los cinco nombres de paso que empiezan por raya baja). Solo trae el ancla y el bloque tal como debe quedar, pero el bloque 'como debe quedar' del material sigue usando 'sys' y 'AQUI', que no estan definidos ni importados en el material. No se puede construir el texto_viejo literal sin ver el archivo completo.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "vigias/test_vigia_el_encargo_viaja_por_archivo.py y la prueba que vigila que el cierre pida el resumen del plan",
+  "puede_danar": [
+   "quien use el programa principal por la terminal",
+   "arnes/puerta_del_plan.py"
+  ],
+  "preguntas": [
+   "El bloque 'como debe quedar' del material usa 'sys' y 'AQUI', que no aparecen importados ni definidos en el material. ¿Se importan en la cabecera de ingeniero.py? ¿Que valor debe llevar 'AQUI'?"
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {},
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'cmd'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: 'AQUI'. No se importa, no se define y no es de Python. En",
+  "el pasillo recorto el encargo de 20608 a 12639 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 20810 a 12740 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

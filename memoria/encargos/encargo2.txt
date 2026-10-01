@@ -1,0 +1,53 @@
+OBJETIVO: en ingeniero.py, dejar el comando resumen-del-plan escrito con nombres limpios.
+
+POR QUE, Y ES UN DEFECTO MEDIDO DE LA CASA: el repartidor de material da por hecho que toda palabra
+que empieza por raya baja es una funcion, y exige verla declarada. El bloque de ese comando usa cinco
+nombres de paso que hoy empiezan por raya baja, y son variables, no funciones. Resultado: cada ronda
+sobre ese bloque muere antes de empezar con FALTA_MATERIAL pidiendo cinco funciones que no existen ni
+pueden existir. Pasa igual a Codex y nos tiene parados a todos. Quitando la raya baja de esos cinco
+nombres de paso, el bloque hace exactamente lo mismo y deja de disparar el aviso falso.
+
+EL ANCLA, un solo renglon, comprobado que aparece UNA sola vez en el archivo:
+
+    if cmd == "resumen-del-plan":
+
+COMO TIENE QUE QUEDAR el bloque entero (esta dentro de la funcion main, entre la rama arranca y la
+rama trabaja, con su sangria de 4 espacios). Se copia tal cual:
+
+def main():
+    if cmd == "resumen-del-plan":
+        if len(sys.argv) < 4:
+            print('Uso: python ingeniero.py resumen-del-plan <numero> "<el resumen>"')
+            return 1
+        try:
+            import arnes.puerta_del_plan as pdp
+            numero = sys.argv[2]
+            resumen = " ".join(sys.argv[3:])
+            apuntado = pdp.apuntar_resumen(numero, resumen, AQUI)
+            if apuntado:
+                print("Apuntado el resumen del plan %s." % numero)
+                return 0
+            print("No se pudo apuntar el resumen del plan %s." % numero)
+            return 1
+        except Exception as fallo:
+            print("No se pudo apuntar el resumen: %s" % fallo)
+            return 1
+
+(El renglon "def main():" de arriba esta solo para situar donde vive el bloque; la funcion main ya
+existe y no se toca. Lo que se escribe es el bloque que empieza en el ancla.)
+
+QUE SE COMPRUEBA:
+1. Que el comando no le pise el nombre a ningun otro comando de la casa.
+2. Que si falta el numero o el resumen, avise como se usa y no reviente.
+3. Que si la pieza del plan no esta o falla, lo diga en palabras simples y devuelva fallo, sin tumbar
+   el programa entero.
+4. Que las ramas de antes y de despues del bloque sigan igual.
+
+A QUIEN PUEDE DANAR: a quien use el programa principal por la terminal. Si el nombre del comando
+choca con otro, ese otro deja de responder.
+
+LO QUE TIENE QUE QUEDAR VERDE: todas las pruebas de la casa, y en especial la que vigila que el
+cierre pida el resumen del plan.
+
+LIBERTAD: se puede escribir el archivo entero si hace falta. No hay nada prohibido de tocar mas alla
+de no cambiar lo que el comando hace.

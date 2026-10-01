@@ -1,0 +1,84 @@
+OBJETIVO: en ingeniero.py, dejar el bloque del comando resumen-del-plan con nombres de paso limpios,
+sin raya baja delante. Es un cambio pequeno y cerrado.
+
+POR QUE: ese bloque esta en disco desde una ronda anterior y usa cinco nombres de paso con raya baja
+que son variables, no funciones. Eso hace que el repartidor de material los confunda con funciones y
+tumbe rondas enteras sobre este archivo. Quitando la raya baja, el bloque hace exactamente lo mismo y
+deja de disparar la falsa alarma. Ademas asi queda con huella de revision y el guardia puede guardar.
+
+LO QUE YA SE PREGUNTO Y YA ESTA CONTESTADO (son renglones exactos de ingeniero.py y no se tocan):
+
+  renglon 24:   import os, sys, subprocess, time
+  renglon 27:   AQUI = os.path.dirname(os.path.abspath(__file__))
+  renglon 249:      cmd = sys.argv[1]
+
+O sea: sys viene del import del renglon 24; AQUI es la carpeta donde vive ingeniero.py y se arma en
+el renglon 27; cmd es la primera palabra que escribe quien usa el programa y se arma en el renglon
+249, dentro de main. Los tres existen antes del bloque y no hay que importar ni definir nada nuevo.
+
+EL ANCLA, un solo renglon, comprobado que aparece UNA sola vez en el archivo:
+
+    if cmd == "resumen-del-plan":
+
+ESTO ES EL TEXTO VIEJO, EXACTO, COPIADO DEL ARCHIVO, sin cambiarle una coma (es el bloque entero que
+hay ahora, dentro de la funcion main, entre la rama arranca y la rama trabaja):
+
+def main():
+    if cmd == "resumen-del-plan":
+        if len(sys.argv) < 4:
+            print('Uso: python ingeniero.py resumen-del-plan <numero> "<el resumen>"')
+            return 1
+        try:
+            import arnes.puerta_del_plan as _pdp
+            _num = sys.argv[2]
+            _texto = " ".join(sys.argv[3:])
+            _ok = _pdp.apuntar_resumen(_num, _texto, AQUI)
+            if _ok:
+                print("Apuntado el resumen del plan %s." % _num)
+                return 0
+            print("No se pudo apuntar el resumen del plan %s." % _num)
+            return 1
+        except Exception as _e:
+            print("No se pudo apuntar el resumen: %s" % _e)
+            return 1
+
+COMO TIENE QUE QUEDAR, y esto si va literal (los mismos renglones, con los cinco nombres de paso sin
+raya baja delante):
+
+def main():
+    if cmd == "resumen-del-plan":
+        if len(sys.argv) < 4:
+            print('Uso: python ingeniero.py resumen-del-plan <numero> "<el resumen>"')
+            return 1
+        try:
+            import arnes.puerta_del_plan as pdp
+            numero = sys.argv[2]
+            resumen = " ".join(sys.argv[3:])
+            apuntado = pdp.apuntar_resumen(numero, resumen, AQUI)
+            if apuntado:
+                print("Apuntado el resumen del plan %s." % numero)
+                return 0
+            print("No se pudo apuntar el resumen del plan %s." % numero)
+            return 1
+        except Exception as fallo:
+            print("No se pudo apuntar el resumen: %s" % fallo)
+            return 1
+
+(Los renglones "def main():" estan solo para situar donde vive el bloque: la funcion main ya existe y
+no se toca. Lo que se escribe es el bloque que empieza en el ancla.)
+
+QUE SE COMPRUEBA:
+1. Que el comando no le pise el nombre a ningun otro comando de la casa.
+2. Que si falta el numero o el resumen, avise como se usa y no reviente.
+3. Que si la pieza del plan no esta o falla, lo diga en palabras simples y devuelva fallo, sin tumbar
+   el programa entero.
+4. Que las ramas de antes y de despues del bloque sigan igual.
+
+A QUIEN PUEDE DANAR: a quien use el programa principal por la terminal. Si el nombre del comando
+choca con otro, ese otro deja de responder.
+
+LO QUE TIENE QUE QUEDAR VERDE: todas las pruebas de la casa, y en especial la que vigila que el
+cierre pida el resumen del plan.
+
+LIBERTAD: se puede escribir el archivo ingeniero.py entero si hace falta. No hay nada prohibido de
+tocar mas alla de no cambiar lo que el comando hace.

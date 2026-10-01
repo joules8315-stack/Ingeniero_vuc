@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El bloque del comando resumen-del-plan usa cinco nombres de paso con raya baja (PDP, NUM, TEXTO, OK, E) que el repartidor de material confunde con funciones y tumba la ronda antes de empezar.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "            import arnes.puerta_del_plan as _PDP\n            _NUM = sys.argv[2]\n            _TEXTO = \" \".join(sys.argv[3:])\n            _OK = _PDP.apuntar_resumen(_NUM, _TEXTO, AQUI)\n            if _OK:\n                print(\"Apuntado el resumen del plan %s.\" % _NUM)\n                return 0\n            print(\"No se pudo apuntar el resumen del plan %s.\" % _NUM)\n            return 1\n        except Exception as _E:\n            print(\"No se pudo apuntar el resumen: %s\" % _E)\n            return 1",
+    "texto_nuevo": "            import arnes.puerta_del_plan as pdp\n            numero = sys.argv[2]\n            resumen = \" \".join(sys.argv[3:])\n            apuntado = pdp.apuntar_resumen(numero, resumen, AQUI)\n            if apuntado:\n                print(\"Apuntado el resumen del plan %s.\" % numero)\n                return 0\n            print(\"No se pudo apuntar el resumen del plan %s.\" % numero)\n            return 1\n        except Exception as fallo:\n            print(\"No se pudo apuntar el resumen: %s\" % fallo)\n            return 1"
+   }
+  ],
+  "cambio": "Quitar la raya baja delante de los cinco nombres de paso del bloque resumen-del-plan: _PDP->pdp, _NUM->numero, _TEXTO->resumen, _OK->apuntado, _E->fallo. El comportamiento del comando no cambia.",
+  "codigo": "            import arnes.puerta_del_plan as pdp\n            numero = sys.argv[2]\n            resumen = \" \".join(sys.argv[3:])\n            apuntado = pdp.apuntar_resumen(numero, resumen, AQUI)\n            if apuntado:\n                print(\"Apuntado el resumen del plan %s.\" % numero)\n                return 0\n            print(\"No se pudo apuntar el resumen del plan %s.\" % numero)\n            return 1\n        except Exception as fallo:\n            print(\"No se pudo apuntar el resumen: %s\" % fallo)\n            return 1",
+  "vigia": "vigias/test_vigia_el_encargo_viaja_por_archivo.py y la prueba de la casa que vigila que el cierre pida el resumen del plan",
+  "puede_danar": [
+   "arnes/puerta_del_plan.py",
+   "quien use el programa principal por la terminal"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "puerta_del_plan.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple con el requerimiento, elimina los guiones bajos y mantiene la funcionalidad sin afectar a otros componentes."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19086 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el pasillo recorto el encargo de 23699 a 13447 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "vueltas_dadas: 4"
+ ]
+}

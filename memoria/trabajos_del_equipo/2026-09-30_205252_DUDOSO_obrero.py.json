@@ -1,0 +1,64 @@
+{
+ "obrero": "gemini4",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "La función `_nombres_de_funcion_del_texto` no distingue correctamente entre palabras conocidas que son funciones y aquellas que son datos o parámetros, lo que causa que la prueba `test_vigia_el_codigo_pegado_no_pide_funciones.py` falle en los casos 1 y 4.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_nombres_de_funcion_del_texto",
+  "texto_viejo": "    if conocidas:\n        try:\n            for palabra in texto_encargo.replace(\",\", \" \").replace(\";\", \" \").split():\n                # una palabra con comillas es una etiqueta o texto pegado como\n                # material, no una funcion que se vaya a tocar: no cuenta.\n                if '\"' in palabra or \"'\" in palabra or '`' in palabra:\n                    continue\n                limpia = palabra.strip(\"()[]{}<>\\\"'`.:\")\n                if limpia in conocidas and limpia not in funciones:\n                    funciones.append(limpia)\n        except Exception:\n            pass\n    return funciones",
+  "texto_nuevo": "    if conocidas:\n        try:\n            # Se necesita el contexto para saber si una palabra conocida es una funcion.\n            # Se busca si la palabra conocida viene precedida por 'def ' o 'funcion '.\n            # Si no, se considera un dato o parametro y no se agrega a la lista de funciones.\n            palabras_con_contexto = texto_encargo.split()\n            for i, palabra in enumerate(palabras_con_contexto):\n                limpia = palabra.strip(\"()[]{}<>\\\"'`.:\")\n                if limpia in conocidas and limpia not in funciones:\n                    # Comprobar si la palabra conocida viene despues de 'def' o 'funcion'\n                    if i > 0:\n                        anterior = palabras_con_contexto[i-1].strip()\n                        if anterior == 'def' or anterior == 'funcion':\n                            funciones.append(limpia)\n                    # Las palabras que empiezan por raya baja siempre cuentan\n                    elif limpia.startswith(\"_\"):\n                        funciones.append(limpia)\n        except Exception:\n            pass\n    return funciones",
+  "cambio": "Se modifica la lógica de adición de palabras conocidas a la lista de funciones. Ahora, solo se agregan si vienen precedidas por 'def' o 'funcion', o si empiezan por raya baja. Esto asegura que los datos o parámetros no se confundan con funciones.",
+  "codigo": "    if conocidas:\n        try:\n            # Se necesita el contexto para saber si una palabra conocida es una funcion.\n            # Se busca si la palabra conocida viene precedida por 'def ' o 'funcion '.\n            # Si no, se considera un dato o parametro y no se agrega a la lista de funciones.\n            palabras_con_contexto = texto_encargo.split()\n            for i, palabra in enumerate(palabras_con_contexto):\n                limpia = palabra.strip(\"()[]{}<>\\\"'`.:\")\n                if limpia in conocidas and limpia not in funciones:\n                    # Comprobar si la palabra conocida viene despues de 'def' o 'funcion'\n                    if i > 0:\n                        anterior = palabras_con_contexto[i-1].strip()\n                        if anterior == 'def' or anterior == 'funcion':\n                            funciones.append(limpia)\n                    # Las palabras que empiezan por raya baja siempre cuentan\n                    elif limpia.startswith(\"_\"):\n                        funciones.append(limpia)\n        except Exception:\n            pass\n    return funciones",
+  "vigia": "vigias/test_vigia_el_codigo_pegado_no_pide_funciones.py",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/mostrador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/obrero.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "vigias/test_vigia_el_material_pide_la_funcion_publica.py",
+   "vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py",
+   "vigias/test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+   "vigias/test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "vigias/test_vigia_lo_que_el_cerebro_pide_en_su_respuesta_se_atiende.py",
+   "vigias/test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "vigias/test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "mostrador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py",
+   "test_vigia_el_material_pide_la_funcion_publica.py",
+   "test_vigia_el_pasillo_no_corta_al_que_escribe.py",
+   "test_vigia_el_trozo_pegado_en_el_encargo_cuenta_como_material.py",
+   "test_vigia_la_extension_suelta_no_es_un_archivo.py",
+   "test_vigia_lo_que_el_cerebro_pide_en_su_respuesta_se_atiende.py",
+   "test_vigia_revisor_roto_no_tira_la_vuelta.py",
+   "test_vigia_un_trozo_pegado_no_es_una_funcion_que_falte.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Se ha eliminado la comprobación que descarta palabras que aparecen entre comillas (\"\", '' o ``). El código original las ignoraba; la nueva versión las considera y podría añadir funciones falsas."
+  ]
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19455 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 26527 a 14677 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO trae el cambio (codigo/texto_viejo/texto_nuevo)) -> se reintenta",
+  "el pasillo recorto el encargo de 26591 a 14708 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "vueltas_dadas: 4"
+ ]
+}
