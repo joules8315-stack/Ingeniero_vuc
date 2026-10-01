@@ -1,0 +1,66 @@
+OBJETIVO: crear la vigia que nace ROJA del bucle que aprende del rechazo. Es el paso 0 del plan: se
+hace ANTES de todo lo demas, porque es lo que permite que el resto salga sin que nadie vigile a mano.
+
+POR QUE, medido hoy 2026-09-30, y es la cuenta que manda: hubo 64 rondas y se guardaron 31. Se perdio
+la mitad. El motivo no es que el equipo no sepa: es que cuando una ronda se rechaza, al que escribe se
+le vuelve a mandar EL MISMO encargo y se espera otra cosa. Se comprobo CINCO veces esta tarde, a mano:
+escribiendo el motivo del rechazo DENTRO del encargo, el equipo paso de RECHAZADO a casi aprobado en
+tres vueltas. A mano depende de que alguien se acuerde, y por eso se pierde siempre.
+
+Y hay una razon mas, dicha sin maquillaje: Julio pidio que todos los pasos del plan salieran de
+corrido, en bucle. Se le entrego un bucle que reintenta A CIEGAS, porque el bucle que aprende es
+codigo y en esta casa el codigo no se escribe a solas. Esta ronda es la forma honrada de tenerlo: que
+lo escriba el equipo.
+
+LO QUE SE CREA EN ESTA RONDA, y solo esto: el archivo
+vigias/test_vigia_el_bucle_aprende_del_rechazo.py
+
+Esa vigia NACE ROJA a proposito, porque la pieza que vigila, arnes/bucle_del_plan.py, todavia no
+existe. La pieza se escribe en la ronda siguiente. Es la ley de la casa.
+
+QUE TIENE QUE COMPROBAR LA VIGIA, cinco casos, y cada uno dice en su primer renglon que vigila:
+
+CASO 1, la pieza existe y se puede usar: se carga arnes/bucle_del_plan.py por su RUTA y tiene una
+funcion publica que devuelve la lista de encargos del plan, otra que saca los motivos de un rechazo
+archivado, y otra que pega esos motivos dentro de un encargo.
+
+CASO 2, los encargos salen EN ORDEN: se le da una carpeta de mentira con tres encargos llamados
+paso_1b, paso_0a y paso_1a, y los devuelve en el orden paso_0a, paso_1a, paso_1b. El nombre manda el
+orden, no la fecha del archivo.
+
+CASO 3, saca los motivos de un rechazo de verdad: se le da una ficha de trabajo archivado de mentira
+que trae dentro los motivos del auditor, y devuelve esos motivos, con su texto, sin inventar ninguno.
+
+CASO 4, pega el rechazo DENTRO del encargo y lo REEMPLAZA, no lo acumula: se le pasa un encargo de
+mentira y dos motivos, y los dos aparecen dentro. Se le pasa otra vez con dos motivos NUEVOS, y
+quedan SOLO los nuevos: los viejos ya no estan y el encargo no crecio por tener dos tandas pegadas.
+Esto es lo mas importante del caso: si se acumulan, el encargo engorda, el pasillo lo corta y el
+trabajo se pierde. Hoy el pasillo recorto encargos de 26.838 letras a 14.843.
+
+CASO 5, un paso que no entra NO para el bucle: se le dan dos pasos y se hace que el primero falle
+siempre. El bucle tiene que intentar el primero el numero de veces que toque, dejarlo apuntado como
+no entrado con su motivo, y SEGUIR con el segundo. Nunca se queda parado esperando a nadie.
+
+COMO SE ESCRIBE LA VIGIA, reglas de la casa que no se negocian:
+- Se carga la pieza por RUTA, no por nombre de paquete.
+- PROHIBIDO fabricar un muneco de la pieza y probar el muneco. Eso se rechazo hoy en el paso 1a: la
+  prueba salia verde sin que la pieza existiera y no vigilaba nada.
+- La prueba NO puede salir verde mientras la pieza no exista. Si sale verde, esta mal escrita.
+- Las carpetas y las fichas de mentira son de la PRUEBA, en su propia carpeta aparte. No se toca la
+  memoria de verdad: una prueba escribio su copia vacia encima y se perdieron 27 de 32 errores.
+- Para el caso 5, el lanzador de rondas se le pasa a la pieza como un parametro que se puede
+  sustituir, para no llamar a ningun cerebro de verdad desde una prueba. Sustituir el LANZADOR si se
+  puede; sustituir la pieza que se vigila, no.
+- Nada que dependa de la respuesta de un cerebro: datos de mentira fijos, siempre iguales.
+- No se usa texto de triple comilla que lleve dentro otras comillas.
+
+QUE SIGNIFICA QUE NAZCA ROJA: hoy los cinco casos FALLAN diciendo en palabras simples que el bucle no
+existe. Cuando la pieza se escriba, los cinco pasan a verde sin tocar la prueba.
+
+A QUIEN PUEDE DANAR: a nadie todavia. En cuanto exista, el bucle lanzara TODAS las rondas del plan,
+asi que un fallo ahi afecta a todo el trabajo. Por eso se vigila antes de escribirlo.
+
+LO QUE TIENE QUE QUEDAR VERDE: todo lo que ya estaba verde sigue verde. Esta vigia queda ROJA a
+proposito, y eso es lo correcto en esta ronda.
+
+LIBERTAD: se escribe el archivo entero, es nuevo. No hay texto viejo que respetar.

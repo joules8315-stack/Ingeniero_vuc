@@ -1,0 +1,190 @@
+import importlib.util
+import os
+import sys
+import tempfile
+import shutil
+
+import pytest
+
+
+# Ruta de la pieza que se vigila, armada desde la carpeta de esta propia prueba.
+# Se carga por RUTA y no por nombre de paquete: hay dos proyectos con carpetas
+# que se llaman igual y por nombre de paquete se agarra la equivocada.
+AQUI = os.path.dirname(os.path.abspath(__file__))
+RAIZ = os.path.dirname(AQUI)
+RUTA_LIBRETA = os.path.join(RAIZ, "arnes", "libreta_de_frenos.py")
+
+
+# Nombres exactos que la libreta tiene que ofrecer. Si la libreta no existe,
+# la prueba falla; si existe pero no trae estos nombres, tambien falla.
+NOMBRE_APUNTAR = "apuntar_freno"
+NOMBRE_LEER = "leer_frenos"
+
+# Los tres datos que un freno tiene que dejar escritos.
+CLAVE_CUANDO = "cuando"
+CLAVE_QUIEN = "quien"
+CLAVE_INSTRUCCION = "instruccion"
+
+# Marca con la que la libreta senala un freno mudo (le falta quien o instruccion).
+CLAVE_MUDO = "mudo"
+
+
+def _cargar_libreta_por_ruta():
+    # Carga el ARCHIVO REAL por su ruta. Si no esta, falla con un mensaje en
+    # palabras simples: eso es exactamente lo que se busca hoy, nacer roja.
+    if not os.path.isfile(RUTA_LIBRETA):
+        pytest.fail(
+            "la libreta de frenos no existe todavia: falta el archivo "
+            + RUTA_LIBRETA
+            + " (se escribe en la ronda siguiente; esta vigia nace roja a proposito)"
+        )
+    especificacion = importlib.util.spec_from_file_location(
+        "libreta_de_frenos_bajo_prueba", RUTA_LIBRETA
+    )
+    if especificacion is None or especificacion.loader is None:
+        pytest.fail(
+            "no se pudo cargar la libreta de frenos desde su ruta: " + RUTA_LIBRETA
+        )
+    modulo = importlib.util.module_from_spec(especificacion)
+    especificacion.loader.exec_module(modulo)
+    return modulo
+
+
+def _carpeta_aparte():
+    # La prueba le da a la libreta SU PROPIA carpeta, para no tocar la memoria
+    # de verdad. Esto no es un muneco de la libreta: es decirle a la libreta de
+    # verdad donde escribir.
+    return tempfile.mkdtemp(prefix="libreta_de_frenos_prueba_")
+
+
+def _apuntar(libreta, carpeta, freno):
+    # Llama a la funcion publica de apuntar, pasandole la carpeta aparte.
+    funcion = getattr(libreta, NOMBRE_APUNTAR)
+    try:
+        return funcion(freno, carpeta=carpeta)
+    except TypeError:
+        return funcion(freno, carpeta)
+
+
+def _leer(libreta, carpeta):
+    # Llama a la funcion publica de leer, pasandole la carpeta aparte.
+    funcion = getattr(libreta, NOMBRE_LEER)
+    try:
+        return funcion(carpeta=carpeta)
+    except TypeError:
+        return funcion(carpeta)
+
+
+def test_caso_1_la_libreta_existe_y_se_puede_usar():
+    # Vigila que la libreta de frenos existe y se puede usar.
+    libreta = _cargar_libreta_por_ruta()
+    assert hasattr(libreta, NOMBRE_APUNTAR), (
+        "la libreta no tiene la funcion publica para apuntar un freno: "
+        + NOMBRE_APUNTAR
+    )
+    assert hasattr(libreta, NOMBRE_LEER), (
+        "la libreta no tiene la funcion publica para leer lo apuntado: "
+        + NOMBRE_LEER
+    )
+    assert callable(getattr(libreta, NOMBRE_APUNTAR))
+    assert callable(getattr(libreta, NOMBRE_LEER))
+
+
+def test_caso_2_un_freno_apuntado_deja_los_tres_datos():
+    # Vigila que un freno apuntado deja escritos los tres datos.
+    libreta = _cargar_libreta_por_ruta()
+    carpeta = _carpeta_aparte()
+    try:
+        cuando = "2026-09-30T10:00:00"
+        quien = "vigia_de_mentira_que_freno"
+        instruccion = "comprueba que el candado anota su causa al frenar"
+        freno = {
+            CLAVE_CUANDO: cuando,
+            CLAVE_QUIEN: quien,
+            CLAVE_INSTRUCCION: instruccion,
+        }
+        _apuntar(libreta, carpeta, freno)
+        leidos = _leer(libreta, carpeta)
+        assert leidos, "la libreta no devolvio nada despues de apuntar un freno"
+        ultimo = leidos[-1]
+        assert ultimo.get(CLAVE_CUANDO) == cuando, (
+            "el freno apuntado no guardo el cuando"
+        )
+        assert ultimo.get(CLAVE_QUIEN) == quien, (
+            "el freno apuntado no guardo el nombre exacto del que freno"
+        )
+        assert ultimo.get(CLAVE_INSTRUCCION) == instruccion, (
+            "el freno apuntado no guardo el texto de la instruccion que fallo"
+        )
+    finally:
+        shutil.rmtree(carpeta, ignore_errors=True)
+
+
+def test_caso_3_un_freno_sin_los_tres_datos_es_mudo():
+    # Vigila que un freno sin los tres datos se reconoce como mudo.
+    libreta = _cargar_libreta_por_ruta()
+    carpeta = _carpeta_aparte()
+    try:
+        cuando = "2026-09-30T11:00:00"
+        # A este freno le falta el nombre del que freno y el texto de la
+        # instruccion: es un freno mudo y la libreta tiene que marcarlo asi.
+        freno_mudo = {CLAVE_CUANDO: cuando}
+        _apuntar(libreta, carpeta, freno_mudo)
+        leidos = _leer(libreta, carpeta)
+        assert leidos, "la libreta no devolvio nada despues de apuntar un freno mudo"
+        ultimo = leidos[-1]
+        assert ultimo.get(CLAVE_MUDO) is True, (
+            "la libreta no marco como mudo el freno al que le faltaban datos"
+        )
+        # Y un freno completo no puede quedar marcado como mudo.
+        freno_completo = {
+            CLAVE_CUANDO: "2026-09-30T11:05:00",
+            CLAVE_QUIEN: "vigia_de_mentira_que_freno",
+            CLAVE_INSTRUCCION: "comprueba que el candado anota su causa al frenar",
+        }
+        _apuntar(libreta, carpeta, freno_completo)
+        leidos = _leer(libreta, carpeta)
+        ultimo = leidos[-1]
+        assert ultimo.get(CLAVE_MUDO) is not True, (
+            "la libreta marco como mudo un freno que traia los tres datos"
+        )
+    finally:
+        shutil.rmtree(carpeta, ignore_errors=True)
+
+
+def test_caso_4_la_libreta_no_escribe_en_la_memoria_de_verdad():
+    # Vigila que la libreta no escribe en la memoria de verdad cuando se la prueba.
+    libreta = _cargar_libreta_por_ruta()
+    carpeta = _carpeta_aparte()
+    try:
+        # La prueba usa SU PROPIA copia, con su carpeta aparte. Se comprueba
+        # que lo apuntado cae dentro de esa carpeta y no fuera de ella.
+        cuando = "2026-09-30T12:00:00"
+        quien = "vigia_de_mentira_que_freno"
+        instruccion = "comprueba que el candado anota su causa al frenar"
+        freno = {
+            CLAVE_CUANDO: cuando,
+            CLAVE_QUIEN: quien,
+            CLAVE_INSTRUCCION: instruccion,
+        }
+        _apuntar(libreta, carpeta, freno)
+        leidos = _leer(libreta, carpeta)
+        assert leidos, "la libreta no escribio nada en su carpeta aparte"
+        # Nada de lo apuntado puede aparecer en la memoria de verdad del
+        # proyecto: la carpeta de la prueba es la unica que se toca.
+        memoria_de_verdad = os.path.join(RAIZ, "memoria")
+        if os.path.isdir(memoria_de_verdad):
+            for nombre in os.listdir(memoria_de_verdad):
+                ruta = os.path.join(memoria_de_verdad, nombre)
+                if not os.path.isfile(ruta):
+                    continue
+                try:
+                    with open(ruta, "r", encoding="utf-8", errors="ignore") as f:
+                        contenido = f.read()
+                except OSError:
+                    continue
+                assert quien not in contenido, (
+                    "la prueba escribio en la memoria de verdad: " + ruta
+                )
+    finally:
+        shutil.rmtree(carpeta, ignore_errors=True)

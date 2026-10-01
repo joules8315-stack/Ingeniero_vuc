@@ -1,75 +1,92 @@
-OBJETIVO: crear la vigia que nace ROJA de la libreta de frenos. Es el paso 1a del plan que esta
-escrito en PLAN_DOS_PASOS.md, en la raiz del proyecto.
-
-POR QUE, con el numero que manda: hay 2.824 frenos apuntados y solo 5 acabaron sabiendo quien fallo.
-El sistema tuvo 2.824 oportunidades de aprender y aprovecho cinco. La causa de fondo no es que falten
-vigias (casi todos los que frenan ya tienen la suya): es que el freno NO ANOTA SU CAUSA en el momento
-de frenar. Esta es la ley que Julio legislo hoy, 2026-09-30, textual: "el que frena tiene que vigilar
-un aspecto especifico, asi que con saber el nombre del vigia, y que quede apuntado, por programa, no
-a mano, en una lista, sabremos que esta fallando. La lista debe tener la instruccion que se le dio y
-fallo, de modo que podamos corregir."
-
-LO QUE SE CREA EN ESTA RONDA, y solo esto: el archivo
+OBJETIVO: crear la vigia que nace ROJA de la libreta de frenos:
 vigias/test_vigia_la_libreta_de_frenos_apunta_quien_freno.py
 
-Esa vigia NACE ROJA a proposito, porque la pieza que vigila todavia no existe. La pieza se escribe en
-la ronda siguiente. Eso es la ley de la casa: la vigia va primero y nace roja por su propio motivo.
+CAMINO NUEVO. Los dos intentos anteriores murieron por LA MISMA causa, dicha por dos obreros
+distintos: "falta la firma exacta que tendra arnes/libreta_de_frenos.py para escribir la vigia sin
+inventar nombres ni contratos". Tenian razon y no se les vuelve a pedir lo mismo: el contrato no
+estaba escrito, y en esta casa no se inventa. Aqui abajo va el contrato COMPLETO, para que no haya
+nada que adivinar. Esto NO es un reintento del mismo camino: es otro camino.
 
-QUE TIENE QUE COMPROBAR LA VIGIA, cuatro casos, y cada uno explica en su primer renglon que vigila:
+POR QUE EXISTE ESTA PIEZA, con el numero que manda: hay 2.824 frenos apuntados y solo 5 acabaron
+sabiendo quien fallo. Ley de Julio del 2026-09-30: "el que frena tiene que vigilar un aspecto
+especifico, asi que con saber el nombre del vigia, y que quede apuntado, por programa, no a mano, en
+una lista, sabremos que esta fallando. La lista debe tener la instruccion que se le dio y fallo, de
+modo que podamos corregir."
 
-CASO 1, la libreta existe y se puede usar: se carga arnes/libreta_de_frenos.py por su ruta y tiene
-una funcion publica para apuntar un freno y otra para leer lo apuntado.
+=== EL CONTRATO DE LA PIEZA QUE SE VIGILA, exacto y cerrado ===
 
-CASO 2, un freno apuntado deja los TRES datos escritos: cuando freno, el nombre exacto del que freno,
-y la instruccion que fallo con su texto. Se apunta un freno de mentira y se vuelve a leer: los tres
-datos tienen que estar, y el nombre y el texto tienen que ser los mismos que se metieron.
+El archivo arnes/libreta_de_frenos.py tendra DOS funciones publicas y nada mas:
 
-CASO 3, un freno sin los tres datos es un FRENO MUDO y se reconoce como tal: si se intenta apuntar un
-freno al que le falta el nombre del que freno o el texto de la instruccion, la libreta lo deja
-marcado como mudo, y al leer se puede distinguir cual fue mudo y cual no.
+  def apuntar(quien_freno, instruccion, carpeta=None):
+      quien_freno  : texto. El nombre exacto del que freno. Si viene vacio, el freno es MUDO.
+      instruccion  : texto. La instruccion que fallo, con su texto. Si viene vacia, es MUDO.
+      carpeta      : texto o None. La carpeta donde escribir. Si es None, escribe en la carpeta
+                     memoria del proyecto. La prueba SIEMPRE le pasa su propia carpeta.
+      devuelve     : un diccionario con cuatro claves exactas:
+                        "cuando"       texto, la fecha y hora en que se apunto
+                        "quien_freno"  texto, tal como entro
+                        "instruccion"  texto, tal como entro
+                        "mudo"         verdadero o falso: verdadero si falta quien_freno o
+                                       instruccion
 
-CASO 4, la libreta NO escribe en la memoria de verdad cuando se la prueba: la prueba usa SU PROPIA
-copia, con su carpeta aparte. Esto es obligatorio y ya costo caro: una prueba escribio su copia vacia
-encima de la memoria real y se perdieron 27 de los 32 errores aprendidos.
+  def leer(carpeta=None):
+      carpeta  : igual que arriba.
+      devuelve : una LISTA de diccionarios, cada uno con esas mismas cuatro claves, en el orden en
+                 que se apuntaron.
 
-COMO SE ESCRIBE LA VIGIA, reglas de la casa que no se negocian:
-- La prueba carga la pieza por RUTA, no por nombre de paquete, porque hay dos proyectos con carpetas
-  que se llaman igual y se agarra la equivocada.
-- Nada de esperar respuesta de un cerebro: la prueba es determinista, con datos de mentira fijos. Una
-  prueba que depende de una IA se pone roja sin que el codigo cambie y no vale para nada.
+No hay clases. No hay otras funciones publicas. Esos son los nombres y nada mas.
+
+=== LO QUE SE CREA EN ESTA RONDA, y solo esto ===
+
+El archivo de la prueba. La pieza NO se escribe hoy: va en la ronda siguiente. Por eso la prueba
+NACE ROJA, y eso es lo correcto.
+
+=== LOS CUATRO CASOS, cada uno diciendo en su primer renglon que vigila ===
+
+CASO 1, la libreta existe y tiene sus dos funciones: se carga arnes/libreta_de_frenos.py por su RUTA
+y se comprueba que tiene apuntar y leer, y que se pueden llamar.
+
+CASO 2, un freno apuntado deja los TRES datos escritos: se llama a apuntar con el nombre
+"candado_de_prueba" y la instruccion "hacer tal cosa", pasandole la carpeta de la prueba. Despues se
+llama a leer con esa misma carpeta y el renglon que vuelve tiene cuando con algo escrito,
+quien_freno igual a "candado_de_prueba", instruccion igual a "hacer tal cosa", y mudo falso.
+
+CASO 3, un freno sin los tres datos sale marcado como MUDO: se llama a apuntar con el nombre vacio y
+la instruccion "hacer tal cosa", y despues con el nombre "candado_de_prueba" y la instruccion vacia.
+Los dos renglones vuelven con mudo verdadero, y al leer se distingue cual fue mudo y cual no.
+
+CASO 4, la libreta NO escribe en la memoria de verdad cuando se la prueba: se le pasa la carpeta de
+la prueba, se apunta un freno, y se comprueba que el archivo quedo en ESA carpeta y no en la carpeta
+memoria del proyecto. La prueba usa SU PROPIA carpeta, siempre. Esto es obligatorio y ya costo caro
+dos veces: una prueba escribio su copia vacia encima de la memoria real y se perdieron 27 de los 32
+errores aprendidos, y otra envenenó el diccionario con 535 apariciones de un dato de prueba.
+
+=== COMO SE ESCRIBE LA PRUEBA, reglas que no se negocian ===
+
+- Se carga la pieza por RUTA: se arma la ruta hasta arnes/libreta_de_frenos.py partiendo de la
+  carpeta de la propia prueba, y se carga ESE archivo. Nunca por nombre de paquete: hay dos
+  proyectos con carpetas que se llaman igual y se agarra la equivocada.
+- PROHIBIDO fabricar un muneco, una imitacion o un sustituto de la libreta y probar el muneco. Eso
+  se rechazo ya en esta misma tarea: la prueba salia VERDE sin que la pieza existiera y no vigilaba
+  nada. Lo unico que la prueba sustituye es la CARPETA donde se escribe.
+- La prueba NO puede salir verde mientras la libreta no exista. Si hoy sale verde, esta mal escrita.
+- Nada que dependa de la respuesta de un cerebro: datos de mentira fijos, siempre iguales.
 - No se usa texto de triple comilla que lleve dentro otras comillas.
-- Cada caso dice en su primer renglon QUE vigila, en palabras simples, porque el nombre del vigia es
-  el diagnostico.
 
-A QUIEN PUEDE DANAR: a nadie todavia, porque la pieza que vigila no existe. En cuanto exista, pasara
-a vigilar a todos los candados, que son los que tendran que apuntar sus frenos en ella.
+=== QUE SIGNIFICA QUE NAZCA ROJA ===
 
-LO QUE TIENE QUE QUEDAR VERDE: todo lo que ya estaba verde sigue verde. Esta vigia nueva queda ROJA
-a proposito, y eso es lo correcto en esta ronda.
+Hoy, al correrla, los cuatro casos FALLAN y dicen en palabras simples que la libreta no existe.
+Cuando la libreta se escriba con el contrato de arriba, los cuatro pasan a verde SIN TOCAR la prueba.
 
-LIBERTAD: se escribe el archivo entero, es nuevo. No hay texto viejo que respetar.
+=== A QUIEN PUEDE DANAR ===
 
-LO QUE YA SE INTENTO Y EL AUDITOR RECHAZO CON RAZON. No se vuelve a hacer:
+A nadie todavia, porque la pieza no existe. En cuanto exista, todos los candados tendran que apuntar
+sus frenos en ella, asi que un fallo ahi se nota en todo el trabajo.
 
-INTENTO 1, RECHAZADO POR INVENTO: se escribio una prueba que se fabricaba un muneco de mentira de la
-libreta y despues probaba el muneco. Asi la prueba salia VERDE sin que la libreta existiera. Eso es
-una prueba tautologica: se asegura de que su propio muneco funciona y no vigila nada.
+=== LO QUE TIENE QUE QUEDAR VERDE ===
 
-PROHIBIDO EN ESTA RONDA, y es lo que tumbo el intento 1:
-- NADA de munecos, imitaciones ni sustitutos de la libreta. Ni uno.
-- NADA de sustituir la pieza por su nombre de paquete. Se carga el ARCHIVO REAL por su RUTA.
-- La prueba NO puede salir verde mientras la libreta no exista. Si sale verde, esta mal escrita.
+Todo lo que ya estaba verde sigue verde. Esta prueba nueva queda ROJA a proposito.
 
-COMO SE CARGA LA PIEZA, y esto es obligatorio: se arma la ruta hasta arnes/libreta_de_frenos.py
-partiendo de la carpeta de la propia prueba, y se carga ESE archivo por su ruta. Si el archivo no
-esta, la prueba FALLA, y eso es exactamente lo que se busca hoy: nace roja porque la pieza no existe
-todavia.
+=== LIBERTAD ===
 
-QUE SIGNIFICA QUE NAZCA ROJA, para que no haya duda: hoy, al correrla, los cuatro casos tienen que
-FALLAR, y fallar diciendo en palabras simples que la libreta no existe. Manana, cuando la libreta se
-escriba, los cuatro pasan a verde sin tocar la prueba. Si hoy sale verde, el trabajo esta mal y se
-rechaza otra vez.
-
-LO QUE SE PUEDE SUSTITUIR, y solo esto: la CARPETA donde la libreta escribe. La prueba le da su
-propia carpeta aparte para no tocar la memoria de verdad. Eso no es un muneco de la libreta: es
-decirle a la libreta de verdad donde escribir.
+Se escribe el archivo entero, es nuevo. No hay texto viejo que respetar.

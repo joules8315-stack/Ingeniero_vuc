@@ -1,0 +1,244 @@
+import importlib.util
+import os
+import sys
+import tempfile
+import unittest
+
+
+# Vigia de la libreta de frenos: nace ROJA porque la pieza todavia no existe.
+# Se carga la pieza por RUTA, nunca por nombre de paquete, porque hay dos
+# proyectos con carpetas que se llaman igual y se agarra la equivocada.
+#
+# La prueba NO fabrica munecos de la libreta: carga el archivo real por su
+# ruta. Si el archivo no esta, la prueba FALLA, y eso es lo correcto hoy.
+#
+# Lo unico que se sustituye es la CARPETA donde la libreta escribe: la prueba
+# le da su propia carpeta aparte para no tocar la memoria de verdad.
+
+
+AQUI = os.path.dirname(os.path.abspath(__file__))
+RAIZ = os.path.dirname(AQUI)
+RUTA_LIBRETA = os.path.join(RAIZ, 'arnes', 'libreta_de_frenos.py')
+
+
+# Nombres publicos que la tarea exige de la libreta. Si la libreta no existe,
+# la prueba falla antes de llegar aqui; si existe pero no expone estos
+# nombres, la prueba tambien falla, que es lo que se busca.
+NOMBRE_APUNTAR = 'apuntar_freno'
+NOMBRE_LEER = 'leer_frenos'
+
+
+# Campos que la tarea exige en cada freno apuntado.
+CAMPO_CUANDO = 'cuando'
+CAMPO_QUIEN = 'quien'
+CAMPO_INSTRUCCION = 'instruccion'
+CAMPO_MUDO = 'mudo'
+
+
+def cargar_libreta_por_ruta():
+    # Carga el archivo real por su ruta. Si no existe, revienta con un
+    # mensaje en palabras simples: la libreta no existe todavia.
+    if not os.path.isfile(RUTA_LIBRETA):
+        raise AssertionError(
+            'la libreta de frenos no existe todavia en la ruta esperada: '
+            + RUTA_LIBRETA
+            + ' -- esta vigia nace ROJA a proposito porque la pieza se '
+            + 'escribe en la ronda siguiente'
+        )
+    especificacion = importlib.util.spec_from_file_location(
+        'libreta_de_frenos_bajo_prueba', RUTA_LIBRETA
+    )
+    if especificacion is None or especificacion.loader is None:
+        raise AssertionError(
+            'no se pudo preparar la carga de la libreta desde su ruta: '
+            + RUTA_LIBRETA
+        )
+    modulo = importlib.util.module_from_spec(especificacion)
+    especificacion.loader.exec_module(modulo)
+    return modulo
+
+
+def carpeta_aparte():
+    # Carpeta propia de la prueba, para no tocar la memoria de verdad.
+    return tempfile.mkdtemp(prefix='libreta_de_frenos_prueba_')
+
+
+def apuntar(libreta, carpeta, cuando, quien, instruccion):
+    # Llama a la funcion publica de apuntar. Se le pasa la carpeta aparte
+    # para que la libreta de verdad escriba ahi y no en la memoria real.
+    funcion = getattr(libreta, NOMBRE_APUNTAR)
+    try:
+        return funcion(
+            cuando=cuando,
+            quien=quien,
+            instruccion=instruccion,
+            carpeta=carpeta,
+        )
+    except TypeError:
+        # Si la libreta usa otra firma, se intenta posicional con la carpeta
+        # al final, que es la forma mas comun de decirle donde escribir.
+        return funcion(cuando, quien, instruccion, carpeta)
+
+
+def leer(libreta, carpeta):
+    # Llama a la funcion publica de leer lo apuntado.
+    funcion = getattr(libreta, NOMBRE_LEER)
+    try:
+        return funcion(carpeta=carpeta)
+    except TypeError:
+        return funcion(carpeta)
+
+
+class TestVigiaLaLibretaDeFrenosApuntaQuienFreno(unittest.TestCase):
+
+    def test_caso_1_la_libreta_existe_y_se_puede_usar(self):
+        # Vigila que la libreta existe y tiene funcion publica para apuntar y para leer.
+        libreta = cargar_libreta_por_ruta()
+        self.assertTrue(
+            hasattr(libreta, NOMBRE_APUNTAR),
+            'la libreta no tiene la funcion publica para apuntar un freno: '
+            + NOMBRE_APUNTAR,
+        )
+        self.assertTrue(
+            hasattr(libreta, NOMBRE_LEER),
+            'la libreta no tiene la funcion publica para leer lo apuntado: '
+            + NOMBRE_LEER,
+        )
+        self.assertTrue(
+            callable(getattr(libreta, NOMBRE_APUNTAR)),
+            'la funcion de apuntar no se puede llamar: ' + NOMBRE_APUNTAR,
+        )
+        self.assertTrue(
+            callable(getattr(libreta, NOMBRE_LEER)),
+            'la funcion de leer no se puede llamar: ' + NOMBRE_LEER,
+        )
+
+    def test_caso_2_un_freno_apuntado_deja_los_tres_datos_escritos(self):
+        # Vigila que un freno apuntado deja cuando, quien y la instruccion que fallo.
+        libreta = cargar_libreta_por_ruta()
+        carpeta = carpeta_aparte()
+        cuando = '2026-09-30T10:00:00'
+        quien = 'vigia_de_mentira_que_freno'
+        instruccion = 'revisa que el candado apunte su causa al frenar'
+        apuntar(libreta, carpeta, cuando, quien, instruccion)
+        apuntados = leer(libreta, carpeta)
+        self.assertEqual(
+            len(apuntados), 1,
+            'se apunto un freno y al leer no aparece exactamente uno',
+        )
+        freno = apuntados[0]
+        self.assertIn(
+            CAMPO_CUANDO, freno,
+            'el freno apuntado no deja el momento del freno',
+        )
+        self.assertIn(
+            CAMPO_QUIEN, freno,
+            'el freno apuntado no deja el nombre exacto del que freno',
+        )
+        self.assertIn(
+            CAMPO_INSTRUCCION, freno,
+            'el freno apuntado no deja la instruccion que fallo',
+        )
+        self.assertEqual(
+            freno[CAMPO_QUIEN], quien,
+            'el nombre del que freno no es el mismo que se metio',
+        )
+        self.assertEqual(
+            freno[CAMPO_INSTRUCCION], instruccion,
+            'el texto de la instruccion no es el mismo que se metio',
+        )
+        self.assertEqual(
+            freno[CAMPO_CUANDO], cuando,
+            'el momento del freno no es el mismo que se metio',
+        )
+
+    def test_caso_3_un_freno_sin_los_tres_datos_es_un_freno_mudo(self):
+        # Vigila que un freno sin nombre o sin instruccion queda marcado como mudo.
+        libreta = cargar_libreta_por_ruta()
+        carpeta = carpeta_aparte()
+        # Freno completo: no es mudo.
+        apuntar(
+            libreta, carpeta,
+            '2026-09-30T11:00:00',
+            'vigia_que_si_dijo_quien',
+            'instruccion que si se dijo',
+        )
+        # Freno mudo por falta de nombre del que freno.
+        apuntar(
+            libreta, carpeta,
+            '2026-09-30T11:01:00',
+            '',
+            'instruccion que si se dijo',
+        )
+        # Freno mudo por falta del texto de la instruccion.
+        apuntar(
+            libreta, carpeta,
+            '2026-09-30T11:02:00',
+            'vigia_que_si_dijo_quien',
+            '',
+        )
+        apuntados = leer(libreta, carpeta)
+        self.assertEqual(
+            len(apuntados), 3,
+            'se apuntaron tres frenos y al leer no aparecen exactamente tres',
+        )
+        for freno in apuntados:
+            self.assertIn(
+                CAMPO_MUDO, freno,
+                'la libreta no marca si el freno fue mudo o no',
+            )
+        mudos = [f for f in apuntados if f[CAMPO_MUDO]]
+        no_mudos = [f for f in apuntados if not f[CAMPO_MUDO]]
+        self.assertEqual(
+            len(mudos), 2,
+            'los dos frenos sin nombre o sin instruccion no quedaron marcados como mudos',
+        )
+        self.assertEqual(
+            len(no_mudos), 1,
+            'el freno completo quedo marcado como mudo y no deberia',
+        )
+
+    def test_caso_4_la_libreta_no_escribe_en_la_memoria_de_verdad(self):
+        # Vigila que la prueba usa su propia carpeta y no toca la memoria real.
+        libreta = cargar_libreta_por_ruta()
+        carpeta = carpeta_aparte()
+        apuntar(
+            libreta, carpeta,
+            '2026-09-30T12:00:00',
+            'vigia_de_mentira_que_freno',
+            'instruccion de mentira para no tocar la memoria real',
+        )
+        apuntados = leer(libreta, carpeta)
+        self.assertEqual(
+            len(apuntados), 1,
+            'la libreta no escribio en la carpeta aparte que le dio la prueba',
+        )
+        # La carpeta aparte tiene que estar fuera de la carpeta del proyecto
+        # para que no pueda confundirse con la memoria de verdad.
+        carpeta_real = os.path.join(RAIZ, 'memoria')
+        self.assertFalse(
+            os.path.abspath(carpeta).startswith(os.path.abspath(carpeta_real)),
+            'la prueba esta escribiendo dentro de la carpeta de memoria real',
+        )
+        # Y la memoria de verdad no debe haber cambiado por culpa de la prueba:
+        # si existe, se anota su huella antes y despues de apuntar.
+        archivo_memoria = os.path.join(carpeta_real, 'DICCIONARIO.json')
+        if os.path.isfile(archivo_memoria):
+            with open(archivo_memoria, 'rb') as manejador:
+                antes = manejador.read()
+            apuntar(
+                libreta, carpeta,
+                '2026-09-30T12:01:00',
+                'vigia_de_mentira_que_freno',
+                'otra instruccion de mentira',
+            )
+            with open(archivo_memoria, 'rb') as manejador:
+                despues = manejador.read()
+            self.assertEqual(
+                antes, despues,
+                'la prueba escribio en la memoria de verdad y eso ya costo caro',
+            )
+
+
+if __name__ == '__main__':
+    unittest.main()

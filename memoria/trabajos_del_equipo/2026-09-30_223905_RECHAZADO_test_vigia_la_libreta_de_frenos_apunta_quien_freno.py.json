@@ -1,0 +1,41 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta ver el contenido real de PLAN_DOS_PASOS.md y la firma exacta que tendra arnes/libreta_de_frenos.py (nombres de las funciones publicas y forma de la lista leida) para escribir la vigia sin inventar nombres ni contratos.",
+  "archivo": "vigias/test_vigia_la_libreta_de_frenos_apunta_quien_freno.py",
+  "texto_nuevo": "NECESITO_LEER: PLAN_DOS_PASOS.md / motivo: es el plan que define el paso 1a y el contrato de la libreta / que decide: los nombres exactos de las funciones publicas de arnes/libreta_de_frenos.py y la forma de lo que devuelve al leer / riesgo: si no lo leo, invento nombres de funciones y la vigia vigilaria algo distinto a lo que se va a escribir en la ronda siguiente.\nNECESITO_LEER: arnes/libreta_de_frenos.py / motivo: es la pieza que la vigia debe cargar por ruta / que decide: los nombres exactos de la funcion de apuntar y de la de leer, y como se marca un freno mudo / riesgo: sin verlo, la vigia no puede comprobar los tres datos ni la distincion mudo/no-mudo sin inventar el contrato.",
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "No se entrega el archivo solicitado vigias/test_vigia_la_libreta_de_frenos_apunta_quien_freno.py con la lógica requerida; solo se pide leer archivos.",
+   "La propuesta no implementa la vigia que debe fallar en los cuatro casos porque la libreta aún no existe, incumpliendo el diagnóstico.",
+   "No se asegura que la prueba cargue arnes/libreta_de_frenos.py por ruta ni que use una carpeta aislada para evitar escribir en la memoria real."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Implementar el archivo de prueba con los cuatro casos descritos, garantizando que todos fallen con el mensaje de que la libreta no existe.",
+   "Usar la ruta correcta a arnes/libreta_de_frenos.py y una carpeta temporal para la escritura de la libreta.",
+   "Eliminar cualquier intento de crear “munecos” o sustitutos de la libreta, tal como prohíbe la regla."
+  ],
+  "resumen_para_el_jefe": "La propuesta solo pide leer archivos y no entrega la prueba requerida, por lo que no soluciona el diagnóstico."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 22906 a 12819 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "el pasillo recorto el encargo de 23213 a 12974 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el pasillo recorto el encargo de 23443 a 13088 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "el pasillo recorto el encargo de 23505 a 13118 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "vueltas_dadas: 4"
+ ]
+}

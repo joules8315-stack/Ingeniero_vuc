@@ -1,51 +1,56 @@
 @echo off
 REM ============================================================================
-REM  BUCLE  -  todos los pasos del plan, de corrido, sin parar.
+REM  BUCLE  -  los pasos del plan, de corrido. UN intento por paso.
 REM
-REM  Julio lo pidio asi el 2026-09-30: "necesito que haga todo, en loop, todos
-REM  los pasos del plan". Antes se le daba un paso por vez y eso no servia.
+REM  CORREGIDO el 2026-09-30 de noche, cazado por Julio: la version anterior
+REM  reintentaba TRES VECES EL MISMO ENCARGO. Eso va contra su propio metodo:
 REM
-REM  QUE HACE: lanza la ronda de equipo de CADA paso del plan, tres intentos por
-REM  paso. Si un paso no entra en tres intentos, lo deja y PASA AL SIGUIENTE: no
-REM  se queda parado esperando a nadie. Nada se pierde: cada intento queda
-REM  archivado con su motivo en memoria\trabajos_del_equipo.
+REM    Regla 2 - un camino que ya fallo NO se vuelve a intentar.
+REM    Regla 3 - el avance se mide en hechos nuevos, no en intentos. Un intento
+REM              que falla sin dejar un hecho nuevo es morderse la cola: se para.
+REM    Regla 5 - si varios caminos distintos fallan sobre el mismo problema, lo
+REM              que esta mal es la CAUSA, no el arreglo: se vuelve a medir.
+REM
+REM  Reintentar el mismo texto tres veces no deja ningun hecho nuevo. Era
+REM  morderse la cola, escrito en un archivo. Por eso ahora va UN solo intento
+REM  por paso: si un paso no entra, se para ahi y se mira el motivo, que es
+REM  justamente el hecho nuevo con el que se arma el camino siguiente.
+REM
+REM  OJO, APUNTADO Y NO REPARADO: si el auditor contesta roto, la ronda se da
+REM  por perdida aunque el obrero haya trabajado bien. Eso ya se cazo y esta
+REM  apuntado: hay que reintentar AL AUDITOR dentro de la ronda. Mientras no se
+REM  repare, un RECHAZADO con veredicto raro puede no ser culpa del obrero.
 REM
 REM  El plan esta en PLAN_DOS_PASOS.md. Los encargos en memoria\encargos.
-REM
-REM  CUANTO TARDA: cada intento son unos minutos. El bucle entero puede llevar
-REM  una hora o mas. No hay que hacer nada mientras: al final sale el parte.
 REM
 REM  Se usa asi, en su terminal:
 REM      cd C:\Ingeniero_VUC
 REM      .\BUCLE
-REM
-REM  LO QUE ESTE BUCLE TODAVIA NO HACE SOLO, y hay que decirlo: no lee el motivo
-REM  del rechazo para pegarlo dentro del encargo. Eso es justo lo que construye
-REM  el paso 1b del plan, y por eso el paso 1b va primero en la lista. Mientras
-REM  no exista, los reintentos son a ciegas.
 REM ============================================================================
 
 cd /d "C:\Ingeniero_VUC"
 
 echo.
 echo ############################################################
-echo #  BUCLE DEL PLAN  -  todos los pasos, tres intentos cada uno
+echo #  BUCLE DEL PLAN  -  un intento por paso, sin reintentos ciegos
 echo ############################################################
 
-call :UN_PASO "memoria\encargos\paso_1a_vigia_libreta.txt"         "PASO 1a - la prueba de la libreta de frenos"
-call :UN_PASO "memoria\encargos\paso_1b_vigia_devolver_la_causa.txt" "PASO 1b - la prueba de devolver la causa"
+call :UN_PASO "memoria\encargos\paso_1a_vigia_libreta.txt"                "PASO 1a - la prueba de la libreta de frenos"
+call :UN_PASO "memoria\encargos\paso_0a_vigia_del_bucle_que_aprende.txt"  "PASO 0a - la prueba del bucle que aprende del rechazo"
+call :UN_PASO "memoria\encargos\paso_1b_vigia_devolver_la_causa.txt"      "PASO 1b - la prueba de devolver la causa al que escribe"
 
 echo.
 echo ############################################################
 echo #  PARTE FINAL
 echo ############################################################
 echo.
-echo Mira arriba el veredicto de cada paso. Donde diga APROBADO Y
-echo APLICADO, esa prueba ya esta escrita y nace roja, que es lo
-echo correcto: la pieza que la pone verde va en la ronda siguiente.
+echo Donde diga APROBADO Y APLICADO, esa prueba ya esta escrita y
+echo nace roja, que es lo correcto: la pieza que la pone verde va en
+echo la ronda siguiente.
 echo.
-echo Donde diga RECHAZADO, nada se perdio: el intento quedo guardado
-echo con su motivo en memoria\trabajos_del_equipo.
+echo Donde diga RECHAZADO, NO se reintenta el mismo camino. El motivo
+echo que aparece arriba es el hecho nuevo: con el se arma otro camino.
+echo Cada intento quedo guardado en memoria\trabajos_del_equipo.
 echo.
 echo PRUEBA HUMANA: PENDIENTE. Prueba verde NO es prueba: la prueba
 echo es que Julio lo vea funcionar con sus ojos.
@@ -60,16 +65,9 @@ echo ============================================================
 echo   %~2
 echo ============================================================
 echo.
-echo   --- intento 1 de 3 ---
 python ingeniero.py equipo ingeniero --crear --encargo-archivo "%~1"
 echo.
-echo   --- intento 2 de 3 ---
-python ingeniero.py equipo ingeniero --crear --encargo-archivo "%~1"
-echo.
-echo   --- intento 3 de 3 ---
-python ingeniero.py equipo ingeniero --crear --encargo-archivo "%~1"
-echo.
-echo   Fin de %~2. Se pasa al siguiente.
+echo   Fin de %~2.
 goto :EOF
 
 
