@@ -1,0 +1,76 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "La pieza tope_del_pasillo existe pero nadie la llama; el tope al armar el material sigue saliendo del numero fijo TOPE_GRATIS en vez de calcularse sobre las capacidades de la fila.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "la llamada que arma el material del obrero (donde se calcula tope=...)",
+  "texto_viejo": "tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690,",
+  "texto_nuevo": "tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else min(max(tope_del_pasillo([cuotas._capacidad(t) for t in fila]) or TOPE_GRATIS, TOPE_GRATIS), 40000)) - 2690,",
+  "cambios": "",
+  "cambio": "En la llamada que arma el material del obrero, cuando NO se pide un generador concreto, sustituir el uso directo de TOPE_GRATIS por el resultado de tope_del_pasillo calculado sobre las capacidades de los cerebros de la fila (lista armada con cuotas._capacidad sobre cada turno de la fila); si esa lista viene vacia o la pieza devuelve 0, caer al TOPE_GRATIS de siempre; conservar el techo de 40000 y la resta de 2690.",
+  "codigo": "tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else min(max(tope_del_pasillo([cuotas._capacidad(t) for t in fila]) or TOPE_GRATIS, TOPE_GRATIS), 40000)) - 2690,",
+  "vigia": "vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py, vigias/test_vigia_se_reparte_por_capacidad.py y vigias/test_vigia_lo_pesado_a_deepseek.py (las once verdes); y en la ronda siguiente el aviso del sistema debe mostrar un tope mayor que 19042 o dejar de recortar.",
+  "puede_danar": [
+   "quien reciba un encargo mas grande del que aguanta (mitigado por el reparto por capacidad ya verde y por el techo de 40000)",
+   "el flujo de armado del material del obrero si la lista de capacidades de la fila no se arma con el nombre correcto"
+  ],
+  "preguntas": [
+   "PREGUNA_REQUERIDA: como se llama exactamente la variable que contiene la lista de turnos de la fila en esa llamada (el material no la muestra literal, solo menciona 'la fila')",
+   "PREGUNTA_REQUERIDA: el nombre exacto del parametro/objeto 'fila' en esa llamada que arma el material"
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "la variable 'fila'"
+  ],
+  "fallos": [
+   "La variable 'fila' no existe en el ámbito (scope) de la función ni en el material proporcionado. Su uso provocará un NameError.",
+   "El obrero admite explícitamente en su sección de preguntas que el material no muestra el nombre de la variable, pero decide inventar 'fila' y escribirla en el código final de todos modos."
+  ],
+  "riesgo_vecinos": [
+   "Colapso total del armado del material del obrero por excepción de ejecución (NameError) al intentar iterar sobre una variable inexistente."
+  ],
+  "que_falta": [
+   "Identificar de dónde extraer los datos de la fila (posiblemente dentro del objeto 'paquete' o una variable de contexto no proporcionada) antes de intentar iterar sobre ella."
+  ],
+  "resumen_para_el_jefe": "El cambio fallará por un NameError: el obrero ha inventado la variable 'fila' para hacer el cálculo, admitiendo además que no sabe si se llama así."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'fila'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "el pasillo recorto el encargo de 24012 a 12223 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "LM Studio (tu PC) tardo demasiado -> pasa el turno",
+  "NO_ENCONTRADO: ningun cerebro pudo atender",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "vueltas_dadas: 4"
+ ]
+}
