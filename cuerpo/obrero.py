@@ -161,6 +161,13 @@ def pedido_del_obrero_al_mostrador(propuesta, material, raiz):
         return material
 
 
+def tope_del_pasillo(capacidades):
+    # Esta pieza sera llamada en el renglon 1496 de cuerpo/obrero.py para armar el material.
+    if not capacidades:
+        return 0
+    return max(capacidades)
+
+
 def material_con_lo_que_falta(material, faltantes, archivo, raiz):
     """El equipo viene en ayuda de la IA: pide lo que necesita y aqui esta.
 
