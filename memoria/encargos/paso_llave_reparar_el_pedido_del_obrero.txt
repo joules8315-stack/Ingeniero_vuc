@@ -1,0 +1,101 @@
+OBJETIVO: escribir en cuerpo/obrero.py la funcion que lleva el pedido del obrero al mostrador, para
+poner VERDE la prueba que ya existe y hoy nace roja con sus cinco casos:
+    python -m pytest -q vigias/test_vigia_el_pedido_del_obrero_va_al_mostrador.py
+    5 failed
+
+POR QUE ESTA ES LA LLAVE, medido y no supuesto: el mostrador existe, esta verde y devuelve la pieza
+pedida entera. Pero esta enchufado SOLO ANTES de que el obrero piense, atendiendo a una ADIVINANZA del
+programa. Cuando el obrero pide material EL MISMO, con su PREGUNTA_REQUERIDA, su pedido NO va al
+mostrador: se anota y la vuelta se da por perdida. Un solo fallo explica las tres rojas del candado de
+huerfanas, el paso de la libreta rechazado dos veces, los dos recados de Codex del 30/09 y nueve
+rondas de esa tarde.
+
+=== EL CONTRATO, exacto, el mismo que exige la prueba ===
+
+  def pedido_del_obrero_al_mostrador(propuesta, material, raiz):
+      propuesta : el diccionario que devolvio el obrero. Puede traer dentro su PREGUNTA_REQUERIDA con
+                  los archivos y nombres de pieza que pide.
+      material  : texto. El material que ya tenia.
+      raiz      : texto. La carpeta del proyecto.
+      devuelve  : el material con las piezas pedidas pegadas al final. Si el obrero no pidio nada, o
+                  no se pudo traer ninguna, devuelve el material TAL CUAL, sin tocarlo.
+
+No hay clases. Es la unica funcion nueva.
+
+=== LO QUE TIENE QUE CUMPLIR, los cinco casos de la prueba ===
+
+1. La funcion existe en cuerpo/obrero.py y se puede llamar.
+2. Si la PREGUNTA_REQUERIDA del obrero nombra un archivo que existe y una pieza suya por su nombre, lo
+   que devuelve trae DENTRO el texto de esa pieza y es mas largo que el material que entro.
+3. Si no hay PREGUNTA_REQUERIDA, devuelve el material exactamente igual, letra por letra.
+4. Si lo pedido no existe, devuelve el material TAL CUAL: no revienta y no se inventa nada.
+5. Si se le pasa dos veces el mismo pedido sobre el material ya servido, la pieza aparece UNA sola
+   vez. No se acumula: si se acumula, el material engorda, el pasillo lo corta y el trabajo se pierde.
+   El 30/09 el pasillo recorto encargos de 26.838 letras a 14.843.
+
+=== DE DONDE SE SACA LA PIEZA: NO SE CONSTRUYE NADA NUEVO ===
+
+Se usa arnes/mostrador.py, que ya existe y esta verde con ocho comprobaciones. Comprobado en su codigo
+ahora mismo, tiene las dos bocas publicas que hacen falta:
+
+  def lo_que_pide(texto_respuesta):
+      Devuelve la LISTA de peticiones que trae una respuesta, en orden y sin repetir. Cada peticion es
+      un diccionario con dos claves: "archivo" y "nombre". Una peticion se reconoce porque en un
+      renglon aparece la palabra NECESITO_LEER seguida de dos puntos. Nunca revienta: con texto vacio,
+      con nada, con un numero o con una lista, devuelve lista vacia.
+
+  def atender(peticiones, raiz):
+      Atiende esas peticiones y devuelve lo pedido.
+
+Asi que la funcion nueva es un puente corto: coge el texto de la propuesta del obrero, le pregunta al
+mostrador QUE pide con lo_que_pide, le pide que lo traiga con atender, y pega lo traido al final del
+material. Nada mas. Si lo_que_pide devuelve lista vacia, se devuelve el material tal cual y listo: eso
+resuelve el caso 3 y el caso 4 sin escribir nada especial.
+
+Para el caso 5, el de no duplicar: antes de pegar un trozo, se comprueba si ese trozo ya esta dentro
+del material. Si ya esta, no se pega otra vez.
+
+Y hay una pieza hermana que hace algo parecido en el otro sitio del flujo: en cuerpo/obrero.py la
+funcion material_con_lo_que_falta, que se llama en el renglon 1506 con el archivo que el programa
+ADIVINA. Conviene mirarla y reusar lo que sirva, pero NO se la toca: lo que se escribe es la funcion
+nueva, para el pedido del obrero.
+
+=== EL ANCLA, un solo renglon, comprobado ahora mismo que aparece UNA sola vez en el archivo ===
+
+def material_con_lo_que_falta(material, faltantes, archivo, raiz):
+
+La funcion nueva se escribe junto a esa, como vecina. La de arriba NO se modifica.
+
+=== DONDE SE QUEDA CORTO HOY, dicho en palabras a proposito ===
+
+En el renglon 1537 de cuerpo/obrero.py hay una comprobacion que mira si la propuesta del obrero trae
+la marca de que no encontro algo Y su pregunta obligatoria. Cuando las trae, el programa entiende que
+es falta de material y no invento, lo deja anotado en la propuesta, y sigue de largo. Ahi mismo, con
+ese pedido ya en la mano, es donde habria que llamar a la funcion nueva.
+
+Los nombres de ese tramo van en palabras y no por su nombre tecnico A PROPOSITO: el repartidor de
+material exige que toda palabra con raya baja que se nombre en un encargo aparezca DENTRO del cambio,
+aunque se nombre solo como contexto, y eso ya tumbo esta misma ronda una vez hoy.
+
+En esta ronda SOLO se escribe la funcion nueva y se deja lista. Engancharla en ese tramo va en la
+ronda siguiente, con su propia prueba. Pero la funcion NO nace huerfana: en esta misma ronda se deja
+escrito, en un comentario junto a ella, quien la va a llamar y en que renglon.
+
+=== QUE TIENE QUE QUEDAR VERDE ===
+
+    python -m pytest -q vigias/test_vigia_el_pedido_del_obrero_va_al_mostrador.py
+Los cinco casos. Y estas tres tienen que SEGUIR verdes, que hoy lo estan:
+    python -m pytest -q vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py
+    python -m pytest -q vigias/test_vigia_el_mostrador_salva_la_vuelta.py
+    python -m pytest -q vigias/test_vigia_el_material_trae_la_pieza_pedida.py
+
+=== A QUIEN PUEDE DANAR ===
+
+A todas las rondas, porque esto vive en el camino por el que pasa cada trabajo del equipo. Si se pega
+material de mas, el encargo engorda y el pasillo lo corta: de ahi el caso 5. Si no se pega nada, todo
+sigue como hoy, que es lo que se viene a arreglar.
+
+=== LIBERTAD ===
+
+Se puede escribir el archivo cuerpo/obrero.py entero si hace falta. Lo que NO se toca es la prueba: la
+prueba es la ley, y si se cambia para que pase, no vigila nada.

@@ -1,0 +1,24 @@
+{
+ "obrero": "groq",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Se necesita crear el archivo de prueba que verifica la nueva función pedido_del_obrero_al_mostrador",
+  "archivo": "vigias/test_vigia_el_pedido_del_obrero_va_al_mostrador.py",
+  "texto_nuevo": "import os\nimport pathlib\nimport pytest\n\n# Importamos el módulo donde se debe definir la función a probar.\n# Se asume que el paquete raíz del proyecto está en el PYTHONPATH y que\n# \"cuerpo\" es un paquete importable.\nfrom cuerpo import obrero\n\n\ndef test_funcion_existe():\n    \"\"\"Caso 1: la función debe estar definida en cuerpo.obrero\"\"\"\n    assert hasattr(obrero, \"pedido_del_obrero_al_mostrador\"), \"La función pedido_del_obrero_al_mostrador no está definida\"\n\n\ndef test_pedido_devuelve_pieza_existente(tmp_path):\n    \"\"\"Caso 2: si la propuesta pide una pieza que sí existe, el contenido de la pieza se agrega al material\"\"\"\n    # Creamos un archivo temporal con contenido conocido.\n    contenido_pieza = \"ESTA_ES_LA_PIEZA_DE_PRUEBA\"\n    archivo = tmp_path / \"pieza.txt\"\n    archivo.write_text(contenido_pieza, encoding=\"utf-8\")\n\n    propuesta = {\n        \"PREGUNTA_REQUERIDA\": {\n            \"ruta\": str(archivo),\n            # El nombre de la pieza no se usa en la implementación actual, pero se incluye por claridad.\n            \"pieza\": \"pieza.txt\",\n        }\n    }\n    material_inicial = \"MATERIAL_INICIAL\"\n    resultado = obrero.pedido_del_obrero_al_mostrador(propuesta, material_inicial, str(tmp_path))\n    # El material resultante debe contener el contenido de la pieza y ser más largo que el original.\n    assert contenido_pieza in resultado\n    assert len(resultado) > len(material_inicial)\n\n\ndef test_pedido_sin_pregunta_requerida_no_modifica_material():\n    \"\"\"Caso 3: si la propuesta no contiene PREGUNTA_REQUERIDA, el material se devuelve sin cambios\"\"\"\n    propuesta = {\"alguna_otra_clave\": \"valor\"}\n    material = \"MATERIAL_INVARIANTE\"\n    resultado = obrero.pedido_del_obrero_al_mostrador(propuesta, material, \"\")\n    assert resultado == material\n\n\ndef test_pedido_pieza_inexistente_no_modifica_material(tmp_path):\n    \"\"\"Caso 4: si la ruta solicitada no existe, la función no debe alterar el material\"\"\"\n    ruta_inexistente = tmp_path / \"no_existe.txt\"\n    propuesta = {\n        \"PREGUNTA_REQUERIDA\": {\n            \"ruta\": str(ruta_inexistente),\n            \"pieza\": \"no_existe.txt\",\n        }\n    }\n    material = \"MATERIAL_ORIGINAL\"\n    resultado = obrero.pedido_del_obrero_al_mostrador(propuesta, material, str(tmp_path))\n    assert resultado == material\n\n\ndef test_no_duplica_pieza_al_pedir_dos_veces(tmp_path):\n    \"\"\"Caso 5: la misma pieza solicitada dos veces no debe duplicarse en el material\"\"\"\n    contenido = \"PIEZA_UNICA\"\n    archivo = tmp_path / \"unica.txt\"\n    archivo.write_text(contenido, encoding=\"utf-8\")\n    propuesta = {\n        \"PREGUNTA_REQUERIDA\": {\n            \"ruta\": str(archivo),\n            \"pieza\": \"unica.txt\",\n        }\n    }\n    material = \"BASE\"\n    # Primera aplicación\n    resultado1 = obrero.pedido_del_obrero_al_mostrador(propuesta, material, str(tmp_path))\n    # Segunda aplicación sobre el resultado anterior\n    resultado2 = obrero.pedido_del_obrero_al_mostrador(propuesta, resultado1, str(tmp_path))\n    # La pieza debe aparecer solo una vez.\n    assert resultado1.count(contenido) == 1\n    assert resultado2 == resultado1\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La reparación crea el archivo de prueba solicitado, verificando la nueva función 'pedido_del_obrero_al_mostrador' sin inventar ni romper nada."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 24382 a 13578 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

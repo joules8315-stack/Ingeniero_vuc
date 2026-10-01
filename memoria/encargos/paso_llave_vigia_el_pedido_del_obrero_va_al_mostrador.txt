@@ -1,0 +1,113 @@
+OBJETIVO: crear la vigia que nace ROJA de la reparacion llave:
+vigias/test_vigia_el_pedido_del_obrero_va_al_mostrador.py
+
+POR QUE ESTA ES LA LLAVE, medido el 30/09 y el 01/10, no supuesto: el mostrador existe, esta verde y
+devuelve la pieza pedida entera (de un archivo de 607.012 letras devolvio 3.472, el 0,57 por ciento).
+Pero esta enchufado SOLO ANTES de que el obrero piense, atendiendo a una ADIVINANZA del programa.
+Cuando el obrero pide material EL MISMO, con su PREGUNTA_REQUERIDA, que es quien de verdad sabe que le
+falta porque ya intento, su pedido NO va al mostrador: se anota y la vuelta se da por perdida.
+
+Un solo fallo explica: las tres pruebas rojas del candado de huerfanas, el paso de la libreta
+rechazado dos veces, los dos recados de Codex de las 18:19 y 18:23 del 30/09, y nueve rondas de esa
+tarde. No eran problemas distintos.
+
+=== EL MATERIAL, pegado aqui literal, copiado del archivo ===
+
+TRAMO A, cuerpo/obrero.py renglones 1498 a 1511. Aqui el mostrador SI se llama, pero con un archivo
+que el programa ADIVINA, y solo cuando la clase no es crear:
+
+        if clase != "crear":
+            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)
+            if faltantes:
+                _raiz_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                _archivo_tarea = ""
+                _nombres_tarea = _nombres_de_funcion_del_texto(tarea, _conocidas)
+                if _nombres_tarea:
+                    _archivo_tarea = _nombres_tarea[0]
+                material_obrero = material_con_lo_que_falta(
+                    material_obrero, faltantes, _archivo_tarea, _raiz_proyecto
+                )
+                faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)
+
+TRAMO B, cuerpo/obrero.py renglones 1535 a 1539. Aqui llega el pedido DEL OBRERO y solo se anota:
+
+        inventados = _validar_en_paquete(paquete, propuesta, tarea)
+        # Si el obrero dijo NO_ENCONTRADO y PREGUNTA_REQUERIDA, es falta de material, no invento.
+        # Eso sale como PREGUNTA al que reparte, no como rechazo.
+        if inventados and not ("NO_ENCONTRADO" in str(propuesta) and "PREGUNTA_REQUERIDA" in str(propuesta)):
+            propuesta["_fuera_del_paquete"] = inventados   # marco: no se deja pasar como valido
+
+=== LO QUE SE CREA EN ESTA RONDA, y solo esto ===
+
+El archivo de la prueba. La reparacion va en la ronda siguiente. Por eso la prueba NACE ROJA, y eso
+es lo correcto: es la ley de la casa.
+
+=== EL CONTRATO DE LA REPARACION QUE SE VIGILA, exacto y cerrado ===
+
+En cuerpo/obrero.py habra una funcion publica nueva:
+
+  def pedido_del_obrero_al_mostrador(propuesta, material, raiz):
+      propuesta : el diccionario que devolvio el obrero. Puede traer dentro su PREGUNTA_REQUERIDA
+                  con los archivos y nombres de pieza que pide.
+      material  : texto. El material que ya tenia.
+      raiz      : texto. La carpeta del proyecto.
+      devuelve  : el material con las piezas pedidas pegadas al final. Si el obrero no pidio nada, o
+                  no se pudo traer ninguna, devuelve el material TAL CUAL, sin tocarlo.
+
+No hay clases. Esa es la unica funcion nueva.
+
+=== LOS CINCO CASOS, cada uno diciendo en su primer renglon que vigila ===
+
+CASO 1, la funcion existe y se puede usar: se carga cuerpo/obrero.py por su RUTA y tiene la funcion
+pedido_del_obrero_al_mostrador, y se puede llamar.
+
+CASO 2, un pedido del obrero trae la pieza de vuelta: se le pasa una propuesta de mentira cuya
+PREGUNTA_REQUERIDA nombra un archivo que SI existe en el proyecto y una pieza suya por su nombre. Lo
+que devuelve tiene DENTRO el texto de esa pieza, y es mas largo que el material que entro.
+
+CASO 3, si el obrero no pide nada, el material no se toca: se le pasa una propuesta sin
+PREGUNTA_REQUERIDA y devuelve exactamente el mismo material que entro, letra por letra.
+
+CASO 4, si lo pedido no existe, no se inventa y no se rompe: se le pasa una propuesta que pide una
+pieza que no existe en ningun archivo. Devuelve el material TAL CUAL, sin reventar y sin inventarse
+nada.
+
+CASO 5, no se pega la misma pieza dos veces: se le pasa dos veces el mismo pedido sobre el mismo
+material ya servido, y la pieza aparece UNA sola vez. Si se acumula, el material engorda, el pasillo
+lo corta y el trabajo se pierde: el 30/09 el pasillo recorto encargos de 26.838 letras a 14.843.
+
+=== COMO SE ESCRIBE LA PRUEBA, reglas que no se negocian ===
+
+- Se carga la pieza por RUTA, no por nombre de paquete: hay dos proyectos con carpetas que se llaman
+  igual y se agarra la equivocada.
+- PROHIBIDO fabricar un muneco de la funcion y probar el muneco. Eso se rechazo ya dos veces el
+  30/09: la prueba salia VERDE sin que la pieza existiera y no vigilaba nada.
+- La prueba NO puede salir verde mientras la funcion no exista. Si sale verde, esta mal escrita.
+- Nada que dependa de la respuesta de un cerebro: datos de mentira fijos, siempre iguales. Para el
+  caso 2 se usa un archivo del propio proyecto que ya existe y una de sus piezas, por su nombre.
+- La prueba no escribe en la memoria de verdad: si necesita escribir algo, su propia carpeta aparte.
+  Eso ya costo caro dos veces: una prueba piso la memoria real y se perdieron 27 de 32 errores
+  aprendidos, y otra enveneno el diccionario con 535 apariciones de un dato de prueba.
+- No se usa texto de triple comilla que lleve dentro otras comillas.
+
+=== QUE SIGNIFICA QUE NAZCA ROJA ===
+
+Hoy, al correrla, los cinco casos FALLAN diciendo en palabras simples que la funcion no existe.
+Cuando la funcion se escriba con el contrato de arriba, los cinco pasan a verde SIN TOCAR la prueba.
+
+=== A QUIEN PUEDE DANAR ===
+
+A todas las rondas, porque esto se mete en el camino por el que pasa cada trabajo del equipo. Si se
+pega material de mas, el encargo engorda y el pasillo lo corta. Si no se pega nada, todo sigue como
+hoy. Por eso el caso 5 es obligatorio.
+
+=== LO QUE TIENE QUE QUEDAR VERDE ===
+
+Todo lo que ya estaba verde sigue verde, y en especial las dos pruebas del mostrador:
+    python -m pytest -q vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py
+    python -m pytest -q vigias/test_vigia_el_mostrador_salva_la_vuelta.py
+Esta prueba nueva queda ROJA a proposito.
+
+=== LIBERTAD ===
+
+Se escribe el archivo entero, es nuevo. No hay texto viejo que respetar.
