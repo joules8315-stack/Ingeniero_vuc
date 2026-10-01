@@ -1,0 +1,72 @@
+OBJETIVO: poner verdes las TRES pruebas rojas de arnes/candado_nace_enganchada.py. Son de hoy mismo,
+2026-09-30, de las rondas de las 16:59 a las 18:30: el trabajo quedo a medias y esas tres rojas son lo
+que hoy frena el cierre en cada vuelta.
+
+LO QUE SE MIDIO, corriendo la prueba ahora mismo. No es una suposicion: es la salida literal.
+
+    python -m pytest -q vigias/test_vigia_una_pieza_nueva_nace_enganchada.py
+    3 failed, 3 passed
+
+ROJA 1, caso 2, renglon 140 de la prueba:
+    "La pieza que llama a otra NO es huerfana."
+    Lista devuelta: ['pieza_huerfana.py', 'pieza_que_llama.py']
+    Lo que falla: pieza_que_llama.py aparece en la lista de huerfanas y no deberia.
+
+ROJA 2, caso 3, renglon 181 de la prueba:
+    "Con una pieza huerfana NO se puede cerrar."
+    Devuelto: (True, 'AVISO: hay 2 piezas huerfanas viejas; hay que ir ENGANCHANDOLAS o BORRANDOLAS.')
+    Lo que falla: devuelve que SI se puede cerrar y solo avisa. Las dos piezas se tomaron por VIEJAS
+    en vez de por recien nacidas, asi que no frenan.
+
+ROJA 3, caso 4, renglon 222 de la prueba:
+    "Una pieza con el trozo de siempre para correrla a mano es punto de entrada y NO cuenta como
+    huerfana."
+    Lista devuelta: ['pieza_de_entrada.py']
+    Lo que falla: una pieza que trae su bloque de arranque sale marcada como huerfana.
+
+LA CAUSA EXACTA DE LA ROJA 3, comprobada en el codigo y no supuesta. En la funcion huerfanas de
+arnes/candado_nace_enganchada.py, el contador que se reusa devuelve diccionarios con estas claves:
+
+    {'pieza': 'cazar_el_humo', 'ruta': 'skills\\cazar_el_humo.py', 'llamadas': 0, ...}
+
+y el tramo que normaliza esos diccionarios a nombres recorre las claves en este orden:
+
+    for clave in ("nombre", "pieza", "archivo", "ruta", "path"):
+
+Como "pieza" va ANTES que "ruta", se queda con el nombre pelado ("cazar_el_humo"), sin carpeta y sin
+terminacion. Despues ese nombre pelado se le pasa a la funcion que decide si es punto de entrada, y
+esa funcion intenta ABRIR el archivo para buscarle dentro el bloque de arranque. Con un nombre pelado
+no hay archivo que abrir, el intento falla en silencio y devuelve que NO es punto de entrada. Esa es
+la razon por la que la tercera via de esa funcion, la del bloque de arranque, NUNCA llega a funcionar.
+
+LA CURA DE LA ROJA 3: que la normalizacion se quede con la RUTA cuando venga, porque es lo que esa
+funcion necesita para abrir el archivo. Es cambiar el orden en que se miran las claves: la ruta
+primero, el nombre pelado solo como ultimo recurso. Y que lo que se le pase a la funcion que decide
+si es punto de entrada sea esa ruta, no el nombre pelado.
+
+LAS ROJAS 1 Y 2: la evidencia esta arriba, la causa NO se midio y por eso NO se escribe aqui una
+inventada. Hay que medirla antes de tocar: para la roja 1, ver por que una pieza que llama a otra
+entra en la lista; para la roja 2, ver por que las dos piezas de la prueba se toman por viejas en vez
+de por recien nacidas. Si al mirarlo resulta que la prueba pide algo que el contrato no dice, se dice
+y no se cambia el codigo para contentar a la prueba.
+
+EL ANCLA, un solo renglon, comprobado que aparece UNA sola vez en el archivo:
+
+def huerfanas(raiz):
+
+Se puede reescribir esa funcion entera, y el archivo entero si hace falta.
+
+QUE TIENE QUE QUEDAR VERDE, y se comprueba corriendo esto:
+    python -m pytest -q vigias/test_vigia_una_pieza_nueva_nace_enganchada.py
+Los seis casos verdes, no solo los tres que hoy pasan.
+
+Y estas dos tienen que SEGUIR verdes, que hoy lo estan:
+    python -m pytest -q vigias/test_vigia_solo_frena_la_huerfana_recien_nacida.py
+    python -m pytest -q vigias/test_vigia_la_huerfana_se_empareja_con_su_fecha.py
+
+A QUIEN PUEDE DANAR: a todo el que cierre una sesion, porque esta pieza es la que frena el cierre
+cuando hay algo sin enganchar. Si se afloja de mas, deja pasar piezas que nadie llama; si se aprieta
+de mas, no se puede cerrar nunca. Hoy esta aflojada: avisa pero no frena.
+
+LIBERTAD: se puede escribir el archivo arnes/candado_nace_enganchada.py entero. Lo que NO se toca es
+la prueba: la prueba es la ley, y si se cambia para que pase, no vigila nada.
