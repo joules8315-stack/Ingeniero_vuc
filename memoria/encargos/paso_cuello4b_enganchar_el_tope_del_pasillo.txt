@@ -88,3 +88,23 @@ se conserva.
 === LIBERTAD ===
 
 Se puede escribir el archivo cuerpo/obrero.py entero. Lo que NO se toca son las pruebas.
+
+=== LA PIEZA, PEGADA AQUI LITERAL PORQUE EL MATERIAL NO LA TRAE ===
+
+El repartidor pidio ver tope_del_pasillo y no venia en el material, asi que va copiada del archivo tal
+cual esta. Son cinco renglones. NO se toca: ya esta bien y su prueba esta verde. Solo hay que LLAMARLA.
+
+def tope_del_pasillo(capacidades):
+    # Esta pieza sera llamada en el renglon 1496 de cuerpo/obrero.py para armar el material.
+    if not capacidades:
+        return 0
+    return max(capacidades)
+
+Se lee asi, en palabras: si la lista de capacidades viene vacia devuelve 0, que significa no recortar;
+y si trae algo, devuelve la mas grande de todas. Eso es exactamente lo que la ley manda: el tope es la
+capacidad del cerebro MAS GRANDE de la fila, no la del mas chico.
+
+El comentario que trae dentro ya dice quien la va a llamar. Esta ronda es la que cumple ese comentario:
+hasta ahora la pieza existe y NADIE la llama, y por eso el pasillo sigue recortando con el numero viejo
+de 19042.
+

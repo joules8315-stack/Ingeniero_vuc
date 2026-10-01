@@ -1,0 +1,32 @@
+
+=== LA PIEZA, PEGADA AQUI LITERAL PORQUE EL MATERIAL NO LA TRAE ===
+
+El repartidor pidio ver tope_del_pasillo y no venia en el material, asi que va copiada del archivo tal
+cual esta. Son cinco renglones. NO se toca: ya esta bien y su prueba esta verde. Solo hay que LLAMARLA.
+
+def tope_del_pasillo(capacidades):
+    # Esta pieza sera llamada en el renglon 1496 de cuerpo/obrero.py para armar el material.
+    if not capacidades:
+        return 0
+    return max(capacidades)
+
+Se lee asi, en palabras: si la lista de capacidades viene vacia devuelve 0, que significa no recortar;
+y si trae algo, devuelve la mas grande de todas. Eso es exactamente lo que la ley manda: el tope es la
+capacidad del cerebro MAS GRANDE de la fila, no la del mas chico.
+
+El comentario que trae dentro ya dice quien la va a llamar. Esta ronda es la que cumple ese comentario:
+hasta ahora la pieza existe y NADIE la llama, y por eso el pasillo sigue recortando con el numero viejo
+de 19042.
+
+=== Y ESTA ES LA PIEZA VECINA, pegada para que se vea como la casa ya pide material ===
+
+Justo debajo de la anterior vive material_con_lo_que_falta, que hace algo parecido en el otro sitio del
+flujo. Su propia explicacion, copiada del archivo, dice:
+
+    El equipo viene en ayuda de la IA: pide lo que necesita y aqui esta.
+    Cuando al material le falta una pieza que la tarea nombra, en vez de morir la vuelta, se le pide al
+    mostrador que traiga SOLO lo pedido y se anade al final del material. Asi el codigo no engorda:
+    solo se agrega lo que faltaba. Nunca revienta: si algo falla, devuelve el material tal cual.
+
+Esa pieza NO se toca. Se pega aqui solo para que se vea el criterio de la casa: pedir lo justo, no
+engordar, y no reventar nunca.
