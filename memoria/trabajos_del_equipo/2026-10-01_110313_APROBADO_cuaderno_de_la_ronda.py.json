@@ -1,0 +1,24 @@
+{
+ "obrero": "groq",
+ "auditor": "gemini4",
+ "propuesta": {
+  "diagnostico": "Falta implementar arnes/cuaderno_de_la_ronda.py con las dos funciones requeridas",
+  "archivo": "arnes/cuaderno_de_la_ronda.py",
+  "texto_nuevo": "import os\nimport json\nfrom typing import Any, Dict\n\n\ndef _ruta_cuaderno(raiz: str) -> str:\n    \"\"\"Devuelve la ruta completa del archivo de cuaderno dentro del *raiz*.\n    Se usa un nombre oculto para evitar colisiones con otros archivos del proyecto.\n    \"\"\"\n    return os.path.join(raiz, \".cuaderno_ronda.json\")\n\n\ndef _cargar_cuaderno(raiz: str) -> Dict[str, Any]:\n    \"\"\"Carga el cuaderno desde disco.\n    Si el archivo no existe o está corrupto, se devuelve un diccionario vacío.\n    \"\"\"\n    ruta = _ruta_cuaderno(raiz)\n    if not os.path.isfile(ruta):\n        return {}\n    try:\n        with open(ruta, \"r\", encoding=\"utf-8\") as f:\n            return json.load(f)\n    except Exception:\n        # En caso de error (p.e. JSON inválido) se ignora y se empieza de cero.\n        return {}\n\n\ndef _guardar_cuaderno(raiz: str, datos: Dict[str, Any]) -> None:\n    \"\"\"Guarda el cuaderno en disco de forma atómica.\n    Se escribe en un archivo temporal y luego se renombra para evitar corrupciones.\n    \"\"\"\n    ruta = _ruta_cuaderno(raiz)\n    tmp = ruta + \".tmp\"\n    with open(tmp, \"w\", encoding=\"utf-8\") as f:\n        json.dump(datos, f, ensure_ascii=False, indent=2)\n    os.replace(tmp, ruta)\n\n\ndef _clave(encargo: Any, pieza: Any) -> str:\n    \"\"\"Construye una clave única para el par (encargo, pieza).\n    Se convierte a cadena JSON para soportar objetos complejos.\n    \"\"\"\n    return json.dumps([encargo, pieza], ensure_ascii=False)\n\n\ndef antes_de_lanzar(encargo: Any, pieza: Any, raiz: str) -> Dict[str, Any]:\n    \"\"\"Devuelve información previa a lanzar la pieza.\n\n    - ``ya_fallo``: ``True`` si previamente se registró un fallo para este\n      ``encargo``/``pieza``.\n    - ``guia``: texto del motivo del fallo anterior (vía de la guía). Vacío si\n      nunca falló.\n    - ``codigo``: siempre cadena vacía, cumpliendo la Ley de las Dos Vías.\n    \"\"\"\n    datos = _cargar_cuaderno(raiz)\n    clave = _clave(encargo, pieza)\n    motivo = datos.get(clave, \"\")\n    return {\n        \"ya_fallo\": bool(motivo),\n        \"guia\": motivo,\n        \"codigo\": \"\",\n    }\n\n\ndef despues_de_la_ronda(encargo: Any, pieza: Any, motivo: str, raiz: str) -> bool:\n    \"\"\"Registra el motivo de un fallo después de ejecutar la ronda.\n\n    Si ``motivo`` es una cadena vacía, no se escribe nada y se devuelve ``False``.\n    En caso contrario se almacena el motivo y se devuelve ``True``.\n    \"\"\"\n    if not motivo:\n        return False\n    datos = _cargar_cuaderno(raiz)\n    clave = _clave(encargo, pieza)\n    datos[clave] = motivo\n    _guardar_cuaderno(raiz, datos)\n    return True\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La implementación del cuaderno cumple con el contrato y las leyes establecidas, sin inventar ni romper nada."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 22433 a 12783 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 1"
+ ]
+}

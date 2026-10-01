@@ -1,0 +1,30 @@
+{
+ "obrero": "gemini2",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Se debe insertar la función tope_del_pasillo en cuerpo/obrero.py para cumplir con el contrato de capacidad y evitar recortes innecesarios.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "tope_del_pasillo",
+  "texto_viejo": "def material_con_lo_que_falta(material, faltantes, archivo, raiz):",
+  "texto_nuevo": "def tope_del_pasillo(capacidades):\n    # Esta pieza sera llamada en el renglon 1496 de cuerpo/obrero.py para armar el material.\n    if not capacidades:\n        return 0\n    return max(capacidades)\n\n\ndef material_con_lo_que_falta(material, faltantes, archivo, raiz):",
+  "cambio": "Insertar la función tope_del_pasillo antes de la función material_con_lo_que_falta.",
+  "codigo": "def tope_del_pasillo(capacidades):\n    # Esta pieza sera llamada en el renglon 1496 de cuerpo/obrero.py para armar el material.\n    if not capacidades:\n        return 0\n    return max(capacidades)",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Añade la función requerida con la lógica correcta sin afectar al código existente."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 21235 a 12056 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "vueltas_dadas: 2"
+ ]
+}

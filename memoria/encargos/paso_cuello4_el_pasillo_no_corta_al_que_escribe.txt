@@ -1,0 +1,70 @@
+OBJETIVO: escribir en cuerpo/obrero.py la pieza tope_del_pasillo, para poner VERDE la prueba que ya
+existe y nace roja desde el 2026-09-29:
+    python -m pytest -q vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py
+    1 failed
+
+Esa prueba YA TRAE el contrato cerrado. No hay nada que adivinar ni que decidir. Y el rojo se
+comprobo dos veces, no una: no es ruido de un archivo a medio escribir.
+
+POR QUE, con los numeros medidos: el recorte usa hoy la capacidad del cerebro MAS CHICO de la fila, no
+la del que de verdad va a escribir. Resultado medido: el 2026-09-30 un encargo paso de 26.838 letras a
+14.843, y el 2026-10-01 otro de 25.602 a 14.211. El que escribe recibe la ley a medias, contesta a
+medias y el auditor lo rechaza con razon. Eso explico 3 de los 4 rechazos del 2026-09-30.
+
+Y ES LA LEY DE JULIO, ya legislada dos veces:
+- CONTRATO_EL_PASILLO_SE_REPARTA_POR_CAPACIDAD.md, del 2026-09-09, con su causa raiz medida. De sus
+  once pruebas, diez estan verdes: esta es la unica roja.
+- CONTRATO_LAS_DOS_VIAS.md, del 2026-10-01: el codigo viaja limpio y la guia va aparte. Si el paquete
+  no engorda, no hay nada que cortar. Esta pieza es la otra mitad: que lo que se corte se corte a la
+  medida del que escribe, no del mas chico.
+
+=== EL CONTRATO, copiado de la propia prueba. Es exacto y no se discute ===
+
+  def tope_del_pasillo(capacidades):
+      capacidades : una lista de numeros, las capacidades de los cerebros de la fila.
+      devuelve    : un numero.
+
+Los tres casos que la prueba exige, con sus numeros literales:
+
+  CASO 1: con la fila [5000, 20000, 60000] devuelve 60000.
+          Motivo escrito en la propia prueba: el pasillo debe cortar a la medida del cerebro MAS
+          GRANDE de la fila, no a la del mas chico, porque el reparto de mas abajo ya manda el trabajo
+          al que aguanta, y recortar antes al mas chico tira material para nada.
+
+  CASO 2: con la fila [12000] devuelve 12000.
+          Con un solo cerebro, el tope es su capacidad.
+
+  CASO 3: con la fila vacia [] devuelve 0.
+          Cero significa NO RECORTAR NADA. Y no puede reventar con un error.
+
+=== EL ANCLA, un solo renglon, comprobado que aparece UNA sola vez en el archivo ===
+
+def material_con_lo_que_falta(material, faltantes, archivo, raiz):
+
+La pieza nueva se escribe junto a esa, como vecina. La de arriba NO se modifica.
+
+=== EN ESTA RONDA SOLO SE ESCRIBE LA PIEZA ===
+
+Engancharla donde hoy se calcula el tope va en la ronda siguiente, con su propia prueba. Pero la pieza
+NO NACE HUERFANA: en esta misma ronda queda escrito, en un comentario junto a ella, quien la va a
+llamar y en que renglon. Comprobado: hoy el tope se calcula en el renglon 1496 de cuerpo/obrero.py,
+dentro de la llamada que arma el material, y ahi se usa un minimo entre la capacidad y un tope fijo.
+
+=== QUE TIENE QUE QUEDAR VERDE ===
+
+    python -m pytest -q vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py
+Y estas dos tienen que SEGUIR verdes, que hoy lo estan, porque son de la misma ley:
+    python -m pytest -q vigias/test_vigia_se_reparte_por_capacidad.py
+    python -m pytest -q vigias/test_vigia_lo_pesado_a_deepseek.py
+
+=== A QUIEN PUEDE DANAR ===
+
+A quien dependa de que el material llegue recortado al tamano del cerebro mas chico. Esa es justamente
+la dureza que se quita. El riesgo contrario es que llegue material de mas a un cerebro que no aguanta:
+eso NO pasa, porque el reparto por capacidad ya elige despues a quien se le entrega, y esa parte ya
+esta verde con sus dos pruebas.
+
+=== LIBERTAD ===
+
+Se puede escribir el archivo cuerpo/obrero.py entero si hace falta. Lo que NO se toca es la prueba: la
+prueba es la ley, y si se cambia para que pase, no vigila nada.
