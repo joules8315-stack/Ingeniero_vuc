@@ -1,0 +1,113 @@
+OBJETIVO: crear la vigia que nace ROJA de que el cuaderno de caminos fallidos este CONECTADO al
+comando con el que se lanzan las rondas a mano:
+    vigias/test_vigia_el_cuaderno_esta_conectado_a_la_ronda.py
+
+POR QUE, y esta medido dos veces, con dos dias de diferencia:
+
+El cuaderno EXISTE: memoria/HUELLAS_QUE_FALLARON.jsonl, con 44 caminos apuntados. Su ultimo apunte es
+del 2026-09-29. El 2026-10-01 se lanzaron ONCE rondas a mano y NINGUNA quedo apuntada ni consulto
+nada antes de arrancar.
+
+Comprobado en el codigo: las tres bocas del cuaderno viven en cuerpo/capataz.py y SOLO las llama el
+ciclo automatico de ese mismo archivo. El comando con el que se lanzan las rondas a mano no las llama
+ni una vez.
+
+Y ya estaba escrito en METODO_ANTE_UN_PROBLEMA.md el 2026-09-29, con estas palabras: "ese registro
+tiene 40 caminos escritos, y el ultimo es del 2026-09-28. Hoy no se apunto ni uno, porque solo escribe
+el ciclo automatico y hoy todas las rondas se lanzaron a mano. El freno del bucle existia y estuvo
+ciego todo el dia." Pasaron dos dias y nadie lo conecto.
+
+LA CONSECUENCIA, dicha por Julio hoy y es la ley madre: por estar ciego, meter el motivo del rechazo
+dentro del encargo acabo dependiendo de que una IA se acordara de hacerlo a mano. Eso esta PROHIBIDO.
+Nada importante depende de la memoria de nadie: se programa.
+
+=== LAS TRES BOCAS DEL CUADERNO, copiadas del archivo, para que no haya nada que adivinar ===
+
+En cuerpo/capataz.py, y NO se tocan, solo se llaman:
+
+  def huella_de(orden):
+      Devuelve los primeros 16 caracteres hex del sha256 de encargo + salto de renglon + pieza.
+      Lee del diccionario que recibe las claves encargo y pieza; si no son texto, las toma vacias.
+
+  def anotar_huella_fallida(orden, motivo):
+      Agrega al cuaderno una linea con cuatro claves: huella, id, motivo y fecha de hoy en ISO.
+
+  def ya_fallo(orden):
+      True si la huella de esa orden ya aparece en el cuaderno. Nunca lanza: si el archivo no esta,
+      devuelve falso.
+
+OJO CON LA HUELLA, y es la ley de Julio del 2026-09-29: la huella se calcula sobre la PIEZA y el MODO
+de arreglarla, no sobre el texto del encargo. Si se calculara sobre el texto, bastaria reescribir la
+frase para que el mismo error pase por nuevo.
+
+=== EL CONTRATO DE LA PIEZA QUE SE VIGILA, exacto y cerrado ===
+
+El archivo arnes/cuaderno_de_la_ronda.py tendra DOS funciones publicas y nada mas:
+
+  def antes_de_lanzar(encargo, pieza, raiz):
+      encargo : texto. El encargo que se va a mandar.
+      pieza   : texto. El archivo o la pieza que se va a tocar.
+      raiz    : texto. La carpeta del proyecto.
+      devuelve: un diccionario con dos claves exactas:
+                   "ya_fallo"  verdadero o falso
+                   "motivo"    texto: si ya fallo, el motivo que quedo apuntado la vez anterior; si
+                               no fallo nunca, texto vacio.
+
+  def despues_de_la_ronda(encargo, pieza, motivo, raiz):
+      Igual los tres primeros, y motivo es el texto del rechazo.
+      devuelve: verdadero si quedo apuntado en el cuaderno, falso si no se pudo.
+      Si motivo viene vacio, NO apunta nada y devuelve falso: una ronda que salio bien no se apunta
+      como camino fallido.
+
+No hay clases. Esas son las dos funciones.
+
+=== LOS CINCO CASOS, cada uno diciendo en su primer renglon que vigila ===
+
+CASO 1, la pieza existe y tiene sus dos funciones: se carga arnes/cuaderno_de_la_ronda.py por su RUTA
+y tiene antes_de_lanzar y despues_de_la_ronda, y se pueden llamar.
+
+CASO 2, un camino nuevo no figura como fallido: se llama a antes_de_lanzar con un encargo y una pieza
+de mentira que nadie intento nunca, y devuelve ya_fallo falso y motivo vacio.
+
+CASO 3, un camino que fallo queda apuntado y se reconoce: se llama a despues_de_la_ronda con un
+encargo y una pieza de mentira y un motivo de mentira; devuelve verdadero. Despues se llama a
+antes_de_lanzar con EL MISMO encargo y la MISMA pieza, y devuelve ya_fallo verdadero y el motivo con
+el texto que se metio.
+
+CASO 4, una ronda que salio bien NO se apunta: se llama a despues_de_la_ronda con el motivo vacio y
+devuelve falso, y el cuaderno no crecio ni un renglon.
+
+CASO 5, la pieza NO escribe en el cuaderno de verdad cuando se la prueba: la prueba le pasa su propia
+carpeta aparte y comprueba que el cuaderno de verdad del proyecto no cambio. Esto es obligatorio y ya
+costo caro dos veces: una prueba escribio en la memoria real y se perdieron 27 de 32 errores
+aprendidos, y otra dejo en el diccionario 535 apariciones de un dato de mentira.
+
+=== COMO SE ESCRIBE LA PRUEBA, reglas que no se negocian ===
+
+- Se carga la pieza por RUTA, no por nombre de paquete: hay dos proyectos con carpetas que se llaman
+  igual y se agarra la equivocada.
+- PROHIBIDO fabricar un muneco de la pieza y probar el muneco. Eso se rechazo ya el 2026-09-30: la
+  prueba salia VERDE sin que la pieza existiera y no vigilaba nada. Lo unico que se sustituye es la
+  CARPETA donde se escribe.
+- La prueba NO puede salir verde mientras la pieza no exista. Si sale verde, esta mal escrita.
+- Nada que dependa de la respuesta de un cerebro: datos de mentira fijos, siempre iguales.
+- No se usa texto de triple comilla que lleve dentro otras comillas.
+
+=== QUE SIGNIFICA QUE NAZCA ROJA ===
+
+Hoy, al correrla, los cinco casos FALLAN diciendo en palabras simples que la pieza no existe. Cuando
+la pieza se escriba con el contrato de arriba, los cinco pasan a verde SIN TOCAR la prueba.
+
+=== A QUIEN PUEDE DANAR ===
+
+A todas las rondas, porque esto se mete en el camino por el que pasa cada trabajo del equipo. Si
+frenara de mas, no se podria reintentar nunca un camino que fallo por una causa ya reparada; por eso
+antes_de_lanzar AVISA y entrega el motivo, y la decision de reintentar queda fuera de esta pieza.
+
+=== LO QUE TIENE QUE QUEDAR VERDE ===
+
+Todo lo que ya estaba verde sigue verde. Esta prueba nueva queda ROJA a proposito.
+
+=== LIBERTAD ===
+
+Se escribe el archivo entero, es nuevo. No hay texto viejo que respetar.

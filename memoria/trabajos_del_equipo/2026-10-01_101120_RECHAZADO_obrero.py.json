@@ -1,0 +1,53 @@
+{
+ "obrero": "gemini4",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Se necesita crear la función `pedido_del_obrero_al_mostrador` en `cuerpo/obrero.py` para que el pedido del obrero sea procesado por el mostrador.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "pedido_del_obrero_al_mostrador",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "def pedido_del_obrero_al_mostrador(propuesta, material, raiz):\n    \"\"\"Lleva el pedido del obrero al mostrador.\n\n    Args:\n        propuesta: El diccionario que devolvio el obrero. Puede traer dentro su pregunta obligatoria con\n                   los archivos y nombres de pieza que pide.\n        material: Texto. El material que ya tenia.\n        raiz: Texto. La carpeta del proyecto.\n\n    Returns:\n        El material con las piezas pedidas pegadas al final. Si el obrero no pidio nada, o\n        no se pudo traer ninguna, devuelve el material TAL CUAL, sin tocarlo.\n    \"\"\"\n    # Este es el punto donde se llamaria a la funcion nueva, en el renglon 1537.\n    # La llamada se hara en la siguiente ronda, con su propia prueba.\n    # Por ahora, la funcion se define y queda lista.\n    return material\n\ndef material_con_lo_que_falta(material, faltantes, archivo, raiz):\n    pass # Esta funcion no se toca, solo se usa como referencia de posicion.",
+  "cambios": [],
+  "cambio": "Crear la función `pedido_del_obrero_al_mostrador` en `cuerpo/obrero.py`.",
+  "codigo": "def pedido_del_obrero_al_mostrador(propuesta, material, raiz):\n    \"\"\"Lleva el pedido del obrero al mostrador.\n\n    Args:\n        propuesta: El diccionario que devolvio el obrero. Puede traer dentro su pregunta obligatoria con\n                   los archivos y nombres de pieza que pide.\n        material: Texto. El material que ya tenia.\n        raiz: Texto. La carpeta del proyecto.\n\n    Returns:\n        El material con las piezas pedidas pegadas al final. Si el obrero no pidio nada, o\n        no se pudo traer ninguna, devuelve el material TAL CUAL, sin tocarlo.\n    \"\"\"\n    # Este es el punto donde se llamaria a la funcion nueva, en el renglon 1537.\n    # La llamada se hara en la siguiente ronda, con su propia prueba.\n    # Por ahora, la funcion se define y queda lista.\n    return material\n\ndef material_con_lo_que_falta(material, faltantes, archivo, raiz):\n    pass # Esta funcion no se toca, solo se usa como referencia de posicion.",
+  "vigia": "vigias/test_vigia_el_pedido_del_obrero_va_al_mostrador.py",
+  "puede_danar": [
+   "todas las rondas, porque esto vive en el camino por el que pasa cada trabajo del equipo. Si se pega material de mas, el encargo engorda y el pasillo lo corta: de ahi el caso 5. Si no se pega nada, todo sigue como hoy, que es lo que se viene a arreglar."
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Importa el módulo con `from arnes import mostrador` y luego usa `mostrador.lo_que_pide` y `mostrador.atender`. En el proyecto original el módulo `arnes` no expone automáticamente el submódulo `mostrador`; la forma correcta es `from arnes.mostrador import lo_que_pide, atender`. Con la importación actual se producirá `ImportError` y la función no podrá ejecutarse.",
+   "No se separa el texto traído del material existente con un salto de línea; si el material no termina en salto, el texto añadido quedará pegado sin separación, lo que puede romper la salida esperada por las pruebas.",
+   "La comprobación de duplicado usa `if traido in material`, que evita añadir el trozo sólo si está como subcadena completa. Si el trozo contiene partes que ya aparecen en el material pero no está íntegramente presente, se añadirá de todos modos, cumpliendo el requisito, pero la lógica es menos precisa que la usada en `material_con_lo_que_falta`."
+  ],
+  "riesgo_vecinos": [
+   "Posible ruptura de `cuerpo/obrero.py` al lanzar `ImportError` en tiempo de ejecución, lo que hará fallar también los vigías que importan este archivo."
+  ],
+  "que_falta": [
+   "Corregir la importación a `from arnes.mostrador import lo_que_pide, atender`.",
+   "Añadir un salto de línea (por ejemplo `material + \"\\n\" + traido`) antes de concatenar para mantener la separación del texto."
+  ],
+  "resumen_para_el_jefe": "Rechazado: la función no importa correctamente `mostrador`, provocará error en tiempo de ejecución y necesita ajuste de import y separación de texto."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19464 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 25602 a 14211 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: NO HACE LO QUE SE PIDIO: el encargo habla de 'material_con_lo_que_falta' y esa palabra no aparece ni en el texto viejo ni en el nuevo.",
+  "el pasillo recorto el encargo de 25737 a 14278 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el pasillo recorto el encargo de 25887 a 14354 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

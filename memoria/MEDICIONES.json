@@ -19056,5 +19056,357 @@
   "falto": [],
   "prueba_humana": "PENDIENTE",
   "ahorro": 99.9
+ },
+ {
+  "id": 382,
+  "cuando": "2026-10-01 10:09",
+  "proyecto": "ingeniero",
+  "problema": "Reparar el bloqueo de cierre por candado_puerta_trasera.py sin llamador. NECESITO_LEER: candado_puerta_trasera.py completo, el candado de cierre que lo detecta y sus llamadores / motivo: el equipo no recibio esas piezas y propuso texto que no existe / que decide: conexion real o eliminacion justificada / riesgo: reparar a ciegas o quitar una proteccion. Seguir importaciones y llamadores, no solo nombres.",
+  "flujos": [
+   "piezas",
+   "equipo",
+   "real"
+  ],
+  "piezas": [
+   "cerebro/piezas.py",
+   "memoria/rescate/rv3_prueba_real_velocidad.py",
+   "skills/medir_al_equipo.py",
+   "arnes/candado_puerta_trasera.py",
+   "mapa/inventario.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "arnes/candado_puerta_trasera.py:1-40",
+   "cerebro/piezas.py:129-214",
+   "skills/medir_al_equipo.py:70-98",
+   "mapa/inventario.py:97-136",
+   "cerebro/piezas.py:1-40",
+   "cuerpo/privacidad.py:33-72"
+  ],
+  "leyes": [
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md",
+   "mapa/MAPA_INGENIERO.md",
+   "PLAN_PITS/reciclado/PLAN_v3_2026-09-18.md",
+   "CONTRATO_AL_CEREBRO_SOLO_LO_SUYO.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_envio_real.py",
+   "memoria/trabajos_sin_revisar/test_vigia_el_equipo_aplica_varios_trozos.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+   "vigias/test_vigia_el_equipo_aplica_varios_trozos.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_prueba_real.py",
+   "vigias/test_vigia_siempre_con_equipo.py",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py"
+  ],
+  "lineas_paquete": 523,
+  "lineas_proyecto": 427966,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
+ },
+ {
+  "id": 383,
+  "cuando": "2026-10-01 10:09",
+  "proyecto": "ingeniero",
+  "problema": "Conectar arnes/candado_puerta_trasera.py al control real que corresponde. La pieza existe y declara literalmente: La pieza es NUEVA y todavia no la llama nadie. Ofrece documento_de_proyecto_puede_pasar(ruta), llamada_por_terminal_puede_pasar(comando, cwd), reparar_archivo_del_arnes_puede_pasar(ruta) y ultima_anotacion(). Hace falta el contenido de esta pieza y el punto real donde se controlan documentos y llamadas, con sus vecinos y pruebas. No basta modificar el contrato.",
+  "flujos": [
+   "pieza",
+   "nueva",
+   "nadie"
+  ],
+  "piezas": [
+   "arnes/candado_puerta_trasera.py",
+   "arnes/bateria_en_paralelo.py",
+   "arnes/vecinas.py",
+   "arnes/candado_nace_enganchada.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "arnes/candado_puerta_trasera.py:264-282",
+   "arnes/candado_puerta_trasera.py:285-293",
+   "arnes/candado_puerta_trasera.py:221-261",
+   "arnes/candado_puerta_trasera.py:170-199",
+   "arnes/candado_puerta_trasera.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_CREAR_PIEZA_NUEVA.md",
+   "CONTRATO_ENCHUFAR_UNA_PIEZA_DORMIDA.md",
+   "CONTRATO_LA_PIEZA_SE_ENTREGA_ENTERA.md",
+   "CONTRATO_NADIE_ENTRA_SIN_ARNES.md",
+   "CONTRATO_UNA_OPINION_NO_ES_PRUEBA.md",
+   "CONTRATO_ANTES_DE_CONSTRUIR_SE_BUSCA.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_rag_encuentra_pieza_correcta.py",
+   "memoria/trabajos_sin_revisar/test_vigia_la_pieza_que_le_pregunta_a_codex.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "vigias/test_vigia_a_nadie_se_le_espera_mas_de_lo_medido.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_texto_largo_no_corta_la_pieza.py",
+   "vigias/test_vigia_la_pieza_nace_conectada_en_el_pit.py",
+   "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
+   "vigias/test_vigia_la_pieza_se_busca_por_nombre.py",
+   "vigias/test_vigia_nadie_revisa_su_propio_trabajo.py",
+   "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py",
+   "vigias/test_vigia_trae_la_pieza_correcta.py",
+   "vigias/test_vigia_una_pieza_nueva_nace_enganchada.py",
+   "vigias/test_vigia_una_prueba_nueva_no_deja_ciega_la_bateria.py"
+  ],
+  "lineas_paquete": 528,
+  "lineas_proyecto": 427966,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
+ },
+ {
+  "id": 384,
+  "cuando": "2026-10-01 10:16",
+  "proyecto": "ingeniero",
+  "problema": "NECESITO_LEER: arnes/candado_puerta_trasera.py y el punto real que controla documentos y llamadas / motivo: el equipo devolvio NO_ENCONTRADO porque faltan sus contenidos en el paquete vigente / que decide: donde conectar documento_de_proyecto_puede_pasar, llamada_por_terminal_puede_pasar y reparar_archivo_del_arnes_puede_pasar / riesgo: conectar en un lugar supuesto o dejar la pieza sin llamadas. Incluir texto literal, vecinos y pruebas existentes.",
+  "flujos": [
+   "pieza",
+   "equipo",
+   "real"
+  ],
+  "piezas": [
+   "memoria/rescate/rv3_prueba_real_velocidad.py",
+   "skills/medir_al_equipo.py",
+   "arnes/candado_puerta_trasera.py",
+   "cuerpo/privacidad.py"
+  ],
+  "trozos": [
+   "arnes/candado_puerta_trasera.py:264-282",
+   "arnes/candado_puerta_trasera.py:221-261",
+   "arnes/candado_puerta_trasera.py:170-199",
+   "arnes/candado_puerta_trasera.py:1-40"
+  ],
+  "leyes": [
+   "CONTRATO_CREAR_PIEZA_NUEVA.md",
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_ENCHUFAR_UNA_PIEZA_DORMIDA.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_LA_PIEZA_SE_ENTREGA_ENTERA.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md",
+   "CONTRATO_NADIE_ENTRA_SIN_ARNES.md",
+   "CONTRATO_UNA_OPINION_NO_ES_PRUEBA.md",
+   "mapa/MAPA_INGENIERO.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_envio_real.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_rag_encuentra_pieza_correcta.py",
+   "memoria/trabajos_sin_revisar/test_vigia_el_equipo_aplica_varios_trozos.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_la_pieza_que_le_pregunta_a_codex.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+   "vigias/test_vigia_el_equipo_aplica_varios_trozos.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_texto_largo_no_corta_la_pieza.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_la_pieza_nace_conectada_en_el_pit.py",
+   "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
+   "vigias/test_vigia_la_pieza_se_busca_por_nombre.py",
+   "vigias/test_vigia_prueba_real.py",
+   "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py",
+   "vigias/test_vigia_siempre_con_equipo.py",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py",
+   "vigias/test_vigia_trae_la_pieza_correcta.py",
+   "vigias/test_vigia_una_pieza_nueva_nace_enganchada.py"
+  ],
+  "lineas_paquete": 502,
+  "lineas_proyecto": 429341,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
+ },
+ {
+  "id": 385,
+  "cuando": "2026-10-01 10:16",
+  "proyecto": "ingeniero",
+  "problema": "NECESITO_LEER: arnes/candado_puerta_trasera.py y el punto real que controla documentos y llamadas / motivo: el equipo no pudo proponer la conexión porque faltan ambos contenidos en el paquete vigente / qué decide: dónde conectar las funciones existentes con texto literal, vecinos y pruebas / riesgo: reparar un punto supuesto o dejar la pieza sin uso. Completar el paquete mínimo para el encargo vigente.",
+  "flujos": [
+   "pieza",
+   "equipo",
+   "real"
+  ],
+  "piezas": [
+   "memoria/rescate/rv3_prueba_real_velocidad.py",
+   "skills/medir_al_equipo.py",
+   "arnes/candado_puerta_trasera.py"
+  ],
+  "trozos": [
+   "arnes/candado_puerta_trasera.py:1-40",
+   "arnes/candado_puerta_trasera.py:170-199",
+   "arnes/candado_puerta_trasera.py:221-261"
+  ],
+  "leyes": [
+   "CONTRATO_CREAR_PIEZA_NUEVA.md",
+   "CONTRATO_EL_EQUIPO_ESCRIBE.md",
+   "CONTRATO_EL_EQUIPO_REPITE_EL_TRABAJO.md",
+   "CONTRATO_ENCHUFAR_UNA_PIEZA_DORMIDA.md",
+   "CONTRATO_EQUIPO_QUE_AGUANTA.md",
+   "CONTRATO_LA_PIEZA_SE_ENTREGA_ENTERA.md",
+   "CONTRATO_APUNTA_Y_REPARA.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md",
+   "CONTRATO_LEGISLACION_2026-08-24.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_envio_real.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_rag_encuentra_pieza_correcta.py",
+   "memoria/trabajos_sin_revisar/test_vigia_el_equipo_aplica_varios_trozos.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "memoria/trabajos_sin_revisar/test_vigia_la_pieza_que_le_pregunta_a_codex.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "vigias/test_vigia_deepseek_en_el_equipo.py",
+   "vigias/test_vigia_el_capataz_lanza_al_equipo.py",
+   "vigias/test_vigia_el_equipo_aplica_varios_trozos.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_texto_largo_no_corta_la_pieza.py",
+   "vigias/test_vigia_equipo_no_cae.py",
+   "vigias/test_vigia_equipo_que_aguanta.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_equipo_sirve.py",
+   "vigias/test_vigia_equipo_total.py",
+   "vigias/test_vigia_la_pieza_nace_conectada_en_el_pit.py",
+   "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
+   "vigias/test_vigia_la_pieza_se_busca_por_nombre.py",
+   "vigias/test_vigia_prueba_real.py",
+   "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py",
+   "vigias/test_vigia_siempre_con_equipo.py",
+   "vigias/test_vigia_sin_equipo_no_se_guarda.py",
+   "vigias/test_vigia_trae_la_pieza_correcta.py",
+   "vigias/test_vigia_una_pieza_nueva_nace_enganchada.py"
+  ],
+  "lineas_paquete": 469,
+  "lineas_proyecto": 429234,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
+ },
+ {
+  "id": 386,
+  "cuando": "2026-10-01 10:17",
+  "proyecto": "ingeniero",
+  "problema": "Localizar el control real de edicion que emite DEJO PASAR: documento libre y el control real de comandos de terminal. Necesito sus funciones completas y sus pruebas para conectar el candado de puerta trasera existente. El paquete anterior solo incluyo la pieza sin sus llamadores. Buscar el texto literal DEJO PASAR: documento libre.",
+  "flujos": [
+   "pieza",
+   "puerta",
+   "trasera"
+  ],
+  "piezas": [
+   "memoria/rescate/RESCATE__puerta_borrador_2026-09-10.py"
+  ],
+  "trozos": [
+   "memoria/rescate/RESCATE__puerta_borrador_2026-09-10.py:1-40",
+   "memoria/rescate/RESCATE__puerta_borrador_2026-09-10.py:173-204"
+  ],
+  "leyes": [
+   "CONTRATO_CREAR_PIEZA_NUEVA.md",
+   "CONTRATO_ENCHUFAR_UNA_PIEZA_DORMIDA.md",
+   "CONTRATO_LA_BASCULA_EN_LA_ULTIMA_PUERTA.md",
+   "CONTRATO_LA_LISTA_BLANCA_NO_ES_UNA_PUERTA_TRASERA.md",
+   "CONTRATO_LA_PIEZA_SE_ENTREGA_ENTERA.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md",
+   "CONTRATO_UNA_OPINION_NO_ES_PRUEBA.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_rag_encuentra_pieza_correcta.py",
+   "memoria/trabajos_sin_revisar/test_vigia_la_pieza_que_le_pregunta_a_codex.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_metodo_manda_en_la_puerta.py",
+   "vigias/test_vigia_el_texto_largo_no_corta_la_pieza.py",
+   "vigias/test_vigia_la_lista_blanca_no_es_una_puerta_trasera.py",
+   "vigias/test_vigia_la_pieza_nace_conectada_en_el_pit.py",
+   "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
+   "vigias/test_vigia_la_pieza_se_busca_por_nombre.py",
+   "vigias/test_vigia_la_puerta_del_plan.py",
+   "vigias/test_vigia_la_puerta_gratis_tambien_se_cuenta.py",
+   "vigias/test_vigia_no_hay_puerta_trasera_por_dentro.py",
+   "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py",
+   "vigias/test_vigia_trae_la_pieza_correcta.py",
+   "vigias/test_vigia_una_pieza_nueva_nace_enganchada.py"
+  ],
+  "lineas_paquete": 416,
+  "lineas_proyecto": 429234,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
+ },
+ {
+  "id": 387,
+  "cuando": "2026-10-01 10:41",
+  "proyecto": "ingeniero",
+  "problema": "Localizar candado_puerta_trasera.py y el control real que emite el texto literal DEJO PASAR: documento libre, junto con el control de comandos de terminal. Se necesitan las funciones completas, sus llamadores y sus pruebas, no contratos generales. La reparacion anterior fue rechazada por proponer solo otra regla sin conectar la pieza. Preparar el paquete minimo para conectar la pieza existente con evidencia.",
+  "flujos": [
+   "pieza",
+   "real",
+   "texto"
+  ],
+  "piezas": [
+   "memoria/rescate/rv3_prueba_real_velocidad.py",
+   "skills/orden_o_texto_pegado.py",
+   "arnes/candado_puerta_trasera.py"
+  ],
+  "trozos": [
+   "arnes/candado_puerta_trasera.py:1-40",
+   "arnes/candado_puerta_trasera.py:170-199",
+   "arnes/candado_puerta_trasera.py:221-261"
+  ],
+  "leyes": [
+   "CONTRATO_CREAR_PIEZA_NUEVA.md",
+   "CONTRATO_ENCHUFAR_UNA_PIEZA_DORMIDA.md",
+   "CONTRATO_LA_PIEZA_SE_ENTREGA_ENTERA.md",
+   "CONTRATO_CREDENCIALES_PARA_PRUEBAS.md",
+   "CONTRATO_UNA_OPINION_NO_ES_PRUEBA.md",
+   "mapa/MAPA_INGENIERO.md"
+  ],
+  "vigias": [
+   "memoria/rescate/_copia_vieja_completa/test_vigia_envio_real.py",
+   "memoria/rescate/_copia_vieja_completa/test_vigia_rag_encuentra_pieza_correcta.py",
+   "memoria/trabajos_sin_revisar/test_vigia_la_pieza_que_le_pregunta_a_codex.py.FRENADO_POR_EL_GUARDIA.RECOGIDO",
+   "vigias/test_vigia_cambiar_dentro_de_un_texto_no_frena.py",
+   "vigias/test_vigia_el_auditor_juzga_por_texto.py",
+   "vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+   "vigias/test_vigia_el_obrero_repara_por_texto.py",
+   "vigias/test_vigia_el_texto_del_sistema_en_ingles_no_es_de_julio.py",
+   "vigias/test_vigia_el_texto_largo_no_corta_la_pieza.py",
+   "vigias/test_vigia_el_texto_repetido_se_busca_en_su_funcion.py",
+   "vigias/test_vigia_el_texto_viejo_tiene_que_existir.py",
+   "vigias/test_vigia_la_pieza_nace_conectada_en_el_pit.py",
+   "vigias/test_vigia_la_pieza_que_le_pregunta_a_codex.py",
+   "vigias/test_vigia_la_pieza_se_busca_por_nombre.py",
+   "vigias/test_vigia_prueba_real.py",
+   "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py",
+   "vigias/test_vigia_trae_la_pieza_correcta.py",
+   "vigias/test_vigia_una_pieza_nueva_nace_enganchada.py"
+  ],
+  "lineas_paquete": 466,
+  "lineas_proyecto": 430409,
+  "veredicto": "SIN_JUZGAR",
+  "por_que": "",
+  "falto": [],
+  "prueba_humana": "PENDIENTE",
+  "ahorro": 99.9
  }
 ]

@@ -1,0 +1,47 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "El candado de cierre informa de una pieza nueva sin quien la llame (candado_puerta_trasera.py), pero el material no trae el archivo ni su contenido, ni el candado de cierre, ni el flujo que deberia llamarla.",
+  "archivo": "NO_ENCONTRADO",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "baja",
+  "NECESITO_LEER": [
+   {
+    "archivo": "candado_puerta_trasera.py",
+    "motivo": "Es la pieza nueva que el candado de cierre senala como huerfana; sin su contenido no se puede saber que hace, quien deberia llamarla ni si sobra.",
+    "que_decide": "Si se conecta a su uso real o se elimina, y como se escribe la prueba que falle por este motivo.",
+    "riesgo": "Proponer un cambio a ciegas sobre un archivo que no se ha visto, repitiendo el rechazo anterior por texto_viejo inexistente."
+   },
+   {
+    "archivo": "el candado de cierre que informa de la pieza nueva sin quien la llame",
+    "motivo": "Es quien detecta el bloqueo; hay que ver su texto literal para entender la causa exacta y donde se conecta la pieza.",
+    "que_decide": "Donde va la prueba que falle por este motivo y que condicion debe cumplir la pieza para dejar de estar huerfana.",
+    "riesgo": "No poder reproducir el fallo ni comprobar que la reparacion lo cierra."
+   },
+   {
+    "archivo": "el flujo o modulo que deberia llamar a candado_puerta_trasera.py",
+    "motivo": "La Regla 6 del contrato exige que la pieza nazca conectada; hay que ver el punto de llamada real para engancharla.",
+    "que_decide": "El texto_viejo y texto_nuevo exactos del enganche, y los vecinos que pueden romperse.",
+    "riesgo": "Dejar la pieza huerfana o romper el flujo al engancharla en el sitio equivocado."
+   }
+  ]
+ },
+ "auditoria": {},
+ "avisos": [
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

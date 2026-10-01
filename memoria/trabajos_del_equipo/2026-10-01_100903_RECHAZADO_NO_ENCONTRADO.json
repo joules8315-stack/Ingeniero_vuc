@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "El control de cierre señala candado_puerta_trasera.py como pieza huérfana y el material no trae su contenido ni quién debería llamarla, así que no se puede decidir con evidencia si conectarla o retirarla.",
+  "archivo": "NO_ENCONTRADO",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO",
+  "puede_danar": [],
+  "preguntas": [],
+  "confianza": "baja",
+  "NECESITO_LEER": "candado_puerta_trasera.py / necesito su contenido completo para saber qué hace y quién debería llamarla / decide si se conecta o se retira / riesgo: dejar huérfana una pieza o romper un candado activo"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El cambio NO arregla el diagnostico: el diagnostico dice que candado_puerta_trasera.py es una pieza huerfana que no se llama y que no hay evidencia que justifique su creacion. La propuesta NO conecta la pieza ni la retira; solo anade texto al contrato citandola como ejemplo. El problema medido (pieza huerfana) sigue igual.",
+   "El cambio se hace en el archivo equivocado: el encargo pide reparar la pieza huerfana (conectarla o retirarla), no legislar sobre piezas huerfanas. El archivo tocado es CONTRATO_CREAR_PIEZA_NUEVA.md, que es la ley, no la pieza.",
+   "El texto_nuevo duplica una regla ya existente: la Regla 6 del contrato ya legisla 'NADA PUEDE CREARSE Y QUEDAR HUERFANO'. Anadir una 'Regla 5' nueva con el mismo tema crea dos reglas numeradas 5 y contradice la numeracion existente (ya hay Regla 5 — Con autorizacion).",
+   "El cambio no responde a las preguntas del encargo: no comprueba con evidencia quien deberia llamar a la pieza, no decide si hace falta, no la conecta ni la retira.",
+   "El 'vigia' propuesto es una prueba generica ('verificar que todas las piezas son llamadas') que no se implementa ni se ubica en ningun archivo; queda como deseo, no como prueba roja."
+  ],
+  "riesgo_vecinos": [
+   "CONTRATO_CREAR_PIEZA_NUEVA.md: se le anade una regla duplicada y con numeracion chocante (Regla 5 repetida), lo que puede confundir la lectura de la ley.",
+   "candado_puerta_trasera.py: sigue huerfana; el cambio no la toca, no la conecta ni la retira, asi que el dano que el encargo queria cerrar permanece abierto."
+  ],
+  "que_falta": [
+   "Comprobar con evidencia quien deberia llamar a candado_puerta_trasera.py y en que momento.",
+   "Decidir segun el contrato si la pieza hace falta: si hace falta, conectarla a un flujo real; si no, retirarla.",
+   "Si se decide legislar, hacerlo en el contrato correcto y sin duplicar la Regla 6 ya existente.",
+   "Prueba roja que demuestre el fallo antes de la reparacion y prueba verde despues.",
+   "Sabotaje que verifique que la reparacion no se puede saltar."
+  ],
+  "resumen_para_el_jefe": "La propuesta no repara la pieza huerfana: solo anade texto al contrato citandola como ejemplo, duplica una regla ya existente y deja el problema medido intacto; hay que conectarla o retirarla con evidencia."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19577 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 20058 a 11382 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 20096 a 11402 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

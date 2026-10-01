@@ -5,7 +5,7 @@ poner VERDE la prueba que ya existe y hoy nace roja con sus cinco casos:
 
 POR QUE ESTA ES LA LLAVE, medido y no supuesto: el mostrador existe, esta verde y devuelve la pieza
 pedida entera. Pero esta enchufado SOLO ANTES de que el obrero piense, atendiendo a una ADIVINANZA del
-programa. Cuando el obrero pide material EL MISMO, con su PREGUNTA_REQUERIDA, su pedido NO va al
+programa. Cuando el obrero pide material EL MISMO, con su pregunta obligatoria, su pedido NO va al
 mostrador: se anota y la vuelta se da por perdida. Un solo fallo explica las tres rojas del candado de
 huerfanas, el paso de la libreta rechazado dos veces, los dos recados de Codex del 30/09 y nueve
 rondas de esa tarde.
@@ -13,7 +13,7 @@ rondas de esa tarde.
 === EL CONTRATO, exacto, el mismo que exige la prueba ===
 
   def pedido_del_obrero_al_mostrador(propuesta, material, raiz):
-      propuesta : el diccionario que devolvio el obrero. Puede traer dentro su PREGUNTA_REQUERIDA con
+      propuesta : el diccionario que devolvio el obrero. Puede traer dentro su pregunta obligatoria con
                   los archivos y nombres de pieza que pide.
       material  : texto. El material que ya tenia.
       raiz      : texto. La carpeta del proyecto.
@@ -25,9 +25,9 @@ No hay clases. Es la unica funcion nueva.
 === LO QUE TIENE QUE CUMPLIR, los cinco casos de la prueba ===
 
 1. La funcion existe en cuerpo/obrero.py y se puede llamar.
-2. Si la PREGUNTA_REQUERIDA del obrero nombra un archivo que existe y una pieza suya por su nombre, lo
+2. Si la pregunta obligatoria del obrero nombra un archivo que existe y una pieza suya por su nombre, lo
    que devuelve trae DENTRO el texto de esa pieza y es mas largo que el material que entro.
-3. Si no hay PREGUNTA_REQUERIDA, devuelve el material exactamente igual, letra por letra.
+3. Si no hay pregunta obligatoria, devuelve el material exactamente igual, letra por letra.
 4. Si lo pedido no existe, devuelve el material TAL CUAL: no revienta y no se inventa nada.
 5. Si se le pasa dos veces el mismo pedido sobre el material ya servido, la pieza aparece UNA sola
    vez. No se acumula: si se acumula, el material engorda, el pasillo lo corta y el trabajo se pierde.
@@ -41,7 +41,9 @@ ahora mismo, tiene las dos bocas publicas que hacen falta:
   def lo_que_pide(texto_respuesta):
       Devuelve la LISTA de peticiones que trae una respuesta, en orden y sin repetir. Cada peticion es
       un diccionario con dos claves: "archivo" y "nombre". Una peticion se reconoce porque en un
-      renglon aparece la palabra NECESITO_LEER seguida de dos puntos. Nunca revienta: con texto vacio,
+      renglon aparece la palabra con la que se pide material, seguida de dos puntos. Esa palabra la
+      conoce el propio mostrador y la funcion nueva NO tiene que escribirla ni nombrarla: le basta
+      preguntarle al mostrador. Nunca revienta: con texto vacio,
       con nada, con un numero o con una lista, devuelve lista vacia.
 
   def atender(peticiones, raiz):
@@ -99,3 +101,37 @@ sigue como hoy, que es lo que se viene a arreglar.
 
 Se puede escribir el archivo cuerpo/obrero.py entero si hace falta. Lo que NO se toca es la prueba: la
 prueba es la ley, y si se cambia para que pase, no vigila nada.
+
+=== LO QUE YA SE INTENTO Y EL AUDITOR RECHAZO CON RAZON. No se vuelve a hacer ===
+
+INTENTO 1, RECHAZADO por tres cosas, y las tres se arreglan COPIANDO lo que ya funciona en el mismo
+archivo. No hay que inventar ninguna forma nueva:
+
+FALLO 1, el import. Se escribio una forma de traer el mostrador que no funciona en esta casa, y
+provoca un error en cuanto se ejecuta. COMPROBADO en el disco: el propio cuerpo/obrero.py ya trae el
+mostrador en el renglon 156, y lo hace asi, dentro de la funcion y no arriba del archivo:
+
+        from arnes.mostrador import atender
+
+Se copia ESA forma, nombrando tambien la otra boca que hace falta. Y va DENTRO de la funcion, no
+arriba del archivo, igual que ahi.
+
+FALLO 2, no se separaba lo pegado. Si el material no acaba en salto de renglon, lo traido queda
+pegado al final sin separacion. COMPROBADO: la pieza hermana del mismo archivo, en el renglon 179,
+lo hace asi, con dos saltos y un titulo en mayusculas que avisa de donde viene lo pegado:
+
+        return material + "\n\nLO QUE FALTABA, ATENDIDO POR EL MOSTRADOR\n" + "\n".join(utiles)
+
+Se copia ese mismo criterio: dos saltos, un titulo propio, y despues lo traido.
+
+FALLO 3, la comprobacion de no duplicar era tosca. Se mira si el trozo entero esta dentro del
+material; si solo esta un pedazo, se pega igual. El auditor dice, con razon, que la pieza hermana lo
+hace mas fino. Se mira como lo hace ella y se usa el mismo criterio.
+
+Y TRES COSAS MAS QUE LA PIEZA HERMANA YA RESUELVE Y CONVIENE COPIARLE, comprobadas en sus renglones
+156 a 181: parte lo traido en bloques, cada uno empieza por el titulo "LO QUE PEDISTE: "; descarta los
+bloques cuyo cuerpo esta vacio o solo trae la marca de que no se encontro; si no queda ningun bloque
+util, devuelve el material TAL CUAL; y todo va envuelto de modo que si algo falla, se devuelve el
+material sin tocarlo y nunca revienta.
+
+LO QUE NO SE TOCA: la pieza hermana. Se la mira y se le copia el criterio, pero no se modifica.

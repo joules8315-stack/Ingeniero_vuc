@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta en cuerpo/obrero.py la funcion pedido_del_obrero_al_mostrador que lleve la PREGUNTA_REQUERIDA del obrero al mostrador, y por eso la prueba nace roja en sus cinco casos.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "material_con_lo_que_falta",
+  "texto_viejo": "def material_con_lo_que_falta(material, faltantes, archivo, raiz):",
+  "texto_nuevo": "def pedido_del_obrero_al_mostrador(propuesta, material, raiz):\n    \"\"\"Lleva al mostrador el pedido que el obrero hace en su propia propuesta.\n\n    La llama la comprobacion de la propuesta del obrero en el renglon 1537 de\n    cuerpo/obrero.py, cuando la propuesta trae la marca de que no encontro algo\n    y su pregunta obligatoria. En esta ronda solo se deja escrita y lista; el\n    enganche en ese tramo va en la ronda siguiente.\n\n    propuesta : el diccionario que devolvio el obrero. Puede traer dentro su\n                PREGUNTA_REQUERIDA con los archivos y nombres de pieza que pide.\n    material  : texto. El material que ya tenia.\n    raiz      : texto. La carpeta del proyecto.\n    devuelve  : el material con las piezas pedidas pegadas al final. Si el\n                obrero no pidio nada, o no se pudo traer ninguna, devuelve el\n                material TAL CUAL, sin tocarlo.\n    \"\"\"\n    try:\n        from arnes.mostrador import lo_que_pide, atender\n    except Exception:\n        return material\n\n    if not isinstance(propuesta, dict):\n        return material\n\n    texto_respuesta = propuesta.get(\"PREGUNTA_REQUERIDA\")\n    if not texto_respuesta:\n        return material\n\n    try:\n        peticiones = lo_que_pide(texto_respuesta)\n    except Exception:\n        return material\n\n    if not peticiones:\n        return material\n\n    try:\n        traido = atender(peticiones, raiz)\n    except Exception:\n        return material\n\n    if not traido:\n        return material\n\n    if not isinstance(traido, str):\n        traido = str(traido)\n\n    if not traido:\n        return material\n\n    if traido in material:\n        return material\n\n    return material + traido\n\n\ndef material_con_lo_que_falta(material, faltantes, archivo, raiz):",
+  "cambios": "",
+  "cambio": "Anadir la funcion pedido_del_obrero_al_mostrador justo antes de material_con_lo_que_falta, sin tocar esta ultima.",
+  "codigo": "def pedido_del_obrero_al_mostrador(propuesta, material, raiz):\n    \"\"\"Lleva al mostrador el pedido que el obrero hace en su propia propuesta.\n\n    La llama la comprobacion de la propuesta del obrero en el renglon 1537 de\n    cuerpo/obrero.py, cuando la propuesta trae la marca de que no encontro algo\n    y su pregunta obligatoria. En esta ronda solo se deja escrita y lista; el\n    enganche en ese tramo va en la ronda siguiente.\n\n    propuesta : el diccionario que devolvio el obrero. Puede traer dentro su\n                PREGUNTA_REQUERIDA con los archivos y nombres de pieza que pide.\n    material  : texto. El material que ya tenia.\n    raiz      : texto. La carpeta del proyecto.\n    devuelve  : el material con las piezas pedidas pegadas al final. Si el\n                obrero no pidio nada, o no se pudo traer ninguna, devuelve el\n                material TAL CUAL, sin tocarlo.\n    \"\"\"\n    try:\n        from arnes.mostrador import lo_que_pide, atender\n    except Exception:\n        return material\n\n    if not isinstance(propuesta, dict):\n        return material\n\n    texto_respuesta = propuesta.get(\"PREGUNTA_REQUERIDA\")\n    if not texto_respuesta:\n        return material\n\n    try:\n        peticiones = lo_que_pide(texto_respuesta)\n    except Exception:\n        return material\n\n    if not peticiones:\n        return material\n\n    try:\n        traido = atender(peticiones, raiz)\n    except Exception:\n        return material\n\n    if not traido:\n        return material\n\n    if not isinstance(traido, str):\n        traido = str(traido)\n\n    if not traido:\n        return material\n\n    if traido in material:\n        return material\n\n    return material + traido",
+  "vigia": "vigias/test_vigia_el_pedido_del_obrero_va_al_mostrador.py (los cinco casos) y siguen verdes vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py, vigias/test_vigia_el_mostrador_salva_la_vuelta.py y vigias/test_vigia_el_material_trae_la_pieza_pedida.py",
+  "puede_danar": [
+   "arnes/mostrador.py",
+   "arnes/asignador.py",
+   "arnes/revisor_de_programa.py",
+   "cuerpo/obrero.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "revisor_de_programa.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "Cumple el diagnóstico sin introducir inventos ni romper vecinos."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19595 a 11140 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 25564 a 14126 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 25602 a 14146 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

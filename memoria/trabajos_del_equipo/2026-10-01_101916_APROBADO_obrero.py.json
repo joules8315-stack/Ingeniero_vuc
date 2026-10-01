@@ -1,0 +1,45 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "Falta la funcion pedido_del_obrero_al_mostrador en cuerpo/obrero.py; hay que escribirla junto a material_con_lo_que_falta copiando el criterio de la pieza hermana.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "material_con_lo_que_falta",
+  "texto_viejo": "def material_con_lo_que_falta(material, faltantes, archivo, raiz):",
+  "texto_nuevo": "def pedido_del_obrero_al_mostrador(propuesta, material, raiz):\n    # La llamara el tramo de cuerpo/obrero.py que hoy mira si la propuesta trae la marca de\n    # que no encontro algo Y su pregunta obligatoria (renglon 1537), con ese pedido ya en la mano.\n    # En esta ronda solo se deja escrita y lista; el enganche va en la ronda siguiente.\n    try:\n        from arnes.mostrador import atender, lo_que_pide\n\n        peticiones = lo_que_pide(propuesta)\n        if not peticiones:\n            return material\n\n        traido = atender(peticiones, raiz)\n        if not traido:\n            return material\n\n        bloques = []\n        for bloque in str(traido).split(\"LO QUE PEDISTE: \"):\n            cuerpo = bloque.strip()\n            if not cuerpo:\n                continue\n            if \"NO_ENCONTRADO\" in cuerpo:\n                continue\n            bloques.append(\"LO QUE PEDISTE: \" + cuerpo)\n\n        utiles = [b for b in bloques if b not in material]\n        if not utiles:\n            return material\n\n        return material + \"\\n\\nLO QUE PEDISTE, ATENDIDO POR EL MOSTRADOR\\n\" + \"\\n\".join(utiles)\n    except Exception:\n        return material\n\n\ndef material_con_lo_que_falta(material, faltantes, archivo, raiz):",
+  "cambios": [],
+  "cambio": "Anadir la funcion pedido_del_obrero_al_mostrador justo antes de material_con_lo_que_falta, copiando el import dentro de la funcion, el titulo con dos saltos y el criterio de bloques/descarte de la pieza hermana.",
+  "codigo": "def pedido_del_obrero_al_mostrador(propuesta, material, raiz):\n    # La llamara el tramo de cuerpo/obrero.py que hoy mira si la propuesta trae la marca de\n    # que no encontro algo Y su pregunta obligatoria (renglon 1537), con ese pedido ya en la mano.\n    # En esta ronda solo se deja escrita y lista; el enganche va en la ronda siguiente.\n    try:\n        from arnes.mostrador import atender, lo_que_pide\n\n        peticiones = lo_que_pide(propuesta)\n        if not peticiones:\n            return material\n\n        traido = atender(peticiones, raiz)\n        if not traido:\n            return material\n\n        bloques = []\n        for bloque in str(traido).split(\"LO QUE PEDISTE: \"):\n            cuerpo = bloque.strip()\n            if not cuerpo:\n                continue\n            if \"NO_ENCONTRADO\" in cuerpo:\n                continue\n            bloques.append(\"LO QUE PEDISTE: \" + cuerpo)\n\n        utiles = [b for b in bloques if b not in material]\n        if not utiles:\n            return material\n\n        return material + \"\\n\\nLO QUE PEDISTE, ATENDIDO POR EL MOSTRADOR\\n\" + \"\\n\".join(utiles)\n    except Exception:\n        return material",
+  "vigia": "vigias/test_vigia_el_pedido_del_obrero_va_al_mostrador.py (los cinco casos) y las tres vigias del mostrador y del material que deben seguir verdes.",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "arnes/mostrador.py",
+   "todas las rondas del equipo"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La función requerida se añadió correctamente, cumple el contrato y no rompe nada."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19540 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 27646 a 15195 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "el pasillo recorto el encargo de 27705 a 15224 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

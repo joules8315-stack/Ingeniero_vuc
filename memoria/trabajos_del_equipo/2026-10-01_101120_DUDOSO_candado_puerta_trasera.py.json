@@ -1,0 +1,62 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La pieza arnes/candado_puerta_trasera.py es nueva y nadie la llama; hay que engancharla donde pasan las demas llamadas, pero el material no trae el llamador real ni sus lineas exactas.",
+  "archivo": "arnes/candado_puerta_trasera.py",
+  "funcion": "documento_de_proyecto_puede_pasar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO: el material no trae el archivo llamador real ni sus lineas exactas donde deberia engancharse la pieza; sin eso no se puede conectar sin inventar.",
+  "codigo": "",
+  "vigia": "Una prueba que llame al llamador real y compruebe que arnes/candado_puerta_trasera.py se ejecuta (prueba roja antes del arreglo, verde despues, y sabotaje que la vuelva a poner roja).",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_cierre.py",
+   "arnes/candado_buzon.py",
+   "arnes/candado_commit.py",
+   "arnes/candado_companero.py",
+   "arnes/candado_nace_enganchada.py"
+  ],
+  "preguntas": [
+   "Cual es el archivo llamador real y cuales son sus lineas exactas donde pasan las demas llamadas, para enganchar ahi arnes/candado_puerta_trasera.py?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "candado_buzon.py",
+   "candado_commit.py",
+   "candado_companero.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "No repara nada: entrega codigo vacio, cambios vacios y texto_viejo/texto_nuevo vacios, asi que la pieza sigue huerfana y el problema sigue abierto",
+   "El campo puede_danar lista seis archivos (arnes/autorizacion.py, candado_cierre.py, candado_buzon.py, candado_commit.py, candado_companero.py, candado_nace_enganchada.py) que NO aparecen en el material: los tiene de memoria, no medidos",
+   "El campo vigia es la INTENCION de una prueba ('una prueba que llame al llamador real...'), no una prueba escrita; no nace roja porque no existe"
+  ],
+  "riesgo_vecinos": [
+   "Ninguno: no se toco ningun archivo, asi que no se rompio nada",
+   "El diagnostico se apoya en el encabezado de la pieza, que si viene en el material, asi que no es inventado"
+  ],
+  "que_falta": [
+   "El archivo llamador real y sus lineas exactas: es justo lo que el encargo pedia pedir si faltaba, y falta",
+   "Todo el metodo (prueba roja, enganche, sabotaje) queda pendiente de esa respuesta",
+   "Verificacion de la regla vigente de documentos libres que el encargo menciona antes de conectar, para no bloquear trabajo autorizado"
+  ],
+  "resumen_para_el_jefe": "El obrero no invento nada y se paro correctamente a pedir el archivo que llama a la pieza, pero no repara: hay quearle el llamador real y sus lineas exactas y devolverlo al trabajo."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 21662 a 12850 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 22565 a 14361 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "el pasillo recorto el encargo de 22624 a 14380 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "el pasillo recorto el encargo de 22683 a 14400 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}

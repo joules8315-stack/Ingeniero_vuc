@@ -1,0 +1,63 @@
+{
+ "obrero": "gemini4",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "La pieza candado_puerta_trasera.py se reporta como huerfana, lo que indica que fue creada pero no está conectada a ningún llamador real en el flujo del programa.",
+  "archivo": "CONTRATO_LA_PIEZA_SE_ENTREGA_ENTERA.md",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambios": [],
+  "cambio": "Localizar los llamadores reales de candado_puerta_trasera.py y conectarla al control de edición y comandos de terminal. Si no es necesaria, eliminarla.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "Prueba que verifique la conexión de candado_puerta_trasera.py con sus llamadores reales y su correcta integración en el flujo del programa.",
+  "puede_danar": [
+   "candado_puerta_trasera.py",
+   "arnes/copista.py",
+   "skills/",
+   "arnes/reparto.py",
+   "arnes/candado_no_repetir.py",
+   "skills/orden_o_texto_pegado.py",
+   "contratos"
+  ],
+  "preguntas": [
+   "¿Cuál es la ruta completa del archivo candado_puerta_trasera.py?",
+   "¿Cuál es la funcionalidad específica de candado_puerta_trasera.py?",
+   "¿Existe algún otro archivo en el paquete que llame a candado_puerta_trasera.py?",
+   "¿Cuál es la causa raíz por la que candado_puerta_trasera.py se creó sin ser conectada?"
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El encargo pide LOCALIZAR los llamadores reales de candado_puerta_trasera.py y, si hace falta, CONECTARLA al control real. La propuesta NO toca candado_puerta_trasera.py ni busca llamadores: solo añade texto doctrinal a un contrato. No repara el diagnostico.",
+   "El texto_viejo citado ('Una pieza nueva se crea SOLO si es estrictamente necesaria...') SÍ aparece en el material, pero el texto_nuevo se inserta como 'Regla 5' cuando en el contrato la Regla 5 ya existe ('Con autorizacion') y la Regla 6 ya cubre 'NACE CONECTADA O NO NACE'. Duplica/renumera una ley ya existente en el mismo archivo.",
+   "La 'Regla 5 — Conexion al control real' que propone ya esta legislada en la Regla 6 del propio contrato ('nada puede crearse y quedar huerfano', 'cero llamadas = trabajo sin terminar'). Añadirla otra vez no arregla la pieza huerfana, solo engorda la ley.",
+   "El vigia propuesto ('una prueba que verifique que candado_puerta_trasera.py tiene un llamador real') es una promesa, no una prueba: no dice como se cuenta, ni donde, ni con que comando. No cumple la Regla 6.1 ('se cuenta, no se promete').",
+   "No hay evidencia literal de la causa de la huerfania (quien deberia llamarla, donde esta el flujo, por que no la llama). El encargo pide 'determinar la causa con evidencia literal'; la propuesta no la trae."
+  ],
+  "riesgo_vecinos": [
+   "CONTRATO_CREAR_PIEZA_NUEVA.md: duplicar la Regla 5 y solapar con la Regla 6 puede descuadrar la numeracion y las referencias cruzadas del contrato.",
+   "CONTRATO_ENCHUFAR_UNA_PIEZA_DORMIDA.md: la propuesta invade su materia (conectar piezas) sin tocar ese contrato, dejando dos leyes diciendo lo mismo en sitios distintos."
+  ],
+  "que_falta": [
+   "Localizar en el codigo los llamadores reales de candado_puerta_trasera.py (o demostrar que no los tiene) con evidencia literal.",
+   "Si hace falta: conectarla al control real de edicion y comandos de terminal (codigo, no prosa).",
+   "Si no hace falta: demostrarlo con evidencia y proponer su eliminacion.",
+   "Un vigia concreto y ejecutable que cuente llamadas reales (no comentarios) a la pieza."
+  ],
+  "resumen_para_el_jefe": "La propuesta no repara nada: en vez de buscar y conectar candado_puerta_trasera.py, añade una regla doctrinal que ya existe (Regla 6 del propio contrato) y deja la pieza huerfana intacta. Rechazar y pedir la conexion real con evidencia."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19584 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "el pasillo recorto el encargo de 20131 a 11416 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "el revisor de programa freno antes de pagar la revision: EL TEXTO VIEJO NO ESTA EN EL ARCHIVO: lo que se dice cambiar no existe tal cual. Seguramente se adivino lo que hay mas alla del pedazo que se mando. Hay que pedir el archivo completo antes de proponer",
+  "Gemini 2.5 flash-lite dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}
