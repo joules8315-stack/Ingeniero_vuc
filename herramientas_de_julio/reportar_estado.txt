@@ -1,0 +1,116 @@
+# -*- coding: utf-8 -*-
+"""REPORTAR ESTADO: junta el estado del bucle en UN archivo y lo sube a la rama claude/estado-del-bucle.
+
+Autorizado por Julio el 2026-10-02 ("si, subelo y reparalo"): asi el que repara lee la causa real sin que Julio copie nada.
+Sube SOLO: conteo de ordenes, las fallidas/corriendo con su nota, y el final de los ultimos archivos de salida.
+No sube codigo del proyecto. Las lineas que parezcan llaves o claves se tachan antes de subir.
+No toca la carpeta, la rama ni el indice de Julio: arma el commit en una carpeta temporal y lo empuja de ahi.
+Nunca lanza error hacia fuera: si no puede subir, lo dice en una linea y termina bien.
+Uso (desde C:\\Ingeniero_VUC):  python reportar_estado.py
+"""
+import glob
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+from collections import Counter
+from datetime import datetime
+
+RAIZ = os.getcwd()
+RAMA = "claude/estado-del-bucle"
+SECRETO = re.compile(r"(sk-[A-Za-z0-9_\-]{12,}|AIza[0-9A-Za-z_\-]{20,}|gsk_[A-Za-z0-9]{12,}|ghp_[A-Za-z0-9]{20,}|"
+                     r"(api[_-]?key|token|secret|password|passwd|authorization|bearer)\s*[:=]\s*\S+)", re.I)
+
+
+def limpio(texto):
+    return "\n".join(("[linea tachada: parecia una clave]" if SECRETO.search(l) else l) for l in str(texto).splitlines())
+
+
+def cola(ruta, n=40):
+    try:
+        with open(ruta, encoding="utf-8", errors="replace") as f:
+            return limpio("\n".join(f.read().splitlines()[-n:]))
+    except OSError as e:
+        return "(no se pudo leer: %s)" % e
+
+
+def armar():
+    L = []
+    L.append("ESTADO DEL BUCLE  %s  (PC de Julio)" % datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    try:
+        with open(os.path.join(RAIZ, "memoria", "ORDENES.json"), encoding="utf-8") as f:
+            ordenes = json.load(f)
+    except Exception as e:
+        ordenes = []
+        L.append("NO SE PUDO LEER ORDENES.json: %s" % e)
+    c = Counter(str(o.get("estado", "?")) for o in ordenes)
+    L.append("\nORDENES: " + ", ".join("%s=%d" % (k, v) for k, v in sorted(c.items())))
+    for est in ("corriendo", "fallida"):
+        L.append("\n== %s ==" % est.upper())
+        for o in ordenes:
+            if str(o.get("estado")) == est:
+                L.append("- %s | paso_fallido=%s | fallos_seguidos=%s | depende=%s" % (
+                    str(o.get("id"))[:70], o.get("paso_fallido", ""), o.get("fallos_seguidos", ""), str(o.get("depende", ""))[:80]))
+                if o.get("nota"):
+                    L.append("    nota: " + limpio(str(o["nota"])[:400]).replace("\n", " "))
+    try:
+        rc = json.load(open(os.path.join(RAIZ, "memoria", ".rojas_conocidas.json"), encoding="utf-8"))
+        L.append("\nLINEA BASE: %d vigias rojas conocidas" % len(rc))
+    except Exception:
+        L.append("\nLINEA BASE: NO EXISTE memoria/.rojas_conocidas.json")
+    L.append("\n== ULTIMA VUELTA DEL BUCLE (final de la ventana) ==")
+    L.append(cola(os.path.join(RAIZ, "memoria", ".ultima_vuelta.txt"), 60))
+    salidas = sorted(glob.glob(os.path.join(RAIZ, "memoria", ".salida_tarea_*.txt")), key=os.path.getmtime, reverse=True)[:4]
+    for s in salidas:
+        L.append("\n== SALIDA %s  (%s) ==" % (os.path.basename(s), datetime.fromtimestamp(os.path.getmtime(s)).strftime("%H:%M:%S")))
+        L.append(cola(s, 40))
+    tr = sorted(glob.glob(os.path.join(RAIZ, "memoria", "trabajos_del_equipo", "*.json")), key=os.path.getmtime, reverse=True)[:8]
+    L.append("\n== ULTIMOS TRABAJOS DEL EQUIPO ==")
+    for t in tr:
+        L.append("%s  %s" % (datetime.fromtimestamp(os.path.getmtime(t)).strftime("%H:%M:%S"), os.path.basename(t)))
+    return "\n".join(L) + "\n"
+
+
+def subir(texto):
+    env = dict(os.environ, GIT_TERMINAL_PROMPT="0")
+    for k in ("GIT_INDEX_FILE", "GIT_DIR", "GIT_WORK_TREE", "GIT_PREFIX", "GIT_OBJECT_DIRECTORY"):
+        env.pop(k, None)
+    url = subprocess.run(["git", "remote", "get-url", "origin"], cwd=RAIZ, capture_output=True, text=True, timeout=30, env=env).stdout.strip()
+    if not url:
+        return "NO SE SUBIO: esta carpeta no tiene remoto 'origin'"
+    tmp = tempfile.mkdtemp(prefix="vuc_estado_")
+    try:
+        def g(*a, tope=90):
+            return subprocess.run(["git"] + list(a), cwd=tmp, capture_output=True, text=True, timeout=tope, env=env)
+        g("init", "-q")
+        g("config", "user.email", "bucle@ingeniero.local")
+        g("config", "user.name", "Bucle del Ingeniero")
+        with open(os.path.join(tmp, "ESTADO_DEL_BUCLE.txt"), "w", encoding="utf-8") as f:
+            f.write(texto)
+        g("add", "ESTADO_DEL_BUCLE.txt")
+        g("commit", "-q", "-m", "estado del bucle " + time.strftime("%Y-%m-%d %H:%M:%S"))
+        r = g("push", "-q", "--force", url, "HEAD:refs/heads/" + RAMA)
+        if r.returncode != 0:
+            return "NO SE SUBIO: " + (r.stderr or r.stdout).strip().splitlines()[-1][:200] if (r.stderr or r.stdout).strip() else "NO SE SUBIO (git push fallo)"
+        return "ESTADO SUBIDO a la rama %s" % RAMA
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def main():
+    try:
+        if not os.path.isfile(os.path.join(RAIZ, "memoria", "ORDENES.json")):
+            print("NO SE SUBIO: no estoy en C:\\Ingeniero_VUC")
+            return 0
+        print(subir(armar()))
+    except Exception as e:
+        print("NO SE SUBIO (%s)" % str(e)[:150])
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
