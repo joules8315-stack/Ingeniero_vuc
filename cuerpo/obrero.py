@@ -1028,6 +1028,13 @@ def _claude_directo(prompt):
     return r.stdout
 
 
+def tope_del_pasillo(capacidades):
+    """Devuelve la capacidad MAYOR de la fila: el pasillo se recorta a la medida del cerebro
+    que mas aguanta, no del mas pequeno (medido 2026-10-01: recortar al minimo quitaba en 27 de
+    34 ordenes el codigo que si habia llegado)."""
+    return max(capacidades)
+
+
 def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False,
                           clase="", vuelta=0):
     """Pregunta respetando el orden de Julio: Qwen -> Gemini -> local, y VOLVIENDO a Qwen
@@ -1090,7 +1097,7 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
         _capas = [cuotas._capacidad(q) for q in turnos]
         _capas = [c for c in _capas if c > 0]
         if _capas:
-            _tope_pasillo = min(_capas)
+            _tope_pasillo = tope_del_pasillo(_capas)
             if len(prompt) > _tope_pasillo:
                 _antes = len(prompt)
                 _recortado = asignador.recortar_prompt(prompt, _tope_pasillo)
