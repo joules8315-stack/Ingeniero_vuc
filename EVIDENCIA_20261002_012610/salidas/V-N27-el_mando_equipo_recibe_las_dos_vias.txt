@@ -1,0 +1,19 @@
+SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).
+Al obrero le llega el encargo de ANALISTA: escribe el documento entero.
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-01_221916_RECHAZADO_test_vigia_el_mando_equipo_recibe_las_dos_vias.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : GPT-OSS 120B (Groq) no le cabe (37391 letras, aguanta 19042) -> se le salta
+  aviso       : GPT-OSS 120B (Groq) no le cabe (37844 letras, aguanta 19042) -> se le salta
+  aviso       : GPT-OSS 120B (Groq) no le cabe (38217 letras, aguanta 19042) -> se le salta
+  diagnostico : El material no trae el comando 'equipo' ni su firma real; solo trozos de cuerpo/obrero.py, asi que no puedo atar la prueba a la via real sin leer el archivo del mando.
+  toca        : vigias/test_vigia_el_mando_equipo_recibe_las_dos_vias.py funcion ?
+  confianza   : baja
+  VEREDICTO   : RECHAZADO
+  fallo       : Nace roja por TypeError, no por un assert. El encargo (COMO SE REPARA) admite solo dos formas de rojo: un assert que falle, o el error de importar justamente la pieza que falta. Aqui el modulo SI existe y lo que falta son los parametros, asi que la llamada `_obrero.trabajar(..., guia=..., codigo=...)` revienta con `TypeError: unexpected keyword argument 'guia'`: eso es un ERROR de pytest, no el assert pedido, y el propio docstring lo disfraza de 'el assert que falta'.
+  fallo       : El assert de contenido (`'GUIA DE PRUEBA' in visto` y `'def pieza' in visto`) excede lo que la ley exige y deja la prueba en rojo aunque la reparacion sea correcta. La ley pide que el mando acepte la guia y el codigo como dos archivos distintos y se los pase al obrero; pasar las RUTAS (`str(guia)`, `str(codigo)`) cumple la ley igual, y en ese caso el espia solo vera 'guia.md' y 'pieza.py' en su texto, no el contenido: assert falla sobre una implementacion valida.
+  fallo       : Los dos asserts `espia.recibio_guia()` / `recibio_codigo()` atan la prueba a una forma concreta de la llamada mando->obrero (kwargs literales `guia=` y `codigo=`). Si el mando real pasa esas dos vias posicionalmente o dentro del paquete, la prueba jamas pasa aunque la pieza este reparada. Es el mismo error que el diagnostico le reprocha a la prueba anterior (exigir una firma en vez de ejecutar lavia real), repetido un nivel mas abajo.
+  fallo       : Los dobles fijan a ciegas el contrato de retorno del generador (diagnostico/archivo/funcion/texto_viejo/texto_nuevo/codigo/confianza) y del auditor (veredicto/invento_algo/... ). Si esas esquemas no son los reales, `trabajar` revienta en su propia validacion antes de llegar al assert: la prueba queda roja/error por motivos que no son la pieza a reparar, y no hay forma de distinguir eso del fallo real.
+  resumen     : La prueba esta construida sobre la firma y los esquemas de retorno que la reparacion todavia no ha definido, asi que falla hoy por un TypeError (no por el assert que exige el encargo) y seguira fallando aunque la reparacion sea correcta si el mando pasa las rutas o usa otra llamada; hay que releer cuerpo/obrero.py y atar la prueba a la via real, no a una firma supuesta.
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.

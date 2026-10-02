@@ -1,0 +1,18 @@
+SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).
+Al obrero le llega el encargo de ANALISTA: escribe el documento entero.
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-01_223203_RECHAZADO_test_vigia_el_perito_es_gratis.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : vueltas_dadas: 4
+  diagnostico : Falta la prueba que ejecute la funcion del perito y verifique el orden gratis (Big Pickle, Grok 4.7, Codex), el mismo pedido/esquema, que Claude no se llame por defecto y que sin respuesta gratis el expediente quede sin leer; el archivo vigias/test_vigia_el_perito_es_gratis.py no existe.
+  toca        : vigias/test_vigia_el_perito_es_gratis.py funcion ?
+  confianza   : media
+  VEREDICTO   : RECHAZADO
+  *** INVENTO: El centinela `"SIN_LEER"`: el material solo dice «el expediente queda sin leer», no fija ningun valor de retorno; el test asserta `resultado == "SIN_LEER"` en dos sitios.; La firma `funcion(pedido=..., esquema=..., carpeta=...)`: no aparece en ninguna parte del material.; Los atributos de modulo `big_pickle`, `grok`, `codex`, `claude` exigidos por `monkeypatch.setattr` con `hasattr` -> AssertionError: se presupone que la pieza expone esos cuatro nombres.; Los 30 candidatos de modulo/funcion (`cuerpo.perito`, `cuerpo.forense`, `cuerpo.analista`, `cuerpo.ingeniero`, `perito`, `forense` x `llamar_al_perito`, `llama_al_perito`, `pedir_perito`, `consultar_perito`, `perito`) presentados como si fueran la pieza real. -> SE DESCARTA
+  fallo       : El test queda rojo para siempre salvo que la reparacion nombre modulo, funcion y firma EXACTAMENTE como los adivino. Si el modulo real se llama de otro modo, `_cargar_pieza` lanza AssertionError y ya no hay forma de que la prueba pase nunca. Es exactamente el fallo que el propio comentario del obrero dice querer evitar, y sigue igual:6 modulos x 5 funciones no es un contrato, es una loteria.
+  fallo       : Aserta datos que no existen: `resultado == "SIN_LEER"` y `resultado != "SIN_LEER"`. Una implementacion razonable que devuelva None, False o un dict de estado cumple el requisito al pie de la letra y hace fallar la prueba.
+  fallo       : No comprueba la mitad del encargo: «y el bucle sigue». No hay segunda iteracion, ni segundo expediente, ni ninguna asercion de que la funcion devuelve el control y el proceso no aborta. El docstring promete el punto 5 y el codigo no lo hace; el flujo `estado` que el material lista (6 apariciones) no se mira.
+  fallo       : El parcheo de dobles solo engancha si la implementacion llama a esos cuatro nombres como atributos del propio modulo en tiempo de llamada. Si usa `from x import y` dentro de la funcion, una tupla/lista/dict de IAs capturado en import, o un cliente con metodos, el doble no se engancha, `registro` queda vacio y la prueba se pone roja sin motivo real.
+  resumen     : RECHAZADO: el test ata un contrato que nadie definio (modulo, funcion, firma pedido/esquema/carpeta y el centinela "SIN_LEER"), asi que seguira rojo aunque la reparacion sea correcta, y ademas no comprueba la parte de «el bucle sigue».
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.

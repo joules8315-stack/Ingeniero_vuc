@@ -1,0 +1,19 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-02_000043_RECHAZADO_vecinas.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : GPT-OSS 120B (Groq) no le cabe (30798 letras, aguanta 19042) -> se le salta
+  aviso       : el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.; HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio
+  aviso       : GPT-OSS 120B (Groq) no le cabe (31667 letras, aguanta 19042) -> se le salta
+  diagnostico : En _vecinas_por_stem, cuando un archivo de codigo cambiado no aparece en ninguna vigia se devuelve None (bateria completa) en vez de devolver las vecinas encontradas mas una marca de falta de cobertura y la vigia general si existe; y el docstring de elegir() no explica por que se hace asi ni que el guardado no debe morir por tiempo.
+  toca        : arnes/vecinas.py funcion _vecinas_por_stem y elegir
+  confianza   : baja
+  PREGUNTA_REQUERIDA: Como se llama exactamente la vigia general del proyecto y donde vive (ruta) para poder anadirla?; Que texto exacto debe llevar la marca de falta de cobertura para que el guardia la reconozca y no la trate como vigia a correr?; Existe ya una funcion _vigia_general en arnes/vecinas.py o hay que crearla? Si hay que crearla, que debe devolver exactamente?
+  VEREDICTO   : RECHAZADO
+  *** INVENTO: `_vigia_general(raiz)`: se llama en el bucle pero no se define en ningun cambio ni aparece en el material; el propio obrero pregunta en 'preguntas' si existe (confianza 'baja'), o sea que se usa un nombre sin verificar.; `_MARCA_FALTA_COBERTURA + stem`: constante usada para construir la marca pero no definida en ningun cambio ni en el bloque `codigo`; el obrero admite no saber que texto exacto la reconoce. -> SE DESCARTA
+  fallo       : Rompe el contrato declarado de la funcion: `elegir()` dice devolver 'una lista ordenada sin repetidos de rutas (con barras /) de vigias a correr', y el parche mete ahi `_MARCA_FALTA_COBERTURA + stem`, que no es una ruta existente. No hay ningun filtrado posterior en el parche, y `arnes/guardia_de_guardado.py` esta prohibido tocarlo en esta orden, asi que ningun consumidor sabe descartar la marca.
+  fallo       : Consecuencia grave relative a la ley principal ('SIN AFLOJAR EL GUARDIA'): la propia lista de vecinos incluye `test_vigia_una_vigia_vieja_que_no_carga_frena.py`, o sea que una vigia que no carga FRENA el guardado. Inyectar una ruta inexistente en la lista a correr puede precisely provocar eso y bloquear todas las guardas, que es justo lo contrario de lo pedido.
+  fallo       : El docstring nuevo afirma 'Solo devuelve None si no hay ninguna vigia que cubra nada', pero el bloque `codigo` no tiene NINGUN `return None`: la funcion ya nunca devuelve None. Docstring que describe un comportamiento que el codigo no tiene.
+  fallo       : La doc de la funcion nueva dice 'Solo devuelve None...' y a la vez mantiene el tipo `list[str] | None`, dejando contrato y firma incoherentes con el cuerpo.
+  resumen     : Rechazado: el parche depende de dos simbolos que nadie define ni puede probar (`_vigia_general` y `_MARCA_FALTA_COBERTURA`) y mete una marca que no es una ruta de vigia dentro de la lista que el guardia va a correr, cuando el propio material dice que una vigia que no carga frena el guardado, o sea justo el contrario de 'sin aflojar el guardia'.
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.

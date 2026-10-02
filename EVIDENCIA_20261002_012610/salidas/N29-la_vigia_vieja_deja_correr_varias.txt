@@ -1,0 +1,18 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-01_222304_RECHAZADO_test_vigia_el_pit_corre_una_tarea_a_la_vez.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.; DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 pieza(s) que si estaban 
+  aviso       : el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.; DESAPARECE LO QUE YA ESTABA: el texto nuevo se lleva por delante 1 pieza(s) que si estaban 
+  aviso       : el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.
+  diagnostico : La vigia exige que capataz.bucle corra una sola tarea a la vez (en_paralelo=1), lo contrario de la ley de multitarea del 2026-09-28, que pide que dos ordenes de la MISMA pieza nunca corran juntas.
+  toca        : vigias/test_vigia_el_pit_corre_una_tarea_a_la_vez.py funcion test_el_pit_corre_una_tarea_a_la_vez
+  confianza   : media
+  PREGUNTA_REQUERIDA: La ley dice que dos ordenes de la MISMA pieza nunca corran juntas, pero no dice como se identifica la pieza ni como se comprueba en capataz.bucle. ¿Basta con exigir que en_paralelo != 1, o hay que comprobar ademas que el bucle agrupa por pieza?; El material no trae el codigo de cuerpo/capataz.bucle, asi que no se puede verificar que exista un mecanismo de agrupacion por pieza. ¿Se debe pedir ese archivo para comprobar la vigia contra el codigo real?
+  VEREDICTO   : RECHAZADO
+  *** INVENTO: La 'ley de la multitarea del 2026-09-28 (maxima prioridad de Julio)' que cita como fundamento para invertir la vigia. No aparece en el material proporcionado. -> SE DESCARTA
+  fallo       : Se apoya en una ley/instruccion que NO existe en el material para justificar el cambio. Afirma que esa ley derogo la vigia, cuando el unico fundamento visible es el encargo del paquete.
+  fallo       : Invierte la asercion (pasa de exigir en_paralelo==1 a exigir en_paralelo!=1) sin que el material demuestre que capataz.bucle agrupa ordenes por pieza. La exigencia logica ('dos ordenes de la MISMA pieza nunca corren juntas') no se traduce de forma valida solo con !=1, segun lo visto.
+  fallo       : Cambia el nombre de la funcion de test (test_el_pit_corre_una_tarea_a_la_vez -> test_dos_ordenes_de_la_misma_pieza_no_corren_juntas) mas alla de lo estrictamente necesario para cumplir el encargo, sin prueba en material de que ese nuevo nombre sea requerido o compatible con el ecosistema.
+  resumen     : Rechazado: inventa una ley inexistente para invertir la vigia y propone !=1 sin demostrar agrupacion por pieza; renombre innecesario con riesgo a vecinos.
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.

@@ -1,0 +1,18 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-01_235600_RECHAZADO_guardia_de_guardado.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : GPT-OSS 120B (Groq) no le cabe (39325 letras, aguanta 19042) -> se le salta
+  aviso       : GPT-OSS 120B (Groq) no le cabe (41216 letras, aguanta 19042) -> se le salta
+  aviso       : GPT-OSS 120B (Groq) no le cabe (41601 letras, aguanta 19042) -> se le salta
+  diagnostico : El guardia frena por cualquier roja ya guardada en el vecindario en vez de comparar contra el color de referencia de la corrida anterior, y el tope de 600 s corta la bateria completa que tarda 1.110 s.
+  toca        : arnes/guardia_de_guardado.py funcion rojas_que_frenan
+  confianza   : media
+  PREGUNTA_REQUERIDA: PREGUNTA_REQUERIDA: el tope de 1800 segundos es coherente con los 1.110 s medidos de la bateria completa, pero el contrato pide que el tope de fuera sea mayor que la suma de los topes de dentro; falta confirmar si 1800 cubre esa suma o si hay que correr solo las vecinas de verdad.
+  VEREDICTO   : RECHAZADO
+  fallo       : La comprobacion de 'verde que desaparece' NO detecta desapareciones: `verdes_ahora = [a for a in verdes_de_antes if a not in archivos_rojos]` son las verdes que SIGUEN verdes, y `verdes_que_desaparecen` devuelve las que estan en archivos_rojos, o sea verde->rojo otra vez, que es duplicado de rojas_que_frenan. Una verde que desaparece de verdad (borrada, renombrada, no recolectada) nunca aparece en archivos_rojos y por tanto nunca frena: la segunda mitad del encargo ('frena si desaparece una verde') no esta implementada, solo documentada en el docstring.
+  fallo       : La actualizacion del color de referencia envenena el estado: `{a: ('roja' if a in archivos_rojos else 'verde') for a in set(color_de_antes) | set(archivos_rojos)}` marca como 'verde' toda roja que existia antes pero no se corrio esta vez (esperando, declarada, no recolectada). En la corrida siguiente esa prueba vuelve a estar roja, se lee como 'antes verde' y frena un trabajo bueno. Es exactamente el fallo que el encargo quiere eliminar, introducido por la reparacion.
+  fallo       : La escritura de 'primera medida' guarda solo `{a: 'roja' for a in archivos_rojos}` y ninguna verde, con lo cual en la segunda corrida `verdes_de_antes` es lista vacia y el chequeo de verdes queda inerte y silencioso.
+  fallo       : El tope pasa de 600 a 1800 sin cumplir lo que el propio material exige: la regla 5 que se cita pide que el tope de fuera sea mayor que la SUMA de los topes de dentro, no mayor que 1.110. La propuesta lo admite en PREGUNTA_REQUERIDA y aun asi lo aplico, asi que puede seguir cortando por tiempo igual que antes.
+  resumen     : Reparacion rechazada: el chequeo de 'verde desaparecida' esta mal construido y solo repite el caso rojo, y la forma de guardar el color de referencia marcara como verdes pruebas que nunca se corrieron, con lo que la proxima corrida frenara trabajos buenos; ademas sube el tope a 1800 sin cumplir la regla del propio contrato que exige que el tope de fuera supere la suma de los de dentro.
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.

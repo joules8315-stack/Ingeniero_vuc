@@ -1,0 +1,17 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-02_004706_RECHAZADO_revisor_de_programa.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : GPT-OSS 120B (Groq) no le cabe (32497 letras, aguanta 19042) -> se le salta
+  aviso       : el revisor de programa freno antes de pagar la revision: USA SIMULADOR (Mock) EN VEZ DE LO REAL: una prueba con simuladores no prueba la pieza de verdad.
+  aviso       : GPT-OSS 120B (Groq) no le cabe (33587 letras, aguanta 19042) -> se le salta
+  diagnostico : Falta en arnes/revisor_de_programa.py la regla que caza pruebas test_ con return con valor y sin assert, y la que caza pruebas saltadas con unittest.SkipTest o pytest.skip alegando que la pieza no existe.
+  toca        : arnes/revisor_de_programa.py funcion revisar
+  confianza   : media
+  VEREDICTO   : RECHAZADO
+  fallo       : 2e acepta cualquier mensaje de skip que contenga "falta", "pendiente" o "no esta": un pytest.skip("el servicio no esta disponible") o ("falta de red en windows") se reporta como PRUEBA SALTADA. El encargo pedia mensaje que hable de que LA PIEZA NO EXISTE; la lista de palabras implementa otra cosa y produce falsos positivos que empujan a tocar pruebas saltadas por motivos de entorno.
+  fallo       : Todo el bloque va envuelto en `except Exception: pass` y tambien los ast.parse. Si falta `import ast`, `import textwrap`, o el helper `es_un_pedazo` no existe, el NameError se traga en silencio y las reglas 2d y 2e NO se disparan jamas: la reparacion queda puesta, pasa revision y no caza nada. Eso es exactamente el fallo que pretendia arreglar.
+  fallo       : El silencio por texto ilegible se mezcla con el silencio por error de codigo: no hay forma de distinguir "no se puede leer" de "esta roto".
+  fallo       : El fragamento ancla2d/2e en 8 espacios justo despues de `_despues_c = _antes_c.replace(viejo, nuevo, 1)`, que esta a 20 espacios dentro de `if viejo in _antes_c:`. Cierra los dos if, asi que sintacticamente aguanta, pero solo si el fragmento coincide literal con el archivo; el material entregado no lo trae y no se puede confirmar.
+  resumen     : Logicamente medio correcta, pero se aprueba con reparo: la lista de palabras de 2e marca como saltadas pruebas validas por entorno y los except anchos convierten cualquier error de codigo en silencio, dejando reglas que no cazan nada sin que se note.
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.

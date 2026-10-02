@@ -1,0 +1,17 @@
+SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).
+Al obrero le llega el encargo de ANALISTA: escribe el documento entero.
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-01_221426_DUDOSO_test_vigia_prueba_previa.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : vueltas_dadas: 1
+  diagnostico : Falta la pieza que reproduce sin IA las etapas del encargo (paquete, material del escritor, prompt, recorte al tope y veredicto por etapa sobre el codigo nombrado), y hay que crear la prueba pytest que nazca roja hasta que exista.
+  toca        : vigias/test_vigia_prueba_previa.py funcion ?
+  confianza   : media
+  VEREDICTO   : DUDOSO
+  fallo       : Los dos asserts que deberian certificar el fondo son tautologicos: ('si' in bajo or 'no' in bajo or 'falta' in bajo or 'esta' in bajo) y ('no cabe' or 'no llega' or 'recortado' or 'falta' or 'no') se cumplen con cualquier texto en espanol ('sigue' contiene 'si', 'no' esta en casi toda frase). Una pieza que devuelva un parrafo fijo nombrando las cuatro etapas pasaria sin comprobar nada.
+  fallo       : El tope de 10 caracteres de test_con_tope_pequeno_avisa_que_el_codigo_no_cabe no se contrasta con nada: el informe se aplana a texto con _texto_informe, asi que no se mira ni el tamano del material del escritor ni el del recorte. El 'recorte al tope', que es la cuarta etapa del encargo, queda sin verificar.
+  fallo       : La pieza se localiza por adivinanza: 8 nombres de modulo y 6 de funcion. Una implementacion correcta llamada p.ej. cuerpo/vista_previa.py con main() deja la prueba roja para siempre, incumpliendo la ley del contrato 'pasar cuando la reparacion este hecha'.
+  fallo       : _llamar reintenta ante cualquier TypeError, incluidos los lanzados dentro del cuerpo de la funcion: puede enmascarar un fallo real y validar el resultado de una llamada con argumentos que no son los correctos.
+  resumen     : El archivo esta bien placed y nace rojo de verdad, pero sus dos asserts clave los cumple cualquier texto en espanol y la pieza se busca entre 8 nombres inventados, asi que la prueba no certifica lo que el encargo pide y puede quedarse roja para siempre; hay que atarla a un nombre real y anadir la prueba negativa del codigo ausente y la del tope.
+
+EL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.

@@ -1,0 +1,19 @@
+SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).
+Al obrero le llega el encargo de ANALISTA: escribe el documento entero.
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-02_001749_RECHAZADO_test_vigia_29_f005530.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : GPT-OSS 120B (Groq) no le cabe (38586 letras, aguanta 19042) -> se le salta
+  aviso       : GPT-OSS 120B (Groq) no le cabe (39038 letras, aguanta 19042) -> se le salta
+  aviso       : GPT-OSS 120B (Groq) no le cabe (39253 letras, aguanta 19042) -> se le salta
+  diagnostico : Falta la vigia que comprueba que el archivo nombrado en el problema se entrega completo (hasta TOPE_LINEAS) y no recortado a 80 renglones, y hay que escribirla sin inventar marcadores ni estructura interna.
+  toca        : vigias/test_vigia_29_f005530.py funcion ?
+  confianza   : alta
+  VEREDICTO   : RECHAZADO
+  fallo       : La vigia fabrica el contrato publico de cerebro/router.py en vez de leerlo. Del material solo consta una linea real ('hasta': min(80, ficha.get('lineas', 80) or 80)). La prueba inventa la firma de armar() (dos posicionales + k_trozos=6), que router.grafo.cargar sea una funcion monkeypatcheable, que el grafo sea un dict con 'raiz'/'flujos'/'piezas'/'enlaces'/'resumen', y que la ficha lleve 'boca'/'api'. Si cualquiera de esas suposiciones falla, el test revienta con TypeError/KeyError/AttributeError, y la orden exige explicitamente 'NACER ROJA por un assert que falla (no por un error de sintaxis o de un nombre que no existe)'.
+  fallo       : Las claves del trozo son adivinanzas. Solo 'hasta' y 'lineas' estan confirmadas por el material. 'pieza', 'desde', 'texto', 'trozos' y 'direccion' no aparecen en ninguna parte. Con 'fid' como nombre en el enunciado, es igual de probable que el trozo se llame 'id'/'ficha'/'nombre'. Si la clave esta mal, el assert 'trozo is not None' falla siempre: vigia roja permanente que nunca pasa.
+  fallo       : El test elige el PRIMER trozo de la pieza y le exige desde==1 y hasta==200. Si router reparte un archivo de 200 renglones en varios trozos (k_trozos=6 con una sola pieza larga es justo el caso en que lo haria), el primero no es el completo y el assert queda rojo aunque la reparacion este bien. Es una falsa roja clasica.
+  fallo       : La segunda prueba se sale del encargo y puede fallar con la reparacion CORRECTA: exige que el router entregue algun trozo de un archivo de TOPE_LINEAS+500 renglones (nadie garantiza que no lo omita por no caber) y asegura hasta <= tope asumiendo que el recorte deersion es 80; si TOPE_LINEAS < 80, la orden manda dejar 80 y hasta <= tope es falso para siempre.
+  resumen     : El test inventa la firma de router.armar(), el monkeypatch de grafo.cargar y las claves 'pieza'/'trozos'/'desde' del trozo (solo 'hasta' y 'lineas' estan confirmadas), asi que probablemente muera con TypeError en vez de nascer roja por un assert, o se quede roja para siempre; y la segunda prueba puede fallar con la reparacion correcta. Hay que leer cerebro/router.py antes de escribir la vigia.
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.

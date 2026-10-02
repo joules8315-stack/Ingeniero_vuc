@@ -1,0 +1,17 @@
+SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).
+Al obrero le llega el encargo de ANALISTA: escribe el documento entero.
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-01_222043_DUDOSO_test_vigia_el_contrato_de_copias_temporales_por_orden.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : vueltas_dadas: 1
+  diagnostico : No existe la vigia que exige el contrato CONTRATO_COPIAS_TEMPORALES_POR_ORDEN.md; hay que crearla para que nazca roja por assert (contrato ausente) y pase cuando el contrato exista con las frases y archivos exigidos.
+  toca        : vigias/test_vigia_el_contrato_de_copias_temporales_por_orden.py funcion ?
+  confianza   : alta
+  VEREDICTO   : DUDOSO
+  fallo       : La clausula 'orden ABIERTA' no se cumple: _ordenes_abiertas() recoge cualquier string que acabe en extension de TODO memoria/ORDENES.json, sin mirar si la orden esta abierta o cerrada; una orden cerrada pasa el chequeo y la vigia se relaja justo en el agujero que la clausula pretendia cerrar.
+  fallo       : Test test_cada_archivo_nombrado_existe_o_es_orden_abierta mete una condicion que el encargo NO pide: assert nombrados (el contrato debe nombrar al menos un archivo). Eso puede poner rojo un contrato bien escrito que no nombre rutas, rompiendo 'pasar cuando el contrato este bien escrito'.
+  fallo       : La regex [A-Za-z0-9_./\\-]+\.(ext) puede capturar el token suelto '.md' o '.py' cuando el contrato habla de extensiones en prosa ('archivos .md'), limpio solo quita acentos de puntuacion, no el punto inicial: ese token no existira nunca y la vigia quedara roja por su cuenta.
+  fallo       : test_el_contrato_habla_de_una_sola_via_y_de_multitarea y test_el_contrato_explica_que_la_copia_temporal_se_borra son repeticiones literales de aserciones ya hechas en test_el_contrato_contiene_las_frases_obligatorias: dos tests mas que no anaden cobertura (cambia mas de lo necesario).
+  resumen     : El archivo nuevo esta bien y nace roja por assert como se pidio, pero la vigia acepta ordenes cerradas como si fueran abiertas y se anade una exigencia extra ('el contrato debe nombrar un archivo') que el encargo no pedia; ademas depende de que memoria/ORDENES.json exista y eso el material recortado no deja verificar.
+
+EL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.

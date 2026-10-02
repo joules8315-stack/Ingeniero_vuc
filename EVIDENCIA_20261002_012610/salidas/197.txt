@@ -1,0 +1,15 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-22_093423_APROBADO_puente_codex.py.json
+OBRERO deepseek -> AUDITOR grok47
+  aviso       : se pidio auditar a bigpickle y no esta disponible: reviso None
+  aviso       : bigpickle no contesto: revisa Grok 4.7 (A-45)
+  aviso       : vueltas_dadas: 1
+  diagnostico : En _escribir_salida_arreglada, cuando la salida es un dict con evento y trae additionalContext arriba, se quita de arriba y se pone dentro de hookSpecificOutput solo si este no lo trae ya; si hookSpecificOutput ya trae additionalContext, el de arriba se pierde y nunca queda additionalContext arriba.
+  toca        : arnes/puente_codex.py funcion _escribir_salida_arreglada
+  confianza   : alta
+  VEREDICTO   : APROBADO
+  resumen     : El cambio quita additionalContext de arriba y solo lo copia dentro si hookSpecificOutput no lo trae; no inventa ni toca de mas.
+
+APLICADO en disco (lo escribio el equipo): arnes/puente_codex.py
+GUARDADO AL MOMENTO: guardado en la historia: arnes/puente_codex.py
+LLAVE GUARDADA: se puede escribir en 791 archivo(s) durante 90 min.

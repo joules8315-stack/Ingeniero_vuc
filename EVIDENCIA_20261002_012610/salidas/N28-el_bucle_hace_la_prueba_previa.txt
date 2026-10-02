@@ -1,0 +1,18 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-01_214838_DUDOSO_capataz.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : GPT-OSS 120B (Groq) no le cabe (32973 letras, aguanta 19042) -> se le salta
+  aviso       : GPT-OSS 120B (Groq) no le cabe (33819 letras, aguanta 19042) -> se le salta
+  aviso       : GPT-OSS 120B (Groq) no le cabe (34065 letras, aguanta 19042) -> se le salta
+  diagnostico : El bucle lanza cada orden al equipo sin comprobar antes por programa que el paquete trae el codigo de la pieza, y las ordenes sin codigo se mandan igual a una IA de pago.
+  toca        : cuerpo/capataz.py funcion bucle
+  confianza   : media
+  PREGUNTA_REQUERIDA: El estado 'apartada' con paso 'sin_codigo': ¿lo conoce ya el sistema (marcar_estado y quien lee la lista) o hay que anadirlo? No aparece en el material.; Las ordenes apartadas por 'sin_codigo': ¿se reintentan en otra vuelta (por ejemplo cuando el encargo se corrija o el archivo aparezca) o quedan fuera del bucle para siempre? El material no lo dice.; El motivo 'sin_codigo' como paso_fallido: ¿cuenta para el tope de 3 fallos del mismo tipo en la misma pieza, o queda fuera de ese contador?
+  VEREDICTO   : DUDOSO
+  fallo       : La razon de la comprobacion no es 'sin codigo' sino 'no existe el archivo': la funcion se llama apartar_si_no_llega_el_codigo pero lo que evalua es os.path.isfile, es decir presencia del archivo en disco, no si el codigo llega al equipo. El diagnostico medido (12 de 58 ordenes con pieza .py que no nombran su archivo) encaja con 'falta el archivo', pero el nombre y el motivo escrito ('no existe en el disco y el encargo no nombra su archivo') mezclan dos cosas distintas y el docstring promete algo que el codigo no comprueba.
+  fallo       : El filtro se aplica a la tanda completa con continue cuando la tanda queda vacia: si TODAS las ordenes de la tanda se apartan por sin_codigo, el bucle hace continue y no lanza nada de esa tanda, incluidos los pasos que vienen despues (los que el propio bucle yaProcessing hacia, marcar_estado con paso_fallido). Es un cambio de comportamiento mas alla de 'no gastar la llamada': se salta el resto de la tanda, no solo la orden sin codigo.
+  fallo       : marcar_estado se llama DENTRO de apartar_si_no_llega_el_codigo y otra vez fuera, para las que pasan. La orden apartada ya no se lanza, pero sigue dentro de la variable 'tanda' original hasta que la lista comprehension la filtra; no hay ninguna reentrega ni cola de reintentos para el estado 'apartada', que el propio obrero admite que el material no define.
+  fallo       : El paso_fallido que se graba es el literal 'sin_codigo', no el motivo completo, y marcar_estado se invoca con 4 posicionales (id, 'apartada', 'sin_codigo', fallos_seguidos). Si el estado 'apartada' no esta en la lista de estados que marcar_estado acepta, la llamada revienta; el propio obrero lo pregunta en 'preguntas' y aun asi lo escribe como si fuera resoluble.
+  resumen     : El cambio hace lo pedido en la letra y no inventa nada, pero comprueba si el ARCHIVO esta en disco, no si el codigo LLEGA, graba un estado 'apartada' que nadie define y deja esas ordenes fuera del bucle para siempre sin reintento: no lo apruebo sin confirmar el estado y la cola de reintentos.
+
+EL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.

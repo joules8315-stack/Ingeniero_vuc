@@ -1,0 +1,18 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-01_222440_RECHAZADO_capataz.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : GPT-OSS 120B (Groq) no le cabe (20525 letras, aguanta 19042) -> se le salta
+  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta
+  aviso       : GPT-OSS 120B (Groq) no le cabe (20991 letras, aguanta 19042) -> se le salta
+  diagnostico : en cuerpo/capataz.py la funcion correr_una_orden ya hace copia por orden, pero no existe ni se usa 'en_paralelo' y por eso dos ordenes de piezas distintas no corren a la vez.
+  toca        : cuerpo/capataz.py funcion correr_una_orden
+  confianza   : baja
+  PREGUNTA_REQUERIDA: Quien llama a correr_una_orden y con que valor de en_paralelo debe hacerlo para que dos ordenes de piezas distintas corran a la vez?
+  VEREDICTO   : RECHAZADO
+  fallo       : El parámetro en_paralelo se añade a la firma pero NO se usa en ninguna línea del cuerpo: el texto_viejo y el texto_nuevo de correr_una_orden son idénticos salvo 'en_paralelo=1' en la def. Es código muerto.
+  fallo       : No se implementa paralelismo en ninguna parte: no hay hilo, pool, lote ni bucle que lance dos órdenes a la vez. Diagnosticar 'no existe ni se usa en_paralelo' y responder poniendo la palabra en la firma no ataca la causa.
+  fallo       : La constante EN_PARALELO = 2 queda huérfana: el valor por defecto del parámetro sigue siendo 1 y ningún punto de despacho la lee. La barrera de dos que rompe la prueba sigue rota.
+  fallo       : No se actualiza ni identifica al llamador que debería pasar en_paralelo=EN_PARALELO. La propia propuesta lo admite en 'preguntas' y baja la confianza a 'baja': se entrega Knowing que falta la pieza que hace el trabajo, y aun así se sella.
+  resumen     : Anade en_paralelo a la firma y una constante EN_PARALELO=2, pero no las usa: el cuerpo no cambia, nadie pasa el valor y no hay codigo que lance dos ordenes a la vez, asi que la prueba sigue roja; decia el mismo en sus preguntas y debio pedir el archivo del llamador.
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.

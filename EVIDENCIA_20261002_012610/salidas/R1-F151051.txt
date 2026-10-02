@@ -1,0 +1,17 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-01_152252_DUDOSO_obrero.py.json
+OBRERO groq -> AUDITOR bigpickle
+  aviso       : el pasillo recorto el encargo de 31340 a 17739 letras para que le quepa a un cerebro gratis (tope medido: 19042)
+  aviso       : DeepSeek (SE PAGA) tardo demasiado -> pasa el turno
+  aviso       : se pidio generar a deepseek y no esta disponible: contesto groq
+  diagnostico : Recorta el prompt antes de intentar usar cerebro de pago
+  toca        : cuerpo/obrero.py funcion _preguntar_con_relevo
+  confianza   : alta
+  VEREDICTO   : DUDOSO
+  fallo       : El texto_nuevo SI aparece literal en el material (cuerpo/obrero.py, bloque `_capas`/`_tope_pasillo` dentro de `_preguntar_con_relevo`), asi que la ubicacion es correcta; no hay sintaxis inventada ni referencias a archivos/funciones inexistentes.
+  fallo       : Fallo de fondo 1: el comentario afirma que 'el flujo posterior ... dividira el encargo', pero el material solo muestra que en el caso de 'no quedo nadie' se AVISA ('se avisa claro de que hay que PARTIR el trabajo'). No hay ninguna linea de codigo que trocee. Antes, el recorte garantizaba entrega al menos al gratis mas chico; ahora, un encargo mayor que TODOS (incluido el de pago) cae en una rama que solo deja un aviso. Si el que parte no es codigo de este flujo, ese encargo se queda sin entregar.
+  fallo       : Fallo de fondo 2: el encargo pide explicitamente la mitad que falta: 'se parte en trozos coherentes que cada uno conserven que archivo hay que tocar y el objetivo'. Eso no esta en el cambio. Quitar el recorte es correcto; dejar el recorte sin la parte coherente deja la garantia de 'nunca perder la marca de archivo' depending de un第三 actor que nadie nombro.
+  fallo       : Menor: `if _capas:` + `_tope_pasillo = min(_capas)` se quedan calculando un valor que ya no usa nadie (codigo muerto) y tres lineas de comentario不做 nada. No rompe nada, pero es ruido que el propio paquete pide no dejar ('el ancla es un solo renglon unico').
+  resumen     : Quitar el recorte prematuro es la direccion correcta y el texto ancla existe, pero la reparacion se queda en la mitad: no implementa el troceado coherente que exige el encargo y deja el caso 'no cabe en nadie'depending de un flujo que el material no muestra; aprobar solo si se acepta ese hueco o se rechaza pidiendo el troceado.
+
+EL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.
