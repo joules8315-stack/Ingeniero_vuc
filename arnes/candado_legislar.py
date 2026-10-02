@@ -144,6 +144,16 @@ def parece_una_orden(texto):
     senales_maquina = ['the user', 'task title', 'markdown', 'tool chatter', 'codex', 'catch-up']
     if any(palabra in texto.lower() for palabra in senales_maquina):
         return False
+    # (3) si el texto trae alguna palabra o forma que solo usa la maquina, tampoco es de Julio: return False.
+    palabras_solo_maquina = ['monkeypatch', 'subprocess', 'typeerror', 'assert', 'tmp_path']
+    if any(palabra in texto.lower() for palabra in palabras_solo_maquina):
+        return False
+    # un nombre pegado a parentesis vacios, como foo(), es codigo, no una orden
+    if re.search(r"[A-Za-z_][A-Za-z0-9_]*\(\)", texto):
+        return False
+    # una ruta que acabe en punto py es codigo, no una orden
+    if re.search(r"\S+\.py\b", texto):
+        return False
     return True
 
 
