@@ -177,10 +177,8 @@ N = [
          partes=[
              ("ninguna_vigia_toca_la_memoria_real", "vigias/test_vigia_ninguna_vigia_toca_la_memoria_real.py", "vigia", "La guardia de la memoria real",
               "Una vigia que corra las vigias que importan a Big Pickle con una copia de memoria/ y compruebe que el registro real no cambia; nace roja porque hoy cambia.", ""),
-             ("el_registro_de_big_pickle_respeta_la_prueba", "cuerpo/bigpickle.py", "editar", "El registro respeta la variable de prueba",
-              "Que la ruta del registro de Big Pickle pueda cambiarse con una variable de entorno de prueba, y que sin ella siga siendo la de siempre.", ""),
              ("las_pruebas_apuntan_a_un_registro_temporal", "vigias/conftest.py", "editar", "Cada prueba usa su propio registro",
-              "Que el archivo de ajustes comunes de las vigias fije, para cada prueba, esa variable apuntando a una carpeta temporal, como ya hace con las otras variables de prueba.", ""),
+              "Que el archivo de ajustes comunes de las vigias (vigias/conftest.py) agregue una fixture automatica (autouse) que, para cada prueba, cambie con monkeypatch el valor RUTA_LOG del modulo cuerpo.bigpickle para que apunte a un archivo dentro de la carpeta temporal de la prueba, igual que ya hacen vigias/test_vigia_bigpickle_enchufe.py y vigias/test_vigia_la_puerta_gratis_tambien_se_cuenta.py. No se agrega ninguna variable de entorno y no se toca cuerpo/bigpickle.py.", ""),
          ]),
     dict(clave="N21", titulo="El forense no juzga lo que no ve",
          porque="Medido el 2026-10-01 en los 93 expedientes: solo 9 (10 por ciento) terminaron en una orden nueva; el juez rechazo 28, el perito no contesto 28, las citas no existian en 17 y 39 expedientes nunca se analizaron. El juez es una IA a la que solo se le pasan la causa y las citas, sin el codigo: no puede ver lo que juzga.",
@@ -460,6 +458,18 @@ if not PRUEBA:
     por_id = {str(o["id"]): o for o in lista}
 
 
+CORREGIDAS = {"N20"}   # definiciones cuyo encargo se corrigio: las ordenes que ya existen reciben el texto nuevo
+RETIRADAS = {"V-N20-el_registro_de_big_pickle_respeta_la_prueba": "N20 se hace sin tocar cuerpo/bigpickle.py: RUTA_LOG ya se cambia con monkeypatch",
+             "N20-el_registro_de_big_pickle_respeta_la_prueba": "N20 se hace sin tocar cuerpo/bigpickle.py: RUTA_LOG ya se cambia con monkeypatch"}
+for r_, m_ in RETIRADAS.items():
+    if r_ in por_id and por_id[r_].get("estado") in ("pendiente", "fallida"):
+        print("RETIRADA: %s (%s)" % (r_, m_))
+        if not PRUEBA:
+            director.archivar(RAIZ, r_, m_)
+        por_id[r_]["estado"] = "archivada"
+if not PRUEBA:
+    lista = cargar()
+    por_id = {str(o["id"]): o for o in lista}
 DUPLICADAS = {"194": "195", "183": "184", "173": "177"}   # misma reparacion y misma pieza (medido el 2026-10-01)
 for d_, v_ in DUPLICADAS.items():
     if d_ in por_id and v_ in por_id and por_id[d_].get("estado") in ("pendiente", "fallida"):
@@ -568,6 +578,12 @@ for nombre, items in PASOS:
             for o in ordenes_de_N(K):
                 if o["id"] not in por_id:
                     nuevas.append(o)
+                elif K["clave"] in CORREGIDAS:
+                    ex_ = por_id[o["id"]]
+                    if ex_.get("estado") in ("pendiente", "fallida") and not str(ex_.get("encargo", "")).endswith(o["encargo"]):
+                        ex_["encargo"], ex_["repara"], ex_["resultado_esperado"] = o["encargo"], o["repara"], o["resultado_esperado"]
+                        ex_["nota"] = "Encargo corregido el 2026-10-02: el equipo invento nombres porque el encargo no decia como se cambia RUTA_LOG (con monkeypatch, como las vigias que ya existen)."
+                        print("ENCARGO CORREGIDO:", o["id"])
                 poner(o, paso)
             continue
         i = resolver(it)

@@ -1,0 +1,88 @@
+# -*- coding: utf-8 -*-
+"""LINEA BASE DE ROJAS: mide de que color esta CADA vigia hoy y apunta las rojas en memoria/.rojas_conocidas.json.
+
+Por que existe (medido el 2026-10-01 en el PC de Julio): el guardia frenaba trabajos APROBADOS por vigias que ya
+estaban rojas desde antes, y cada vez nombraba otras, porque 3 de 4 grupos de la bateria se cortaban por tiempo.
+La lista de "rojas de antes" solo se escribia cuando un guardado pasaba, y nunca pasaba: no podia aprender.
+
+Que hace: copia el proyecto a una carpeta temporal, corre TODA la bateria alli (la carpeta real no se toca),
+y solo si TODOS los grupos terminaron escribe la lista. Sin IA, sin gasto.
+Uso:  python linea_base_de_rojas.py            (escribe memoria/.rojas_conocidas.json)
+      python linea_base_de_rojas.py --sin-escribir   (solo mide y cuenta)
+"""
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+import json
+
+RAIZ = os.getcwd()
+SIN_ESCRIBIR = "--sin-escribir" in sys.argv
+TOPE_GRUPO = 1800
+
+
+def main():
+    if not os.path.isdir(os.path.join(RAIZ, "vigias")) or not os.path.isfile(os.path.join(RAIZ, "arnes", "bateria_en_paralelo.py")):
+        print("NO ESTOY EN LA CARPETA DEL INGENIERO (falta vigias/ o arnes/bateria_en_paralelo.py): cd C:\\Ingeniero_VUC")
+        return 2
+    tmp = tempfile.mkdtemp(prefix="vuc_base_")
+    copia = os.path.join(tmp, "copia")
+    try:
+        print("copiando el proyecto a una carpeta temporal (la real no se toca)...")
+        shutil.copytree(RAIZ, copia, ignore=shutil.ignore_patterns(".git", "__pycache__", ".pytest_cache", "trabajos_del_equipo",
+                                                                    "trabajos_sin_revisar", "rescate", "EXPEDIENTES", "planes_anulados"))
+        cfg = os.path.join(copia, "proyectos.config")
+        if os.path.isfile(cfg):
+            lineas = open(cfg, encoding="utf-8", errors="replace").read().splitlines()
+            lineas = [("ingeniero      = %s | main | ingeniero.py" % copia) if re.match(r"^ingeniero\s*=", l) else l for l in lineas]
+            open(cfg, "w", encoding="utf-8").write("\n".join(lineas))
+        sys.path.insert(0, os.path.join(copia, "arnes"))
+        import bateria_en_paralelo
+        entorno = {k: v for k, v in os.environ.items() if k not in ("GIT_INDEX_FILE", "GIT_DIR", "GIT_WORK_TREE", "GIT_PREFIX", "GIT_OBJECT_DIRECTORY")}
+        print("corriendo TODA la bateria en 4 grupos (tope %d s por grupo)... puede tardar varios minutos" % TOPE_GRUPO)
+        t0 = time.time()
+        r = bateria_en_paralelo.correr(copia, ["vigias/"], procesos=4, tope=TOPE_GRUPO, env=entorno, correr_uno=subprocess.run)
+        seg = int(time.time() - t0)
+        salida = (r.stdout or "") + (r.stderr or "")
+        resumen = [l for l in salida.splitlines() if l.strip()][-1:] or [""]
+        print("tardo %d segundos | %s" % (seg, resumen[0].strip()))
+        if "grupo cortado por tiempo" in salida or "grupo reventado" in salida:
+            print("NO SE ESCRIBIO NADA: algun grupo no termino, la lista saldria incompleta.")
+            for l in salida.splitlines():
+                if l.startswith("bateria en paralelo: grupo"):
+                    print("  ", l[:200])
+            return 1
+        rojas = []
+        for linea in salida.splitlines():
+            linea = linea.strip()
+            if linea.startswith(("FAILED", "ERROR")):
+                a = linea.split("::")[0]
+                for p in ("FAILED", "ERROR"):
+                    if a.startswith(p):
+                        a = a[len(p):].strip()
+                        break
+                a = a.split(" - ")[0].strip().replace("\\", "/")
+                if a.startswith("vigias/") and a not in rojas:
+                    rojas.append(a)
+        rojas.sort()
+        print("VIGIAS ROJAS HOY: %d" % len(rojas))
+        for a in rojas:
+            print("   ", a)
+        if SIN_ESCRIBIR:
+            print("(--sin-escribir: no se guardo la lista)")
+            return 0
+        destino = os.path.join(RAIZ, "memoria", ".rojas_conocidas.json")
+        os.makedirs(os.path.dirname(destino), exist_ok=True)
+        with open(destino, "w", encoding="utf-8") as f:
+            json.dump(rojas, f)
+        print("LISTO: apuntadas %d rojas en memoria/.rojas_conocidas.json. El guardia ya no frena por ellas." % len(rojas))
+        return 0
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
