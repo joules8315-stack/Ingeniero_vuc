@@ -426,8 +426,9 @@ def separar_avisos_y_frenos(mensajes):
     """Reparte una lista de mensajes en dos: primero los AVISOS, despues los FRENOS.
 
     Es aviso todo texto que, quitandole los espacios de delante, empieza por la
-    palabra AVISO seguida de dos puntos. Todo lo demas es freno. No se pierde ni
-    se duplica ningun mensaje. Si no llega una lista, o trae cosas que no son
+    palabra AVISO seguida de dos puntos, o por las palabras NO HACE LO QUE SE
+    PIDIO seguidas de dos puntos. Todo lo demas es freno. No se pierde ni se
+    duplica ningun mensaje. Si no llega una lista, o trae cosas que no son
     texto, no revienta: devuelve dos listas y sigue.
     """
     avisos = []
@@ -437,7 +438,8 @@ def separar_avisos_y_frenos(mensajes):
     for mensaje in mensajes:
         if not isinstance(mensaje, str):
             continue
-        if mensaje.lstrip().startswith("AVISO:"):
+        limpio = mensaje.lstrip()
+        if limpio.startswith("AVISO:") or limpio.startswith("NO HACE LO QUE SE PIDIO:"):
             avisos.append(mensaje)
         else:
             frenos.append(mensaje)
