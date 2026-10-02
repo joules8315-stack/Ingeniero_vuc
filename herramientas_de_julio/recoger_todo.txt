@@ -1,0 +1,271 @@
+# -*- coding: utf-8 -*-
+"""RECOGER TODO: junta en UN archivo JSON todos los datos que el que repara necesita y lo sube a la rama claude/datos-para-claude.
+
+Pedido por Julio el 2026-10-02: "un comando que te entregue todos los datos que necesitas, en un json".
+Sin IA y sin gasto. No toca la carpeta, la rama ni el indice de Julio: la bateria se mide en una COPIA y el commit se arma en una carpeta temporal.
+Las lineas que parezcan llaves o claves se tachan antes de subir. Nunca lanza error hacia fuera.
+
+Tiene dos tiempos: (1) en segundos sube lo rapido (ordenes, plan, trabajos, salidas, lo que correria el guardia, el entorno);
+(2) despues mide cuanto tarda CADA parte de la bateria en este PC (varios minutos) y sube el archivo completo.
+Uso (desde C:\\Ingeniero_VUC):  python recoger_todo.py            (--sin-bateria para saltar el tiempo 2)
+"""
+import concurrent.futures
+import glob
+import json
+import os
+import platform
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+from collections import Counter
+from datetime import datetime
+
+RAIZ = os.getcwd()
+RAMA = "claude/datos-para-claude"
+SIN_BATERIA = "--sin-bateria" in sys.argv
+SECRETO = re.compile(r"(sk-[A-Za-z0-9_\-]{12,}|AIza[0-9A-Za-z_\-]{20,}|gsk_[A-Za-z0-9]{12,}|ghp_[A-Za-z0-9]{20,}|"
+                     r"(api[_-]?key|token|secret|password|passwd|authorization|bearer)\s*[:=]\s*\S+)", re.I)
+DATOS = {"generado": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "errores": []}
+
+
+def limpio(texto):
+    return "\n".join(("[linea tachada: parecia una clave]" if SECRETO.search(l) else l) for l in str(texto).splitlines())
+
+
+def seccion(nombre):
+    def deco(f):
+        try:
+            DATOS[nombre] = f()
+        except Exception as e:
+            DATOS[nombre] = None
+            DATOS["errores"].append("%s: %s" % (nombre, str(e)[:200]))
+        return f
+    return deco
+
+
+def cola(ruta, n=60):
+    try:
+        with open(ruta, encoding="utf-8", errors="replace") as f:
+            return limpio("\n".join(f.read().splitlines()[-n:]))
+    except OSError as e:
+        return "(no se pudo leer: %s)" % e
+
+
+def cargar_json(rel):
+    with open(os.path.join(RAIZ, rel), encoding="utf-8") as f:
+        return json.load(f)
+
+
+def correr(cmd, tope=90, cwd=None):
+    t0 = time.time()
+    r = subprocess.run(cmd, cwd=cwd or RAIZ, capture_output=True, text=True, timeout=tope, stdin=subprocess.DEVNULL, encoding="utf-8", errors="replace")
+    return dict(codigo=r.returncode, segundos=round(time.time() - t0, 2), salida=limpio((r.stdout or "") + (r.stderr or ""))[-4000:])
+
+
+@seccion("entorno")
+def _():
+    return dict(sistema=platform.platform(), python=sys.version.split()[0], nucleos=os.cpu_count(), carpeta=RAIZ,
+                disco_libre_gb=round(shutil.disk_usage(RAIZ).free / 1e9, 1),
+                carpeta_en_onedrive="onedrive" in RAIZ.lower())
+
+
+@seccion("ordenes_conteo")
+def _():
+    return dict(Counter(str(o.get("estado")) for o in cargar_json("memoria/ORDENES.json")))
+
+
+@seccion("ordenes_abiertas")
+def _():
+    out = []
+    for o in cargar_json("memoria/ORDENES.json"):
+        if str(o.get("estado")) in ("hecha", "archivada"):
+            continue
+        out.append({k: (limpio(str(o.get(k, "")))[:500] if k in ("nota", "titulo") else o.get(k)) for k in
+                    ("id", "estado", "paso_fallido", "fallos_seguidos", "depende", "pieza", "vigia", "modo", "nota", "titulo")})
+    return out
+
+
+@seccion("plan_de_pasos")
+def _():
+    return cargar_json("memoria/PLAN_DE_PASOS.json")
+
+
+@seccion("trabajos_recientes")
+def _():
+    fs = sorted(glob.glob(os.path.join(RAIZ, "memoria", "trabajos_del_equipo", "*.json")), key=os.path.getmtime, reverse=True)[:40]
+    return [dict(hora=datetime.fromtimestamp(os.path.getmtime(f)).strftime("%m-%d %H:%M:%S"), nombre=os.path.basename(f)) for f in fs]
+
+
+@seccion("salidas_recientes")
+def _():
+    fs = sorted(glob.glob(os.path.join(RAIZ, "memoria", ".salida_tarea_*.txt")), key=os.path.getmtime, reverse=True)[:8]
+    return [dict(archivo=os.path.basename(f), hora=datetime.fromtimestamp(os.path.getmtime(f)).strftime("%m-%d %H:%M:%S"), cola=cola(f, 60)) for f in fs]
+
+
+@seccion("ultima_vuelta_del_bucle")
+def _():
+    return cola(os.path.join(RAIZ, "memoria", ".ultima_vuelta.txt"), 80)
+
+
+@seccion("lo_que_correria_el_guardia")
+def _():
+    r = correr([sys.executable, os.path.join("arnes", "vecinas.py"), RAIZ])
+    lineas = [l for l in r["salida"].splitlines() if l.strip()]
+    return dict(todas_las_vigias=(lineas[:1] == ["TODAS"]), cuantas_lineas=len(lineas), lista=lineas[:60], segundos=r["segundos"])
+
+
+@seccion("git")
+def _():
+    st = correr(["git", "status", "--porcelain"], 120)
+    lineas = [l for l in st["salida"].splitlines() if l.strip()]
+    return dict(cambiados=len(lineas), segundos_git_status=st["segundos"], lista=[l[:140] for l in lineas[:300]],
+                hooksPath=correr(["git", "config", "core.hooksPath"])["salida"].strip(),
+                ultimos_commits=correr(["git", "log", "-8", "--format=%h %ci %s"])["salida"].strip().splitlines(),
+                rama=correr(["git", "rev-parse", "--abbrev-ref", "HEAD"])["salida"].strip(),
+                hook_precommit_existe=os.path.isfile(os.path.join(RAIZ, "hooks", "pre-commit")))
+
+
+@seccion("rojas_conocidas")
+def _():
+    return cargar_json("memoria/.rojas_conocidas.json")
+
+
+@seccion("capacidades_y_cuotas")
+def _():
+    out = {}
+    for rel in ("memoria/CAPACIDADES.json", "memoria/CUOTAS.json", "memoria/GASTO.json", "memoria/ESTADO.json"):
+        try:
+            out[rel] = json.loads(limpio(json.dumps(cargar_json(rel), ensure_ascii=False)).replace("[linea tachada: parecia una clave]", "\"[tachado]\""))
+        except Exception as e:
+            out[rel] = "(no se pudo leer: %s)" % str(e)[:100]
+    return out
+
+
+@seccion("cuaderno_ultimas_llamadas")
+def _():
+    return cola(os.path.join(RAIZ, "memoria", "CUADERNO_DE_LLAMADAS.jsonl"), 25)
+
+
+@seccion("bigpickle_ultimas_lineas")
+def _():
+    return cola(os.path.join(RAIZ, "memoria", "BIGPICKLE.log"), 25)
+
+
+@seccion("ultima_linea_base")
+def _():
+    return cola(os.path.join(RAIZ, "memoria", ".ultima_linea_base.txt"), 10)
+
+
+@seccion("arranque_de_python_y_pytest")
+def _():
+    a = correr([sys.executable, "-c", "pass"], 60)
+    b = correr([sys.executable, "-m", "pytest", "--collect-only", "-q", "-p", "no:cacheprovider", "vigias/"], 900)
+    return dict(python_vacio_segundos=a["segundos"], recoger_todas_las_vigias_segundos=b["segundos"], cola=b["salida"][-300:])
+
+
+def subir(nombre_progreso):
+    env = dict(os.environ, GIT_TERMINAL_PROMPT="0")
+    for k in ("GIT_INDEX_FILE", "GIT_DIR", "GIT_WORK_TREE", "GIT_PREFIX", "GIT_OBJECT_DIRECTORY"):
+        env.pop(k, None)
+    url = subprocess.run(["git", "remote", "get-url", "origin"], cwd=RAIZ, capture_output=True, text=True, timeout=30, env=env).stdout.strip()
+    if not url:
+        return "NO SE SUBIO: esta carpeta no tiene remoto 'origin'"
+    tmp = tempfile.mkdtemp(prefix="vuc_datos_")
+    try:
+        def g(*a):
+            return subprocess.run(["git"] + list(a), cwd=tmp, capture_output=True, text=True, timeout=120, env=env)
+        g("init", "-q")
+        g("config", "user.email", "bucle@ingeniero.local")
+        g("config", "user.name", "Bucle del Ingeniero")
+        with open(os.path.join(tmp, "DATOS_PARA_CLAUDE.json"), "w", encoding="utf-8") as f:
+            json.dump(DATOS, f, ensure_ascii=False, indent=1)
+        g("add", "DATOS_PARA_CLAUDE.json")
+        g("commit", "-q", "-m", "datos para claude " + nombre_progreso)
+        r = g("push", "-q", "--force", url, "HEAD:refs/heads/" + RAMA)
+        if r.returncode != 0:
+            return "NO SE SUBIO: " + ((r.stderr or r.stdout).strip().splitlines() or ["git push fallo"])[-1][:200]
+        return "DATOS SUBIDOS (%s) a la rama %s" % (nombre_progreso, RAMA)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def medir_bateria():
+    """Corre TODA la bateria en una copia, en 4 grupos, y apunta cuanto tarda cada grupo y las pruebas mas lentas."""
+    tmp = tempfile.mkdtemp(prefix="vuc_bat_")
+    copia = os.path.join(tmp, "copia")
+    try:
+        shutil.copytree(RAIZ, copia, ignore=shutil.ignore_patterns(".git", "__pycache__", ".pytest_cache", "trabajos_del_equipo",
+                                                                    "trabajos_sin_revisar", "rescate", "EXPEDIENTES", "planes_anulados"))
+        cfg = os.path.join(copia, "proyectos.config")
+        if os.path.isfile(cfg):
+            ls = open(cfg, encoding="utf-8", errors="replace").read().splitlines()
+            ls = [("ingeniero      = %s | main | ingeniero.py" % copia) if re.match(r"^ingeniero\s*=", l) else l for l in ls]
+            open(cfg, "w", encoding="utf-8").write("\n".join(ls))
+        archivos = sorted("vigias/" + f for f in os.listdir(os.path.join(copia, "vigias")) if f.startswith("test_") and f.endswith(".py"))
+        grupos = [archivos[i::4] for i in range(4)]
+
+        def uno(i):
+            t0 = time.time()
+            try:
+                r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "--durations=30", "--durations-min=2.0"] + grupos[i],
+                                   cwd=copia, capture_output=True, text=True, timeout=3300, stdin=subprocess.DEVNULL, encoding="utf-8", errors="replace")
+                return i, round(time.time() - t0), False, (r.stdout or "") + (r.stderr or "")
+            except subprocess.TimeoutExpired as e:
+                return i, round(time.time() - t0), True, str(e.stdout or "")
+        res = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:
+            for fut in [ex.submit(uno, i) for i in range(4)]:
+                res.append(fut.result())
+        lentas, rojas = [], []
+        for i, seg, cortado, salida in res:
+            for l in salida.splitlines():
+                m = re.match(r"^\s*([0-9.]+)s (call|setup|teardown)\s+(\S+)", l)
+                if m:
+                    lentas.append((float(m.group(1)), m.group(2), m.group(3)))
+                l = l.strip()
+                if l.startswith(("FAILED", "ERROR")):
+                    a = l.split("::")[0]
+                    for p in ("FAILED", "ERROR"):
+                        if a.startswith(p):
+                            a = a[len(p):].strip()
+                    a = a.split(" - ")[0].strip().replace("\\", "/")
+                    if a.startswith("vigias/") and a not in rojas:
+                        rojas.append(a)
+        lentas.sort(reverse=True)
+        return dict(segundos_por_grupo=[r[1] for r in res], algun_grupo_cortado=any(r[2] for r in res),
+                    total_segundos=max(r[1] for r in res), vigias=len(archivos), rojas=len(rojas), rojas_lista=sorted(rojas),
+                    pruebas_mas_lentas=[dict(segundos=s, fase=f, prueba=p) for s, f, p in lentas[:40]],
+                    suma_segundos_de_las_40_mas_lentas=round(sum(s for s, _, _ in lentas[:40]), 1))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def main():
+    if not os.path.isfile(os.path.join(RAIZ, "memoria", "ORDENES.json")):
+        print("NO ESTOY EN LA CARPETA DEL INGENIERO: cd C:\\Ingeniero_VUC")
+        return 2
+    DATOS["bateria_medida_en_este_pc"] = "PENDIENTE (se esta midiendo)" if not SIN_BATERIA else "saltada"
+    try:
+        print(subir("parte 1: datos rapidos"))
+    except Exception as e:
+        print("NO SE SUBIO (%s)" % str(e)[:150])
+    if SIN_BATERIA:
+        return 0
+    print("midiendo cuanto tarda cada parte de la bateria en este PC (hasta ~30 minutos). No cierres esta ventana.")
+    try:
+        DATOS["bateria_medida_en_este_pc"] = medir_bateria()
+    except Exception as e:
+        DATOS["bateria_medida_en_este_pc"] = None
+        DATOS["errores"].append("bateria: %s" % str(e)[:200])
+    try:
+        print(subir("parte 2: con la bateria medida"))
+    except Exception as e:
+        print("NO SE SUBIO (%s)" % str(e)[:150])
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
