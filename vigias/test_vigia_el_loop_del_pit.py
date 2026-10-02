@@ -207,8 +207,8 @@ def test_tope_de_gasto_para_antes_de_llamar(tmp_path, monkeypatch):
 
     texto = capataz.bucle('prueba', aviso=lambda t: None)
 
-    assert texto.startswith('PARADO: TOPE DE GASTO')
-    assert llamadas == []
+    assert not texto.startswith('PARADO: TOPE DE GASTO')  # A-42: sin tope en dolares
+    assert llamadas == ['o1']
 
 
 def test_dependiente_de_fallida_no_se_corre(tmp_path, monkeypatch):
