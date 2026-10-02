@@ -1,0 +1,59 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El guardia llama a la bateria en paralelo con tope=600 fijo, y la bateria completa tarda 1482 s, asi que se corta por tiempo y no deja guardar.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "            import bateria_en_paralelo\n            r = bateria_en_paralelo.correr(raiz, objetivo, procesos=4, tope=600,\n                                           env=_entorno_limpio, correr_uno=subprocess.run)",
+  "texto_nuevo": "            import bateria_en_paralelo\n            _tope = 3300 if objetivo == [\"vigias/\"] else 600\n            r = bateria_en_paralelo.correr(raiz, objetivo, procesos=4, tope=_tope,\n                                           env=_entorno_limpio, correr_uno=subprocess.run)",
+  "cambio": "En la llamada a bateria_en_paralelo.correr dentro de _vigias, el tope por grupo pasa a ser 3300 segundos cuando la seleccion es la bateria completa (objetivo == [\"vigias/\"]); con una lista corta de vigias sigue siendo 600.",
+  "codigo": "_tope = 3300 if objetivo == [\"vigias/\"] else 600",
+  "vigia": "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+  "puede_danar": [
+   "arnes/bateria_en_paralelo.py",
+   "arnes/turno_de_guardado.py",
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardado_dice_cuando_no_pudo_probar.py",
+   "vigias/test_vigia_el_guardado_dice_que_roja_lo_frena.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "bateria_en_paralelo.py",
+   "test_vigia_el_guardado_dice_cuando_no_pudo_probar.py",
+   "test_vigia_el_guardado_dice_que_roja_lo_frena.py",
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "turno_de_guardado.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La condicion objetivo == [\"vigias/\"] es muy estricta: solo activa el tope 3300 cuando la lista es exactamente esa instancia. Si en algun caso objetivo viene como [\"./vigias/\", ...] o con otra forma pero representa la bateria completa, NO se detectara y seguira cortando a 600, por lo que no arregla de verdad ese caso."
+  ],
+  "riesgo_vecinos": [
+   "Otras rutas que construyen objetivo distinto a [\"vigias/\"] para la bateria completa seguiran usando tope 600 y el diagnostico no se resuelve."
+  ],
+  "que_falta": [
+   "Definir un criterio de deteccion de 'bateria completa' mas robusto (p.ej. comparar contra la seleccion real que indica bateria completa, o contar archivos/tamaño, o normalizar rutas) para asegurar que el caso 1482s use 3300."
+  ],
+  "resumen_para_el_jefe": "El cambio apunta bien al problema, pero la igualdad estricta a [\"vigias/\"] puede dejar fuera casos de bateria completa y no garantizar la reparacion."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (30809 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

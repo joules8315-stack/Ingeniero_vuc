@@ -1,0 +1,72 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El bucle devuelve PARADO al tercer fallo del mismo tipo en la misma pieza en vez de apartar esa orden, dejar fuera solo a sus dependientes y seguir con las demas, y no imprime resumen de apartadas.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    fallos_por_pieza_tipo = {}\n    while True:\n        if se_paso_del_tope():\n            return 'PARADO: TOPE DE GASTO (%.2f USD este mes)' % gastado_del_mes()\n        tanda = listas_para_correr()[:en_paralelo]\n        if not tanda:\n            pendientes = []\n            for orden in leer_lista():\n                if isinstance(orden, dict) and orden.get('estado') in ('pendiente', 'corriendo'):\n                    pendientes.append(str(orden.get('id', '')))\n            if not pendientes:\n                return 'PARADO: TODO HECHO'\n            return 'PARADO: NADA SE PUEDE CORRER (pendientes: ' + ','.join(pendientes) + ')'",
+    "texto_nuevo": "    fallos_por_pieza_tipo = {}\n    apartadas = []\n    while True:\n        if se_paso_del_tope():\n            return 'PARADO: TOPE DE GASTO (%.2f USD este mes)' % gastado_del_mes()\n        tanda = listas_para_correr()[:en_paralelo]\n        if not tanda:\n            pendientes = []\n            for orden in leer_lista():\n                if isinstance(orden, dict) and orden.get('estado') in ('pendiente', 'corriendo'):\n                    pendientes.append(str(orden.get('id', '')))\n            if not pendientes:\n                return 'PARADO: TODO HECHO' + resumen_apartadas(apartadas)\n            return 'PARADO: NADA SE PUEDE CORRER (pendientes: ' + ','.join(pendientes) + ')' + resumen_apartadas(apartadas)"
+   },
+   {
+    "texto_viejo": "                pieza = orden.get('pieza')\n                clave = (pieza, tipo)\n                fallos_por_pieza_tipo[clave] = fallos_por_pieza_tipo.get(clave, 0) + 1\n                if fallos_por_pieza_tipo[clave] >= 3:\n                    return 'PARADO: 3 FALLOS DEL MISMO TIPO (' + tipo + ') EN ' + str(pieza)",
+    "texto_nuevo": "                pieza = orden.get('pieza')\n                clave = (pieza, tipo)\n                fallos_por_pieza_tipo[clave] = fallos_por_pieza_tipo.get(clave, 0) + 1\n                if fallos_por_pieza_tipo[clave] >= 3:\n                    motivo = '3 fallos del mismo tipo (' + tipo + ') en ' + str(pieza)\n                    expediente = ''\n                    try:\n                        ruta_exp, _ = armar_expediente(orden, resultado)\n                        expediente = ruta_exp or ''\n                    except Exception as e:\n                        aviso('NO SE PUDO ANOTAR EXPEDIENTE ' + orden_id + ' ' + str(e)[:200])\n                    marcar_estado(orden.get('id'), 'apartada', tipo, fallos_seguidos)\n                    apartar_dependientes(orden, aviso)\n                    apartadas.append({'id': orden_id, 'pieza': str(pieza), 'tipo': tipo, 'motivo': motivo, 'expediente': expediente})\n                    aviso('APARTADA ' + orden_id + ' (' + motivo + ')')\n                    continue"
+   },
+   {
+    "texto_viejo": "def correr_orden_del_sistema(palabras):",
+    "texto_nuevo": "def apartar_dependientes(orden, aviso=print):\n    \"\"\"Marca como apartadas las ordenes que dependen de la orden dada, sin tocar las demas.\"\"\"\n    orden_id = str(orden.get('id', '')) if isinstance(orden, dict) else str(orden)\n    for otra in leer_lista():\n        if not isinstance(otra, dict):\n            continue\n        depende = otra.get('depende') or []\n        if not isinstance(depende, list):\n            depende = [depende]\n        if orden_id in [str(d) for d in depende]:\n            if otra.get('estado') in ('pendiente', 'corriendo', 'fallida'):\n                marcar_estado(otra.get('id'), 'apartada', 'depende_de_' + orden_id, otra.get('fallos_seguidos') or 0)\n                aviso('APARTADA ' + str(otra.get('id', '')) + ' (depende de ' + orden_id + ')')\n\n\ndef resumen_apartadas(apartadas):\n    \"\"\"Devuelve el texto del resumen final de ordenes apartadas, o cadena vacia si no hay.\"\"\"\n    if not apartadas:\n        return ''\n    lineas = ['', 'RESUMEN DE ORDENES APARTADAS:']\n    for a in apartadas:\n        lineas.append('  - ' + a['id'] + ' | pieza: ' + a['pieza'] + ' | tipo: ' + a['tipo'] + ' | motivo: ' + a['motivo'] + ' | expediente: ' + (a['expediente'] or 'NO_ENCONTRADO'))\n    return '\\n'.join(lineas)\n\n\ndef correr_orden_del_sistema(palabras):"
+   }
+  ],
+  "cambio": "En bucle: sustituir el PARADO por 3 fallos por marcar la orden como 'apartada' con motivo y expediente, apartar solo a sus dependientes, continuar con la siguiente corrible, y anadir resumen final de apartadas en las dos salidas validas (TODO HECHO y NADA SE PUEDE CORRER). Anadir dos funciones auxiliares apartar_dependientes y resumen_apartadas.",
+  "codigo": "def apartar_dependientes(orden, aviso=print):\n    \"\"\"Marca como apartadas las ordenes que dependen de la orden dada, sin tocar las demas.\"\"\"\n    orden_id = str(orden.get('id', '')) if isinstance(orden, dict) else str(orden)\n    for otra in leer_lista():\n        if not isinstance(otra, dict):\n            continue\n        depende = otra.get('depende') or []\n        if not isinstance(depende, list):\n            depende = [depende]\n        if orden_id in [str(d) for d in depende]:\n            if otra.get('estado') in ('pendiente', 'corriendo', 'fallida'):\n                marcar_estado(otra.get('id'), 'apartada', 'depende_de_' + orden_id, otra.get('fallos_seguidos') or 0)\n                aviso('APARTADA ' + str(otra.get('id', '')) + ' (depende de ' + orden_id + ')')\n\n\ndef resumen_apartadas(apartadas):\n    \"\"\"Devuelve el texto del resumen final de ordenes apartadas, o cadena vacia si no hay.\"\"\"\n    if not apartadas:\n        return ''\n    lineas = ['', 'RESUMEN DE ORDENES APARTADAS:']\n    for a in apartadas:\n        lineas.append('  - ' + a['id'] + ' | pieza: ' + a['pieza'] + ' | tipo: ' + a['tipo'] + ' | motivo: ' + a['motivo'] + ' | expediente: ' + (a['expediente'] or 'NO_ENCONTRADO'))\n    return '\\n'.join(lineas)",
+  "vigia": "Ejecutar el bucle con ordenes falsas: una que falla siempre tres veces del mismo tipo en la misma pieza, otra que depende de ella y otra que no depende. Comprobar que la que falla queda 'apartada' con motivo y expediente, la dependiente queda 'apartada', la independiente se corre y el bucle termina con resumen de apartadas en vez de PARADO por 3 fallos.",
+  "puede_danar": [
+   "arnes/copia_de_la_orden.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_la_tarea_trabaja_en_su_propia_carpeta.py"
+  ],
+  "preguntas": [
+   "El estado 'apartada' debe filtrarlo listas_para_correr para que no vuelva a entrar en la tanda? (no tengo el codigo de listas_para_correr en el material)",
+   "El resumen de apartadas debe imprimirse tambien cuando el bucle termina por tope de gasto?",
+   "Las ordenes dependientes que ya estaban 'hechas' deben quedar intactas o tambien apartarse?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "copia_de_la_orden.py",
+   "test_vigia_la_tarea_trabaja_en_su_propia_carpeta.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Bucle infinito si listas_para_correr() no excluye el estado nuevo 'apartada': la orden apartada se vuelve a elegir, el contador fallos_por_pieza_tipo sigue >=3, se repite la rama y hace continue sin avanzar. El propio worker lo admite como pregunta abierta y no lo resuelve; es el riesgo de mayor impacto.",
+   "apartar_dependientes solo aparta dependientes DIRECTOS (compara orden_id contra la lista depende de cada otra). Si hay cadena A<-B<-C, C no se aparta, queda pendiente huerfana y puede acabar en NADA SE PUEDE CORRER en vez de terminar con el resumen.",
+   "La causa de NADA SE PUEDE CORRER (una sola falla aislada detiene todo, segundo sintoma del POR QUE) solo se le pega el resumen al final; no se cambia la logica que la produce, asi que ese sintoma puede seguir igual.",
+   "marcar_estado graba tipo como motivo, no la cadena completa '3 fallos del mismo tipo (...) en ...'. El motivo descriptivo solo vive en la lista apartadas en memoria y en el resumen impreso; no queda persistido en la orden. (menor)"
+  ],
+  "riesgo_vecinos": [
+   "El estado nuevo 'apartada' no lo conocen arnes/copia_de_la_orden.py, cuerpo/codex.py ni el test de puede_danar; si alguno lee estados por lista blanca, una orden apartada cae en rama desconocida.",
+   "Si B depende de A y A se aparta, las ordenes que dependen de B (transitivas) quedan en un limbo de estado que esos modulos no esperan."
+  ],
+  "que_falta": [
+   "Verificar o forzar explicitamente que listas_para_correr() excluya 'apartada' (hoy es una pregunta sin responder).",
+   "Confirmar si las dependencias son transitivas y, si lo son, hacer el apartado en cascada.",
+   "Un verificador que ejecute el bucle con una cadena A<-B<-C y confirme que termina con el resumen y NO con NADA SE PUEDE CORRER ni en bucle infinito."
+  ],
+  "resumen_para_el_jefe": "El cambio cumple el encargo en el papel (marca apartada, aparta dependientes, sigue con la siguiente y resume) y no inventa nada, pero deja abierto si el filtro de corrida reconoce 'apartada' (si no, bucle infinito), no aparta dependientes de forma transitiva y no toca la causa del NADA SE PUEDE CORRER; conviene verificar esos tres puntos antes de darlo por bueno."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 31900 a 13830 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 33519 a 14411 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 33812 a 14511 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}

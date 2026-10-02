@@ -1,0 +1,33 @@
+{
+  "orden": {
+    "id": "R6",
+    "titulo": "Varias ordenes a la vez, cada una en su copia",
+    "origen": "PLAN_PRIORIDAD_UNO 2026-09-25; medido el 2026-09-21 en test_vigia_el_pit_corre_una_tarea_a_la_vez.py",
+    "repara": "el pit corre una sola orden a la vez aunque el motor ya sabe correr varias, porque todas comparten la misma carpeta y el guardia de una ve el trabajo a medias de la otra",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "es lo que hace lento al equipo: ordenes de piezas distintas que no se pisan podrian salir juntas y hoy van en fila",
+    "encargo": "Que cada orden trabaje en su PROPIA copia temporal de la carpeta (git worktree), creada al empezar y borrada al terminar, para que dos ordenes no se pisen. Nunca dejar copias sueltas en el disco. Con eso hecho, subir en_paralelo en cuerpo/capataz.py linea 303 y pasarlo desde ingeniero.py linea 560. Sigue prohibido correr dos ordenes de la MISMA pieza a la vez (eso ya lo vigila test_vigia_el_loop_del_pit.py). ANTES de tocar nada hay que reescribir vigias/test_vigia_el_pit_corre_una_tarea_a_la_vez.py con su razon nueva y legislar la excepcion al CONTRATO_UNA_SOLA_VIA.md para copias temporales de trabajo: eso se pide, no se salta.",
+    "vigia": "vigias/test_vigia_cada_orden_tiene_su_propia_copia.py",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "1d7853a0598037b0",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-01_222549_SIN_VEREDICTO_NO_ENCONTRADO.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : GPT-OSS 120B (Groq) no le cabe (33791 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (34514 letras, aguanta 19042) -> se le salta\n  diagnostico : El encargo pide crear/reescribir archivos y legislar una excepcion, pero el material no trae el contenido actual de vigias/test_vigia_el_pit_corre_una_tarea_a_la_vez.py ni el texto completo de CONTRATO_UNA_SOLA_VIA.md ni el cuerpo de cuerpo/capataz.py alrededor de la linea 303 ni el de ingeniero.py alrededor de la linea 560, asi que no puedo copiar el texto literal que hay AHORA en esos sitios.\n  toca        : NO_ENCONTRADO funcion NO_ENCONTRADO\n  confianza   : baja\n  PREGUNTA_REQUERIDA: Necesito el contenido literal actual de vigias/test_vigia_el_pit_corre_una_tarea_a_la_vez.py para reescribirlo con su razon nueva.; Necesito el texto completo de CONTRATO_UNA_SOLA_VIA.md para legislar la excepcion de copias temporales de trabajo.; Necesito el cuerpo completo de cuerpo/capataz.py alrededor de la linea 303 (la funcion que contiene en_paralelo) para subir en_paralelo.; Necesito el cuerpo completo de ingeniero.py alrededor de la linea 560 (la funcion que debe pasar en_paralelo) para pasarlo.\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-01T22:25:52",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R6_20261001_222552.json"
+  }
+}

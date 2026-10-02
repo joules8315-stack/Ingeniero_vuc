@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "V-N20-el_registro_de_big_pickle_respeta_la_prueba",
+    "titulo": "Vigia primero: El registro respeta la variable de prueba",
+    "origen": "Julio 2026-10-01",
+    "repara": "Que exista la prueba de: Que la ruta del registro de Big Pickle pueda cambiarse con una variable de entorno de prueba, y que sin ella siga siendo la de siempre.",
+    "pieza": "vigias/test_vigia_el_registro_de_big_pickle_respeta_la_prueba.py",
+    "vigia": "vigias/test_vigia_el_registro_de_big_pickle_respeta_la_prueba.py",
+    "razon": "Medido el 2026-10-01: 423 de las 1678 lineas del registro de Big Pickle (25 por ciento) las escribieron las pruebas al correr (segundos 0 y unidades 0), porque la ruta del registro es fija y ninguna prueba la cambia; 10 vigias importan a Big Pickle. Rompe la ley 23 (ninguna comprobacion toca el estado real) y falsea el porcentaje de fallo que se uso para decidir.",
+    "encargo": "QUE SE REPARA: Que exista la prueba de: Que la ruta del registro de Big Pickle pueda cambiarse con una variable de entorno de prueba, y que sin ella siga siendo la de siempre.\nCOMO SE REPARA: Una prueba pytest en un solo archivo nuevo que demuestre hoy, con un assert, que esto NO se cumple todavia: Que la ruta del registro de Big Pickle pueda cambiarse con una variable de entorno de prueba, y que sin ella siga siendo la de siempre.. Se prueba EJECUTANDO la funcion o el comando (con carpetas temporales y sin tocar el estado real), no mirando el texto del codigo. Tiene que NACER ROJA por un assert (si la pieza aun no existe vale el error de importar justo esa pieza), y pasar cuando la reparacion este hecha.\nDONDE SE REPARA: vigias/test_vigia_el_registro_de_big_pickle_respeta_la_prueba.py\nPOR QUE SE REPARA: Medido el 2026-10-01: 423 de las 1678 lineas del registro de Big Pickle (25 por ciento) las escribieron las pruebas al correr (segundos 0 y unidades 0), porque la ruta del registro es fija y ninguna prueba la cambia; 10 vigias importan a Big Pickle. Rompe la ley 23 (ninguna comprobacion toca el estado real) y falsea el porcentaje de fallo que se uso para decidir.",
+    "modo": "IA",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": "",
+    "resultado_esperado": "Correr toda la bateria no cambia ningun archivo de memoria/; una vigia lo comprueba comparando antes y despues.",
+    "crear": true,
+    "entrega_la_prueba": "si"
+  },
+  "huella": "9730818727830cd0",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-01_193404_RECHAZADO_test_vigia_el_registro_de_big_pickle_respeta_la_prueba.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : el pasillo recorto el encargo de 24825 a 11014 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  aviso       : el pasillo recorto el encargo de 25299 a 11250 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  aviso       : el pasillo recorto el encargo de 25641 a 11422 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  diagnostico : Falta una prueba que ejecute la resolucion de la ruta del registro de Big Pickle con y sin variable de entorno de prueba, aislando LOCALAPPDATA/TEMP y sin recargar el modulo real.\n  toca        : vigias/test_vigia_el_registro_de_big_pickle_respeta_la_prueba.py funcion ?\n  confianza   : ?\n  VEREDICTO   : RECHAZADO\n  *** INVENTO: MODULO_REGISTRO = \"big_pickle.registro\" (modulo no attested en el material); FUNCION_RUTA = \"ruta_del_registro\" (funcion no attested; el propio archivo admite en comentario: \"Si la pieza real usa otros, la reparacion debe exponer estos\"); VAR_ENTORNO_PRUEBA = \"BIG_PICKLE_REGISTRO\" (nombre de variable de entorno fijado a criterio propio y del que depende toda la prueba) -> SE DESCARTA\n  fallo       : La prueba entera cuelga de tres nombres que nadie Certification del material: si la pieza real vive en otro modulo, se llama de otra forma, o la variable de entorno tiene otro nombre, el test queda ROJO POR EL MOTIVO EQUIVOCADO (IMPORT_ERROR / ATTR_ERROR) aunque la reparacion este bien hecha. Eso no es 'nacer roja por lo que falta': es fijar un contrato falso yitles.\n  fallo       : El propio archivo se delata en el comentario de cabecera: reconoce que los nombres son una suposicion y que la prueba habra que ajustarla mas adelante. Eso es trabajo sin terminar, no una prueba valida.\n  fallo       : El material dice explicito: 'NO adivines lo que no ves: si te falta algo, contasta NECESITO_LEIR seguido del archivo que hace falta'. El diagnostico de la reparacion ('la funcion que resuelve la ruta del registro del Big Pickle') no viene con nombre ni ruta: habia que pedir el archivo, no teclear uno.\n  fallo       : El aislamiento es incompleto para la ley 23: se redirigen LOCALAPPDATA/APPDATA/TEMP/TMP pero no USERPROFILE ni HOME, que en Windows es de donde sale Path.home()/expanduser('~'). Si la resolucion usa home(), el subproceso escribe en el estado real y la comprobacion rompe la ley 23 que diceARRY proteger.\n  resumen     : La prueba esta bien montada pero inventa el modulo (big_pickle.registro), la funcion (ruta_del_registro) y la variable de entorno (BIG_PICKLE_REGISTRO); como no viene del material, puede quedarse roja para siempre aunque la reparacion este bien, y ademas no aísla USERPROFILE/HOME, asi que no garantiza la ley 23. Mandale a pedir el archivo real con NECESITO_LEER antes de reintentar.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-01T19:34:07",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\V-N20-el_registro_de_big_pickle_respeta_la_prueba_20261001_193407.json"
+  }
+}

@@ -85,3 +85,30 @@ pieza deja el arnes libre a proposito.
 
 Se puede escribir el archivo arnes/candado_equipo.py entero si hace falta. Lo que NO se toca son las
 pruebas ni el candado de la puerta trasera: ese ya esta bien, solo hay que llamarlo.
+
+=== LA PIEZA QUE PIDIO EL REPARTIDOR, PEGADA AQUI LITERAL ===
+
+El repartidor pidio ver la pieza que apunta las frenadas, porque aparece en el ancla, y no venia en el
+material. Va copiada del archivo tal cual. NO se toca: solo se sigue llamando igual que hoy.
+
+def _apuntar_frenada(fp, por_que):
+    """La libreta AL REVES (Julio, 2026-08-21): se apunta cada vez que el candado FRENA.
+
+    Antes se apuntaba lo que se colaba sin equipo; con la puerta de escape cerrada eso ya no
+    pasa nunca y la libreta quedaba vacia. Lo util ahora es lo contrario: que Julio pueda ver
+    cuantas veces hubo que pararse y por que.
+
+    A prueba de fallos a proposito: si la libreta no se puede escribir, el candado NO se cae.
+    Frenar es lo importante; apuntarlo es la prueba, pero no puede tumbar al guardia.
+    """
+    try:
+        os.makedirs(os.path.dirname(_ruta_sin_equipo()), exist_ok=True)
+        with open(_ruta_sin_equipo(), "a", encoding="utf-8") as f:
+            f.write("%s  %s  (%s)\n" % (time.strftime("%Y-%m-%d %H:%M"), fp[:120], por_que))
+    except Exception:
+        pass
+
+Recibe dos cosas: el archivo del que se trata y el motivo en palabras. Nunca revienta: si no puede
+escribir, se calla y el candado sigue funcionando. Esa es la forma de la casa y hay que respetarla en
+el cambio nuevo: frenar es lo importante, apuntarlo es la prueba, pero apuntar NO puede tumbar al
+guardia.

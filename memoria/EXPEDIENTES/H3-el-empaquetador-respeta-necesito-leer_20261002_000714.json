@@ -1,0 +1,35 @@
+{
+  "orden": {
+    "id": "H3-el-empaquetador-respeta-necesito-leer",
+    "titulo": "Cuando se pide un trozo con NECESITO_LEER, el paquete lo entrega",
+    "origen": "Codex por el canal, 2026-09-29 13:20, trabajando en Foto Informe FI1",
+    "repara": "se pidio literalmente el trozo de app_web.html con processPhoto, el manejador de camara y el guardado, y el paquete entrego leyes y pruebas vecinas, sin ninguno de esos tramos. Dos vueltas del equipo perdidas: la primera SIN_VEREDICTO y la segunda DUDOSO, sin guardar nada. La causa YA estaba medida en la memoria de fallos: el repartidor entrega el archivo NOMBRADO recortado a sus primeros 80 renglones, min(80, lineas), no entero; con router.py de 636 renglones ya tumbo la orden 29 por lo mismo",
+    "pieza": "cerebro/router.py",
+    "encargo": "DONDE SE REPARA: cerebro/router.py\nQue cuando el encargo nombra una funcion concreta de un archivo concreto, el paquete traiga la rebanada literal de ESA funcion en su archivo anfitrion, y no un recorte ciego de los primeros 80 renglones ni solo leyes y pruebas vecinas. Medido hoy con el caso de Codex: processPhoto vive en el renglon 2381 de app_web.html, que tiene 2.462 renglones, asi que un recorte de 80 renglones nunca lo alcanza. Primero su prueba, roja por su motivo; despues el arreglo.",
+    "vigia": "vigias/test_vigia_el_paquete_trae_la_funcion_que_se_pide.py",
+    "razon": "es la causa medida de que el trabajo de Foto Informe este parado, y ya tumbo tambien la orden 29: falla en las dos manos a la vez",
+    "depende": [
+      "V-H3-el-empaquetador-respeta-necesito-leer"
+    ],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "aee941c1db81e765",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-02_000711_DUDOSO_router.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (36630 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : El paquete trae la funcion armar entera pero no trae la rebanada literal de una funcion concreta nombrada en un archivo anfitrion grande (p.ej. processPhoto en app_web.html de 2.462 renglones), porque el recorte ciego de 80 renglones nunca la alcanza.\n  toca        : cerebro/router.py funcion armar\n  confianza   : media\n  PREGUNTA_REQUERIDA: El material no trae el valor de TOPE_FUNCION_NOMBRADA ni la firma de asegurar_trozo_nombrado: se asume que existen tal como los usa el bloque actual. Si hay que confirmarlo, decirlo.; El material no trae el archivo vigias/test_vigia_el_paquete_trae_el_archivo_nombrado.py ni su contenido: no se puede verificar si ya cubre el caso de funcion nombrada en archivo anfitrion grande.\n  VEREDICTO   : DUDOSO\n  fallo       : El filtro `rol not in (\"CUERPO\",\"CODIGO\",\"WEB\",\"CEREBRO\",\"ARNES\")` es una lista literal de valores que nadie ha verificado. Si el rol real no coincide exactamente (mayusculas, guion, otro nombre), el `continue` se come todas las piezas: el bloque recorre el grafo entero y no anade nada. Y al estar dentro de `try/except Exception: pass`, el fallo es silencioso: la reparacion no hace nada y nadie se entera.\n  fallo       : Es regresion sobre `codigo`: el bloque viejo recorria `codigo` sin filtrar nada. Ahora cualquier pieza que ya estaba en `codigo` y cuyo rol no entre en la lista PIERDE su rebanada de funcion nombrada. Es decir, el arreglo puede quitar cobertura que antes funcionaba.\n  fallo       : No hay tope de CUANTAS funciones nombradas se anaden. `TOPE_FUNCION_NOMBRADA` limita renglones por funcion, no numero de funciones; antes el numero venia acotado de forma indirecta por `codigo`, ahora se recorre todo el grafo y cada palabra del problema puede traer su rebanada. El paquete puede crecer sin cota.\n  resumen     : La direccion del arreglo es la correcta (mirar todo el grafo y no solo `codigo`), pero lo deja en un `try/except: pass` con un filtro de `rol` de valores no verificados y sin tope de cuantas funciones anade: si los roles no coinciden tal cual, la reparacion no hace nada, no avisa, y ademas puede perder cobertura que antes si tenia.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-02T00:07:14",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\H3-el-empaquetador-respeta-necesito-leer_20261002_000714.json"
+  }
+}

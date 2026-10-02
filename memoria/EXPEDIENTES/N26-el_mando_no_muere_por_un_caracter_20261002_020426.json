@@ -1,0 +1,34 @@
+{
+  "orden": {
+    "id": "N26-el_mando_no_muere_por_un_caracter",
+    "titulo": "El mando no muere por un caracter y no pierde el trabajo pagado: Guardar antes de imprimir y mostrar con reemplazo",
+    "origen": "Julio 2026-10-01",
+    "repara": "Que el comando del equipo guarde la llave del trabajo antes de imprimir la respuesta y que al imprimir use un reemplazo para los caracteres que la consola no pueda mostrar, de modo que nunca muera por eso.",
+    "pieza": "ingeniero.py",
+    "vigia": "vigias/test_vigia_el_mando_no_muere_por_un_caracter.py",
+    "razon": "Fallo real del 2026-08-25 con vigia escrita para nacer roja y nunca reparado, sin orden que lo lleve: el mando muere al imprimir un caracter que la consola de Windows (cp1252) no tiene y, como guarda DESPUES de imprimir, se pierde el trabajo que ya se pago.",
+    "encargo": "QUE SE REPARA: Que el comando del equipo guarde la llave del trabajo antes de imprimir la respuesta y que al imprimir use un reemplazo para los caracteres que la consola no pueda mostrar, de modo que nunca muera por eso.\nCOMO SE REPARA: Que el comando del equipo guarde la llave del trabajo antes de imprimir la respuesta y que al imprimir use un reemplazo para los caracteres que la consola no pueda mostrar, de modo que nunca muera por eso.\nDONDE SE REPARA: ingeniero.py\nPOR QUE SE REPARA: Fallo real del 2026-08-25 con vigia escrita para nacer roja y nunca reparado, sin orden que lo lleve: el mando muere al imprimir un caracter que la consola de Windows (cp1252) no tiene y, como guarda DESPUES de imprimir, se pierde el trabajo que ya se pago.",
+    "modo": "IA",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": "",
+    "resultado_esperado": "Si un caracter no se puede mostrar, se muestra como se pueda y el trabajo se guarda antes de imprimir; la vigia existente pasa a verde."
+  },
+  "huella": "ede0fbd21f057339",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-02_015936_RECHAZADO_ingeniero.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (36352 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.\n  aviso       : GPT-OSS 120B (Groq) no le cabe (37239 letras, aguanta 19042) -> se le salta\n  diagnostico : El comando equipo imprime el veredicto antes de guardar la llave del trabajo pagado, y el print muere con UnicodeEncodeError en consola cp1252, perdiendo el trabajo ya pagado.\n  toca        : ingeniero.py funcion main\n  confianza   : media\n  VEREDICTO   : RECHAZADO\n  fallo       : No hace lo pedido en su mecanica principal: el encargo dice 'al imprimir use un REEMPLAZO para los caracteres que la consola no pueda mostrar'. Lo que trae es try/except, que no reemplaza nada: el veredicto sigue sin verse y solo se sustituye por un mensaje generico. El caracter malo no se dibuja con sustitucion, se pierde el texto entero.\n  fallo       : En la rama '_error' el parche empeora el caso que mas duele tragar: se captura la excepcion y se imprime '(el veredicto llego, pero no se pudo mostrar entero: %s)', o sea se tira el motivo real del fallo y aun asi se devuelve 1. Una vigia roja que se queda muda es peor que una que muere ruidosa.\n  fallo       : El except del bloque final tampoco esta protegido: su propio texto pasa por el mismo print cp1252. Solo es seguro por accidente (el repr de UnicodeEncodeError sale ASCII escapado), no por diseno.\n  fallo       : El par de nivel superior 'texto_viejo'/'texto_nuevo' viene VACIO (tambien en 'archivo' no hay problema, pero el par si). Todo el parche vive dentro de 'cambios'. Si el consumidor aplica el par de arriba, no aplica nada y se da por reparado sin reparacion.\n  resumen     : Rechazado: el obrero esquivo el fallo en vez de taparlo — pidio un 'reemplazo' de caracteres y entrego un try/except que ademas se come el texto del veredicto y deja a la rama de error sin diagnostico, y el parche de nivel superior va vacio.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-02T02:04:26",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\N26-el_mando_no_muere_por_un_caracter_20261002_020426.json"
+  }
+}

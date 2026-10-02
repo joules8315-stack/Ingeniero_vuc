@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "V-N28-prueba_previa",
+    "titulo": "Vigia primero: El programa de la prueba previa",
+    "origen": "Julio 2026-10-01",
+    "repara": "Que exista la prueba de: Una pieza nueva que, dada una orden, reproduzca sin IA las etapas del encargo: el paquete que se armaria, el material que le quedaria al escritor, el prompt completo y el recorte al tope del cerebro que va a escribir, y diga etapa por etapa si el codigo que la orden nombra sigue estando. Devuelve un informe corto en palabras simples.",
+    "pieza": "vigias/test_vigia_prueba_previa.py",
+    "vigia": "vigias/test_vigia_prueba_previa.py",
+    "razon": "Medido el 2026-10-01: 12 de las 58 ordenes abiertas con pieza .py no nombran el archivo de su pieza y a esas el paquete les trae el codigo solo en 1 de 3; cada una se manda a una IA de pago sin que nadie compruebe antes por programa que el codigo llega. Es gasto sin resultado posible.",
+    "encargo": "QUE SE REPARA: Que exista la prueba de: Una pieza nueva que, dada una orden, reproduzca sin IA las etapas del encargo: el paquete que se armaria, el material que le quedaria al escritor, el prompt completo y el recorte al tope del cerebro que va a escribir, y diga etapa por etapa si el codigo que la orden nombra sigue estando. Devuelve un informe corto en palabras simples.\nCOMO SE REPARA: Una prueba pytest en un solo archivo nuevo que demuestre hoy, con un assert, que esto NO se cumple todavia: Una pieza nueva que, dada una orden, reproduzca sin IA las etapas del encargo: el paquete que se armaria, el material que le quedaria al escritor, el prompt completo y el recorte al tope del cerebro que va a escribir, y diga etapa por etapa si el codigo que la orden nombra sigue estando. Devuelve un informe corto en palabras simples.. Se prueba EJECUTANDO la funcion o el comando (con carpetas temporales y sin tocar el estado real), no mirando el texto del codigo. Tiene que NACER ROJA por un assert (si la pieza aun no existe vale el error de importar justo esa pieza), y pasar cuando la reparacion este hecha.\nDONDE SE REPARA: vigias/test_vigia_prueba_previa.py\nPOR QUE SE REPARA: Medido el 2026-10-01: 12 de las 58 ordenes abiertas con pieza .py no nombran el archivo de su pieza y a esas el paquete les trae el codigo solo en 1 de 3; cada una se manda a una IA de pago sin que nadie compruebe antes por programa que el codigo llega. Es gasto sin resultado posible.",
+    "modo": "IA",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": "",
+    "resultado_esperado": "Antes de llamar a ninguna IA, un programa reproduce las etapas (paquete, material, prompt, recorte) y comprueba que el codigo nombrado llega; si no llega, la orden queda apartada con el motivo exacto y no se gasta nada.",
+    "crear": true,
+    "entrega_la_prueba": "si"
+  },
+  "huella": "bb8676193c9f3952",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-01_221426_DUDOSO_test_vigia_prueba_previa.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : vueltas_dadas: 1\n  diagnostico : Falta la pieza que reproduce sin IA las etapas del encargo (paquete, material del escritor, prompt, recorte al tope y veredicto por etapa sobre el codigo nombrado), y hay que crear la prueba pytest que nazca roja hasta que exista.\n  toca        : vigias/test_vigia_prueba_previa.py funcion ?\n  confianza   : media\n  VEREDICTO   : DUDOSO\n  fallo       : Los dos asserts que deberian certificar el fondo son tautologicos: ('si' in bajo or 'no' in bajo or 'falta' in bajo or 'esta' in bajo) y ('no cabe' or 'no llega' or 'recortado' or 'falta' or 'no') se cumplen con cualquier texto en espanol ('sigue' contiene 'si', 'no' esta en casi toda frase). Una pieza que devuelva un parrafo fijo nombrando las cuatro etapas pasaria sin comprobar nada.\n  fallo       : El tope de 10 caracteres de test_con_tope_pequeno_avisa_que_el_codigo_no_cabe no se contrasta con nada: el informe se aplana a texto con _texto_informe, asi que no se mira ni el tamano del material del escritor ni el del recorte. El 'recorte al tope', que es la cuarta etapa del encargo, queda sin verificar.\n  fallo       : La pieza se localiza por adivinanza: 8 nombres de modulo y 6 de funcion. Una implementacion correcta llamada p.ej. cuerpo/vista_previa.py con main() deja la prueba roja para siempre, incumpliendo la ley del contrato 'pasar cuando la reparacion este hecha'.\n  fallo       : _llamar reintenta ante cualquier TypeError, incluidos los lanzados dentro del cuerpo de la funcion: puede enmascarar un fallo real y validar el resultado de una llamada con argumentos que no son los correctos.\n  resumen     : El archivo esta bien placed y nace rojo de verdad, pero sus dos asserts clave los cumple cualquier texto en espanol y la pieza se busca entre 8 nombres inventados, asi que la prueba no certifica lo que el encargo pide y puede quedarse roja para siempre; hay que atarla a un nombre real y anadir la prueba negativa del codigo ausente y la del tope.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-01T22:14:30",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\V-N28-prueba_previa_20261001_221430.json"
+  }
+}

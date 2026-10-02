@@ -1,315 +1,314 @@
-# PRIORIDAD UNO — Reparar el Ingeniero: que termine, que acierte, rápido y barato
+# PLAN UNICO — GENERADO POR PROGRAMA (2026-10-01). No se edita a mano.
 
-> **APROBADO POR JULIO el 2026-09-25. Es la PRIORIDAD NUMERO UNO.**
-> **No se pasa a ninguna otra prioridad hasta que esto esté terminado.**
->
-> El estado NO vive en el chat: vive aquí, en `memoria/ORDENES.json` y en `memoria/ESTADO.json`.
-> Si una sesión nueva no sabe dónde íbamos, lee este documento y la lista de órdenes.
-> Orden de trabajo: R0 → (R1 + R2 a la vez) → 1b → (R3 + R4 + R5) → (R6 + R7) → R8.
+> Fuente unica: `memoria/ORDENES.json` (ordenes y su campo `depende`) y `memoria/PLAN_DE_PASOS.json` (pasos).
+> Una orden corre solo si las de su `depende` estan `hecha`; la prioridad es el orden de la lista.
+> Lo anterior se aparto, sin borrar, en `memoria/planes_anulados/2026-10-01/` (con `INDICE.json`).
 
-## ESTADO AL 2026-09-27 (lo primero que hay que leer al volver)
+## 1. Hallazgos: fallo, causa raiz, reparacion raiz, donde, plan y paso
 
-**Hechas y selladas hoy, cada una con su vigía nacida ROJA y ahora verde:**
+| # | Fallo | Evidencia medida | Causa raiz | Reparacion raiz | Donde | En que plan estaba | Ordenes | Paso | Que destraba | Meta |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | Las vigias danan la memoria real | La corrida vacio memoria/INDICE_METODO.json (2035 lineas); 423 de 1678 lineas de BIGPICKLE.log las escribieron pruebas | Rutas de memoria fijas; el archivo de ajustes de las vigias no aisla toda la carpeta | Cada prueba usa una copia temporal de memoria y una vigia compara antes y despues | vigias/conftest.py; cuerpo/bigpickle.py (RUTA_LOG) | plan nuevo del 2026-10-01 (esta tabla) | N20 | 00 | toda medicion futura (309 vigias) | 0 archivos de memoria cambiados tras correr la bateria |
+| 2 | El escritor no recibe el codigo que tiene que cambiar | Prueba sin IA: con el encargo original de H2 el paquete (23267 letras) no trae _preguntar_con_relevo ni el renglon a cambiar. En 58 ordenes abiertas: si el encargo nombra el archivo el paquete trae el codigo en 31 de 31; si no, en 1 de 3; 12 de 58 no lo nombran | El pit manda solo el texto del encargo y el buscador adivina por palabras; los campos pieza y repara de la orden nunca llegan; nadie comprueba antes de gastar | La guia lleva DONDE (archivo y funcion) tomado de la orden; el codigo llega completo por su propia via; prueba previa sin IA antes de gastar | capataz.lanzar_al_equipo; ingeniero.py equipo; obrero.trabajar; arnes/dos_vias.py y arnes/prueba_previa.py (nuevos) | plan nuevo del 2026-10-01 (esta tabla) / ley: CONTRATO_LAS_DOS_VIAS (1-oct, sin ninguna orden hasta hoy) | N28, N27 (la linea DONDE ya se aplica a las ordenes que no nombraban su archivo) | 0c | las respuestas NO_ENCONTRADO y NECESITO_LEER (43 de las 164 mal llamadas vacio) y las 12 ordenes sin archivo nombrado | el paquete trae el codigo en 100% de las ordenes; 0 llamadas gastadas sin el codigo |
+| 3 | El pasillo recorta el codigo que si llego | Al tope del cerebro mas pequeno (8000 letras) se pierde codigo que si estaba en 27 de 34 ordenes comprobables; el prompt mediano mide 31989 letras y los 58 pasan de 8000 | _tope_pasillo = min(_capas) y el material engorda con la guia | Tope = el cerebro que mas aguanta; con las dos vias no hay nada que recortar | cuerpo/obrero.py, _preguntar_con_relevo | plan nuevo del 2026-10-01 (esta tabla) / ley: CONTRATO_LAS_DOS_VIAS; CONTRATO_EL_PASILLO_SE_REPARTA_POR_CAPACIDAD | H2, N27 | 0a | 27 ordenes | 0 ordenes con codigo perdido por recorte |
+| 4 | El revisor marca como invento lo que la reparacion crea | 25 de 51 fallos no_aprobo | La IA revisora marca nombres nuevos y nada los contrasta por programa | Un programa comprueba si el nombre esta declarado en el propio codigo que la propuesta trae | cuerpo/obrero.py (revision del auditor) | PLAN_PRIORIDAD_UNO.md | R9 | 0b | toda orden que crea un nombre nuevo (casi todas las piezas nuevas del plan) | 0 rechazos por invento falso |
+| 5 | Una falla aislada detenia todo el trabajo | Con la cadena en fila una falla bloqueaba 173 de 173 ordenes; con dependencias reales bloquea como maximo 5 de 190 | Dependencias en fila y el bucle termina por 3 fallos iguales o por NADA SE PUEDE CORRER | Solo dependencias reales; el bucle aparta la que falla y sigue | memoria/ORDENES.json (campo depende); capataz.bucle | plan nuevo del 2026-10-01 (esta tabla) | N18 + grafo | 0 | todas las ordenes del plan | el bucle solo termina si no queda nada corrible |
+| 6 | No hay multitarea (ley de maxima prioridad del 28-sep sin cumplir) | El comando pit llama a bucle(proyecto) con en_paralelo=1; la vigia 'la cadena trabaja en varias a la vez' esta roja y sin dueno; la copia por orden, los turnos del guardado y el bucle con hilos ya existen | El parametro no se expone, la vigia vieja exige de una en una y R6 estaba en el ultimo paso | Reescribir la vigia vieja con su razon, ley de copias temporales, y R6a/R6 | capataz.bucle; ingeniero.py (comando pit); vigias/test_vigia_el_pit_corre_una_tarea_a_la_vez.py | PLAN_PRIORIDAD_UNO.md / ley: CONTRATO_LA_MULTITAREA_ES_LA_FORMA_DE_TRABAJAR (28-sep, maxima prioridad) | L4, N29, R6a, R6 | 0d | todas las ordenes del plan (hoy se corre 1 a la vez) | 3 o mas ordenes a la vez |
+| 7 | Se gasta el saldo de Claude | Solo el perito ejecuta a Claude: 3 intentos de 600 s tras cada orden fallida. Big Pickle gratis desde el 28-sep: mediana 56 s, p95 186 s, maximo 333 s en 239 llamadas buenas | El perito es Claude y no tiene un tiempo medido | Perito = IA gratis; un intento con el tiempo medido del historial (techo 400 s, decision de Julio) | capataz.pedir_al_perito | PLAN_PRIORIDAD_UNO.md, continuacion_2026-09-13.md | N17, N15, 50, 51 | 0e | el forense de las 31 ordenes fallidas | 0 llamadas a Claude; el perito nunca cuelga el bucle |
+| 8 | El bucle se detiene por tope en dolares | TOPE_MES_USD y se_paso_del_tope dentro del bucle | Tope en dolares dentro del bucle | Solo se detiene si DeepSeek se queda sin saldo (decision de Julio del 27-sep) | capataz.bucle | PLAN_PRIORIDAD_UNO.md, 02_FORENSE.md | 89, 68 | 0f | todas | 0 paradas por dolares |
+| 9 | El guardado pierde trabajo aprobado | 82 veces (FALLOS id 69); la vigia de R1 esta roja; 23 de 93 expedientes son 'guardia' | _vecinas_por_stem devuelve None (corre las 245 vigias) con tope fijo de 900 s | Nunca None; tope medido; si se agota se aparta con motivo | arnes/vecinas.py; arnes/guardia_de_guardado.py | PLAN_PRIORIDAD_UNO.md, PLAN_DE_RAIZ_2026-09-13.md | R1 | 1 | 23 fallos de guardado y los 14 trabajos frenados | 0 trabajos aprobados sin llegar al disco |
+| 10 | Una orden fallida no vuelve tras su arreglo | El forense creo R1-F151051 y R1 siguio fallida | El forense no enlaza el arreglo con la orden que fallo | El arreglo pasa a la lista depende de la fallida | capataz.forense | plan nuevo del 2026-10-01 (esta tabla) | N14 | 1b | la cadena de cada orden fallida | 0 fallidas esperando un arreglo ya hecho |
+| 11 | La legislacion recoge basura | 126 apuntes pendientes, casi todos pegados de PowerShell | El candado de legislar apunta cada linea y cada cita | Un mensaje es una instruccion; las palabras de maquina no entran | arnes/candado_legislar.py | PLAN_PRIORIDAD_UNO.md, 01_ACUERDOS.md | R10, 30, 31 | 3 | el cierre y la lista de pendientes | 0 apuntes falsos |
+| 12 | Recoger pisa trabajo mas nuevo; hay 14 trabajos frenados | Las vigias de 37 y 113 estan rojas | Recoger no compara el contenido | Comparar contenido y no pisar; despues recoger los 14 | arnes/recoger_los_pedazos.py | PLAN_PRIORIDAD_UNO.md, PLAN_DOS_PASOS.md | 37, 113 | 4 | los 14 trabajos ya pagados | 0 trabajos pisados |
+| 13 | El mando muere al imprimir y pierde el trabajo pagado | Vigia escrita el 25-ago, roja, sin orden | Guarda despues de imprimir y la consola cp1252 no dibuja algunos caracteres | Guardar antes de imprimir y mostrar con reemplazo | ingeniero.py (comando equipo) | plan nuevo del 2026-10-01 (esta tabla) | N26 | 4 | el trabajo pagado de cada ronda | 0 trabajos perdidos por imprimir |
+| 14 | El revisor de programa corta rondas buenas | 17 de 51 fallos no_aprobo; la vigia de R24 esta roja | Un aviso sale como freno y hay reglas que se pisan | El aviso no frena; arreglar los casos medidos | arnes/revisor_de_programa.py | PLAN_PRIORIDAD_UNO.md, 08_FICHA_DEL_PIT.md | R24, 95-F011402, 41, 43, 45 | 5 | 17 fallos | 0 rondas buenas frenadas |
+| 15 | Solo un cambio por ronda y no se puede crear sobre un archivo existente | El obrero ofrece 'cambios' solo para el mismo archivo; no_aplico 10 de 93 expedientes | El prompt y el aplicador no admiten varios archivos ni crear sobre uno existente | Varios cambios por ronda en varias funciones y archivos | cuerpo/obrero.py (prompt); cuerpo/aplicador.py | PLAN_PRIORIDAD_UNO.md | 95-F222455, 173-F064924, 46-F061935, 112-F061113 | 6 | toda orden que toca mas de una funcion o archivo | 0 rondas rechazadas por mas de un cambio |
+| 16 | El material no llega completo (archivo pequeno, NECESITO_LEER, paquete compacto) | 17 de 79 fallos apuntados son de material; 14 respuestas NO_ENCONTRADO y 29 NECESITO_LEER | El repartidor corta en trozos por parecido de palabras y no atiende lo que la IA pide | Entregar enteros los archivos cortos y atender lo que la IA pide | cerebro/router.py | PLAN_PRIORIDAD_UNO.md, 08_FICHA_DEL_PIT.md | 29, 29-F005530, H3, R22 | 7 | 43 respuestas que piden material | 0 NECESITO_LEER sin atender |
+| 17 | Hay vigias que no miden | 9 vigias verdes con pruebas sin assert o que devuelven True/False; sabotaje fallo en 10 de 31 ordenes fallidas | Nacen verdes y nada comprueba que nacieron rojas por su motivo | Sabotaje obligatorio y revisor por programa | arnes/sabotaje.py; capataz.comprobar_pasos | PLAN_PRIORIDAD_UNO.md, 02_FORENSE.md | 63, 64, 38, 39, 24, 25, 32, 33 | 8 | sellar con confianza todo lo demas | 0 vigias verdes que no miden |
+| 18 | 'Vacio' no es vacio y nadie lee el cuaderno | 164 de 165 'vacias' eran propuestas incompletas (92 solo diagnostico, 29 otra forma de JSON, 29 texto, 14 NO_ENCONTRADO); Claude y Codex no apuntan; 17,8% de filas sin segundos; solo 1000 filas; sin costo | El codigo marca vacio cuando la propuesta no cumple y no dice que falto; nadie lo lee | Apuntar causa y tamano del pedido; resumen diario que el bucle muestra al arrancar y al parar; el motivo del fallo entra por la guia de la siguiente ronda | cuerpo/obrero.py (trabajar); cuerpo/cuaderno.py; arnes/resumen_del_cuaderno.py | plan nuevo del 2026-10-01 (esta tabla) | N19, N03 | 9 | diagnosticar cualquier fallo con datos | 0 'vacio' falsos; la causa en el 100% de los fallos |
+| 19 | El forense casi nunca produce una orden | 9 de 93 expedientes; el juez rechazo 28; el perito no contesto 28; 39 sin analizar | El juez es una IA que no ve el codigo y el perito es Claude | El juez es un programa que ve el codigo; perito gratis | capataz.juzgar_citas | plan nuevo del 2026-10-01 (esta tabla) | N21, N17 | 9 | que cada fallo genere su arreglo | >80% de expedientes con orden nueva |
+| 20 | Vigias rojas sin dueno | 38 de 56 vigias no verdes no tienen orden; 19 son comportamiento roto de verdad | Nada convierte una vigia roja en orden | Lector de vigias rojas que crea la orden con las 4 preguntas llenas | arnes/lector_de_rojas.py (nuevo); ingeniero.py vigias; guardia_de_guardado | plan nuevo del 2026-10-01 (esta tabla) | N04 | 9 | 19 reparaciones | 0 vigias rojas sin orden |
+| 21 | Todo debe nacer conectado y hay piezas dormidas | 11 piezas dormidas; el contador de huerfanas y el paso 'pieza suelta' del pit dan por conectada a una pieza que solo nombra una vigia; 3 candados dormidos | Basta que cualquier archivo, incluso una vigia, nombre la pieza | Una pieza cuenta como conectada solo si la llama codigo real o esta en los ganchos; el pit no sella una pieza nueva sin llamador | skills/nace_conectada.py; capataz.comprobar_pasos | plan nuevo del 2026-10-01 (esta tabla) / ley: CONTRATO_TODO_ENCHUFADO_NADA_DORMIDO | N06, N06b | 9 | 11 piezas dormidas | 0 piezas huerfanas; cada orden nueva trae su conexion |
+| 22 | Ordenes incompletas | 9 ordenes sin campo vigia y 40 con una vigia prometida y sin escribir (de 91 abiertas) | La puerta de las 4 respuestas solo se aplica al cerrar | Rechazar lo incompleto al crear, con DONDE, POR QUE, COMO y resultado esperado | arnes/puerta_del_plan.py; cuerpo/director.py | plan nuevo del 2026-10-01 (esta tabla) | N02, N01 | 9 | 40 ordenes que no se pueden cerrar | 0 ordenes incompletas |
+| 23 | La memoria no se actualiza al sellar | Lecciones dormidas; el paquete no las trae; nada deja el estado al dia | No hay programa de sellado ni hora de apuntes | Sellado que actualiza solo; hora de apuntes; linea base antes y despues | arnes/al_sellar.py, cuerpo/hora_de_apuntes.py, arnes/linea_base.py (nuevos) | plan nuevo del 2026-10-01 (esta tabla) | N05, N09, N12 | 9 | aprender de cada fallo | memoria al dia tras cada sello |
+| 24 | Demasiados planes y versiones | 47 documentos de plan o estado, 105 copias, 5 duplicadas exactas, 8 hijas del forense, 1223 trabajos guardados (113 versiones de obrero.py) | Cada ronda guarda una version nueva y nada exige un solo plan | Un solo plan generado por programa; lo viejo se aparta sin borrar; vigia del plan unico | PLAN_PRIORIDAD_UNO.md; arnes/un_solo_plan.py (nuevo) | plan nuevo del 2026-10-01 (esta tabla) | N25 | 9 | saber que plan manda | 1 plan; 0 ordenes duplicadas |
+| 25 | La espera maxima de 400 s no esta en ninguna orden | Escrito como FALTA en el plan anterior | R3 solo habla de preguntar a la vez | Big Pickle 400 s y sus dos vigias | cuerpo/bigpickle.py | plan nuevo del 2026-10-01 (esta tabla) | N22 | 10 | esperas largas | espera maxima 400 s |
+| 26 | Falta la medida unica: Julio pudo hacer su informe hoy | Marcada como lo mas importante y nunca convertida en orden | No hay prueba real automatica | Prueba real con navegador automatico | arnes/prueba_real_del_informe.py (nuevo) | plan nuevo del 2026-10-01 (esta tabla) | N23 | 12b | saber si de verdad sirve | si/no diario |
 
-| Orden | Qué quedó arreglado |
-|---|---|
-| R1b + R1c | El guardia ya **no frena por pruebas que estaban rojas de antes**. La pieza `rojas_que_frenan` quedó enganchada dentro de `_vigias`; el fallo estaba en que las declaradas se le pasaban como conjunto y él solo acepta listas, así que las anulaba. El aviso ya nombra la tercera razón. |
-| R1d | **La batería corre en paralelo**: pieza nueva `arnes/bateria_en_paralelo.py`, enganchada en el guardia. En fila, las 257 pruebas pasaban de 12 min y se perdió un trabajo aprobado; en 4 grupos termina en un par de minutos. Ya ha dejado guardar varias veces. |
-| R5 | **Ningún proceso del capataz sin tope**: los cuatro `subprocess.run` que salían sin tope ya lo llevan, y un cuelgue cuenta como fallo, nunca como aprobado. |
-| R4a + R4b | **La misma prueba no se corre dos veces**: pieza `arnes/memoria_de_pruebas.py` y el juez ya la usa. Un apunte rojo nunca se vuelve verde. |
-| R3a (a medias) | Techo de espera declarado y respetado por `cuanto_esperarle`. Lo de Big Pickle, ver la decisión de Julio en R3. |
+## 2. Flujo de trabajo medido, etapa por etapa
 
-**Cómo funciona ahora el guardado, en corto:** las rojas que ya estaban rojas antes viven en
-`memoria/.rojas_conocidas.json` (no se sube al repositorio); el guardia las tolera, y cuando deja
-pasar **une** las de ahora con las que ya conocía en vez de borrarlas. Si hoy hay 21 rojas
-declaradas, son de antes y están apuntadas.
+| Etapa | Quien o que pieza | Numero medido | Orden que lo repara |
+|---|---|---|---|
+| E0 Entender lo que Julio quiere | ninguno | NO MEDIDO: no existe la pieza | N07 |
+| E1 La orden esta completa (4 preguntas y vigia) | puerta del plan solo al cerrar | 9 ordenes sin campo vigia y 40 con vigia sin escribir, de 91 abiertas | N02, N01 |
+| E2 Prueba previa: llega el codigo (sin gastar) | no existe | 12 de 58 ordenes no nombran su archivo; con archivo nombrado llega el codigo en 31/31, sin nombrarlo 1/3 | N28 |
+| E3 Codigo limpio y guia aparte | no existe (ley del 1-oct sin orden) | NO MEDIDO | N27 |
+| E4 Recorte del pasillo | obrero._preguntar_con_relevo | quita codigo que si llego en 27 de 34 ordenes | H2 |
+| E5 El escritor responde | DeepSeek, Groq, Gemini | DeepSeek: 467 de 595 llamadas sirvieron (78,5%), mediana 5,2 s; 164 de 1000 filas mal llamadas vacio | N19 |
+| E6 Revisor por programa | arnes/revisor_de_programa.py | frena en 17 de 51 no_aprobo | R24, 95-F011402, 41, 43, 45 |
+| E7 Auditor IA | Big Pickle | rechazo en 22 y marca invento en 25 de 51 no_aprobo | R9 |
+| E8 Aplicador | cuerpo/aplicador.py | no_aplico 10 de 93 fallos | 95-F222455 y las de su grupo |
+| E9 Guardado y bateria | arnes/guardia_de_guardado.py | guardia 23 de 93 fallos; 82 veces no dejo guardar | R1 |
+| E10 Vigia y sabotaje | capataz.comprobar_pasos | sabotaje fallo en 10 de 31 ordenes fallidas | 63, 64, 38, 39, 24, 25, 32, 33 |
+| E11 Sellado y memoria | no existe | NO MEDIDO | N05, N12 |
+| E12 Aprender del fallo | forense | 9 de 93 expedientes produjeron una orden | N21, N04, N09 |
 
-**Apuntado para después (órdenes nuevas de hoy):** `R4c` (el capataz tampoco repita la corrida),
-`R6a` (la roja de `test_vigia_el_loop_del_pit.py` espera R6), `R13` (el paquete no trae el archivo
-que se le nombra si la frase es larga: costó tres rondas hoy) y `R14` (una ronda no puede declarar
-una constante y usarla a la vez: dejó la herramienta parada un rato).
+## 3. Las cuatro medidas (rapido, preciso, eficiente, economico): hoy y meta
 
----
+| Termino | Medida | Hoy | Meta | Quien la mueve |
+|---|---|---|---|---|
+| RAPIDO | Minutos por orden | 90,1 (plan del 25-sep, cuaderno) | menos de 20 | N12 la mide en cada orden |
+| RAPIDO | Ordenes a la vez | 1 | 3 o mas | L4, N29, R6a, R6 |
+| PRECISO | Rondas aprobadas en la primera | 3 de 13 el 1-oct (CONTRATO_LAS_DOS_VIAS) | 80% o mas | N27, N28 |
+| PRECISO | Llamadas que no sirvieron | 18,8% (cuaderno) | menos de 5% | N19 |
+| PRECISO | Ordenes cuyo codigo llega al escritor | 32 de 34 comprobables; 12 de 58 sin archivo nombrado | 100% | N28, N27 |
+| EFICIENTE | Llamadas a IA por orden | 4,78 (plan del 25-sep) | menos de 2,5 | N28, N27, N19 |
+| EFICIENTE | Trabajo aprobado que no llega al disco | 82 veces | 0 | R1 |
+| ECONOMICO | Llamadas a Claude | una por cada fallo (perito) | 0 | N17, N15 |
+| ECONOMICO | Llamadas gastadas sin el codigo | no medido (12 de 58 ordenes en riesgo) | 0 | N28 |
+| ECONOMICO | Costo por orden aprobada | NO MEDIDO: el cuaderno no guarda costo | medido en cada orden | N03, N12 |
 
-Investigado el 2026-09-25: tres agentes en paralelo + verificación línea por línea hecha por Claude.
-**Dos conclusiones mías anteriores resultaron falsas y están corregidas abajo** (marcadas CORRECCIÓN).
+## 4. Como se decide cada reparacion (qué, donde, por que, cuando, como)
 
----
+Cada orden lleva en su encargo QUE SE REPARA, COMO, DONDE y POR QUE; el CUANDO es su paso y su campo `depende`.
 
-## Los números que mandan (de la memoria de la herramienta, no de una opinión)
+## 5. Pasos y ordenes
 
-| Qué | Número real | De dónde |
-|---|---|---|
-| "El guardia no dejó guardar lo que el equipo aplicó" | **82 veces** | `memoria/FALLOS.json` id 69 (el 2º más repetido tiene 5) |
-| Trabajos aprobados frenados, aún en el disco | **14** | `memoria/trabajos_sin_revisar/*.FRENADO_POR_EL_GUARDIA` |
-| Expedientes con veredicto `no_aprobo` | **40 de 82 (48.8%)** | `memoria/EXPEDIENTES/` |
-| Minutos por orden (promedio) | **90.1 min** | `memoria/CUADERNO_DE_LLAMADAS.jsonl` |
-| Llamadas a IA por orden | **4.78** (máx 27) | ídem, 165 órdenes |
-| Llamadas que acabaron en nada | **20.6%** (206 de 1000) | ídem |
-| Big Pickle | **25.9 h quemadas**, 167 s de media, **40.6% falla**, 22.8% timeout | `memoria/BIGPICKLE.log`, 715 llamadas |
-| DeepSeek (el de pago) | **5.06 s** de media, **USD 2.79 de 5.00** al mes | `memoria/GASTO_USD.jsonl` |
-| Órdenes fallidas | **37 de 197 (18.8%)**; 44 con `fallos_seguidos>0` | `memoria/ORDENES.json` |
+### Paso 00 Medir sin danar la memoria real
+- `N20-ninguna_vigia_toca_la_memoria_real` [pendiente] Las vigias no tocan el estado real: La guardia de la memoria real
+- `V-N20-las_pruebas_apuntan_a_un_registro_temporal` [pendiente] Vigia primero: Cada prueba usa su propio registro
+- `N20-las_pruebas_apuntan_a_un_registro_temporal` [pendiente] Las vigias no tocan el estado real: Cada prueba usa su propio registro
 
-**Lo que grita:** lo "gratis" es lo más caro. El de pago contesta en 5 segundos por centavos; el gratis
-se comió 26 horas fallando 4 de cada 10 veces — y se le espera **en fila**, uno tras otro
-([obrero.py:891](cuerpo/obrero.py#L891)), hasta 600 s cada uno.
+### Paso 0 El bucle no se detiene por un fallo aislado
+- `V-N18-el_bucle_no_se_detiene_por_fallos` [pendiente] Vigia primero: El bucle aparta la que falla y sigue
+- `N18-el_bucle_no_se_detiene_por_fallos` [pendiente] El bucle nunca se detiene por una orden que falla: El bucle aparta la que falla y sigue
 
----
+### Paso 0a El pasillo no recorta al que escribe
+- `H2-el-pasillo-no-corta-a-la-medida-del-mas-chico` [pendiente] El material se corta a la medida del que va a escribir, no del cerebro mas pequeno
 
-# R0 · EL CIERRE ATASCADO — se repara PRIMERO
+### Paso 0b Crear no es inventar
+- `R9` [pendiente] Crear no es inventar: que lo compruebe un programa
 
-- **QUÉ pasa:** el guardia del cierre reclama "instrucciones de Julio sin asentar" que **no son de
-  Julio**: hoy reclama el texto interno de cómo ponerle título corto a una tarea (*"Generate a concise,
-  single-line task title…"*, en inglés). Mientras no se asiente, no deja cerrar. Nunca.
-- **POR QUÉ pasa (causa exacta, verificada):** el filtro que distingue "lo que pide el programa" de "lo
-  que dice Julio" **no lee el texto: confía en una marca de entorno**
-  ([candado_legislar.py:194](arnes/candado_legislar.py#L194)): si quien llama no pone
-  `INGENIERO_LLAMADA_DEL_PROGRAMA=1`, **todo lo que entra se apunta como orden de Julio**. El texto del
-  título llegó sin la marca. Un filtro que depende de que el llamador se acuerde, falla siempre.
-- **DÓNDE:** `arnes/candado_legislar.py`, la parte que apunta ([líneas 141-200](arnes/candado_legislar.py#L141-L200)).
-- **CUÁNDO:** antes que todo lo demás. Cada cierre bloqueado cuesta vueltas todos los días.
-- **CÓMO:** **la ley ya existe y la vigía también** — no se duplica nada:
-  `vigias/test_vigia_lo_que_pide_el_programa_no_es_de_julio.py` (Julio, 2026-09-21) ya exige que lo del
-  programa no se apunte. Lo que falta es que **no dependa de una marca**: el candado decide por el propio
-  texto (idioma, forma de plantilla del sistema, que no venga del chat de Julio).
-  1. Ampliar esa vigía con el caso REAL de hoy: el texto del título en inglés, **sin ninguna marca** →
-     no se apunta. Nace roja.
-  2. El equipo repara el candado hasta ponerla verde.
-  3. Limpiar las 5 líneas falsas que hoy están en la lista de pendientes, marcadas "no aplica".
+### Paso 0c Que el trabajo llegue al escritor: prueba previa y dos vias
+- `V-N28-prueba_previa` [pendiente] Vigia primero: El programa de la prueba previa
+- `N28-prueba_previa` [pendiente] Prueba previa sin IA: antes de gastar, se comprueba que el codigo llega: El programa de la — depende de: V-N28-prueba_previa
+- `V-N28-el_bucle_hace_la_prueba_previa` [pendiente] Vigia primero: El bucle la hace antes de gastar
+- `N28-el_bucle_hace_la_prueba_previa` [pendiente] Prueba previa sin IA: antes de gastar, se comprueba que el codigo llega: El bucle la hace  — depende de: V-N28-el_bucle_hace_la_prueba_previa
+- `V-N27-las_dos_vias` [pendiente] Vigia primero: El programa de las dos vias
+- `N27-las_dos_vias` [pendiente] Las dos vias por programa: el codigo viaja limpio y la guia va aparte: El programa de las  — depende de: V-N27-las_dos_vias
+- `V-N27-el_pit_arma_las_dos_vias` [pendiente] Vigia primero: El pit arma las dos vias
+- `N27-el_pit_arma_las_dos_vias` [pendiente] Las dos vias por programa: el codigo viaja limpio y la guia va aparte: El pit arma las dos — depende de: V-N27-el_pit_arma_las_dos_vias
+- `V-N27-el_mando_equipo_recibe_las_dos_vias` [pendiente] Vigia primero: El comando equipo recibe las dos vias
+- `N27-el_mando_equipo_recibe_las_dos_vias` [pendiente] Las dos vias por programa: el codigo viaja limpio y la guia va aparte: El comando equipo r — depende de: V-N27-el_mando_equipo_recibe_las_dos_vias
+- `V-N27-el_obrero_usa_la_via_del_codigo` [pendiente] Vigia primero: El obrero usa la via del codigo y el candado frena la mezcla
+- `N27-el_obrero_usa_la_via_del_codigo` [pendiente] Las dos vias por programa: el codigo viaja limpio y la guia va aparte: El obrero usa la vi — depende de: V-N27-el_obrero_usa_la_via_del_codigo
 
----
+### Paso 0d Multitarea: varias ordenes a la vez
+- `V-L4-copias-temporales-por-orden` [pendiente] Vigia primero: Ley: cada orden trabaja en su copia temporal (excepcion a una sola via)
+- `L4-copias-temporales-por-orden` [pendiente] Ley: cada orden trabaja en su copia temporal (excepcion a una sola via) — depende de: V-L4-copias-temporales-por-orden
+- `N29-la_vigia_vieja_deja_correr_varias` [pendiente] Multitarea: la vigia vieja deja de exigir de una en una: La vigia vieja admite varias a la
+- `R6a` [pendiente] El pit corre dos piezas distintas a la vez (la prueba que lo exige ya existe y esta roja)
+- `R6` [pendiente] Varias ordenes a la vez, cada una en su copia
 
-# R1 · El trabajo aprobado SIEMPRE llega al disco (la causa nº1: 82 veces)
+### Paso 0e El perito es gratis y no cuelga el bucle
+- `V-N17-el_perito_es_gratis` [pendiente] Vigia primero: El perito es una IA gratis
+- `N17-el_perito_es_gratis` [pendiente] El perito es gratis: Claude no es el perito por defecto: El perito es una IA gratis — depende de: V-N17-el_perito_es_gratis
+- `V-N15-el_perito_tiene_tope_corto` [pendiente] Vigia primero: El perito tiene un tope corto y no reintenta en cadena
+- `N15-el_perito_tiene_tope_corto` [pendiente] El perito no cuelga el bucle: El perito tiene un tope corto y no reintenta en cadena — depende de: V-N15-el_perito_tiene_tope_corto
+- `50` [pendiente] La vigia de que si el perito no contesta, entra Codex
+- `51` [pendiente] Si el perito no contesta, entra Codex — depende de: 50
 
-**CORRECCIÓN de mi diagnóstico anterior:** dije que los apuntes de `memoria/` disparaban la batería
-completa. **Es falso**: `_vecinas_por_stem` ignora lo que no es código
-([vecinas.py:234](arnes/vecinas.py#L234)). La causa real es otra, y es más simple:
+### Paso 0f El bucle no para por dolares (decision de Julio del 2026-09-27)
+- `89` [pendiente] La vigia vieja del loop sigue la orden nueva de Julio: sin tope en dolares
+- `68` [pendiente] El loop no para por dolares: para cuando DeepSeek se queda sin saldo — depende de: 89
 
-- **QUÉ pasa:** cuando se guarda, se corre una batería de vigías con tope de **15 minutos**; si no
-  termina, **no se guarda** ([guardia_de_guardado.py:291-296](arnes/guardia_de_guardado.py#L291-L296)).
-  Y hay **245 archivos de vigías, 28.355 líneas**.
-- **POR QUÉ se corre todo (dos disparadores verificados):**
-  1. **Un archivo de código cambiado que no se menciona en ninguna vigía → se corre TODA la batería**
-     ([vecinas.py:244-247](arnes/vecinas.py#L244-L247)). Es prudente, pero con 245 vigías es una
-     sentencia de muerte al guardado.
-  2. Si cambia `conftest.py` (o `pytest.ini`, `setup.cfg`, `pyproject.toml`) → **toda la batería**
-     ([vecinas.py:54-59](arnes/vecinas.py#L54-L59)). Y `conftest.py` **está entre los 14 trabajos
-     frenados**: se quiso tocar y el guardado se atascó.
-- **DÓNDE:** `arnes/vecinas.py` (a quién se le manda correr) y
-  `arnes/guardia_de_guardado.py` (el tope de tiempo).
-- **CUÁNDO:** inmediatamente después de R0.
-- **CÓMO (sin aflojar el guardia — esto es clave):** el guardia sigue frenando igual las contraseñas y
-  las vigías rojas. Solo cambia **a quién se le manda correr y con qué tiempo**:
-  1. Batería completa **en paralelo** (varios procesos de prueba a la vez): 28.355 líneas no se corren
-     en fila. Mismo rigor, minutos en vez de horas.
-  2. El tope de 15 minutos se mide **por lo que se manda correr**, no fijo, y si se agota **el trabajo
-     no se pierde**: queda apartado con el motivo exacto y una orden para retomarlo.
-  3. Vigía nueva primero (nace roja): `test_vigia_el_guardado_no_muere_por_la_bateria_completa.py`.
-- **Extra del mismo paso:** recoger los **14 trabajos aprobados** que llevan días esperando. Es trabajo
-  ya pagado. `conftest.py` primero, porque él mismo dispara el atasco.
+### Paso 1 El guardado: lo aprobado llega al disco
+- `R1` [pendiente] El trabajo aprobado siempre llega al disco
 
----
+### Paso 1b Una orden que fallo vuelve sola tras su arreglo
+- `V-N14-la_fallida_depende_de_su_arreglo` [pendiente] Vigia primero: El forense enlaza la orden con su arreglo
+- `N14-la_fallida_depende_de_su_arreglo` [pendiente] La orden que fallo espera a su arreglo y vuelve sola: El forense enlaza la orden con su ar — depende de: V-N14-la_fallida_depende_de_su_arreglo
 
-# R2 · Nunca más pagar por una pregunta imposible (el caso del expediente 173)
+### Paso 2 Las leyes nuevas (solo documentos)
+- `V-L1-el-orden-de-los-pasos-lo-impone-el-programa` [pendiente] Vigia primero: Ley: el orden de los pasos lo impone el programa
+- `L1-el-orden-de-los-pasos-lo-impone-el-programa` [pendiente] Ley: el orden de los pasos lo impone el programa — depende de: V-L1-el-orden-de-los-pasos-lo-impone-el-programa
+- `V-L2-el-ingeniero-entiende-lo-que-julio-quiere` [pendiente] Vigia primero: Ley: el ingeniero entiende lo que Julio quiere y se repara solo
+- `L2-el-ingeniero-entiende-lo-que-julio-quiere` [pendiente] Ley: el ingeniero entiende lo que Julio quiere y se repara solo — depende de: V-L2-el-ingeniero-entiende-lo-que-julio-quiere
+- `V-L3-todas-las-ia-trabajan-por-el-canal` [pendiente] Vigia primero: Ley: todas las IA trabajan por el canal
+- `L3-todas-las-ia-trabajan-por-el-canal` [pendiente] Ley: todas las IA trabajan por el canal — depende de: V-L3-todas-las-ia-trabajan-por-el-canal
 
-- **QUÉ:** un guardia de programa que compruebe, **antes de llamar a ninguna IA**, que el material
-  lleva el archivo y la función que el encargo nombra.
-- **DÓNDE:** `cuerpo/obrero.py`, tres averías verificadas:
-  - [obrero.py:1195](cuerpo/obrero.py#L1195): acepta un `.py` suelto de la frase como si fuera un
-    archivo → el filtro deja de filtrar.
-  - [obrero.py:399-413](cuerpo/obrero.py#L399-L413): el recortador borra bloques desde el final **a
-    ciegas** y se lleva justo la función pedida.
-  - [obrero.py:300](cuerpo/obrero.py#L300) + [obrero.py:1222-1227](cuerpo/obrero.py#L1222-L1227):
-    "falta material" se confunde con "la IA trabajó a medias" → reintenta y escala al de pago.
-- **POR QUÉ:** `no_aprobo` es el 48.8% de los expedientes. En el 173 se preguntó 3 veces por
-  `_prompt_obrero` sin mandar nunca el código; la función existe en [obrero.py:73](cuerpo/obrero.py#L73).
-- **CUÁNDO:** a la vez que R1 (archivos distintos, no se pisan).
-- **CÓMO:** vigías primero: `test_vigia_el_material_trae_la_pieza_pedida.py`,
-  `test_vigia_el_punto_py_suelto_no_es_un_archivo.py`,
-  `test_vigia_falta_material_no_llama_al_de_pago.py`.
+### Paso 3 La legislacion deja de ensuciarse
+- `V-R10` [pendiente] Vigia primero: Un mensaje de Julio es UNA instruccion, no veinte
+- `R10` [pendiente] Un mensaje de Julio es UNA instruccion, no veinte — depende de: V-R10
+- `30` [pendiente] La vigia de que las palabras de maquina no entran como orden de Julio
+- `31` [pendiente] Las palabras de maquina no entran como orden de Julio
 
----
+### Paso 4 Recoger no destruye y el mando no pierde lo pagado
+- `37` [pendiente] Recoger los pedazos no pisa trabajo mas nuevo
+- `113` [pendiente] Recoger aparta un archivo nuevo rojo en vez de dejarlo suelto
+- `N26-el_mando_no_muere_por_un_caracter` [pendiente] El mando no muere por un caracter y no pierde el trabajo pagado: Guardar antes de imprimir
 
-# R3 · Velocidad: preguntar a la vez, no en fila
+### Paso 5 El revisor no corta rondas buenas
+- `R24-el-aviso-no-frena-la-ronda` [pendiente] El mensaje que adivina la intencion avisa, y deja de cortar rondas buenas
+- `V-95-F011402` [pendiente] Vigia primero: 95-F011402
+- `95-F011402` [pendiente]  — depende de: V-95-F011402
+- `41` [pendiente] No se aparta lo que un archivo importa por dentro
+- `43` [pendiente] Una prueba nueva no deja ciega a toda la bateria
+- `45` [pendiente] Una prueba no puede devolver en vez de afirmar
 
-- **QUÉ:** (a) a los cerebros lentos se les pregunta **al mismo tiempo** y gana el primero que
-  contesta; (b) a quien falla 4 de cada 10 veces no se le espera 600 s.
-- **DÓNDE:** [obrero.py:891](cuerpo/obrero.py#L891) (`for quien in turnos` → en paralelo),
-  [bigpickle.py:41](cuerpo/bigpickle.py#L41) (`TIMEOUT_POR_DEFECTO=600`),
-  [cuotas.py:52](cuerpo/cuotas.py#L52) (el orden de la fila).
-- **POR QUÉ:** 90 min por orden; 26 horas esperando a un gratis que falla el 40%.
-- **CUÁNDO:** tras R1 y R2.
-- **CÓMO:** vigía `test_vigia_se_pregunta_a_los_lentos_a_la_vez.py`; se mide con los segundos que ya
-  guarda `memoria/CUADERNO_DE_LLAMADAS.jsonl`.
+### Paso 6 Varios cambios por ronda
+- `V-95-F222455` [pendiente] Vigia primero: 95-F222455
+- `95-F222455` [pendiente]  — depende de: V-95-F222455
+- `V-173-F064924` [pendiente] Vigia primero: 173-F064924
+- `173-F064924` [pendiente]  — depende de: V-173-F064924
+- `V-46-F061935` [pendiente] Vigia primero: 46-F061935
+- `46-F061935` [pendiente]  — depende de: V-46-F061935
+- `V-112-F061113` [pendiente] Vigia primero: 112-F061113
+- `112-F061113` [pendiente]  — depende de: V-112-F061113
 
-### DECIDIDO POR JULIO EL 2026-09-27 — la espera máxima es 400 s
+### Paso 7 El material llega a la medida
+- `29` [pendiente] Un archivo pequeno se entrega entero — depende de: 29-F005530
+- `V-29-F005530` [pendiente] Vigia primero: 29-F005530
+- `29-F005530` [pendiente]  — depende de: V-29-F005530
+- `V-H3-el-empaquetador-respeta-necesito-leer` [pendiente] Vigia primero: Cuando se pide un trozo con NECESITO_LEER, el paquete lo entrega
+- `H3-el-empaquetador-respeta-necesito-leer` [pendiente] Cuando se pide un trozo con NECESITO_LEER, el paquete lo entrega — depende de: V-H3-el-empaquetador-respeta-necesito-leer
+- `V-R22-paquete-compacto-sin-ruido` [pendiente] Vigia primero: El paquete y la respuesta viajan compactos y sin ruido
+- `R22-paquete-compacto-sin-ruido` [pendiente] El paquete y la respuesta viajan compactos y sin ruido — depende de: V-R22-paquete-compacto-sin-ruido
 
-Palabras de Julio: *"Que tenga un disparador la respuesta, para que cuando haya respuesta no tenga
-que esperar tiempo innecesario. Disminuir el tiempo de espera a 400 s, pero el criterio es: si se
-activa el disparador, se atiende el requerimiento y máximo se espera 400 s; si no responde en ese
-momento, se le pasa el encargo a otro."*
+### Paso 8 Las pruebas miden de verdad
+- `63` [pendiente] La vigia de que el sabotaje no acepta un texto repetido
+- `64` [pendiente] El sabotaje no acepta un texto repetido — depende de: 63
+- `38` [pendiente] La vigia de que una prueba que revienta no cuenta como nacida roja
+- `24` [pendiente] La vigia de que el pit comprueba solo que la prueba nace roja
+- `25` [pendiente] El pit comprueba solo que la prueba nace roja — depende de: 24
+- `32` [pendiente] La vigia de que una pieza que no existe se manda como creacion
+- `33` [pendiente] Una pieza que no existe se manda como creacion — depende de: 32
 
-Medición que lo respalda (2026-09-27, `memoria/CUADERNO_DE_LLAMADAS.jsonl`): de las **163 respuestas
-buenas** de Big Pickle, la más lenta tardó **314 s**, así que con 400 s **no se pierde ninguna** y el
-peor caso baja de 600 a 400. grok47: 27 buenas, todas antes de 240 s.
+### Paso 9 El Ingeniero se repara solo
+- `N25-vigia_hay_un_solo_plan` [pendiente] Un solo plan, una reparacion una orden: La guardia del plan unico
+- `V-N25-un_solo_plan` [pendiente] Vigia primero: El programa del plan unico
+- `N25-un_solo_plan` [pendiente] Un solo plan, una reparacion una orden: El programa del plan unico — depende de: V-N25-un_solo_plan
+- `V-N25-el_arranque_vigila_el_plan_unico` [pendiente] Vigia primero: El arranque comprueba el plan unico
+- `N25-el_arranque_vigila_el_plan_unico` [pendiente] Un solo plan, una reparacion una orden: El arranque comprueba el plan unico — depende de: V-N25-el_arranque_vigila_el_plan_unico
+- `V-N19-el_cuaderno_dice_la_causa` [pendiente] Vigia primero: Una propuesta incompleta se apunta con su causa
+- `N19-el_cuaderno_dice_la_causa` [pendiente] El cuaderno dice por que una respuesta no sirvio: Una propuesta incompleta se apunta con s — depende de: V-N19-el_cuaderno_dice_la_causa
+- `V-N19-el_resumen_diario_del_cuaderno` [pendiente] Vigia primero: El resumen diario de causas
+- `N19-el_resumen_diario_del_cuaderno` [pendiente] El cuaderno dice por que una respuesta no sirvio: El resumen diario de causas — depende de: V-N19-el_resumen_diario_del_cuaderno
+- `V-N21-el_juez_del_forense_ve_el_codigo` [pendiente] Vigia primero: El juez del forense es un programa que ve el codigo
+- `N21-el_juez_del_forense_ve_el_codigo` [pendiente] El forense no juzga lo que no ve: El juez del forense es un programa que ve el codigo — depende de: V-N21-el_juez_del_forense_ve_el_codigo
+- `V-N01-camino_sano` [pendiente] Vigia primero: El programa que revisa el camino
+- `N01-camino_sano` [pendiente] El camino del plan no se trunca: El programa que revisa el camino — depende de: V-N01-camino_sano
+- `V-N01-el_bucle_llama_al_camino_sano` [pendiente] Vigia primero: El bucle lo llama
+- `N01-el_bucle_llama_al_camino_sano` [pendiente] El camino del plan no se trunca: El bucle lo llama — depende de: V-N01-el_bucle_llama_al_camino_sano
+- `V-N02-la_orden_completa` [pendiente] Vigia primero: La funcion que dice si una orden esta completa
+- `N02-la_orden_completa` [pendiente] Ninguna orden nace incompleta: La funcion que dice si una orden esta completa — depende de: V-N02-la_orden_completa
+- `V-N02-orden_nueva_rechaza_lo_incompleto` [pendiente] Vigia primero: Crear una orden pasa por la puerta
+- `N02-orden_nueva_rechaza_lo_incompleto` [pendiente] Ninguna orden nace incompleta: Crear una orden pasa por la puerta — depende de: V-N02-orden_nueva_rechaza_lo_incompleto
+- `V-N03-el_cuaderno_completo` [pendiente] Vigia primero: El cuaderno guarda todo, por dia
+- `N03-el_cuaderno_completo` [pendiente] El cuaderno apunta a todas las IA: El cuaderno guarda todo, por dia — depende de: V-N03-el_cuaderno_completo
+- `N03-toda_llamada_a_una_ia_apunta` [pendiente] El cuaderno apunta a todas las IA: La guardia de las llamadas
+- `V-N03-codex_apunta_en_el_cuaderno` [pendiente] Vigia primero: Codex apunta
+- `N03-codex_apunta_en_el_cuaderno` [pendiente] El cuaderno apunta a todas las IA: Codex apunta — depende de: V-N03-codex_apunta_en_el_cuaderno
+- `V-N03-el_perito_apunta_en_el_cuaderno` [pendiente] Vigia primero: El perito apunta
+- `N03-el_perito_apunta_en_el_cuaderno` [pendiente] El cuaderno apunta a todas las IA: El perito apunta — depende de: V-N03-el_perito_apunta_en_el_cuaderno
+- `V-N03-el_buscador_de_significados_apunta` [pendiente] Vigia primero: El buscador de significados apunta
+- `N03-el_buscador_de_significados_apunta` [pendiente] El cuaderno apunta a todas las IA: El buscador de significados apunta — depende de: V-N03-el_buscador_de_significados_apunta
+- `V-N04-el_lector_de_vigias_rojas` [pendiente] Vigia primero: El lector de vigias rojas
+- `N04-el_lector_de_vigias_rojas` [pendiente] Cada vigia roja dice por que y alguien la atiende: El lector de vigias rojas — depende de: V-N04-el_lector_de_vigias_rojas
+- `V-N04-el_comando_vigias_dice_por_que` [pendiente] Vigia primero: El comando de vigias dice por que
+- `N04-el_comando_vigias_dice_por_que` [pendiente] Cada vigia roja dice por que y alguien la atiende: El comando de vigias dice por que — depende de: V-N04-el_comando_vigias_dice_por_que
+- `V-N04-el_guardado_llama_al_lector` [pendiente] Vigia primero: El guardado llama al lector
+- `N04-el_guardado_llama_al_lector` [pendiente] Cada vigia roja dice por que y alguien la atiende: El guardado llama al lector — depende de: V-N04-el_guardado_llama_al_lector
+- `V-N04-el_bucle_llama_al_lector` [pendiente] Vigia primero: El bucle llama al lector
+- `N04-el_bucle_llama_al_lector` [pendiente] Cada vigia roja dice por que y alguien la atiende: El bucle llama al lector — depende de: V-N04-el_bucle_llama_al_lector
+- `V-N06-un_candado_no_conectado_es_huerfano` [pendiente] Vigia primero: Se aprieta el contador de huerfanas
+- `N06-un_candado_no_conectado_es_huerfano` [pendiente] Nace conectada de verdad: Se aprieta el contador de huerfanas — depende de: V-N06-un_candado_no_conectado_es_huerfano
+- `V-N06-el_pit_no_cuenta_a_las_vigias_como_llamador` [pendiente] Vigia primero: El pit no da por conectada a una pieza que solo nombra una vigia
+- `N06-el_pit_no_cuenta_a_las_vigias_como_llamador` [pendiente] Nace conectada de verdad: El pit no da por conectada a una pieza que solo nombra una vigia — depende de: V-N06-el_pit_no_cuenta_a_las_vigias_como_llamador
+- `V-N06b-el_candado_de_la_puerta_trasera_conectado` [pendiente] Vigia primero: Se conecta el candado existente
+- `N06b-el_candado_de_la_puerta_trasera_conectado` [pendiente] Se conecta el candado de la puerta trasera: Se conecta el candado existente — depende de: V-N06b-el_candado_de_la_puerta_trasera_conectado
+- `V-N05-al_sellar_la_memoria_se_actualiza` [pendiente] Vigia primero: El programa que actualiza la memoria
+- `N05-al_sellar_la_memoria_se_actualiza` [pendiente] Al sellar, la memoria se actualiza sola: El programa que actualiza la memoria — depende de: V-N05-al_sellar_la_memoria_se_actualiza
+- `V-N05-el_bucle_llama_a_sellar` [pendiente] Vigia primero: El bucle la llama al marcar hecha
+- `N05-el_bucle_llama_a_sellar` [pendiente] Al sellar, la memoria se actualiza sola: El bucle la llama al marcar hecha — depende de: V-N05-el_bucle_llama_a_sellar
+- `V-N09-la_hora_de_apuntes` [pendiente] Vigia primero: El programa de la hora de apuntes
+- `N09-la_hora_de_apuntes` [pendiente] La hora de apuntes: El programa de la hora de apuntes — depende de: V-N09-la_hora_de_apuntes
+- `V-N09-el_paquete_trae_las_lecciones` [pendiente] Vigia primero: El paquete trae las lecciones
+- `N09-el_paquete_trae_las_lecciones` [pendiente] La hora de apuntes: El paquete trae las lecciones — depende de: V-N09-el_paquete_trae_las_lecciones
+- `V-N09-el_bucle_corre_la_hora_de_apuntes` [pendiente] Vigia primero: El bucle la corre al parar
+- `N09-el_bucle_corre_la_hora_de_apuntes` [pendiente] La hora de apuntes: El bucle la corre al parar — depende de: V-N09-el_bucle_corre_la_hora_de_apuntes
+- `V-N12-la_linea_base` [pendiente] Vigia primero: El programa de la linea base
+- `N12-la_linea_base` [pendiente] Linea base, regresion y marcha atras: El programa de la linea base — depende de: V-N12-la_linea_base
+- `V-N12-el_bucle_mide_antes_y_despues` [pendiente] Vigia primero: El bucle mide antes y despues
+- `N12-el_bucle_mide_antes_y_despues` [pendiente] Linea base, regresion y marcha atras: El bucle mide antes y despues — depende de: V-N12-el_bucle_mide_antes_y_despues
+- `V-N07-el_traductor_de_deseo` [pendiente] Vigia primero: El traductor de deseo
+- `N07-el_traductor_de_deseo` [pendiente] El Ingeniero traduce lo que Julio quiere: El traductor de deseo — depende de: V-N07-el_traductor_de_deseo
+- `V-N07-el_comando_entiende` [pendiente] Vigia primero: El comando entiende
+- `N07-el_comando_entiende` [pendiente] El Ingeniero traduce lo que Julio quiere: El comando entiende — depende de: V-N07-el_comando_entiende
+- `V-N08-el_verificador_de_resultado` [pendiente] Vigia primero: El verificador de resultado
+- `N08-el_verificador_de_resultado` [pendiente] Se sella solo si coincide con lo esperado: El verificador de resultado — depende de: V-N08-el_verificador_de_resultado
+- `V-N08-el_bucle_verifica_antes_de_sellar` [pendiente] Vigia primero: El bucle verifica antes de sellar
+- `N08-el_bucle_verifica_antes_de_sellar` [pendiente] Se sella solo si coincide con lo esperado: El bucle verifica antes de sellar — depende de: V-N08-el_bucle_verifica_antes_de_sellar
+- `V-N10-el_canal_conoce_a_todas_las_ia` [pendiente] Vigia primero: El canal conoce a todas las IA
+- `N10-el_canal_conoce_a_todas_las_ia` [pendiente] Codex, Big Pickle y Grok 4.7 trabajan por el canal: El canal conoce a todas las IA — depende de: V-N10-el_canal_conoce_a_todas_las_ia
+- `V-N10-el_capataz_elige_quien_escribe_y_revisa` [pendiente] Vigia primero: Cada orden elige su equipo
+- `N10-el_capataz_elige_quien_escribe_y_revisa` [pendiente] Codex, Big Pickle y Grok 4.7 trabajan por el canal: Cada orden elige su equipo — depende de: V-N10-el_capataz_elige_quien_escribe_y_revisa
+- `V-N10-el_reparto_asigna_a_las_nuevas_ia` [pendiente] Vigia primero: El reparto las asigna
+- `N10-el_reparto_asigna_a_las_nuevas_ia` [pendiente] Codex, Big Pickle y Grok 4.7 trabajan por el canal: El reparto las asigna — depende de: V-N10-el_reparto_asigna_a_las_nuevas_ia
+- `V-N11-programa_antes_que_ia` [pendiente] Vigia primero: El que decide si basta un programa
+- `N11-programa_antes_que_ia` [pendiente] Programa antes que IA, por regla: El que decide si basta un programa
+- `V-N11-modo_ia_exige_por_que` [pendiente] Vigia primero: Modo IA exige explicar por que
+- `N11-modo_ia_exige_por_que` [pendiente] Programa antes que IA, por regla: Modo IA exige explicar por que — depende de: V-N11-modo_ia_exige_por_que
 
-Estado de esta decisión:
-- **HECHO:** `TECHO_ESPERA = 400` declarada en `cuerpo/cuotas.py` y respetada por `cuanto_esperarle`.
-- **HECHO (ya era así):** el disparador ya es la respuesta — `bigpickle.preguntar` devuelve en cuanto
-  el proceso contesta, y el tope solo es el máximo; al agotarse, el turno pasa al siguiente cerebro.
-- **FALTA:** que `espera_de_bigpickle` respete `TECHO_ESPERA`, y bajar `TIMEOUT_POR_DEFECTO` de
-  `cuerpo/bigpickle.py` de 600 a 400.
-- **FALTA, y ahora SÍ está permitido:** reescribir `vigias/test_vigia_a_big_pickle_se_le_espera_lo_que_tarda.py`
-  (orden A-47, 2026-09-21), cuyo caso "sin filas se espera el valor por defecto" exige 600. Se
-  reescribe **con esta decisión de Julio anotada como razón**, no por conveniencia.
-- **FALTA:** en `vigias/test_vigia_a_nadie_se_le_espera_mas_de_lo_medido.py`, los dos casos de Big
-  Pickle piden 300 y tienen que pedir 400.
+### Paso 10 Velocidad sin repetir
+- `V-R4c` [pendiente] Vigia primero: El capataz tampoco repite la corrida de la vigia de la orden
+- `R4c` [pendiente] El capataz tampoco repite la corrida de la vigia de la orden — depende de: V-R4c
+- `V-R3` [pendiente] Vigia primero: Preguntar a los lentos a la vez, no en fila
+- `R3` [pendiente] Preguntar a los lentos a la vez, no en fila — depende de: V-R3
+- `V-N22-la_espera_de_big_pickle_es_400` [pendiente] Vigia primero: La espera por defecto de Big Pickle es 400
+- `N22-la_espera_de_big_pickle_es_400` [pendiente] La espera maxima es 400 segundos: La espera por defecto de Big Pickle es 400 — depende de: V-N22-la_espera_de_big_pickle_es_400
+- `N22-la_vigia_vieja_de_big_pickle_pide_400` [pendiente] La espera maxima es 400 segundos: La vigia vieja pide 400
+- `N22-la_vigia_de_nadie_mas_de_lo_medido_pide_400` [pendiente] La espera maxima es 400 segundos: Los dos casos de Big Pickle piden 400
+- `132` [pendiente] El revisor no llama a Big Pickle mientras descansa y cuenta sus fallos
+- `53` [pendiente] Si Big Pickle falla, revisa Codex
 
-# R4 · La misma prueba no se corre cuatro veces
+### Paso 11 La llave por partes
+- `V-R7` [pendiente] Vigia primero: La llave abre solo lo que la tarea necesita
+- `R7` [pendiente] La llave abre solo lo que la tarea necesita — depende de: V-R7
 
-- **DÓNDE:** hoy corre en `arnes/juez_de_la_prueba.py` (desde [obrero.py:1268](cuerpo/obrero.py#L1268),
-  hasta 3 corridas × 3 vecinas), otra vez en [capataz.py:973](cuerpo/capataz.py#L973), y otra en
-  [capataz.py:548-553](cuerpo/capataz.py#L548-L553). Tope 300 s cada una.
-- **CÓMO:** guardar el resultado con la huella del archivo probado y reusarlo mientras no cambie.
+### Paso 12 Automatizar
+- `167` [pendiente] El comando director del Ingeniero
+- `184` [pendiente] La orden corta del director: la IA solo piensa, el programa redacta
+- `185` [pendiente] El comando director corta
+- `V-R8` [pendiente] Vigia primero: Un comando que arma el plan de trabajo solo
+- `R8` [pendiente] Un comando que arma el plan de trabajo solo — depende de: V-R8
+- `V-N13-el_arquitecto` [pendiente] Vigia primero: El arquitecto
+- `N13-el_arquitecto` [pendiente] El arquitecto propone la estructura: El arquitecto — depende de: V-N13-el_arquitecto
+- `V-N13-el_comando_plan_usa_al_arquitecto` [pendiente] Vigia primero: El comando plan usa al arquitecto
+- `N13-el_comando_plan_usa_al_arquitecto` [pendiente] El arquitecto propone la estructura: El comando plan usa al arquitecto — depende de: V-N13-el_comando_plan_usa_al_arquitecto
 
-# R5 · Dos cuelgues sin tope (la causa de los fallos "tiempo")
+### Paso 12b La prueba real del informe
+- `V-N23-la_prueba_real_del_informe` [pendiente] Vigia primero: El programa de la prueba real del informe
+- `N23-la_prueba_real_del_informe` [pendiente] La medida unica: Julio pudo hacer su informe hoy: El programa de la prueba real del inform — depende de: V-N23-la_prueba_real_del_informe
 
-- **DÓNDE:** [capataz.py:973](cuerpo/capataz.py#L973) y [capataz.py:1018](cuerpo/capataz.py#L1018):
-  dos subprocesos **sin `timeout`**, contra la regla que el propio archivo declara
-  ([capataz.py:9-13](cuerpo/capataz.py#L9-L13)). Un guardado ya se colgó 5 h 30
-  ([guardia_de_guardado.py:272-274](arnes/guardia_de_guardado.py#L272-L274)).
+### Paso 13 Lo que quedaba pendiente sin vigia
+- `V-H4-el-candado-de-memoria-avisa-sin-cobrar-peaje` [pendiente] Vigia primero: El aviso de la memoria avisa una vez y deja pasar, en vez de obligar a repe
+- `H4-el-candado-de-memoria-avisa-sin-cobrar-peaje` [pendiente] El aviso de la memoria avisa una vez y deja pasar, en vez de obligar a repetir cada accion — depende de: V-H4-el-candado-de-memoria-avisa-sin-cobrar-peaje
+- `V-H6-que-no-se-muerda-la-cola` [pendiente] Vigia primero: Que la reparacion de frenos no se muerda la cola: se consulta el camino que
+- `H6-que-no-se-muerda-la-cola` [pendiente] Que la reparacion de frenos no se muerda la cola: se consulta el camino que ya fallo, tamb — depende de: V-H6-que-no-se-muerda-la-cola
+- `V-H1-el-tiempo-de-reparacion-se-mide` [pendiente] Vigia primero: La senal de que la herramienta mejora: el tiempo de reparacion, medido solo
+- `H1-el-tiempo-de-reparacion-se-mide` [pendiente] La senal de que la herramienta mejora: el tiempo de reparacion, medido solo — depende de: V-H1-el-tiempo-de-reparacion-se-mide
+- `V-R25-el-guardado-compara-el-color-no-exige-verde` [pendiente] Vigia primero: El guardado compara con el color de antes, en vez de exigir verde absoluto
+- `R25-el-guardado-compara-el-color-no-exige-verde` [pendiente] El guardado compara con el color de antes, en vez de exigir verde absoluto — depende de: V-R25-el-guardado-compara-el-color-no-exige-verde
+- `V-R23-codex-no-hace-el-papeleo` [pendiente] Vigia primero: A Codex no se le frena por papeleo que el no puede hacer
+- `R23-codex-no-hace-el-papeleo` [pendiente] A Codex no se le frena por papeleo que el no puede hacer — depende de: V-R23-codex-no-hace-el-papeleo
+- `V-95-F001329` [pendiente] Vigia primero: 95-F001329
+- `95-F001329` [pendiente]  — depende de: V-95-F001329
+- `V-95-F012213` [pendiente] Vigia primero: 95-F012213
+- `95-F012213` [pendiente]  — depende de: V-95-F012213
 
-# R6 · Varias órdenes a la vez, cada una en su copia
 
-- **DÓNDE:** el motor ya está listo ([capataz.py:334](cuerpo/capataz.py#L334)); está frenado en
-  [capataz.py:303](cuerpo/capataz.py#L303) (`en_paralelo=1`) y en [ingeniero.py:560](ingeniero.py#L560).
-- **POR QUÉ frena hoy:** medido el 2026-09-21
-  ([test_vigia_el_pit_corre_una_tarea_a_la_vez.py:9-17](vigias/test_vigia_el_pit_corre_una_tarea_a_la_vez.py#L9-L17)):
-  dos tareas comparten carpeta y "el guardia de una ve el trabajo a medias de la otra".
-- **CÓMO:** copia temporal por orden (`git worktree`), borrada al terminar — nunca copias sueltas en el
-  disco. Dos permisos que se piden, no se rodean: reescribir esa vigía con su razón, y legislar la
-  excepción a `CONTRATO_UNA_SOLA_VIA.md`. Sigue prohibido dos órdenes de la misma pieza a la vez.
-
-# R7 · Que la llave abra solo lo que hace falta (la ley de la llave única, hoy incumplida)
-
-- **QUÉ pasa:** `autorizada()` **no recibe ningún argumento**
-  ([autorizacion.py:80-87](arnes/autorizacion.py#L80-L87)): es un interruptor **todo-o-nada**. Girar la
-  llave apaga **los 27 guardias de golpe**, incluido el que obliga a trabajar con el equipo.
-- **POR QUÉ importa:** la ley de la llave única (2026-08-27) dice que se abren **solo** los candados que
-  la tarea necesita. Hoy el código no puede cumplirla.
-- **CÓMO:** que la autorización diga **qué** se abre y por cuánto; cada guardia pregunta por su nombre.
-  Vigía: `test_vigia_la_llave_abre_solo_lo_pedido.py`.
-- **DECIDIDO POR JULIO EL 2026-09-27 (opción b): sin trabajo doble.** R7 cambia la forma en que los
-  **21 candados** piden permiso; si se hiciera "a lo bruto" habría que volver a tocar cada candado ya
-  reparado. Julio eligió que el cambio sea **compatible con la forma vieja**: `autorizada()` sin
-  argumentos sigue funcionando igual, y el nombre del candado se le pasa **solo cuando le toque a ese
-  candado por otro motivo**. Así R7 se queda donde está en la fila y **ninguna reparación anterior se
-  rehace**.
-
-# R8 · El comando que arma el plan solo (para Foto Informe y cualquier repo)
-
-`python ingeniero.py plan <proyecto> "<el problema>"`, encadenando piezas que **ya existen**:
-
-| Hace falta | Pieza que ya lo hace |
-|---|---|
-| confirmar carpeta y rama buenas | `via` ([ingeniero.py:253](ingeniero.py#L253)) + `arnes/via_canonica.py`; Foto Informe en [proyectos.config:18](proyectos.config#L18) |
-| material mínimo | `trabaja` |
-| causa de fondo | `causa` |
-| qué herramienta falta / crearla | `skills.buscar` ([skills.py:118](cuerpo/skills.py#L118)), `skills.crear` ([skills.py:167](cuerpo/skills.py#L167)) |
-| plan → órdenes | `director.orden_nueva` ([director.py:215](cuerpo/director.py#L215)) |
-| correrlas solas | `capataz.bucle` ([capataz.py:303](cuerpo/capataz.py#L303)) |
-| aprender del fallo | `capataz.forense` ([capataz.py:803](cuerpo/capataz.py#L803)) |
-
----
-
-## ¿La herramienta deja hacer estas reparaciones? (verificado, no supuesto)
-
-| Riesgo | ¿Bloquea? | Prueba |
-|---|---|---|
-| Los archivos a tocar disparan la batería completa | **No** | La lista que obliga todas es solo `conftest.py`, `pytest.ini`, `setup.cfg`, `pyproject.toml` ([vecinas.py:54-59](arnes/vecinas.py#L54-L59)) |
-| Quedan sin vigía vecina (→ batería completa) | **No** | Ya existen `test_vigia_vecinas.py`, `…el_obrero_…`, `…el_capataz_…`, `…el_guardia_…` |
-| El equipo no puede escribir en los candados | **No** | Entre los trabajos aprobados hay `candado_equipo.py`, `candado_legislar.py`, `guardia_de_guardado.py` |
-| **Huevo y gallina en R2** | **SÍ, riesgo real** | Para arreglar el filtro del material hay que mandarle al equipo la función **pegada dentro del encargo** (`piezas.funcion_completa`), o fallará igual que el 173 |
-| `cuerpo/obrero.py` es el archivo más grande (76 KB) | **SÍ, riesgo real** | Encargos **por función**, nunca por archivo entero |
-| Tocar `conftest.py` (uno de los 14 frenados) | **SÍ** | Dispara batería completa: va **después** de R1, nunca antes |
-
-## Permisos: qué se abre, cuándo y por qué
-
-Estado real: la última autorización es del **2026-09-18 12:43** y dura **24 horas**
-([autorizacion.py:27](arnes/autorizacion.py#L27)) → **caducada; los guardias están cerrados hoy**.
-La llave de Julio existe (`~/.ingeniero_julio_llave`) y solo él la gira.
-
-**Este plan está hecho para NO necesitar la llave** en R0-R5: se trabaja con paquete mínimo y con el
-equipo, que es el camino legal. La llave solo hace falta en dos momentos, y se pide en el momento:
-1. recoger algunos de los 14 trabajos frenados, si el guardado los vuelve a frenar;
-2. reescribir la vigía que prohíbe el paralelo (R6).
-
-**Advertencia que hay que decirle a Julio antes de que la gire:** hoy la llave **abre los 27 guardias
-de golpe**, incluido el que obliga a trabajar con el equipo. O sea, girarla abre la puerta de atrás que
-él mismo prohibió. Por eso R7 está en el plan, y por eso no se gira "por si acaso".
-
-Comando (PowerShell), cuando de verdad haga falta:
-```
-cd C:\Ingeniero_VUC; python ingeniero.py autorizar-off "<motivo en una frase>" "<su llave>"
-```
-
-## Siempre con el equipo, sin puerta trasera (garantizado por máquina, no por promesa)
-
-- Cualquier escritura de código sin veredicto de equipo la frena `arnes/candado_equipo.py`
-  ([líneas 463-478](arnes/candado_equipo.py#L463-L478)), y el interruptor viejo **ya no basta**: queda
-  anotado como intento y sigue frenando.
-- La IA que dirige **no escribe código**, ni con permiso (`CONTRATO_LA_IA_CARA_NUNCA_ESCRIBE.md`).
-- Ninguna reparación de este plan afloja eso. R1 no toca lo que el guardia frena (contraseñas, vigías
-  rojas): solo cambia **a quién manda correr** y **cuánto espera**.
-- Único hueco conocido: girar la llave (ver arriba) lo abriría. Se repara en R7.
-
-## Orden de trabajo
-
-| Ronda | Qué | ¿A la vez? |
-|---|---|---|
-| 0 | R0 el cierre atascado | primero, solo |
-| 1 | R1 el trabajo se queda **+** R2 el material completo | **sí** (piezas distintas) |
-| 1b | Recoger los 14 trabajos frenados (`conftest.py` incluido) | tras R1 |
-| 2 | R3 preguntar a la vez + R4 una sola prueba + R5 los dos topes | sí |
-| 3 | R6 varias órdenes a la vez + R7 la llave por partes | después |
-| 4 | R8 el comando que arma el plan | último |
-
-## Cómo se ejecuta cada ronda (siempre igual, sin excepción)
-
-1. `python ingeniero.py trabaja ingeniero "<la avería>"` — el paquete mínimo.
-2. `python ingeniero.py vigias ingeniero antes` — de qué color están antes.
-3. **La vigía primero, y tiene que nacer ROJA** (`.claude/rules/vigias.md`).
-4. **El equipo escribe el código.** El encargo lleva la función **pegada dentro**.
-5. `python ingeniero.py vigias ingeniero despues` — no romper vecinos.
-6. Legislar y sellar con `git commit`.
-7. Julio lo ve con sus ojos.
-
-## Por qué esta vez no falla
-
-1. Cada reparación nace de un número de la propia herramienta: 82, 14, 90 min, 40.6%, 48.8%.
-2. Cada una tiene su vigía escrita antes, y roja. Si nace verde, no probó nada.
-3. Cada una tiene medición antes y después, con los archivos que ya llevan la cuenta.
-4. Se repara primero lo que hacía fracasar a todo lo demás: el cierre atascado y el guardado que tira
-   el trabajo aprobado.
-5. Dos conclusiones mías ya se cayeron al verificarlas en el código (los apuntes de `memoria/` y la
-   causa de la batería completa). Están corregidas arriba. Se verifica antes de afirmar.
-6. El plan no vive en el chat: queda como documento en la carpeta, apuntado en la hoja de leyes, y
-   convertido en órdenes con dependencias.
-
-## Cómo se sabrá que sirvió
-
-| Medida | Hoy | Meta |
-|---|---|---|
-| Cierres bloqueados por "instrucciones que no son de Julio" | todos los días | **0** |
-| "El guardia no dejó guardar" | 82 veces | **0 nuevas** |
-| Trabajos aprobados sin llegar al disco | 14 | **0** |
-| Minutos por orden | 90.1 | **menos de 20** |
-| Llamadas a IA por orden | 4.78 | **menos de 2.5** |
-| Llamadas que acaban en nada | 20.6% | **menos de 5%** |
-| Órdenes a la vez | 1 | **3-4** |
-| Orden 173-F064924 | muere sin veredicto | **cerrada en 1 ronda** |
-
----
+## Decisiones y definiciones de Julio (copiadas textuales del plan anterior)
 
 # QUÉ SIGNIFICA "ECONÓMICO" — DEFINICIÓN DE JULIO (2026-09-27)
 
@@ -354,3 +353,33 @@ separados: rápido, preciso y económico son la misma cosa vista desde tres lado
      una forma común de que una respuesta dispare la acción siguiente sin que alguien se acuerde.
 
    Estos dos se apuntan como órdenes nuevas **antes** de seguir, para que no vivan en el chat.
+
+### DECIDIDO POR JULIO EL 2026-09-27 — la espera máxima es 400 s
+
+Palabras de Julio: *"Que tenga un disparador la respuesta, para que cuando haya respuesta no tenga
+que esperar tiempo innecesario. Disminuir el tiempo de espera a 400 s, pero el criterio es: si se
+activa el disparador, se atiende el requerimiento y máximo se espera 400 s; si no responde en ese
+momento, se le pasa el encargo a otro."*
+
+Medición que lo respalda (2026-09-27, `memoria/CUADERNO_DE_LLAMADAS.jsonl`): de las **163 respuestas
+buenas** de Big Pickle, la más lenta tardó **314 s**, así que con 400 s **no se pierde ninguna** y el
+peor caso baja de 600 a 400. grok47: 27 buenas, todas antes de 240 s.
+
+Estado de esta decisión:
+- **HECHO:** `TECHO_ESPERA = 400` declarada en `cuerpo/cuotas.py` y respetada por `cuanto_esperarle`.
+- **HECHO (ya era así):** el disparador ya es la respuesta — `bigpickle.preguntar` devuelve en cuanto
+
+- **DECIDIDO POR JULIO EL 2026-09-27 (opción b): sin trabajo doble.** R7 cambia la forma en que los
+  **21 candados** piden permiso; si se hiciera "a lo bruto" habría que volver a tocar cada candado ya
+  reparado. Julio eligió que el cambio sea **compatible con la forma vieja**: `autorizada()` sin
+  argumentos sigue funcionando igual, y el nombre del candado se le pasa **solo cuando le toque a ese
+  candado por otro motivo**. Así R7 se queda donde está en la fila y **ninguna reparación anterior se
+  rehace**.
+
+# R8 · El comando que arma el plan solo (para Foto Informe y cualquier repo)
+
+`python ingeniero.py plan <proyecto> "<el problema>"`, encadenando piezas que **ya existen**:
+
+| Hace falta | Pieza que ya lo hace |
+|---|---|
+| confirmar carpeta y rama buenas | `via` ([ingeniero.py:253](ingeniero.py#L253)) + `arnes/via_canonica.py`; Foto Informe en [proyectos.config:18](proyectos.config#L18) |

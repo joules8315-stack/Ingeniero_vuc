@@ -1,0 +1,155 @@
+{
+ "fecha": "2026-10-01",
+ "metricas": [
+  {
+   "termino": "RAPIDO",
+   "medida": "Minutos por orden",
+   "hoy": "90,1 (plan del 25-sep, cuaderno)",
+   "meta": "menos de 20",
+   "mueve": "N12 la mide en cada orden"
+  },
+  {
+   "termino": "RAPIDO",
+   "medida": "Ordenes a la vez",
+   "hoy": "1",
+   "meta": "3 o mas",
+   "mueve": "L4, N29, R6a, R6"
+  },
+  {
+   "termino": "PRECISO",
+   "medida": "Rondas aprobadas en la primera",
+   "hoy": "3 de 13 el 1-oct (CONTRATO_LAS_DOS_VIAS)",
+   "meta": "80% o mas",
+   "mueve": "N27, N28"
+  },
+  {
+   "termino": "PRECISO",
+   "medida": "Llamadas que no sirvieron",
+   "hoy": "18,8% (cuaderno)",
+   "meta": "menos de 5%",
+   "mueve": "N19"
+  },
+  {
+   "termino": "PRECISO",
+   "medida": "Ordenes cuyo codigo llega al escritor",
+   "hoy": "32 de 34 comprobables; 12 de 58 sin archivo nombrado",
+   "meta": "100%",
+   "mueve": "N28, N27"
+  },
+  {
+   "termino": "EFICIENTE",
+   "medida": "Llamadas a IA por orden",
+   "hoy": "4,78 (plan del 25-sep)",
+   "meta": "menos de 2,5",
+   "mueve": "N28, N27, N19"
+  },
+  {
+   "termino": "EFICIENTE",
+   "medida": "Trabajo aprobado que no llega al disco",
+   "hoy": "82 veces",
+   "meta": "0",
+   "mueve": "R1"
+  },
+  {
+   "termino": "ECONOMICO",
+   "medida": "Llamadas a Claude",
+   "hoy": "una por cada fallo (perito)",
+   "meta": "0",
+   "mueve": "N17, N15"
+  },
+  {
+   "termino": "ECONOMICO",
+   "medida": "Llamadas gastadas sin el codigo",
+   "hoy": "no medido (12 de 58 ordenes en riesgo)",
+   "meta": "0",
+   "mueve": "N28"
+  },
+  {
+   "termino": "ECONOMICO",
+   "medida": "Costo por orden aprobada",
+   "hoy": "NO MEDIDO: el cuaderno no guarda costo",
+   "meta": "medido en cada orden",
+   "mueve": "N03, N12"
+  }
+ ],
+ "flujo": [
+  {
+   "etapa": "E0 Entender lo que Julio quiere",
+   "pieza": "ninguno",
+   "medido": "NO MEDIDO: no existe la pieza",
+   "orden": "N07"
+  },
+  {
+   "etapa": "E1 La orden esta completa (4 preguntas y vigia)",
+   "pieza": "puerta del plan solo al cerrar",
+   "medido": "9 ordenes sin campo vigia y 40 con vigia sin escribir, de 91 abiertas",
+   "orden": "N02, N01"
+  },
+  {
+   "etapa": "E2 Prueba previa: llega el codigo (sin gastar)",
+   "pieza": "no existe",
+   "medido": "12 de 58 ordenes no nombran su archivo; con archivo nombrado llega el codigo en 31/31, sin nombrarlo 1/3",
+   "orden": "N28"
+  },
+  {
+   "etapa": "E3 Codigo limpio y guia aparte",
+   "pieza": "no existe (ley del 1-oct sin orden)",
+   "medido": "NO MEDIDO",
+   "orden": "N27"
+  },
+  {
+   "etapa": "E4 Recorte del pasillo",
+   "pieza": "obrero._preguntar_con_relevo",
+   "medido": "quita codigo que si llego en 27 de 34 ordenes",
+   "orden": "H2"
+  },
+  {
+   "etapa": "E5 El escritor responde",
+   "pieza": "DeepSeek, Groq, Gemini",
+   "medido": "DeepSeek: 467 de 595 llamadas sirvieron (78,5%), mediana 5,2 s; 164 de 1000 filas mal llamadas vacio",
+   "orden": "N19"
+  },
+  {
+   "etapa": "E6 Revisor por programa",
+   "pieza": "arnes/revisor_de_programa.py",
+   "medido": "frena en 17 de 51 no_aprobo",
+   "orden": "R24, 95-F011402, 41, 43, 45"
+  },
+  {
+   "etapa": "E7 Auditor IA",
+   "pieza": "Big Pickle",
+   "medido": "rechazo en 22 y marca invento en 25 de 51 no_aprobo",
+   "orden": "R9"
+  },
+  {
+   "etapa": "E8 Aplicador",
+   "pieza": "cuerpo/aplicador.py",
+   "medido": "no_aplico 10 de 93 fallos",
+   "orden": "95-F222455 y las de su grupo"
+  },
+  {
+   "etapa": "E9 Guardado y bateria",
+   "pieza": "arnes/guardia_de_guardado.py",
+   "medido": "guardia 23 de 93 fallos; 82 veces no dejo guardar",
+   "orden": "R1"
+  },
+  {
+   "etapa": "E10 Vigia y sabotaje",
+   "pieza": "capataz.comprobar_pasos",
+   "medido": "sabotaje fallo en 10 de 31 ordenes fallidas",
+   "orden": "63, 64, 38, 39, 24, 25, 32, 33"
+  },
+  {
+   "etapa": "E11 Sellado y memoria",
+   "pieza": "no existe",
+   "medido": "NO MEDIDO",
+   "orden": "N05, N12"
+  },
+  {
+   "etapa": "E12 Aprender del fallo",
+   "pieza": "forense",
+   "medido": "9 de 93 expedientes produjeron una orden",
+   "orden": "N21, N04, N09"
+  }
+ ]
+}

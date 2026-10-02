@@ -1,0 +1,49 @@
+{
+ "obrero": "groq",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Recorta el prompt antes de intentar usar cerebro de pago",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_preguntar_con_relevo",
+  "texto_viejo": "        if _capas:\n            _tope_pasillo = min(_capas)\n            if len(prompt) > _tope_pasillo:\n                _antes = len(prompt)\n                _recortado = asignador.recortar_prompt(prompt, _tope_pasillo)\n                if 0 < len(_recortado) < _antes:\n                    prompt = _recortado\n                    avisos.append(\"el pasillo recorto el encargo de %d a %d letras para que \"\n                                  \"le quepa a un cerebro gratis (tope medido: %d)\"\n                                  % (_antes, len(_recortado), _tope_pasillo))",
+  "texto_nuevo": "        if _capas:\n            _tope_pasillo = min(_capas)\n            # Se evita recortar el prompt aquí; si ningún cerebro gratis puede manejar el tamaño completo,\n            # el flujo posterior añadirá el cerebro de pago o dividirá el encargo.",
+  "cambio": "Eliminar recorte prematuro del prompt y dejar que el flujo posterior use el cerebro de pago o parta el encargo",
+  "codigo": "        if _capas:\n            _tope_pasillo = min(_capas)\n            # Se evita recortar el prompt aquí; si ningún cerebro gratis puede manejar el tamaño completo,\n            # el flujo posterior añadirá el cerebro de pago o dividirá el encargo.",
+  "vigia": "Comprobar que un encargo cuyo tamaño supera el _tope_pasillo no sea recortado y que se intente procesarlo con el cerebro de pago antes de dividirlo",
+  "puede_danar": [
+   "cuerpo/obrero.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El texto_nuevo SI aparece literal en el material (cuerpo/obrero.py, bloque `_capas`/`_tope_pasillo` dentro de `_preguntar_con_relevo`), asi que la ubicacion es correcta; no hay sintaxis inventada ni referencias a archivos/funciones inexistentes.",
+   "Fallo de fondo 1: el comentario afirma que 'el flujo posterior ... dividira el encargo', pero el material solo muestra que en el caso de 'no quedo nadie' se AVISA ('se avisa claro de que hay que PARTIR el trabajo'). No hay ninguna linea de codigo que trocee. Antes, el recorte garantizaba entrega al menos al gratis mas chico; ahora, un encargo mayor que TODOS (incluido el de pago) cae en una rama que solo deja un aviso. Si el que parte no es codigo de este flujo, ese encargo se queda sin entregar.",
+   "Fallo de fondo 2: el encargo pide explicitamente la mitad que falta: 'se parte en trozos coherentes que cada uno conserven que archivo hay que tocar y el objetivo'. Eso no esta en el cambio. Quitar el recorte es correcto; dejar el recorte sin la parte coherente deja la garantia de 'nunca perder la marca de archivo' depending de un第三 actor que nadie nombro.",
+   "Menor: `if _capas:` + `_tope_pasillo = min(_capas)` se quedan calculando un valor que ya no usa nadie (codigo muerto) y tres lineas de comentario不做 nada. No rompe nada, pero es ruido que el propio paquete pide no dejar ('el ancla es un solo renglon unico').",
+   "La vigia exigida ('un encargo mayor que el cerebro mas chico nunca se entrega recortado perdiendo la marca de archivo') queda solo como texto en el campo vigia; no hay comprobacion dentro del archivo."
+  ],
+  "riesgo_vecinos": [
+   "Coste/latencia: al no recortar antes, todo encargo que exceda la capacidad de los gratis medidos pasa al cerebro de pago. Es justo lo que pide el paquete, pero es un cambio real de gasto y de tiempo.",
+   "Contrato 'EL EQUIPO GRATIS ESCRIBE, EL DE PAGO ES ULTIMO RECURSO': se respeta (el gratis entra si aguanta segun `rankear`), pero se desplaza el umbral a un solo punto.",
+   "`asignador.recortar_prompt` puede quedar sin ningun llamador; si algun chequeo de codigo muerto lo marca, avisar.",
+   "La rama 'nadie aguanta' pasa de ser casi inalcanzable (por el recorte) a ser el camino normal para encargos grandes. Si aguas arriba no parte, se pierde entrega donde antes habia entrega (mala, pero entregada)."
+  ],
+  "que_falta": [
+   "El troceado coherente que conserva archivo y objetivo para cuando no cabe en nadie (con el ancla `_tope_pasillo = min(_capas)` como unica decision), o al menos una linea que deja constancia de quien trocea.",
+   "La comprobacion dentro del archivo que verifique que un prompt mayor que `_tope_pasillo` llega entero al de pago y no se entrega recortado."
+  ],
+  "resumen_para_el_jefe": "Quitar el recorte prematuro es la direccion correcta y el texto ancla existe, pero la reparacion se queda en la mitad: no implementa el troceado coherente que exige el encargo y deja el caso 'no cabe en nadie'depending de un flujo que el material no muestra; aprobar solo si se acepta ese hueco o se rechaza pidiendo el troceado."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 31340 a 17739 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) tardo demasiado -> pasa el turno",
+  "se pidio generar a deepseek y no esta disponible: contesto groq",
+  "vueltas_dadas: 1"
+ ]
+}

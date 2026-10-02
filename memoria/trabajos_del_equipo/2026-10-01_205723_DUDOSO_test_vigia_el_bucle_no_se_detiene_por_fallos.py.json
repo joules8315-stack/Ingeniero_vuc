@@ -1,0 +1,34 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "La vigia anterior adivinaba el modulo, la firma y los centinelas del bucle real, y ademas se rompia sola con resultado.get sobre algo que podia no ser dict; hay que leer la pieza real del bucle antes de reescribir la prueba contra su firma y centinelas verdaderos.",
+  "archivo": "vigias/test_vigia_el_bucle_no_se_detiene_por_fallos.py",
+  "texto_nuevo": "NECESITO_LEER: la pieza real del bucle (el archivo .py que contiene la funcion que recorre las ordenes y decide PARADO / NADA SE PUEDE CORRER / SIN_CORRIBLES / SIN_SALDO) / motivo: la vigia anterior fue rechazada por adivinar su modulo, su firma, su formato de entrada y sus centinelas, y no puedo escribir una prueba que ejecute el bucle de verdad sin conocerlos / que decide: el nombre exacto del modulo y de la funcion, los nombres y tipos de sus parametros (ruta de ordenes, cerebro, carpeta de estado, umbral de fallos), la forma del objeto que devuelve (dict o dataclass) y los literales exactos de sus estados de terminacion y de sus marcas de apartada / riesgo: sin ese archivo la prueba volveria a nacer roja por adivinar y seria rechazada otra vez, o peor, pasaria forzando al bucle a parecerse a lo que la prueba imagino.",
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La peticion no es accionable: describe el archivoNeeded ('el .py que contiene la funcion que recorre las ordenes') pero no da ruta ni un solo nombre candidato, aunque el material da la raiz C:\\Ingeniero_VUC. Tal como esta, la direccion no puede traer el archivo y la vuelta se pierde.",
+   "El campo 'archivo' de la propuesta sigue apuntando a vigias/test_vigia_el_bucle_no_se_detiene_por_fallos.py pero 'texto_nuevo' no contiene nada de ese archivo: no hay test escrito, no hay assert, no hay nada que nazca rojo. Entrega cero trabajo de codigo.",
+   "El diagnostico blames 'la vigia anterior' por 'romperse sola con resultado.get' y eso esiries lo que ya estaba rechazado; no aporta ninguna correccion parcial que sirva si la peticion vuelve sin respuesta."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Dar 2-4 rutas candidatas concretas bajo C:\\Ingeniero_VUC (por ejemplo el .py cuyo nombre contenga bucle/ordenes/estacion y sus vicarios), no una descripcion.",
+   "Delimitar la peticion a lo minimo indispensable para poder importar y ejecutar: ruta del modulo y de la funcion; con eso se deduce el resto leyendo el archivo.",
+   "Redactar la peticion en el formato exacto del final del paquete: 'NECESITO_LEER: <ruta>', y separarla del 'archivo' que se va a tocar, para que quede claro que no se pide autorizacion a Julio."
+  ],
+  "resumen_para_el_jefe": "Decide bien pedir el bucle real en vez de adivinarlo, pero la peticion llega sin ninguna ruta ni nombre candidato, asi que hay que reenviarla concretizada o se vuelve a perder la vuelta."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19312 a 12644 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 19746 a 12969 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.",
+  "el pasillo recorto el encargo de 19816 a 13022 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 4"
+ ]
+}

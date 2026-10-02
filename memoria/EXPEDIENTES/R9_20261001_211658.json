@@ -1,0 +1,33 @@
+{
+  "orden": {
+    "id": "R9",
+    "titulo": "Crear no es inventar: que lo compruebe un programa",
+    "origen": "PLAN_PRIORIDAD_UNO 2026-09-25; fallo real de hoy: el revisor rechazo la reparacion del cierre por inventar dos constantes y una funcion que la propia reparacion creaba",
+    "repara": "el revisor marca como INVENTO cualquier nombre nuevo que la reparacion crea, y el trabajo se descarta entero; asi casi ninguna reparacion puede aprobarse",
+    "pieza": "cuerpo/obrero.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "es el freno que hace fracasar las reparaciones una detras de otra: la ley ya dice CREAR NO ES INVENTAR en las lineas 186-203, pero se le confia al criterio del revisor gratis, que la ignora, y encima el pasillo recorta el encargo (hoy de 19997 a 12406 letras) y esa parte de la ley puede ni llegarle",
+    "encargo": "Despues de que el revisor conteste, y ANTES de descartar nada, que un PROGRAMA compruebe la marca invento_algo (cuerpo/obrero.py lineas 1320-1321 la imprime; viene del JSON del revisor, linea 222-223). Por cada nombre de la lista que_invento: si ese nombre APARECE DECLARADO dentro del propio codigo que la propuesta trae (por ejemplo se crea ahi una constante o una funcion con ese nombre), entonces NO es invento: es la reparacion haciendo su trabajo. En ese caso se quita de la lista y no se descarta por eso. Si despues de quitar los falsos no queda ninguno, invento_algo pasa a falso. Que quede escrito en el aviso cuantos rechazos en falso se quitaron, para poder medirlo. Inventar sigue siendo usar algo que no existe en ninguna parte y que la propuesta tampoco crea: eso se sigue frenando igual.",
+    "vigia": "vigias/test_vigia_crear_no_es_inventar_lo_comprueba_un_programa.py",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "a0bb92e6a4337748",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-01_211656_RECHAZADO_obrero.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (36520 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.\n  aviso       : GPT-OSS 120B (Groq) no le cabe (37412 letras, aguanta 19042) -> se le salta\n  diagnostico : El aviso del rechazo no dice cuantos rechazos en falso se quitaron y el descarte por invento_algo no comprueba si el nombre aparece declarado en el codigo de la propuesta.\n  toca        : cuerpo/obrero.py funcion trabajar\n  confianza   : media\n  PREGUNTA_REQUERIDA: PREGUNTA_REQUERIDA: donde exactamente se imprime el aviso del rechazo en cuerpo/obrero.py para anadir ahi el numero de rechazos en falso quitados? El material no trae ese tramo.\n  VEREDICTO   : RECHAZADO\n  fallo       : El cambio NO cierra el diagnostico: se anade `falsos_quitadas = 0` en trabajar pero `_quitar_inventos_falsos` no se llama NINGUNA parte y el texto del aviso de rechazo (cuerpo/obrero.py ~1320-1321) no se toca. El contador queda como variable muerta: 'no dice cuantos rechazos en falso se quitaron' sigue exactamente igual.\n  fallo       : La deduplicacion casi nunca dispara en la practica: exige `nombre in declarados` con igualdad EXACTA de cadena. Los `que_invento` reales son descriptivos o con ruta/linea ('cuerpo/obrero.py:1320', 'usa X() que no existe'), no identificadores desnudos, asi que no hay forma de que un item de `que_invento` coincida literalmente con un `def <nombre>` extraido. Es decir: la reparacion pideida no se ejecuta jamas.\n  fallo       : El extractor de nombresDeclared es demasiado ingenuo y a la vez demasiado ancho: `if '=' in limpio` captura cualquier linea con `=`, incluidas keywords de llamada (`f(a=1)`), anotaciones y comparadores `>=`/`<=`, de modo que declara como 'declarado en la propuesta' cualquier cosa que aparezca a la izquierda de un `=`; combinado con lo anterior, el filtro es ruido mas que proteccion.\n  resumen     : No invento nada, pero el arreglo esta a medias y ademas inerte: anade el contador y las funciones sin llamarlas ni tocar el aviso, y el filtro exige coincidencia exacta de nombre con lo que el revisor escribe, asi que en la practica no quita nada.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-01T21:16:58",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R9_20261001_211658.json"
+  }
+}

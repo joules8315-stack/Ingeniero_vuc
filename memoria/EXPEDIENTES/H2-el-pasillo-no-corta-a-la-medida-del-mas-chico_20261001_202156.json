@@ -1,0 +1,33 @@
+{
+  "orden": {
+    "id": "H2-el-pasillo-no-corta-a-la-medida-del-mas-chico",
+    "titulo": "El material se corta a la medida del que va a escribir, no del cerebro mas pequeno",
+    "origen": "Julio: nada de cortar a la medida de ninguna IA; debe cortarse el trozo completo",
+    "repara": "cuerpo/obrero.py toma el MINIMO de las capacidades de toda la fila (_tope_pasillo = min(_capas)) y recorta a ese tope, aunque el que de verdad va a escribir aguante el triple. Medido el 2026-09-29: un encargo se corto de 45.226 a 15.921 letras y esa vuelta murio en DUDOSO porque al revisor le falto justo el trozo que SI iba pegado",
+    "pieza": "cuerpo/obrero.py",
+    "encargo": "OBJETIVO: que el pasillo recorte el material a la medida del cerebro que mas aguanta y no del mas pequeno.\nDONDE: la funcion _preguntar_con_relevo de cuerpo/obrero.py, en el punto donde se calcula _tope_pasillo a partir de las capacidades _capas. La funcion nueva que pide la vigia se llama tope_del_pasillo: es una creacion pedida a proposito, no un invento.\nLA PRUEBA QUE DEBE PASAR A VERDE: vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py\nQUE SE REPARA: el pasillo recorta al tope del cerebro mas pequeno de la fila.\nCOMO SE REPARA: funcion nueva tope_del_pasillo (devuelve la capacidad mayor) y su uso donde hoy se toma el minimo.\nDONDE SE REPARA: cuerpo/obrero.py, funcion _preguntar_con_relevo.\nPOR QUE SE REPARA: medido el 2026-10-01, el recorte quita en 27 de 34 ordenes el codigo que si habia llegado.",
+    "vigia": "vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py",
+    "razon": "es la causa medida de vueltas perdidas, y va directamente contra la ley de Julio sobre el material completo",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "Encargo reescrito el 2026-10-01 con el trozo pegado dentro: fallo dos veces porque el pasillo le recortaba su propio material.",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "6bdaf6eb64270f22",
+  "tipo": "guardia",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-01_200141_APROBADO_obrero.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : el pasillo recorto el encargo de 38841 a 13565 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : el pasillo recorto el encargo de 39747 a 18956 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  diagnostico : En _preguntar_con_relevo el tope del pasillo se calcula con min(_capas), asi que recorta al cerebro gratis mas pequeno y tira material que si cabia en los demas; hay que crear tope_del_pasillo (devuelve la capacidad mayor) y usarla ahi.\n  toca        : cuerpo/obrero.py funcion _preguntar_con_relevo\n  confianza   : media\n  VEREDICTO   : APROBADO\n  resumen     : Hace justo lo pedido y solo eso: crea tope_del_pasillo devolviendo la capacidad mayor y la usa donde estaba min(_capas), sin tocar cuotas.py ni inventar nada; unico reparo pendiente, ejecutar la vigia para confirmar que pasa en verde.\n\nAPLICADO en disco (lo escribio el equipo): cuerpo/obrero.py\nNO SE GUARDO: se volvio atras; lo rechazado quedo apartado en memoria/trabajos_sin_revisar y archivado. POR QUE: EL GUARDIA NO DEJO GUARDAR: \nGUARDIA: NO SE GUARDA. Hay pruebas ROJAS:\n   pruebas rojas que frenan el guardado: vigias/test_vigia_falta_material_no_llama_a_la_ia.py, vigias/test_vigia_la_libreta_de_frenos_apunta_quien_freno.py | bateria en paralelo: 4 grupos, 2 rojos, 2 cortados por tiempo\n\n  No se guarda dejando algo roto. Da igual quien haya escrito el codigo.\n  Arreglalo y vuelve a guardar.\n\n\nSE VOLVIO ATRAS: devuelta a lo guardado (copia apartada): cuerpo/obrero.py\nLLAVE GUARDADA: se puede escribir en 255 archivo(s) durante 90 min.\n",
+  "apartados": [],
+  "fecha": "2026-10-01T20:21:56",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\H2-el-pasillo-no-corta-a-la-medida-del-mas-chico_20261001_202156.json"
+  }
+}

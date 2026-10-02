@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "V-R10",
+    "titulo": "Vigia primero: Un mensaje de Julio es UNA instruccion, no veinte",
+    "origen": "Julio 2026-10-01",
+    "repara": "Que exista la prueba que vigila: cada frase de un mensaje de Julio se apunta como una instruccion aparte, y hasta el texto que escribio Claude se apunta cuando Julio lo cita; por eso la lista crece sin parar y el cierre se atasca",
+    "pieza": "vigias/test_vigia_un_mensaje_de_julio_es_una_instruccion.py",
+    "vigia": "vigias/test_vigia_un_mensaje_de_julio_es_una_instruccion.py",
+    "razon": "Metodo de Julio: la vigia se escribe primero y nace roja. La orden R10 prometia una vigia que no existe y sin ella no puede cerrarse.",
+    "encargo": "QUE SE REPARA: Que exista la prueba que vigila: cada frase de un mensaje de Julio se apunta como una instruccion aparte, y hasta el texto que escribio Claude se apunta cuando Julio lo cita; por eso la lista crece sin parar y el cierre se atasca\nCOMO SE REPARA: Una prueba pytest en un solo archivo nuevo que demuestre hoy, con un assert, que esto NO se cumple todavia: cada frase de un mensaje de Julio se apunta como una instruccion aparte, y hasta el texto que escribio Claude se apunta cuando Julio lo cita; por eso la lista crece sin parar y el cierre se atasca. Contexto de la reparacion que vigila: En apuntar_lo_que_dijo_julio (arnes/candado_legislar.py linea 141): hoy parte el mensaje en frases y apunta cada una. Cambialo para que apunte el MENSAJE COMPLETO como UNA sola instruccion (recortado a lo que quepa), no frase por frase. Y que NO apunte lo que va entre comillas dentro del mensaje, porque eso es Julio citando lo que ya dijo otro. No toques parece_una_orden ni pendientes ni marcar.. Tiene que NACER ROJA por un assert que falla (no por un error de sintaxis o de un nombre que no existe) y pasar cuando la reparacion este hecha.\nDONDE SE REPARA: vigias/test_vigia_un_mensaje_de_julio_es_una_instruccion.py\nPOR QUE SE REPARA: Metodo de Julio: la vigia se escribe primero y nace roja. La orden R10 prometia una vigia que no existe y sin ella no puede cerrarse.",
+    "modo": "IA",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": "",
+    "resultado_esperado": "La prueba existe, falla hoy con un assert y pasa cuando R10 este hecha.",
+    "crear": true,
+    "entrega_la_prueba": "si"
+  },
+  "huella": "0b2403ca5b5c5570",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-02_014737_DUDOSO_test_vigia_un_mensaje_de_julio_es_una_instruccion.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (22237 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 38: unexpected indent. Asi no arranca.\n  aviso       : GPT-OSS 120B (Groq) no le cabe (22429 letras, aguanta 19042) -> se le salta\n  diagnostico : Falta la vigia que demuestre que apuntar_lo_que_dijo_julio hoy parte el mensaje en frases y apunta cada una (y tambien lo citado entre comillas), en vez de apuntar el mensaje completo como una sola instruccion; la prueba debe nacer roja por un assert y pasar tras la reparacion.\n  toca        : vigias/test_vigia_un_mensaje_de_julio_es_una_instruccion.py funcion ?\n  confianza   : ?\n  VEREDICTO   : DUDOSO\n  fallo       : test_el_mensaje_apuntado_es_el_mensaje_completo puede ser estructuralmente IMPASABLE: el mensaje tiene 109 caracteres y el assert exige 'juzgar' en el texto (posicion 103), pero la reparacion que la vigia guarda esta exprESAMENTE definida como 'apuntar el MENSAJE COMPLETO como UNA sola instruccion (recortado a lo que quepa)'. Si el recorte que quepa es 80 o 100 caracteres (valores normales), el texto guardado pierde la cola y el assert sigue fallando para siempre: la vigia bloquearia una reparacion correcta. El propio docstring admite 'recortado a lo que quepa' y aun asi chose un mensaje que no cabe en un recorte corto.\n  fallo       : test_lo_citado_entre_comillas_no_se_apunta puede pasar en VACIO y ademas puede NACER VERDE: el assert esta dentro de un `for t in textos`, asi que si no hay entradas el bucle no se ejecuta nunca y el test es verde sin comprobar nada. Y suodonada depende por completo de que `parece_una_orden` reconozca como orden el trozo citado ('esto lo escribio Claude y no es una orden mia'), cosa que el obrero no puede verificar porque el encargo le prohibe tocar `parece_una_orden`. El material afirma que HOY el texto citado SI se apunta, asi que la muestra elegida tiene que Achieve disparar esa rama; si no, el test queda verde hoy y no vigila la mitad del problema (el texto de Claude apuntaba).\n  fallo       : test_un_mensaje_de_julio_es_una_sola_instruccion y test_el_mensaje_apuntado_es_el_mensaje_completo son el MISMO test duplicado: mismo mensaje literal, mismo primer assert `len(entradas) == 1`. El segundo solo anade las comprobaciones de contenido, que son las fragiles. Trabajo repetido con riesgo anadido, no guarda nueva.\n  fallo       : test 2 y test 3 asumen que el ledger es un DICT de id -> objeto con clave 'texto' (`entradas.values()`, `unico.get('texto','')`). Si el JSON real es una lista, `entradas.values()` lanza AttributeError: esos dos tests NACEN POR ERROR, no por assert, y el encargo exige literalmente 'Tiene que NACER ROJA por un assert que falla (no por un error de sintaxis o de un nombre que no existe)'. Solo el test 1 es independiente de la forma del ledger.\n  resumen     : La ubicacion, el enfoque y el test 1 estan bien y el archivo nace rojo como pide el encargo; pero el test 3 puede quedar rojo para siempre por affirmar sobre la cola de un mensaje de 109 caracteres cuando el recorte es 'lo que quepa', y el test 2 se puede pasar sin comprobar nada o nacer verde, asi que dos de las tres pruebas no reliably vigilan. Ademas, si `_ruta()` no honra INGENIERO_LEGISLAR_TEST, las pruebas escriben en la memoria real.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-02T01:47:37",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\V-R10_20261002_014737.json"
+  }
+}

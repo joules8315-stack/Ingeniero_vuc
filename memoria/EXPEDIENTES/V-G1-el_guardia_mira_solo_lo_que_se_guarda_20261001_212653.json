@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "V-G1-el_guardia_mira_solo_lo_que_se_guarda",
+    "titulo": "Vigia primero: el guardia mira solo lo que se guarda",
+    "pieza": "vigias/test_vigia_el_guardia_mira_solo_lo_que_se_guarda.py",
+    "vigia": "vigias/test_vigia_el_guardia_mira_solo_lo_que_se_guarda.py",
+    "origen": "Julio 2026-10-02: la bateria tarda 25 min en su PC y el guardia corre TODAS en cada guardado",
+    "repara": "que exista la prueba de: el guardia mira solo lo que se guarda",
+    "razon": "Medido el 2026-10-01 en el PC de Julio: la bateria completa tarda 1482 s y el guardia corre TODAS en cada guardado porque mira todo git status con la carpeta sucia; con 186 ordenes pendientes no se termina.",
+    "encargo": "Una prueba pytest, un solo archivo nuevo. En una carpeta temporal crea un repositorio git con dos archivos de codigo guardados: uno que una vigia de esa carpeta menciona por su nombre y otro que ninguna vigia menciona. Cambia los dos, pero deja preparado en el indice (git add) solo el primero. Llama a elegir de arnes/vecinas.py sobre esa carpeta y exige con assert que NO devuelve None y que la lista incluye la vigia que menciona el archivo preparado. Nace roja hoy porque elegir mira todos los cambios sueltos y devuelve None por el segundo archivo. Se prueba EJECUTANDO la funcion en carpeta temporal, sin tocar el estado real.",
+    "depende": [],
+    "modo": "IA",
+    "crear": true,
+    "entrega_la_prueba": "si",
+    "resultado_esperado": "El guardia solo corre las vigias de lo que se guarda.",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "8a4457dab403f77c",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-01_212649_DUDOSO_test_vigia_elegir_solo_mira_lo_preparado.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : vueltas_dadas: 1\n  diagnostico : Falta la prueba pytest que ejecuta elegir() en una carpeta temporal con un repo git donde solo un archivo esta preparado, y que hoy nace roja porque elegir mira todos los cambios sueltos y devuelve None por el archivo no preparado.\n  toca        : vigias/test_vigia_elegir_solo_mira_lo_preparado.py funcion ?\n  confianza   : alta\n  VEREDICTO   : DUDOSO\n  fallo       : La asercion central fija separador POSIX: ruta_vigia = 'vigias/' + nombre_vigia. En win32 (raiz C:\\Ingeniero_VUC) si elegir compone rutas con os.path.join devuelve 'vigias\\test_vigia_de_pieza_mencionada.py' y el `in` falla, dejando la prueba roja aunque elegir este bien reparado. Debe normalizar (os.path.join o comparar tras replace('\\\\','/') o buscar por nombre de archivo).\n  fallo       : La vigia de mentira menciona 'pieza_mencionada' SIN la extension .py (en el docstring, en un comentario y en el nombre del test). Si elegir empareja por nombre de archivo o por ruta relativa y no por raiz del nombre, la pareja nunca se da y la prueba seguira roja por un motivo que no es el del diagnostico. Mencionar el nombre completo y/o la ruta en el texto de la vigia lo hace robusto bajo cualquier criterio de emparejamiento.\n  fallo       : No limpia la carpeta temporal: usa tempfile.mkdtemp y nunca hace shutil.rmtree en un try/finally, asi que cada corrida deja un repo git huerfano en %TEMP%.\n  fallo       : Configura user.email/user.name local pero no neutraliza commit.gpgsign global: en una maquina con firma activada el `git commit` inicial lanza CalledProcessError y la prueba revienta con un error de subprocess en vez de la asercion que se quiere ver.\n  resumen     : No inventa nada y monta fielmente el escenario pedido, pero las dos aserciones que deciden el verde estan escritas contra suposiciones no verificadas (separador '/' en Windows y la vigia de mentira menciona el nombre sin '.py'), asi que la prueba puede quedarse roja aunque elegir se repare; pide arnes/vecinas.py y arregla eso antes de dar luz verde.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-01T21:26:53",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\V-G1-el_guardia_mira_solo_lo_que_se_guarda_20261001_212653.json"
+  }
+}

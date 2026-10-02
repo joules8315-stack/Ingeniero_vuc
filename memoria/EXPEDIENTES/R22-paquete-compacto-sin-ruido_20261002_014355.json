@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "R22-paquete-compacto-sin-ruido",
+    "titulo": "El paquete y la respuesta viajan compactos y sin ruido",
+    "pieza": "arnes/medidor_de_ruido.py",
+    "origen": "orden de Julio del 2026-09-28, hueco de ley encontrado al buscar en los 66 contratos",
+    "repara": "Se buscaron las palabras compacto, sin ruido y formato json en los 66 contratos del proyecto y no aparece ni una linea: no hay ninguna ley sobre el formato en que viaja el material. Hoy el paquete viaja como prosa larga con titulos, explicaciones y avisos repetidos, y eso pesa sin aportar.",
+    "razon": "Palabras de Julio, 2026-09-28: la memoria indexada debe tener la informacion completa, detallada, en un paquete compacto json, y sin nada de ruido, sin nada innecesario, y asi mismo debe ser la respuesta, clara, completa, compacta y solo lo necesario, de modo que las IA gratis puedan leer la informacion porque no excede su ventana de contexto.",
+    "encargo": "OBJETIVO: que se pueda medir el ruido de un paquete. NOMBRES DECIDIDOS (no preguntar, no inventar otros): archivo nuevo arnes/medidor_de_ruido.py con la funcion medir_paquete(texto) que devuelve un diccionario con las claves total, codigo, leyes, pruebas, avisos (letras por seccion) y ruido_pct (porcentaje del total que no es codigo ni pruebas pedidas). LA PRUEBA QUE DEBE PASAR A VERDE: vigias/test_vigia_se_mide_el_ruido_del_paquete.py; leela primero: si sus nombres difieren de estos, mandan los de la prueba. Es un archivo nuevo: se crea entero.",
+    "vigia": "vigias/test_vigia_se_mide_el_ruido_del_paquete.py",
+    "depende": [
+      "V-R22-paquete-compacto-sin-ruido"
+    ],
+    "modo": "PROGRAMA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "Encargo reescrito el 2026-10-02 con las razones del revisor y los nombres decididos.",
+    "prueba_real": "",
+    "comando": "",
+    "crear": true
+  },
+  "huella": "cf109535f66608f4",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-02_014353_DUDOSO_medidor_de_ruido.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta\n  aviso       : vueltas_dadas: 3\n  diagnostico : El archivo arnes/medidor_de_ruido.py no existe y hay que crearlo entero; la prueba arbitro vigias/test_vigia_se_mide_el_ruido_del_paquete.py define el formato real de las lineas del paquete (leyes con backtick y '> **', trozos con '### `ruta:lineas`', vallas ```), asi que medir_paquete debe contar por secciones usando esos patrones y no regex inventados.\n  toca        : arnes/medidor_de_ruido.py funcion ?\n  confianza   : media\n  VEREDICTO   : DUDOSO\n  fallo       : No consta que se leyera la prueba arbitro `vigias/test_vigia_se_mide_el_ruido_del_paquete.py`, que el contrato manda leer PRIMERO y cuyos nombres prevalecen. `_comprobado_por_programa: true` solo acredita que el archivo carga, no que la prueba pase en verde.\n  fallo       : El diagnostico y el docstring del archivo presenting como 'el formato real segun el material' secciones y cabeceras que NO aparecen en el material entregado (que esta truncado y con AVISO de no adivinar): '## 3. LOS TROZOS EXACTOS', '### Texto de la ley que manda aqui (primera de la lista)', '### `ruta:lineas`  (relevancia 4.88)'. Sobre esa base se construyen `_RE_TROZO`, `_clasificar_seccion('TROZO'/'EXACTO')` y `_RE_PRUEBA_TROZO`, que son patrones no verificables contra el material.\n  fallo       : Rama muerta: `_RE_PRUEBA_TROZO` es practicamente identico a `_RE_TROZO` (el grupo de lineas es opcional) y toda linea que casa con el ya fue consumida antes por la rama `_RE_TROZO`. La logica 'prueba dentro de la seccion de trozos' no llega a ejecutarse nunca; el conteo de pruebas depende de una sola rama, no de la seccion.\n  fallo       : Inconsistencia interna de la medicion: `total = len(texto)` incluye los saltos de linea, mientras que codigo/leyes/pruebas/avisos suman `len(linea)` sin ellos. El reparto nunca cuadra al 100% y `ruido_pct` queda inflado de forma systematica en todas las entradas.\n  resumen     : El archivo y la funcion existen, con las seis claves que pide el contrato, y no inventa nada, pero se escribio a ciegas: no leyo la prueba arbitro que el contrato le ordenaba leer y se invento el formato de secciones que despues usa; ademas tiene una rama muerta y un conteo que nunca cuadra al 100%. Se aprueba solo si el obrero lee la prueba y la pasa en verde.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-02T01:43:55",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R22-paquete-compacto-sin-ruido_20261002_014355.json"
+  }
+}

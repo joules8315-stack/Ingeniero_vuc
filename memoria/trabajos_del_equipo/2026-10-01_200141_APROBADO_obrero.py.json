@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _preguntar_con_relevo el tope del pasillo se calcula con min(_capas), asi que recorta al cerebro gratis mas pequeno y tira material que si cabia en los demas; hay que crear tope_del_pasillo (devuelve la capacidad mayor) y usarla ahi.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_preguntar_con_relevo",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    if turnos:\n        _capas = [cuotas._capacidad(q) for q in turnos]\n        _capas = [c for c in _capas if c > 0]\n        if _capas:\n            _tope_pasillo = min(_capas)",
+    "texto_nuevo": "    if turnos:\n        _capas = [cuotas._capacidad(q) for q in turnos]\n        _capas = [c for c in _capas if c > 0]\n        if _capas:\n            _tope_pasillo = tope_del_pasillo(_capas)"
+   },
+   {
+    "texto_viejo": "def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False,\n                          clase=\"\", vuelta=0):",
+    "texto_nuevo": "def tope_del_pasillo(capacidades):\n    \"\"\"Devuelve la capacidad MAYOR de la fila: el pasillo se recorta a la medida del cerebro\n    que mas aguanta, no del mas pequeno. Recortar al minimo tiraba material que si cabia en\n    los demas (medido el 2026-10-01: en 27 de 34 ordenes se quito codigo que si habia llegado).\"\"\"\n    _vivas = [c for c in capacidades if c > 0]\n    if not _vivas:\n        return 0\n    return max(_vivas)\n\n\ndef _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False,\n                          clase=\"\", vuelta=0):"
+   }
+  ],
+  "cambio": "Crear la funcion tope_del_pasillo (devuelve la capacidad mayor de las capacidades dadas) y, en _preguntar_con_relevo, sustituir el calculo del tope del pasillo que hoy usa min(_capas) por una llamada a tope_del_pasillo(_capas).",
+  "codigo": "def tope_del_pasillo(capacidades):\n    \"\"\"Devuelve la capacidad MAYOR de la fila: el pasillo se recorta a la medida del cerebro\n    que mas aguanta, no del mas pequeno. Recortar al minimo tiraba material que si cabia en\n    los demas (medido el 2026-10-01: en 27 de 34 ordenes se quito codigo que si habia llegado).\"\"\"\n    _vivas = [c for c in capacidades if c > 0]\n    if not _vivas:\n        return 0\n    return max(_vivas)",
+  "vigia": "vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py: comprueba que el tope del pasillo es la capacidad mayor de la fila y que el prompt no se recorta por debajo de lo que aguanta el cerebro que mas aguanta.",
+  "puede_danar": [
+   "cuerpo/obrero.py:_preguntar_con_relevo",
+   "cuerpo/cuotas.py (rankear y _capacidad, que siguen decidiendo a quien se le pregunta)",
+   "el cerebro de pago (si el tope sube, puede entrar mas material y subir el coste)"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "cuotas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El tope del pasillo sube de min a max, asi que a cada fila le llega mas material del que le llegaba antes: sube el coste de la llamada al cerebro mas grande. Es exactamente lo pedido y el propio obrero lo declara en puede_danar, pero es el efecto a vigilar en la primera tanda real.",
+   "No se toca cuotas.py, asi que rankear y _capacidad siguen mandando igual: ningun vecino de ahi se mueve.",
+   "El filtro `c > 0` dentro de tope_del_pasillo es redundante porque el llamador ya filtra _capas, y el `return 0` es rama muerta en ese punto. Es codigo de sobra, no un fallo: no cambia ningun resultado."
+  ],
+  "que_falta": [
+   "La vigia no consta ejecutada en verde: el _comprobado_por_programa del paquete solo verifica nombres y que el archivo carga, no que test_vigia_el_pasillo_no_corta_al_que_escribe.py pase. Es el unico空洞 real antes de dar por bueno el cambio."
+  ],
+  "resumen_para_el_jefe": "Hace justo lo pedido y solo eso: crea tope_del_pasillo devolviendo la capacidad mayor y la usa donde estaba min(_capas), sin tocar cuotas.py ni inventar nada; unico reparo pendiente, ejecutar la vigia para confirmar que pasa en verde."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 38841 a 13565 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el pasillo recorto el encargo de 39747 a 18956 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 2"
+ ]
+}

@@ -1,0 +1,35 @@
+{
+  "orden": {
+    "id": "R25-el-guardado-compara-el-color-no-exige-verde",
+    "titulo": "El guardado compara con el color de antes, en vez de exigir verde absoluto",
+    "pieza": "arnes/guardia_de_guardado.py",
+    "encargo": "OBJETIVO: que el guardia compare con el color de antes y solo frene lo que estaba VERDE y ahora esta ROJO; las rojas que ya estaban rojas no frenan. DONDE SE REPARA: arnes/guardia_de_guardado.py, en la funcion _vigias (y rojas_que_frenan si hace falta). LA PRUEBA QUE DEBE PASAR A VERDE: vigias/test_vigia_el_guardado_compara_el_color.py; leela primero: sus nombres y firmas mandan, no los inventes. COMO: guardar el color de cada vigia que corrio en memoria/.colores_de_antes.json como un diccionario ruta -> verde o roja, con TODAS las vigias que corrieron (verdes y rojas, no solo las rojas); frenar una roja de ahora solo si en ese archivo figura como verde; actualizar el archivo solo cuando ningun grupo se corto por tiempo, y fusionando con lo anterior (lo que no corrio ahora conserva su color). No cambiar el tope de tiempo (eso es R1) ni la lista .rojas_conocidas.json. ERRORES QUE EL REVISOR YA ENCONTRO EN UN INTENTO ANTERIOR: calcular las verdes que SIGUEN verdes no detecta las que desaparecen; marcar como verde una roja que ya existia envenena el estado; guardar solo las rojas deja vacia la comprobacion de verdes en la segunda corrida.",
+    "vigia": "vigias/test_vigia_el_guardado_compara_el_color.py",
+    "origen": "julio",
+    "repara": "que una vigia roja de antes, ajena al cambio, impida guardar trabajo correcto",
+    "razon": "orden de Julio del 2026-09-28: el trabajo nuevo no debe romper lo que ya sirve, y eso se comprueba comparando el color, no exigiendo un verde que el proyecto no tiene",
+    "depende": [
+      "V-R25-el-guardado-compara-el-color-no-exige-verde"
+    ],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "Encargo reescrito el 2026-10-02 con las razones del revisor y los nombres decididos.",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "a909d98823240944",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-02_013756_DUDOSO_guardia_de_guardado.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (29536 letras, aguanta 19042) -> se le salta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (31091 letras, aguanta 19042) -> se le salta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (31527 letras, aguanta 19042) -> se le salta\n  diagnostico : El guardia decide por la lista .rojas_conocidas.json (que el encargo prohibe tocar) y por si la corrida fue exactamente ['vigias/'], en vez de guardar el color de antes de TODAS las vigias que corrieron en memoria/.colores_de_antes.json y frenar solo la roja que antes figuraba verde.\n  toca        : arnes/guardia_de_guardado.py funcion _vigias\n  confianza   : media\n  PREGUNTA_REQUERIDA: El material no muestra el cuerpo completo de vigias/test_vigia_el_guardado_compara_el_color.py (solo el encabezado y la contraprueba). ¿La firma exacta que espera es rojas_que_frenan(rojas_ahora, guardadas, declaradas, colores_de_antes) con el cuarto argumento como dict ruta->'verde'/'roja', o espera otro nombre/forma para ese cuarto argumento?; El material no muestra como bateria_en_paralelo.py imprime las lineas PASSED/FAILED/ERROR en su salida. ¿El formato es 'PASSED vigias/test_x.py::test_y' y 'FAILED vigias/test_x.py::test_y - ...' como en pytest -q, o usa otro prefijo? Sin eso, el parseo de verdes puede no encontrar nada.\n  VEREDICTO   : DUDOSO\n  fallo       : Asimetria en las claves: al guardar se normaliza el nombre a '/' (archivo.replace('\\\\','/')), pero la busqueda se hace con `colores_de_antes.get(roja)` sobre `roja` tal cual viene de archivos_rojos/guardados, sin normalizar. En win32 ese valor suele llevar backslash, asi que la clave guardada nunca casa con la roja consultada y TODAS las rojas guardadas frenan: justo el fallo que se queria quitar.\n  fallo       : El formato de las lineas PASSED/FAILED/ERROR y el del marcador de corte ('grupo cortado por tiempo:' / 'N grupos cortados por tiempo') no estan en el material y el propio obrero lo admite en 'preguntas'. Si el parseo no encaja, colores_nuevos sale igual a colores_de_antes y el archivo se reescribe sin nada nuevo: el estado se queda congelado y toda roja que estaba 'verde' frena para siempre, sin que nada avise.\n  fallo       : Se borra por completo la lectura y la escritura de .rojas_conocidas.json. La orden decia 'no cambiar la lista', y el efecto no es neutro: en la PRIMERA corrida tras el cambio .colores_de_antes.json no existe, el dict llega vacio y por regla implementada ('si no figura, SI frena') reaparecen de golpe todas las rojas que la lista ya tenia como conocidas. Es decir, se reintroduce la R25 que motivationa el encargo (trabajos buenos apartados) en forma de rafaga unica.\n  fallo       : Se afirma en el campo 'vigia' lo que hace test_vigia_el_guardado_compara_el_color.py (que llama a rojas_que_frenan con la roja ajena y exige que no frene, y que con una nueva exige que frene) sin haber leido ese archivo: el propio 'preguntas' lo admite. La orden decia leerlo primero porque sus firmas mandan, y aun asi se cambia el contrato de una funcion compartida.\n  resumen     : La logica central es la que pedia el encargo y no inventa nada, pero se aprueba con reparos: guarda las claves con '/' y las busca sin normalizar (en Windows no casa nunca -> todas las rojas frenan), asume un formato de salida que nadie ha verificado, borra la lectura de .rojas_conocidas.json y por tanto hace frenar en la primera corrida todas las rojas ya conocidas, y ademas nunca leyo el test que fija el contrato; pedir el test y bateria_en_paralelo.py antes de dar luz verde.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-02T01:38:00",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R25-el-guardado-compara-el-color-no-exige-verde_20261002_013800.json"
+  }
+}

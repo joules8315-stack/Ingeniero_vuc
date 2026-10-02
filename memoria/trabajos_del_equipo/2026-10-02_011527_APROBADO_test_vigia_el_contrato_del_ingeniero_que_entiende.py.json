@@ -1,0 +1,32 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta la vigia pytest que lee el contrato del ingeniero que entiende lo que Julio quiere y exige sus frases clave y que los archivos nombrados existan o esten en ordenes abiertas.",
+  "archivo": "vigias/test_vigia_el_contrato_del_ingeniero_que_entiende.py",
+  "texto_nuevo": "\"\"\"Vigia del contrato: EL INGENIERO ENTIENDE LO QUE JULIO QUIERE.\n\nMetodo de Julio: la vigia se escribe primero y nace ROJA. Una vigia verde no probo nada.\n\nEsta prueba:\n  1. Exige que exista CONTRATO_EL_INGENIERO_ENTIENDE_LO_QUE_JULIO_QUIERE.md\n  2. Exige que contenga las frases clave de la ley.\n  3. Exige que cada archivo con extension que el contrato nombra exista en el proyecto\n     o corresponda a una orden abierta en memoria/ORDENES.json.\n\nNace roja por un assert que falla (el contrato aun no existe), no por error de sintaxis.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nimport re\nfrom pathlib import Path\n\n\nRAIZ = Path(__file__).resolve().parent.parent\nCONTRATO = RAIZ / \"CONTRATO_EL_INGENIERO_ENTIENDE_LO_QUE_JULIO_QUIERE.md\"\nORDENES = RAIZ / \"memoria\" / \"ORDENES.json\"\n\n\nFRASES_OBLIGATORIAS = [\n    \"resultado esperado\",\n    \"ontologia\",\n    \"nace conectad\",\n    \"candado\",\n    \"memoria\",\n    \"hora de apuntes\",\n    \"programa antes que IA\",\n    \"CONTRATO_TODO_ENCHUFADO_NADA_DORMIDO\",\n    \"CONTRATO_MENOS_IA_MAS_PROGRAMA\",\n    \"CONTRATO_LOS_CUATRO_OBJETIVOS_ORQUESTADOS\",\n    \"CONTRATO_EL_FABRICANTE_DE_HABILIDADES\",\n]\n\n\nPATRON_ARCHIVO = re.compile(r\"[A-Za-z0-9_./\\\\-]+\\.(?:py|md|json|txt|yaml|yml|toml|cfg|ini)\")\n\n\ndef _leer_contrato() -> str:\n    assert CONTRATO.exists(), (\n        f\"Falta el contrato: {CONTRATO}. \"\n        \"La vigia nace roja porque el contrato aun no existe.\"\n    )\n    return CONTRATO.read_text(encoding=\"utf-8\")\n\n\ndef _ordenes_abiertas() -> set[str]:\n    \"\"\"Devuelve el conjunto de rutas/archivos nombrados en ordenes abiertas.\"\"\"\n    if not ORDENES.exists():\n        return set()\n    try:\n        datos = json.loads(ORDENES.read_text(encoding=\"utf-8\"))\n    except (json.JSONDecodeError, OSError):\n        return set()\n\n    abiertas: set[str] = set()\n\n    def _recoger(valor) -> None:\n        if isinstance(valor, str):\n            abiertas.add(valor)\n            abiertas.add(Path(valor).name)\n        elif isinstance(valor, dict):\n            for v in valor.values():\n                _recoger(v)\n        elif isinstance(valor, list):\n            for v in valor:\n                _recoger(v)\n\n    _recoger(datos)\n    return abiertas\n\n\ndef _archivos_nombrados(texto: str) -> set[str]:\n    return set(PATRON_ARCHIVO.findall(texto))\n\n\ndef test_existe_el_contrato_del_ingeniero_que_entiende() -> None:\n    assert CONTRATO.exists(), (\n        f\"No existe {CONTRATO.name}. \"\n        \"El contrato que fija la ley del objetivo maximo debe estar escrito.\"\n    )\n\n\ndef test_el_contrato_contiene_las_frases_de_la_ley() -> None:\n    texto = _leer_contrato()\n    faltan = [frase for frase in FRASES_OBLIGATORIAS if frase not in texto]\n    assert not faltan, (\n        \"Al contrato le faltan frases obligatorias de la ley: \" + \", \".join(faltan)\n    )\n\n\ndef test_cada_archivo_nombrado_existe_o_es_orden_abierta() -> None:\n    texto = _leer_contrato()\n    nombrados = _archivos_nombrados(texto)\n    assert nombrados, (\n        \"El contrato no nombra ningun archivo con extension; \"\n        \"debe referenciar los archivos que la ley toca.\"\n    )\n\n    abiertas = _ordenes_abiertas()\n    faltantes: list[str] = []\n    for nombre in sorted(nombrados):\n        candidato = RAIZ / nombre\n        if candidato.exists():\n            continue\n        if nombre in abiertas or Path(nombre).name in abiertas:\n            continue\n        faltantes.append(nombre)\n\n    assert not faltantes, (\n        \"El contrato nombra archivos que no existen en el proyecto \"\n        \"ni figuran como orden abierta en memoria/ORDENES.json: \"\n        + \", \".join(faltantes)\n    )\n",
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Menor: la whitelist de extensiones (py|md|json|txt|yaml|yml|toml|cfg|ini) deja fuera archivos con otra extension (.ts, .csv, .sql): esos nombrados no se vigilan. El encargo dice 'cada archivo que nombra con extension'.",
+   "Menor: assert nombrados exige que el contrato nombre al menos un archivo con extension; el encargo no pedia esa exigencia extra, asi que un contrato bien escrito que no cite rutas haria fallar la vigia sin motivo.",
+   "Menor: _ordenes_abiertas mete TODAS las cadenas del JSON (estados, ids, fechas) y sus Path(...).name en el conjunto, sin mirar ningun campo de estado. Sirve como referencia laxa, pero una orden cerrada tambien autoriza el archivo: la comprobacion 'orden abierta' es mas blanda que la ley."
+  ],
+  "riesgo_vecinos": [
+   "PATRON_ARCHIVO puede capturar falsos positivos dentro de URLs o rutas con dos puntos (p. ej. 'github.com/openai/x.py' -> no existe en RAIZ y no esta en ORDENES.json -> la vigia se pone roja con un contrato bien escrito). Es la mayor fragilidad del diseno, pero no rompe codigo vecino.",
+   "Si el contrato cita de la ley rutas que son de otro proyecto (cuerpo/experimentos.py, cuerpo/crm.py, cuerpo/compliance.py) y esas no existen en C:\\Ingeniero_VUC ni figuran en memoria/ORDENES.json, la vigia quedara roja; es exactamente lo que pide el encargo, asi que es comportamiento correcto, no defecto."
+  ],
+  "que_falta": [
+   "Nada de lo pedido: archivo unico en la ruta indicada, las 11 frases de la ley estan literales y en orden, los tres asserts exigidos estan, y nace roja por AssertionError de CONTRATO.exists() (no por sintaxis: he revisado el regex, las anotaciones set[str]/list[str] con from __future__ import annotations y la clase de caracteres [A-Za-z0-9_./\\\\-])."
+  ],
+  "resumen_para_el_jefe": "Cumple el encargo exacto en un solo archivo, no inventa nada y nace roja por un assert como se pidio; solo le sobran un par de comprobaciones blandas extra y la lista de extensiones es incompleta, nada que rompa vecinos."
+ },
+ "avisos": [
+  "vueltas_dadas: 2"
+ ]
+}

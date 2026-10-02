@@ -1,0 +1,43 @@
+{
+ "obrero": "groq",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "Faltan importaciones y la constante TOPE_RENGLONES, provocando NameError al usar cuaderno_de_la_ronda.py y mostrador.py",
+  "archivo": "",
+  "funcion": "",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "archivo": "arnes/cuaderno_de_la_ronda.py",
+    "funcion": "_guardar_cuaderno",
+    "texto_viejo": "",
+    "texto_nuevo": "import json\nfrom typing import Dict, Any"
+   },
+   {
+    "archivo": "arnes/mostrador.py",
+    "funcion": "_bloque",
+    "texto_viejo": "",
+    "texto_nuevo": "TOPE_RENGLONES = 300  # máximo de líneas para entregar archivo entero"
+   }
+  ],
+  "cambio": "Agregar importaciones faltantes en cuaderno_de_la_ronda.py y definir la constante TOPE_RENGLONES en mostrador.py",
+  "codigo": "import json\nfrom typing import Dict, Any\n\nTOPE_RENGLONES = 300  # máximo de líneas para entregar archivo entero",
+  "vigia": "Ejecutar _guardar_cuaderno con datos de ejemplo y llamar a _bloque con una petición válida; ambos deben completarse sin lanzar NameError",
+  "puede_danar": [
+   "cuaderno_de_la_ronda.py",
+   "mostrador.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta"
+ },
+ "auditoria": {},
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "el pasillo recorto el encargo de 19191 a 12968 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

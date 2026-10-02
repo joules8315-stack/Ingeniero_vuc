@@ -70,7 +70,61 @@ def disponible():
 
 
 # ─── los prompts: cortos, con el paquete dentro, y prohibicion de inventar ──────────
-def falta_en_el_material(material, encargo):
+def _nombres_de_funcion_del_texto(texto_encargo, conocidas=None):
+    """Devuelve los nombres de funcion que un texto nombra.
+
+    Se buscan palabras que empiecen por raya baja (como _prompt_obrero).
+    El nombre se corta en el primer caracter que no puede formar parte de un
+    nombre de Python: solo letras, numeros y rayas bajas desde el principio.
+    Asi un trozo pegado como '_anotar(segundos' se queda en '_anotar'.
+
+    Si se pasa `conocidas` (una coleccion de nombres), ademas se recorren las
+    palabras del texto y se agregan las que aparecen en esa coleccion. Asi una
+    funcion de nombre normal nombrada en el encargo tambien se reconoce. La
+    lista que vuelve no repite ningun nombre. Si `conocidas` es None o viene
+    rara, se porta igual que antes.
+    """
+    funciones = []
+    for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
+        limpia = palabra.strip("()[]{}<>\"'`.:")
+        if limpia.startswith("_") and len(limpia) > 1:
+            corte = len(limpia)
+            for _i, _c in enumerate(limpia):
+                if not (_c.isalnum() or _c == "_"):
+                    corte = _i
+                    break
+            nombre = limpia[:corte]
+            # si despues de cortar no queda mas que la raya baja, no se exige
+            if nombre.startswith("_") and len(nombre) > 1:
+                funciones.append(nombre)
+    if conocidas:
+        try:
+            for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
+                limpia = palabra.strip("()[]{}<>\"'`.:")
+                if limpia in conocidas and limpia not in funciones:
+                    funciones.append(limpia)
+        except Exception:
+            pass
+    return funciones
+
+def funciones_que_declara(ruta):
+    """Devuelve el conjunto de nombres que ese archivo declara: funciones y clases,
+    incluidas las que viven dentro de una clase. Ante cualquier error, conjunto vacio.
+    Nunca lanza."""
+    try:
+        import ast as _ast
+        with open(ruta, encoding="utf-8") as _f:
+            _arbol = _ast.parse(_f.read())
+        _nombres = set()
+        for _nodo in _ast.walk(_arbol):
+            if isinstance(_nodo, (_ast.FunctionDef, _ast.AsyncFunctionDef, _ast.ClassDef)):
+                _nombres.add(_nodo.name)
+        return _nombres
+    except Exception:
+        return set()
+
+
+def falta_en_el_material(material, encargo, conocidas=None):
     """Devuelve frases cortas con lo que el encargo nombra y el material no trae.
 
     Reglas:
@@ -102,6 +156,18 @@ def falta_en_el_material(material, encargo):
             # descartar la palabra suelta 'py' sin punto ni nombre delante
             if limpia == "py":
                 continue
+            # descartar la extension SUELTA: un punto seguido de py sin ningun
+            # nombre delante. Solo cuenta como archivo si antes del punto hay al
+            # menos una letra, un numero o una raya baja.
+            _punto = limpia.find(".py")
+            _nombre = limpia[:_punto]
+            if not any(_c.isalnum() or _c == "_" for _c in _nombre):
+                continue
+            # una ruta con numero de renglon detras (ruta:1290) es la MISMA ruta:
+            # el nombre del archivo se corta en los dos puntos.
+            _dos_puntos = limpia.find(":")
+            if _dos_puntos != -1:
+                limpia = limpia[:_dos_puntos]
             archivos.append(limpia)
 
     for archivo in archivos:
@@ -111,12 +177,9 @@ def falta_en_el_material(material, encargo):
             )
 
     # --- Funciones nombradas en el encargo ---
-    # Se buscan palabras que empiecen por raya baja (como _prompt_obrero).
-    funciones = []
-    for palabra in texto_encargo.replace(",", " ").replace(";", " ").split():
-        limpia = palabra.strip("()[]{}<>\"'`.:")
-        if limpia.startswith("_") and len(limpia) > 1:
-            funciones.append(limpia)
+    funciones = _nombres_de_funcion_del_texto(texto_encargo, conocidas)
+    if conocidas:
+        funciones = [f for f in funciones if f in conocidas]
 
     for funcion in funciones:
         declaracion = "def " + funcion
@@ -245,6 +308,37 @@ Responde SOLO un JSON valido, sin texto alrededor:
 ===== MATERIAL (esto es TODO lo que existe) =====
 {paquete}
 ===== FIN DEL MATERIAL ====="""
+
+
+def separar_avisos_y_frenos(mensajes):
+    """Reparte una lista de mensajes en dos: primero los AVISOS, despues los FRENOS.
+
+    Es aviso todo texto que, quitandole los espacios de delante, empieza por la
+    palabra AVISO seguida de dos puntos, o por las palabras NO HACE LO QUE SE PIDIO
+    seguidas de dos puntos. Todo lo demas es freno. No se pierde ni se duplica
+    ningun mensaje. Si no llega una lista, o trae cosas que no son texto, no
+    revienta: devuelve dos listas y sigue.
+
+    Hecho medido 2026-09-28: la cuenta del revisor por programa tumbo un cambio que
+    el auditor del equipo ya habia APROBADO, porque el encargo mencionaba dos piezas
+    como explicacion y no para cambiarlas. Lleva cuatro parches por frenadas en falso
+    en tres semanas. La razon de fondo es que esa cuenta adivina la INTENCION, y la
+    intencion es juicio, no cuenta: le toca a quien revisa, no al programa
+    (CONTRATO_CUENTA_O_JUICIO). Por eso ese mensaje se dice pero NO frena.
+    """
+    avisos = []
+    frenos = []
+    if not isinstance(mensajes, (list, tuple)):
+        return avisos, frenos
+    for mensaje in mensajes:
+        if not isinstance(mensaje, str):
+            continue
+        limpio = mensaje.lstrip()
+        if limpio.startswith("AVISO:") or limpio.startswith("NO HACE LO QUE SE PIDIO:"):
+            avisos.append(mensaje)
+        else:
+            frenos.append(mensaje)
+    return avisos, frenos
 
 
 def _prompt_auditor(paquete, propuesta):
@@ -383,7 +477,7 @@ TOPE_REVISOR = 12000   # A-38 (Julio 2026-09-19): el revisor recibe solo el camb
                       # A partir de aqui el cerebro se apaga: corta la respuesta a la mitad.
 
 
-def _filtrar_paquete(paquete, archivo=None, tope=None):
+def _filtrar_paquete(paquete, archivo=None, tope=None, funciones=None):
     """Recorta el paquete a lo minimo que necesita el cerebro que lo recibe.
 
     Medido el 2026-09-10 (Julio: "a un cerebro solo le llega lo suyo"): al auditor le
@@ -465,22 +559,46 @@ def _filtrar_paquete(paquete, archivo=None, tope=None):
              "archivo que hace falta.")
     tope_trabajo = tope - len(aviso) - 1
     recortado = False
+    # Los nombres de funcion que la tarea pide son LO NECESARIO: sus bloques no se sueltan.
+    _pedidas = []
+    if funciones:
+        if isinstance(funciones, str):
+            _pedidas = [funciones]
+        else:
+            try:
+                _pedidas = [f for f in funciones if f]
+            except Exception:
+                _pedidas = []
+    def _trae_funcion_pedida(lineas):
+        for ln in lineas:
+            for f in _pedidas:
+                if ln.startswith("def " + f):
+                    return True
+        return False
     while len("\n".join(salida)) > tope_trabajo and len(salida) > len(bloques["__cabecera__"]):
         cabecera = len(bloques["__cabecera__"])
         ultimo = None
         for i in range(len(salida) - 1, cabecera - 1, -1):
             if salida[i].startswith("### `"):
+                j = i + 1
+                while j < len(salida) and not salida[j].startswith("### `"):
+                    j += 1
+                if _trae_funcion_pedida(salida[i:j]):
+                    continue
                 ultimo = i
                 break
         if ultimo is not None:
-            del salida[ultimo:]
+            j = ultimo + 1
+            while j < len(salida) and not salida[j].startswith("### `"):
+                j += 1
+            del salida[ultimo:j]
             recortado = True
         else:
             if len(salida) <= cabecera:
                 break
             salida.pop()
             recortado = True
-    if recortado:
+    if recortado or len("\n".join(salida)) > tope_trabajo:
         salida.append(aviso)
     return "\n".join(salida)
 
@@ -780,6 +898,16 @@ def _claude_directo(prompt):
     return r.stdout
 
 
+def tope_del_pasillo(capacidades):
+    """Devuelve la capacidad MAYOR de la fila: el pasillo se recorta a la medida del cerebro
+    que mas aguanta, no del mas pequeno. Recortar al minimo tiraba material que si cabia en
+    los demas (medido el 2026-10-01: en 27 de 34 ordenes se quito codigo que si habia llegado)."""
+    _vivas = [c for c in capacidades if c > 0]
+    if not _vivas:
+        return 0
+    return max(_vivas)
+
+
 def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False,
                           clase="", vuelta=0):
     """Pregunta respetando el orden de Julio: Qwen -> Gemini -> local, y VOLVIENDO a Qwen
@@ -830,12 +958,19 @@ def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado
     # a todos = paga el de pago = se juzga a si mismo. Ahora se RECORTA antes de elegir, UNA
     # vez, para las 9 puertas. El tope es la capacidad real MEDIDA del gratis mas pequeno que
     # esta despierto: recortar para el garantiza que ningun gratis quede fuera por tamano.
-    # Se respeta lo "pesado": si Julio pidio de verdad al de pago, no se le recorta su material.
-    if turnos and not pesado:
+    # EL RECORTE SE HACE SIEMPRE (Julio, 2026-09-28). Antes esta condicion miraba lo pesado y
+    # apagaba el filtro: como todas las rondas se lanzan pidiendo que escriba el de pago, el
+    # recorte no se ejecutaba nunca. Medido el 2026-09-28: en las 19 rondas el cerebro gratis
+    # escribio CERO veces, con el aviso de que no le cabe en todas, entre 19.950 y 44.605 letras
+    # contra 19.042 que aguanta. Lo pesado decide A QUIEN SE LE PREGUNTA PRIMERO (eso se hace mas
+    # abajo, en la linea que pone al de pago delante, y esa no se toca), nunca CUANTO MATERIAL
+    # VIAJA: el material se corta SIEMPRE a su minima expresion completa, para todos, porque
+    # mandarle material de mas al de pago lo hace caro Y ademas impreciso.
+    if turnos:
         _capas = [cuotas._capacidad(q) for q in turnos]
         _capas = [c for c in _capas if c > 0]
         if _capas:
-            _tope_pasillo = min(_capas)
+            _tope_pasillo = tope_del_pasillo(_capas)
             if len(prompt) > _tope_pasillo:
                 _antes = len(prompt)
                 _recortado = asignador.recortar_prompt(prompt, _tope_pasillo)
@@ -1269,8 +1404,21 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
                 _vistos.append(_n)
         if _vistos:
             _archivo_tarea = _vistos
+        _conocidas = set()
+        if _archivo_tarea:
+            _raiz_proyecto = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+            for _ruta_nombrada in _archivo_tarea:
+                _ruta_resuelta = _ruta_nombrada
+                if not os.path.isabs(_ruta_resuelta):
+                    _ruta_resuelta = os.path.join(_raiz_proyecto, _ruta_resuelta)
+                _conocidas |= funciones_que_declara(_ruta_resuelta)
         material_obrero = _filtrar_paquete(paquete, archivo=_archivo_tarea,
-                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690)
+                                       tope=(min(max(cuotas._capacidad(generador), TOPE_GRATIS), 40000) if generador else TOPE_GRATIS) - 2690,
+                                       funciones=_nombres_de_funcion_del_texto(tarea, _conocidas))
+        if clase != "crear":
+            faltantes = falta_en_el_material(material_obrero, tarea, _conocidas)
+            if faltantes:
+                return {"_error": "FALTA_MATERIAL: " + "; ".join(faltantes) + " NECESITO_LEER: " + (_archivo_tarea[0] if _archivo_tarea else "el archivo que falta") + " motivo: sin ese trozo no se puede tocar lo que se pide decide: si se puede escribir el cambio o hay que pedir mas material riesgo: si no se lee, se paga una pregunta que nadie puede contestar"}
         crudo, quien_gen, av1 = _preguntar_con_relevo(_prompt_obrero(material_obrero, encargo, clase), 0.2,
                                                       pesado=pesado_ahora, primero=generador,
                                                       clase=clase, vuelta=_vuelta + 1)
@@ -1312,7 +1460,10 @@ def trabajar(paquete, tarea, generador=None, auditor=None, clase="reparar"):
             _prog_corrio = True
         except Exception:
             _fallos_prog = []
-        if _fallos_prog and _vuelta < 3:
+        _avisos_prog, _frenos_prog = separar_avisos_y_frenos(_fallos_prog)
+        for _aviso_prog in _avisos_prog:
+            avisos.append("AVISO del revisor por programa (no frena): %s" % _aviso_prog)
+        if _frenos_prog and _vuelta < 3:
             motivos_rechazo.extend(str(x) for x in _fallos_prog)
             avisos_totales.append('el revisor de programa freno antes de pagar la revision: ' + '; '.join(str(x) for x in _fallos_prog)[:200])
             continue

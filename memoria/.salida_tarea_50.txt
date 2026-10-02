@@ -1,14 +1,23 @@
 SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).
 Al obrero le llega el encargo de ANALISTA: escribe el documento entero.
 SE PIDE: escribe=deepseek  revisa=bigpickle
-TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-22_080221_SIN_VEREDICTO_test_vigia_si_el_perito_no_contesta_entra_codex.py.json
-OBRERO deepseek -> AUDITOR (ninguno)
-  aviso       : GPT-OSS 120B (Groq) no le cabe (36490 letras, aguanta 19042) -> se le salta
-  aviso       : el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.
-  aviso       : GPT-OSS 120B (Groq) no le cabe (36678 letras, aguanta 19042) -> se le salta
-  diagnostico : Falta ver el codigo real de pedir_al_perito para saber como llama a Codex y que forma tiene el estado que devuelve; el material solo muestra la version que llama a Claude y no incluye la rama de Codex ni el contrato exacto del estado.
-  toca        : vigias/test_vigia_si_el_perito_no_contesta_entra_codex.py funcion ?
-  confianza   : baja
-  VEREDICTO   : ?
-
-EL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.
+Traceback (most recent call last):
+  File "C:\Ingeniero_VUC\ingeniero.py", line 848, in <module>
+    sys.exit(main())
+  File "C:\Ingeniero_VUC\ingeniero.py", line 378, in main
+    res = _o.trabajar(_r.a_texto(paq), tarea, generador=_generador, auditor=_auditor,
+  File "C:\Ingeniero_VUC\cuerpo\obrero.py", line 1639, in trabajar
+    auditoria, quien_aud, av2 = auditar(paquete, propuesta, auditor=auditor, evitar=quien_gen)
+  File "C:\Ingeniero_VUC\cuerpo\obrero.py", line 1362, in auditar
+    _texto_bp, _avisos_bp = bigpickle.preguntar(
+  File "C:\Ingeniero_VUC\cuerpo\bigpickle.py", line 265, in preguntar
+    stdout, stderr = proc.communicate(input=prompt, timeout=timeout)
+  File "C:\Users\USER\AppData\Local\Programs\Python\Python310\lib\subprocess.py", line 1154, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+  File "C:\Users\USER\AppData\Local\Programs\Python\Python310\lib\subprocess.py", line 1544, in _communicate
+    self.stdout_thread.join(self._remaining_time(endtime))
+  File "C:\Users\USER\AppData\Local\Programs\Python\Python310\lib\threading.py", line 1100, in join
+    self._wait_for_tstate_lock(timeout=max(timeout, 0))
+  File "C:\Users\USER\AppData\Local\Programs\Python\Python310\lib\threading.py", line 1116, in _wait_for_tstate_lock
+    if lock.acquire(block, timeout):
+KeyboardInterrupt

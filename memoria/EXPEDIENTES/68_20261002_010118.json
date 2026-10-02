@@ -1,0 +1,35 @@
+{
+  "orden": {
+    "id": "68",
+    "titulo": "El loop no para por dolares: para cuando DeepSeek se queda sin saldo",
+    "origen": "orden de Julio 2026-09-21 (A-42)",
+    "repara": "hoy bucle se para al llegar a 5 USD del mes; Julio ordeno usar cada IA de pago hasta que se agote",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [
+      "89"
+    ],
+    "modo": "IA",
+    "razon": "saber si a DeepSeek se le acabo el saldo es leer un dato que ya guarda cuotas: es programa, no juicio",
+    "encargo": "En cuerpo/capataz.py hay que hacer dos cambios, entregalos en la lista cambios. (1) Justo despues de la funcion se_paso_del_tope, agrega la funcion nueva deepseek_sin_saldo(): hace from cuerpo import cuotas, lee cuotas._leer().get('dormidos', {}).get('deepseek'), y devuelve True solo si existe y su campo motivo, en minusculas, contiene 'insufficient balance', 'insufficient_quota', 'payment required' o '402'; en cualquier otro caso False. (2) En la funcion bucle, las dos lineas que dicen if se_paso_del_tope(): y return 'PARADO: TOPE DE GASTO (%.2f USD este mes)' % gastado_del_mes() se cambian por if deepseek_sin_saldo(): y return 'PARADO: DEEPSEEK SIN SALDO (%.2f USD gastados este mes)' % gastado_del_mes(). Cambia tambien en el texto de ayuda de bucle las palabras tope de gasto del mes por DeepSeek sin saldo. No se borran se_paso_del_tope ni TOPE_MES_USD: su vigia sigue viva. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_loop_para_cuando_deepseek_no_tiene_saldo.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "cuotas ya reconoce el 402 de DeepSeek como agotado (es_agote) y lo manda a dormir con el motivo; esto solo lo lee."
+  },
+  "huella": "b462aee10f506086",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "\nEL REVISOR DE PROGRAMA FRENA (gratis, sin ninguna IA):\n   - HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.\nNO se abre la puerta de escribir. El trabajo queda guardado.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-02_010112_APROBADO_capataz.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (19502 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.\n  aviso       : GPT-OSS 120B (Groq) no le cabe (20558 letras, aguanta 19042) -> se le salta\n  diagnostico : En cuerpo/capataz.py falta la funcion deepseek_sin_saldo y el bucle sigue parando por tope de gasto en vez de por DeepSeek sin saldo.\n  toca        : cuerpo/capataz.py funcion bucle\n  confianza   : alta\n  VEREDICTO   : APROBADO\n  resumen     : La reparacion hace exactamente lo que pedia el paquete, con los cuatro literales correctos y sin tocar otros archivos: aprobada.\n\nEL EQUIPO NO APROBO (RECHAZADO_POR_EL_PROGRAMA): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-02T01:01:18",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\68_20261002_010118.json"
+  }
+}

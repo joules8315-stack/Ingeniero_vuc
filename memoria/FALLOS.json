@@ -1096,7 +1096,7 @@
  },
  {
   "id": 69,
-  "fecha": "2026-09-30",
+  "fecha": "2026-10-01",
   "proyecto": "test_si_el_guardia_frena_no_se0",
   "que_paso": "el guardia no dejo guardar lo que el equipo aplico",
   "causa_raiz": "",
@@ -1107,7 +1107,7 @@
   ],
   "quien_lo_caza": "guardia_de_guardado",
   "disparador": "git\\s+commit[^\\n]*--no-verify|INGENIERO_OFF\\s*=\\s*1[^\\n]{0,120}git\\s+commit",
-  "veces": 121,
+  "veces": 127,
   "disparador_anterior": "git\\s+commit[^\\n]*--no-verify|INGENIERO_OFF\\s*=\\s*1"
  },
  {
@@ -1266,6 +1266,21 @@
   ],
   "quien_lo_caza": "ronda de dos archivos aprobada y aplicada el 2026-09-30",
   "disparador": "",
+  "veces": 1
+ },
+ {
+  "id": 80,
+  "fecha": "2026-10-01",
+  "proyecto": "Ingeniero_VUC",
+  "que_paso": "La orden R1 (arreglar arnes/vecinas.py, modo IA) nunca llego a hacerse. El encargo media 30798 letras; el pasillo lo recorto a 13913 \"para que le quepa a un cerebro gratis (tope medido: 19042)\". Con e",
+  "causa_raiz": "El pasillo de cuerpo/obrero.py recorta el encargo a la capacidad del cerebro MAS CHICO de la fila (_tope_pasillo = min(_capas) = 19042) sin mirar si al cortar pierde lo esencial (que archivo se toca), y descarta por lento al unico que aguantaba los 30798 enteros (DeepSeek de pago). Asi entrega un en",
+  "cura": "tarea nueva del forense",
+  "no_volver_a": "Nunca recortar un encargo por debajo de lo que necesita para decir que archivo se toca: si no cabe en el cerebro mas chico, se manda entero al que lo aguanta (incluido el de pago) o se parte en trozos",
+  "piezas": [
+   "arnes/vecinas.py"
+  ],
+  "quien_lo_caza": "pit (forense)",
+  "disparador": "arnes/vecinas\\.py",
   "veces": 1
  }
 ]

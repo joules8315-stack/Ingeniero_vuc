@@ -1,0 +1,25 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta una prueba que verifique que el archivo de ajustes comunes de las vigias fija la variable de registro de Big Pickle a una carpeta temporal por prueba, como hace con las demas variables de prueba.",
+  "archivo": "vigias/test_vigia_las_pruebas_apuntan_a_un_registro_temporal.py",
+  "texto_nuevo": "import os\nimport tempfile\n\nimport pytest\n\n\n# Variable de entorno que apunta al registro de Big Pickle.\n# El archivo de ajustes comunes de las vigias (conftest) debe fijarla,\n# para cada prueba, a una carpeta temporal, igual que hace con las otras\n# variables de prueba.\nVARIABLE_REGISTRO = \"BIG_PICKLE_REGISTRO\"\n\n\ndef test_las_pruebas_apuntan_a_un_registro_temporal(tmp_path):\n    \"\"\"El registro de Big Pickle debe vivir en una carpeta temporal durante las pruebas.\n\n    Se ejecuta una prueba hija con pytest y se comprueba, con un assert,\n    que dentro de esa prueba la variable del registro apunta a una carpeta\n    temporal y no a la ruta real del proyecto.\n    \"\"\"\n    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    archivo_hijo = tmp_path / \"test_hijo_registro_temporal.py\"\n    archivo_hijo.write_text(\n        \"import os\\n\"\n        \"\\n\"\n        \"\\n\"\n        \"def test_dentro_del_hijo():\\n\"\n        \"    valor = os.environ.get('\" + VARIABLE_REGISTRO + \"')\\n\"\n        \"    assert valor, 'la variable del registro no esta fijada'\\n\"\n        \"    assert os.path.isabs(valor), 'la ruta del registro no es absoluta'\\n\"\n        \"    assert 'tmp' in valor.lower() or 'temp' in valor.lower(), (\\n\"\n        \"        'la ruta del registro no apunta a una carpeta temporal: ' + valor\\n\"\n        \"    )\\n\",\n        encoding=\"utf-8\",\n    )\n\n    resultado = pytest.main(\n        [\n            str(archivo_hijo),\n            \"-p\",\n            \"no:cacheprovider\",\n            \"-q\",\n        ]\n    )\n\n    assert resultado == 0, (\n        \"el archivo de ajustes comunes de las vigias no fija \"\n        + VARIABLE_REGISTRO\n        + \" a una carpeta temporal para cada prueba\"\n    )\n",
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "La prueba nueva cumple exactamente lo pedido: crea un archivo nuevo solicitado, prueba ejecutando (no leyendo), y nace roja hasta que el conftest fije la variable a una carpeta temporal."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 25238 a 11043 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el pasillo recorto el encargo de 25507 a 11178 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 2"
+ ]
+}

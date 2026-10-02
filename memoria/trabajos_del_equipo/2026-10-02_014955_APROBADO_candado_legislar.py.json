@@ -1,0 +1,44 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/candado_legislar.py, la funcion parece_una_orden no descarta textos que traen palabras o formas que solo usa la maquina (monkeypatch, subprocess, TypeError, assert, tmp_path, nombre pegado a parentesis vacios, o ruta que acabe en .py), y esos textos pasan como si fueran ordenes de Julio.",
+  "archivo": "arnes/candado_legislar.py",
+  "funcion": "parece_una_orden",
+  "texto_viejo": "    # (2) si el texto contiene alguna de estas senales de maquina: the user, task title, markdown, tool chatter, codex, catch-up, entonces tampoco es de Julio: return False.\n    senales_maquina = ['the user', 'task title', 'markdown', 'tool chatter', 'codex', 'catch-up']\n    if any(palabra in texto.lower() for palabra in senales_maquina):\n        return False\n    return True",
+  "texto_nuevo": "    # (2) si el texto contiene alguna de estas senales de maquina: the user, task title, markdown, tool chatter, codex, catch-up, entonces tampoco es de Julio: return False.\n    senales_maquina = ['the user', 'task title', 'markdown', 'tool chatter', 'codex', 'catch-up']\n    if any(palabra in texto.lower() for palabra in senales_maquina):\n        return False\n    # (3) si el texto trae alguna palabra o forma que solo usa la maquina, tampoco es de Julio: return False.\n    palabras_solo_maquina = ['monkeypatch', 'subprocess', 'typeerror', 'assert', 'tmp_path']\n    if any(palabra in texto.lower() for palabra in palabras_solo_maquina):\n        return False\n    # un nombre pegado a parentesis vacios, como foo(), es codigo, no una orden\n    if re.search(r\"[A-Za-z_][A-Za-z0-9_]*\\(\\)\", texto):\n        return False\n    # una ruta que acabe en punto py es codigo, no una orden\n    if re.search(r\"\\S+\\.py\\b\", texto):\n        return False\n    return True",
+  "cambios": "",
+  "cambio": "Anadir al final de parece_una_orden, despues del bloque de senales_maquina y antes del return True, un bloque que descarte el texto si trae alguna palabra que solo usa la maquina (monkeypatch, subprocess, TypeError, assert, tmp_path), o un nombre pegado a parentesis vacios, o una ruta que acabe en punto py. Las reglas que ya estan no se tocan.",
+  "codigo": "    # (3) si el texto trae alguna palabra o forma que solo usa la maquina, tampoco es de Julio: return False.\n    palabras_solo_maquina = ['monkeypatch', 'subprocess', 'typeerror', 'assert', 'tmp_path']\n    if any(palabra in texto.lower() for palabra in palabras_solo_maquina):\n        return False\n    # un nombre pegado a parentesis vacios, como foo(), es codigo, no una orden\n    if re.search(r\"[A-Za-z_][A-Za-z0-9_]*\\(\\)\", texto):\n        return False\n    # una ruta que acabe en punto py es codigo, no una orden\n    if re.search(r\"\\S+\\.py\\b\", texto):\n        return False",
+  "vigia": "Un test que llame a parece_una_orden con textos que traen monkeypatch, subprocess, TypeError, assert, tmp_path, un nombre pegado a parentesis vacios y una ruta que acabe en .py, y compruebe que devuelve False; y que con frases normales de Julio siga devolviendo True.",
+  "puede_danar": [
+   "arnes/candado_legislar.py",
+   "el apuntador de ordenes de Julio (modo desde-julio)",
+   "el candado de cierre que bloquea si hay instrucciones sin legislar"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El patron \\S+\\.py\\b tambien se come ordenes legitimas de Julio que mencionan un archivo por su nombre (p.ej. 'revisa candado_legislar.py y arreglalo'); el encargo pedia exactamente esa regla, asi que no es fallo, pero conviene tenerlo en mira",
+   "El patron [A-Za-z_]\\w*\\(\\) rechaza frases como 'llama a la funcion f() y mira', misma observacion: pedido expreso, no error del obrero",
+   "No se toco EXCLUIR_DE_ORDEN ni MINIMO_PALABRAS, y el bloque se inserta antes del return True: ninguna regla previa cambia de sitio ni de efecto"
+  ],
+  "que_falta": [
+   "Ninguna pieza del encargo falta: las cinco palabras, el parentesis vacio y la ruta .py estan, y el bloque va despues de senales_maquina y antes del return True",
+   "El comentario '# (3) ... return False' mete dos sentencias en una linea; es estetico, no funcional",
+   "El test propuesto por el vigia es correcto pero no se aporta como archivo; si el paquete lo exige explicitamente, faltaria, y en este material no se pide"
+  ],
+  "resumen_para_el_jefe": "El arreglo hace exactamente lo pedido dentro de parece_una_orden, usa re que ya estaba en el archivo, no toca reglas existentes ni otro archivo, y solo queda el aviso de que la regla .py tambien puede filtrarse una orden legitima de Julio que nombre un archivo."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (20217 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 1"
+ ]
+}

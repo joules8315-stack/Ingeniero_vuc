@@ -1,0 +1,64 @@
+{
+ "obrero": "deepseek",
+ "auditor": "deepseek",
+ "propuesta": {
+  "diagnostico": "El candado de cierre informa dos piezas sin llamadores (arnes/cuaderno_de_la_ronda.py y arnes/mostrador.py) y el material no trae el candado ni la prueba roja que demuestre la causa raiz, ni el texto completo de las funciones que habria que tocar.",
+  "archivo": "NO_ENCONTRADO",
+  "funcion": "NO_ENCONTRADO",
+  "texto_viejo": "NO_ENCONTRADO",
+  "texto_nuevo": "NO_ENCONTRADO",
+  "cambio": "NO_ENCONTRADO",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO",
+  "puede_danar": [
+   "arnes/mostrador.py",
+   "cerebro/piezas.py",
+   "mapa/inventario.py",
+   "vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py"
+  ],
+  "preguntas": [
+   "Cual es la ruta exacta y el nombre del candado de cierre que informa las piezas sin llamadores, y cual es su texto completo?",
+   "Cual es la prueba roja que demuestra que arnes/cuaderno_de_la_ronda.py y arnes/mostrador.py no tienen llamador, y donde esta su archivo?",
+   "Cual es el texto completo de arnes/cuaderno_de_la_ronda.py y de arnes/mostrador.py, y quien deberia llamarlos segun el diseno?",
+   "Que archivo y que funcion deben pasar a llamar a arnes/cuaderno_de_la_ronda.py y a arnes/mostrador.py, o en su caso, que prueba demuestra que sobran?"
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "El módulo `cerebro.piezas` y el símbolo `_piezas` dentro de él: no aparecen en ninguna parte del material original. El material solo muestra `arnes/mostrador.py` y los contratos; no hay rastro de `cerebro/piezas.py` ni de un objeto llamado `_piezas`."
+  ],
+  "fallos": [
+   "El diagnóstico dice 'falta import de _piezas' pero el material no contiene ninguna referencia a `_piezas` ni a `cerebro.piezas`. El import propuesto apunta a un módulo y a un símbolo que no existen en el material: es inventar.",
+   "El diagnóstico afirma que el import 'impide que el mostrador tenga su llamador'. Un import no crea llamadores: un llamador es quien invoca la función. Añadir un import no conecta el mostrador con nadie. El cambio no arregla la causa raíz que el propio diagnóstico declara.",
+   "El encargo del paquete pide 'conectar cada pieza con un llamador real' y 'primero prueba roja, después reparación y sabotaje'. La propuesta no trae prueba roja, no trae vigía ejecutable (solo nombra un archivo de vigía sin contenido), y no demuestra la causa raíz. Se salta el contrato del paquete.",
+   "El diagnóstico menciona 'posible ciclo de importación' y la reparación añade precisamente un import nuevo desde `cerebro.piezas` hacia `arnes/mostrador.py` sin analizar la dirección del ciclo. Si el ciclo existe, este import lo puede empeorar, no resolverlo."
+  ],
+  "riesgo_vecinos": [
+   "`cerebro/piezas.py`: se importa un símbolo `_piezas` que no está verificado en el material; si no existe, el import revienta al cargar `arnes/mostrador.py` y tumba todo el mostrador.",
+   "`arnes/mostrador.py`: cualquier consumidor que haga `import arnes.mostrador` fallará si `cerebro.piezas` no existe o no exporta `_piezas`."
+  ],
+  "que_falta": [
+   "Prueba roja que demuestre el fallo antes del cambio (el paquete la exige explícitamente).",
+   "Evidencia de que `cerebro/piezas.py` existe y de que contiene `_piezas`; si no existe, el encargo real es otro (crear la pieza o enchufar la existente según `CONTRATO_ENCHUFAR_UNA_PIEZA_DORMIDA`).",
+   "Un llamador real: quién invoca al mostrador. Un import no es un llamador.",
+   "Análisis del ciclo de importación que el propio diagnóstico menciona.",
+   "Vigía con contenido ejecutable, no solo el nombre del archivo."
+  ],
+  "resumen_para_el_jefe": "La reparación importa `_piezas` desde `cerebro.piezas`, módulo y símbolo que no existen en el material: es invento, y además un import no crea el llamador que el diagnóstico dice que falta; rechazar y pedir prueba roja y evidencia de que la pieza existe."
+ },
+ "avisos": [
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el pasillo recorto el encargo de 19045 a 13045 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

@@ -1,0 +1,35 @@
+{
+  "orden": {
+    "id": "63",
+    "titulo": "La vigia de que el sabotaje no acepta un texto repetido",
+    "origen": "visto el 2026-09-21 al sabotear el candado del archivo de llaves",
+    "repara": "un sabotaje uso un texto que aparece cinco veces en el archivo y rompio otro freno, no el nuevo; salio verde y parecia que la prueba no medía, cuando el que fallaba era el sabotaje",
+    "pieza": "vigias/test_vigia_el_sabotaje_no_acepta_texto_repetido.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "la vigia nace antes que el cambio, y nace roja",
+    "encargo": "Crear la vigia nueva vigias/test_vigia_el_sabotaje_no_acepta_texto_repetido.py. Vigila arnes/sabotaje.py, el programa que rompe a proposito un arreglo para ver si su vigia frena. Prueba, en una carpeta temporal con un archivo de mentira y una lista de sabotajes de mentira, que si el texto viejo de un sabotaje aparece MAS de una vez en su archivo, ese sabotaje NO se aplica y se informa como sabotaje mal escrito (texto repetido), en vez de romper el primer sitio que encuentre y dar un resultado que engaña. Y prueba que con un texto que aparece una sola vez funciona como hoy. Importa lo que pruebas dentro de cada prueba. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_el_sabotaje_no_acepta_texto_repetido.py",
+    "entrega_la_prueba": "si",
+    "crear": true,
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "3d3d0d2c42d79f64",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-02_004932_DUDOSO_test_vigia_el_sabotaje_no_acepta_texto_repetido.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (27415 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : arnes/sabotaje.py aplica el sabotaje con replace(viejo, nuevo, 1) sin comprobar si 'viejo' aparece mas de una vez, asi que un texto repetido rompe el primer sitio y da un resultado que engana; la vigia nueva debe exigir que el texto sea unico y avisar 'texto_repetido'.\n  toca        : vigias/test_vigia_el_sabotaje_no_acepta_texto_repetido.py funcion ?\n  confianza   : alta\n  VEREDICTO   : DUDOSO\n  fallo       : La vigia se apoya en un contrato de arnes/sabotaje.py que NO esta en el material y que se presenta como hecho (\"funciona como hoy\", \"se informa 'no_encontrado' como hoy\"): firma sabotear(base, vigia, lista), claves 'resultados'/'sana'/'devuelta'/'ok', literales de estado 'roja'/'texto_repetido'/'no_encontrado' y el sufijo de copia '.sabotaje_bak'. Si un solo nombre no coincide, las 5 pruebas mueren juntas con TypeError/KeyError y la vigia da una alarma falsa en vez de vigilar el bug.\n  fallo       : test_texto_repetido_no_deja_copia_de_seguridad no prueba lo que su nombre y su docstring prometen: usa 'viejo': 'MARCA = 3', que aparece UNA sola vez. Es decir, es el camino del sabotaje bueno, no del repetido; del caso repetido no comprueba nada, y su unica asercion real es el literal adivinado '.sabotaje_bak'.\n  fallo       : La asercion interna es contradictoria o autodefinida: en el caso bueno (UNICA unico) exige estado 'roja' y a la vez 'sana' is True y 'ok' is True. El arnes tiene que estar de acuerdo con esa triple lectura de 'sana'/'ok'; el material no la define y la propuesta se la inventa.\n  fallo       : test_lista_mezclada_cada_sabotaje_con_su_estado exige estados == ['texto_repetido', 'roja'], o sea que el arnes siga procesando la lista despues de una entrada mal formada, y ademas exige devuelta/ok en ese caso. Eso dicta la implementacion del arreglo futuro, cosas que el encargo no pidio: sobre-especifica y puede poner roja una correccion razonable.\n  resumen     : El archivo, el diagnostico y la restriccion de no tocar nada mas estan bien, pero las 5 pruebas cuelgan de un contrato de arnes/sabotaje.py (firma, claves sana/devuelta/ok, estados y sufijo .sabotaje_bak) que no aparece en el material; con leer ese fichero y corregir una prueba mal nombrada y el nombre de la vigia falsa se aprueba en una vuelta.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-02T00:49:33",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\63_20261002_004933.json"
+  }
+}

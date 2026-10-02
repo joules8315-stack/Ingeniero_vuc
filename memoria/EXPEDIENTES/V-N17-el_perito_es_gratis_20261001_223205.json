@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "V-N17-el_perito_es_gratis",
+    "titulo": "Vigia primero: El perito es una IA gratis",
+    "origen": "Julio 2026-10-01",
+    "repara": "Que exista la prueba de: Que la funcion que llama al perito use primero las IA gratis que ya existen (Big Pickle, luego Grok 4.7, luego Codex), con el mismo pedido y el mismo esquema de respuesta, y que NO llame a Claude nunca por defecto: solo si existe la variable de entorno INGENIERO_PERITO_CLAUDE con valor 1. Si ninguna gratis contesta, el expediente queda sin leer y el bucle sigue.",
+    "pieza": "vigias/test_vigia_el_perito_es_gratis.py",
+    "vigia": "vigias/test_vigia_el_perito_es_gratis.py",
+    "razon": "Medido el 2026-10-01: despues de CADA orden fallida el forense llama a Claude (el programa claude con permiso de leer el proyecto) y gasta el saldo de Claude de Julio; en la corrida de H2 ese analisis ademas fue descartado por el juez gratis. Julio definio lo economico asi: lo que puedan hacer las IA gratis, que lo hagan; Claude solo lo estrictamente necesario.",
+    "encargo": "QUE SE REPARA: Que exista la prueba de: Que la funcion que llama al perito use primero las IA gratis que ya existen (Big Pickle, luego Grok 4.7, luego Codex), con el mismo pedido y el mismo esquema de respuesta, y que NO llame a Claude nunca por defecto: solo si existe la variable de entorno INGENIERO_PERITO_CLAUDE con valor 1. Si ninguna gratis contesta, el expediente queda sin leer y el bucle sigue.\nCOMO SE REPARA: Una prueba pytest en un solo archivo nuevo que demuestre hoy, con un assert, que esto NO se cumple todavia: Que la funcion que llama al perito use primero las IA gratis que ya existen (Big Pickle, luego Grok 4.7, luego Codex), con el mismo pedido y el mismo esquema de respuesta, y que NO llame a Claude nunca por defecto: solo si existe la variable de entorno INGENIERO_PERITO_CLAUDE con valor 1. Si ninguna gratis contesta, el expediente queda sin leer y el bucle sigue.. Se prueba EJECUTANDO la funcion o el comando (con carpetas temporales y sin tocar el estado real), no mirando el texto del codigo. Tiene que NACER ROJA por un assert (si la pieza aun no existe vale el error de importar justo esa pieza), y pasar cuando la reparacion este hecha.\nDONDE SE REPARA: vigias/test_vigia_el_perito_es_gratis.py\nPOR QUE SE REPARA: Medido el 2026-10-01: despues de CADA orden fallida el forense llama a Claude (el programa claude con permiso de leer el proyecto) y gasta el saldo de Claude de Julio; en la corrida de H2 ese analisis ademas fue descartado por el juez gratis. Julio definio lo economico asi: lo que puedan hacer las IA gratis, que lo hagan; Claude solo lo estrictamente necesario.",
+    "modo": "IA",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": "",
+    "resultado_esperado": "El perito es primero una IA gratis (Big Pickle, Grok 4.7 o Codex); Claude no se llama nunca por defecto y solo si Julio lo enciende con una variable de entorno.",
+    "crear": true,
+    "entrega_la_prueba": "si"
+  },
+  "huella": "a4caa0be5f53c759",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-01_223203_RECHAZADO_test_vigia_el_perito_es_gratis.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : vueltas_dadas: 4\n  diagnostico : Falta la prueba que ejecute la funcion del perito y verifique el orden gratis (Big Pickle, Grok 4.7, Codex), el mismo pedido/esquema, que Claude no se llame por defecto y que sin respuesta gratis el expediente quede sin leer; el archivo vigias/test_vigia_el_perito_es_gratis.py no existe.\n  toca        : vigias/test_vigia_el_perito_es_gratis.py funcion ?\n  confianza   : media\n  VEREDICTO   : RECHAZADO\n  *** INVENTO: El centinela `\"SIN_LEER\"`: el material solo dice «el expediente queda sin leer», no fija ningun valor de retorno; el test asserta `resultado == \"SIN_LEER\"` en dos sitios.; La firma `funcion(pedido=..., esquema=..., carpeta=...)`: no aparece en ninguna parte del material.; Los atributos de modulo `big_pickle`, `grok`, `codex`, `claude` exigidos por `monkeypatch.setattr` con `hasattr` -> AssertionError: se presupone que la pieza expone esos cuatro nombres.; Los 30 candidatos de modulo/funcion (`cuerpo.perito`, `cuerpo.forense`, `cuerpo.analista`, `cuerpo.ingeniero`, `perito`, `forense` x `llamar_al_perito`, `llama_al_perito`, `pedir_perito`, `consultar_perito`, `perito`) presentados como si fueran la pieza real. -> SE DESCARTA\n  fallo       : El test queda rojo para siempre salvo que la reparacion nombre modulo, funcion y firma EXACTAMENTE como los adivino. Si el modulo real se llama de otro modo, `_cargar_pieza` lanza AssertionError y ya no hay forma de que la prueba pase nunca. Es exactamente el fallo que el propio comentario del obrero dice querer evitar, y sigue igual:6 modulos x 5 funciones no es un contrato, es una loteria.\n  fallo       : Aserta datos que no existen: `resultado == \"SIN_LEER\"` y `resultado != \"SIN_LEER\"`. Una implementacion razonable que devuelva None, False o un dict de estado cumple el requisito al pie de la letra y hace fallar la prueba.\n  fallo       : No comprueba la mitad del encargo: «y el bucle sigue». No hay segunda iteracion, ni segundo expediente, ni ninguna asercion de que la funcion devuelve el control y el proceso no aborta. El docstring promete el punto 5 y el codigo no lo hace; el flujo `estado` que el material lista (6 apariciones) no se mira.\n  fallo       : El parcheo de dobles solo engancha si la implementacion llama a esos cuatro nombres como atributos del propio modulo en tiempo de llamada. Si usa `from x import y` dentro de la funcion, una tupla/lista/dict de IAs capturado en import, o un cliente con metodos, el doble no se engancha, `registro` queda vacio y la prueba se pone roja sin motivo real.\n  resumen     : RECHAZADO: el test ata un contrato que nadie definio (modulo, funcion, firma pedido/esquema/carpeta y el centinela \"SIN_LEER\"), asi que seguira rojo aunque la reparacion sea correcta, y ademas no comprueba la parte de «el bucle sigue».\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-01T22:32:05",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\V-N17-el_perito_es_gratis_20261001_223205.json"
+  }
+}

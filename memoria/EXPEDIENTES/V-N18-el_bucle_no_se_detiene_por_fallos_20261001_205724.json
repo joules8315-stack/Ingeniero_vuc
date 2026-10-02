@@ -1,0 +1,36 @@
+{
+  "orden": {
+    "id": "V-N18-el_bucle_no_se_detiene_por_fallos",
+    "titulo": "Vigia primero: El bucle aparta la que falla y sigue",
+    "origen": "Julio 2026-10-01",
+    "repara": "Que exista la prueba de: Que cuando una orden falla tres veces del mismo tipo en la misma pieza el bucle NO termine: marque esa orden como apartada con su motivo y su expediente, deje fuera solo a las que dependen de ella, y continue con la siguiente orden corrible. El bucle termina solo si no queda ninguna corrible o si DeepSeek no tiene saldo, e imprime al final un resumen de las ordenes apartadas y por que.",
+    "pieza": "vigias/test_vigia_el_bucle_no_se_detiene_por_fallos.py",
+    "vigia": "vigias/test_vigia_el_bucle_no_se_detiene_por_fallos.py",
+    "razon": "Julio, 2026-10-01: 'una serie de pasos logicos que desbloquee todo el trabajo, no que se detenga cada instante'. Medido: el bucle termina con PARADO cuando una orden falla tres veces igual en la misma pieza, y con NADA SE PUEDE CORRER cuando falla la primera; una falla aislada detiene todo el trabajo.",
+    "encargo": "QUE SE REPARA: Que exista la prueba de: Que cuando una orden falla tres veces del mismo tipo en la misma pieza el bucle NO termine: marque esa orden como apartada con su motivo y su expediente, deje fuera solo a las que dependen de ella, y continue con la siguiente orden corrible. El bucle termina solo si no queda ninguna corrible o si DeepSeek no tiene saldo, e imprime al final un resumen de las ordenes apartadas y por que.\nCOMO SE REPARA: Una prueba pytest en un solo archivo nuevo que demuestre hoy, con un assert, que esto NO se cumple todavia: Que cuando una orden falla tres veces del mismo tipo en la misma pieza el bucle NO termine: marque esa orden como apartada con su motivo y su expediente, deje fuera solo a las que dependen de ella, y continue con la siguiente orden corrible. El bucle termina solo si no queda ninguna corrible o si DeepSeek no tiene saldo, e imprime al final un resumen de las ordenes apartadas y por que.. Se prueba EJECUTANDO la funcion o el comando (con carpetas temporales y sin tocar el estado real), no mirando el texto del codigo. Tiene que NACER ROJA por un assert (si la pieza aun no existe vale el error de importar justo esa pieza), y pasar cuando la reparacion este hecha.\nDONDE SE REPARA: vigias/test_vigia_el_bucle_no_se_detiene_por_fallos.py\nPOR QUE SE REPARA: Julio, 2026-10-01: 'una serie de pasos logicos que desbloquee todo el trabajo, no que se detenga cada instante'. Medido: el bucle termina con PARADO cuando una orden falla tres veces igual en la misma pieza, y con NADA SE PUEDE CORRER cuando falla la primera; una falla aislada detiene todo el trabajo.",
+    "modo": "IA",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": "",
+    "resultado_esperado": "Una orden que falla se aparta con su expediente y el bucle sigue con las demas; el bucle solo termina si no queda ninguna orden corrible o DeepSeek se quedo sin saldo, y al final resume cuales quedaron apartadas y por que.",
+    "crear": true,
+    "entrega_la_prueba": "si"
+  },
+  "huella": "c56f7ff9ec911644",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-01_205723_DUDOSO_test_vigia_el_bucle_no_se_detiene_por_fallos.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : el pasillo recorto el encargo de 19312 a 12644 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  aviso       : el pasillo recorto el encargo de 19746 a 12969 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  aviso       : el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.\n  diagnostico : La vigia anterior adivinaba el modulo, la firma y los centinelas del bucle real, y ademas se rompia sola con resultado.get sobre algo que podia no ser dict; hay que leer la pieza real del bucle antes de reescribir la prueba contra su firma y centinelas verdaderos.\n  toca        : vigias/test_vigia_el_bucle_no_se_detiene_por_fallos.py funcion ?\n  confianza   : baja\n  VEREDICTO   : DUDOSO\n  fallo       : La peticion no es accionable: describe el archivoNeeded ('el .py que contiene la funcion que recorre las ordenes') pero no da ruta ni un solo nombre candidato, aunque el material da la raiz C:\\Ingeniero_VUC. Tal como esta, la direccion no puede traer el archivo y la vuelta se pierde.\n  fallo       : El campo 'archivo' de la propuesta sigue apuntando a vigias/test_vigia_el_bucle_no_se_detiene_por_fallos.py pero 'texto_nuevo' no contiene nada de ese archivo: no hay test escrito, no hay assert, no hay nada que nazca rojo. Entrega cero trabajo de codigo.\n  fallo       : El diagnostico blames 'la vigia anterior' por 'romperse sola con resultado.get' y eso esiries lo que ya estaba rechazado; no aporta ninguna correccion parcial que sirva si la peticion vuelve sin respuesta.\n  resumen     : Decide bien pedir el bucle real en vez de adivinarlo, pero la peticion llega sin ninguna ruta ni nombre candidato, asi que hay que reenviarla concretizada o se vuelve a perder la vuelta.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-01T20:57:24",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\V-N18-el_bucle_no_se_detiene_por_fallos_20261001_205724.json"
+  }
+}

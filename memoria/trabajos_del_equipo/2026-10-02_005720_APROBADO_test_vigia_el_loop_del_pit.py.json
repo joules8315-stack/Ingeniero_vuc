@@ -1,0 +1,40 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El test afirma que el tope de gasto para la ejecucion y no llama al equipo, pero el encargo pide invertirlo a que sin tope en dolares si llama, dejando el docstring contradiciendo lo que comprueba.",
+  "archivo": "vigias/test_vigia_el_loop_del_pit.py",
+  "funcion": "test_tope_de_gasto_para_antes_de_llamar",
+  "texto_viejo": "    assert texto.startswith('PARADO: TOPE DE GASTO')\n    assert llamadas == []",
+  "texto_nuevo": "    assert not texto.startswith('PARADO: TOPE DE GASTO')  # A-42: sin tope en dolares\n    assert llamadas == ['o1']",
+  "cambio": "Sustituir las dos lineas seguidas de asserts por las dos nuevas que invierten la comprobacion (sin tope en dolares y con llamada a o1).",
+  "codigo": "    assert not texto.startswith('PARADO: TOPE DE GASTO')  # A-42: sin tope en dolares\n    assert llamadas == ['o1']",
+  "vigia": "vigias/test_vigia_el_loop_del_pit.py::test_tope_de_gasto_para_antes_de_llamar",
+  "puede_danar": [
+   "vigias/test_vigia_el_loop_del_pit.py"
+  ],
+  "preguntas": [
+   "El docstring de la funcion sigue diciendo 'Si el gasto del mes ya paso el tope, para y no llama al equipo', que ahora contradice lo que comprueba el test: se cambia tambien o se deja como esta?"
+  ],
+  "confianza": "alta",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "El archivo tocado (vigias/test_vigia_el_loop_del_pit.py) no figura en la lista de 'A QUIEN PUEDE DANAR', asi que ningun vecino declarado se ve afectado",
+   "El cambio solo edita dos asserts dentro del propio test; no toca imports, fixtures (preparar, orden), monkeypatch ni ningun modulo de produccion"
+  ],
+  "que_falta": [
+   "El docstring sigue diciendo 'Si el gasto del mes ya paso el tope, para y no llama al equipo', ya incoherente con lo que ahora comprueba. El encargo prohibe cambiar nada mas, asi que dejarlo es lo correcto: la pregunta que deja abierta en `preguntas` es el camino correcto (decision del jefe, no fallo del obrero)",
+   "Menor: 'assert not texto.startswith(...)' es un negativo debil: pasaria igual con cualquier otro texto de error. Es lo que pide el encargo literal, asi que no es motivo de rechazo, pero conviene que el jefe lo sepa"
+  ],
+  "resumen_para_el_jefe": "Aplico exactamente el cambio pedido, dos lineas, en el archivo correcto, sin inventar nada ni tocar vecinos; aprovado, lo unico pendiente es decidir si el docstring contradictorio se actualiza en una orden aparte."
+ },
+ "avisos": [
+  "vueltas_dadas: 2"
+ ]
+}

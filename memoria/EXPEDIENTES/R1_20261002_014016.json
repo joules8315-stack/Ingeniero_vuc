@@ -1,0 +1,33 @@
+{
+  "orden": {
+    "id": "R1",
+    "titulo": "El trabajo aprobado siempre llega al disco",
+    "origen": "PLAN_PRIORIDAD_UNO aprobado por Julio el 2026-09-25; medido: FALLOS.json id 69 con 82 veces y 14 trabajos en memoria/trabajos_sin_revisar",
+    "repara": "el guardado corre una bateria de 245 vigias con tope de 15 minutos; si no termina NO se guarda, y el trabajo que el equipo ya aprobo se deshace",
+    "pieza": "arnes/vecinas.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "es la causa numero uno medida: 82 veces se perdio trabajo bueno ya pagado",
+    "encargo": "OBJETIVO: que una bateria completa no se corte por tiempo en este PC. MEDIDO: la bateria completa tarda 1482 s con 4 grupos y el guardia da 600 s por grupo, asi que se corta y no deja guardar. DONDE SE REPARA: arnes/guardia_de_guardado.py, funcion _vigias, en la llamada a bateria_en_paralelo.correr donde hoy dice tope=600. LA PRUEBA QUE DEBE PASAR A VERDE: vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py; leela primero: sus nombres mandan. COMO: cuando la seleccion es la bateria completa (objetivo igual a la lista con vigias/) el tope por grupo es 3300 segundos; con una lista corta de vigias sigue siendo 600. SOLO ESO: no agregar vigia general, ni marcas de falta de cobertura, ni cambiar vecinas.py ni lo que devuelve elegir. Un intento anterior fue rechazado por inventar _vigia_general y por romper el contrato de elegir.",
+    "vigia": "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "Encargo reescrito el 2026-10-02 con las razones del revisor y los nombres decididos.",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "14e0c124609019a4",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-02_014015_DUDOSO_guardia_de_guardado.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (30809 letras, aguanta 19042) -> se le salta\n  aviso       : vueltas_dadas: 1\n  diagnostico : El guardia llama a la bateria en paralelo con tope=600 fijo, y la bateria completa tarda 1482 s, asi que se corta por tiempo y no deja guardar.\n  toca        : arnes/guardia_de_guardado.py funcion _vigias\n  confianza   : media\n  VEREDICTO   : DUDOSO\n  fallo       : La condicion objetivo == [\"vigias/\"] es muy estricta: solo activa el tope 3300 cuando la lista es exactamente esa instancia. Si en algun caso objetivo viene como [\"./vigias/\", ...] o con otra forma pero representa la bateria completa, NO se detectara y seguira cortando a 600, por lo que no arregla de verdad ese caso.\n  resumen     : El cambio apunta bien al problema, pero la igualdad estricta a [\"vigias/\"] puede dejar fuera casos de bateria completa y no garantizar la reparacion.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-02T01:40:16",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R1_20261002_014016.json"
+  }
+}

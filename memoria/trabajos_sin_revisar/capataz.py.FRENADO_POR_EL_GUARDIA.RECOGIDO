@@ -300,7 +300,7 @@ def tipo_de_fallo(salida):
     return "otro"
 
 
-def bucle(proyecto, en_paralelo=1, tope_segundos=900, aviso=print):
+def bucle(proyecto, en_paralelo=2, tope_segundos=900, aviso=print):
     """Corre las ordenes sola hasta que se para por una de las tres causas:
     tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos
     del mismo tipo en la misma pieza."""
@@ -415,7 +415,10 @@ def correr_orden_del_sistema(palabras):
     """
     import subprocess
     carpeta = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    resultado = subprocess.run(palabras, cwd=carpeta, capture_output=True, text=True)
+    try:
+        resultado = subprocess.run(palabras, cwd=carpeta, capture_output=True, text=True, timeout=300)
+    except subprocess.TimeoutExpired:
+        return 124
     return resultado.returncode
 
 
@@ -459,6 +462,7 @@ def armar_sabotaje(orden, raiz=None):
         propuesta = trabajo.get('propuesta') if isinstance(trabajo, dict) else None
         if not isinstance(propuesta, dict):
             return False
+        # el nombre de la pieza sirve para buscar su trabajo aprobado; el sabotaje necesita la ruta entera (medido 2026-09-22, orden 70)
         lista = []
         cambios = propuesta.get('cambios')
         if isinstance(cambios, list):
@@ -468,12 +472,12 @@ def armar_sabotaje(orden, raiz=None):
                 viejo = trozo.get('texto_viejo')
                 nuevo = trozo.get('texto_nuevo')
                 if viejo and nuevo:
-                    lista.append({'archivo': pieza, 'viejo': nuevo, 'nuevo': viejo})
+                    lista.append({'archivo': str(orden.get('pieza', '')).replace(chr(92), '/'), 'viejo': nuevo, 'nuevo': viejo})
         else:
             viejo = propuesta.get('texto_viejo')
             nuevo = propuesta.get('texto_nuevo')
             if viejo and nuevo:
-                lista.append({'archivo': pieza, 'viejo': nuevo, 'nuevo': viejo})
+                lista.append({'archivo': str(orden.get('pieza', '')).replace(chr(92), '/'), 'viejo': nuevo, 'nuevo': viejo})
         if not lista:
             return False
         destino = orden.get('sabotaje') if isinstance(orden, dict) else None
@@ -500,15 +504,14 @@ def sabotear_la_orden(orden):
     try:
         vigia = orden.get('vigia') if isinstance(orden, dict) else None
         sabotaje = orden.get('sabotaje') if isinstance(orden, dict) else None
+        if vigia and not sabotaje and orden.get('pieza') != vigia:
+            sabotaje = 'memoria/sabotajes/orden_' + str(orden.get('id', '')) + '.json'
+            orden = dict(orden, sabotaje=sabotaje)
         if not vigia or not sabotaje:
             return {'ok': None, 'razon': 'esta orden no trae lista de sabotaje y por eso no hay nada que correr'}
         raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        ruta_sabotaje = sabotaje
-        if not os.path.isabs(ruta_sabotaje):
-            ruta_sabotaje = os.path.join(raiz, ruta_sabotaje)
-        if not os.path.exists(ruta_sabotaje):
-            armado = armar_sabotaje(orden)
-            if not armado:
+        if not os.path.isfile(os.path.join(raiz, sabotaje)):
+            if not armar_sabotaje(orden):
                 return {'ok': None, 'razon': 'no hay sabotaje escrito y no se pudo armar solo (pieza creada entera o sin trabajo aprobado)'}
         palabras = [sys.executable, 'arnes/sabotaje.py', vigia, sabotaje]
         codigo = correr_orden_del_sistema(palabras)
@@ -554,24 +557,44 @@ def recoger_lo_frenado(orden, raiz):
             env=entorno,
         )
         if prueba.returncode != 0:
-            subprocess.run(
-                ['git', 'checkout', 'HEAD', '--', pieza],
+            guardada = subprocess.run(
+                ['git', 'cat-file', '-e', 'HEAD:' + pieza],
                 cwd=raiz,
                 capture_output=True,
                 text=True,
-                timeout=60,
+                timeout=30,
             )
+            if guardada.returncode != 0:
+                os.replace(pieza, os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.ROJO'))
+            else:
+                subprocess.run(
+                    ['git', 'checkout', 'HEAD', '--', pieza],
+                    cwd=raiz,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                )
             return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida deja su prueba roja: no se deja en el disco'}
         from arnes import guardia_de_guardado
         paso, _mensaje = guardia_de_guardado._vigias(raiz)
         if paso is not True:
-            subprocess.run(
-                ['git', 'checkout', 'HEAD', '--', pieza],
+            guardada = subprocess.run(
+                ['git', 'cat-file', '-e', 'HEAD:' + pieza],
                 cwd=raiz,
                 capture_output=True,
                 text=True,
-                timeout=60,
+                timeout=30,
             )
+            if guardada.returncode != 0:
+                os.replace(pieza, os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.ROJO'))
+            else:
+                subprocess.run(
+                    ['git', 'checkout', 'HEAD', '--', pieza],
+                    cwd=raiz,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                )
             return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida pone rojas a sus vecinas: no se deja en el disco'}
         return resultado
     except Exception as e:
@@ -768,12 +791,96 @@ def agregar_orden(orden):
     nueva['estado'] = 'pendiente'
     nueva['paso_fallido'] = ''
     nueva['fallos_seguidos'] = 0
-    lista.append(nueva)
+    # ley A-43, el arreglo de la herramienta va al frente
+    if str(nueva.get('origen', '')).startswith('forense:'):
+        lista.insert(0, nueva)
+    else:
+        lista.append(nueva)
     carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     ruta = os.path.join(carpeta_proyecto, 'memoria', 'ORDENES.json')
     with open(ruta, 'w', encoding='utf-8') as f:
         json.dump(lista, f, indent=2, ensure_ascii=False)
     return (True, 'agregada ' + str(orden_id))
+
+
+def reintentar_tras_el_arreglo(id_orden, id_arreglo):
+    """Deja pendiente la orden y borra su huella de HUELLAS_QUE_FALLARON.jsonl.
+
+    Nunca lanza: ante cualquier error devuelve False.
+    """
+    try:
+        lista = leer_lista()
+        encontrada = None
+        for orden in lista:
+            if isinstance(orden, dict) and orden.get('id') == id_orden:
+                encontrada = orden
+                break
+        if encontrada is None:
+            return False
+        encontrada['estado'] = 'pendiente'
+        encontrada['paso_fallido'] = ''
+        encontrada['fallos_seguidos'] = 0
+        depende = encontrada.get('depende')
+        if not isinstance(depende, list):
+            depende = []
+        if id_arreglo not in depende:
+            depende.append(id_arreglo)
+        encontrada['depende'] = depende
+        carpeta_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        ruta = os.path.join(carpeta_proyecto, 'memoria', 'ORDENES.json')
+        with open(ruta, 'w', encoding='utf-8') as f:
+            json.dump(lista, f, indent=2, ensure_ascii=False)
+        huella = huella_de(encontrada)
+        ruta_huellas = os.path.join(carpeta_proyecto, 'memoria', 'HUELLAS_QUE_FALLARON.jsonl')
+        try:
+            with open(ruta_huellas, encoding='utf-8') as f:
+                renglones = f.readlines()
+        except (FileNotFoundError, OSError):
+            return True
+        conservados = []
+        for renglon in renglones:
+            try:
+                dato = json.loads(renglon)
+            except json.JSONDecodeError:
+                conservados.append(renglon)
+                continue
+            if isinstance(dato, dict) and dato.get('huella') == huella:
+                continue
+            conservados.append(renglon)
+        with open(ruta_huellas, 'w', encoding='utf-8') as f:
+            f.writelines(conservados)
+        return True
+    except Exception:
+        return False
+
+
+def reintentar_lo_que_esperaba(id_orden):
+    """Devuelve la lista de ids que volvieron a la cola tras arreglarse id_orden.
+
+    Recorre leer_lista y se queda con las ordenes en estado 'fallida' cuya
+    lista 'depende' contiene id_orden. Para cada una llama a
+    reintentar_tras_el_arreglo pasandole el id de esa orden fallida y el id
+    recibido; si devuelve True, suma ese id a la lista que se devuelve.
+    Nunca lanza: ante cualquier error devuelve lo que tenga juntado.
+    """
+    reintentadas = []
+    try:
+        for orden in leer_lista():
+            if not isinstance(orden, dict):
+                continue
+            if orden.get('estado') != 'fallida':
+                continue
+            depende = orden.get('depende')
+            if not isinstance(depende, list):
+                continue
+            if id_orden not in depende:
+                continue
+            id_fallida = orden.get('id')
+            if reintentar_tras_el_arreglo(id_fallida, id_orden):
+                reintentadas.append(id_fallida)
+    except Exception:
+        return reintentadas
+    return reintentadas
 
 
 def forense(orden, resultado, raiz=None):
@@ -874,6 +981,11 @@ def marcar_estado(orden_id, estado, paso_fallido='', fallos_seguidos=0):
         return False
     with open(ruta, "w", encoding="utf-8") as f:
         json.dump(lista, f, indent=2, ensure_ascii=False)
+    if estado == 'hecha':
+        try:
+            reintentar_lo_que_esperaba(orden_id)
+        except Exception:
+            pass
     return True
 
 
@@ -946,12 +1058,16 @@ def comprobar_pasos(orden):
     ruta_vigia = os.path.join(carpeta_proyecto, vigia)
     if not os.path.isfile(ruta_vigia):
         return "vigia_verde"
-    resultado_vigia = subprocess.run(
-        ["python", "-m", "pytest", vigia],
-        cwd=carpeta_proyecto,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        resultado_vigia = subprocess.run(
+            ["python", "-m", "pytest", vigia],
+            cwd=carpeta_proyecto,
+            capture_output=True,
+            text=True,
+            timeout=300,
+        )
+    except subprocess.TimeoutExpired:
+        return "vigia_verde"
     if orden.get("entrega_la_prueba") == "si":
         # La tarea ENTREGA la prueba: se comprueba al reves. La prueba tiene
         # que existir y estar ROJA. Si ya esta verde, este paso falla, porque
@@ -977,12 +1093,16 @@ def comprobar_pasos(orden):
             return "vigia_verde"
         return ""
     if resultado_vigia.returncode != 0:
-        resultado_git = subprocess.run(
-            ["git", "ls-files", vigia],
-            cwd=carpeta_proyecto,
-            capture_output=True,
-            text=True,
-        )
+        try:
+            resultado_git = subprocess.run(
+                ["git", "ls-files", vigia],
+                cwd=carpeta_proyecto,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+        except subprocess.TimeoutExpired:
+            return "vigia_verde"
         if resultado_git.stdout.strip() == "":
             return ""
         return "vigia_verde"
@@ -991,13 +1111,17 @@ def comprobar_pasos(orden):
     comando = orden.get("comando")
     if not comando:
         return "prueba_real"
-    resultado_prueba = subprocess.run(
-        comando,
-        shell=True,
-        cwd=carpeta_proyecto,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        resultado_prueba = subprocess.run(
+            comando,
+            shell=True,
+            cwd=carpeta_proyecto,
+            capture_output=True,
+            text=True,
+            timeout=300,
+        )
+    except subprocess.TimeoutExpired:
+        return "prueba_real"
     if resultado_prueba.returncode != 0:
         return "prueba_real"
 

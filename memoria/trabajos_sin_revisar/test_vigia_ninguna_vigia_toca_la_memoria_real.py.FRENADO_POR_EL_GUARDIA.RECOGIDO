@@ -1,0 +1,148 @@
+"""Vigia: ninguna vigia que importa a Big Pickle toca la memoria real.
+
+Medido el 2026-10-01: 423 de las 1678 lineas del registro de Big Pickle (25 por ciento)
+las escribieron las pruebas al correr, porque la ruta del registro es fija y ninguna
+prueba la cambia. Rompe la ley 23 (ninguna comprobacion toca el estado real).
+
+Esta vigia:
+  1. Localiza las vigias que importan a Big Pickle.
+  2. Corre cada una con una COPIA de memoria/ (nunca la real).
+  3. Comprueba que el registro real NO cambia de tamano ni de contenido.
+
+Nace ROJA hoy: el assert final falla porque las vigias escriben en el registro real.
+Pasa cuando todas las partes de esta pieza esten conectadas (cada vigia usa su copia).
+"""
+
+from __future__ import annotations
+
+import hashlib
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+import pytest
+
+
+RAIZ = Path(__file__).resolve().parent.parent
+VIGIAS = RAIZ / "vigias"
+MEMORIA_REAL = RAIZ / "memoria"
+
+# El registro de Big Pickle: ruta fija que hoy nadie desvia.
+REGISTRO_REAL = MEMORIA_REAL / "registro_big_pickle.jsonl"
+
+# Nombres de las vigias que importan a Big Pickle (10 segun la medicion del 2026-10-01).
+# Se descubren por funcion: cualquier vigia que mencione 'big_pickle' o 'Big Pickle'.
+MARCADORES_BIG_PICKLE = ("big_pickle", "Big Pickle", "BIG_PICKLE")
+
+
+def _huella(ruta: Path) -> str:
+    """Huella estable de un archivo (o de su ausencia)."""
+    if not ruta.exists():
+        return "AUSENTE"
+    h = hashlib.sha256()
+    with ruta.open("rb") as f:
+        for bloque in iter(lambda: f.read(65536), b""):
+            h.update(bloque)
+    return h.hexdigest()
+
+
+def _vigias_que_importan_a_big_pickle() -> list[Path]:
+    """Devuelve las vigias cuyo texto menciona a Big Pickle.
+
+    Se busca por FUNCION (que mencionen a Big Pickle), no por nombre fijo.
+    """
+    encontradas: list[Path] = []
+    if not VIGIAS.is_dir():
+        return encontradas
+    for archivo in sorted(VIGIAS.glob("test_vigia_*.py")):
+        if archivo.name == Path(__file__).name:
+            continue
+        try:
+            texto = archivo.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        if any(m in texto for m in MARCADORES_BIG_PICKLE):
+            encontradas.append(archivo)
+    return encontradas
+
+
+def _copia_de_memoria(destino: Path) -> Path:
+    """Copia memoria/ a un directorio temporal y devuelve la raiz de la copia."""
+    copia = destino / "memoria"
+    if MEMORIA_REAL.is_dir():
+        shutil.copytree(MEMORIA_REAL, copia)
+    else:
+        copia.mkdir(parents=True, exist_ok=True)
+    return copia
+
+
+def _correr_vigia_con_copia(vigia: Path, raiz_copia: Path) -> subprocess.CompletedProcess:
+    """Corre una vigia apuntando a la copia de memoria/, nunca a la real.
+
+    Se pasan variables de entorno para que la vigia use la copia. Si la vigia
+    ignora esas variables y escribe en la ruta fija, el assert final lo cazara.
+    """
+    entorno = dict(os.environ)
+    entorno["VUC_MEMORIA"] = str(raiz_copia)
+    entorno["VUC_MEMORIA_DIR"] = str(raiz_copia)
+    entorno["VUC_REGISTRO_BIG_PICKLE"] = str(raiz_copia / "registro_big_pickle.jsonl")
+    entorno["VUC_RAIZ"] = str(raiz_copia.parent)
+    entorno["PYTHONPATH"] = str(RAIZ) + os.pathsep + entorno.get("PYTHONPATH", "")
+    return subprocess.run(
+        [sys.executable, "-m", "pytest", str(vigia), "-q", "--no-header", "-p", "no:cacheprovider"],
+        cwd=str(raiz_copia.parent),
+        env=entorno,
+        capture_output=True,
+        text=True,
+        timeout=300,
+    )
+
+
+def test_ninguna_vigia_toca_la_memoria_real():
+    """Corre las vigias de Big Pickle con copia y comprueba que el registro real no cambia.
+
+    Nace ROJA hoy: el assert final falla porque las vigias escriben en el registro real.
+    """
+    vigias = _vigias_que_importan_a_big_pickle()
+    assert vigias, (
+        "No se encontro ninguna vigia que importe a Big Pickle. "
+        "La medicion del 2026-10-01 dice que hay 10; si no aparecen, el descubrimiento "
+        "por funcion esta roto y esta vigia no puede cumplir su papel."
+    )
+
+    huella_antes = _huella(REGISTRO_REAL)
+    tamano_antes = REGISTRO_REAL.stat().st_size if REGISTRO_REAL.exists() else 0
+
+    with tempfile.TemporaryDirectory(prefix="vigia_big_pickle_") as tmp:
+        raiz_copia = _copia_de_memoria(Path(tmp))
+        for vigia in vigias:
+            _correr_vigia_con_copia(vigia, raiz_copia)
+
+    huella_despues = _huella(REGISTRO_REAL)
+    tamano_despues = REGISTRO_REAL.stat().st_size if REGISTRO_REAL.exists() else 0
+
+    assert huella_despues == huella_antes, (
+        "El registro real de Big Pickle cambio al correr las vigias. "
+        f"Antes: {huella_antes[:16]} ({tamano_antes} bytes). "
+        f"Despues: {huella_despues[:16]} ({tamano_despues} bytes). "
+        "Las vigias deben usar una copia de memoria/, no la ruta fija. "
+        "Ley 23: ninguna comprobacion toca el estado real."
+    )
+
+
+def test_el_registro_real_existe_y_es_el_de_big_pickle():
+    """Comprueba que el registro real existe y es el que la medicion senala.
+
+    Si no existe, la vigia anterior no puede medir nada y hay que avisar.
+    """
+    assert REGISTRO_REAL.exists(), (
+        f"No existe el registro real de Big Pickle en {REGISTRO_REAL}. "
+        "Sin el, la vigia de 'ninguna vigia toca la memoria real' no puede medir nada."
+    )
+    assert REGISTRO_REAL.stat().st_size > 0, (
+        f"El registro real de Big Pickle esta vacio ({REGISTRO_REAL}). "
+        "La medicion del 2026-10-01 habla de 1678 lineas; si esta vacio, algo lo borro."
+    )

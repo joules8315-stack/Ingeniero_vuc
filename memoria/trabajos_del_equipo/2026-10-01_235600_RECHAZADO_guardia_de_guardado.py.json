@@ -1,0 +1,91 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El guardia frena por cualquier roja ya guardada en el vecindario en vez de comparar contra el color de referencia de la corrida anterior, y el tope de 600 s corta la bateria completa que tarda 1.110 s.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "rojas_que_frenan",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas_de_antes):\n    \"\"\"Devuelve las rojas que SI frenan el guardado, en el orden de rojas_ahora.\n\n    Fallo del 2026-09-25: el guardia tiro tres trabajos buenos el mismo dia\n    porque 29 pruebas ya estaban rojas desde antes. Es el fallo mas repetido\n    de la herramienta, 82 veces, y dejo 14 trabajos aprobados apartados.\n\n    Reglas:\n    - Una roja que no esta en guardadas es nueva y no frena.\n    - Una roja guardada que esta en declaradas no frena.\n    - Una roja guardada que esta en conocidas_de_antes no frena.\n    - Cualquier otra roja guardada si frena.\n    - Si algo llega vacio o no es lista, se trata como lista vacia.\n    \"\"\"\n    def _como_lista(x):\n        return x if isinstance(x, list) else []\n\n    rojas_ahora = _como_lista(rojas_ahora)\n    guardadas = _como_lista(guardadas)\n    declaradas = _como_lista(declaradas)\n    conocidas_de_antes = _como_lista(conocidas_de_antes)\n\n    frenan = []\n    for roja in rojas_ahora:\n        if roja not in guardadas:\n            continue\n        if roja in declaradas:\n            continue\n        if roja in conocidas_de_antes:\n            continue\n        frenan.append(roja)\n    return frenan",
+    "texto_nuevo": "def rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas_de_antes, color_de_antes=None):\n    \"\"\"Devuelve las rojas que SI frenan el guardado, en el orden de rojas_ahora.\n\n    Fallo del 2026-09-25: el guardia tiro tres trabajos buenos el mismo dia\n    porque 29 pruebas ya estaban rojas desde antes. Es el fallo mas repetido\n    de la herramienta, 82 veces, y dejo 14 trabajos aprobados apartados.\n\n    HECHO MEDIDO 2026-09-28: la bateria completa da 54 rojas y 1.252 verdes, y\n    tarda 18 minutos y 30 segundos. Frenar por cualquier roja ya guardada deja\n    imposible guardar cualquier pieza con muchas vecinas: se cayeron DOS cambios\n    correctos y ya aprobados por el equipo, y la unica roja que de verdad tocaba\n    la pieza era la vigia declarada de su propia orden.\n\n    Reglas (comparan el color de las vecinas CON EL DE ANTES del cambio):\n    - Una roja que no esta en guardadas es nueva y no frena.\n    - Una roja guardada que esta en declaradas no frena.\n    - Una roja guardada que esta en conocidas_de_antes no frena.\n    - Una roja guardada que YA estaba roja en color_de_antes no frena: no la\n      toca este trabajo.\n    - Una roja guardada que antes estaba verde SI frena: el cambio la empeoro.\n    - Si algo llega vacio o no es lista, se trata como lista vacia.\n    \"\"\"\n    def _como_lista(x):\n        return x if isinstance(x, list) else []\n\n    rojas_ahora = _como_lista(rojas_ahora)\n    guardadas = _como_lista(guardadas)\n    declaradas = _como_lista(declaradas)\n    conocidas_de_antes = _como_lista(conocidas_de_antes)\n    color_de_antes = color_de_antes if isinstance(color_de_antes, dict) else {}\n\n    frenan = []\n    for roja in rojas_ahora:\n        if roja not in guardadas:\n            continue\n        if roja in declaradas:\n            continue\n        if roja in conocidas_de_antes:\n            continue\n        if color_de_antes.get(roja) == \"roja\":\n            continue\n        frenan.append(roja)\n    return frenan\n\n\ndef verdes_que_desaparecen(verdes_de_antes, verdes_ahora):\n    \"\"\"Devuelve las verdes que estaban verdes antes y ya no estan verdes ahora.\n\n    HECHO MEDIDO 2026-09-28: si una vigia que estaba verde desaparece de la\n    corrida (deja de estar verde), el cambio la rompio y hay que frenar.\n    \"\"\"\n    verdes_de_antes = verdes_de_antes if isinstance(verdes_de_antes, list) else []\n    verdes_ahora = verdes_ahora if isinstance(verdes_ahora, list) else []\n    ahora = set(verdes_ahora)\n    return [v for v in verdes_de_antes if v not in ahora]"
+   },
+   {
+    "texto_viejo": "    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, list(esperando), conocidas_de_antes)\n    if guardados_que_frenan:\n        # Al menos uno ya estaba guardado y no espera arreglo: es romper algo que estaba verde. Frenar.\n        return False, (\"pruebas rojas que frenan el guardado: \" + \", \".join(guardados_que_frenan)\n                       + \" | \" + ultima[0].strip())",
+    "texto_nuevo": "    # Color de referencia guardado en memoria, con fecha. Si no hay, esta corrida\n    # es la primera medida: se guarda el color de esta corrida y se deja pasar con aviso.\n    ruta_color = os.path.join(raiz, \"memoria\", \".color_de_referencia.json\")\n    color_de_antes = None\n    try:\n        with open(ruta_color, encoding=\"utf-8\") as f:\n            leido = json.load(f)\n        if isinstance(leido, dict) and isinstance(leido.get(\"color\"), dict):\n            color_de_antes = leido.get(\"color\")\n    except Exception:\n        color_de_antes = None\n\n    if color_de_antes is None:\n        # Primera medida: se guarda el color de esta corrida y se deja pasar con aviso.\n        try:\n            os.makedirs(os.path.dirname(ruta_color), exist_ok=True)\n            with open(ruta_color, \"w\", encoding=\"utf-8\") as f:\n                json.dump({\"fecha\": time.strftime(\"%Y-%m-%dT%H:%M:%S\"),\n                           \"color\": {a: \"roja\" for a in archivos_rojos}},\n                          f, ensure_ascii=False)\n        except Exception:\n            pass\n        return True, (\"primera medida: se guarda el color de referencia y se deja pasar | \"\n                      + ultima[0].strip())\n\n    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, list(esperando),\n                                            conocidas_de_antes, color_de_antes)\n    if guardados_que_frenan:\n        # Al menos una estaba verde antes y ahora esta roja: el cambio la empeoro. Frenar.\n        return False, (\"pruebas rojas que frenan el guardado: \" + \", \".join(guardados_que_frenan)\n                       + \" | \" + ultima[0].strip())\n\n    # Verdes que desaparecen: estaban verdes antes y ya no estan verdes ahora.\n    verdes_de_antes = [a for a, c in color_de_antes.items() if c == \"verde\"]\n    verdes_ahora = [a for a in verdes_de_antes if a not in archivos_rojos]\n    desaparecidas = verdes_que_desaparecen(verdes_de_antes, verdes_ahora)\n    if desaparecidas:\n        return False, (\"verdes que desaparecen y frenan el guardado: \"\n                       + \", \".join(desaparecidas) + \" | \" + ultima[0].strip())\n\n    # Se actualiza el color de referencia con esta corrida completa.\n    try:\n        os.makedirs(os.path.dirname(ruta_color), exist_ok=True)\n        with open(ruta_color, \"w\", encoding=\"utf-8\") as f:\n            json.dump({\"fecha\": time.strftime(\"%Y-%m-%dT%H:%M:%S\"),\n                       \"color\": {a: (\"roja\" if a in archivos_rojos else \"verde\")\n                                 for a in set(color_de_antes) | set(archivos_rojos)}},\n                      f, ensure_ascii=False)\n    except Exception:\n        pass"
+   },
+   {
+    "texto_viejo": "        turno = turno_de_guardado.pedir_turno(os.path.join(raiz, \"memoria\"), tope_segundos=600)",
+    "texto_nuevo": "        # HECHO MEDIDO 2026-09-28: la bateria completa tarda 1.110 segundos y el tope\n        # estaba en 600, asi que el tope cortaba por tiempo y eso se tomaba por fallo.\n        # El tope tiene que ser coherente con lo medido, como manda\n        # CONTRATO_TOPE_MEDIDO_Y_CORTE_A_MINIMA_EXPRESION.md (regla 5).\n        turno = turno_de_guardado.pedir_turno(os.path.join(raiz, \"memoria\"), tope_segundos=1800)"
+   }
+  ],
+  "cambio": "En rojas_que_frenan: anadir el parametro color_de_antes y no frenar por una roja que ya estaba roja antes. Anadir verdes_que_desaparecen. En _vigias: leer el color de referencia guardado en memoria/.color_de_referencia.json; si no existe, guardarlo con fecha y dejar pasar con aviso de primera medida; si existe, frenar solo por rojas que antes estaban verdes o por verdes que desaparecen, y actualizar el color de referencia con esta corrida. En main: subir el tope del turno de 600 a 1800 segundos, coherente con los 1.110 s medidos.",
+  "codigo": "def rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas_de_antes, color_de_antes=None):\n    def _como_lista(x):\n        return x if isinstance(x, list) else []\n    rojas_ahora = _como_lista(rojas_ahora)\n    guardadas = _como_lista(guardadas)\n    declaradas = _como_lista(declaradas)\n    conocidas_de_antes = _como_lista(conocidas_de_antes)\n    color_de_antes = color_de_antes if isinstance(color_de_antes, dict) else {}\n    frenan = []\n    for roja in rojas_ahora:\n        if roja not in guardadas:\n            continue\n        if roja in declaradas:\n            continue\n        if roja in conocidas_de_antes:\n            continue\n        if color_de_antes.get(roja) == \"roja\":\n            continue\n        frenan.append(roja)\n    return frenan\n\n\ndef verdes_que_desaparecen(verdes_de_antes, verdes_ahora):\n    verdes_de_antes = verdes_de_antes if isinstance(verdes_de_antes, list) else []\n    verdes_ahora = verdes_ahora if isinstance(verdes_ahora, list) else []\n    ahora = set(verdes_ahora)\n    return [v for v in verdes_de_antes if v not in ahora]",
+  "vigia": "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py: comprueba que una roja que ya estaba roja antes no frena, que una roja que antes estaba verde si frena, que una verde que desaparece frena, y que sin color de referencia guardado se deja pasar con aviso de primera medida.",
+  "puede_danar": [
+   "arnes/bateria_en_paralelo.py",
+   "arnes/turno_de_guardado.py",
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardado_dice_cuando_no_pudo_probar.py",
+   "vigias/test_vigia_el_guardado_dice_que_roja_lo_frena.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [
+   "PREGUNTA_REQUERIDA: el tope de 1800 segundos es coherente con los 1.110 s medidos de la bateria completa, pero el contrato pide que el tope de fuera sea mayor que la suma de los topes de dentro; falta confirmar si 1800 cubre esa suma o si hay que correr solo las vecinas de verdad."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "bateria_en_paralelo.py",
+   "color_de_referencia.js",
+   "test_vigia_el_guardado_dice_cuando_no_pudo_probar.py",
+   "test_vigia_el_guardado_dice_que_roja_lo_frena.py",
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "turno_de_guardado.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "La comprobacion de 'verde que desaparece' NO detecta desapareciones: `verdes_ahora = [a for a in verdes_de_antes if a not in archivos_rojos]` son las verdes que SIGUEN verdes, y `verdes_que_desaparecen` devuelve las que estan en archivos_rojos, o sea verde->rojo otra vez, que es duplicado de rojas_que_frenan. Una verde que desaparece de verdad (borrada, renombrada, no recolectada) nunca aparece en archivos_rojos y por tanto nunca frena: la segunda mitad del encargo ('frena si desaparece una verde') no esta implementada, solo documentada en el docstring.",
+   "La actualizacion del color de referencia envenena el estado: `{a: ('roja' if a in archivos_rojos else 'verde') for a in set(color_de_antes) | set(archivos_rojos)}` marca como 'verde' toda roja que existia antes pero no se corrio esta vez (esperando, declarada, no recolectada). En la corrida siguiente esa prueba vuelve a estar roja, se lee como 'antes verde' y frena un trabajo bueno. Es exactamente el fallo que el encargo quiere eliminar, introducido por la reparacion.",
+   "La escritura de 'primera medida' guarda solo `{a: 'roja' for a in archivos_rojos}` y ninguna verde, con lo cual en la segunda corrida `verdes_de_antes` es lista vacia y el chequeo de verdes queda inerte y silencioso.",
+   "El tope pasa de 600 a 1800 sin cumplir lo que el propio material exige: la regla 5 que se cita pide que el tope de fuera sea mayor que la SUMA de los topes de dentro, no mayor que 1.110. La propuesta lo admite en PREGUNTA_REQUERIDA y aun asi lo aplico, asi que puede seguir cortando por tiempo igual que antes.",
+   "La actualizacion del color de referencia se ejecuta sin comprobar que la corrida fue completa; si el tope corta o el proceso falla a medias, se graba un mapa de colores incompleto como si fuera la referencia buena."
+  ],
+  "riesgo_vecinos": [
+   "vigias/test_vigia_el_guardado_dice_que_roja_lo_frena.py y vigias/test_vigia_el_guardia_se_acuerdo_y_frena.py: si elArrange simula _vigias sin memoria, ahora la primera corrida devuelve 'primera medida' y deja pasar en vez de frenar; el contrato de esos tests cambia.",
+   "vigias/test_vigia_el_guardado_dice_cuando_no_pudo_probar.py: con tope de 1800 s el camino de corte por tiempo deja de ser alcanzable en la prueba o la prueba pasa a tardar30 minutos.",
+   "La rama de primera medida escribe de verdad en memoria/.color_de_referencia.json con raiz real: las pruebas contaminan el estado de produccion y se pisan entre si.",
+   "arnes/turno_de_guardado.py y arnes/vecinas.py reciben un tope que no se ha contrastado con la suma de sus topes internos, que es lo que la ley manda."
+  ],
+  "que_falta": [
+   "Comprobar la suma de los topes de dentro antes de fijar1800, o aplicar la alternativa que da el material: correr solo las vecinas de verdad.",
+   "Implementar de verdad la senal de desaparecida (prueba que estaba verde en la referencia y no aparece en la corrida actual), no recalcularla desde archivos_rojos.",
+   "No marcar como 'verde' lo que no se ha medido en la corrida; guardar el estado real o solo las claves vistas.",
+   "Escribir la primera medida con el mismo esquema que la actualizacion final (verdes y rojas).",
+   "La vigia que dice haber escrito, vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py, no esta en la lista de cambios y figura como leida pero no tocada: no hay nada que la cree ni la mantenga."
+  ],
+  "resumen_para_el_jefe": "Reparacion rechazada: el chequeo de 'verde desaparecida' esta mal construido y solo repite el caso rojo, y la forma de guardar el color de referencia marcara como verdes pruebas que nunca se corrieron, con lo que la proxima corrida frenara trabajos buenos; ademas sube el tope a 1800 sin cumplir la regla del propio contrato que exige que el tope de fuera supere la suma de los de dentro."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (39325 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (41216 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (41601 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (41739 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

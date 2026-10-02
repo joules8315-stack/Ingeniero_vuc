@@ -1,19 +1,18 @@
 SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).
 Al obrero le llega el encargo de ANALISTA: escribe el documento entero.
 SE PIDE: escribe=deepseek  revisa=bigpickle
-TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-09-22_111809_RECHAZADO_test_vigia_el_sabotaje_no_acepta_texto_repetido.py.json
-OBRERO deepseek -> AUDITOR groq
-  aviso       : GPT-OSS 120B (Groq) no le cabe (24170 letras, aguanta 19042) -> se le salta
-  aviso       : el revisor de programa freno antes de pagar la revision: EL CODIGO QUEDA ROTO en el renglon 1: invalid syntax. Asi no arranca.
-  aviso       : GPT-OSS 120B (Groq) no le cabe (24358 letras, aguanta 19042) -> se le salta
-  diagnostico : Falta ver el cuerpo de arnes/sabotaje.py (como aplica el texto viejo y como informa el resultado) para escribir una vigia que lo llame tal cual y compruebe el caso de texto repetido.
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-02_004932_DUDOSO_test_vigia_el_sabotaje_no_acepta_texto_repetido.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : GPT-OSS 120B (Groq) no le cabe (27415 letras, aguanta 19042) -> se le salta
+  aviso       : vueltas_dadas: 1
+  diagnostico : arnes/sabotaje.py aplica el sabotaje con replace(viejo, nuevo, 1) sin comprobar si 'viejo' aparece mas de una vez, asi que un texto repetido rompe el primer sitio y da un resultado que engana; la vigia nueva debe exigir que el texto sea unico y avisar 'texto_repetido'.
   toca        : vigias/test_vigia_el_sabotaje_no_acepta_texto_repetido.py funcion ?
-  confianza   : baja
-  VEREDICTO   : RECHAZADO
-  *** INVENTO: Referencia al archivo arnes/sabotaje.py que no aparece en el material proporcionado -> SE DESCARTA
-  fallo       : Invoca un archivo (arnes/sabotaje.py) que no existe en el material, lo que constituye un invento.
-  fallo       : No incluye la justificación requerida por los contratos (las cinco respuestas) para crear una pieza nueva.
-  fallo       : Al crear la vigía sin que exista el archivo que debe vigilar, la pieza queda huérfana y no cumple la regla de que una pieza nueva debe estar conectada.
-  resumen     : Rechazado: la propuesta usa un archivo inexistente y carece de justificación contractual para crear la nueva vigía.
+  confianza   : alta
+  VEREDICTO   : DUDOSO
+  fallo       : La vigia se apoya en un contrato de arnes/sabotaje.py que NO esta en el material y que se presenta como hecho ("funciona como hoy", "se informa 'no_encontrado' como hoy"): firma sabotear(base, vigia, lista), claves 'resultados'/'sana'/'devuelta'/'ok', literales de estado 'roja'/'texto_repetido'/'no_encontrado' y el sufijo de copia '.sabotaje_bak'. Si un solo nombre no coincide, las 5 pruebas mueren juntas con TypeError/KeyError y la vigia da una alarma falsa en vez de vigilar el bug.
+  fallo       : test_texto_repetido_no_deja_copia_de_seguridad no prueba lo que su nombre y su docstring prometen: usa 'viejo': 'MARCA = 3', que aparece UNA sola vez. Es decir, es el camino del sabotaje bueno, no del repetido; del caso repetido no comprueba nada, y su unica asercion real es el literal adivinado '.sabotaje_bak'.
+  fallo       : La asercion interna es contradictoria o autodefinida: en el caso bueno (UNICA unico) exige estado 'roja' y a la vez 'sana' is True y 'ok' is True. El arnes tiene que estar de acuerdo con esa triple lectura de 'sana'/'ok'; el material no la define y la propuesta se la inventa.
+  fallo       : test_lista_mezclada_cada_sabotaje_con_su_estado exige estados == ['texto_repetido', 'roja'], o sea que el arnes siga procesando la lista despues de una entrada mal formada, y ademas exige devuelta/ok en ese caso. Eso dicta la implementacion del arreglo futuro, cosas que el encargo no pidio: sobre-especifica y puede poner roja una correccion razonable.
+  resumen     : El archivo, el diagnostico y la restriccion de no tocar nada mas estan bien, pero las 5 pruebas cuelgan de un contrato de arnes/sabotaje.py (firma, claves sana/devuelta/ok, estados y sufijo .sabotaje_bak) que no aparece en el material; con leer ese fichero y corregir una prueba mal nombrada y el nombre de la vigia falsa se aprueba en una vuelta.
 
-EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.
+EL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.

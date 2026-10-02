@@ -322,9 +322,13 @@ def _vigias(raiz):
         _entorno_limpio = {k: v for k, v in os.environ.items()
                            if k not in ("GIT_INDEX_FILE", "GIT_DIR", "GIT_WORK_TREE",
                                         "GIT_PREFIX", "GIT_OBJECT_DIRECTORY")}
-        r = subprocess.run([sys.executable, "-m", "pytest", "-q"] + objetivo,
-                           cwd=raiz, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=900,
-                           stdin=subprocess.DEVNULL, env=_entorno_limpio)  # lee en utf-8, en cp1252 revienta con los acentos (2026-09-21)
+        try:
+            import bateria_en_paralelo
+            r = bateria_en_paralelo.correr(raiz, objetivo, procesos=4, tope=600)
+        except Exception:
+            r = subprocess.run([sys.executable, "-m", "pytest", "-q"] + objetivo,
+                               cwd=raiz, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=900,
+                               stdin=subprocess.DEVNULL, env=_entorno_limpio)  # lee en utf-8, en cp1252 revienta con los acentos (2026-09-21)
     except subprocess.TimeoutExpired:
         return False, ("las vigias NO terminaron en 15 minutos: no se guarda sin probar. "
                        "Algo se quedo esperando; hay que ver cual se cuelga")
@@ -397,24 +401,29 @@ def _vigias(raiz):
                     esperando.add(vigia)
         except Exception:
             esperando = set()
-    conocidas = []
+    conocidas_de_antes = []
     try:
-        with open(os.path.join(RAIZ, "memoria", "rojas_conocidas.json"), encoding="utf-8") as f:
-            conocidas = json.load(f)
+        ruta_conocidas = os.path.join(raiz, "memoria", ".rojas_conocidas.json")
+        with open(ruta_conocidas, encoding="utf-8") as f:
+            leidas = json.load(f)
+        if isinstance(leidas, list):
+            conocidas_de_antes = leidas
     except Exception:
-        conocidas = []
-    guardados_que_frenan = rojas_que_frenan(rojas_ahora, guardados, declaradas, conocidas)
+        conocidas_de_antes = []
+    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, list(esperando), conocidas_de_antes)
     if guardados_que_frenan:
         # Al menos uno ya estaba guardado y no espera arreglo: es romper algo que estaba verde. Frenar.
         return False, ultima[0].strip()
     # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.
     try:
-        with open(os.path.join(RAIZ, "memoria", "rojas_conocidas.json"), "w", encoding="utf-8") as f:
-            json.dump(rojas_ahora, f)
+        ruta_conocidas = os.path.join(raiz, "memoria", ".rojas_conocidas.json")
+        os.makedirs(os.path.dirname(ruta_conocidas), exist_ok=True)
+        with open(ruta_conocidas, "w", encoding="utf-8") as f:
+            json.dump(archivos_rojos, f)
     except Exception:
         pass
-    detalle = "; ".join(nuevos + [a for a in guardados if a in esperando])
-    return True, "vigias recien escritas sin su pieza aun o esperando su arreglo (se deja pasar): " + detalle
+    detalle = "; ".join(nuevos + [a for a in guardados if a in esperando] + [a for a in guardados if a in conocidas_de_antes and a not in esperando])
+    return True, "vigias recien escritas sin su pieza aun, esperando su arreglo, o ya rojas antes de este trabajo (se deja pasar): " + detalle
 
 
 def main():

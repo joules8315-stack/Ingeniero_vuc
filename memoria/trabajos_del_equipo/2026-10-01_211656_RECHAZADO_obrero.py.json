@@ -1,0 +1,72 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El aviso del rechazo no dice cuantos rechazos en falso se quitaron y el descarte por invento_algo no comprueba si el nombre aparece declarado en el codigo de la propuesta.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "trabajar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    pesado_ahora = bool(generador) and generador in cuotas.DE_PAGO\n    avisos_totales = []\n    motivos_rechazo = []\n    vueltas = 0\n    propuesta = {}",
+    "texto_nuevo": "    pesado_ahora = bool(generador) and generador in cuotas.DE_PAGO\n    avisos_totales = []\n    motivos_rechazo = []\n    vueltas = 0\n    propuesta = {}\n    falsos_quitados = 0"
+   },
+   {
+    "texto_viejo": "def _propuesta_cumple(propuesta, clase):",
+    "texto_nuevo": "def _nombres_declarados_en_la_propuesta(propuesta):\n    \"\"\"Devuelve el conjunto de nombres que la propuesta DECLARA dentro de su propio codigo.\n\n    Un nombre esta declarado si aparece como 'def <nombre>', 'class <nombre>' o como una\n    asignacion de constante '<nombre> =' en el texto que la propuesta trae (codigo,\n    texto_nuevo o los elementos de cambios). Un nombre declarado aqui NO es invento: es la\n    reparacion haciendo su trabajo. Inventar es usar algo que no existe en ninguna parte y\n    que la propuesta tampoco crea.\n    \"\"\"\n    if not isinstance(propuesta, dict):\n        return set()\n    trozos = []\n    for clave in (\"codigo\", \"texto_nuevo\", \"texto_viejo\"):\n        valor = propuesta.get(clave)\n        if isinstance(valor, str):\n            trozos.append(valor)\n    cambios = propuesta.get(\"cambios\")\n    if isinstance(cambios, list):\n        for elemento in cambios:\n            if isinstance(elemento, dict):\n                for clave in (\"codigo\", \"texto_nuevo\", \"texto_viejo\"):\n                    valor = elemento.get(clave)\n                    if isinstance(valor, str):\n                        trozos.append(valor)\n    texto = \"\\n\".join(trozos)\n    declarados = set()\n    for renglon in texto.splitlines():\n        limpio = renglon.strip()\n        for prefijo in (\"def \", \"class \"):\n            if limpio.startswith(prefijo):\n                resto = limpio[len(prefijo):]\n                nombre = \"\"\n                for ch in resto:\n                    if ch.isalnum() or ch == \"_\":\n                        nombre += ch\n                    else:\n                        break\n                if nombre:\n                    declarados.add(nombre)\n        if \"=\" in limpio and not limpio.startswith(\"==\") and not limpio.startswith(\"!=\"):\n            izquierda = limpio.split(\"=\", 1)[0].strip()\n            if izquierda and all(c.isalnum() or c == \"_\" for c in izquierda):\n                declarados.add(izquierda)\n    return declarados\n\n\ndef _quitar_inventos_falsos(propuesta):\n    \"\"\"Quita de que_invento los nombres que la propuesta DECLARA en su propio codigo.\n\n    Devuelve (cuantos_se_quitaron, quedan). Si tras quitar los falsos no queda ninguno,\n    invento_algo pasa a falso. Inventar de verdad (usar algo que no existe en ninguna parte\n    y que la propuesta tampoco crea) se sigue frenando igual.\n    \"\"\"\n    if not isinstance(propuesta, dict):\n        return 0, []\n    if not propuesta.get(\"invento_algo\"):\n        return 0, []\n    lista = propuesta.get(\"que_invento\")\n    if not isinstance(lista, list):\n        return 0, []\n    declarados = _nombres_declarados_en_la_propuesta(propuesta)\n    quedan = []\n    quitados = 0\n    for nombre in lista:\n        if isinstance(nombre, str) and nombre in declarados:\n            quitados += 1\n        else:\n            quedan.append(nombre)\n    propuesta[\"que_invento\"] = quedan\n    if not quedan:\n        propuesta[\"invento_algo\"] = False\n    return quitados, quedan\n\n\ndef _propuesta_cumple(propuesta, clase):"
+   }
+  ],
+  "cambio": "Anadir un contador falsos_quitados en trabajar, y dos funciones nuevas (_nombres_declarados_en_la_propuesta y _quitar_inventos_falsos) que quitan de que_invento los nombres que la propuesta declara en su propio codigo; si no queda ninguno, invento_algo pasa a falso. El aviso debe decir cuantos rechazos en falso se quitaron.",
+  "codigo": "def _nombres_declarados_en_la_propuesta(propuesta):\n    \"\"\"Devuelve el conjunto de nombres que la propuesta DECLARA dentro de su propio codigo.\"\"\"\n    if not isinstance(propuesta, dict):\n        return set()\n    trozos = []\n    for clave in (\"codigo\", \"texto_nuevo\", \"texto_viejo\"):\n        valor = propuesta.get(clave)\n        if isinstance(valor, str):\n            trozos.append(valor)\n    cambios = propuesta.get(\"cambios\")\n    if isinstance(cambios, list):\n        for elemento in cambios:\n            if isinstance(elemento, dict):\n                for clave in (\"codigo\", \"texto_nuevo\", \"texto_viejo\"):\n                    valor = elemento.get(clave)\n                    if isinstance(valor, str):\n                        trozos.append(valor)\n    texto = \"\\n\".join(trozos)\n    declarados = set()\n    for renglon in texto.splitlines():\n        limpio = renglon.strip()\n        for prefijo in (\"def \", \"class \"):\n            if limpio.startswith(prefijo):\n                resto = limpio[len(prefijo):]\n                nombre = \"\"\n                for ch in resto:\n                    if ch.isalnum() or ch == \"_\":\n                        nombre += ch\n                    else:\n                        break\n                if nombre:\n                    declarados.add(nombre)\n        if \"=\" in limpio and not limpio.startswith(\"==\") and not limpio.startswith(\"!=\"):\n            izquierda = limpio.split(\"=\", 1)[0].strip()\n            if izquierda and all(c.isalnum() or c == \"_\" for c in izquierda):\n                declarados.add(izquierda)\n    return declarados\n\n\ndef _quitar_inventos_falsos(propuesta):\n    \"\"\"Quita de que_invento los nombres que la propuesta DECLARA en su propio codigo.\"\"\"\n    if not isinstance(propuesta, dict):\n        return 0, []\n    if not propuesta.get(\"invento_algo\"):\n        return 0, []\n    lista = propuesta.get(\"que_invento\")\n    if not isinstance(lista, list):\n        return 0, []\n    declarados = _nombres_declarados_en_la_propuesta(propuesta)\n    quedan = []\n    quitados = 0\n    for nombre in lista:\n        if isinstance(nombre, str) and nombre in declarados:\n            quitados += 1\n        else:\n            quedan.append(nombre)\n    propuesta[\"que_invento\"] = quedan\n    if not quedan:\n        propuesta[\"invento_algo\"] = False\n    return quitados, quedan",
+  "vigia": "Un test que arme una propuesta con invento_algo=True y que_invento=['_nombres_declarados_en_la_propuesta'] y compruebe que tras _quitar_inventos_falsos queda invento_algo=False y que_invento=[]; y otro con un nombre que no aparece declarado y compruebe que sigue invento_algo=True.",
+  "puede_danar": [
+   "arnes/asignador.py",
+   "arnes/mostrador.py",
+   "arnes/revisor_de_programa.py",
+   "vigias/test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "vigias/test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py"
+  ],
+  "preguntas": [
+   "PREGUNTA_REQUERIDA: donde exactamente se imprime el aviso del rechazo en cuerpo/obrero.py para anadir ahi el numero de rechazos en falso quitados? El material no trae ese tramo."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "asignador.py",
+   "mostrador.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_aviso_del_rechazo_no_es_el_encargo.py",
+   "test_vigia_el_aviso_del_revisor_no_frena_la_ronda.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "El cambio NO cierra el diagnostico: se anade `falsos_quitadas = 0` en trabajar pero `_quitar_inventos_falsos` no se llama NINGUNA parte y el texto del aviso de rechazo (cuerpo/obrero.py ~1320-1321) no se toca. El contador queda como variable muerta: 'no dice cuantos rechazos en falso se quitaron' sigue exactamente igual.",
+   "La deduplicacion casi nunca dispara en la practica: exige `nombre in declarados` con igualdad EXACTA de cadena. Los `que_invento` reales son descriptivos o con ruta/linea ('cuerpo/obrero.py:1320', 'usa X() que no existe'), no identificadores desnudos, asi que no hay forma de que un item de `que_invento` coincida literalmente con un `def <nombre>` extraido. Es decir: la reparacion pideida no se ejecuta jamas.",
+   "El extractor de nombresDeclared es demasiado ingenuo y a la vez demasiado ancho: `if '=' in limpio` captura cualquier linea con `=`, incluidas keywords de llamada (`f(a=1)`), anotaciones y comparadores `>=`/`<=`, de modo que declara como 'declarado en la propuesta' cualquier cosa que aparezca a la izquierda de un `=`; combinado con lo anterior, el filtro es ruido mas que proteccion."
+  ],
+  "riesgo_vecinos": [
+   "`_quitar_inventos_falsos` MUTA el dict de la propuesta en sitio (`propuesta[\"que_invento\"] = quedan`, `propuesta[\"invento_algo\"] = False`). Si se llega a llamar desde `trabajar`, el JSON que se guarda/pasa al revisor queda con la marca ya reescrita: la comprobacion deja de poder ver lo que el revisor dijo, que es justo lo que el encargo pide poder medir.",
+   "Si el filtro se activa de verdad, deja de frenarse 'inventar' sobre nombres que la propuesta declara solo como `ALGO = ...` en un texto suyo, sin que ese nombre exista de verdad en el archivo: elemblema del encargo (usar algo que no existe en ninguna parte) se diluye."
+  ],
+  "que_falta": [
+   "El sitio que SI tiene que cambiar: la linea del aviso (cuerpo/obrero.py ~1320-1321, segun el enunciado) para que imprima cuantos falsos se quitaron. El cambio no la toca; solo deja un contador sin usar.",
+   "La llamada a `_quitar_inventos_falsos` dentro de `trabajar` (o donde corresponda), asignando su retorno a `falsos_quitados`.",
+   "Que el aviso muestre 0 tambien en el camino normal, no solo cuando hubo que quitar algo (si no, el campo sigue sin decir nada).",
+   "Normalizar `que_invento` antes de comparar (quitar rutas, `archivo:linea`, parentesis, prefijos) o comparar por subcadena/token, no por igualdad exacta."
+  ],
+  "resumen_para_el_jefe": "No invento nada, pero el arreglo esta a medias y ademas inerte: anade el contador y las funciones sin llamarlas ni tocar el aviso, y el filtro exige coincidencia exacta de nombre con lo que el revisor escribe, asi que en la practica no quita nada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (36520 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "GPT-OSS 120B (Groq) no le cabe (37412 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (37660 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (37979 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

@@ -1,0 +1,55 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _preguntar_con_relevo el tope del pasillo se calcula con min(_capas), recortando al cerebro mas pequeno; hay que crear tope_del_pasillo (devuelve la capacidad mayor) y usarla en su lugar.",
+  "archivo": "cuerpo/obrero.py",
+  "funcion": "_preguntar_con_relevo",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    if turnos:\n        _capas = [cuotas._capacidad(q) for q in turnos]\n        _capas = [c for c in _capas if c > 0]\n        if _capas:\n            _tope_pasillo = min(_capas)",
+    "texto_nuevo": "    if turnos:\n        _capas = [cuotas._capacidad(q) for q in turnos]\n        _capas = [c for c in _capas if c > 0]\n        if _capas:\n            _tope_pasillo = tope_del_pasillo(_capas)"
+   },
+   {
+    "texto_viejo": "def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False,\n                          clase=\"\", vuelta=0):",
+    "texto_nuevo": "def tope_del_pasillo(capacidades):\n    \"\"\"Devuelve la capacidad MAYOR de la fila: el pasillo se recorta a la medida del cerebro\n    que mas aguanta, no del mas pequeno (medido 2026-10-01: recortar al minimo quitaba en 27 de\n    34 ordenes el codigo que si habia llegado).\"\"\"\n    return max(capacidades)\n\n\ndef _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False,\n                          clase=\"\", vuelta=0):"
+   }
+  ],
+  "cambio": "Crear la funcion tope_del_pasillo (devuelve max de las capacidades) y usarla en _preguntar_con_relevo donde hoy se hace _tope_pasillo = min(_capas).",
+  "codigo": "def tope_del_pasillo(capacidades):\n    \"\"\"Devuelve la capacidad MAYOR de la fila: el pasillo se recorta a la medida del cerebro\n    que mas aguanta, no del mas pequeno (medido 2026-10-01: recortar al minimo quitaba en 27 de\n    34 ordenes el codigo que si habia llegado).\"\"\"\n    return max(capacidades)",
+  "vigia": "vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py: comprueba que el pasillo no recorta al cerebro mas pequeno y que tope_del_pasillo devuelve la capacidad mayor.",
+  "puede_danar": [
+   "cuerpo/obrero.py",
+   "cuotas",
+   "asignador.recortar_prompt",
+   "cerebro de pago (DeepSeek)"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Con max(), el cerebro mas pequeno de la fila ahora recibe mas material del que cabe segun su propia capacidad: su recorte interno puede volver a cortar codigo, o directamente ser descartado y acabar mandando la fila al cerebro de pago (DeepSeek) con mas carga de la queexpects. Es exactamente el efecto que se pedia, pero conviene que la vigia lo vigile, no solo que mire que tope_del_pasillo devuelve max.",
+   "AQUIEN PUEDE DANAR declaro 'cuotas' y 'asignador.recortar_prompt': el cambio no los toca (solo cambia quien calcula el tope), pero el valor de entrada sigue viniendo de cuotas._capacidad, asi que si ahi hay un min/max de capacidades distinto, el efecto se duplica o se contradice."
+  ],
+  "que_falta": [
+   "Falta la ejecucion real de vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py: '_comprobado_por_programa' dice que los nombres existen y que el archivo carga, no que la vigia este en verde.",
+   "Falta comprobar que la insercion de la funcion nueva no deja encima un decorador o comentario que pertenecía a _preguntar_con_relevo (el anclaje empieza en 'def', asi que cualquier linea de decoracion inmediatamente anterior se quedariaApplied a tope_del_pasillo).",
+   "Falta confirmar que la vigia puede importar la funcion ('from cuerpo.obrero import tope_del_pasillo'): si el modulo define __all__, la nueva no entraria en el import explícito."
+  ],
+  "resumen_para_el_jefe": "Arregla exactamente lo pedido (min -> tope_del_pasillo con max), no inventa nada y no toca mas de lo necesario; apunto solo que aun falta correr la vigia y vigilar que al darle mas material al cerebro mas pequeno no acabe yendole el turno al cerebro de pago."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 40313 a 14896 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: USA UN NOMBRE QUE NO EXISTE: 'tope_del_pasillo'. No se importa, no se define y no es de Python. En cuanto se corra, revienta.; USA UN NOMBRE QUE NO EXISTE: '_capas'. No se importa, no se define y no e",
+  "el pasillo recorto el encargo de 41534 a 18956 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "vueltas_dadas: 2"
+ ]
+}

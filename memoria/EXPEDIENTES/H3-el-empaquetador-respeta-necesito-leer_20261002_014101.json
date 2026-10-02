@@ -1,0 +1,35 @@
+{
+  "orden": {
+    "id": "H3-el-empaquetador-respeta-necesito-leer",
+    "titulo": "Cuando se pide un trozo con NECESITO_LEER, el paquete lo entrega",
+    "origen": "Codex por el canal, 2026-09-29 13:20, trabajando en Foto Informe FI1",
+    "repara": "se pidio literalmente el trozo de app_web.html con processPhoto, el manejador de camara y el guardado, y el paquete entrego leyes y pruebas vecinas, sin ninguno de esos tramos. Dos vueltas del equipo perdidas: la primera SIN_VEREDICTO y la segunda DUDOSO, sin guardar nada. La causa YA estaba medida en la memoria de fallos: el repartidor entrega el archivo NOMBRADO recortado a sus primeros 80 renglones, min(80, lineas), no entero; con router.py de 636 renglones ya tumbo la orden 29 por lo mismo",
+    "pieza": "cerebro/router.py",
+    "encargo": "OBJETIVO: que cuando el encargo nombra una funcion de un archivo, el paquete traiga la rebanada literal de ESA funcion. DONDE SE REPARA: cerebro/router.py, el bloque que arma los trozos de codigo del paquete. En ese archivo ya existen la constante TOPE_FUNCION_NOMBRADA y la funcion asegurar_trozo_nombrado: usalas, no las redefinas; si no ves su firma pidela con NECESITO_LEER cerebro/router.py. LA PRUEBA QUE DEBE PASAR A VERDE: vigias/test_vigia_el_paquete_trae_la_funcion_que_se_pide.py; leela primero. COMO: agregar la rebanada de cada funcion nombrada en el encargo sin quitar nada de lo que ya llegaba hoy, y con un tope de 5 funciones nombradas. NO filtrar por rol con una lista literal: un intento anterior perdio las rebanadas de piezas cuyo rol no estaba en la lista y no tenia tope de cuantas funciones agregaba.",
+    "vigia": "vigias/test_vigia_el_paquete_trae_la_funcion_que_se_pide.py",
+    "razon": "es la causa medida de que el trabajo de Foto Informe este parado, y ya tumbo tambien la orden 29: falla en las dos manos a la vez",
+    "depende": [
+      "V-H3-el-empaquetador-respeta-necesito-leer"
+    ],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "Encargo reescrito el 2026-10-02 con las razones del revisor y los nombres decididos.",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "c9a12bccc00dc126",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-02_014059_SIN_VEREDICTO_router.py.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : GPT-OSS 120B (Groq) no le cabe (20792 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (21684 letras, aguanta 19042) -> se le salta\n  diagnostico : El paquete no trae la rebanada literal de la funcion nombrada en el encargo porque el bloque que arma los trozos en cerebro/router.py no usa asegurar_trozo_nombrado ni respeta TOPE_FUNCION_NOMBRADA.\n  toca        : cerebro/router.py funcion asegurar_trozo_nombrado\n  confianza   : baja\n  VEREDICTO   : ?\n\nEL EQUIPO NO APROBO (?): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-02T01:41:01",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\H3-el-empaquetador-respeta-necesito-leer_20261002_014101.json"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "orden": {
+    "id": "R1",
+    "titulo": "El trabajo aprobado siempre llega al disco",
+    "origen": "PLAN_PRIORIDAD_UNO aprobado por Julio el 2026-09-25; medido: FALLOS.json id 69 con 82 veces y 14 trabajos en memoria/trabajos_sin_revisar",
+    "repara": "el guardado corre una bateria de 245 vigias con tope de 15 minutos; si no termina NO se guarda, y el trabajo que el equipo ya aprobo se deshace",
+    "pieza": "arnes/vecinas.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "es la causa numero uno medida: 82 veces se perdio trabajo bueno ya pagado",
+    "encargo": "SIN AFLOJAR EL GUARDIA (sigue frenando contrasenas y vigias rojas igual). Dos cosas en arnes/vecinas.py: (1) en _vecinas_por_stem (linea 216) hoy se devuelve None, o sea bateria completa, en cuanto UN archivo de codigo cambiado no aparezca en ninguna vigia (lineas 244-247); en su lugar, devolver las vecinas que si se encontraron MAS la marca de que falta cubrir ese archivo, y anadir la vigia general del proyecto si existe, en vez de mandar correr las 245. (2) Dejar escrito en el docstring de elegir() por que se hace asi y que el guardado no debe morir por tiempo. No toques arnes/guardia_de_guardado.py en esta orden.",
+    "vigia": "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "adc42786ad283138",
+  "tipo": "otro",
+  "codigo": 1,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-01_150030_SIN_VEREDICTO_sin_archivo.json\nNO SE PUDO: el pasillo recorto el encargo de 30798 a 13913 letras para que le quepa a un cerebro gratis (tope medido: 19042); DeepSeek (SE PAGA) tardo demasiado -> pasa el turno; GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca) -> se reintenta; el pasillo recorto el encargo de 31489 a 14476 letras para que le quepa a un cerebro gratis (tope medido: 19042); GPT-OSS 120B (Groq) se agoto -> pasa el turno; se pidio generar a deepseek y no esta disponible: contesto gemini4; DeepSeek (SE PAGA) tardo demasiado -> pasa el turno; Gemini 2.5 flash-lite se agoto -> pasa el turno; Gemini 3 preview se agoto -> pasa el turno; NO_ENCONTRADO: ningun cerebro pudo atender\n",
+  "apartados": [],
+  "fecha": "2026-10-01T15:00:36",
+  "analisis": {
+    "que_paso": "La orden R1 (arreglar arnes/vecinas.py, modo IA) nunca llego a hacerse. El encargo media 30798 letras; el pasillo lo recorto a 13913 \"para que le quepa a un cerebro gratis (tope medido: 19042)\". Con el encargo mutilado, GPT-OSS 120B \"dejo el pedido a mitad (la propuesta NO dice que archivo toca)\"; el unico cerebro que aguantaba el encargo entero, DeepSeek (de pago), \"tardo demasiado -> pasa el turno\" una y otra vez, y los Gemini se agotaron. Resultado: \"NO_ENCONTRADO: ningun cerebro pudo atender\" y el trabajo se archivo SIN_VEREDICTO (2026-10-01_150030_SIN_VEREDICTO_sin_archivo.json). Nadie toco vecinas.py.",
+    "causa_raiz": "El pasillo de cuerpo/obrero.py recorta el encargo a la capacidad del cerebro MAS CHICO de la fila (_tope_pasillo = min(_capas) = 19042) sin mirar si al cortar pierde lo esencial (que archivo se toca), y descarta por lento al unico que aguantaba los 30798 enteros (DeepSeek de pago). Asi entrega un encargo mutilado a cerebros gratis que lo dejan a medias y nunca lo hace llegar al que si podia. La herramienta incluso sabe avisar \"HAY QUE PARTIRLO en trozos mas pequenos\", pero en lugar de partirlo de forma coherente lo recorta a ciegas al tamano del mas chico. Falla la herramienta, no la pieza vecinas.py que R1 pretendia tocar: R1 murio antes de empezar, en el reparto.",
+    "donde": "cuerpo/obrero.py — bloque de recorte del prompt (lineas 1089-1101, \"_tope_pasillo = min(_capas)\") y la descarta del de pago por lentitud (linea 1234). El aviso \"ENCARGO NO LE CABE A NADIE ... HAY QUE PARTIRLO\" vive en 1133-1135 pero no se actua sobre el.",
+    "quien_fallo": "herramienta",
+    "citas": [
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "_tope_pasillo = min(_capas)"
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "avisos.append(\"el pasillo recorto el encargo de %d a %d letras para que \"\n                                  \"le quepa a un cerebro gratis (tope medido: %d)\""
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "avisos.append(f\"{cuotas.APODO[quien]} tardo demasiado -> pasa el turno\")"
+      },
+      {
+        "archivo": "cuerpo/obrero.py",
+        "texto": "avisos.append(\"ENCARGO NO LE CABE A NADIE: mide %d letras, el que mas aguanta es %s \"\n                          \"con %d. HAY QUE PARTIRLO en trozos mas pequenos.\""
+      },
+      {
+        "archivo": "memoria/trabajos_del_equipo/2026-10-01_150030_SIN_VEREDICTO_sin_archivo.json",
+        "texto": "GPT-OSS 120B (Groq) dejo el pedido a mitad (la propuesta NO dice que archivo toca)"
+      }
+    ],
+    "no_volver_a": "Nunca recortar un encargo por debajo de lo que necesita para decir que archivo se toca: si no cabe en el cerebro mas chico, se manda entero al que lo aguanta (incluido el de pago) o se parte en trozos completos, nunca se mutila a la medida del mas pequeno.",
+    "tarea_nueva": {
+      "repara": "que cuando el encargo no quepa en el cerebro mas chico, el pasillo NO lo recorte a ciegas a min(_capas); debe entregarlo entero al cerebro que lo aguanta (incluido DeepSeek de pago) o partirlo en trozos coherentes que conserven la marca de que archivo se toca, y nunca entregar un recorte que pierda esa marca",
+      "pieza": "cuerpo/obrero.py",
+      "razon": "el recorte a 19042 dejo la propuesta 'a mitad (no dice que archivo toca)' y el unico que aguantaba los 30798 enteros (DeepSeek) paso turno por lento; por eso R1 se archivo SIN_VEREDICTO sin que nadie tocara vecinas.py. Es causa distinta de la orden R1 (que iba sobre arnes/vecinas.py): el fallo esta en el reparto del encargo, no en la pieza que se queria arreglar",
+      "encargo": "En cuerpo/obrero.py, donde el pasillo recorta el prompt al tamano del cerebro mas chico (el renglon _tope_pasillo = min(_capas)): si el encargo no cabe en ese tope, NO se entrega recortado a los gratis. Primero se ofrece ENTERO al cerebro que lo aguanta (el de pago), aunque sea lento; y solo si de verdad no cabe en nadie, se parte en trozos coherentes que cada uno conserven que archivo hay que tocar y el objetivo, en vez de cortar a ciegas. Nunca mandar una propuesta que, por el corte, no pueda decir que archivo toca. Dejarlo verde con una vigia que compruebe: un encargo mayor que el cerebro mas chico nunca se entrega recortado perdiendo la marca de archivo. El ancla es un solo renglon unico: _tope_pasillo = min(_capas)",
+      "modo": "PROGRAMA"
+    }
+  },
+  "informe": {
+    "ok": true,
+    "paso": "tarea",
+    "motivo": "agregada R1-F151051",
+    "tarea": "R1-F151051",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R1_20261001_150036.json"
+  }
+}

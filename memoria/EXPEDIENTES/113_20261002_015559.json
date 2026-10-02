@@ -1,0 +1,33 @@
+{
+  "orden": {
+    "id": "113",
+    "titulo": "Recoger aparta un archivo nuevo rojo en vez de dejarlo suelto",
+    "origen": "medido el 2026-09-21 16:03 (A-43): la vigia recogida de la orden 55 era un archivo nuevo; git checkout HEAD no la quita porque no esta en lo guardado, y quedo suelta en el disco",
+    "repara": "una pieza nueva rechazada queda suelta sin guardar y contamina las pruebas siguientes",
+    "pieza": "cuerpo/capataz.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "nunca se borra nada: se aparta con su marca, igual que hace el guardia",
+    "encargo": "En cuerpo/capataz.py, en la funcion recoger_lo_frenado, hay dos sitios que devuelven la pieza a lo guardado con subprocess.run(['git', 'checkout', 'HEAD', '--', pieza], ...). En los dos, justo antes de esa llamada, agrega: pregunta con subprocess.run(['git', 'cat-file', '-e', 'HEAD:' + pieza], cwd=raiz, capture_output=True, text=True, timeout=30) si la pieza esta guardada; si su returncode no es 0 (es nueva), mueve el archivo con os.replace a os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', os.path.basename(pieza) + '.ROJO') en vez de llamar a git checkout. Entrega los dos sitios en la lista cambios. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_recoger_aparta_la_pieza_nueva_roja.py",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "toca dos sitios: depende de que el equipo ya aplique varios trozos por ronda (57 y 60)."
+  },
+  "huella": "2c77cc99136c99db",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-02_015556_RECHAZADO_capataz.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (30139 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.; HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio\n  aviso       : GPT-OSS 120B (Groq) no le cabe (31028 letras, aguanta 19042) -> se le salta\n  diagnostico : En recoger_lo_frenado hay dos sitios que devuelven la pieza con git checkout HEAD sin comprobar antes si la pieza existe en HEAD; si es nueva, git checkout falla y la pieza no se mueve a .ROJO.\n  toca        : cuerpo/capataz.py funcion recoger_lo_frenado\n  confianza   : baja\n  PREGUNTA_REQUERIDA: El material ya trae en los dos sitios de recoger_lo_frenado la comprobacion con git cat-file -e HEAD:pieza y el os.replace a .ROJO antes del git checkout. ¿Se confirma que el encargo ya esta aplicado y no hay que tocar nada, o el material que se me dio esta desactualizado y hay que pedir el archivo real?\n  VEREDICTO   : RECHAZADO\n  *** INVENTO: El texto_viejo del primer sitio (bloque con `if prueba.returncode != 0:`, `guardada = subprocess.run(['git','cat-file','-e','HEAD:' + pieza], ...)`, `os.replace(pieza, os.path.join(raiz, 'memoria', 'trabajos_sin_revisar', ...))`, `return {'ok': False, 'destino': resultado.get('destino'), 'razon': 'la copia recogida deja su prueba roja...'}`) no aparece en ningun sitio del material: el paquete no incluye ni una linea de cuerpo/capataz.py.; El texto_viejo del segundo sitio (mismo bloque bajo `if paso is not True:` con el 'razon' de 'pone rojas a sus vecinas') tampoco aparece en el material.; Las cadenas exactas de los dos mensajes 'razon' y el uso de `resultado.get('destino')` se afirman como codigo ya escrito en el archivo. El material no las contiene y el obrero no cites su origen.; La afirmacion 'el material ya trae ese codigo en ambos sitios' es falsa respecto al material entregado: alli solo hay prosa describiendo lo que hay que hacer, no el codigo de capataz.py. -> SE DESCARTA\n  fallo       : El cambio es un no-op: texto_nuevo es byte a byte identico a texto_viejo en los dos sitios, y el campo `codigo` va vacio. Se entrega un diff de tamano cero, que es exactamente el encargo sin hacer.\n  fallo       : El diagnostico y su propio texto_viejo se contradicen: el diagnostico afirma que los dos sitios hacen checkout SIN comprobar antes, y a continuacion el texto_viejo que el propio obrero pone YA tiene la comprobacion con cat-file y el os.replace a .ROJO. Uno de los dos es falso, y eso invalida el informe entero.\n  fallo       : La ubicacion se juzga por el texto, y el texto ancla no aparece en el material: no hay forma de verificar que ese bloque exista en cuerpo/capataz.py ni que las variables `raiz`, `pieza`, `prueba`, `paso`, `resultado` existan con esos nombres.\n  fallo       : Ante la falta de capataz.py en el paquete, la conducta correcta era NECESITO_LEER cuerpo/capataz.py (el propio paquete lo ordena: 'NO adivines lo que no ves'). En vez de eso escribio codigo verosimil para rellenar el hueco y cerro con confianza 'baja'.\n  resumen     : La reparacion es un no-op: entrega el mismo texto antes y despues, y su 'texto viejo' es codigo que nadie ha visto porque el paquete no incluye capataz.py; ademas se contradice con su propio diagnostico. Lo unico que falta es leer cuerpo/capataz.py y sacar el diff real.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-02T01:55:59",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\113_20261002_015559.json"
+  }
+}

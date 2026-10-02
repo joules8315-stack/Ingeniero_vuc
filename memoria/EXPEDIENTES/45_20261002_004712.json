@@ -1,0 +1,34 @@
+{
+  "orden": {
+    "id": "45",
+    "titulo": "Una prueba no puede devolver en vez de afirmar",
+    "origen": "fallo visto el 2026-09-21",
+    "repara": "cazarlo gratis antes de pagar la revision evita que entre una vigilancia que no vigila",
+    "pieza": "arnes/revisor_de_programa.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "una vigilancia que parece que esta y no esta es el peor fallo; ya costo cinco rondas con la prueba sin cuerpo",
+    "encargo": "En arnes/revisor_de_programa.py agregar una regla mas, escrita entera en su sitio y del mismo estilo que la de SE QUEDA SIN CUERPO: si el texto nuevo es un archivo de prueba de Python y alguna funcion cuyo nombre empieza por test_ tiene un return con valor y ningun assert, se devuelve un fallo que diga que en pytest eso pasa siempre y la prueba no vigila nada, y que hay que usar assert. Un return sin valor no cuenta. Si el texto no se puede leer, no se dice nada. Medido el 2026-09-21: una vigia asi entro verde sin que existiera su arreglo; se escanearon todas las demas del proyecto y era la unica. Agrega tambien el segundo caso de la misma familia: si el texto nuevo es una prueba que llama a unittest.SkipTest o a pytest.skip con un mensaje que habla de que la pieza no existe todavia, se devuelve un fallo que diga que una prueba saltada no puede ponerse roja y que mientras la pieza no exista tiene que fallar con assert. No toques ningun otro archivo.",
+    "vigia": "vigias/test_vigia_una_prueba_no_devuelve_en_vez_de_afirmar.py",
+    "sabotaje": "memoria/sabotajes/una_prueba_no_devuelve_en_vez_de_afirmar.json",
+    "prueba_real": "",
+    "comando": "",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": ""
+  },
+  "huella": "5da2c5f52c9b737e",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-02_004706_RECHAZADO_revisor_de_programa.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (32497 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: USA SIMULADOR (Mock) EN VEZ DE LO REAL: una prueba con simuladores no prueba la pieza de verdad.\n  aviso       : GPT-OSS 120B (Groq) no le cabe (33587 letras, aguanta 19042) -> se le salta\n  diagnostico : Falta en arnes/revisor_de_programa.py la regla que caza pruebas test_ con return con valor y sin assert, y la que caza pruebas saltadas con unittest.SkipTest o pytest.skip alegando que la pieza no existe.\n  toca        : arnes/revisor_de_programa.py funcion revisar\n  confianza   : media\n  VEREDICTO   : RECHAZADO\n  fallo       : 2e acepta cualquier mensaje de skip que contenga \"falta\", \"pendiente\" o \"no esta\": un pytest.skip(\"el servicio no esta disponible\") o (\"falta de red en windows\") se reporta como PRUEBA SALTADA. El encargo pedia mensaje que hable de que LA PIEZA NO EXISTE; la lista de palabras implementa otra cosa y produce falsos positivos que empujan a tocar pruebas saltadas por motivos de entorno.\n  fallo       : Todo el bloque va envuelto en `except Exception: pass` y tambien los ast.parse. Si falta `import ast`, `import textwrap`, o el helper `es_un_pedazo` no existe, el NameError se traga en silencio y las reglas 2d y 2e NO se disparan jamas: la reparacion queda puesta, pasa revision y no caza nada. Eso es exactamente el fallo que pretendia arreglar.\n  fallo       : El silencio por texto ilegible se mezcla con el silencio por error de codigo: no hay forma de distinguir \"no se puede leer\" de \"esta roto\".\n  fallo       : El fragamento ancla2d/2e en 8 espacios justo despues de `_despues_c = _antes_c.replace(viejo, nuevo, 1)`, que esta a 20 espacios dentro de `if viejo in _antes_c:`. Cierra los dos if, asi que sintacticamente aguanta, pero solo si el fragmento coincide literal con el archivo; el material entregado no lo trae y no se puede confirmar.\n  resumen     : Logicamente medio correcta, pero se aprueba con reparo: la lista de palabras de 2e marca como saltadas pruebas validas por entorno y los except anchos convierten cualquier error de codigo en silencio, dejando reglas que no cazan nada sin que se note.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-02T00:47:12",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\45_20261002_004712.json"
+  }
+}

@@ -1,0 +1,68 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En cuerpo/capataz.py falta la funcion deepseek_sin_saldo y el bucle sigue parando por tope de gasto en vez de por DeepSeek sin saldo.",
+  "archivo": "cuerpo/capataz.py",
+  "funcion": "bucle",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def se_paso_del_tope(hoy=None):\n    \"\"\"True si ya se gasto el tope del mes.\"\"\"\n    return gastado_del_mes(hoy) >= TOPE_MES_USD",
+    "texto_nuevo": "def se_paso_del_tope(hoy=None):\n    \"\"\"True si ya se gasto el tope del mes.\"\"\"\n    return gastado_del_mes(hoy) >= TOPE_MES_USD\n\n\ndef deepseek_sin_saldo():\n    \"\"\"True si DeepSeek esta dormido por falta de saldo.\"\"\"\n    from cuerpo import cuotas\n    dormido = cuotas._leer().get('dormidos', {}).get('deepseek')\n    if not dormido:\n        return False\n    motivo = str(dormido.get('motivo', '')).lower()\n    for senal in ('insufficient balance', 'insufficient_quota', 'payment required', '402'):\n        if senal in motivo:\n            return True\n    return False"
+   },
+   {
+    "texto_viejo": "    \"\"\"Corre las ordenes sola hasta que se para por una de las tres causas:\n    tope de gasto del mes, todo hecho (o nada se puede correr), o 3 fallos\n    del mismo tipo en la misma pieza.\"\"\"",
+    "texto_nuevo": "    \"\"\"Corre las ordenes sola hasta que se para por una de las tres causas:\n    DeepSeek sin saldo, todo hecho (o nada se puede correr), o 3 fallos\n    del mismo tipo en la misma pieza.\"\"\""
+   },
+   {
+    "texto_viejo": "        if se_paso_del_tope():\n            return 'PARADO: TOPE DE GASTO (%.2f USD este mes)' % gastado_del_mes()",
+    "texto_nuevo": "        if deepseek_sin_saldo():\n            return 'PARADO: DEEPSEEK SIN SALDO (%.2f USD gastados este mes)' % gastado_del_mes()"
+   }
+  ],
+  "cambio": "Agregar la funcion deepseek_sin_saldo justo despues de se_paso_del_tope, y en bucle cambiar la condicion y el mensaje de parada por tope de gasto a DeepSeek sin saldo, incluido el texto de ayuda.",
+  "codigo": "def deepseek_sin_saldo():\n    \"\"\"True si DeepSeek esta dormido por falta de saldo.\"\"\"\n    from cuerpo import cuotas\n    dormido = cuotas._leer().get('dormidos', {}).get('deepseek')\n    if not dormido:\n        return False\n    motivo = str(dormido.get('motivo', '')).lower()\n    for senal in ('insufficient balance', 'insufficient_quota', 'payment required', '402'):\n        if senal in motivo:\n            return True\n    return False",
+  "vigia": "Un vigia que compruebe que con cuotas._leer() devolviendo un dormido de deepseek con motivo 'insufficient balance' la funcion deepseek_sin_saldo devuelve True, y que bucle devuelve 'PARADO: DEEPSEEK SIN SALDO' en ese caso.",
+  "puede_danar": [
+   "arnes/copia_de_la_orden.py",
+   "cuerpo/codex.py",
+   "vigias/test_vigia_balance.py",
+   "vigias/test_vigia_la_tarea_trabaja_en_su_propia_carpeta.py"
+  ],
+  "preguntas": [],
+  "confianza": "alta",
+  "_fuera_del_paquete": [
+   "codex.py",
+   "copia_de_la_orden.py",
+   "test_vigia_balance.py",
+   "test_vigia_la_tarea_trabaja_en_su_propia_carpeta.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "cuerpo/capataz.py: se_paso_del_tope y TOPE_MES_USD quedan sin uso dentro de bucle; la ley del paquete exige que no se borren y su vigia sigue viva, asi que no es fallo, pero conviene que la vigia del tope se ejecute todavia (si esa vigia solo可达 via bucle, quedaria huerfana).",
+   "cuerpo/capataz.py: no se ve el resto de bucle; si en otro punto del mismo archivo se compara el texto 'PARADO: TOPE DE GASTO', ese vecino queda desalineado (no verificable con este recorte).",
+   "El mensaje de parada sigue imprimiendo gastado_del_mes() junto a 'DEEPSEEK SIN SALDO': es lo pedido literalmente, pero mezcla dos causas distintas en una sola linea."
+  ],
+  "que_falta": [
+   "Confirmar en la entrega que el archivo quedo guardado (ley SIN GUARDAR NO HAY TRABAJO).",
+   "Ejecutar la vigia del tope tras el cambio para probar que sigue verde con se_paso_del_tope huerfana del bucle."
+  ],
+  "resumen_para_el_jefe": "La reparacion hace exactamente lo que pedia el paquete, con los cuatro literales correctos y sin tocar otros archivos: aprobada."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (19502 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (20558 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (20666 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (20774 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

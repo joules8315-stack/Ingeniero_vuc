@@ -1,0 +1,51 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El conftest de vigias aisla varias variables de prueba pero no fija la variable de la ruta del registro de Big Pickle, asi que las pruebas escriben en el registro real.",
+  "archivo": "vigias/conftest.py",
+  "funcion": "_nada_toca_lo_real",
+  "texto_viejo": "    monkeypatch.setenv(\"INGENIERO_CONTADOR_TEST\", str(tmp_path / \".protocolo_bloqueos\"))",
+  "texto_nuevo": "    monkeypatch.setenv(\"INGENIERO_CONTADOR_TEST\", str(tmp_path / \".protocolo_bloqueos\"))\n    # La ruta del registro de Big Pickle tambien es estado REAL: si no se aisla, las pruebas\n    # escriben en el registro de verdad (ley 23).\n    monkeypatch.setenv(\"INGENIERO_REGISTRO_TEST\", str(tmp_path / \".registro_big_pickle\"))",
+  "cambio": "Anadir en _nada_toca_lo_real una linea que fije la variable de entorno de la ruta del registro de Big Pickle a una carpeta temporal, igual que ya se hace con las otras variables de prueba.",
+  "codigo": "    monkeypatch.setenv(\"INGENIERO_REGISTRO_TEST\", str(tmp_path / \".registro_big_pickle\"))",
+  "vigia": "Correr la tanda de vigias y comprobar que el registro real de Big Pickle no crece durante las pruebas (0 lineas nuevas escritas por las pruebas).",
+  "puede_danar": [
+   "arnes/candado_diagnostico.py",
+   "arnes/candado_equipo.py",
+   "arnes/candado_memoria.py",
+   "arnes/candado_prueba_real.py",
+   "arnes/candados_medicion.py",
+   "cuerpo/codex.py"
+  ],
+  "preguntas": [
+   "Cual es el nombre exacto de la variable de entorno que usa Big Pickle para la ruta de su registro?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "candado_diagnostico.py",
+   "candado_equipo.py",
+   "candado_memoria.py",
+   "candado_prueba_real.py",
+   "candados_medicion.py",
+   "codex.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Confianza baja: la propuesta reconoce no tener la certeza del nombre exacto de la variable de entorno. Aunque el programa la da por comprobada, el auditor no ve ese nombre en el material original."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Confirmar que INGENIERO_REGISTRO_TEST es el nombre exacto que usa Big Pickle para su registro (pregunta 1 de la propuesta)."
+  ],
+  "resumen_para_el_jefe": "Cambio correcto por fondo y ubicación, pero queda sin confirmar el nombre exacto de la variable, por lo que no se puede sellar con seguridad."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

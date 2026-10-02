@@ -1,0 +1,37 @@
+{
+  "orden": {
+    "id": "N27-las_dos_vias",
+    "titulo": "Las dos vias por programa: el codigo viaja limpio y la guia va aparte: El programa de las dos vias",
+    "origen": "Julio 2026-10-01",
+    "repara": "Una pieza nueva con una funcion que, dada una orden, arme la GUIA (objetivo, donde = pieza y funciones de la orden, motivo exacto del fallo anterior leido del mensaje de la vigia roja y de los motivos del ultimo rechazo, y lo que no se debe repetir) y el CODIGO (la funcion completa de la pieza, literal, entregada por el mostrador y no por adivinar palabras; si no cabe se parte por funcion, nunca se recorta), y otra funcion que diga si hay mezcla entre las dos vias. La vigia que nace primero cubre las cuatro filas de la tabla de verdad de CONTRATO_LAS_DOS_VIAS (guia aparte y codigo limpio pasa; guia dentro del codigo, codigo dentro de la guia o una sola via, no pasan). Sin IA. Nunca lanza.",
+    "pieza": "arnes/dos_vias.py",
+    "vigia": "vigias/test_vigia_las_dos_vias.py",
+    "razon": "Ley de Julio del 2026-10-01 (CONTRATO_LAS_DOS_VIAS) que ninguna orden llevaba. Medido el 2026-10-01 con una prueba sin IA: con el encargo original de H2 el paquete (23267 letras) no traia el codigo a cambiar; en 58 ordenes abiertas con pieza .py, el paquete trae el codigo nombrado en 31 de 31 cuando el encargo nombra el archivo y en 1 de 3 cuando no; el pit solo manda el texto del encargo y los campos pieza y repara de la orden nunca llegan; y el recorte al tope del cerebro mas pequeno quita codigo que si habia llegado en 27 de 34.",
+    "encargo": "QUE SE REPARA: Una pieza nueva con una funcion que, dada una orden, arme la GUIA (objetivo, donde = pieza y funciones de la orden, motivo exacto del fallo anterior leido del mensaje de la vigia roja y de los motivos del ultimo rechazo, y lo que no se debe repetir) y el CODIGO (la funcion completa de la pieza, literal, entregada por el mostrador y no por adivinar palabras; si no cabe se parte por funcion, nunca se recorta), y otra funcion que diga si hay mezcla entre las dos vias. La vigia que nace primero cubre las cuatro filas de la tabla de verdad de CONTRATO_LAS_DOS_VIAS (guia aparte y codigo limpio pasa; guia dentro del codigo, codigo dentro de la guia o una sola via, no pasan). Sin IA. Nunca lanza.\nCOMO SE REPARA: Una pieza nueva con una funcion que, dada una orden, arme la GUIA (objetivo, donde = pieza y funciones de la orden, motivo exacto del fallo anterior leido del mensaje de la vigia roja y de los motivos del ultimo rechazo, y lo que no se debe repetir) y el CODIGO (la funcion completa de la pieza, literal, entregada por el mostrador y no por adivinar palabras; si no cabe se parte por funcion, nunca se recorta), y otra funcion que diga si hay mezcla entre las dos vias. La vigia que nace primero cubre las cuatro filas de la tabla de verdad de CONTRATO_LAS_DOS_VIAS (guia aparte y codigo limpio pasa; guia dentro del codigo, codigo dentro de la guia o una sola via, no pasan). Sin IA. Nunca lanza.\nDONDE SE REPARA: arnes/dos_vias.py\nPOR QUE SE REPARA: Ley de Julio del 2026-10-01 (CONTRATO_LAS_DOS_VIAS) que ninguna orden llevaba. Medido el 2026-10-01 con una prueba sin IA: con el encargo original de H2 el paquete (23267 letras) no traia el codigo a cambiar; en 58 ordenes abiertas con pieza .py, el paquete trae el codigo nombrado en 31 de 31 cuando el encargo nombra el archivo y en 1 de 3 cuando no; el pit solo manda el texto del encargo y los campos pieza y repara de la orden nunca llegan; y el recorte al tope del cerebro mas pequeno quita codigo que si habia llegado en 27 de 34.",
+    "modo": "IA",
+    "depende": [
+      "V-N27-las_dos_vias"
+    ],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": "",
+    "resultado_esperado": "Cada orden entrega a la IA dos vias separadas: la guia (objetivo, donde, motivo exacto del fallo, que no repetir) y el codigo (la funcion completa de la pieza, literal), nunca mezcladas; un candado frena cualquier mezcla; no hay nada que recortar.",
+    "crear": true
+  },
+  "huella": "3b34d8e0c30535ad",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE CREAR UNA PIEZA NUEVA (marca --crear puesta por Julio).\nAl obrero le llega el encargo de ANALISTA: escribe el documento entero.\nSE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-01_221612_SIN_AUDITAR_dos_vias.py.json\nOBRERO deepseek -> AUDITOR (ninguno)\n  aviso       : GPT-OSS 120B (Groq) no le cabe (22930 letras, aguanta 19042) -> se le salta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (25942 letras, aguanta 19042) -> se le salta\n  aviso       : Gemini 2.5 flash-lite se agoto -> pasa el turno\n  diagnostico : Falta la pieza arnes/dos_vias.py que arma la guia y el codigo por separado desde una orden y vigila las cuatro filas de CONTRATO_LAS_DOS_VIAS sin IA y sin lanzar.\n  toca        : arnes/dos_vias.py funcion ?\n  confianza   : alta\n  VEREDICTO   : SIN_AUDITAR\n  resumen     : el revisor contesto roto; se conserva la propuesta del obrero\n\nEL EQUIPO NO APROBO (SIN_AUDITAR): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-01T22:16:16",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\N27-las_dos_vias_20261001_221616.json"
+  }
+}

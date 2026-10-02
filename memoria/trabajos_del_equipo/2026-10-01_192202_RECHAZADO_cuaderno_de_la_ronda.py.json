@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "groq",
+ "propuesta": {
+  "diagnostico": "El cierre informa de piezas huerfanas recien nacidas (cuaderno_de_la_ronda.py y mostrador.py) sin llamadores reales; el material solo trae fragmentos parciales de mostrador.py y el archivo completo de cuaderno_de_la_ronda.py, pero no hay evidencia de quien las llama ni de su finalidad completa.",
+  "archivo": "arnes/cuaderno_de_la_ronda.py",
+  "funcion": "antes_de_lanzar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO: el material no contiene ningun llamador real de cuaderno_de_la_ronda.py ni de mostrador.py, ni el archivo completo de mostrador.py (solo dos fragmentos: lo_que_pide y _dentro_de_raiz). No se puede determinar la causa raiz ni engancharlas o retirarlas sin ver quien las importa y como se usan.",
+  "codigo": "",
+  "vigia": "NO_ENCONTRADO: no hay vigia en el material que ejecute el camino real de cuaderno_de_la_ronda.py o mostrador.py con un espia puesto en la pieza.",
+  "puede_danar": [
+   "arnes/mostrador.py",
+   "cerebro/piezas.py",
+   "mapa/inventario.py",
+   "vigias/test_vigia_el_mostrador_atiende_lo_que_se_pide.py"
+  ],
+  "preguntas": [
+   "¿Quien importa y llama a arnes/cuaderno_de_la_ronda.py y a arnes/mostrador.py en el codigo real?",
+   "¿Cual es la finalidad declarada de cada una de estas dos piezas y donde esta su contrato o encargo original?",
+   "¿Existe ya una vigia que ejecute el camino real de estas piezas con espia, o hay que crearla?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "test_vigia_el_mostrador_atiende_lo_que_se_pide.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "No se propone ninguna modificación que solucione el diagnóstico; el cambio es inexistente.",
+   "No se solicita el material faltante (arnes/mostrador.py completo y/o vigía correspondiente), incumpliendo la regla de pedir lo que falta.",
+   "Al no aportar solución, no se cumple con el objetivo de reparar o retirar las piezas huérfanas."
+  ],
+  "riesgo_vecinos": [],
+  "que_falta": [
+   "Solicitar y obtener el archivo completo arnes/mostrador.py (y cualquier vigía necesaria) mediante el mecanismo autorizado.",
+   "Implementar la detección de llamadores reales o la eliminación segura de las piezas huérfanas.",
+   "Proveer evidencia de ejecución real (espía) que demuestre que las piezas son llamadas o no."
+  ],
+  "resumen_para_el_jefe": "La propuesta no arregla nada y omite pedir el material faltante, por lo que debe rechazarse."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "vueltas_dadas: 4"
+ ]
+}

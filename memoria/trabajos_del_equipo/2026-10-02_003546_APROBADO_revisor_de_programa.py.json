@@ -1,0 +1,56 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El revisor no tiene la regla que caza monkeypatch.setattr sobre un modulo del proyecto pidiendo un nombre que ese modulo no importa arriba; hay que anadirla al lado de la regla 3b ya existente.",
+  "archivo": "arnes/revisor_de_programa.py",
+  "funcion": "revisar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "                            if not isinstance(_mod_arg, ast.Constant) or not isinstance(_mod_arg.value, str):",
+    "texto_nuevo": "                            if not isinstance(_mod_arg, ast.Constant) or not isinstance(_mod_arg.value, str):\n                                continue\n                            _nom_pedido = _nodo_mp.args[1]\n                            if not isinstance(_nom_pedido, ast.Constant) or not isinstance(_nom_pedido.value, str):\n                                continue\n                            _mod_nombre = _mod_arg.value\n                            _nom_pedido = _nom_pedido.value\n                            _ruta_mod_mp = os.path.join(_dir_mp, *_mod_nombre.split(\".\")) + \".py\"\n                            if not os.path.isfile(_ruta_mod_mp):\n                                continue\n                            try:\n                                with open(_ruta_mod_mp, encoding=\"utf-8-sig\", errors=\"replace\") as _fmod_mp:\n                                    _fuente_mod_mp = _fmod_mp.read()\n                                _arbol_mod_mp = ast.parse(_fuente_mod_mp)\n                            except Exception:\n                                continue\n                            _nombres_mod_mp = set()\n                            for _n_mp in _arbol_mod_mp.body:\n                                if isinstance(_n_mp, ast.Import):\n                                    for _a_mp in _n_mp.names:\n                                        _nombres_mod_mp.add((_a_mp.asname or _a_mp.name).split(\".\")[0])\n                                elif isinstance(_n_mp, ast.ImportFrom):\n                                    for _a_mp in _n_mp.names:\n                                        _nombres_mod_mp.add(_a_mp.asname or _a_mp.name)\n                                elif isinstance(_n_mp, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):\n                                    _nombres_mod_mp.add(_n_mp.name)\n                                elif isinstance(_n_mp, ast.Assign):\n                                    for _t_mp in _n_mp.targets:\n                                        if isinstance(_t_mp, ast.Name):\n                                            _nombres_mod_mp.add(_t_mp.id)\n                            if _nom_pedido not in _nombres_mod_mp:\n                                fallos.append(\n                                    \"MONKEYPATCH A UN NOMBRE QUE EL MODULO NO IMPORTA: la prueba \"\n                                    \"hace monkeypatch.setattr('%s', '%s', ...) pero '%s' no se \"\n                                    \"importa arriba de %s. Ese apartado revienta con \"\n                                    \"AttributeError y la prueba no mediria nada. Hay que apartar \"\n                                    \"la funcion en su propio modulo.\"\n                                    % (_mod_nombre, _nom_pedido, _nom_pedido, _ruta_mod_mp))"
+   }
+  ],
+  "cambio": "Anadir, dentro del bloque 3b que ya recorre los monkeypatch.setattr, la comprobacion de que el nombre pedido aparece entre los imports/definiciones de arriba del modulo del proyecto; si no aparece, se anade el fallo MONKEYPATCH A UN NOMBRE QUE EL MODULO NO IMPORTA. Si el modulo no se puede leer, se calla.",
+  "codigo": "                            if not isinstance(_mod_arg, ast.Constant) or not isinstance(_mod_arg.value, str):\n                                continue\n                            _nom_pedido = _nodo_mp.args[1]\n                            if not isinstance(_nom_pedido, ast.Constant) or not isinstance(_nom_pedido.value, str):\n                                continue\n                            _mod_nombre = _mod_arg.value\n                            _nom_pedido = _nom_pedido.value\n                            _ruta_mod_mp = os.path.join(_dir_mp, *_mod_nombre.split(\".\")) + \".py\"\n                            if not os.path.isfile(_ruta_mod_mp):\n                                continue\n                            try:\n                                with open(_ruta_mod_mp, encoding=\"utf-8-sig\", errors=\"replace\") as _fmod_mp:\n                                    _fuente_mod_mp = _fmod_mp.read()\n                                _arbol_mod_mp = ast.parse(_fuente_mod_mp)\n                            except Exception:\n                                continue\n                            _nombres_mod_mp = set()\n                            for _n_mp in _arbol_mod_mp.body:\n                                if isinstance(_n_mp, ast.Import):\n                                    for _a_mp in _n_mp.names:\n                                        _nombres_mod_mp.add((_a_mp.asname or _a_mp.name).split(\".\")[0])\n                                elif isinstance(_n_mp, ast.ImportFrom):\n                                    for _a_mp in _n_mp.names:\n                                        _nombres_mod_mp.add(_a_mp.asname or _a_mp.name)\n                                elif isinstance(_n_mp, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):\n                                    _nombres_mod_mp.add(_n_mp.name)\n                                elif isinstance(_n_mp, ast.Assign):\n                                    for _t_mp in _n_mp.targets:\n                                        if isinstance(_t_mp, ast.Name):\n                                            _nombres_mod_mp.add(_t_mp.id)\n                            if _nom_pedido not in _nombres_mod_mp:\n                                fallos.append(\n                                    \"MONKEYPATCH A UN NOMBRE QUE EL MODULO NO IMPORTA: la prueba \"\n                                    \"hace monkeypatch.setattr('%s', '%s', ...) pero '%s' no se \"\n                                    \"importa arriba de %s. Ese apartado revienta con \"\n                                    \"AttributeError y la prueba no mediria nada. Hay que apartar \"\n                                    \"la funcion en su propio modulo.\"\n                                    % (_mod_nombre, _nom_pedido, _nom_pedido, _ruta_mod_mp))",
+  "vigia": "Una vigia que llama a revisor_de_programa.revisar con una propuesta cuyo texto_nuevo hace monkeypatch.setattr('shutil', 'rmtree', ...) sobre un modulo del proyecto que no importa rmtree arriba, y comprueba que aparece el fallo MONKEYPATCH A UN NOMBRE QUE EL MODULO NO IMPORTA; y otra que con el nombre si importado arriba comprueba que no aparece ese fallo.",
+  "puede_danar": [
+   "arnes/revisor_de_programa.py",
+   "cuerpo/obrero.py",
+   "arnes/candado_equipo.py",
+   "vigias/test_vigia_el_revisor_de_programa_revisa_cada_trozo.py",
+   "vigias/test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py",
+   "vigias/test_vigia_el_archivo_carga.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "test_vigia_el_archivo_carga.py",
+   "test_vigia_el_revisor_de_programa_revisa_cada_trozo.py",
+   "test_vigia_el_revisor_sabe_lo_que_ya_comprobo_el_programa.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio se limita a añadir la regla 3b dentro de arnes/revisor_de_programa.py, lee el módulo objetivo para comprobar nombres importados/definidos arriba y cumple exactamente lo pedido sin tocar otros archivos."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (38280 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO CARGA: el archivo se queda sin arrancar. Primera razon: EL ARCHIVO NO CARGA: error de sintaxis en la linea 527",
+  "GPT-OSS 120B (Groq) no le cabe (39088 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (39146 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: NO CARGA: el archivo se queda sin arrancar. Primera razon: EL ARCHIVO NO CARGA: error de sintaxis en la linea 529",
+  "GPT-OSS 120B (Groq) no le cabe (39260 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

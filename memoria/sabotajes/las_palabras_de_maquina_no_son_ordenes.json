@@ -1,0 +1,7 @@
+[
+ {
+  "archivo": "arnes/candado_legislar.py",
+  "viejo": "    # (2) si el texto contiene alguna de estas senales de maquina: the user, task title, markdown, tool chatter, codex, catch-up, entonces tampoco es de Julio: return False.\n    senales_maquina = ['the user', 'task title', 'markdown', 'tool chatter', 'codex', 'catch-up']\n    if any(palabra in texto.lower() for palabra in senales_maquina):\n        return False\n    # (3) si el texto trae alguna palabra o forma que solo usa la maquina, tampoco es de Julio: return False.\n    palabras_solo_maquina = ['monkeypatch', 'subprocess', 'typeerror', 'assert', 'tmp_path']\n    if any(palabra in texto.lower() for palabra in palabras_solo_maquina):\n        return False\n    # un nombre pegado a parentesis vacios, como foo(), es codigo, no una orden\n    if re.search(r\"[A-Za-z_][A-Za-z0-9_]*\\(\\)\", texto):\n        return False\n    # una ruta que acabe en punto py es codigo, no una orden\n    if re.search(r\"\\S+\\.py\\b\", texto):\n        return False\n    return True",
+  "nuevo": "    # (2) si el texto contiene alguna de estas senales de maquina: the user, task title, markdown, tool chatter, codex, catch-up, entonces tampoco es de Julio: return False.\n    senales_maquina = ['the user', 'task title', 'markdown', 'tool chatter', 'codex', 'catch-up']\n    if any(palabra in texto.lower() for palabra in senales_maquina):\n        return False\n    return True"
+ }
+]

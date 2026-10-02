@@ -1,0 +1,50 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "Falta el codigo real del perito y del historial de tiempos: sin sus firmas no puedo escribir una prueba que ejecute la funcion y compruebe el tope sacado del historial, asi que pido los dos modulos antes de escribir el archivo.",
+  "archivo": "vigias/test_vigia_el_perito_tiene_tope_corto.py",
+  "texto_nuevo": "",
+  "confianza": "baja"
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "CANDIDATOS_MODULO_PERITO: 'cuerpo.perito', 'cuerpo.forense', 'cuerpo.llamada_perito', 'cuerpo.llamar_perito', 'cuerpo.perito_llamada', 'cuerpo.forense_perito'. El material solo menciona flujos 'estado', 'cerebro', 'julio'. No aparece ningun modulo 'cuerpo' ni ninguno de esos seis nombres.",
+   "CANDIDATOS_FUNCION_PERITO: 'llamar_al_perito', 'preguntar_al_perito', 'consultar_perito', 'llamar_a_claude', etc. Ninguno aparece en el material.",
+   "CANDIDATOS_MODULO_HISTORIAL y CANDIDATOS_FUNCION_HISTORIAL ('cerebro.historial', 'tiempo_esperado', 'tope_de_tempo', 'cuanto_se_le_espera'...). El material solo dice 'la funcion que ya calcula cuanto se le espera a cada cerebro', sin nombre ni ruta.",
+   "Consecuencia: los nombres inventados son el MECANISMO de descubrimiento de la prueba. Si ninguno existe (lo mas probable), _importar_primero lanza un ImportError compuesto de seis intentos y la vigia queda roja ETERNA, aunque la reparacion se haga bien. Eso viola la ley explicita del material: 'pasar cuando la reparacion este hecha'."
+  ],
+  "fallos": [
+   "PRUEBA 4 viola la ley del material 'no mirando el texto del codigo': usa inspect.signature(fn) y hace assert sobre nombres de parametros ('tope'/'historial'). Una reparacion CORRECTA que calcule el tope internamente (llama al historial y listo, sin ningun parametro nuevo) no tiene ni 'tope' ni 'historial' en su firma -> la prueba falla aunque el codigo este perfecto. Si admite **kwargs, tambien falla.",
+   "PRUEBA 4, segundo bloque, esta rota de forma tecnica: el perito falso hace raise TimeoutError INMEDIATO tras0.05 s, asi que la funcion nunca espera ni un segundo en ninguno de los dos casos. t_largo y t_corto valen ~0.05 ambos y el assert t_largo > t_corto es SIEMPRE falso. Prueba garantizada roja con la reparacion hecha. Y ademas el except Exception: pass se come cualquier error real.",
+   "PRUEBAS 2, 3 y 5: el falso perito solo se inyecta si la funcion acepta un callable por parametro ('perito=', 'llamar=' o positional). Si no lo acepta, el bucle intentos_firma cae en su ultimo fallback lambda: fn(expediente), que LLAMA AL PERITO REAL. Tres consecuencias: (a) la prueba queda roja por el motivo equivocado ('llamo al perito 0 veces'); (b) rompe 'sin tocar el estado real' haciendo una llamada de verdad, con coste y potentially colgada; (c) si la funcion acepta **kwargs, el callable se traga en silencio y se vuelve a llamar al Claude de verdad.",
+   "PRUEBAS 2, 3 y 5 comprueban el numero de llamadas a una funcion inyectada, no el comportamiento real del perito. Si la inyeccion es imposible, llamadas['n'] es 0 y el assert falla siempre: prueba inpasable.",
+   "PRUEBAS 3 y 5 juzgan por la CADENA DE TEXTO del retorno ('sin leer', 'siguiente', 'seguir', 'continua'). Eso es mirar el texto, no ejecutar, y ademas PRUEBA 5 acepta 'sin leer' como prueba de que el bucle sigue: 'sin leer' no dice nada de si el bucle avanza. Assert tautologico.",
+   "PRUEBA 1 exige assert tope >= 333. El material da 333 como maximo MEDIDO de una muestra, no como la salida requerida. Si el historial real calcula min(400, p95*2)=372 pasa, pero si hace min(400, mediana*5)=280 falla sin motivo. La ley que hay que exigir es 'sale del historial con techo 400', no 'vale entre 333 y 400'. La docstring incluso afirma como hecho 'El tope del historial con techo 400 s da 333 s', y eso no lo dice el material: es politica inventada.",
+   "PRUEBA 1: 'if resultado is None: raise AssertionError'. Si fn() acepta不带 argumentos y devuelve algo legitimo, o si un TypeError interno (bug real) ocurre, el bucle lo confunde con 'firma incompatible' y pasa al siguiente candidato. Enmascara fallos reales.",
+   "La docstring promete 'el import falla y la prueba queda roja por ese import (que es justo lo que se pide)'. El material permite el error de importar JUSTA ESA pieza. Aqui se intenta importar seis modulos inventados y el ImportError es una lista de seis fallos: no es el import de la pieza, es una apuesta ciega."
+  ],
+  "riesgo_vecinos": [
+   "Coste y tiempo reales: el fallback fn(expediente) de las pruebas 2, 3 y 5 invoca al Claude de verdad. Con el codigo sin reparar son 3 intentos x 600 s = hasta 30 minutos por prueba, y es la misma queja que la vigia queria vigilar.",
+   "Toca estado real: la prueba escribe expediente.json en temporal pero la funcion leida puede marcar el estado del cerebro/orden real si no recibe solo el temporal.",
+   "PRUEBA 4 no verifica nada util cuando la firma no trae historial (el assert previo ya fallo, pero el bloque de timing es codigo muerto que no aporta). Y cuando si trae historial, su unica comparacion de tiempos es la que ya se vio rota.",
+   "except Exception: pass en PRUEBA 4 y except TypeError en los bucles de firma convierten errores legitimos en 'firma no probada', con lo que una reparacion con un bug real puede quedar verde."
+  ],
+  "que_falta": [
+   "Leer los dos modulos reales (el que llama al perito y el que calcula el tiempo de espera por cerebro) y usar sus rutas y firmas reales. El propio material avisa 'Puede faltar algun archivo entero. NO adivines lo que no ves' y prescribe la salida NECESITO_LEER. Adivinar seis nombres no es una prueba, es una ruleta.",
+   "Una costura probada para sustituir al perito sin cambiar la firma de produccion (monkeypatch del simbolo que la funcion usa por dentro), en vez de confiar en que exista un parametro inyectable que nadie pidio.",
+   "Comprobar el 'sin leer' por efecto observable (el estado del expediente pasa a sin leer / la funcion devuelve un estado consultable), no por buscar la palabra 'sin leer' en el texto devuelto.",
+   "Comprobar el tope saliendo del historial EJECUTANDO con reloj controlado o con un historial de tope diminuto y verificando que la funcion corta antes de ese limite, en vez de comparar dos duraciones de una excepcion instantanea.",
+   "Una asercion sobre la ley que si se pide: que el valor usado sea el que devuelve la funcion del historial (comparacion por identidad/igualdad contra lo que devuelve esa funcion en el mismo momento) y que no exceda 400."
+  ],
+  "resumen_para_el_jefe": "La prueba es impasable aunque la reparacion se haga bien: descubre el codigo adivinando seis nombres de modulo que no existen en el material, y ademas se apoya en un parametro inyectable que nadie pidio y en un assert de tiempos que da ~0,05 s en los dos casos y siempre falla; ademas viola la ley de 'no mirar el texto del codigo' con inspect.signature. Lo correcto es pedir con NECESITO_LEIR los dos modulos reales (el del perito y el del historial) y rehacer la prueba contra sus firmas reales."
+ },
+ "avisos": [
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO trae texto_nuevo (el pedido llego incompleto)) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

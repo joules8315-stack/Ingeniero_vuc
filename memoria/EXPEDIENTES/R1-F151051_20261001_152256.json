@@ -1,0 +1,28 @@
+{
+  "orden": {
+    "repara": "que cuando el encargo no quepa en el cerebro mas chico, el pasillo NO lo recorte a ciegas a min(_capas); debe entregarlo entero al cerebro que lo aguanta (incluido DeepSeek de pago) o partirlo en trozos coherentes que conserven la marca de que archivo se toca, y nunca entregar un recorte que pierda esa marca",
+    "pieza": "cuerpo/obrero.py",
+    "razon": "el recorte a 19042 dejo la propuesta 'a mitad (no dice que archivo toca)' y el unico que aguantaba los 30798 enteros (DeepSeek) paso turno por lento; por eso R1 se archivo SIN_VEREDICTO sin que nadie tocara vecinas.py. Es causa distinta de la orden R1 (que iba sobre arnes/vecinas.py): el fallo esta en el reparto del encargo, no en la pieza que se queria arreglar",
+    "encargo": "En cuerpo/obrero.py, donde el pasillo recorta el prompt al tamano del cerebro mas chico (el renglon _tope_pasillo = min(_capas)): si el encargo no cabe en ese tope, NO se entrega recortado a los gratis. Primero se ofrece ENTERO al cerebro que lo aguanta (el de pago), aunque sea lento; y solo si de verdad no cabe en nadie, se parte en trozos coherentes que cada uno conserven que archivo hay que tocar y el objetivo, en vez de cortar a ciegas. Nunca mandar una propuesta que, por el corte, no pueda decir que archivo toca. Dejarlo verde con una vigia que compruebe: un encargo mayor que el cerebro mas chico nunca se entrega recortado perdiendo la marca de archivo. El ancla es un solo renglon unico: _tope_pasillo = min(_capas)",
+    "modo": "PROGRAMA",
+    "id": "R1-F151051",
+    "origen": "forense:R1",
+    "depende": [],
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0
+  },
+  "huella": "c66de52ce9412d13",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-01_152252_DUDOSO_obrero.py.json\nOBRERO groq -> AUDITOR bigpickle\n  aviso       : el pasillo recorto el encargo de 31340 a 17739 letras para que le quepa a un cerebro gratis (tope medido: 19042)\n  aviso       : DeepSeek (SE PAGA) tardo demasiado -> pasa el turno\n  aviso       : se pidio generar a deepseek y no esta disponible: contesto groq\n  diagnostico : Recorta el prompt antes de intentar usar cerebro de pago\n  toca        : cuerpo/obrero.py funcion _preguntar_con_relevo\n  confianza   : alta\n  VEREDICTO   : DUDOSO\n  fallo       : El texto_nuevo SI aparece literal en el material (cuerpo/obrero.py, bloque `_capas`/`_tope_pasillo` dentro de `_preguntar_con_relevo`), asi que la ubicacion es correcta; no hay sintaxis inventada ni referencias a archivos/funciones inexistentes.\n  fallo       : Fallo de fondo 1: el comentario afirma que 'el flujo posterior ... dividira el encargo', pero el material solo muestra que en el caso de 'no quedo nadie' se AVISA ('se avisa claro de que hay que PARTIR el trabajo'). No hay ninguna linea de codigo que trocee. Antes, el recorte garantizaba entrega al menos al gratis mas chico; ahora, un encargo mayor que TODOS (incluido el de pago) cae en una rama que solo deja un aviso. Si el que parte no es codigo de este flujo, ese encargo se queda sin entregar.\n  fallo       : Fallo de fondo 2: el encargo pide explicitamente la mitad que falta: 'se parte en trozos coherentes que cada uno conserven que archivo hay que tocar y el objetivo'. Eso no esta en el cambio. Quitar el recorte es correcto; dejar el recorte sin la parte coherente deja la garantia de 'nunca perder la marca de archivo' depending de un第三 actor que nadie nombro.\n  fallo       : Menor: `if _capas:` + `_tope_pasillo = min(_capas)` se quedan calculando un valor que ya no usa nadie (codigo muerto) y tres lineas de comentario不做 nada. No rompe nada, pero es ruido que el propio paquete pide no dejar ('el ancla es un solo renglon unico').\n  resumen     : Quitar el recorte prematuro es la direccion correcta y el texto ancla existe, pero la reparacion se queda en la mitad: no implementa el troceado coherente que exige el encargo y deja el caso 'no cabe en nadie'depending de un flujo que el material no muestra; aprobar solo si se acepta ese hueco o se rechaza pidiendo el troceado.\n\nEL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-01T15:22:56",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no contesto en 600 s",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R1-F151051_20261001_152256.json"
+  }
+}

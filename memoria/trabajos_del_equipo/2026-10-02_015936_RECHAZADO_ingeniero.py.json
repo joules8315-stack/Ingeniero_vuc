@@ -1,0 +1,67 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El comando equipo imprime el veredicto antes de guardar la llave del trabajo pagado, y el print muere con UnicodeEncodeError en consola cp1252, perdiendo el trabajo ya pagado.",
+  "archivo": "ingeniero.py",
+  "funcion": "main",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "        # PRIMERO SE GUARDA, DESPUES SE ENSENA (fallo real 2026-08-25).\n        # Antes se imprimia justo aqui y la llave se guardaba al final. El equipo contesto, el\n        # print murio por un caracter que la consola de Windows no sabia dibujar, y el trabajo YA\n        # PAGADO se perdio entero: no se guardo nada y hubo que volver a llamar. Lo que cuesta\n        # dinero se asegura ANTES de ensenarlo. Mostrar es lo ultimo y ya no puede tumbar nada.\n        if \"_error\" in res:\n            print(_o.veredicto_corto(res))\n            return 1",
+    "texto_nuevo": "        # PRIMERO SE GUARDA, DESPUES SE ENSENA (fallo real 2026-08-25).\n        # Antes se imprimia justo aqui y la llave se guardaba al final. El equipo contesto, el\n        # print murio por un caracter que la consola de Windows no sabia dibujar, y el trabajo YA\n        # PAGADO se perdio entero: no se guardo nada y hubo que volver a llamar. Lo que cuesta\n        # dinero se asegura ANTES de ensenarlo. Mostrar es lo ultimo y ya no puede tumbar nada.\n        if \"_error\" in res:\n            try:\n                print(_o.veredicto_corto(res))\n            except Exception as _e:\n                print(\"(el veredicto llego, pero no se pudo mostrar entero: %s)\" % _e)\n            return 1"
+   },
+   {
+    "texto_viejo": "        # Ya esta a salvo. AHORA se ensena, y si mostrar falla, no se pierde nada.\n        try:\n            print(_o.veredicto_corto(res))\n        except Exception as _e:\n            print(\"(el veredicto llego y quedo guardado, pero no se pudo mostrar entero: %s)\"",
+    "texto_nuevo": "        # Ya esta a salvo. AHORA se ensena, y si mostrar falla, no se pierde nada.\n        try:\n            print(_o.veredicto_corto(res))\n        except Exception as _e:\n            print(\"(el veredicto llego y quedo guardado, pero no se pudo mostrar entero: %s)\" % _e)"
+   }
+  ],
+  "cambio": "En el comando equipo de main(): (1) cuando res trae '_error', envolver el print del veredicto en try/except para que un caracter que la consola cp1252 no pueda dibujar no tumbe el mando; (2) cerrar el print del bloque final con '% _e' para que el mensaje de respaldo no vuelva a morir por el mismo motivo. La llave ya se guarda antes de imprimir (guardar_veredicto va antes del print final), asi que el trabajo pagado queda a salvo aunque el print falle.",
+  "codigo": "        if \"_error\" in res:\n            try:\n                print(_o.veredicto_corto(res))\n            except Exception as _e:\n                print(\"(el veredicto llego, pero no se pudo mostrar entero: %s)\" % _e)\n            return 1",
+  "vigia": "vigias/test_vigia_equipo_sirve.py: lanzar el comando equipo con una respuesta que traiga un caracter no representable en cp1252 (p.ej. '\\u202f') y comprobar que (a) el mando no muere con UnicodeEncodeError, (b) el veredicto queda guardado en disco (guardar_veredicto se ejecuto) y (c) el mensaje de respaldo se imprime sin volver a fallar.",
+  "puede_danar": [
+   "arnes/candado_equipo.py",
+   "arnes/candado_terminal.py",
+   "vigias/test_vigia_equipo_sirve.py"
+  ],
+  "preguntas": [],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "candado_equipo.py",
+   "candado_terminal.py",
+   "test_vigia_equipo_sirve.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "No hace lo pedido en su mecanica principal: el encargo dice 'al imprimir use un REEMPLAZO para los caracteres que la consola no pueda mostrar'. Lo que trae es try/except, que no reemplaza nada: el veredicto sigue sin verse y solo se sustituye por un mensaje generico. El caracter malo no se dibuja con sustitucion, se pierde el texto entero.",
+   "En la rama '_error' el parche empeora el caso que mas duele tragar: se captura la excepcion y se imprime '(el veredicto llego, pero no se pudo mostrar entero: %s)', o sea se tira el motivo real del fallo y aun asi se devuelve 1. Una vigia roja que se queda muda es peor que una que muere ruidosa.",
+   "El except del bloque final tampoco esta protegido: su propio texto pasa por el mismo print cp1252. Solo es seguro por accidente (el repr de UnicodeEncodeError sale ASCII escapado), no por diseno.",
+   "El par de nivel superior 'texto_viejo'/'texto_nuevo' viene VACIO (tambien en 'archivo' no hay problema, pero el par si). Todo el parche vive dentro de 'cambios'. Si el consumidor aplica el par de arriba, no aplica nada y se da por reparado sin reparacion.",
+   "La primera mitad del diagnostico (imprimir antes de guardar la llave) no se toca ni se demuestra: en el bloque '_error' que se cita no aparece ninguna llamada a guardar, y la afirmacion 'guardar_veredicto va antes del print final' no tiene ningun texto que la respalde en el material."
+  ],
+  "riesgo_vecinos": [
+   "arnes/candado_equipo.py: si el veredicto de error llega vacio o con el motivo tapado, el candado ve un fallo sin diagnostico y no puede distinguir 'equipo caido' de 'error de codificacion'.",
+   "vigias/test_vigia_equipo_sirve.py: una prueba que verifique que el veredicto llego entero con un caracter \\u202f pasara con el print de respaldo pero sin el veredicto; el fallo se camufla de exito parcial."
+  ],
+  "que_falta": [
+   "Reconfigurar la salida con reemplazo de errores antes de imprimir (errors='replace' sobre stdout/stderr o equivalente), que es lo que el encargo nombra explicitamente.",
+   "El texto real de la llamada de guardado y la prueba de que ocurre ANTES de cualquier print en las DOS ramas (error y final).",
+   "Rellenar texto_viejo/texto_nuevo de nivel superior con el bloque real."
+  ],
+  "resumen_para_el_jefe": "Rechazado: el obrero esquivo el fallo en vez de taparlo — pidio un 'reemplazo' de caracteres y entrego un try/except que ademas se come el texto del veredicto y deja a la rama de error sin diagnostico, y el parche de nivel superior va vacio."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (36352 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (37239 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (37424 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (37532 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

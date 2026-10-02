@@ -1,0 +1,33 @@
+{
+  "orden": {
+    "id": "R6a",
+    "titulo": "El pit corre dos piezas distintas a la vez (la prueba que lo exige ya existe y esta roja)",
+    "pieza": "cuerpo/capataz.py",
+    "vigia": "vigias/test_vigia_el_loop_del_pit.py",
+    "encargo": "Su caso test_dos_piezas_distintas_corren_a_la_vez espera que dos ordenes de piezas distintas corran al mismo tiempo; hoy en_paralelo vale 1 en cuerpo/capataz.py y por eso la barrera de dos se rompe y la orden sale fallida. Se pone verde cuando entre R6: cada orden en su propia copia temporal y en_paralelo por encima de 1. No se toca esta prueba para ponerla verde a la fuerza.",
+    "origen": "medido el 2026-09-27 al reparar R5: es una roja anterior, no la rompio R5",
+    "repara": "que quede declarado por que esa prueba esta roja y que no frene el guardado de otros trabajos",
+    "razon": "una roja sin dueno hace que el guardia tire trabajo aprobado; es el fallo mas repetido de la herramienta",
+    "depende": [],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "2f854073afd4bdc1",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-01_222440_RECHAZADO_capataz.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (20525 letras, aguanta 19042) -> se le salta\n  aviso       : DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (20991 letras, aguanta 19042) -> se le salta\n  diagnostico : en cuerpo/capataz.py la funcion correr_una_orden ya hace copia por orden, pero no existe ni se usa 'en_paralelo' y por eso dos ordenes de piezas distintas no corren a la vez.\n  toca        : cuerpo/capataz.py funcion correr_una_orden\n  confianza   : baja\n  PREGUNTA_REQUERIDA: Quien llama a correr_una_orden y con que valor de en_paralelo debe hacerlo para que dos ordenes de piezas distintas corran a la vez?\n  VEREDICTO   : RECHAZADO\n  fallo       : El parámetro en_paralelo se añade a la firma pero NO se usa en ninguna línea del cuerpo: el texto_viejo y el texto_nuevo de correr_una_orden son idénticos salvo 'en_paralelo=1' en la def. Es código muerto.\n  fallo       : No se implementa paralelismo en ninguna parte: no hay hilo, pool, lote ni bucle que lance dos órdenes a la vez. Diagnosticar 'no existe ni se usa en_paralelo' y responder poniendo la palabra en la firma no ataca la causa.\n  fallo       : La constante EN_PARALELO = 2 queda huérfana: el valor por defecto del parámetro sigue siendo 1 y ningún punto de despacho la lee. La barrera de dos que rompe la prueba sigue rota.\n  fallo       : No se actualiza ni identifica al llamador que debería pasar en_paralelo=EN_PARALELO. La propia propuesta lo admite en 'preguntas' y baja la confianza a 'baja': se entrega Knowing que falta la pieza que hace el trabajo, y aun así se sella.\n  resumen     : Anade en_paralelo a la firma y una constante EN_PARALELO=2, pero no las usa: el cuerpo no cambia, nadie pasa el valor y no hay codigo que lance dos ordenes a la vez, asi que la prueba sigue roja; decia el mismo en sus preguntas y debio pedir el archivo del llamador.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-01T22:24:41",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R6a_20261001_222441.json"
+  }
+}

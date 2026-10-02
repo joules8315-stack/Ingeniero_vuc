@@ -1,0 +1,54 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En arnes/recoger_los_pedazos.py, la funcion recoger devuelve la copia apartada a su sitio sin comprobar antes si esa copia es VIEJA comparando la fecha del ultimo guardado en git con la fecha de la copia apartada.",
+  "archivo": "arnes/recoger_los_pedazos.py",
+  "funcion": "recoger",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "import json\nimport os\nimport shutil",
+    "texto_nuevo": "import json\nimport os\nimport shutil\nimport subprocess"
+   },
+   {
+    "texto_viejo": "    origen = os.path.join(_carpeta_sin_revisar(raiz), nombre)\n    if not os.path.isfile(origen):\n        return {\n            \"ok\": False,\n            \"destino\": destino,\n            \"razon\": \"No existe la copia apartada '\" + str(nombre) + \"' en trabajos_sin_revisar.\",\n        }\n\n    try:",
+    "texto_nuevo": "    origen = os.path.join(_carpeta_sin_revisar(raiz), nombre)\n    if not os.path.isfile(origen):\n        return {\n            \"ok\": False,\n            \"destino\": destino,\n            \"razon\": \"No existe la copia apartada '\" + str(nombre) + \"' en trabajos_sin_revisar.\",\n        }\n\n    if _es_vieja(raiz, destino, origen):\n        return {\n            \"ok\": False,\n            \"destino\": destino,\n            \"razon\": (\n                \"La copia apartada '\"\n                + str(nombre)\n                + \"' es de antes del ultimo guardado en git, asi que no se toca nada.\"\n            ),\n        }\n\n    try:"
+   }
+  ],
+  "cambio": "Anadir la comprobacion de copia VIEJA antes de devolver la copia a su sitio: preguntar a git la fecha del ultimo guardado del archivo destino con git log -1 y formato de fecha en segundos, y si ese ultimo guardado es mas nuevo que la fecha de la copia apartada, no devolverla y contestar que no con esa razon. Si git no contesta, devolver como hoy. Nunca borrar nada.",
+  "codigo": "import subprocess\n\n\ndef _fecha_de_la_copia(ruta):\n    \"\"\"Devuelve la fecha de ultimo cambio del archivo en segundos, o None si no se puede.\"\"\"\n    try:\n        return os.path.getmtime(ruta)\n    except OSError:\n        return None\n\n\ndef _fecha_del_ultimo_guardado_en_git(raiz, destino):\n    \"\"\"Pregunta a git la fecha del ultimo guardado del archivo, en segundos.\n\n    Devuelve None si git no contesta o falla. Nunca revienta.\n    \"\"\"\n    try:\n        resultado = subprocess.run(\n            [\"git\", \"log\", \"-1\", \"--format=%ct\", \"--\", destino],\n            cwd=raiz,\n            capture_output=True,\n            text=True,\n            timeout=10,\n        )\n    except (OSError, subprocess.SubprocessError):\n        return None\n    if resultado.returncode != 0:\n        return None\n    salida = (resultado.stdout or \"\").strip()\n    if not salida:\n        return None\n    try:\n        return int(salida)\n    except ValueError:\n        return None\n\n\ndef _es_vieja(raiz, destino, origen):\n    \"\"\"Dice si la copia apartada es de antes del ultimo guardado en git.\n\n    Compara la fecha del ultimo guardado en git del archivo destino con la fecha de la\n    copia apartada. Si git no contesta, devuelve False (se devuelve como hoy).\n    \"\"\"\n    fecha_git = _fecha_del_ultimo_guardado_en_git(raiz, destino)\n    if fecha_git is None:\n        return False\n    fecha_copia = _fecha_de_la_copia(origen)\n    if fecha_copia is None:\n        return False\n    return fecha_git > fecha_copia",
+  "vigia": "vigias/test_vigia_recoger_los_pedazos.py: comprobar que cuando el ultimo guardado en git del archivo destino es mas nuevo que la fecha de la copia apartada, recoger devuelve ok en falso con la razon de que la copia es vieja y no se toca nada; y que cuando git no contesta, recoger devuelve la copia como hoy.",
+  "puede_danar": [
+   "arnes/recoger_los_pedazos.py",
+   "vigias/test_vigia_recoger_los_pedazos.py"
+  ],
+  "preguntas": [
+   "Como se obtiene la fecha de la copia apartada: con os.path.getmtime del archivo en trabajos_sin_revisar, o con otra fuente (por ejemplo la fecha guardada en el aprobado)?"
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "test_vigia_recoger_los_pedazos.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Usa os.path.getmtime(origen) como 'fecha de la copia apartada', pero el material deja una pregunta abierta y directa: ¿es esa la fuente correcta o debe usarse la fecha guardada en el aprobado? El cambio asume mtime sin resolver esa duda, por lo que la condicion puede no coincidir con lo que se probo antes."
+  ],
+  "riesgo_vecinos": [
+   "Solo anade codigo nuevo en arnes/recoger_los_pedazos.py. No edita otros archivos. Riesgo bajo si se respeta estrictamente que no se toca nada mas."
+  ],
+  "que_falta": [
+   "Confirmar la fuente exacta de la fecha de la copia apartada (getmtime vs dato del aprobado) para asegurar que el criterio de 'copia vieja' es el mismo que se uso cuando se detecto el problema."
+  ],
+  "resumen_para_el_jefe": "La logica sigue el diagnostico y respeta 'nunca borrar, si git no contesta devuelve como hoy', pero queda sin aclarar la fuente de la fecha de la copia apartada, lo que impide cerrar el fallo con seguridad."
+ },
+ "avisos": [
+  "vueltas_dadas: 1"
+ ]
+}

@@ -1,0 +1,94 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "El guardia decide por la lista .rojas_conocidas.json (que el encargo prohibe tocar) y por si la corrida fue exactamente ['vigias/'], en vez de guardar el color de antes de TODAS las vigias que corrieron en memoria/.colores_de_antes.json y frenar solo la roja que antes figuraba verde.",
+  "archivo": "arnes/guardia_de_guardado.py",
+  "funcion": "_vigias",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "    conocidas_de_antes = []\n    try:\n        ruta_conocidas = os.path.join(raiz, \"memoria\", \".rojas_conocidas.json\")\n        with open(ruta_conocidas, encoding=\"utf-8\") as f:\n            leidas = json.load(f)\n        if isinstance(leidas, list):\n            conocidas_de_antes = leidas\n    except Exception:\n        conocidas_de_antes = []\n    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, list(esperando), conocidas_de_antes)",
+    "texto_nuevo": "    # EL COLOR DE ANTES (2026-10-02): se guarda el color de CADA vigia que corrio\n    # (verdes y rojas) en memoria/.colores_de_antes.json, ruta -> 'verde' o 'roja'.\n    # Una roja de ahora solo frena si en ese archivo figuraba como VERDE: las rojas\n    # que ya estaban rojas antes no frenan. No se toca .rojas_conocidas.json.\n    colores_de_antes = {}\n    try:\n        ruta_colores = os.path.join(raiz, \"memoria\", \".colores_de_antes.json\")\n        with open(ruta_colores, encoding=\"utf-8\") as f:\n            leidos = json.load(f)\n        if isinstance(leidos, dict):\n            colores_de_antes = leidos\n    except Exception:\n        colores_de_antes = {}\n    guardados_que_frenan = rojas_que_frenan(archivos_rojos, guardados, list(esperando), colores_de_antes)"
+   },
+   {
+    "texto_viejo": "    # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.\n    try:\n        ruta_conocidas = os.path.join(raiz, \"memoria\", \".rojas_conocidas.json\")\n        os.makedirs(os.path.dirname(ruta_conocidas), exist_ok=True)\n        # Si la corrida fue la bateria COMPLETA (la lista objetivo es la carpeta de vigias,\n        # no una lista de archivos concretos), una corrida completa ya lo sabe todo: se\n        # apuntan solo las rojas de ahora. Si la corrida fue de unos pocos archivos, se\n        # apunta la UNION de lo que ya habia y las rojas de ahora, sin repetidos y en\n        # orden alfabetico, para no perder lo que esa corrida ni siquiera probo.\n        if objetivo == [\"vigias/\"]:\n            a_apuntar = list(archivos_rojos)\n        else:\n            a_apuntar = sorted(set(conocidas_de_antes) | set(archivos_rojos))\n        with open(ruta_conocidas, \"w\", encoding=\"utf-8\") as f:\n            json.dump(a_apuntar, f)\n    except Exception:\n        pass",
+    "texto_nuevo": "    # Todos los rojos son nuevos o esperan su arreglo: dejar pasar con aviso.\n    # Se actualiza el color de antes SOLO si ningun grupo se corto por tiempo: una\n    # corrida cortada no sabe el color de lo que no llego a correr. Se FUSIONA con lo\n    # anterior: lo que no corrio ahora conserva su color. Se guardan TODAS las vigias\n    # que corrieron (verdes y rojas), no solo las rojas.\n    hubo_corte = False\n    for linea in salida.splitlines():\n        if linea.strip().startswith(\"bateria en paralelo: grupo cortado por tiempo:\"):\n            hubo_corte = True\n            break\n    if not hubo_corte and ultima:\n        partes = ultima[0].strip().split()\n        if (len(partes) >= 9\n                and partes[0] == \"bateria\"\n                and partes[1] == \"en\"\n                and partes[2] == \"paralelo:\"\n                and partes[-3:] == [\"cortados\", \"por\", \"tiempo\"]):\n            try:\n                if int(partes[-4]) > 0:\n                    hubo_corte = True\n            except ValueError:\n                pass\n    if not hubo_corte:\n        try:\n            ruta_colores = os.path.join(raiz, \"memoria\", \".colores_de_antes.json\")\n            os.makedirs(os.path.dirname(ruta_colores), exist_ok=True)\n            colores_nuevos = dict(colores_de_antes)\n            for linea in salida.splitlines():\n                linea = linea.strip()\n                if linea.startswith((\"PASSED\", \"FAILED\", \"ERROR\")):\n                    archivo = linea.split(\"::\")[0].strip()\n                    for prefijo in (\"PASSED\", \"FAILED\", \"ERROR\"):\n                        if archivo.startswith(prefijo):\n                            archivo = archivo[len(prefijo):].strip()\n                            break\n                    archivo = archivo.split(\" - \")[0].strip()\n                    archivo = archivo.replace(\"\\\\\", \"/\")\n                    if not archivo:\n                        continue\n                    if linea.startswith(\"PASSED\"):\n                        colores_nuevos[archivo] = \"verde\"\n                    else:\n                        colores_nuevos[archivo] = \"roja\"\n            with open(ruta_colores, \"w\", encoding=\"utf-8\") as f:\n                json.dump(colores_nuevos, f)\n        except Exception:\n            pass"
+   },
+   {
+    "texto_viejo": "    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando] + [a for a in guardados if a in conocidas_de_antes and a not in esperando])",
+    "texto_nuevo": "    detalle = \"; \".join(nuevos + [a for a in guardados if a in esperando] + [a for a in guardados if colores_de_antes.get(a) == \"roja\" and a not in esperando])"
+   },
+   {
+    "texto_viejo": "def rojas_que_frenan(rojas_ahora, guardadas, declaradas, conocidas_de_antes):\n    \"\"\"Devuelve las rojas que SI frenan el guardado, en el orden de rojas_ahora.\n\n    Fallo del 2026-09-25: el guardia tiro tres trabajos buenos el mismo dia\n    porque 29 pruebas ya estaban rojas desde antes. Es el fallo mas repetido\n    de la herramienta, 82 veces, y dejo 14 trabajos aprobados apartados.\n\n    Reglas:\n    - Una roja que no esta en guardadas es nueva y no frena.\n    - Una roja guardada que esta en declaradas no frena.\n    - Una roja guardada que esta en conocidas_de_antes no frena.\n    - Cualquier otra roja guardada si frena.\n    - Si algo llega vacio o no es lista, se trata como lista vacia.\n    \"\"\"\n    def _como_lista(x):\n        return x if isinstance(x, list) else []\n\n    rojas_ahora = _como_lista(rojas_ahora)\n    guardadas = _como_lista(guardadas)\n    declaradas = _como_lista(declaradas)\n    conocidas_de_antes = _como_lista(conocidas_de_antes)\n\n    frenan = []\n    for roja in rojas_ahora:\n        if roja not in guardadas:\n            continue\n        if roja in declaradas:\n            continue\n        if roja in conocidas_de_antes:\n            continue\n        frenan.append(roja)\n    return frenan",
+    "texto_nuevo": "def rojas_que_frenan(rojas_ahora, guardadas, declaradas, colores_de_antes):\n    \"\"\"Devuelve las rojas que SI frenan el guardado, en el orden de rojas_ahora.\n\n    Fallo del 2026-09-25: el guardia tiro tres trabajos buenos el mismo dia\n    porque 29 pruebas ya estaban rojas desde antes. Es el fallo mas repetido\n    de la herramienta, 82 veces, y dejo 14 trabajos aprobados apartados.\n\n    Reglas (2026-10-02, R25-el-guardado-compara-el-color):\n    - Una roja que no esta en guardadas es nueva y no frena.\n    - Una roja guardada que esta en declaradas no frena.\n    - Una roja guardada que en colores_de_antes figura como 'roja' no frena:\n      ya estaba roja antes del cambio.\n    - Una roja guardada que en colores_de_antes figura como 'verde' SI frena:\n      estaba verde y el cambio la rompio.\n    - Una roja guardada que NO figura en colores_de_antes SI frena: no se sabe\n      su color de antes y no se deja pasar a ciegas.\n    - Si algo llega vacio o no es lista/dict, se trata como vacio.\n    \"\"\"\n    def _como_lista(x):\n        return x if isinstance(x, list) else []\n\n    rojas_ahora = _como_lista(rojas_ahora)\n    guardadas = _como_lista(guardadas)\n    declaradas = _como_lista(declaradas)\n    if not isinstance(colores_de_antes, dict):\n        colores_de_antes = {}\n\n    frenan = []\n    for roja in rojas_ahora:\n        if roja not in guardadas:\n            continue\n        if roja in declaradas:\n            continue\n        if colores_de_antes.get(roja) == \"roja\":\n            continue\n        frenan.append(roja)\n    return frenan"
+   }
+  ],
+  "cambio": "En _vigias: leer memoria/.colores_de_antes.json (dict ruta->'verde'/'roja') en vez de .rojas_conocidas.json, pasarlo a rojas_que_frenan, y actualizarlo SOLO si ningun grupo se corto por tiempo, fusionando con lo anterior y guardando TODAS las vigias que corrieron (verdes y rojas). En rojas_que_frenan: frenar una roja guardada solo si en colores_de_antes figura como 'verde' (o no figura); si figura 'roja', no frena.",
+  "codigo": "def rojas_que_frenan(rojas_ahora, guardadas, declaradas, colores_de_antes):\n    def _como_lista(x):\n        return x if isinstance(x, list) else []\n    rojas_ahora = _como_lista(rojas_ahora)\n    guardadas = _como_lista(guardadas)\n    declaradas = _como_lista(declaradas)\n    if not isinstance(colores_de_antes, dict):\n        colores_de_antes = {}\n    frenan = []\n    for roja in rojas_ahora:\n        if roja not in guardadas:\n            continue\n        if roja in declaradas:\n            continue\n        if colores_de_antes.get(roja) == \"roja\":\n            continue\n        frenan.append(roja)\n    return frenan",
+  "vigia": "vigias/test_vigia_el_guardado_compara_el_color.py (llama a rojas_que_frenan con la roja ajena en conocidas_de_antes/colores_de_antes y exige que NO frene; y con una roja nueva que no estaba antes y exige que SI frene).",
+  "puede_danar": [
+   "arnes/bateria_en_paralelo.py",
+   "arnes/turno_de_guardado.py",
+   "arnes/vecinas.py",
+   "vigias/test_vigia_el_guardado_dice_cuando_no_pudo_probar.py",
+   "vigias/test_vigia_el_guardado_dice_que_roja_lo_frena.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_no_se_cuelga.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [
+   "El material no muestra el cuerpo completo de vigias/test_vigia_el_guardado_compara_el_color.py (solo el encabezado y la contraprueba). ¿La firma exacta que espera es rojas_que_frenan(rojas_ahora, guardadas, declaradas, colores_de_antes) con el cuarto argumento como dict ruta->'verde'/'roja', o espera otro nombre/forma para ese cuarto argumento?",
+   "El material no muestra como bateria_en_paralelo.py imprime las lineas PASSED/FAILED/ERROR en su salida. ¿El formato es 'PASSED vigias/test_x.py::test_y' y 'FAILED vigias/test_x.py::test_y - ...' como en pytest -q, o usa otro prefijo? Sin eso, el parseo de verdes puede no encontrar nada."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "bateria_en_paralelo.py",
+   "test_vigia_el_guardado_dice_cuando_no_pudo_probar.py",
+   "test_vigia_el_guardado_dice_que_roja_lo_frena.py",
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_no_se_cuelga.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "turno_de_guardado.py",
+   "vecinas.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "DUDOSO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [
+   "Asimetria en las claves: al guardar se normaliza el nombre a '/' (archivo.replace('\\\\','/')), pero la busqueda se hace con `colores_de_antes.get(roja)` sobre `roja` tal cual viene de archivos_rojos/guardados, sin normalizar. En win32 ese valor suele llevar backslash, asi que la clave guardada nunca casa con la roja consultada y TODAS las rojas guardadas frenan: justo el fallo que se queria quitar.",
+   "El formato de las lineas PASSED/FAILED/ERROR y el del marcador de corte ('grupo cortado por tiempo:' / 'N grupos cortados por tiempo') no estan en el material y el propio obrero lo admite en 'preguntas'. Si el parseo no encaja, colores_nuevos sale igual a colores_de_antes y el archivo se reescribe sin nada nuevo: el estado se queda congelado y toda roja que estaba 'verde' frena para siempre, sin que nada avise.",
+   "Se borra por completo la lectura y la escritura de .rojas_conocidas.json. La orden decia 'no cambiar la lista', y el efecto no es neutro: en la PRIMERA corrida tras el cambio .colores_de_antes.json no existe, el dict llega vacio y por regla implementada ('si no figura, SI frena') reaparecen de golpe todas las rojas que la lista ya tenia como conocidas. Es decir, se reintroduce la R25 que motivationa el encargo (trabajos buenos apartados) en forma de rafaga unica.",
+   "Se afirma en el campo 'vigia' lo que hace test_vigia_el_guardado_compara_el_color.py (que llama a rojas_que_frenan con la roja ajena y exige que no frene, y que con una nueva exige que frene) sin haber leido ese archivo: el propio 'preguntas' lo admite. La orden decia leerlo primero porque sus firmas mandan, y aun asi se cambia el contrato de una funcion compartida.",
+   "Regla de brake invertida respecto a la letra del encargo: 'frenar una roja de ahora solo si en ese archivo figura como verde'. El codigo frena tambien cuando no figura. Puede ser lo correcto (fail-closed, coherente con una vigia vieja que no carga), pero es una decision tomada contra el texto sin haber verificado que el test la acepte."
+  ],
+  "riesgo_vecinos": [
+   "test_vigia_el_guardia_solo_frena_por_lo_que_se_rompio_ahora.py, test_vigia_el_guardia_se_acuerdo_y_frena.py, test_vigia_una_vigia_vieja_que_no_carga_frena.py, test_vigia_el_guardado_dice_que_roja_lo_frena.py, test_vigia_el_guardado_dice_cuando_no_pudo_probar.py, test_vigia_el_guardia_lee_en_utf8.py y test_vigia_el_guardia_no_se_cuelga.py: si alguno de estos monta el escenario escribiendo .rojas_conocidas.json o pasando una LISTA como cuarto argumento, con el nuevo codigo la lista se descarta (no es dict -> {}), la roja que antes no frenaba ahora frena y el test se rompe.",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py en particular depende de la semantica de 'no figurar -> frena', que se ha tocado y que ademas depende de la normalizacion de claves fallada.",
+   "arnes/turno_de_guardado.py y arnes/vecinas.py quedan leyendo un .rojas_conocidas.json que ya no se regenera: se queda congelado con el ultimo contenido y sus consumidores toman decisiones con datos rancios.",
+   "El if not hubo_corte depende de dos detecciones de formato no verificadas; si el corte no se reconoce, se escribe el archivo incumpliendo la ley 'actualizar solo cuando ningun grupo se corto por tiempo'."
+  ],
+  "que_falta": [
+   "Haber leido vigias/test_vigia_el_guardado_compara_el_color.py antes de tocar nada, para saber si llama a rojas_que_franen por posicion o por palabra clave y si espera brake o no-brake cuando la roja no figura en el dict.",
+   "Haber leido arnes/bateria_en_paralelo.py para copiar el formato real de salida y del aviso de corte, en vez de asumir formato pytest -q.",
+   "Un puente de arranque: leer .rojas_conocidas.json una vez y sembrar .colores_de_antes.json con esas rutas como 'roja', para que la primera corrida no revierta el trabajo ya conocido.",
+   "Normalizar los dos lados de la comparacion (guardar la clave con el mismo formato que archivos_rojos) o normalizar tambien la consulta.",
+   "Dejar claro si otros lectores de .rojas_conocidas.json necesitan que el archivo siga escribiendose."
+  ],
+  "resumen_para_el_jefe": "La logica central es la que pedia el encargo y no inventa nada, pero se aprueba con reparos: guarda las claves con '/' y las busca sin normalizar (en Windows no casa nunca -> todas las rojas frenan), asume un formato de salida que nadie ha verificado, borra la lectura de .rojas_conocidas.json y por tanto hace frenar en la primera corrida todas las rojas ya conocidas, y ademas nunca leyo el test que fija el contrato; pedir el test y bateria_en_paralelo.py antes de dar luz verde."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (29536 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (31091 letras, aguanta 19042) -> se le salta",
+  "GPT-OSS 120B (Groq) no le cabe (31527 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 3"
+ ]
+}

@@ -1,0 +1,35 @@
+{
+  "orden": {
+    "id": "R25-el-guardado-compara-el-color-no-exige-verde",
+    "titulo": "El guardado compara con el color de antes, en vez de exigir verde absoluto",
+    "pieza": "arnes/guardia_de_guardado.py",
+    "encargo": "En arnes/guardia_de_guardado.py, la decision de guardar tiene que comparar el color de las vigias vecinas CON EL DE ANTES del cambio, y frenar solo si el cambio EMPEORA algo: una vigia que ya estaba roja antes no puede frenar un trabajo que no la toca. HECHO MEDIDO 2026-09-28: la bateria completa da 54 rojas y 1.252 verdes, y tarda 18 minutos y 30 segundos. Hoy el guardia frena en cuanto encuentra una roja ya guardada en el vecindario, y como hay 54 rojas repartidas por el proyecto, cualquier pieza con muchas vecinas queda imposible de guardar: hoy se cayeron por esto DOS cambios correctos y ya aprobados por el equipo, y la unica roja que de verdad tocaba la pieza era la vigia declarada de su propia orden. Lo que se pide: antes de correr, se lee el color de referencia guardado; se corre la seleccion de vecinas; y se frena solo si aparece una roja que antes estaba verde, o si desaparece una verde. Si no hay color de referencia guardado, se guarda el de esta corrida y se deja pasar con aviso, diciendo que es la primera medida. El color de referencia se guarda en memoria, con fecha, y se actualiza en cada corrida completa. Las demas garantias del guardia no se tocan: lo que se escribio a solas sigue sin pasar, y el trabajo aprobado sigue quedando apartado si no se puede guardar. SEGUNDO HECHO MEDIDO, que va en el mismo comentario: el tope de esa corrida esta en 600 segundos y la bateria entera tarda 1.110, asi que el tope corta por tiempo y eso se toma por fallo; el tope tiene que ser coherente con lo medido, como manda CONTRATO_TOPE_MEDIDO_Y_CORTE_A_MINIMA_EXPRESION.md, o correr solo las vecinas de verdad. La ley que manda es la regla 5 de CONTRATO_LOS_CUATRO_OBJETIVOS_ORQUESTADOS.md, la puerta de regresion.",
+    "vigia": "vigias/test_vigia_el_guardado_compara_el_color.py",
+    "origen": "julio",
+    "repara": "que una vigia roja de antes, ajena al cambio, impida guardar trabajo correcto",
+    "razon": "orden de Julio del 2026-09-28: el trabajo nuevo no debe romper lo que ya sirve, y eso se comprueba comparando el color, no exigiendo un verde que el proyecto no tiene",
+    "depende": [
+      "V-R25-el-guardado-compara-el-color-no-exige-verde"
+    ],
+    "modo": "IA",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "6f66fe49a846b04e",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-01_235600_RECHAZADO_guardia_de_guardado.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (39325 letras, aguanta 19042) -> se le salta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (41216 letras, aguanta 19042) -> se le salta\n  aviso       : GPT-OSS 120B (Groq) no le cabe (41601 letras, aguanta 19042) -> se le salta\n  diagnostico : El guardia frena por cualquier roja ya guardada en el vecindario en vez de comparar contra el color de referencia de la corrida anterior, y el tope de 600 s corta la bateria completa que tarda 1.110 s.\n  toca        : arnes/guardia_de_guardado.py funcion rojas_que_frenan\n  confianza   : media\n  PREGUNTA_REQUERIDA: PREGUNTA_REQUERIDA: el tope de 1800 segundos es coherente con los 1.110 s medidos de la bateria completa, pero el contrato pide que el tope de fuera sea mayor que la suma de los topes de dentro; falta confirmar si 1800 cubre esa suma o si hay que correr solo las vecinas de verdad.\n  VEREDICTO   : RECHAZADO\n  fallo       : La comprobacion de 'verde que desaparece' NO detecta desapareciones: `verdes_ahora = [a for a in verdes_de_antes if a not in archivos_rojos]` son las verdes que SIGUEN verdes, y `verdes_que_desaparecen` devuelve las que estan en archivos_rojos, o sea verde->rojo otra vez, que es duplicado de rojas_que_frenan. Una verde que desaparece de verdad (borrada, renombrada, no recolectada) nunca aparece en archivos_rojos y por tanto nunca frena: la segunda mitad del encargo ('frena si desaparece una verde') no esta implementada, solo documentada en el docstring.\n  fallo       : La actualizacion del color de referencia envenena el estado: `{a: ('roja' if a in archivos_rojos else 'verde') for a in set(color_de_antes) | set(archivos_rojos)}` marca como 'verde' toda roja que existia antes pero no se corrio esta vez (esperando, declarada, no recolectada). En la corrida siguiente esa prueba vuelve a estar roja, se lee como 'antes verde' y frena un trabajo bueno. Es exactamente el fallo que el encargo quiere eliminar, introducido por la reparacion.\n  fallo       : La escritura de 'primera medida' guarda solo `{a: 'roja' for a in archivos_rojos}` y ninguna verde, con lo cual en la segunda corrida `verdes_de_antes` es lista vacia y el chequeo de verdes queda inerte y silencioso.\n  fallo       : El tope pasa de 600 a 1800 sin cumplir lo que el propio material exige: la regla 5 que se cita pide que el tope de fuera sea mayor que la SUMA de los topes de dentro, no mayor que 1.110. La propuesta lo admite en PREGUNTA_REQUERIDA y aun asi lo aplico, asi que puede seguir cortando por tiempo igual que antes.\n  resumen     : Reparacion rechazada: el chequeo de 'verde desaparecida' esta mal construido y solo repite el caso rojo, y la forma de guardar el color de referencia marcara como verdes pruebas que nunca se corrieron, con lo que la proxima corrida frenara trabajos buenos; ademas sube el tope a 1800 sin cumplir la regla del propio contrato que exige que el tope de fuera supere la suma de los de dentro.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-01T23:58:55",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R25-el-guardado-compara-el-color-no-exige-verde_20261001_235855.json"
+  }
+}

@@ -1,0 +1,98 @@
+{
+ "obrero": "deepseek",
+ "auditor": "bigpickle",
+ "propuesta": {
+  "diagnostico": "En _vecinas_por_stem, cuando un archivo de codigo cambiado no aparece en ninguna vigia se devuelve None (bateria completa) en vez de devolver las vecinas encontradas mas una marca de falta de cobertura y la vigia general si existe; y el docstring de elegir() no explica por que se hace asi ni que el guardado no debe morir por tiempo.",
+  "archivo": "arnes/vecinas.py",
+  "funcion": "_vecinas_por_stem y elegir",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [
+   {
+    "texto_viejo": "def _vecinas_por_stem(\n    cambiados: list[str], raiz: str, vigias: list[str]\n) -> list[str] | None:\n    \"\"\"Vigias que mencionan el stem de cada archivo de codigo cambiado.\n\n    Devuelve None si algun archivo de codigo cambiado (fuera de vigias/)",
+    "texto_nuevo": "def _vecinas_por_stem(\n    cambiados: list[str], raiz: str, vigias: list[str]\n) -> list[str] | None:\n    \"\"\"Vigias que mencionan el stem de cada archivo de codigo cambiado.\n\n    Devuelve las vecinas encontradas MAS la vigia general del proyecto si existe,\n    y una marca de que falta cubrir el archivo, en vez de None (bateria completa).\n    Solo devuelve None si no hay ninguna vigia que cubra nada.\n\n    Antes devolvia None si algun archivo de codigo cambiado (fuera de vigias/)"
+   },
+   {
+    "texto_viejo": "        if not encontrada:\n            # Archivo de codigo cambiado sin vecinas conocidas:\n            # por seguridad, se corre toda la bateria.\n            return None\n    return vecinas",
+    "texto_nuevo": "        if not encontrada:\n            # Archivo de codigo cambiado sin vecinas conocidas:\n            # se anade la vigia general del proyecto si existe, y se marca\n            # que falta cubrir ese archivo, en vez de correr toda la bateria.\n            general = _vigia_general(raiz)\n            if general is not None:\n                vecinas.append(general)\n            vecinas.append(_MARCA_FALTA_COBERTURA + stem)\n    return vecinas"
+   },
+   {
+    "texto_viejo": "def elegir(raiz: str) -> list[str] | None:\n    \"\"\"Elige las vigias a correr para la pieza tocada y sus vecinas.\n\n    Devuelve None para correr toda la carpeta vigias/, o una lista\n    ordenada sin repetidos de rutas (con barras '/') de vigias a correr.\n    Nunca lanza: ante cualquier error devuelve None.\n    \"\"\"",
+    "texto_nuevo": "def elegir(raiz: str) -> list[str] | None:\n    \"\"\"Elige las vigias a correr para la pieza tocada y sus vecinas.\n\n    Devuelve None para correr toda la carpeta vigias/, o una lista\n    ordenada sin repetidos de rutas (con barras '/') de vigias a correr.\n    Nunca lanza: ante cualquier error devuelve None.\n\n    POR QUE SE HACE ASI: cuando un archivo de codigo cambiado no aparece en\n    ninguna vigia, antes se devolvia None y se corria TODA la bateria. Eso\n    hacia que el guardado muriera por tiempo (la bateria completa tarda\n    demasiado) y el guardia no pudiera frenar lo que de verdad importa.\n    Ahora se devuelven las vecinas que SI se encontraron, mas la vigia\n    general del proyecto si existe, mas una marca de que falta cubrir ese\n    archivo. Asi el guardado NO MUERE POR TIEMPO y sigue frenando igual:\n    las contrasenas y las vigias rojas se siguen comprobando.\n    \"\"\""
+   }
+  ],
+  "cambio": "En _vecinas_por_stem: en vez de devolver None cuando un archivo de codigo cambiado no aparece en ninguna vigia, anadir la vigia general del proyecto si existe y una marca de falta de cobertura, y devolver las vecinas encontradas. En elegir(): ampliar el docstring explicando por que se hace asi y que el guardado no debe morir por tiempo.",
+  "codigo": "def _vecinas_por_stem(\n    cambiados: list[str], raiz: str, vigias: list[str]\n) -> list[str] | None:\n    \"\"\"Vigias que mencionan el stem de cada archivo de codigo cambiado.\n\n    Devuelve las vecinas encontradas MAS la vigia general del proyecto si existe,\n    y una marca de que falta cubrir el archivo, en vez de None (bateria completa).\n    Solo devuelve None si no hay ninguna vigia que cubra nada.\n\n    Antes devolvia None si algun archivo de codigo cambiado (fuera de vigias/)\n    no aparecia en ninguna vigia, y eso mandaba correr toda la bateria.\n    \"\"\"\n    vecinas: list[str] = []\n    for ruta in cambiados:\n        if not _es_codigo(ruta):\n            continue\n        if ruta.startswith(_CARPETA_VIGIAS + \"/\"):\n            continue\n        stem = os.path.splitext(os.path.basename(ruta))[0]\n        if not stem:\n            continue\n        encontrada = False\n        for v in vigias:\n            if _contiene_palabra(textos.get(v, \"\"), stem):\n                vecinas.append(v)\n                encontrada = True\n        if not encontrada:\n            # Archivo de codigo cambiado sin vecinas conocidas:\n            # se anade la vigia general del proyecto si existe, y se marca\n            # que falta cubrir ese archivo, en vez de correr toda la bateria.\n            general = _vigia_general(raiz)\n            if general is not None:\n                vecinas.append(general)\n            vecinas.append(_MARCA_FALTA_COBERTURA + stem)\n    return vecinas",
+  "vigia": "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py y vigias/test_vigia_vecinas.py: comprueban que con un archivo de codigo cambiado sin vecinas no se devuelve None (bateria completa) sino las vecinas encontradas mas la marca de falta de cobertura y la vigia general si existe.",
+  "puede_danar": [
+   "arnes/guardia_de_guardado.py",
+   "arnes/bateria_en_paralelo.py",
+   "arnes/turno_de_guardado.py",
+   "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+   "vigias/test_vigia_vecinas.py",
+   "vigias/test_vigia_el_guardia_lee_en_utf8.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_de_las_rojas_de_antes.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py"
+  ],
+  "preguntas": [
+   "Como se llama exactamente la vigia general del proyecto y donde vive (ruta) para poder anadirla?",
+   "Que texto exacto debe llevar la marca de falta de cobertura para que el guardia la reconozca y no la trate como vigia a correr?",
+   "Existe ya una funcion _vigia_general en arnes/vecinas.py o hay que crearla? Si hay que crearla, que debe devolver exactamente?"
+  ],
+  "confianza": "baja",
+  "_fuera_del_paquete": [
+   "bateria_en_paralelo.py",
+   "test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+   "test_vigia_el_guardia_lee_en_utf8.py",
+   "test_vigia_el_guardia_se_acuerda_de_las_rojas_de_antes.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_una_prueba_que_espera_su_arreglo_no_frena_el_guardado.py",
+   "test_vigia_una_vigia_vieja_que_no_carga_frena.py",
+   "test_vigia_vecinas.py",
+   "turno_de_guardado.py"
+  ]
+ },
+ "auditoria": {
+  "veredicto": "RECHAZADO",
+  "invento_algo": true,
+  "que_invento": [
+   "`_vigia_general(raiz)`: se llama en el bucle pero no se define en ningun cambio ni aparece en el material; el propio obrero pregunta en 'preguntas' si existe (confianza 'baja'), o sea que se usa un nombre sin verificar.",
+   "`_MARCA_FALTA_COBERTURA + stem`: constante usada para construir la marca pero no definida en ningun cambio ni en el bloque `codigo`; el obrero admite no saber que texto exacto la reconoce."
+  ],
+  "fallos": [
+   "Rompe el contrato declarado de la funcion: `elegir()` dice devolver 'una lista ordenada sin repetidos de rutas (con barras /) de vigias a correr', y el parche mete ahi `_MARCA_FALTA_COBERTURA + stem`, que no es una ruta existente. No hay ningun filtrado posterior en el parche, y `arnes/guardia_de_guardado.py` esta prohibido tocarlo en esta orden, asi que ningun consumidor sabe descartar la marca.",
+   "Consecuencia grave relative a la ley principal ('SIN AFLOJAR EL GUARDIA'): la propia lista de vecinos incluye `test_vigia_una_vigia_vieja_que_no_carga_frena.py`, o sea que una vigia que no carga FRENA el guardado. Inyectar una ruta inexistente en la lista a correr puede precisely provocar eso y bloquear todas las guardas, que es justo lo contrario de lo pedido.",
+   "El docstring nuevo afirma 'Solo devuelve None si no hay ninguna vigia que cubra nada', pero el bloque `codigo` no tiene NINGUN `return None`: la funcion ya nunca devuelve None. Docstring que describe un comportamiento que el codigo no tiene.",
+   "La doc de la funcion nueva dice 'Solo devuelve None...' y a la vez mantiene el tipo `list[str] | None`, dejando contrato y firma incoherentes con el cuerpo.",
+   "El campo `vigia` afirma que `test_vigia_el_guardado_no_muere_por_la_bateria_completa.py` y `test_vigia_vecinas.py` comprueban exactamente el comportamiento nuevo; el material no incluye su contenido, asi que esa afirmacion no esta respaldada por nada visible.",
+   "No hay deduplicacion de la vigia general: se llama y se anade dentro del bucle por cada archivo sin cubrir, con lo que la misma ruta general puede repetirse N veces, contra el 'sin repetidos' que declara el contrato de `elegir()`."
+  ],
+  "riesgo_vecinos": [
+   "arnes/guardia_de_guardado.py: recibe una lista con una entrada que no es un archivo; no se toca (prohibido) y no esta preparado para marcas.",
+   "arnes/bateria_en_paralelo.py: intentaria cargar una ruta inexistente como si fuera vigia.",
+   "vigias/test_vigia_una_vigia_vieja_que_no_carga_frena.py: si una entrada no carga frena el guardado; una marca-falsa puede hacer frenar la bateria entera.",
+   "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py y vigias/test_vigia_vecinas.py: se affirmation su contenido y no se actualizan ni se muestran.",
+   "arnes/turno_de_guardado.py: consume la salida de elegir() y espera rutas reales."
+  ],
+  "que_falta": [
+   "Definir (o verificar que ya existen) `_MARCA_FALTA_COBERTURA` y `_vigia_general`, con el valor puesto una sola vez arriba del archivo.",
+   "Decidir y documentar donde se consume la marca para que `elegiar()` nunca devuelva rutas que no existen, sin tocar guardia_de_guardado.py; si hace falta tocarlo, hay que pedirlo.",
+   "Deduplicar y ordenar la lista antes de devolverla, para cumplir el contrato de `elegir()`.",
+   "Alinear docstring y cuerpo: o el codigo devuelve None cuando no cubre nada, o la firma deja de ser `| None`; ahora los dos mienten.",
+   "Leer de verdad las dos vigias de test que dice comprobar y actualizarlas si el contrato cambio."
+  ],
+  "resumen_para_el_jefe": "Rechazado: el parche depende de dos simbolos que nadie define ni puede probar (`_vigia_general` y `_MARCA_FALTA_COBERTURA`) y mete una marca que no es una ruta de vigia dentro de la lista que el guardia va a correr, cuando el propio material dice que una vigia que no carga frena el guardado, o sea justo el contrario de 'sin aflojar el guardia'."
+ },
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (30798 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.; HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio",
+  "GPT-OSS 120B (Groq) no le cabe (31667 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.; HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio",
+  "GPT-OSS 120B (Groq) no le cabe (31883 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.",
+  "GPT-OSS 120B (Groq) no le cabe (31991 letras, aguanta 19042) -> se le salta",
+  "vueltas_dadas: 4"
+ ]
+}

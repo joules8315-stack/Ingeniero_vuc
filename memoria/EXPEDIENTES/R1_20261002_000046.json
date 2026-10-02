@@ -1,0 +1,33 @@
+{
+  "orden": {
+    "id": "R1",
+    "titulo": "El trabajo aprobado siempre llega al disco",
+    "origen": "PLAN_PRIORIDAD_UNO aprobado por Julio el 2026-09-25; medido: FALLOS.json id 69 con 82 veces y 14 trabajos en memoria/trabajos_sin_revisar",
+    "repara": "el guardado corre una bateria de 245 vigias con tope de 15 minutos; si no termina NO se guarda, y el trabajo que el equipo ya aprobo se deshace",
+    "pieza": "arnes/vecinas.py",
+    "depende": [],
+    "modo": "IA",
+    "razon": "es la causa numero uno medida: 82 veces se perdio trabajo bueno ya pagado",
+    "encargo": "SIN AFLOJAR EL GUARDIA (sigue frenando contrasenas y vigias rojas igual). Dos cosas en arnes/vecinas.py: (1) en _vecinas_por_stem (linea 216) hoy se devuelve None, o sea bateria completa, en cuanto UN archivo de codigo cambiado no aparezca en ninguna vigia (lineas 244-247); en su lugar, devolver las vecinas que si se encontraron MAS la marca de que falta cubrir ese archivo, y anadir la vigia general del proyecto si existe, en vez de mandar correr las 245. (2) Dejar escrito en el docstring de elegir() por que se hace asi y que el guardado no debe morir por tiempo. No toques arnes/guardia_de_guardado.py en esta orden.",
+    "vigia": "vigias/test_vigia_el_guardado_no_muere_por_la_bateria_completa.py",
+    "estado": "pendiente",
+    "paso_fallido": "",
+    "fallos_seguidos": 0,
+    "nota": "",
+    "prueba_real": "",
+    "comando": ""
+  },
+  "huella": "adc42786ad283138",
+  "tipo": "no_aprobo",
+  "codigo": 0,
+  "salida": "SE PIDE: escribe=deepseek  revisa=bigpickle\nTRABAJO ARCHIVADO (no se pierde): C:\\Ingeniero_VUC\\memoria\\trabajos_del_equipo\\2026-10-02_000043_RECHAZADO_vecinas.py.json\nOBRERO deepseek -> AUDITOR bigpickle\n  aviso       : GPT-OSS 120B (Groq) no le cabe (30798 letras, aguanta 19042) -> se le salta\n  aviso       : el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.; HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio\n  aviso       : GPT-OSS 120B (Groq) no le cabe (31667 letras, aguanta 19042) -> se le salta\n  diagnostico : En _vecinas_por_stem, cuando un archivo de codigo cambiado no aparece en ninguna vigia se devuelve None (bateria completa) en vez de devolver las vecinas encontradas mas una marca de falta de cobertura y la vigia general si existe; y el docstring de elegir() no explica por que se hace asi ni que el guardado no debe morir por tiempo.\n  toca        : arnes/vecinas.py funcion _vecinas_por_stem y elegir\n  confianza   : baja\n  PREGUNTA_REQUERIDA: Como se llama exactamente la vigia general del proyecto y donde vive (ruta) para poder anadirla?; Que texto exacto debe llevar la marca de falta de cobertura para que el guardia la reconozca y no la trate como vigia a correr?; Existe ya una funcion _vigia_general en arnes/vecinas.py o hay que crearla? Si hay que crearla, que debe devolver exactamente?\n  VEREDICTO   : RECHAZADO\n  *** INVENTO: `_vigia_general(raiz)`: se llama en el bucle pero no se define en ningun cambio ni aparece en el material; el propio obrero pregunta en 'preguntas' si existe (confianza 'baja'), o sea que se usa un nombre sin verificar.; `_MARCA_FALTA_COBERTURA + stem`: constante usada para construir la marca pero no definida en ningun cambio ni en el bloque `codigo`; el obrero admite no saber que texto exacto la reconoce. -> SE DESCARTA\n  fallo       : Rompe el contrato declarado de la funcion: `elegir()` dice devolver 'una lista ordenada sin repetidos de rutas (con barras /) de vigias a correr', y el parche mete ahi `_MARCA_FALTA_COBERTURA + stem`, que no es una ruta existente. No hay ningun filtrado posterior en el parche, y `arnes/guardia_de_guardado.py` esta prohibido tocarlo en esta orden, asi que ningun consumidor sabe descartar la marca.\n  fallo       : Consecuencia grave relative a la ley principal ('SIN AFLOJAR EL GUARDIA'): la propia lista de vecinos incluye `test_vigia_una_vigia_vieja_que_no_carga_frena.py`, o sea que una vigia que no carga FRENA el guardado. Inyectar una ruta inexistente en la lista a correr puede precisely provocar eso y bloquear todas las guardas, que es justo lo contrario de lo pedido.\n  fallo       : El docstring nuevo afirma 'Solo devuelve None si no hay ninguna vigia que cubra nada', pero el bloque `codigo` no tiene NINGUN `return None`: la funcion ya nunca devuelve None. Docstring que describe un comportamiento que el codigo no tiene.\n  fallo       : La doc de la funcion nueva dice 'Solo devuelve None...' y a la vez mantiene el tipo `list[str] | None`, dejando contrato y firma incoherentes con el cuerpo.\n  resumen     : Rechazado: el parche depende de dos simbolos que nadie define ni puede probar (`_vigia_general` y `_MARCA_FALTA_COBERTURA`) y mete una marca que no es una ruta de vigia dentro de la lista que el guardia va a correr, cuando el propio material dice que una vigia que no carga frena el guardado, o sea justo el contrario de 'sin aflojar el guardia'.\n\nEL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.\n",
+  "apartados": [],
+  "fecha": "2026-10-02T00:00:46",
+  "analisis": null,
+  "informe": {
+    "ok": false,
+    "paso": "perito",
+    "motivo": "el perito no devolvio JSON: ",
+    "expediente": "C:\\Ingeniero_VUC\\memoria\\EXPEDIENTES\\R1_20261002_000046.json"
+  }
+}

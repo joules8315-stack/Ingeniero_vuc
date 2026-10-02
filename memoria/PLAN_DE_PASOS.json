@@ -1,0 +1,653 @@
+{
+ "generado": "2026-10-01",
+ "regla": "una orden corre solo si las de su depende estan hechas; la prioridad es el orden de la lista",
+ "pasos": [
+  {
+   "paso": "00 Medir sin danar la memoria real",
+   "ordenes": [
+    "N20-ninguna_vigia_toca_la_memoria_real",
+    "V-N20-las_pruebas_apuntan_a_un_registro_temporal",
+    "N20-las_pruebas_apuntan_a_un_registro_temporal"
+   ]
+  },
+  {
+   "paso": "0 El bucle no se detiene por un fallo aislado",
+   "ordenes": [
+    "V-N18-el_bucle_no_se_detiene_por_fallos",
+    "N18-el_bucle_no_se_detiene_por_fallos"
+   ]
+  },
+  {
+   "paso": "0a El pasillo no recorta al que escribe",
+   "ordenes": [
+    "H2-el-pasillo-no-corta-a-la-medida-del-mas-chico"
+   ]
+  },
+  {
+   "paso": "0b Crear no es inventar",
+   "ordenes": [
+    "R9"
+   ]
+  },
+  {
+   "paso": "0c Que el trabajo llegue al escritor: prueba previa y dos vias",
+   "ordenes": [
+    "V-N28-prueba_previa",
+    "N28-prueba_previa",
+    "V-N28-el_bucle_hace_la_prueba_previa",
+    "N28-el_bucle_hace_la_prueba_previa",
+    "V-N27-las_dos_vias",
+    "N27-las_dos_vias",
+    "V-N27-el_pit_arma_las_dos_vias",
+    "N27-el_pit_arma_las_dos_vias",
+    "V-N27-el_mando_equipo_recibe_las_dos_vias",
+    "N27-el_mando_equipo_recibe_las_dos_vias",
+    "V-N27-el_obrero_usa_la_via_del_codigo",
+    "N27-el_obrero_usa_la_via_del_codigo"
+   ]
+  },
+  {
+   "paso": "0d Multitarea: varias ordenes a la vez",
+   "ordenes": [
+    "V-L4-copias-temporales-por-orden",
+    "L4-copias-temporales-por-orden",
+    "N29-la_vigia_vieja_deja_correr_varias",
+    "R6a",
+    "R6"
+   ]
+  },
+  {
+   "paso": "0e El perito es gratis y no cuelga el bucle",
+   "ordenes": [
+    "V-N17-el_perito_es_gratis",
+    "N17-el_perito_es_gratis",
+    "V-N15-el_perito_tiene_tope_corto",
+    "N15-el_perito_tiene_tope_corto",
+    "50",
+    "51"
+   ]
+  },
+  {
+   "paso": "0f El bucle no para por dolares (decision de Julio del 2026-09-27)",
+   "ordenes": [
+    "89",
+    "68"
+   ]
+  },
+  {
+   "paso": "1 El guardado: lo aprobado llega al disco",
+   "ordenes": [
+    "R1"
+   ]
+  },
+  {
+   "paso": "1b Una orden que fallo vuelve sola tras su arreglo",
+   "ordenes": [
+    "V-N14-la_fallida_depende_de_su_arreglo",
+    "N14-la_fallida_depende_de_su_arreglo"
+   ]
+  },
+  {
+   "paso": "2 Las leyes nuevas (solo documentos)",
+   "ordenes": [
+    "V-L1-el-orden-de-los-pasos-lo-impone-el-programa",
+    "L1-el-orden-de-los-pasos-lo-impone-el-programa",
+    "V-L2-el-ingeniero-entiende-lo-que-julio-quiere",
+    "L2-el-ingeniero-entiende-lo-que-julio-quiere",
+    "V-L3-todas-las-ia-trabajan-por-el-canal",
+    "L3-todas-las-ia-trabajan-por-el-canal"
+   ]
+  },
+  {
+   "paso": "3 La legislacion deja de ensuciarse",
+   "ordenes": [
+    "V-R10",
+    "R10",
+    "30",
+    "31"
+   ]
+  },
+  {
+   "paso": "4 Recoger no destruye y el mando no pierde lo pagado",
+   "ordenes": [
+    "37",
+    "113",
+    "N26-el_mando_no_muere_por_un_caracter"
+   ]
+  },
+  {
+   "paso": "5 El revisor no corta rondas buenas",
+   "ordenes": [
+    "R24-el-aviso-no-frena-la-ronda",
+    "V-95-F011402",
+    "95-F011402",
+    "41",
+    "43",
+    "45"
+   ]
+  },
+  {
+   "paso": "6 Varios cambios por ronda",
+   "ordenes": [
+    "V-95-F222455",
+    "95-F222455",
+    "V-173-F064924",
+    "173-F064924",
+    "V-46-F061935",
+    "46-F061935",
+    "V-112-F061113",
+    "112-F061113"
+   ]
+  },
+  {
+   "paso": "7 El material llega a la medida",
+   "ordenes": [
+    "29",
+    "V-29-F005530",
+    "29-F005530",
+    "V-H3-el-empaquetador-respeta-necesito-leer",
+    "H3-el-empaquetador-respeta-necesito-leer",
+    "V-R22-paquete-compacto-sin-ruido",
+    "R22-paquete-compacto-sin-ruido"
+   ]
+  },
+  {
+   "paso": "8 Las pruebas miden de verdad",
+   "ordenes": [
+    "63",
+    "64",
+    "38",
+    "24",
+    "25",
+    "32",
+    "33"
+   ]
+  },
+  {
+   "paso": "9 El Ingeniero se repara solo",
+   "ordenes": [
+    "N25-vigia_hay_un_solo_plan",
+    "V-N25-un_solo_plan",
+    "N25-un_solo_plan",
+    "V-N25-el_arranque_vigila_el_plan_unico",
+    "N25-el_arranque_vigila_el_plan_unico",
+    "V-N19-el_cuaderno_dice_la_causa",
+    "N19-el_cuaderno_dice_la_causa",
+    "V-N19-el_resumen_diario_del_cuaderno",
+    "N19-el_resumen_diario_del_cuaderno",
+    "V-N21-el_juez_del_forense_ve_el_codigo",
+    "N21-el_juez_del_forense_ve_el_codigo",
+    "V-N01-camino_sano",
+    "N01-camino_sano",
+    "V-N01-el_bucle_llama_al_camino_sano",
+    "N01-el_bucle_llama_al_camino_sano",
+    "V-N02-la_orden_completa",
+    "N02-la_orden_completa",
+    "V-N02-orden_nueva_rechaza_lo_incompleto",
+    "N02-orden_nueva_rechaza_lo_incompleto",
+    "V-N03-el_cuaderno_completo",
+    "N03-el_cuaderno_completo",
+    "N03-toda_llamada_a_una_ia_apunta",
+    "V-N03-codex_apunta_en_el_cuaderno",
+    "N03-codex_apunta_en_el_cuaderno",
+    "V-N03-el_perito_apunta_en_el_cuaderno",
+    "N03-el_perito_apunta_en_el_cuaderno",
+    "V-N03-el_buscador_de_significados_apunta",
+    "N03-el_buscador_de_significados_apunta",
+    "V-N04-el_lector_de_vigias_rojas",
+    "N04-el_lector_de_vigias_rojas",
+    "V-N04-el_comando_vigias_dice_por_que",
+    "N04-el_comando_vigias_dice_por_que",
+    "V-N04-el_guardado_llama_al_lector",
+    "N04-el_guardado_llama_al_lector",
+    "V-N04-el_bucle_llama_al_lector",
+    "N04-el_bucle_llama_al_lector",
+    "V-N06-un_candado_no_conectado_es_huerfano",
+    "N06-un_candado_no_conectado_es_huerfano",
+    "V-N06-el_pit_no_cuenta_a_las_vigias_como_llamador",
+    "N06-el_pit_no_cuenta_a_las_vigias_como_llamador",
+    "V-N06b-el_candado_de_la_puerta_trasera_conectado",
+    "N06b-el_candado_de_la_puerta_trasera_conectado",
+    "V-N05-al_sellar_la_memoria_se_actualiza",
+    "N05-al_sellar_la_memoria_se_actualiza",
+    "V-N05-el_bucle_llama_a_sellar",
+    "N05-el_bucle_llama_a_sellar",
+    "V-N09-la_hora_de_apuntes",
+    "N09-la_hora_de_apuntes",
+    "V-N09-el_paquete_trae_las_lecciones",
+    "N09-el_paquete_trae_las_lecciones",
+    "V-N09-el_bucle_corre_la_hora_de_apuntes",
+    "N09-el_bucle_corre_la_hora_de_apuntes",
+    "V-N12-la_linea_base",
+    "N12-la_linea_base",
+    "V-N12-el_bucle_mide_antes_y_despues",
+    "N12-el_bucle_mide_antes_y_despues",
+    "V-N07-el_traductor_de_deseo",
+    "N07-el_traductor_de_deseo",
+    "V-N07-el_comando_entiende",
+    "N07-el_comando_entiende",
+    "V-N08-el_verificador_de_resultado",
+    "N08-el_verificador_de_resultado",
+    "V-N08-el_bucle_verifica_antes_de_sellar",
+    "N08-el_bucle_verifica_antes_de_sellar",
+    "V-N10-el_canal_conoce_a_todas_las_ia",
+    "N10-el_canal_conoce_a_todas_las_ia",
+    "V-N10-el_capataz_elige_quien_escribe_y_revisa",
+    "N10-el_capataz_elige_quien_escribe_y_revisa",
+    "V-N10-el_reparto_asigna_a_las_nuevas_ia",
+    "N10-el_reparto_asigna_a_las_nuevas_ia",
+    "V-N11-programa_antes_que_ia",
+    "N11-programa_antes_que_ia",
+    "V-N11-modo_ia_exige_por_que",
+    "N11-modo_ia_exige_por_que"
+   ]
+  },
+  {
+   "paso": "10 Velocidad sin repetir",
+   "ordenes": [
+    "V-R4c",
+    "R4c",
+    "V-R3",
+    "R3",
+    "V-N22-la_espera_de_big_pickle_es_400",
+    "N22-la_espera_de_big_pickle_es_400",
+    "N22-la_vigia_vieja_de_big_pickle_pide_400",
+    "N22-la_vigia_de_nadie_mas_de_lo_medido_pide_400",
+    "132",
+    "53"
+   ]
+  },
+  {
+   "paso": "11 La llave por partes",
+   "ordenes": [
+    "V-R7",
+    "R7"
+   ]
+  },
+  {
+   "paso": "12 Automatizar",
+   "ordenes": [
+    "167",
+    "184",
+    "185",
+    "V-R8",
+    "R8",
+    "V-N13-el_arquitecto",
+    "N13-el_arquitecto",
+    "V-N13-el_comando_plan_usa_al_arquitecto",
+    "N13-el_comando_plan_usa_al_arquitecto"
+   ]
+  },
+  {
+   "paso": "12b La prueba real del informe",
+   "ordenes": [
+    "V-N23-la_prueba_real_del_informe",
+    "N23-la_prueba_real_del_informe"
+   ]
+  },
+  {
+   "paso": "13 Lo que quedaba pendiente sin vigia",
+   "ordenes": [
+    "V-H4-el-candado-de-memoria-avisa-sin-cobrar-peaje",
+    "H4-el-candado-de-memoria-avisa-sin-cobrar-peaje",
+    "V-H6-que-no-se-muerda-la-cola",
+    "H6-que-no-se-muerda-la-cola",
+    "V-H1-el-tiempo-de-reparacion-se-mide",
+    "H1-el-tiempo-de-reparacion-se-mide",
+    "V-R25-el-guardado-compara-el-color-no-exige-verde",
+    "R25-el-guardado-compara-el-color-no-exige-verde",
+    "V-R23-codex-no-hace-el-papeleo",
+    "R23-codex-no-hace-el-papeleo",
+    "V-95-F001329",
+    "95-F001329",
+    "V-95-F012213",
+    "95-F012213"
+   ]
+  }
+ ],
+ "depende": {
+  "N20-ninguna_vigia_toca_la_memoria_real": [],
+  "V-N20-las_pruebas_apuntan_a_un_registro_temporal": [],
+  "N20-las_pruebas_apuntan_a_un_registro_temporal": [],
+  "V-N18-el_bucle_no_se_detiene_por_fallos": [],
+  "N18-el_bucle_no_se_detiene_por_fallos": [],
+  "H2-el-pasillo-no-corta-a-la-medida-del-mas-chico": [],
+  "R9": [],
+  "V-N28-prueba_previa": [],
+  "N28-prueba_previa": [
+   "V-N28-prueba_previa"
+  ],
+  "V-N28-el_bucle_hace_la_prueba_previa": [],
+  "N28-el_bucle_hace_la_prueba_previa": [
+   "V-N28-el_bucle_hace_la_prueba_previa"
+  ],
+  "V-N27-las_dos_vias": [],
+  "N27-las_dos_vias": [
+   "V-N27-las_dos_vias"
+  ],
+  "V-N27-el_pit_arma_las_dos_vias": [],
+  "N27-el_pit_arma_las_dos_vias": [
+   "V-N27-el_pit_arma_las_dos_vias"
+  ],
+  "V-N27-el_mando_equipo_recibe_las_dos_vias": [],
+  "N27-el_mando_equipo_recibe_las_dos_vias": [
+   "V-N27-el_mando_equipo_recibe_las_dos_vias"
+  ],
+  "V-N27-el_obrero_usa_la_via_del_codigo": [],
+  "N27-el_obrero_usa_la_via_del_codigo": [
+   "V-N27-el_obrero_usa_la_via_del_codigo"
+  ],
+  "V-L4-copias-temporales-por-orden": [],
+  "L4-copias-temporales-por-orden": [
+   "V-L4-copias-temporales-por-orden"
+  ],
+  "N29-la_vigia_vieja_deja_correr_varias": [],
+  "R6a": [],
+  "R6": [],
+  "V-N17-el_perito_es_gratis": [],
+  "N17-el_perito_es_gratis": [
+   "V-N17-el_perito_es_gratis"
+  ],
+  "V-N15-el_perito_tiene_tope_corto": [],
+  "N15-el_perito_tiene_tope_corto": [
+   "V-N15-el_perito_tiene_tope_corto"
+  ],
+  "50": [],
+  "51": [
+   "50"
+  ],
+  "89": [],
+  "68": [
+   "89"
+  ],
+  "R1": [],
+  "V-N14-la_fallida_depende_de_su_arreglo": [],
+  "N14-la_fallida_depende_de_su_arreglo": [
+   "V-N14-la_fallida_depende_de_su_arreglo"
+  ],
+  "V-L1-el-orden-de-los-pasos-lo-impone-el-programa": [],
+  "L1-el-orden-de-los-pasos-lo-impone-el-programa": [
+   "V-L1-el-orden-de-los-pasos-lo-impone-el-programa"
+  ],
+  "V-L2-el-ingeniero-entiende-lo-que-julio-quiere": [],
+  "L2-el-ingeniero-entiende-lo-que-julio-quiere": [
+   "V-L2-el-ingeniero-entiende-lo-que-julio-quiere"
+  ],
+  "V-L3-todas-las-ia-trabajan-por-el-canal": [],
+  "L3-todas-las-ia-trabajan-por-el-canal": [
+   "V-L3-todas-las-ia-trabajan-por-el-canal"
+  ],
+  "V-R10": [],
+  "R10": [
+   "V-R10"
+  ],
+  "30": [],
+  "31": [],
+  "37": [],
+  "113": [],
+  "N26-el_mando_no_muere_por_un_caracter": [],
+  "R24-el-aviso-no-frena-la-ronda": [],
+  "V-95-F011402": [],
+  "95-F011402": [
+   "V-95-F011402"
+  ],
+  "41": [],
+  "43": [],
+  "45": [],
+  "V-95-F222455": [],
+  "95-F222455": [
+   "V-95-F222455"
+  ],
+  "V-173-F064924": [],
+  "173-F064924": [
+   "V-173-F064924"
+  ],
+  "V-46-F061935": [],
+  "46-F061935": [
+   "V-46-F061935"
+  ],
+  "V-112-F061113": [],
+  "112-F061113": [
+   "V-112-F061113"
+  ],
+  "29": [
+   "29-F005530"
+  ],
+  "V-29-F005530": [],
+  "29-F005530": [
+   "V-29-F005530"
+  ],
+  "V-H3-el-empaquetador-respeta-necesito-leer": [],
+  "H3-el-empaquetador-respeta-necesito-leer": [
+   "V-H3-el-empaquetador-respeta-necesito-leer"
+  ],
+  "V-R22-paquete-compacto-sin-ruido": [],
+  "R22-paquete-compacto-sin-ruido": [
+   "V-R22-paquete-compacto-sin-ruido"
+  ],
+  "63": [],
+  "64": [
+   "63"
+  ],
+  "38": [],
+  "24": [],
+  "25": [
+   "24"
+  ],
+  "32": [],
+  "33": [
+   "32"
+  ],
+  "N25-vigia_hay_un_solo_plan": [],
+  "V-N25-un_solo_plan": [],
+  "N25-un_solo_plan": [
+   "V-N25-un_solo_plan"
+  ],
+  "V-N25-el_arranque_vigila_el_plan_unico": [],
+  "N25-el_arranque_vigila_el_plan_unico": [
+   "V-N25-el_arranque_vigila_el_plan_unico"
+  ],
+  "V-N19-el_cuaderno_dice_la_causa": [],
+  "N19-el_cuaderno_dice_la_causa": [
+   "V-N19-el_cuaderno_dice_la_causa"
+  ],
+  "V-N19-el_resumen_diario_del_cuaderno": [],
+  "N19-el_resumen_diario_del_cuaderno": [
+   "V-N19-el_resumen_diario_del_cuaderno"
+  ],
+  "V-N21-el_juez_del_forense_ve_el_codigo": [],
+  "N21-el_juez_del_forense_ve_el_codigo": [
+   "V-N21-el_juez_del_forense_ve_el_codigo"
+  ],
+  "V-N01-camino_sano": [],
+  "N01-camino_sano": [
+   "V-N01-camino_sano"
+  ],
+  "V-N01-el_bucle_llama_al_camino_sano": [],
+  "N01-el_bucle_llama_al_camino_sano": [
+   "V-N01-el_bucle_llama_al_camino_sano"
+  ],
+  "V-N02-la_orden_completa": [],
+  "N02-la_orden_completa": [
+   "V-N02-la_orden_completa"
+  ],
+  "V-N02-orden_nueva_rechaza_lo_incompleto": [],
+  "N02-orden_nueva_rechaza_lo_incompleto": [
+   "V-N02-orden_nueva_rechaza_lo_incompleto"
+  ],
+  "V-N03-el_cuaderno_completo": [],
+  "N03-el_cuaderno_completo": [
+   "V-N03-el_cuaderno_completo"
+  ],
+  "N03-toda_llamada_a_una_ia_apunta": [],
+  "V-N03-codex_apunta_en_el_cuaderno": [],
+  "N03-codex_apunta_en_el_cuaderno": [
+   "V-N03-codex_apunta_en_el_cuaderno"
+  ],
+  "V-N03-el_perito_apunta_en_el_cuaderno": [],
+  "N03-el_perito_apunta_en_el_cuaderno": [
+   "V-N03-el_perito_apunta_en_el_cuaderno"
+  ],
+  "V-N03-el_buscador_de_significados_apunta": [],
+  "N03-el_buscador_de_significados_apunta": [
+   "V-N03-el_buscador_de_significados_apunta"
+  ],
+  "V-N04-el_lector_de_vigias_rojas": [],
+  "N04-el_lector_de_vigias_rojas": [
+   "V-N04-el_lector_de_vigias_rojas"
+  ],
+  "V-N04-el_comando_vigias_dice_por_que": [],
+  "N04-el_comando_vigias_dice_por_que": [
+   "V-N04-el_comando_vigias_dice_por_que"
+  ],
+  "V-N04-el_guardado_llama_al_lector": [],
+  "N04-el_guardado_llama_al_lector": [
+   "V-N04-el_guardado_llama_al_lector"
+  ],
+  "V-N04-el_bucle_llama_al_lector": [],
+  "N04-el_bucle_llama_al_lector": [
+   "V-N04-el_bucle_llama_al_lector"
+  ],
+  "V-N06-un_candado_no_conectado_es_huerfano": [],
+  "N06-un_candado_no_conectado_es_huerfano": [
+   "V-N06-un_candado_no_conectado_es_huerfano"
+  ],
+  "V-N06-el_pit_no_cuenta_a_las_vigias_como_llamador": [],
+  "N06-el_pit_no_cuenta_a_las_vigias_como_llamador": [
+   "V-N06-el_pit_no_cuenta_a_las_vigias_como_llamador"
+  ],
+  "V-N06b-el_candado_de_la_puerta_trasera_conectado": [],
+  "N06b-el_candado_de_la_puerta_trasera_conectado": [
+   "V-N06b-el_candado_de_la_puerta_trasera_conectado"
+  ],
+  "V-N05-al_sellar_la_memoria_se_actualiza": [],
+  "N05-al_sellar_la_memoria_se_actualiza": [
+   "V-N05-al_sellar_la_memoria_se_actualiza"
+  ],
+  "V-N05-el_bucle_llama_a_sellar": [],
+  "N05-el_bucle_llama_a_sellar": [
+   "V-N05-el_bucle_llama_a_sellar"
+  ],
+  "V-N09-la_hora_de_apuntes": [],
+  "N09-la_hora_de_apuntes": [
+   "V-N09-la_hora_de_apuntes"
+  ],
+  "V-N09-el_paquete_trae_las_lecciones": [],
+  "N09-el_paquete_trae_las_lecciones": [
+   "V-N09-el_paquete_trae_las_lecciones"
+  ],
+  "V-N09-el_bucle_corre_la_hora_de_apuntes": [],
+  "N09-el_bucle_corre_la_hora_de_apuntes": [
+   "V-N09-el_bucle_corre_la_hora_de_apuntes"
+  ],
+  "V-N12-la_linea_base": [],
+  "N12-la_linea_base": [
+   "V-N12-la_linea_base"
+  ],
+  "V-N12-el_bucle_mide_antes_y_despues": [],
+  "N12-el_bucle_mide_antes_y_despues": [
+   "V-N12-el_bucle_mide_antes_y_despues"
+  ],
+  "V-N07-el_traductor_de_deseo": [],
+  "N07-el_traductor_de_deseo": [
+   "V-N07-el_traductor_de_deseo"
+  ],
+  "V-N07-el_comando_entiende": [],
+  "N07-el_comando_entiende": [
+   "V-N07-el_comando_entiende"
+  ],
+  "V-N08-el_verificador_de_resultado": [],
+  "N08-el_verificador_de_resultado": [
+   "V-N08-el_verificador_de_resultado"
+  ],
+  "V-N08-el_bucle_verifica_antes_de_sellar": [],
+  "N08-el_bucle_verifica_antes_de_sellar": [
+   "V-N08-el_bucle_verifica_antes_de_sellar"
+  ],
+  "V-N10-el_canal_conoce_a_todas_las_ia": [],
+  "N10-el_canal_conoce_a_todas_las_ia": [
+   "V-N10-el_canal_conoce_a_todas_las_ia"
+  ],
+  "V-N10-el_capataz_elige_quien_escribe_y_revisa": [],
+  "N10-el_capataz_elige_quien_escribe_y_revisa": [
+   "V-N10-el_capataz_elige_quien_escribe_y_revisa"
+  ],
+  "V-N10-el_reparto_asigna_a_las_nuevas_ia": [],
+  "N10-el_reparto_asigna_a_las_nuevas_ia": [
+   "V-N10-el_reparto_asigna_a_las_nuevas_ia"
+  ],
+  "V-N11-programa_antes_que_ia": [],
+  "N11-programa_antes_que_ia": [],
+  "V-N11-modo_ia_exige_por_que": [],
+  "N11-modo_ia_exige_por_que": [
+   "V-N11-modo_ia_exige_por_que"
+  ],
+  "V-R4c": [],
+  "R4c": [
+   "V-R4c"
+  ],
+  "V-R3": [],
+  "R3": [
+   "V-R3"
+  ],
+  "V-N22-la_espera_de_big_pickle_es_400": [],
+  "N22-la_espera_de_big_pickle_es_400": [
+   "V-N22-la_espera_de_big_pickle_es_400"
+  ],
+  "N22-la_vigia_vieja_de_big_pickle_pide_400": [],
+  "N22-la_vigia_de_nadie_mas_de_lo_medido_pide_400": [],
+  "132": [],
+  "53": [],
+  "V-R7": [],
+  "R7": [
+   "V-R7"
+  ],
+  "167": [],
+  "184": [],
+  "185": [],
+  "V-R8": [],
+  "R8": [
+   "V-R8"
+  ],
+  "V-N13-el_arquitecto": [],
+  "N13-el_arquitecto": [
+   "V-N13-el_arquitecto"
+  ],
+  "V-N13-el_comando_plan_usa_al_arquitecto": [],
+  "N13-el_comando_plan_usa_al_arquitecto": [
+   "V-N13-el_comando_plan_usa_al_arquitecto"
+  ],
+  "V-N23-la_prueba_real_del_informe": [],
+  "N23-la_prueba_real_del_informe": [
+   "V-N23-la_prueba_real_del_informe"
+  ],
+  "V-H4-el-candado-de-memoria-avisa-sin-cobrar-peaje": [],
+  "H4-el-candado-de-memoria-avisa-sin-cobrar-peaje": [
+   "V-H4-el-candado-de-memoria-avisa-sin-cobrar-peaje"
+  ],
+  "V-H6-que-no-se-muerda-la-cola": [],
+  "H6-que-no-se-muerda-la-cola": [
+   "V-H6-que-no-se-muerda-la-cola"
+  ],
+  "V-H1-el-tiempo-de-reparacion-se-mide": [],
+  "H1-el-tiempo-de-reparacion-se-mide": [
+   "V-H1-el-tiempo-de-reparacion-se-mide"
+  ],
+  "V-R25-el-guardado-compara-el-color-no-exige-verde": [],
+  "R25-el-guardado-compara-el-color-no-exige-verde": [
+   "V-R25-el-guardado-compara-el-color-no-exige-verde"
+  ],
+  "V-R23-codex-no-hace-el-papeleo": [],
+  "R23-codex-no-hace-el-papeleo": [
+   "V-R23-codex-no-hace-el-papeleo"
+  ],
+  "V-95-F001329": [],
+  "95-F001329": [
+   "V-95-F001329"
+  ],
+  "V-95-F012213": [],
+  "95-F012213": [
+   "V-95-F012213"
+  ]
+ }
+}

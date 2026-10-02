@@ -1,0 +1,12 @@
+[
+ {
+  "archivo": "cuerpo/obrero.py",
+  "viejo": "    if turnos:\n        _capas = [cuotas._capacidad(q) for q in turnos]\n        _capas = [c for c in _capas if c > 0]\n        if _capas:\n            _tope_pasillo = tope_del_pasillo(_capas)",
+  "nuevo": "    if turnos:\n        _capas = [cuotas._capacidad(q) for q in turnos]\n        _capas = [c for c in _capas if c > 0]\n        if _capas:\n            _tope_pasillo = min(_capas)"
+ },
+ {
+  "archivo": "cuerpo/obrero.py",
+  "viejo": "def tope_del_pasillo(capacidades):\n    \"\"\"Devuelve la capacidad MAYOR de la fila: el pasillo se recorta a la medida del cerebro\n    que mas aguanta, no del mas pequeno (medido 2026-10-01: recortar al minimo quitaba en 27 de\n    34 ordenes el codigo que si habia llegado).\"\"\"\n    return max(capacidades)\n\n\ndef _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False,\n                          clase=\"\", vuelta=0):",
+  "nuevo": "def _preguntar_con_relevo(prompt, temperatura, evitar=None, primero=None, pesado=False,\n                          clase=\"\", vuelta=0):"
+ }
+]

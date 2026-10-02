@@ -1,0 +1,46 @@
+{
+ "obrero": "deepseek",
+ "auditor": "(ninguno)",
+ "propuesta": {
+  "diagnostico": "El encargo pide crear un programa medidor nuevo y su vigia, pero el material no trae ningun archivo con ese codigo ni la funcion donde enchufarlo; ademas el material no incluye el archivo cerebro/router.py completo, solo trozos, asi que no se puede sustituir texto literal con garantia.",
+  "archivo": "cerebro/router.py",
+  "funcion": "armar",
+  "texto_viejo": "",
+  "texto_nuevo": "",
+  "cambios": [],
+  "cambio": "NO_ENCONTRADO: el material no trae ningun archivo medidor de paquete ni su vigia, ni la funcion donde el router deba llamarlo. Tampoco trae cerebro/router.py completo (solo trozos 210-561, 157-188 y 712-743), por lo que no se puede copiar texto_viejo literal y unico de la funcion entera.",
+  "codigo": "NO_ENCONTRADO",
+  "vigia": "NO_ENCONTRADO: no hay vigia en el material que compruebe el medidor nuevo.",
+  "puede_danar": [
+   "cerebro/protocolo.py",
+   "cerebro/trozos.py",
+   "cuerpo/dudas.py",
+   "cuerpo/respuestas.py",
+   "vigias/test_vigia_dudas.py",
+   "vigias/test_vigia_el_paquete_se_corta_a_su_minima_expresion.py",
+   "vigias/test_vigia_el_paquete_trae_el_archivo_nombrado.py",
+   "vigias/test_vigia_el_presupuesto_no_tira_lo_nombrado.py",
+   "vigias/test_vigia_memoria_completa.py"
+  ],
+  "preguntas": [
+   "¿Como se llama el archivo nuevo del medidor y en que carpeta va?",
+   "¿Como se llama el archivo nuevo de la vigia del medidor?",
+   "¿Que debe hacer exactamente el medidor: contar letras por seccion (codigo, prosa, titulos, avisos repetidos) y escribir un documento en memoria, o algo mas?",
+   "¿Como se llama el documento de salida en la carpeta memoria?",
+   "¿Donde debe llamar cerebro/router.py al medidor: al final de armar(), o en otro sitio?"
+  ],
+  "confianza": "baja"
+ },
+ "auditoria": {},
+ "avisos": [
+  "GPT-OSS 120B (Groq) no le cabe (37937 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (38677 letras, aguanta 19042) -> se le salta",
+  "el revisor de programa freno antes de pagar la revision: HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio no repara nada.; HUMO: quitando comentarios y lineas en blanco, el texto nuevo es IGUAL al viejo. Ese cambio",
+  "GPT-OSS 120B (Groq) no le cabe (38893 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "GPT-OSS 120B (Groq) no le cabe (38951 letras, aguanta 19042) -> se le salta",
+  "DeepSeek (SE PAGA) dejo el pedido a mitad (la propuesta NO cumple porque trae la marca NO_ENCONTRADO) -> se reintenta",
+  "vueltas_dadas: 4"
+ ]
+}

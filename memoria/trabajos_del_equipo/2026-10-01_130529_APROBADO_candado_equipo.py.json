@@ -1,0 +1,83 @@
+{
+ "obrero": "deepseek",
+ "auditor": "gemini2",
+ "propuesta": {
+  "diagnostico": "El candado de la puerta trasera existe pero nadie lo llama, y el tramo de documentos libres en candado_equipo.py deja pasar sin preguntar.",
+  "archivo": "arnes/candado_equipo.py",
+  "funcion": "el tramo que decide dejar pasar documentos sin extension de codigo (dentro de la funcion que escribe/valida archivos)",
+  "texto_viejo": "    if os.path.splitext(fp)[1].lower() not in CODIGO:\n        _apuntar_frenada(fp, \"DEJO PASAR: documento libre\")\n        return 0                                    # documentos: libres",
+  "texto_nuevo": "    if os.path.splitext(fp)[1].lower() not in CODIGO:\n        try:\n            from arnes.candado_puerta_trasera import documento_de_proyecto_puede_pasar\n            if not documento_de_proyecto_puede_pasar(fp):\n                _apuntar_frenada(fp, \"FRENADO: la puerta trasera no deja pasar el documento\")\n                return 1\n        except Exception:\n            _apuntar_frenada(fp, \"AVISO: no se pudo consultar la puerta trasera, se deja pasar\")\n        _apuntar_frenada(fp, \"DEJO PASAR: documento libre\")\n        return 0                                    # documentos: libres",
+  "cambios": "",
+  "cambio": "Antes de dejar pasar un documento, se trae dentro de la funcion la pieza documento_de_proyecto_puede_pasar de arnes/candado_puerta_trasera.py; si dice que no puede pasar, se frena con el mensaje del candado de equipo; si falla al traerla, se deja pasar y se apunta el aviso. El apunte del freno sigue haciendose.",
+  "codigo": "    if os.path.splitext(fp)[1].lower() not in CODIGO:\n        try:\n            from arnes.candado_puerta_trasera import documento_de_proyecto_puede_pasar\n            if not documento_de_proyecto_puede_pasar(fp):\n                _apuntar_frenada(fp, \"FRENADO: la puerta trasera no deja pasar el documento\")\n                return 1\n        except Exception:\n            _apuntar_frenada(fp, \"AVISO: no se pudo consultar la puerta trasera, se deja pasar\")\n        _apuntar_frenada(fp, \"DEJO PASAR: documento libre\")\n        return 0                                    # documentos: libres",
+  "vigia": "vigias/test_vigia_no_hay_puerta_trasera_por_dentro.py y vigias/test_vigia_el_documento_del_proyecto_no_es_libre.py; ademas vigias/test_vigia_sin_rendijas.py debe seguir verde.",
+  "puede_danar": [
+   "arnes/autorizacion.py",
+   "arnes/candado_supervisor.py",
+   "arnes/candado_terminal.py",
+   "arnes/candados_medicion.py",
+   "arnes/revisor_de_programa.py",
+   "ingeniero.py",
+   "vigias/conftest.py",
+   "vigias/test_vigia_el_documento_del_proyecto_no_es_libre.py",
+   "vigias/test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "vigias/test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py",
+   "vigias/test_vigia_equipo_siempre.py",
+   "vigias/test_vigia_fila_de_commits.py",
+   "vigias/test_vigia_fuera_de_casa.py",
+   "vigias/test_vigia_lo_aprobado_se_guarda_al_momento.py",
+   "vigias/test_vigia_no_se_aplica_lo_frenado.py",
+   "vigias/test_vigia_nunca_sin_revisar.py",
+   "vigias/test_vigia_siempre_con_equipo.py"
+  ],
+  "preguntas": [
+   "El material no muestra la funcion completa que contiene el ancla; solo el tramo. Para copiar el texto_viejo con exactitud y no romper la funcion, hace falta ver la funcion entera de arnes/candado_equipo.py donde vive el ancla. NECESITO_LEER: arnes/candado_equipo.py / motivo: ver la funcion completa que contiene el tramo de documentos libres / que decide: el texto exacto a sustituir y el valor de retorno correcto al frenar / riesgo: si el retorno no es 1 o el nombre de la funcion no es el correcto, el cambio no aplica."
+  ],
+  "confianza": "media",
+  "_fuera_del_paquete": [
+   "autorizacion.py",
+   "candado_supervisor.py",
+   "candado_terminal.py",
+   "candados_medicion.py",
+   "conftest.py",
+   "revisor_de_programa.py",
+   "test_vigia_el_guardia_se_acuerda_y_frena.py",
+   "test_vigia_el_trabajo_pagado_no_se_pisa.py",
+   "test_vigia_el_turno_de_guardado_se_libera_si_su_dueno_murio.py",
+   "test_vigia_equipo_siempre.py",
+   "test_vigia_fila_de_commits.py",
+   "test_vigia_fuera_de_casa.py",
+   "test_vigia_lo_aprobado_se_guarda_al_momento.py",
+   "test_vigia_no_se_aplica_lo_frenado.py",
+   "test_vigia_nunca_sin_revisar.py",
+   "test_vigia_siempre_con_equipo.py"
+  ],
+  "_comprobado_por_programa": true
+ },
+ "auditoria": {
+  "veredicto": "APROBADO",
+  "invento_algo": false,
+  "que_invento": [],
+  "fallos": [],
+  "riesgo_vecinos": [
+   "Riesgo mínimo. La importación local y el bloque try-except protegen al sistema de posibles errores o de la ausencia del módulo 'candado_puerta_trasera'."
+  ],
+  "que_falta": [],
+  "resumen_para_el_jefe": "El cambio cierra el agujero de seguridad en documentos sin extensión de código integrando correctamente la llamada al candado de la puerta trasera."
+ },
+ "avisos": [
+  "el pasillo recorto el encargo de 19588 a 11141 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.",
+  "el pasillo recorto el encargo de 25469 a 14082 letras para que le quepa a un cerebro gratis (tope medido: 19042)",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 3 preview se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "no quedaba ningun cerebro gratis: contesto DeepSeek (SE PAGA), que SE PAGA",
+  "GPT-OSS 120B (Groq) se agoto -> pasa el turno",
+  "Gemini 2.5 flash-lite se agoto -> pasa el turno",
+  "vueltas_dadas: 3"
+ ]
+}
