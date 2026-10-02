@@ -487,6 +487,43 @@ def revisar(propuesta, tarea=""):
                             _nom_arg = _nodo_mp.args[1]
                             if not isinstance(_mod_arg, ast.Constant) or not isinstance(_mod_arg.value, str):
                                 continue
+                            _nom_pedido = _nodo_mp.args[1]
+                            if not isinstance(_nom_pedido, ast.Constant) or not isinstance(_nom_pedido.value, str):
+                                continue
+                            _mod_nombre = _mod_arg.value
+                            _nom_pedido = _nom_pedido.value
+                            _ruta_mod_mp = os.path.join(_dir_mp, *_mod_nombre.split(".")) + ".py"
+                            if not os.path.isfile(_ruta_mod_mp):
+                                continue
+                            try:
+                                with open(_ruta_mod_mp, encoding="utf-8-sig", errors="replace") as _fmod_mp:
+                                    _fuente_mod_mp = _fmod_mp.read()
+                                _arbol_mod_mp = ast.parse(_fuente_mod_mp)
+                            except Exception:
+                                continue
+                            _nombres_mod_mp = set()
+                            for _n_mp in _arbol_mod_mp.body:
+                                if isinstance(_n_mp, ast.Import):
+                                    for _a_mp in _n_mp.names:
+                                        _nombres_mod_mp.add((_a_mp.asname or _a_mp.name).split(".")[0])
+                                elif isinstance(_n_mp, ast.ImportFrom):
+                                    for _a_mp in _n_mp.names:
+                                        _nombres_mod_mp.add(_a_mp.asname or _a_mp.name)
+                                elif isinstance(_n_mp, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                                    _nombres_mod_mp.add(_n_mp.name)
+                                elif isinstance(_n_mp, ast.Assign):
+                                    for _t_mp in _n_mp.targets:
+                                        if isinstance(_t_mp, ast.Name):
+                                            _nombres_mod_mp.add(_t_mp.id)
+                            if _nom_pedido not in _nombres_mod_mp:
+                                fallos.append(
+                                    "MONKEYPATCH A UN NOMBRE QUE EL MODULO NO IMPORTA: la prueba "
+                                    "hace monkeypatch.setattr('%s', '%s', ...) pero '%s' no se "
+                                    "importa arriba de %s. Ese apartado revienta con "
+                                    "AttributeError y la prueba no mediria nada. Hay que apartar "
+                                    "la funcion en su propio modulo."
+                                    % (_mod_nombre, _nom_pedido, _nom_pedido, _ruta_mod_mp))
+                                continue
                             if not isinstance(_nom_arg, ast.Constant) or not isinstance(_nom_arg.value, str):
                                 continue
                             _mod_nombre = _mod_arg.value
