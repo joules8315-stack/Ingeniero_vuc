@@ -4225,5 +4225,85 @@
   "estado": "pendiente",
   "resolucion": "",
   "motivo": ""
+ },
+ "c516d3be611d0c8d262faa5fa1698884": {
+  "texto": ">>   $sd = \"$env:TEMP\\sinclaude\"",
+  "fuente": "julio",
+  "cuando": 1790900179.9124753,
+  "estado": "pendiente",
+  "resolucion": "",
+  "motivo": ""
+ },
+ "4b900ee998cdd2236efab2da0d5b5e66": {
+  "texto": ">>   Set-Content -Path \"$sd\\claude",
+  "fuente": "julio",
+  "cuando": 1790900179.919224,
+  "estado": "pendiente",
+  "resolucion": "",
+  "motivo": ""
+ },
+ "1fc16b29cc1b33e8f32d5fa8e35537e5": {
+  "texto": ">>   \"Claude falso puesto en esta ventana\"",
+  "fuente": "julio",
+  "cuando": 1790900179.9253678,
+  "estado": "pendiente",
+  "resolucion": "",
+  "motivo": ""
+ },
+ "d3420199511134173fc50e8b41e72c2c": {
+  "texto": ">>     $ult = \"$($res | Select-Object -Last 1)\"",
+  "fuente": "julio",
+  "cuando": 1790900179.9320636,
+  "estado": "pendiente",
+  "resolucion": "",
+  "motivo": ""
+ },
+ "6b7bfed24a52003b6099758c0e9545aa": {
+  "texto": ">>     if (\"$res\" -match \"TODO HECHO\") { \"=== TERMINADO: todo hecho\"; break }",
+  "fuente": "julio",
+  "cuando": 1790900179.9386253,
+  "estado": "pendiente",
+  "resolucion": "",
+  "motivo": ""
+ },
+ "47a10b980c096fccbb64cdad1cd6eb05": {
+  "texto": ">>     if (\"$res\" -match \"SIN SALDO\") { \"=== PARADO: DeepSeek sin saldo\"; break }",
+  "fuente": "julio",
+  "cuando": 1790900179.9447005,
+  "estado": "pendiente",
+  "resolucion": "",
+  "motivo": ""
+ },
+ "c2bd9ff26de6fe358b00fb57cd5242f6": {
+  "texto": ">>     if ($ult -eq $prev) { \"=== EL BUCLE REPITE LO MISMO: me detengo para que lo veas\"; break }",
+  "fuente": "julio",
+  "cuando": 1790900179.950753,
+  "estado": "pendiente",
+  "resolucion": "",
+  "motivo": ""
+ },
+ "09e2b2993d99b51dfafaefab542d92d9": {
+  "texto": ">>     Start-Sleep -Seconds 3",
+  "fuente": "julio",
+  "cuando": 1790900179.9564624,
+  "estado": "pendiente",
+  "resolucion": "",
+  "motivo": ""
+ },
+ "0f3fb7b68e5131ddbd1b4eb1c231cd7b": {
+  "texto": "txt | Sort-Object LastWriteTime -Descending | Select-Object -First 1 | ForEach-Object { \"=== POR QUE FALLO LA ULTIMA: \" + $_",
+  "fuente": "julio",
+  "cuando": 1790900179.963111,
+  "estado": "pendiente",
+  "resolucion": "",
+  "motivo": ""
+ },
+ "f62b69938cd3eaaa2d010c6f0a301e07": {
+  "texto": "Claude falso puesto en esta ventana",
+  "fuente": "julio",
+  "cuando": 1790900179.9692335,
+  "estado": "pendiente",
+  "resolucion": "",
+  "motivo": ""
  }
 }
