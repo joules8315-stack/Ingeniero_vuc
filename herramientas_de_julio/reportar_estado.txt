@@ -62,6 +62,23 @@ def armar():
         L.append("\nLINEA BASE: %d vigias rojas conocidas" % len(rc))
     except Exception:
         L.append("\nLINEA BASE: NO EXISTE memoria/.rojas_conocidas.json")
+    L.append("\n== LO QUE EL GUARDIA CORRERIA AHORA (arnes/vecinas.py; TODAS = la bateria completa) ==")
+    try:
+        r_ = subprocess.run([sys.executable, os.path.join("arnes", "vecinas.py"), RAIZ], cwd=RAIZ, capture_output=True, text=True,
+                            timeout=90, stdin=subprocess.DEVNULL)
+        sel = [x for x in r_.stdout.splitlines() if x.strip()]
+        L.append("%d lineas%s" % (len(sel), ": TODAS" if sel[:1] == ["TODAS"] else ""))
+        L.extend(sel[:30])
+    except Exception as e_:
+        L.append("(no se pudo medir: %s)" % str(e_)[:120])
+    L.append("\n== ARCHIVOS CAMBIADOS SIN GUARDAR (git status) ==")
+    try:
+        g_ = subprocess.run(["git", "status", "--porcelain"], cwd=RAIZ, capture_output=True, text=True, timeout=60, stdin=subprocess.DEVNULL)
+        gs = [x for x in g_.stdout.splitlines() if x.strip()]
+        L.append("%d archivos" % len(gs))
+        L.extend(x[:140] for x in gs[:40])
+    except Exception as e_:
+        L.append("(no se pudo leer: %s)" % str(e_)[:120])
     L.append("\n== ULTIMA MEDIDA DE LA BATERIA EN ESTE PC ==")
     L.append(cola(os.path.join(RAIZ, "memoria", ".ultima_linea_base.txt"), 10))
     L.append("\n== ULTIMA VUELTA DEL BUCLE (final de la ventana) ==")
