@@ -1,0 +1,1181 @@
+# -*- coding: utf-8 -*-
+"""Crea las ordenes nuevas de Julio (2026-10-01) y pone TODO el orden en memoria/ORDENES.json.
+Sin IA. Usa las piezas del propio Ingeniero (director, capataz). Se corre desde C:\\Ingeniero_VUC:
+    python crear_las_ordenes.py --prueba    (simula y comprueba la cadena; no toca nada)
+    python crear_las_ordenes.py             (aplica)
+Se puede correr otra vez: no duplica ordenes, vuelve a poner el orden."""
+import collections
+import datetime
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+
+RAIZ = os.getcwd()
+sys.path.insert(0, RAIZ)
+from cuerpo import capataz, director  # noqa: E402
+
+PRUEBA = "--prueba" in sys.argv
+ORIGEN = "Julio 2026-10-01"
+HOY = datetime.date.today().isoformat()
+
+
+def slug(t):
+    return re.sub(r"[^a-z0-9]+", "_", t.lower()).strip("_")[:60]
+
+
+def enc(que, como, donde, porque, extra=""):
+    t = ("QUE SE REPARA: %s\nCOMO SE REPARA: %s\nDONDE SE REPARA: %s\nPOR QUE SE REPARA: %s"
+         % (que, como, donde, porque))
+    return t + ("\n" + extra if extra else "")
+
+
+# ----------------------------------------------------------------------------------------
+# LAS TRES LEYES NUEVAS (documentos). Completan las que ya existen, no las repiten.
+# ----------------------------------------------------------------------------------------
+LEYES = [
+    dict(
+        id="L1-el-orden-de-los-pasos-lo-impone-el-programa",
+        titulo="Ley: el orden de los pasos lo impone el programa",
+        pieza="CONTRATO_EL_ORDEN_DE_LOS_PASOS_LO_IMPONE_EL_PROGRAMA.md",
+        slug="el_contrato_del_orden_de_los_pasos",
+        claves=["que cada uno abra el otro", "no dependa de tu memoria", "depende", "PLAN_DE_PASOS.json",
+                "CONTRATO_EL_PLAN_SE_SIGUE", "camino_sano"],
+        que="Escribir la ley: un plan se ejecuta en pasos y cada paso abre el siguiente; el orden lo impone el programa y nunca la memoria de una persona o de una IA.",
+        como="Un contrato nuevo, con las palabras de Julio arriba y textuales. Dice: cada orden lleva su depende y no corre hasta que las de las que depende esten hechas; una dependencia que apunta a una orden archivada, inexistente, circular, o cuya vigia no se ha escrito, es una falla del plan que un programa detecta y dice con nombre; la tabla del plan vive en un solo archivo (memoria/PLAN_DE_PASOS.json); incluye la tabla de verdad con sus casos y nombra el programa y la vigia que la hacen cumplir. Completa a CONTRATO_EL_PLAN_SE_SIGUE sin repetirlo.",
+        porque="Julio, 2026-10-01: 'que cada paso abra el otro, porque si no seguimos tirando trabajo a la basura' y 'que nada dependa de tu memoria'. Medido: el campo depende estaba vacio en las 56 ordenes abiertas, y una orden archivada o sin vigia detiene en silencio a todas las que vienen detras.",
+        esperado="El contrato existe, cita a Julio, nombra el campo depende, el archivo del plan y el programa camino_sano, y su vigia lo comprueba.",
+    ),
+    dict(
+        id="L2-el-ingeniero-entiende-lo-que-julio-quiere",
+        titulo="Ley: el ingeniero entiende lo que Julio quiere y se repara solo",
+        pieza="CONTRATO_EL_INGENIERO_ENTIENDE_LO_QUE_JULIO_QUIERE.md",
+        slug="el_contrato_del_ingeniero_que_entiende",
+        claves=["resultado esperado", "ontologia", "nace conectad", "candado", "memoria", "hora de apuntes",
+                "programa antes que IA", "CONTRATO_TODO_ENCHUFADO_NADA_DORMIDO", "CONTRATO_MENOS_IA_MAS_PROGRAMA",
+                "CONTRATO_LOS_CUATRO_OBJETIVOS_ORQUESTADOS", "CONTRATO_EL_FABRICANTE_DE_HABILIDADES"],
+        que="Escribir la ley del objetivo maximo: cuando Julio dice lo que desea, el Ingeniero lo traduce y sabe de verdad que quiere, y despues lo construye, lo verifica y se repara solo.",
+        como="Un contrato nuevo con los once pasos de Julio textuales: 1 verifica si sabe lo que se desea y si existe material o toca crearlo; 2 analiza el problema; 3 propone la arquitectura; 4 busca todos los recursos; 5 organiza las tareas; 6 las delega al equipo diciendo el objetivo; 7 antes establece candados y vigilantes; 8 hay una hora de apuntes que recoge lo que no sirvio y replantea; 9 en caso de acierto se verifica contra el resultado esperado (ontologia) y se sella; 10 verifica que cada paso no dane lo que ya sirve; 11 todo por programa y la IA solo donde un programa no alcanza. Suma: toda pieza nace conectada, con candado y con vigia, y lo comprueba un programa; al sellar la memoria se actualiza sola; el creador de skills YA existe y no se vuelve a crear. Cada regla nombra su programa y su vigia, y cita las leyes que completa: CONTRATO_TODO_ENCHUFADO_NADA_DORMIDO, CONTRATO_MENOS_IA_MAS_PROGRAMA, CONTRATO_LOS_CUATRO_OBJETIVOS_ORQUESTADOS, CONTRATO_MEMORIA_DE_FALLOS y CONTRATO_EL_FABRICANTE_DE_HABILIDADES.",
+        donde="CONTRATO_EL_INGENIERO_ENTIENDE_LO_QUE_JULIO_QUIERE.md en la raiz.",
+        porque="Julio, 2026-10-01: 'el objetivo maximo es que cuando yo le diga al ingeniero que deseo, el lo traduzca, sepa en realidad que quiero' y 'nada dependa de tu memoria, ni de la de ninguna IA'. Medido: no existe campo de resultado esperado ni ontologia en el codigo, y hay 11 piezas dormidas.",
+        esperado="El contrato existe, trae los once pasos, el resultado esperado y la ontologia, y cada regla nombra su programa y su vigia.",
+    ),
+    dict(
+        id="L4-copias-temporales-por-orden",
+        titulo="Ley: cada orden trabaja en su copia temporal (excepcion a una sola via)",
+        pieza="CONTRATO_COPIAS_TEMPORALES_POR_ORDEN.md",
+        slug="el_contrato_de_copias_temporales_por_orden",
+        claves=["CONTRATO_LA_MULTITAREA_ES_LA_FORMA_DE_TRABAJAR", "CONTRATO_UNA_SOLA_VIA", "copia temporal", "se borra", "misma pieza", "git worktree"],
+        que="Escribir la excepcion que hace posible la multitarea: una copia TEMPORAL por orden, creada al empezar y borrada al terminar, no cuenta como una segunda via.",
+        como="Un contrato nuevo que cita la ley de la multitarea del 2026-09-28 (maxima prioridad) y la ley de una sola via, y dice: cada orden corre en su propia copia temporal (git worktree); se borra al terminar y nunca queda una copia suelta en el disco; sigue prohibido correr dos ordenes de la misma pieza a la vez; solo se escribe en el disco y se guarda por turnos; el trabajo aprobado vuelve a la carpeta unica. Nombra el programa y la vigia que lo hacen cumplir.",
+        porque="Julio, 2026-09-28 (maxima prioridad): 'trabajar de una en una es lo que hace que esto se demore demasiado, y eso es inaceptable'. Medido el 2026-10-01: el bucle corre de una en una (en_paralelo=1 fijo en el comando pit), la vigia que exige varias a la vez esta roja sin dueno, y la maquinaria (copia por orden, turnos del guardado, bucle con hilos) ya existe.",
+        esperado="El contrato existe, cita las dos leyes y la regla de la misma pieza, y su vigia lo comprueba.",
+    ),
+    dict(
+        id="L3-todas-las-ia-trabajan-por-el-canal",
+        titulo="Ley: todas las IA trabajan por el canal",
+        pieza="CONTRATO_TODAS_LAS_IA_TRABAJAN_POR_EL_CANAL.md",
+        slug="el_contrato_de_todas_las_ia_por_el_canal",
+        claves=["Codex", "Big Pickle", "Grok 4.7", "canal", "objetivo", "resultado esperado", "cuaderno",
+                "CONTRATO_ATENTO_AL_CANAL"],
+        que="Escribir la ley: en cada trabajo se puede pedir ayuda a Codex, Big Pickle y Grok 4.7 (y a las demas IA) por el canal, diciendoles el objetivo.",
+        como="Un contrato nuevo que dice: cada IA tiene identidad en el canal; una orden puede pedir ayuda declarando el objetivo y el resultado esperado; la respuesta queda en el cuaderno con quien, cuanto tardo y cuanto costo; se espera con la regla de CONTRATO_ATENTO_AL_CANAL; las gratis primero; ninguna IA escribe codigo sin pasar por el equipo y su revisor. Nombra el programa y la vigia que lo hacen cumplir.",
+        donde="CONTRATO_TODAS_LAS_IA_TRABAJAN_POR_EL_CANAL.md en la raiz.",
+        porque="Julio, 2026-10-01: 'tenemos mas IAs, en cada trabajo se les puede solicitar que trabajen, se puede comunicar con ellas por un canal: Codex, Big Pickle y Grok 4.7'. Medido: el canal solo conoce a claude, cline y chatgpt, y el capataz tiene fijo quien escribe y quien revisa.",
+        esperado="El contrato existe, nombra a las tres IA y al canal, y su vigia lo comprueba.",
+    ),
+]
+
+# ----------------------------------------------------------------------------------------
+# LAS PIEZAS NUEVAS. Cada una: ley que la manda, partes (pieza nueva o conexion), y su resultado esperado.
+# tipo: crear (archivo nuevo) | editar (cambiar uno que existe) | vigia (solo la prueba)
+# ----------------------------------------------------------------------------------------
+N = [
+    dict(clave="N19", titulo="El cuaderno dice por que una respuesta no sirvio",
+         porque="Medido el 2026-10-01 en el cuaderno de llamadas (1000 filas): 164 de las 165 respuestas marcadas 'vacio' NO estaban vacias; la IA contesto algo y la propuesta salio incompleta. El cuaderno las llama vacio y apunta como tamano el de la RESPUESTA. Causas reales leidas en el campo crudo: 92 devuelven solo un diagnostico sin el cambio, 29 JSON de otra forma, 29 texto que no es JSON (por ejemplo NECESITO_LEER), 14 NO_ENCONTRADO. Nadie lo leia porque el cuaderno no dice que falto.",
+         esperado="Cada respuesta que no sirve queda apuntada con su causa exacta (que campo falto, o si pidio material) y con el tamano del pedido; 'vacio' solo significa vacio de verdad; un programa resume cada dia las causas que mas se repiten.",
+         partes=[
+             ("el_cuaderno_dice_la_causa", "cuerpo/obrero.py", "editar", "Una propuesta incompleta se apunta con su causa",
+              "Que en el sitio donde la funcion trabajar apunta en el cuaderno una propuesta incompleta, el resultado ya no sea vacio sino incompleta, el tamano sea el del pedido y no el de la respuesta, y el motivo diga que campo falto (diagnostico sin cambio, forma de JSON distinta, texto que no es JSON o pide material).",
+              "Se prueba ejecutando con una respuesta falsa incompleta y leyendo la fila que queda en el cuaderno."),
+             ("el_resumen_diario_del_cuaderno", "arnes/resumen_del_cuaderno.py", "crear", "El resumen diario de causas",
+              "Una pieza nueva que lea el cuaderno y devuelva por dia y por cerebro cuantas respuestas sirvieron y las tres causas de fallo que mas se repiten, y que el comando de arranque la muestre en dos renglones.",
+              "Sin IA."),
+         ]),
+    dict(clave="N27", titulo="Las dos vias por programa: el codigo viaja limpio y la guia va aparte",
+         porque="Ley de Julio del 2026-10-01 (CONTRATO_LAS_DOS_VIAS) que ninguna orden llevaba. Medido el 2026-10-01 con una prueba sin IA: con el encargo original de H2 el paquete (23267 letras) no traia el codigo a cambiar; en 58 ordenes abiertas con pieza .py, el paquete trae el codigo nombrado en 31 de 31 cuando el encargo nombra el archivo y en 1 de 3 cuando no; el pit solo manda el texto del encargo y los campos pieza y repara de la orden nunca llegan; y el recorte al tope del cerebro mas pequeno quita codigo que si habia llegado en 27 de 34.",
+         esperado="Cada orden entrega a la IA dos vias separadas: la guia (objetivo, donde, motivo exacto del fallo, que no repetir) y el codigo (la funcion completa de la pieza, literal), nunca mezcladas; un candado frena cualquier mezcla; no hay nada que recortar.",
+         partes=[
+             ("las_dos_vias", "arnes/dos_vias.py", "crear", "El programa de las dos vias",
+              "Una pieza nueva con una funcion que, dada una orden, arme la GUIA (objetivo, donde = pieza y funciones de la orden, motivo exacto del fallo anterior leido del mensaje de la vigia roja y de los motivos del ultimo rechazo, y lo que no se debe repetir) y el CODIGO (la funcion completa de la pieza, literal, entregada por el mostrador y no por adivinar palabras; si no cabe se parte por funcion, nunca se recorta), y otra funcion que diga si hay mezcla entre las dos vias. La vigia que nace primero cubre las cuatro filas de la tabla de verdad de CONTRATO_LAS_DOS_VIAS (guia aparte y codigo limpio pasa; guia dentro del codigo, codigo dentro de la guia o una sola via, no pasan). Sin IA. Nunca lanza.", ""),
+             ("el_pit_arma_las_dos_vias", "cuerpo/capataz.py", "editar", "El pit arma las dos vias",
+              "Que al lanzar al equipo el capataz arme la guia y el codigo con el programa de las dos vias y los entregue por separado en lugar de mandar solo el texto del encargo.", ""),
+             ("el_mando_equipo_recibe_las_dos_vias", "ingeniero.py", "editar", "El comando equipo recibe las dos vias",
+              "Que el comando equipo acepte la guia y el codigo como dos archivos distintos, ademas del encargo de siempre, y se los pase al obrero.", ""),
+             ("el_obrero_usa_la_via_del_codigo", "cuerpo/obrero.py", "editar", "El obrero usa la via del codigo y el candado frena la mezcla",
+              "Que el obrero, cuando recibe la via del codigo, no vuelva a adivinar el material por palabras; que los motivos de un rechazo anterior entren por la guia y nunca dentro del codigo; y que frene la entrega si la funcion de mezcla detecta guia dentro del codigo o al reves.", ""),
+         ]),
+    dict(clave="N28", titulo="Prueba previa sin IA: antes de gastar, se comprueba que el codigo llega",
+         porque="Medido el 2026-10-01: 12 de las 58 ordenes abiertas con pieza .py no nombran el archivo de su pieza y a esas el paquete les trae el codigo solo en 1 de 3; cada una se manda a una IA de pago sin que nadie compruebe antes por programa que el codigo llega. Es gasto sin resultado posible.",
+         esperado="Antes de llamar a ninguna IA, un programa reproduce las etapas (paquete, material, prompt, recorte) y comprueba que el codigo nombrado llega; si no llega, la orden queda apartada con el motivo exacto y no se gasta nada.",
+         partes=[
+             ("prueba_previa", "arnes/prueba_previa.py", "crear", "El programa de la prueba previa",
+              "Una pieza nueva que, dada una orden, reproduzca sin IA las etapas del encargo: el paquete que se armaria, el material que le quedaria al escritor, el prompt completo y el recorte al tope del cerebro que va a escribir, y diga etapa por etapa si el codigo que la orden nombra sigue estando. Devuelve un informe corto en palabras simples.", ""),
+             ("el_bucle_hace_la_prueba_previa", "cuerpo/capataz.py", "editar", "El bucle la hace antes de gastar",
+              "Que antes de lanzar una orden al equipo el bucle corra la prueba previa y, si el codigo no llega, aparte la orden con el motivo en vez de gastar una llamada.", ""),
+         ]),
+    dict(clave="N29", titulo="Multitarea: la vigia vieja deja de exigir de una en una",
+         porque="Ley de Julio del 2026-09-28 (maxima prioridad). La vigia test_vigia_el_pit_corre_una_tarea_a_la_vez exige lo contrario de la ley y R6 pide reescribirla con su razon antes de tocar nada.",
+         esperado="La vigia vieja ya no exige de una en una: exige que dos ordenes de la misma pieza no corran a la vez y deja correr las de piezas distintas.",
+         partes=[
+             ("la_vigia_vieja_deja_correr_varias", "vigias/test_vigia_el_pit_corre_una_tarea_a_la_vez.py", "editarvigia", "La vigia vieja admite varias a la vez",
+              "Que la vigia deje de exigir que el pit corra una sola tarea a la vez y pase a exigir que dos ordenes de la MISMA pieza nunca corran juntas. Razon: ley de la multitarea del 2026-09-28, maxima prioridad de Julio.", ""),
+         ]),
+    dict(clave="N22", titulo="La espera maxima es 400 segundos",
+         porque="Decidido por Julio el 2026-09-27 (palabras suyas: 'maximo se espera 400 s; si no responde, se le pasa el encargo a otro') y escrito en el plan anterior como FALTA, pero ninguna orden lo lleva: R3 solo habla de preguntar a la vez. Medido: de 163 respuestas buenas de Big Pickle la mas lenta tardo 314 s.",
+         esperado="Big Pickle no espera mas de 400 s por defecto, la espera medida nunca pasa de 400 s, y las dos vigias viejas piden 400 y no 600 ni 300.",
+         partes=[
+             ("la_espera_de_big_pickle_es_400", "cuerpo/bigpickle.py", "editar", "La espera por defecto de Big Pickle es 400",
+              "Que el tiempo maximo por defecto de Big Pickle pase de 600 a 400 segundos y que la funcion que calcula cuanto se le espera respete el tope de espera declarado en la fila de cerebros.",
+              "Se prueba ejecutando con y sin historico de tiempos."),
+             ("la_vigia_vieja_de_big_pickle_pide_400", "vigias/test_vigia_a_big_pickle_se_le_espera_lo_que_tarda.py", "editarvigia", "La vigia vieja pide 400",
+              "Que el caso de 'sin filas se espera el valor por defecto' pase a exigir 400 en vez de 600. Se reescribe con esta razon: decision de Julio del 2026-09-27.", ""),
+             ("la_vigia_de_nadie_mas_de_lo_medido_pide_400", "vigias/test_vigia_a_nadie_se_le_espera_mas_de_lo_medido.py", "editarvigia", "Los dos casos de Big Pickle piden 400",
+              "Que los dos casos de Big Pickle que hoy piden 300 pidan 400. Razon: decision de Julio del 2026-09-27.", ""),
+         ]),
+    dict(clave="N23", titulo="La medida unica: Julio pudo hacer su informe hoy",
+         porque="Escrito como pendiente 'lo mas importante' en el analisis del Ingeniero y nunca convertido en orden. Ley 7 de Julio: antes de pedirle que pruebe con sus ojos, una prueba real interna debe demostrar que el objetivo se cumple.",
+         esperado="Un programa abre la aplicacion con un navegador automatico, genera un informe de prueba y apunta si/no en el estado: pudo Julio hacer su informe hoy.",
+         partes=[
+             ("la_prueba_real_del_informe", "arnes/prueba_real_del_informe.py", "crear", "El programa de la prueba real del informe",
+              "Una pieza nueva que, con Playwright y la ruta del proyecto Foto Informe declarada en proyectos.config, abra la aplicacion, haga una foto de prueba, genere un informe y deje apuntado en el estado si salio bien, con la hora, y que diga en una linea simple que paso. Sin IA.", ""),
+         ]),
+    dict(clave="N25", titulo="Un solo plan, una reparacion una orden",
+         porque="Medido el 2026-10-01: 47 documentos de plan o estado (27 llamados PLAN), 105 copias de archivos, 5 grupos de ordenes con la misma reparacion y la misma pieza, 8 ordenes hijas del forense sobre 6 padres y 1223 trabajos guardados (113 versiones de la misma pieza). Cada ronda guarda una version nueva en vez de actualizar una sola, y nada exige que haya un solo plan.",
+         esperado="Hay un solo plan (PLAN_PRIORIDAD_UNO.md, generado por programa), ninguna orden abierta repite la reparacion y la pieza de otra, y las copias viejas viven en una sola carpeta; una vigia lo comprueba al arrancar.",
+         partes=[
+             ("vigia_hay_un_solo_plan", "vigias/test_vigia_hay_un_solo_plan.py", "vigia", "La guardia del plan unico",
+              "Una vigia que compruebe, sobre un proyecto de prueba armado en una carpeta temporal, que: hay un unico documento de plan en la raiz; ningun otro documento de plan fuera de la carpeta de anulados; ninguna orden abierta repite la misma reparacion y pieza de otra; y ninguna copia vieja (.bak, .antes_) fuera de su carpeta. Nace roja porque la pieza todavia no existe.", ""),
+             ("un_solo_plan", "arnes/un_solo_plan.py", "crear", "El programa del plan unico",
+              "Una pieza nueva con una funcion que revise esas cuatro cosas en un proyecto y devuelva la lista de lo que incumple, y otra que aparte lo viejo sin borrarlo: documentos de plan corregidos y copias a una carpeta de anulados con un indice, y ordenes duplicadas a archivadas con su motivo. Sin IA. Nunca lanza.", ""),
+             ("el_arranque_vigila_el_plan_unico", "ingeniero.py", "editar", "El arranque comprueba el plan unico",
+              "Que el comando de arranque llame a la funcion de revision y muestre en una linea simple si hay un solo plan o que incumple.", ""),
+         ]),
+    dict(clave="N26", titulo="El mando no muere por un caracter y no pierde el trabajo pagado",
+         porque="Fallo real del 2026-08-25 con vigia escrita para nacer roja y nunca reparado, sin orden que lo lleve: el mando muere al imprimir un caracter que la consola de Windows (cp1252) no tiene y, como guarda DESPUES de imprimir, se pierde el trabajo que ya se pago.",
+         esperado="Si un caracter no se puede mostrar, se muestra como se pueda y el trabajo se guarda antes de imprimir; la vigia existente pasa a verde.",
+         partes=[
+             ("el_mando_no_muere_por_un_caracter", "ingeniero.py", "existente", "Guardar antes de imprimir y mostrar con reemplazo",
+              "Que el comando del equipo guarde la llave del trabajo antes de imprimir la respuesta y que al imprimir use un reemplazo para los caracteres que la consola no pueda mostrar, de modo que nunca muera por eso.",
+              "vigias/test_vigia_el_mando_no_muere_por_un_caracter.py"),
+         ]),
+    dict(clave="N20", titulo="Las vigias no tocan el estado real",
+         porque="Medido el 2026-10-01: 423 de las 1678 lineas del registro de Big Pickle (25 por ciento) las escribieron las pruebas al correr (segundos 0 y unidades 0), porque la ruta del registro es fija y ninguna prueba la cambia; 10 vigias importan a Big Pickle. Rompe la ley 23 (ninguna comprobacion toca el estado real) y falsea el porcentaje de fallo que se uso para decidir.",
+         esperado="Correr toda la bateria no cambia ningun archivo de memoria/; una vigia lo comprueba comparando antes y despues.",
+         partes=[
+             ("ninguna_vigia_toca_la_memoria_real", "vigias/test_vigia_ninguna_vigia_toca_la_memoria_real.py", "vigia", "La guardia de la memoria real",
+              "Una vigia que corra las vigias que importan a Big Pickle con una copia de memoria/ y compruebe que el registro real no cambia; nace roja porque hoy cambia.", ""),
+             ("el_registro_de_big_pickle_respeta_la_prueba", "cuerpo/bigpickle.py", "editar", "El registro respeta la variable de prueba",
+              "Que la ruta del registro de Big Pickle pueda cambiarse con una variable de entorno de prueba, y que sin ella siga siendo la de siempre.", ""),
+             ("las_pruebas_apuntan_a_un_registro_temporal", "vigias/conftest.py", "editar", "Cada prueba usa su propio registro",
+              "Que el archivo de ajustes comunes de las vigias fije, para cada prueba, esa variable apuntando a una carpeta temporal, como ya hace con las otras variables de prueba.", ""),
+         ]),
+    dict(clave="N21", titulo="El forense no juzga lo que no ve",
+         porque="Medido el 2026-10-01 en los 93 expedientes: solo 9 (10 por ciento) terminaron en una orden nueva; el juez rechazo 28, el perito no contesto 28, las citas no existian en 17 y 39 expedientes nunca se analizaron. El juez es una IA a la que solo se le pasan la causa y las citas, sin el codigo: no puede ver lo que juzga.",
+         esperado="Un programa comprueba que cada cita existe literal y que contiene lo que se afirma; solo si no puede decidir se pregunta a una IA gratis, y esa IA recibe el trozo citado pegado.",
+         partes=[
+             ("el_juez_del_forense_ve_el_codigo", "cuerpo/capataz.py", "editar", "El juez del forense es un programa que ve el codigo",
+              "Que la funcion que juzga las citas del forense decida primero por programa: cada cita existe literal en su archivo y los terminos de la causa afirmada aparecen en el trozo citado. Solo si el programa no puede decidir pregunta a una IA gratis, pasandole el trozo citado pegado y no solo la causa.",
+              "Se prueba ejecutando con una cita verdadera, una falsa y una dudosa."),
+         ]),
+    dict(clave="N18", titulo="El bucle nunca se detiene por una orden que falla",
+         porque="Julio, 2026-10-01: 'una serie de pasos logicos que desbloquee todo el trabajo, no que se detenga cada instante'. Medido: el bucle termina con PARADO cuando una orden falla tres veces igual en la misma pieza, y con NADA SE PUEDE CORRER cuando falla la primera; una falla aislada detiene todo el trabajo.",
+         esperado="Una orden que falla se aparta con su expediente y el bucle sigue con las demas; el bucle solo termina si no queda ninguna orden corrible o DeepSeek se quedo sin saldo, y al final resume cuales quedaron apartadas y por que.",
+         partes=[
+             ("el_bucle_no_se_detiene_por_fallos", "cuerpo/capataz.py", "editar", "El bucle aparta la que falla y sigue",
+              "Que cuando una orden falla tres veces del mismo tipo en la misma pieza el bucle NO termine: marque esa orden como apartada con su motivo y su expediente, deje fuera solo a las que dependen de ella, y continue con la siguiente orden corrible. El bucle termina solo si no queda ninguna corrible o si DeepSeek no tiene saldo, e imprime al final un resumen de las ordenes apartadas y por que.",
+              "Se prueba ejecutando el bucle con ordenes falsas, una que falla siempre y otras que no dependen de ella."),
+         ]),
+    dict(clave="N17", titulo="El perito es gratis: Claude no es el perito por defecto",
+         porque="Medido el 2026-10-01: despues de CADA orden fallida el forense llama a Claude (el programa claude con permiso de leer el proyecto) y gasta el saldo de Claude de Julio; en la corrida de H2 ese analisis ademas fue descartado por el juez gratis. Julio definio lo economico asi: lo que puedan hacer las IA gratis, que lo hagan; Claude solo lo estrictamente necesario.",
+         esperado="El perito es primero una IA gratis (Big Pickle, Grok 4.7 o Codex); Claude no se llama nunca por defecto y solo si Julio lo enciende con una variable de entorno.",
+         partes=[
+             ("el_perito_es_gratis", "cuerpo/capataz.py", "editar", "El perito es una IA gratis",
+              "Que la funcion que llama al perito use primero las IA gratis que ya existen (Big Pickle, luego Grok 4.7, luego Codex), con el mismo pedido y el mismo esquema de respuesta, y que NO llame a Claude nunca por defecto: solo si existe la variable de entorno INGENIERO_PERITO_CLAUDE con valor 1. Si ninguna gratis contesta, el expediente queda sin leer y el bucle sigue.",
+              "Se prueba ejecutando con un perito gratis falso y comprobando que Claude no se llama."),
+         ]),
+    dict(clave="N15", titulo="El perito no cuelga el bucle",
+         porque="Medido el 2026-10-01 en la corrida real: al fallar H2 el forense llamo a Claude como perito y el proceso se quedo esperando hasta que Julio lo corto con Ctrl+C. La funcion intenta 3 veces con 600 segundos cada una, o sea hasta 30 minutos de bucle parado por cada fallo, y no mira si Claude esta disponible. El tiempo maximo sale del historial, no de un numero puesto a mano.",
+         esperado="Si el perito no contesta en su tiempo medido, el expediente queda listo y sin leer, el bucle sigue con la siguiente orden y el intento queda apuntado en el cuaderno.",
+         partes=[
+             ("el_perito_tiene_tope_corto", "cuerpo/capataz.py", "editar", "El perito tiene un tope corto y no reintenta en cadena",
+              "Que la funcion que llama al perito haga un solo intento y que su tiempo maximo salga del historial medido del cerebro que hace de perito (la funcion que ya calcula cuanto se le espera a cada cerebro, con el techo de 400 segundos decidido por Julio), sin ninguna constante nueva escrita a mano. Medido el 2026-10-01 en las llamadas buenas de Big Pickle desde el 28-sep: mediana 56 s, p95 186 s, maximo 333 s. Si no contesta o devuelve algo que no es JSON, devuelve de inmediato que el expediente queda sin leer, sin repetir el intento tres veces. El bucle sigue con la siguiente orden.",
+              "Se prueba ejecutando con un perito falso que se cuelga y comprobando que vuelve dentro del tiempo medido."),
+         ]),
+    dict(clave="N14", titulo="La orden que fallo espera a su arreglo y vuelve sola",
+         porque="Medido el 2026-10-01 en la primera corrida real: R1 fallo, el forense creo la orden de arreglo R1-F151051 al frente, pero la orden R1 no quedo enlazada a ella. Cuando el arreglo se haga, nada devuelve R1 a la cola y toda la cadena que depende de R1 se queda parada para siempre. El capataz ya llama a reintentar_lo_que_esperaba al marcar una orden como hecha; solo falta el enlace.",
+         esperado="Cuando el forense crea una orden de arreglo, la orden que fallo queda dependiendo de ella; al hacerse el arreglo, la fallida vuelve sola a pendiente y la cadena sigue.",
+         partes=[
+             ("la_fallida_depende_de_su_arreglo", "cuerpo/capataz.py", "editar", "El forense enlaza la orden con su arreglo",
+              "Que cuando la funcion forense agrega la orden de arreglo con exito, anote ese id en la lista depende de la orden que fallo (que sigue fallida), de modo que la funcion que ya existe y se llama al marcar una orden como hecha la devuelva a pendiente sola cuando el arreglo quede hecho. No debe enlazar si agregar_orden devolvio que no la agrego.",
+              "Se prueba ejecutando: una orden fallida y su arreglo; al marcar el arreglo como hecho la fallida vuelve a pendiente."),
+         ]),
+    dict(clave="N01", titulo="El camino del plan no se trunca",
+         porque="Ley L1. Medido: una orden que quedo corriendo de una corrida muerta bloquea para siempre a las demas de su pieza; una dependencia archivada, circular o con vigia sin escribir detiene la cadena sin avisar.",
+         esperado="Un programa dice con nombre cual orden bloquea el camino y por que; el bucle lo corre al arrancar y cuando no puede avanzar.",
+         partes=[
+             ("camino_sano", "arnes/camino_sano.py", "crear", "El programa que revisa el camino",
+              "Una pieza nueva con una funcion que recibe la lista de ordenes y devuelve la lista de problemas del camino, cada uno con la orden culpable y el motivo: dependencia inexistente o archivada, ciclo, orden con la vigia sin escribir y que ninguna orden anterior entrega, orden en estado corriendo de una corrida muerta, etiqueta incompleta que el bucle salta.",
+              "Sin IA, sin red, sin tocar el disco. Nunca lanza."),
+             ("el_bucle_llama_al_camino_sano", "cuerpo/capataz.py", "editar", "El bucle lo llama",
+              "Que el bucle del capataz revise el camino al arrancar y cada vez que va a parar con NADA SE PUEDE CORRER, imprimiendo la orden culpable; y que al arrancar devuelva a pendiente las ordenes que quedaron corriendo de una corrida muerta, salvo que otro bucle vivo la tenga.",
+              "Se prueba ejecutando el bucle con la pieza espiada, no mirando el texto."),
+         ]),
+    dict(clave="N02", titulo="Ninguna orden nace incompleta",
+         porque="Ley L2, punto 7 de Julio: antes establecer candados y vigilantes. Medido: 9 ordenes corren sin vigia y 40 prometen una que no existe; la puerta de las cuatro respuestas solo se aplica al cerrar.",
+         esperado="Crear una orden sin las cuatro respuestas, sin resultado esperado o sin vigia (existente o entregada por otra orden) es rechazado con el motivo.",
+         partes=[
+             ("la_orden_completa", "arnes/puerta_del_plan.py", "editar", "La funcion que dice si una orden esta completa",
+              "Una funcion nueva en la puerta del plan que diga si una orden trae las cuatro respuestas, el resultado esperado y su vigia, y devuelva la lista de lo que falta en palabras simples. Reusa lo que la pieza ya tiene; no copies codigo.",
+              "Nunca lanza."),
+             ("orden_nueva_rechaza_lo_incompleto", "cuerpo/director.py", "editar", "Crear una orden pasa por la puerta",
+              "Que orden_nueva del director rechace una orden incompleta, diciendo que le falta, usando la funcion nueva de la puerta del plan. Las ordenes que ya existen no se tocan.",
+              "Se prueba ejecutando orden_nueva con una orden incompleta y con una completa."),
+         ]),
+    dict(clave="N03", titulo="El cuaderno apunta a todas las IA",
+         porque="Julio, 2026-10-01: que se pueda medir lo rapido, lo preciso, lo eficiente y lo economico. Medido: Claude, Codex y el buscador de significados nunca apuntan; el 17.8 por ciento de las filas no trae los segundos; solo se guardan las ultimas 1000 filas (3 dias); no hay costo, ni orden, ni tokens; cada llamada reescribe el archivo entero y en paralelo se pierden filas.",
+         esperado="Toda llamada a una IA queda apuntada con quien, segundos, costo, orden y tamano, en un archivo por dia que solo se agrega, y una vigia falla si aparece una llamada a una IA que no apunta.",
+         partes=[
+             ("el_cuaderno_completo", "cuerpo/cuaderno.py", "editar", "El cuaderno guarda todo, por dia",
+              "Que el cuaderno guarde siempre los segundos, el costo estimado, la orden y los tokens o letras; un archivo por dia que solo se agrega al final, sin reescribir todo; y que su resumen lea varios dias. Que las filas viejas sigan leyendose.",
+              "Nunca rompe el trabajo; si el disco falla, calla."),
+             ("toda_llamada_a_una_ia_apunta", "vigias/test_vigia_toda_llamada_a_una_ia_apunta.py", "vigia", "La guardia de las llamadas",
+              "Una vigia que recorra el codigo del proyecto buscando los sitios que llaman a una IA (procesos de Claude, Codex y opencode, y direcciones de los proveedores) y falle nombrando cada archivo que llama y no apunta en el cuaderno. Nace roja porque hoy hay varios que no apuntan.",
+              ""),
+             ("codex_apunta_en_el_cuaderno", "cuerpo/codex.py", "editar", "Codex apunta",
+              "Que cada llamada a Codex quede apuntada en el cuaderno con quien, segundos, resultado y la etiqueta de la orden.", ""),
+             ("el_perito_apunta_en_el_cuaderno", "cuerpo/capataz.py", "editar", "El perito apunta",
+              "Que la llamada al perito (Claude) del capataz quede apuntada en el cuaderno con quien, segundos, resultado y la orden que analiza.", ""),
+             ("el_buscador_de_significados_apunta", "cerebro/semantico.py", "editar", "El buscador de significados apunta",
+              "Que cada llamada del buscador de significados quede apuntada en el cuaderno.", ""),
+         ]),
+    dict(clave="N04", titulo="Cada vigia roja dice por que y alguien la atiende",
+         porque="Julio, 2026-10-01: 'que cada vigia diga por que fallo, y que alguien atienda ese fallo y comience a repararse'. Medido: el comando de vigias y el guardado solo imprimen la ultima linea de pytest; el camino fallo, expediente, orden nueva existe solo para ordenes del pit, no para vigias rojas.",
+         esperado="Cada vigia roja deja un expediente con el mensaje del error, la pieza que vigila y a quien puede danar, y se abre sola una orden con las cuatro respuestas llenas por programa, sin duplicar y con tope.",
+         partes=[
+             ("el_lector_de_vigias_rojas", "arnes/lector_de_rojas.py", "crear", "El lector de vigias rojas",
+              "Una pieza nueva que corra la bateria (o reciba su salida), y por cada vigia roja guarde un expediente en memoria/ROJAS con: archivo y prueba, el mensaje exacto del assert, la pieza que vigila (por lo que la vigia nombra), a quien puede danar (por los enlaces del mapa) y una huella; distinga regresion (estaba verde) de roja vieja; y cree por programa la orden con las cuatro respuestas llenas, el resultado esperado 'esa vigia vuelve a verde', sin duplicar una orden abierta con la misma huella y con un tope de ordenes automaticas abiertas. Una regresion sale primero; una roja vieja espera al final del camino. Usa la puerta de las cuatro respuestas y el director, no copies su codigo.",
+              "Sin IA para nada de esto; solo si la causa es desconocida se deja el expediente listo para el perito."),
+             ("el_comando_vigias_dice_por_que", "ingeniero.py", "editar", "El comando de vigias dice por que",
+              "Que el comando vigias imprima, ademas del resumen, cada vigia roja con su mensaje, y llame al lector de rojas.", ""),
+             ("el_guardado_llama_al_lector", "arnes/guardia_de_guardado.py", "editar", "El guardado llama al lector",
+              "Que despues de correr la bateria, el guardado llame al lector de rojas con la salida que ya tiene, sin cambiar lo que frena ni lo que deja pasar.", ""),
+             ("el_bucle_llama_al_lector", "cuerpo/capataz.py", "editar", "El bucle llama al lector",
+              "Que el bucle llame al lector de rojas al terminar cada orden hecha, para ver si rompio algo.", ""),
+         ]),
+    dict(clave="N06", titulo="Nace conectada de verdad",
+         porque="Ley L2, punto 2 de Julio: que nazca conectado. Medido: 11 piezas dormidas porque el contador de huerfanas deja pasar a toda pieza que se puede correr a mano, aunque nadie la llame; un candado solo cuenta si esta en los ganchos o lo llama otra pieza.",
+         esperado="Un candado que no esta en los ganchos ni lo llama otra pieza cuenta como huerfano, aunque se pueda correr a mano; las 11 dormidas salen rojas y el lector abre su orden.",
+         partes=[
+             ("un_candado_no_conectado_es_huerfano", "skills/nace_conectada.py", "editar", "Se aprieta el contador de huerfanas",
+              "Que el contador de piezas huerfanas deje de excusar a un candado por poder correrse a mano: un candado cuenta como conectado solo si esta en los ganchos del archivo de opciones o lo llama otra pieza. Reusa el contador, no lo copies.", ""),
+             ("el_pit_no_cuenta_a_las_vigias_como_llamador", "cuerpo/capataz.py", "editar", "El pit no da por conectada a una pieza que solo nombra una vigia",
+              "Que el paso de comprobar_pasos que mira si una pieza nueva esta suelta no cuente como llamador a los archivos de la carpeta de vigias ni de memoria: una pieza que solo nombra una vigia sigue suelta y la orden no se sella.",
+              "Se prueba ejecutando con una pieza nombrada solo por una vigia y con otra nombrada por codigo real."),
+         ]),
+    dict(clave="N06b", titulo="Se conecta el candado de la puerta trasera",
+         porque="Orden anterior de Julio que quedo pendiente: la reparacion anterior se rechazo por proponer solo otra regla sin conectar la pieza. Medido: el candado de la puerta trasera existe, tiene 293 renglones y nadie lo llama.",
+         esperado="El candado de la puerta trasera esta conectado y se prueba ejecutando que bloquea el texto 'DEJO PASAR: documento libre' junto con el control de comandos de terminal.",
+         partes=[
+             ("el_candado_de_la_puerta_trasera_conectado", "arnes/candado_puerta_trasera.py", "editar", "Se conecta el candado existente",
+              "Ubicar el control real que emite el texto literal 'DEJO PASAR: documento libre' junto con el control de comandos de terminal, con sus funciones completas, sus llamadores y sus pruebas, y conectar la pieza existente donde corresponda, sin escribir otra regla nueva.", ""),
+         ]),
+    dict(clave="N05", titulo="Al sellar, la memoria se actualiza sola",
+         porque="Julio, 2026-10-01: 'no existe tampoco nada que actualice las memorias, una vez sellado el trabajo'. Hoy lo hace una persona o nadie.",
+         esperado="Al marcar una orden como hecha, un programa deja al dia el estado, la lista de piezas y enlaces, las lecciones, la memoria de fallos y el cuaderno, y lo prueba una vigia.",
+         partes=[
+             ("al_sellar_la_memoria_se_actualiza", "arnes/al_sellar.py", "crear", "El programa que actualiza la memoria",
+              "Una pieza nueva con una funcion que, dada una orden recien sellada, deje al dia por programa: el estado de donde ibamos, el mapa de piezas y enlaces (con el comando que ya lo regenera), la leccion de la orden en las lecciones, el fallo que esa orden curaba marcado como curado con fecha en la memoria de fallos, y las ordenes que dependian de ella anotadas como desbloqueadas. Idempotente: correrla dos veces no duplica nada.", "Sin IA."),
+             ("el_bucle_llama_a_sellar", "cuerpo/capataz.py", "editar", "El bucle la llama al marcar hecha",
+              "Que el bucle llame al programa de sellado justo cuando marca una orden como hecha.", ""),
+         ]),
+    dict(clave="N09", titulo="La hora de apuntes",
+         porque="Julio, 2026-10-01 (punto 8): que exista una hora de apuntes para recoger lo que no ha servido y se replantee el trabajo en caso de fallo. Medido: las lecciones existen pero nadie las usa; el paquete no las trae.",
+         esperado="Cuando el bucle para, un programa junta lo que fallo, lo agrupa por causa, apunta las lecciones y replantea las ordenes; el paquete de cada trabajo trae las lecciones de su pieza.",
+         partes=[
+             ("la_hora_de_apuntes", "cuerpo/hora_de_apuntes.py", "crear", "El programa de la hora de apuntes",
+              "Una pieza nueva que recoja las ordenes fallidas y las vigias rojas del periodo, las agrupe por causa, apunte la leccion de cada grupo, convierta en orden de candado toda leccion que se repita tres veces, y replantee: archive la orden fallida con su motivo y cree la orden nueva con el encargo corregido segun la leccion y el mismo lugar en la cadena. Reusa las lecciones y el director que ya existen.", "Sin IA para agrupar y apuntar; solo si la causa es desconocida deja el expediente al perito."),
+             ("el_paquete_trae_las_lecciones", "cerebro/router.py", "editar", "El paquete trae las lecciones",
+              "Que el paquete de cada trabajo traiga las lecciones de su pieza, usando la funcion que ya existe en las lecciones, sin engordar el paquete: solo las de esa pieza.", ""),
+             ("el_bucle_corre_la_hora_de_apuntes", "cuerpo/capataz.py", "editar", "El bucle la corre al parar",
+              "Que el bucle llame a la hora de apuntes cada vez que se detiene.", ""),
+         ]),
+    dict(clave="N12", titulo="Linea base, regresion y marcha atras",
+         porque="Julio, 2026-10-01 (punto 10): verificar que cada paso no dane algo que ya sirva. CONTRATO_LOS_CUATRO_OBJETIVOS_ORQUESTADOS ya manda una puerta de regresion con los cuatro numeros; si ya existe una pieza que la hace, se usa y no se duplica.",
+         esperado="Antes de cada orden se guarda la medida de hoy; al sellar se compara y no se sella si algun numero empeora; queda anotado el punto exacto del repositorio para volver atras.",
+         partes=[
+             ("la_linea_base", "arnes/linea_base.py", "crear", "El programa de la linea base",
+              "Una pieza nueva (o la que ya haga la puerta de regresion, si existe, ampliada) que guarde antes de cada orden: el color de las vigias, los minutos por orden, el porcentaje de llamadas sin provecho, el gasto y el punto del repositorio; y que compare despues y diga si algun numero empeoro.", "Sin IA."),
+             ("el_bucle_mide_antes_y_despues", "cuerpo/capataz.py", "editar", "El bucle mide antes y despues",
+              "Que el bucle guarde la linea base antes de cada orden y no la marque como hecha si la comparacion dice que algo empeoro, dejando el motivo y el punto para volver atras.", ""),
+         ]),
+    dict(clave="N07", titulo="El Ingeniero traduce lo que Julio quiere",
+         porque="Julio, 2026-10-01: 'el objetivo maximo es que cuando yo le diga al ingeniero que deseo, el lo traduzca, sepa en realidad que quiero' (puntos 1 al 5). Medido: no hay ninguna pieza que convierta su frase en una especificacion con resultado esperado.",
+         esperado="Dada una frase de Julio, un programa devuelve: que entendi, que material ya existe, que toca crear, el resultado esperado medible, lo que queda fuera y como maximo tres preguntas; y se le confirma en tres renglones simples antes de gastar.",
+         partes=[
+             ("el_traductor_de_deseo", "arnes/traductor_de_deseo.py", "crear", "El traductor de deseo",
+              "Una pieza nueva que reciba lo que Julio quiere y devuelva una especificacion guardada en memoria/ESPECIFICACIONES: objetivo, quien lo usa, resultado esperado en criterios que un programa pueda comprobar, lo que queda fuera, el material que ya existe (usando el glosario de significados, lo que Julio ya dijo, el buscador de habilidades y el mapa) y lo que toca crear, mas un maximo de tres preguntas cuando algo no se sabe. Primero programa; una sola llamada a una IA gratis solo para redactar criterios cuando el programa no alcance. Nunca asume: si falta algo escribe PREGUNTA_REQUERIDA.", ""),
+             ("el_comando_entiende", "ingeniero.py", "editar", "El comando entiende",
+              "Un comando nuevo 'entiende <proyecto> <lo que quiero>' que llame al traductor y le muestre a Julio, en palabras simples y en tres renglones, que entendio, que existe y que hay que crear.", ""),
+         ]),
+    dict(clave="N08", titulo="Se sella solo si coincide con lo esperado",
+         porque="Julio, 2026-10-01 (punto 9): en caso de acierto se verifica junto al resultado esperado, con ontologia, y si es cierto se sella. Hoy se sella con la vigia en verde y la prueba real; la ontologia solo aparece en documentos.",
+         esperado="Antes de marcar una orden como hecha, un programa comprueba su resultado esperado contra una ontologia que el mismo arma desde el mapa y los significados; si no coincide, no sella y dice por que.",
+         partes=[
+             ("el_verificador_de_resultado", "arnes/verificador_de_resultado.py", "crear", "El verificador de resultado",
+              "Una pieza nueva que arme la ontologia (los conceptos y sus relaciones: pieza, flujo, ley, vigia, objetivo) desde el mapa, los flujos y el glosario de significados que ya existen, y que verifique el resultado esperado de una orden: criterios que un programa comprueba (vigia verde, un comando que sale bien, una pieza conectada, una relacion que debe existir en la ontologia). Devuelve ok o la lista de lo que no coincide.", "Sin IA."),
+             ("el_bucle_verifica_antes_de_sellar", "cuerpo/capataz.py", "editar", "El bucle verifica antes de sellar",
+              "Que el bucle llame al verificador antes de marcar una orden como hecha, y si no coincide la deje sin sellar con el motivo.", ""),
+         ]),
+    dict(clave="N10", titulo="Codex, Big Pickle y Grok 4.7 trabajan por el canal",
+         porque="Ley L3, punto 7 de Julio. Medido: el canal solo reconoce a claude, cline y chatgpt; el capataz lanza siempre deepseek escribe y bigpickle revisa fijo; las piezas de Codex, Big Pickle y Grok existen pero el reparto no las usa.",
+         esperado="Una orden puede declarar quien escribe, quien revisa y a quien pide ayuda por el canal; el pedido lleva el objetivo y el resultado esperado; la respuesta queda en el cuaderno.",
+         partes=[
+             ("el_canal_conoce_a_todas_las_ia", "arnes/canal.py", "editar", "El canal conoce a todas las IA",
+              "Que el canal reconozca las identidades codex, bigpickle y grok47 ademas de las que ya tiene, y permita pedir ayuda a una de ellas dejando el objetivo y el resultado esperado en el mensaje.", ""),
+             ("el_capataz_elige_quien_escribe_y_revisa", "cuerpo/capataz.py", "editar", "Cada orden elige su equipo",
+              "Que al lanzar al equipo se lean de la orden quien escribe y quien revisa (con deepseek y bigpickle como valores por defecto, igual que hoy), y que una orden pueda pedir ayuda por el canal a otra IA diciendole el objetivo.", ""),
+             ("el_reparto_asigna_a_las_nuevas_ia", "arnes/reparto.py", "editar", "El reparto las asigna",
+              "Que el reparto sepa asignar tareas a codex, bigpickle y grok47, y siga exigiendo que nadie cierre una tarea sin supervision con la vigia en verde.", ""),
+         ]),
+    dict(clave="N11", titulo="Programa antes que IA, por regla",
+         porque="Julio, 2026-09-27 y 2026-10-01 (punto 11): todo lo que no necesita IA se hace por programa. Medido: la regla se cumple caso por caso; ninguna pieza obliga; el 91 por ciento del tiempo de llamadas es auditar.",
+         esperado="Toda orden con modo IA explica por que un programa no alcanza; un programa decide si la tarea es de programa por sus reglas y sugiere cual pieza existente la hace.",
+         partes=[
+             ("programa_antes_que_ia", "arnes/programa_antes_que_ia.py", "crear", "El que decide si basta un programa",
+              "Una pieza nueva con una funcion que, dada una tarea, diga si la hace un programa (contar, comparar, listar, mover, formatear, medir, clasificar un fallo ya conocido, comprobar que algo existe), cual pieza existente la hace, y si no, que parte exacta necesita IA. Usa lo que la clasificacion de fallos del capataz y la medida de programa antes que IA ya tienen.", "Sin IA."),
+             ("modo_ia_exige_por_que", "cuerpo/director.py", "editar", "Modo IA exige explicar por que",
+              "Que el director, al crear una orden con modo IA, exija el campo por_que_ia y la ponga en modo PROGRAMA si el que decide dice que basta un programa.", ""),
+         ]),
+    dict(clave="N13", titulo="El arquitecto propone la estructura",
+         porque="Julio, 2026-10-01 (punto 3): que proponga la arquitectura del proyecto. Hoy ninguna pieza lo hace; el comando plan (R8) encadena piezas que ya existen y esta pieza se le suma.",
+         esperado="Dada una especificacion, un programa propone los componentes, sus flujos, donde encaja cada pieza que ya existe, que hay que crear, los riesgos y el orden de construccion como ordenes con su vigia primero.",
+         partes=[
+             ("el_arquitecto", "arnes/arquitecto.py", "crear", "El arquitecto",
+              "Una pieza nueva que, dada la especificacion del traductor, proponga la estructura con el mapa y los flujos que ya existen: componentes, flujos, a que pieza existente corresponde cada cosa, que hay que crear, riesgos, y el plan de construccion como ordenes con la vigia primero, listas para el director.", "Primero programa; IA solo para lo que no se pueda deducir."),
+             ("el_comando_plan_usa_al_arquitecto", "ingeniero.py", "editar", "El comando plan usa al arquitecto",
+              "Que el comando plan, cuando lo arme R8, llame al arquitecto despues de entender lo que Julio quiere y antes de organizar las tareas.", ""),
+         ]),
+]
+
+# ----------------------------------------------------------------------------------------
+# EL ORDEN. Cada renglon es un paso. Textos = ordenes que ya existen; K:xx = pieza nueva N; L:x = ley.
+# ----------------------------------------------------------------------------------------
+PASOS = [
+    ("00 Medir sin danar la memoria real", ["K:N20"]),
+    ("0 El bucle no se detiene por un fallo aislado", ["K:N18"]),
+    ("0a El pasillo no recorta al que escribe", ["H2"]),
+    ("0b Crear no es inventar", ["R9"]),
+    ("0c Que el trabajo llegue al escritor: prueba previa y dos vias", ["K:N28", "K:N27"]),
+    ("0d Multitarea: varias ordenes a la vez", ["L:L4", "K:N29", "R6a", "R6"]),
+    ("0e El perito es gratis y no cuelga el bucle", ["K:N17", "K:N15", "50", "51"]),
+    ("0f El bucle no para por dolares (decision de Julio del 2026-09-27)", ["89", "68"]),
+    ("1 El guardado: lo aprobado llega al disco", ["R1"]),
+    ("1b Una orden que fallo vuelve sola tras su arreglo", ["K:N14"]),
+    ("2 Las leyes nuevas (solo documentos)", ["L:L1", "L:L2", "L:L3"]),
+    ("3 La legislacion deja de ensuciarse", ["R10", "30", "31"]),
+    ("4 Recoger no destruye y el mando no pierde lo pagado", ["37", "113", "K:N26"]),
+    ("5 El revisor no corta rondas buenas", ["R24", "95-F011402", "41", "43", "45"]),
+    ("6 Varios cambios por ronda", ["95-F222455", "173-F064924", "46-F061935", "112-F061113"]),
+    ("7 El material llega a la medida", ["29", "29-F005530", "H3", "R2", "R22"]),
+    ("8 Las pruebas miden de verdad", ["63", "64", "38", "39", "24", "25", "32", "33"]),
+    ("9 El Ingeniero se repara solo", ["K:N25", "K:N19", "K:N21", "K:N01", "K:N02", "K:N03", "K:N04", "K:N06", "K:N06b", "K:N05", "K:N09",
+                                      "K:N12", "K:N07", "K:N08", "K:N10", "K:N11"]),
+    ("10 Velocidad sin repetir", ["R4c", "R3", "K:N22", "132", "53"]),
+    ("11 La llave por partes", ["R7"]),
+    ("12 Automatizar", ["167", "183", "184", "185", "R8", "K:N13"]),
+    ("12b La prueba real del informe", ["K:N23"]),
+    ("13 Lo que quedaba pendiente sin vigia", ["H4", "H6", "H1", "R25", "R23", "95-F001329", "95-F012213"]),
+]
+
+# ----------------------------------------------------------------------------------------
+# ENCARGOS REESCRITOS CON EL TROZO PEGADO DENTRO (CLAUDE.md: si el material no trae la pieza, se pega
+# el trozo en el encargo; el ancla es UN renglon exacto que aparece UNA sola vez en el archivo).
+# MEDIDO el 2026-10-01 en la corrida real: el pasillo recorto el encargo de H2 de 22296 a 15620 letras
+# y a DeepSeek le falto la funcion que habia que cambiar. H2 fallaba por el mismo fallo que repara.
+# El recorte solo toca el bloque MATERIAL; el encargo (la cabecera) nunca se recorta.
+# ----------------------------------------------------------------------------------------
+ENCARGOS = {
+    # DOS VIAS (CONTRATO_LAS_DOS_VIAS, Julio 2026-10-01): la GUIA dice objetivo y donde; el CODIGO llega por su via.
+    # MEDIDO el 2026-10-01 con la prueba sin IA: con el encargo ORIGINAL de H2 (no nombraba ni el archivo ni la funcion)
+    # el paquete (23267 letras) NO traia ni _preguntar_con_relevo ni el renglon a cambiar; nombrando el archivo y la
+    # funcion, SIN pegar codigo, el paquete trae las dos cosas.
+    "H2-el-pasillo-no-corta-a-la-medida-del-mas-chico": (
+        "OBJETIVO: que el pasillo recorte el material a la medida del cerebro que mas aguanta y no del mas pequeno.\n"
+        "DONDE: la funcion _preguntar_con_relevo de cuerpo/obrero.py, en el punto donde se calcula _tope_pasillo a partir de las capacidades _capas. "
+        "La funcion nueva que pide la vigia se llama tope_del_pasillo: es una creacion pedida a proposito, no un invento.\n"
+        "LA PRUEBA QUE DEBE PASAR A VERDE: vigias/test_vigia_el_pasillo_no_corta_al_que_escribe.py\n"
+        "QUE SE REPARA: el pasillo recorta al tope del cerebro mas pequeno de la fila.\n"
+        "COMO SE REPARA: funcion nueva tope_del_pasillo (devuelve la capacidad mayor) y su uso donde hoy se toma el minimo.\n"
+        "DONDE SE REPARA: cuerpo/obrero.py, funcion _preguntar_con_relevo.\n"
+        "POR QUE SE REPARA: medido el 2026-10-01, el recorte quita en 27 de 34 ordenes el codigo que si habia llegado."
+    ),
+}
+
+ruta = os.path.join(RAIZ, "memoria", "ORDENES.json")
+
+
+def cargar():
+    with open(ruta, encoding="utf-8") as f:
+        return json.load(f)
+
+
+lista = cargar()
+por_id = {str(o["id"]): o for o in lista}
+
+
+def resolver(corto):
+    if corto in por_id:
+        return corto
+    p = [i for i in por_id if i.startswith(corto + "-")]
+    return p[0] if len(p) == 1 else None
+
+
+# 0. Ordenes que quedaron "corriendo" de una corrida muerta: bloquean a las de su pieza para siempre.
+for o in lista:
+    if o.get("estado") == "corriendo":
+        print("ORDEN ATASCADA EN 'corriendo' (corrida muerta):", o["id"])
+        if not PRUEBA:
+            ok, motivo = director.hecha(RAIZ, str(o["id"]))
+            print("   hecha:", ok, "|" if ok else "-> se devuelve a pendiente")
+            if not ok:
+                print("  ", director.reintentar(RAIZ, str(o["id"]))[1])
+        else:
+            print("   (prueba) se intentaria cerrarla con su vigia, y si no, devolverla a pendiente")
+        o["estado"] = "pendiente"
+if not PRUEBA:
+    lista = cargar()
+    por_id = {str(o["id"]): o for o in lista}
+
+
+DUPLICADAS = {"194": "195", "183": "184", "173": "177"}   # misma reparacion y misma pieza (medido el 2026-10-01)
+for d_, v_ in DUPLICADAS.items():
+    if d_ in por_id and v_ in por_id and por_id[d_].get("estado") in ("pendiente", "fallida"):
+        print("DUPLICADA: %s repite la reparacion y la pieza de %s -> se archiva" % (d_, v_))
+        if not PRUEBA:
+            director.archivar(RAIZ, d_, "duplicada de %s (misma reparacion y misma pieza)" % v_)
+        por_id[d_]["estado"] = "archivada"
+if not PRUEBA:
+    lista = cargar()
+    por_id = {str(o["id"]): o for o in lista}
+
+
+def etiqueta_ok(o):
+    for c in ("id", "titulo", "pieza", "encargo", "vigia"):
+        if not isinstance(o.get(c), str) or not o[c].strip():
+            return ["falta " + c]
+    return capataz.validar_etiqueta(o)
+
+
+def hacer(id_, titulo, pieza, vigia, que, como, donde, porque, esperado, crear=False, entrega=False, extra=""):
+    o = dict(id=id_, titulo=titulo, origen=ORIGEN, repara=que, pieza=pieza, vigia=vigia, razon=porque,
+             encargo=enc(que, como, donde, porque, extra), modo="IA", depende=[], estado="pendiente",
+             paso_fallido="", fallos_seguidos=0, nota="", prueba_real="", comando="",
+             resultado_esperado=esperado)
+    if crear:
+        o["crear"] = True
+    if entrega:
+        o["entrega_la_prueba"] = "si"
+    return o
+
+
+nuevas = []
+encargos_con_donde = []
+cadena = []
+entregadas = set()
+pasos_json = []
+
+
+def ordenes_de_la_ley(L):
+    vig = "vigias/test_vigia_%s.py" % L["slug"]
+    claves = "; ".join("'%s'" % c for c in L["claves"])
+    v = hacer("V-" + L["id"], "Vigia primero: " + L["titulo"], vig, vig,
+              "Que exista la prueba que vigila: " + L["que"],
+              "Una prueba pytest, un solo archivo nuevo, que lea el contrato %s y exija con asserts: que existe; que contiene estas palabras o frases: %s; que cada archivo que nombra con extension existe en el proyecto o corresponde a una orden abierta en memoria/ORDENES.json. Tiene que NACER ROJA por un assert que falla (el contrato aun no existe), no por un error de sintaxis, y pasar cuando el contrato este bien escrito." % (L["pieza"], claves),
+              vig, "Metodo de Julio: la vigia se escribe primero y nace roja; una vigia verde no probo nada.",
+              "La prueba existe, falla hoy con un assert y pasa cuando el contrato esta escrito.",
+              crear=True, entrega=True)
+    c = hacer(L["id"], L["titulo"], L["pieza"], vig, L["que"], L["como"], L.get("donde", L["pieza"]),
+              L["porque"], L["esperado"], crear=True)
+    return [v, c]
+
+
+def ordenes_de_N(K):
+    out = []
+    primera = None
+    for (sl, pieza, tipo, titulo, que, extra) in K["partes"]:
+        vig = pieza if tipo in ("vigia", "editarvigia") else (extra if tipo == "existente" else "vigias/test_vigia_%s.py" % sl)
+        idb = "%s-%s" % (K["clave"], sl)
+        if tipo in ("existente", "editarvigia"):
+            ob = hacer(idb, K["titulo"] + ": " + titulo, pieza, vig, que, que, pieza, K["porque"], K["esperado"])
+            if primera is not None:
+                ob["_dep"] = [primera]
+            if primera is None:
+                primera = idb
+            out.append(ob)
+            continue
+        if tipo == "vigia":
+            out.append(hacer(idb, K["titulo"] + ": " + titulo, vig, vig, que,
+                             "Una prueba pytest en un solo archivo nuevo. Tiene que NACER ROJA por un assert que falla hoy, no por un error de sintaxis ni de un nombre que no existe, y pasar cuando todas las partes de esta pieza esten conectadas.",
+                             vig, K["porque"], K["esperado"], crear=True, entrega=True))
+            continue
+        out.append(hacer("V-" + idb, "Vigia primero: " + titulo, vig, vig,
+                         "Que exista la prueba de: " + que,
+                         ("Una prueba pytest en un solo archivo nuevo que demuestre hoy, con un assert, que esto NO se cumple todavia: %s. Se prueba EJECUTANDO la funcion o el comando (con carpetas temporales y sin tocar el estado real), no mirando el texto del codigo. Tiene que NACER ROJA por un assert (si la pieza aun no existe vale el error de importar justo esa pieza), y pasar cuando la reparacion este hecha." % que),
+                         vig, K["porque"], K["esperado"], crear=True, entrega=True))
+        ob = hacer(idb, K["titulo"] + ": " + titulo, pieza, vig, que, que + (" " + extra if extra else ""),
+                   pieza, K["porque"], K["esperado"], crear=(tipo == "crear"))
+        if primera is None:
+            primera = idb
+        else:
+            ob["_dep"] = [primera]   # conectar viene DESPUES de que exista la pieza o la base
+        out.append(ob)
+    return out
+
+
+def poner(o, paso):
+    cadena.append(o["id"])
+    paso.append(o["id"])
+    if o.get("entrega_la_prueba") == "si":
+        entregadas.add(o.get("vigia"))
+        entregadas.add(o.get("pieza"))
+
+
+for nombre, items in PASOS:
+    paso = []
+    for it in items:
+        if it.startswith("L:"):
+            L = [x for x in LEYES if x["id"].startswith(it[2:] + "-")][0]
+            for o in ordenes_de_la_ley(L):
+                if o["id"] not in por_id:
+                    nuevas.append(o)
+                poner(o, paso)
+            continue
+        if it.startswith("K:"):
+            K = [x for x in N if x["clave"] == it[2:]][0]
+            for o in ordenes_de_N(K):
+                if o["id"] not in por_id:
+                    nuevas.append(o)
+                poner(o, paso)
+            continue
+        i = resolver(it)
+        if i is None:
+            print("NO EXISTE (se salta):", it)
+            continue
+        o = por_id[i]
+        if o.get("estado") in ("hecha", "archivada", "esperando"):
+            print("se salta (%s): %s" % (o.get("estado"), i))
+            continue
+        for h in [x for x in lista if str(x.get("origen", "")) == "forense:" + i
+                  and x.get("estado") in ("pendiente", "fallida") and str(x["id"]) not in cadena]:
+            hv = h.get("vigia")
+            if not (hv and (os.path.isfile(os.path.join(RAIZ, hv)) or hv in entregadas)) and h.get("entrega_la_prueba") != "si":
+                print("  ARREGLO DEL FORENSE sin vigia, queda al final del camino:", h["id"])
+                continue
+            print("  ARREGLO DEL FORENSE de %s va justo antes: %s" % (i, h["id"]))
+            poner(h, paso)
+        # DOS VIAS (medido el 2026-10-01): si el encargo NO nombra el archivo de su pieza, el paquete trae el codigo en 1 de 3;
+        # si lo nombra, en 31 de 31. La GUIA lleva siempre DONDE (el archivo), tomado de la propia orden. No se pega codigo.
+        pz_ = str(o.get("pieza") or "")
+        if pz_.endswith(".py") and not pz_.startswith("vigias/") and os.path.isfile(os.path.join(RAIZ, pz_)) \
+                and os.path.basename(pz_) not in str(o.get("encargo", "")):
+            o["encargo"] = "DONDE SE REPARA: %s\n%s" % (pz_, o.get("encargo", ""))
+            encargos_con_donde.append(i)
+        # La vigia que promete la orden: o existe, o la entrega una orden anterior de la cadena.
+        v = o.get("vigia")
+        if v and (os.path.isfile(os.path.join(RAIZ, v)) or v in entregadas):
+            pass
+        elif o.get("entrega_la_prueba") == "si":
+            pass
+        else:
+            v = v or "vigias/test_vigia_%s.py" % slug(i)
+            vo = hacer("V-" + i, "Vigia primero: " + str(o.get("titulo") or i), v, v,
+                       "Que exista la prueba que vigila: " + str(o.get("repara", ""))[:300],
+                       "Una prueba pytest en un solo archivo nuevo que demuestre hoy, con un assert, que esto NO se cumple todavia: %s. Contexto de la reparacion que vigila: %s. Tiene que NACER ROJA por un assert que falla (no por un error de sintaxis o de un nombre que no existe) y pasar cuando la reparacion este hecha." % (str(o.get("repara", ""))[:300], str(o.get("encargo", ""))[:500]),
+                       v, "Metodo de Julio: la vigia se escribe primero y nace roja. La orden %s prometia una vigia que no existe y sin ella no puede cerrarse." % i,
+                       "La prueba existe, falla hoy con un assert y pasa cuando %s este hecha." % i,
+                       crear=True, entrega=True)
+            if vo["id"] not in por_id:
+                nuevas.append(vo)
+            poner(vo, paso)
+            o["vigia"] = v  # se anota despues, en el mismo guardado
+        poner(o, paso)
+    pasos_json.append({"paso": nombre, "ordenes": paso})
+
+# ----------------------------------------------------------------------------------------
+# Lo que no esta en la cadena espera al final. Se vuelve a poner TODO el orden.
+# ----------------------------------------------------------------------------------------
+todas = lista + nuevas
+todas_por = {str(o["id"]): o for o in todas}
+for i_, e_ in ENCARGOS.items():
+    if i_ in todas_por:
+        todas_por[i_]["encargo"] = e_
+        todas_por[i_]["nota"] = "Encargo reescrito el 2026-10-01 con el trozo pegado dentro: fallo dos veces porque el pasillo le recortaba su propio material."
+problemas_etiqueta = [(o["id"], etiqueta_ok(o)) for o in nuevas if etiqueta_ok(o)]
+if problemas_etiqueta:
+    print("\nPROBLEMAS CON ORDENES NUEVAS (no se aplica nada):")
+    for i, p in problemas_etiqueta:
+        print("  ", i, p)
+    sys.exit(1)
+
+ultima = cadena[-1]
+pausadas = [str(o["id"]) for o in todas if str(o["id"]).startswith("FI") and o.get("estado") == "pendiente"]
+for i in pausadas:
+    todas_por[i]["estado"] = "esperando"
+    todas_por[i]["nota"] = "FOTO INFORME es otro proyecto: no se corre con el bucle del Ingeniero. Se retoma con su propio proyecto cuando el Ingeniero termine (2026-10-01)."
+fallidas_a_devolver = []
+cadena_set = set(cadena)
+# La vigia de cada orden la entrega a veces otra orden: de ahi sale la dependencia real.
+entrega_de = {}
+for i in cadena:
+    o = todas_por[i]
+    if o.get("entrega_la_prueba") == "si":
+        for k in (o.get("vigia"), o.get("pieza")):
+            entrega_de.setdefault(k, i)
+EXTRA = {"68": ["89"]}   # la vigia vieja se pone roja primero (89) y el arreglo la pone verde (68)
+for i in cadena:
+    o = todas_por[i]
+    deps = []
+    v = o.get("vigia")
+    if v and not os.path.isfile(os.path.join(RAIZ, v)):
+        d = entrega_de.get(v)
+        if d and d != i:
+            deps.append(d)
+    for d in o.pop("_dep", None) or []:
+        deps.append(d)
+    for corto in EXTRA.get(i, []):
+        r = resolver(corto) or corto
+        if r in cadena_set:
+            deps.append(r)
+    for h in lista:   # el arreglo que creo el forense para esta orden va antes de ella
+        if str(h.get("origen", "")) == "forense:" + i and str(h["id"]) in cadena_set:
+            deps.append(str(h["id"]))
+    o["depende"] = list(dict.fromkeys(deps))
+    if o.get("estado") == "fallida" or capataz.ya_fallo(o):
+        fallidas_a_devolver.append(i)
+resto = []
+for o in todas:
+    i = str(o["id"])
+    if i in cadena_set or i in pausadas or o.get("estado") not in ("pendiente", "fallida") or i.startswith("R3c"):
+        continue
+    o["depende"] = []
+    resto.append(i)
+ultima = cadena[-1]
+# La lista queda en el orden de PRIORIDAD: primero la cadena, despues el resto.
+todas = [todas_por[i] for i in cadena] + [o for o in todas if str(o["id"]) not in cadena_set]
+
+print("\nGUIA: a %d ordenes se les agrego la linea DONDE SE REPARA (su encargo no nombraba el archivo de su pieza)." % len(encargos_con_donde))
+print("\nPLAN: %d ordenes (%d nuevas) con SOLO sus dependencias reales. EL RESTO: %d corren despues, sin bloquear a nadie. PAUSADAS (Foto Informe, otro proyecto): %d." %
+      (len(cadena), len(nuevas), len(resto), len(pausadas)))
+for p in pasos_json:
+    print("  PASO", p["paso"], "->", len(p["ordenes"]), "ordenes")
+
+# ----------------------------------------------------------------------------------------
+# LA COMPROBACION DEL CAMINO (la hace el programa, no mi memoria): se simula el bucle entero.
+# ----------------------------------------------------------------------------------------
+sim = json.loads(json.dumps(todas))
+for o in sim:
+    if str(o["id"]) in fallidas_a_devolver:
+        o["estado"] = "pendiente"
+capataz.leer_lista = lambda: sim
+_ya_fallo = capataz.ya_fallo
+capataz.ya_fallo = lambda o: False if str(o.get("id")) in fallidas_a_devolver else _ya_fallo(o)
+sim_por = {str(o["id"]): o for o in sim}
+corrieron = []
+vigias_ok = set(entregadas) | {v for v in (o.get("vigia") for o in sim) if v and os.path.isfile(os.path.join(RAIZ, v))}
+entregadas_sim = set()
+riesgos = []
+for _ in range(len(todas) + 5):
+    listas = capataz.listas_para_correr()
+    if not listas:
+        break
+    o = listas[0]
+    corrieron.append(str(o["id"]))
+    v = o.get("vigia")
+    if o.get("entrega_la_prueba") == "si":
+        entregadas_sim.add(o.get("vigia"))
+    elif not (v and (os.path.isfile(os.path.join(RAIZ, v)) or v in entregadas_sim)):
+        riesgos.append((o["id"], "su vigia no existe ni la entrega una orden anterior"))
+    sim_por[str(o["id"])]["estado"] = "hecha"
+no_corrieron = [i for i in cadena if i not in corrieron]
+orden_mal = False
+# QUE PASA SI UNA ORDEN FALLA: solo se bloquean las que dependen de ella (de verdad), nunca todo el trabajo.
+hijos = {}
+for i in cadena:
+    for d in todas_por[i]["depende"]:
+        hijos.setdefault(d, []).append(i)
+
+
+def descendientes(x, vistos=None):
+    vistos = set() if vistos is None else vistos
+    for h in hijos.get(x, []):
+        if h not in vistos:
+            vistos.add(h)
+            descendientes(h, vistos)
+    return vistos
+
+
+bloqueo = sorted(((len(descendientes(i)), i) for i in cadena), reverse=True)
+peor = bloqueo[0]
+print("\nSI UNA ORDEN FALLA: lo peor que puede pasar es que se bloqueen %d de %d ordenes (por la orden %s)." % (peor[0], len(cadena), peor[1]))
+for n_, i_ in bloqueo[:4]:
+    print("   %3d dependen de %s" % (n_, i_))
+print("\nSIMULACION DEL BUCLE: corrieron %d de %d ordenes de la cadena, y despues %d del resto." % (len([i for i in corrieron if i in cadena]), len(cadena), len([i for i in corrieron if i not in cadena])))
+if no_corrieron:
+    print("  SE ATASCAN (primero): %s" % no_corrieron[:5])
+    for i in no_corrieron[:3]:
+        o = sim_por[i]
+        print("    ", i, "etiqueta:", capataz.validar_etiqueta(o), "| huella fallida:", capataz.ya_fallo(o),
+              "| pieza ocupada por una orden corriendo:",
+              any(x.get("estado") == "corriendo" and x.get("pieza") == o.get("pieza") for x in sim))
+if orden_mal:
+    print("  EL ORDEN NO ES EL DE LA CADENA")
+for i, m in riesgos:
+    print("  RIESGO:", i, m)
+sano = not no_corrieron and not orden_mal and not riesgos
+print("\n==> CAMINO %s" % ("SANO: cada orden abre la siguiente y ninguna se atasca" if sano else "CON PROBLEMAS: no arranques el bucle"))
+
+
+# ----------------------------------------------------------------------------------------
+# LA TABLA DE HALLAZGOS (queda guardada por programa dentro del plan unico) Y LA LIMPIEZA DE PLANES.
+# ----------------------------------------------------------------------------------------
+HALLAZGOS = [
+    dict(fallo="Las vigias danan la memoria real",
+         evidencia="La corrida vacio memoria/INDICE_METODO.json (2035 lineas); 423 de 1678 lineas de BIGPICKLE.log las escribieron pruebas",
+         causa="Rutas de memoria fijas; el archivo de ajustes de las vigias no aisla toda la carpeta",
+         reparacion="Cada prueba usa una copia temporal de memoria y una vigia compara antes y despues",
+         donde="vigias/conftest.py; cuerpo/bigpickle.py (RUTA_LOG)", ordenes="N20", paso="00",
+         destraba="toda medicion futura (309 vigias)", meta="0 archivos de memoria cambiados tras correr la bateria"),
+    dict(fallo="El escritor no recibe el codigo que tiene que cambiar",
+         ley="CONTRATO_LAS_DOS_VIAS (1-oct, sin ninguna orden hasta hoy)",
+         evidencia="Prueba sin IA: con el encargo original de H2 el paquete (23267 letras) no trae _preguntar_con_relevo ni el renglon a cambiar. En 58 ordenes abiertas: si el encargo nombra el archivo el paquete trae el codigo en 31 de 31; si no, en 1 de 3; 12 de 58 no lo nombran",
+         causa="El pit manda solo el texto del encargo y el buscador adivina por palabras; los campos pieza y repara de la orden nunca llegan; nadie comprueba antes de gastar",
+         reparacion="La guia lleva DONDE (archivo y funcion) tomado de la orden; el codigo llega completo por su propia via; prueba previa sin IA antes de gastar",
+         donde="capataz.lanzar_al_equipo; ingeniero.py equipo; obrero.trabajar; arnes/dos_vias.py y arnes/prueba_previa.py (nuevos)",
+         ordenes="N28, N27 (la linea DONDE ya se aplica a las ordenes que no nombraban su archivo)", paso="0c",
+         destraba="las respuestas NO_ENCONTRADO y NECESITO_LEER (43 de las 164 mal llamadas vacio) y las 12 ordenes sin archivo nombrado",
+         meta="el paquete trae el codigo en 100% de las ordenes; 0 llamadas gastadas sin el codigo"),
+    dict(fallo="El pasillo recorta el codigo que si llego",
+         ley="CONTRATO_LAS_DOS_VIAS; CONTRATO_EL_PASILLO_SE_REPARTA_POR_CAPACIDAD",
+         evidencia="Al tope del cerebro mas pequeno (8000 letras) se pierde codigo que si estaba en 27 de 34 ordenes comprobables; el prompt mediano mide 31989 letras y los 58 pasan de 8000",
+         causa="_tope_pasillo = min(_capas) y el material engorda con la guia",
+         reparacion="Tope = el cerebro que mas aguanta; con las dos vias no hay nada que recortar",
+         donde="cuerpo/obrero.py, _preguntar_con_relevo", ordenes="H2, N27", paso="0a",
+         destraba="27 ordenes", meta="0 ordenes con codigo perdido por recorte"),
+    dict(fallo="El revisor marca como invento lo que la reparacion crea",
+         evidencia="25 de 51 fallos no_aprobo",
+         causa="La IA revisora marca nombres nuevos y nada los contrasta por programa",
+         reparacion="Un programa comprueba si el nombre esta declarado en el propio codigo que la propuesta trae",
+         donde="cuerpo/obrero.py (revision del auditor)", ordenes="R9", paso="0b",
+         destraba="toda orden que crea un nombre nuevo (casi todas las piezas nuevas del plan)", meta="0 rechazos por invento falso"),
+    dict(fallo="Una falla aislada detenia todo el trabajo",
+         evidencia="Con la cadena en fila una falla bloqueaba 173 de 173 ordenes; con dependencias reales bloquea como maximo 5 de 190",
+         causa="Dependencias en fila y el bucle termina por 3 fallos iguales o por NADA SE PUEDE CORRER",
+         reparacion="Solo dependencias reales; el bucle aparta la que falla y sigue",
+         donde="memoria/ORDENES.json (campo depende); capataz.bucle", ordenes="N18 + grafo", paso="0",
+         destraba="todas las ordenes del plan", meta="el bucle solo termina si no queda nada corrible"),
+    dict(fallo="No hay multitarea (ley de maxima prioridad del 28-sep sin cumplir)",
+         ley="CONTRATO_LA_MULTITAREA_ES_LA_FORMA_DE_TRABAJAR (28-sep, maxima prioridad)",
+         evidencia="El comando pit llama a bucle(proyecto) con en_paralelo=1; la vigia 'la cadena trabaja en varias a la vez' esta roja y sin dueno; la copia por orden, los turnos del guardado y el bucle con hilos ya existen",
+         causa="El parametro no se expone, la vigia vieja exige de una en una y R6 estaba en el ultimo paso",
+         reparacion="Reescribir la vigia vieja con su razon, ley de copias temporales, y R6a/R6",
+         donde="capataz.bucle; ingeniero.py (comando pit); vigias/test_vigia_el_pit_corre_una_tarea_a_la_vez.py",
+         ordenes="L4, N29, R6a, R6", paso="0d", destraba="todas las ordenes del plan (hoy se corre 1 a la vez)", meta="3 o mas ordenes a la vez"),
+    dict(fallo="Se gasta el saldo de Claude",
+         evidencia="Solo el perito ejecuta a Claude: 3 intentos de 600 s tras cada orden fallida. Big Pickle gratis desde el 28-sep: mediana 56 s, p95 186 s, maximo 333 s en 239 llamadas buenas",
+         causa="El perito es Claude y no tiene un tiempo medido",
+         reparacion="Perito = IA gratis; un intento con el tiempo medido del historial (techo 400 s, decision de Julio)",
+         donde="capataz.pedir_al_perito", ordenes="N17, N15, 50, 51", paso="0e",
+         destraba="el forense de las 31 ordenes fallidas", meta="0 llamadas a Claude; el perito nunca cuelga el bucle"),
+    dict(fallo="El bucle se detiene por tope en dolares",
+         evidencia="TOPE_MES_USD y se_paso_del_tope dentro del bucle",
+         causa="Tope en dolares dentro del bucle",
+         reparacion="Solo se detiene si DeepSeek se queda sin saldo (decision de Julio del 27-sep)",
+         donde="capataz.bucle", ordenes="89, 68", paso="0f", destraba="todas", meta="0 paradas por dolares"),
+    dict(fallo="El guardado pierde trabajo aprobado",
+         evidencia="82 veces (FALLOS id 69); la vigia de R1 esta roja; 23 de 93 expedientes son 'guardia'",
+         causa="_vecinas_por_stem devuelve None (corre las 245 vigias) con tope fijo de 900 s",
+         reparacion="Nunca None; tope medido; si se agota se aparta con motivo",
+         donde="arnes/vecinas.py; arnes/guardia_de_guardado.py", ordenes="R1", paso="1",
+         destraba="23 fallos de guardado y los 14 trabajos frenados", meta="0 trabajos aprobados sin llegar al disco"),
+    dict(fallo="Una orden fallida no vuelve tras su arreglo",
+         evidencia="El forense creo R1-F151051 y R1 siguio fallida",
+         causa="El forense no enlaza el arreglo con la orden que fallo",
+         reparacion="El arreglo pasa a la lista depende de la fallida",
+         donde="capataz.forense", ordenes="N14", paso="1b", destraba="la cadena de cada orden fallida", meta="0 fallidas esperando un arreglo ya hecho"),
+    dict(fallo="La legislacion recoge basura",
+         evidencia="126 apuntes pendientes, casi todos pegados de PowerShell",
+         causa="El candado de legislar apunta cada linea y cada cita",
+         reparacion="Un mensaje es una instruccion; las palabras de maquina no entran",
+         donde="arnes/candado_legislar.py", ordenes="R10, 30, 31", paso="3", destraba="el cierre y la lista de pendientes", meta="0 apuntes falsos"),
+    dict(fallo="Recoger pisa trabajo mas nuevo; hay 14 trabajos frenados",
+         evidencia="Las vigias de 37 y 113 estan rojas",
+         causa="Recoger no compara el contenido",
+         reparacion="Comparar contenido y no pisar; despues recoger los 14",
+         donde="arnes/recoger_los_pedazos.py", ordenes="37, 113", paso="4", destraba="los 14 trabajos ya pagados", meta="0 trabajos pisados"),
+    dict(fallo="El mando muere al imprimir y pierde el trabajo pagado",
+         evidencia="Vigia escrita el 25-ago, roja, sin orden",
+         causa="Guarda despues de imprimir y la consola cp1252 no dibuja algunos caracteres",
+         reparacion="Guardar antes de imprimir y mostrar con reemplazo",
+         donde="ingeniero.py (comando equipo)", ordenes="N26", paso="4", destraba="el trabajo pagado de cada ronda", meta="0 trabajos perdidos por imprimir"),
+    dict(fallo="El revisor de programa corta rondas buenas",
+         evidencia="17 de 51 fallos no_aprobo; la vigia de R24 esta roja",
+         causa="Un aviso sale como freno y hay reglas que se pisan",
+         reparacion="El aviso no frena; arreglar los casos medidos",
+         donde="arnes/revisor_de_programa.py", ordenes="R24, 95-F011402, 41, 43, 45", paso="5", destraba="17 fallos", meta="0 rondas buenas frenadas"),
+    dict(fallo="Solo un cambio por ronda y no se puede crear sobre un archivo existente",
+         evidencia="El obrero ofrece 'cambios' solo para el mismo archivo; no_aplico 10 de 93 expedientes",
+         causa="El prompt y el aplicador no admiten varios archivos ni crear sobre uno existente",
+         reparacion="Varios cambios por ronda en varias funciones y archivos",
+         donde="cuerpo/obrero.py (prompt); cuerpo/aplicador.py", ordenes="95-F222455, 173-F064924, 46-F061935, 112-F061113", paso="6",
+         destraba="toda orden que toca mas de una funcion o archivo", meta="0 rondas rechazadas por mas de un cambio"),
+    dict(fallo="El material no llega completo (archivo pequeno, NECESITO_LEER, paquete compacto)",
+         evidencia="17 de 79 fallos apuntados son de material; 14 respuestas NO_ENCONTRADO y 29 NECESITO_LEER",
+         causa="El repartidor corta en trozos por parecido de palabras y no atiende lo que la IA pide",
+         reparacion="Entregar enteros los archivos cortos y atender lo que la IA pide",
+         donde="cerebro/router.py", ordenes="29, 29-F005530, H3, R22", paso="7", destraba="43 respuestas que piden material", meta="0 NECESITO_LEER sin atender"),
+    dict(fallo="Hay vigias que no miden",
+         evidencia="9 vigias verdes con pruebas sin assert o que devuelven True/False; sabotaje fallo en 10 de 31 ordenes fallidas",
+         causa="Nacen verdes y nada comprueba que nacieron rojas por su motivo",
+         reparacion="Sabotaje obligatorio y revisor por programa",
+         donde="arnes/sabotaje.py; capataz.comprobar_pasos", ordenes="63, 64, 38, 39, 24, 25, 32, 33", paso="8",
+         destraba="sellar con confianza todo lo demas", meta="0 vigias verdes que no miden"),
+    dict(fallo="'Vacio' no es vacio y nadie lee el cuaderno",
+         evidencia="164 de 165 'vacias' eran propuestas incompletas (92 solo diagnostico, 29 otra forma de JSON, 29 texto, 14 NO_ENCONTRADO); Claude y Codex no apuntan; 17,8% de filas sin segundos; solo 1000 filas; sin costo",
+         causa="El codigo marca vacio cuando la propuesta no cumple y no dice que falto; nadie lo lee",
+         reparacion="Apuntar causa y tamano del pedido; resumen diario que el bucle muestra al arrancar y al parar; el motivo del fallo entra por la guia de la siguiente ronda",
+         donde="cuerpo/obrero.py (trabajar); cuerpo/cuaderno.py; arnes/resumen_del_cuaderno.py", ordenes="N19, N03", paso="9",
+         destraba="diagnosticar cualquier fallo con datos", meta="0 'vacio' falsos; la causa en el 100% de los fallos"),
+    dict(fallo="El forense casi nunca produce una orden",
+         evidencia="9 de 93 expedientes; el juez rechazo 28; el perito no contesto 28; 39 sin analizar",
+         causa="El juez es una IA que no ve el codigo y el perito es Claude",
+         reparacion="El juez es un programa que ve el codigo; perito gratis",
+         donde="capataz.juzgar_citas", ordenes="N21, N17", paso="9", destraba="que cada fallo genere su arreglo", meta=">80% de expedientes con orden nueva"),
+    dict(fallo="Vigias rojas sin dueno",
+         evidencia="38 de 56 vigias no verdes no tienen orden; 19 son comportamiento roto de verdad",
+         causa="Nada convierte una vigia roja en orden",
+         reparacion="Lector de vigias rojas que crea la orden con las 4 preguntas llenas",
+         donde="arnes/lector_de_rojas.py (nuevo); ingeniero.py vigias; guardia_de_guardado", ordenes="N04", paso="9", destraba="19 reparaciones", meta="0 vigias rojas sin orden"),
+    dict(fallo="Todo debe nacer conectado y hay piezas dormidas",
+         ley="CONTRATO_TODO_ENCHUFADO_NADA_DORMIDO",
+         evidencia="11 piezas dormidas; el contador de huerfanas y el paso 'pieza suelta' del pit dan por conectada a una pieza que solo nombra una vigia; 3 candados dormidos",
+         causa="Basta que cualquier archivo, incluso una vigia, nombre la pieza",
+         reparacion="Una pieza cuenta como conectada solo si la llama codigo real o esta en los ganchos; el pit no sella una pieza nueva sin llamador",
+         donde="skills/nace_conectada.py; capataz.comprobar_pasos", ordenes="N06, N06b", paso="9", destraba="11 piezas dormidas", meta="0 piezas huerfanas; cada orden nueva trae su conexion"),
+    dict(fallo="Ordenes incompletas",
+         evidencia="9 ordenes sin campo vigia y 40 con una vigia prometida y sin escribir (de 91 abiertas)",
+         causa="La puerta de las 4 respuestas solo se aplica al cerrar",
+         reparacion="Rechazar lo incompleto al crear, con DONDE, POR QUE, COMO y resultado esperado",
+         donde="arnes/puerta_del_plan.py; cuerpo/director.py", ordenes="N02, N01", paso="9", destraba="40 ordenes que no se pueden cerrar", meta="0 ordenes incompletas"),
+    dict(fallo="La memoria no se actualiza al sellar",
+         evidencia="Lecciones dormidas; el paquete no las trae; nada deja el estado al dia",
+         causa="No hay programa de sellado ni hora de apuntes",
+         reparacion="Sellado que actualiza solo; hora de apuntes; linea base antes y despues",
+         donde="arnes/al_sellar.py, cuerpo/hora_de_apuntes.py, arnes/linea_base.py (nuevos)", ordenes="N05, N09, N12", paso="9", destraba="aprender de cada fallo", meta="memoria al dia tras cada sello"),
+    dict(fallo="Demasiados planes y versiones",
+         evidencia="47 documentos de plan o estado, 105 copias, 5 duplicadas exactas, 8 hijas del forense, 1223 trabajos guardados (113 versiones de obrero.py)",
+         causa="Cada ronda guarda una version nueva y nada exige un solo plan",
+         reparacion="Un solo plan generado por programa; lo viejo se aparta sin borrar; vigia del plan unico",
+         donde="PLAN_PRIORIDAD_UNO.md; arnes/un_solo_plan.py (nuevo)", ordenes="N25", paso="9", destraba="saber que plan manda", meta="1 plan; 0 ordenes duplicadas"),
+    dict(fallo="La espera maxima de 400 s no esta en ninguna orden",
+         evidencia="Escrito como FALTA en el plan anterior",
+         causa="R3 solo habla de preguntar a la vez",
+         reparacion="Big Pickle 400 s y sus dos vigias",
+         donde="cuerpo/bigpickle.py", ordenes="N22", paso="10", destraba="esperas largas", meta="espera maxima 400 s"),
+    dict(fallo="Falta la medida unica: Julio pudo hacer su informe hoy",
+         evidencia="Marcada como lo mas importante y nunca convertida en orden",
+         causa="No hay prueba real automatica",
+         reparacion="Prueba real con navegador automatico",
+         donde="arnes/prueba_real_del_informe.py (nuevo)", ordenes="N23", paso="12b", destraba="saber si de verdad sirve", meta="si/no diario"),
+]
+
+FLUJO = [
+    ("E0 Entender lo que Julio quiere", "ninguno", "NO MEDIDO: no existe la pieza", "N07"),
+    ("E1 La orden esta completa (4 preguntas y vigia)", "puerta del plan solo al cerrar", "9 ordenes sin campo vigia y 40 con vigia sin escribir, de 91 abiertas", "N02, N01"),
+    ("E2 Prueba previa: llega el codigo (sin gastar)", "no existe", "12 de 58 ordenes no nombran su archivo; con archivo nombrado llega el codigo en 31/31, sin nombrarlo 1/3", "N28"),
+    ("E3 Codigo limpio y guia aparte", "no existe (ley del 1-oct sin orden)", "NO MEDIDO", "N27"),
+    ("E4 Recorte del pasillo", "obrero._preguntar_con_relevo", "quita codigo que si llego en 27 de 34 ordenes", "H2"),
+    ("E5 El escritor responde", "DeepSeek, Groq, Gemini", "DeepSeek: 467 de 595 llamadas sirvieron (78,5%), mediana 5,2 s; 164 de 1000 filas mal llamadas vacio", "N19"),
+    ("E6 Revisor por programa", "arnes/revisor_de_programa.py", "frena en 17 de 51 no_aprobo", "R24, 95-F011402, 41, 43, 45"),
+    ("E7 Auditor IA", "Big Pickle", "rechazo en 22 y marca invento en 25 de 51 no_aprobo", "R9"),
+    ("E8 Aplicador", "cuerpo/aplicador.py", "no_aplico 10 de 93 fallos", "95-F222455 y las de su grupo"),
+    ("E9 Guardado y bateria", "arnes/guardia_de_guardado.py", "guardia 23 de 93 fallos; 82 veces no dejo guardar", "R1"),
+    ("E10 Vigia y sabotaje", "capataz.comprobar_pasos", "sabotaje fallo en 10 de 31 ordenes fallidas", "63, 64, 38, 39, 24, 25, 32, 33"),
+    ("E11 Sellado y memoria", "no existe", "NO MEDIDO", "N05, N12"),
+    ("E12 Aprender del fallo", "forense", "9 de 93 expedientes produjeron una orden", "N21, N04, N09"),
+]
+
+METRICAS = [
+    ("RAPIDO", "Minutos por orden", "90,1 (plan del 25-sep, cuaderno)", "menos de 20", "N12 la mide en cada orden"),
+    ("RAPIDO", "Ordenes a la vez", "1", "3 o mas", "L4, N29, R6a, R6"),
+    ("PRECISO", "Rondas aprobadas en la primera", "3 de 13 el 1-oct (CONTRATO_LAS_DOS_VIAS)", "80% o mas", "N27, N28"),
+    ("PRECISO", "Llamadas que no sirvieron", "18,8% (cuaderno)", "menos de 5%", "N19"),
+    ("PRECISO", "Ordenes cuyo codigo llega al escritor", "32 de 34 comprobables; 12 de 58 sin archivo nombrado", "100%", "N28, N27"),
+    ("EFICIENTE", "Llamadas a IA por orden", "4,78 (plan del 25-sep)", "menos de 2,5", "N28, N27, N19"),
+    ("EFICIENTE", "Trabajo aprobado que no llega al disco", "82 veces", "0", "R1"),
+    ("ECONOMICO", "Llamadas a Claude", "una por cada fallo (perito)", "0", "N17, N15"),
+    ("ECONOMICO", "Llamadas gastadas sin el codigo", "no medido (12 de 58 ordenes en riesgo)", "0", "N28"),
+    ("ECONOMICO", "Costo por orden aprobada", "NO MEDIDO: el cuaderno no guarda costo", "medido en cada orden", "N03, N12"),
+]
+
+
+def tabla_md(donde_plan):
+    L = ["| # | Fallo | Evidencia medida | Causa raiz | Reparacion raiz | Donde | En que plan estaba | Ordenes | Paso | Que destraba | Meta |",
+         "|---|---|---|---|---|---|---|---|---|---|---|"]
+    for n, h in enumerate(HALLAZGOS, 1):
+        plan = donde_plan(h["ordenes"]) + (" | ley: " + h["ley"] if h.get("ley") else "")
+        fila = [h["fallo"], h["evidencia"], h["causa"], h["reparacion"], h["donde"], plan, h["ordenes"], h["paso"], h["destraba"], h["meta"]]
+        L.append("| %d | %s |" % (n, " | ".join(x.replace("|", "/") for x in fila)))
+    return "\n".join(L)
+
+
+def flujo_md():
+    L = ["| Etapa | Quien o que pieza | Numero medido | Orden que lo repara |", "|---|---|---|---|"]
+    for e in FLUJO:
+        L.append("| " + " | ".join(x.replace("|", "/") for x in e) + " |")
+    return "\n".join(L)
+
+
+def metricas_md():
+    L = ["| Termino | Medida | Hoy | Meta | Quien la mueve |", "|---|---|---|---|---|"]
+    for m in METRICAS:
+        L.append("| " + " | ".join(x.replace("|", "/") for x in m) + " |")
+    return "\n".join(L)
+
+
+def sha(ruta):
+    import hashlib
+    return hashlib.sha256(open(ruta, "rb").read()).hexdigest()[:16]
+
+
+
+def medir_en_copia():
+    """Corre en una COPIA (nunca en la carpeta real) las vigias que solo se podian medir en el PC de Julio."""
+    import tempfile
+    vig = ["vigias/test_vigia_el_paquete_trae_el_archivo_nombrado.py", "vigias/test_vigia_el_trabajo_pagado_no_se_pisa.py"]
+    vig = [v for v in vig if os.path.isfile(os.path.join(RAIZ, v))]
+    if not vig:
+        return
+    tmp = tempfile.mkdtemp(prefix="vuc_copia_")
+    copia_ = os.path.join(tmp, "copia")
+    try:
+        shutil.copytree(RAIZ, copia_, ignore=shutil.ignore_patterns(".git", "__pycache__", "trabajos_del_equipo", "trabajos_sin_revisar", "rescate", "EXPEDIENTES", "planes_anulados"))
+        cfg = os.path.join(copia_, "proyectos.config")
+        lineas = open(cfg, encoding="utf-8", errors="replace").read().splitlines()
+        lineas = [("ingeniero      = %s | main | ingeniero.py" % copia_) if re.match(r"^ingeniero\s*=", l_) else l_ for l_ in lineas]
+        open(cfg, "w", encoding="utf-8").write("\n".join(lineas))
+        print("\nVIGIAS QUE SOLO SE MEDIAN EN EL PC (se corren en una copia, la carpeta real no se toca):")
+        for v in vig:
+            r = subprocess.run([sys.executable, "-m", "pytest", v, "-q", "--tb=line", "-p", "no:cacheprovider", "-x"], cwd=copia_,
+                               capture_output=True, text=True, timeout=180)
+            sal = [l_ for l_ in (r.stdout + r.stderr).splitlines() if l_.strip()]
+            print("   %-60s %s" % (os.path.basename(v)[12:-3][:60], "VERDE" if r.returncode == 0 else "ROJA: " + (sal[-1][:90] if sal else "")))
+    except Exception as e_:
+        print("   no se pudo medir en copia:", str(e_)[:120])
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def etapa_un_solo_plan(aplicar):
+    import glob as _g
+    estado_ = {str(o["id"]): o["estado"] for o in cargar()}
+    globs = ["PLAN*", "PLAN_PITS/*", "memoria/PLAN*", "memoria/*continuacion*", "DONDE_QUED*", "memoria/MAÑANA.md",
+             "ORDENES.md", "memoria/ORDEN_PARA_CODEX*", "PENDIENTE*.md", "INFORME*.md", "ANALISIS*.md", "GUIA_ESTADO.md",
+             "PARA_COMPARTIR.md", "EXPEDIENTE_FALLOS_RECURRENTES.md", "ENCARGO_*", "memoria/paquete_*"]
+    docs = sorted(set(p.replace("\\", "/") for g in globs for p in _g.glob(os.path.join(RAIZ, g)) if os.path.isfile(p)))
+    docs = [os.path.relpath(d, RAIZ).replace("\\", "/") for d in docs]
+    docs = [d for d in docs if os.path.basename(d) not in ("PLAN_DE_PASOS.json", "METRICAS_BASE.json")]
+    patrones_copia = [r"\.bak$", r"\.antes_", r"\.REESCRITO", r"\.orig$", r"\.old$"]
+    copias = []
+    for raiz_, _d, fs_ in os.walk(RAIZ):
+        if any(x in raiz_ for x in (os.sep + ".git", "planes_anulados", "copias_viejas", "trabajos_del_equipo", "trabajos_sin_revisar", "rescate", "__pycache__")):
+            continue
+        for f_ in fs_:
+            if any(re.search(p_, f_) for p_ in patrones_copia):
+                copias.append(os.path.relpath(os.path.join(raiz_, f_), RAIZ).replace("\\", "/"))
+    corpus = ""
+    for raiz_, _d, fs_ in os.walk(RAIZ):
+        if any(x in raiz_ for x in (os.sep + ".git", "memoria", "__pycache__", "planes_anulados")) and not raiz_.endswith(os.sep + ".claude"):
+            continue
+        for f_ in fs_:
+            if f_.endswith((".py", ".cmd", ".sh", ".config", ".rules")) or f_ in ("settings.json", "CLAUDE.md", "AGENTS.md"):
+                rel = os.path.relpath(os.path.join(raiz_, f_), RAIZ).replace("\\", "/")
+                if rel in docs or rel in copias:
+                    continue
+                try:
+                    corpus += "\n" + open(os.path.join(raiz_, f_), encoding="utf-8-sig", errors="replace").read()
+                except OSError:
+                    pass
+    UNICO = "PLAN_PRIORIDAD_UNO.md"
+    mover, protegidos = [], []
+    for d in docs + copias:
+        if d == UNICO:
+            continue
+        b = os.path.basename(d)
+        if b in corpus:
+            protegidos.append(d)
+        else:
+            mover.append(d)
+    print("\nPLAN UNICO: %d documentos de plan/estado y %d copias viejas encontrados." % (len(docs), len(copias)))
+    print("   se apartan (sin borrar): %d | protegidos porque el codigo los nombra: %d" % (len(mover), len(protegidos)))
+    for d in protegidos:
+        print("   protegido:", d)
+    if not aplicar:
+        return
+    # En que plan estaba cada orden: se calcula ANTES de apartar los documentos.
+    refs_doc = collections.defaultdict(set)
+    for d in docs:
+        try:
+            txt_ = open(os.path.join(RAIZ, d), encoding="utf-8", errors="replace").read()
+        except OSError:
+            continue
+        for i_ in estado_:
+            if len(i_) >= 2 and re.search(r"(?<![\w-])" + re.escape(i_) + r"(?![\w-])", txt_):
+                refs_doc[i_].add(os.path.basename(d))
+
+    def donde_plan(ordenes_txt):
+        ids_ = [x.strip() for x in re.split(r"[,+ ]+", ordenes_txt) if x.strip() in estado_]
+        docs_ = sorted({n for i_ in ids_ for n in refs_doc.get(i_, [])}, key=lambda n: (n != "PLAN_PRIORIDAD_UNO.md", len(n)))
+        return (", ".join(docs_[:2]) if docs_ else "plan nuevo del 2026-10-01 (esta tabla)")
+    carpeta = os.path.join(RAIZ, "memoria", "planes_anulados", HOY)
+    indice = []
+    hechos_, abiertas_ = [], []
+    for d in mover:
+        orig = os.path.join(RAIZ, d)
+        txt = ""
+        try:
+            txt = open(orig, encoding="utf-8", errors="replace").read()
+        except OSError:
+            pass
+        refs = sorted(i for i in estado_ if len(i) >= 2 and re.search(r"(?<![\w-])" + re.escape(i) + r"(?![\w-])", txt))
+        ab = [i for i in refs if estado_[i] in ("pendiente", "fallida", "esperando", "corriendo")]
+        destino = os.path.join(carpeta, d.replace("/", "__"))
+        os.makedirs(os.path.dirname(destino), exist_ok=True)
+        indice.append(dict(origen=d, destino=os.path.relpath(destino, RAIZ).replace("\\", "/"), sha256=sha(orig),
+                           motivo="el unico plan vigente es PLAN_PRIORIDAD_UNO.md (generado por programa); lo pendiente vive en memoria/ORDENES.json",
+                           ordenes_que_nombra=len(refs), de_ellas_abiertas=ab))
+        os.replace(orig, destino)
+    # el plan unico: el viejo se aparta con su copia y el nuevo lo genera el programa
+    viejo = os.path.join(RAIZ, UNICO)
+    ya_es_generado = os.path.isfile(viejo) and open(viejo, encoding="utf-8", errors="replace").read(40).startswith("# PLAN UNICO")
+    if os.path.isfile(viejo) and not ya_es_generado:   # solo se guarda copia del plan HECHO A MANO; el generado se reescribe, no se versiona
+        dv = os.path.join(carpeta, UNICO + ".version_anterior")
+        os.makedirs(carpeta, exist_ok=True)
+        shutil.copyfile(viejo, dv)
+        indice.append(dict(origen=UNICO, destino=os.path.relpath(dv, RAIZ).replace("\\", "/"), sha256=sha(viejo),
+                           motivo="se regenera por programa; esta es la copia anterior"))
+    # Las decisiones y definiciones de Julio del plan anterior se copian TEXTUALES al plan unico.
+    decisiones = []
+    if os.path.isfile(viejo) and not ya_es_generado:
+        vl = open(viejo, encoding="utf-8", errors="replace").read().splitlines()
+        for k, ln in enumerate(vl):
+            if re.match(r"^# QU\S+ SIGNIFICA .ECON", ln):
+                decisiones += vl[k:]
+                break
+        for k, ln in enumerate(vl):
+            if "DECIDIDO POR JULIO" in ln:
+                decisiones += [""] + vl[k:k + 14]
+    ords = cargar()
+    por_ = {str(o["id"]): o for o in ords}
+    L = ["# PLAN UNICO — GENERADO POR PROGRAMA (%s). No se edita a mano." % HOY, "",
+         "> Fuente unica: `memoria/ORDENES.json` (ordenes y su campo `depende`) y `memoria/PLAN_DE_PASOS.json` (pasos).",
+         "> Una orden corre solo si las de su `depende` estan `hecha`; la prioridad es el orden de la lista.",
+         "> Lo anterior se aparto, sin borrar, en `memoria/planes_anulados/%s/` (con `INDICE.json`)." % HOY, "",
+         "## 1. Hallazgos: fallo, causa raiz, reparacion raiz, donde, plan y paso", "", tabla_md(donde_plan), "",
+         "## 2. Flujo de trabajo medido, etapa por etapa", "", flujo_md(), "",
+         "## 3. Las cuatro medidas (rapido, preciso, eficiente, economico): hoy y meta", "", metricas_md(), "",
+         "## 4. Como se decide cada reparacion (qué, donde, por que, cuando, como)", "",
+         "Cada orden lleva en su encargo QUE SE REPARA, COMO, DONDE y POR QUE; el CUANDO es su paso y su campo `depende`.", "",
+         "## 5. Pasos y ordenes", ""]
+    for p_ in pasos_json:
+        L.append("### Paso %s" % p_["paso"])
+        for i in p_["ordenes"]:
+            o = por_.get(i)
+            if o:
+                L.append("- `%s` [%s] %s%s" % (i, o.get("estado"), str(o.get("titulo", ""))[:90],
+                                              (" — depende de: " + ", ".join(o.get("depende") or [])) if o.get("depende") else ""))
+        L.append("")
+    if ya_es_generado:
+        pl = open(viejo, encoding="utf-8", errors="replace").read().splitlines()
+        for k, ln in enumerate(pl):
+            if ln.startswith("## Decisiones y definiciones de Julio"):
+                decisiones = pl[k + 2:]
+                break
+    if decisiones:
+        L += ["", "## Decisiones y definiciones de Julio (copiadas textuales del plan anterior)", ""] + decisiones
+    open(viejo, "w", encoding="utf-8").write("\n".join(L))
+    ruta_ind = os.path.join(carpeta, "INDICE.json")
+    previo = []
+    if os.path.isfile(ruta_ind):
+        try:
+            previo = json.load(open(ruta_ind, encoding="utf-8"))
+        except ValueError:
+            previo = []
+    json.dump(previo + indice, open(ruta_ind, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    json.dump({"fecha": HOY, "metricas": [dict(termino=m[0], medida=m[1], hoy=m[2], meta=m[3], mueve=m[4]) for m in METRICAS],
+               "flujo": [dict(etapa=e[0], pieza=e[1], medido=e[2], orden=e[3]) for e in FLUJO]},
+              open(os.path.join(RAIZ, "memoria", "METRICAS_BASE.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    print("   apartados %d archivos en memoria/planes_anulados/%s/ ; el plan unico es %s" % (len(mover), HOY, UNICO))
+
+
+if PRUEBA:
+    etapa_un_solo_plan(False)
+    print("\n(prueba: no se toco nada)")
+    sys.exit(0 if sano else 1)
+if not sano:
+    print("No se aplica: el camino tiene problemas.")
+    sys.exit(1)
+
+# ----------------------------------------------------------------------------------------
+# APLICAR: copia de rescate, devolver a pendiente las fallidas, y guardar todo de una vez.
+# ----------------------------------------------------------------------------------------
+os.makedirs(os.path.join(RAIZ, "memoria", "rescate"), exist_ok=True)
+copia = os.path.join(RAIZ, "memoria", "rescate", "ORDENES.antes_%s.json" % datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+shutil.copyfile(ruta, copia)
+print("\ncopia de rescate:", copia)
+for i in fallidas_a_devolver:
+    print(director.reintentar(RAIZ, i)[1])
+final = cargar()
+final_por = {str(o["id"]): o for o in final}
+for o in nuevas:
+    if str(o["id"]) not in final_por:
+        final.append(o)
+final_por = {str(o["id"]): o for o in final}
+for i_, e_ in ENCARGOS.items():
+    if i_ in final_por:
+        final_por[i_]["encargo"] = e_
+        final_por[i_]["nota"] = todas_por[i_]["nota"]
+for i in encargos_con_donde:
+    final_por[i]["encargo"] = todas_por[i]["encargo"]
+for i in cadena:
+    o = final_por[i]
+    o["depende"] = todas_por[i]["depende"]
+    if todas_por[i].get("vigia"):
+        o["vigia"] = todas_por[i]["vigia"]
+for i in resto:
+    final_por[i]["depende"] = []
+for i in pausadas:
+    final_por[i]["estado"] = "esperando"
+    final_por[i]["nota"] = todas_por[i]["nota"]
+final = [final_por[i] for i in cadena] + [o for o in final if str(o["id"]) not in cadena_set]
+director._guardar_ordenes(RAIZ, final)
+with open(os.path.join(RAIZ, "memoria", "PLAN_DE_PASOS.json"), "w", encoding="utf-8") as f:
+    json.dump({"generado": HOY, "regla": "una orden corre solo si las de su depende estan hechas; la prioridad es el orden de la lista",
+               "pasos": pasos_json, "depende": {i: todas_por[i]["depende"] for i in cadena}},
+              f, ensure_ascii=False, indent=1)
+print("PLAN guardado en memoria/PLAN_DE_PASOS.json")
+etapa_un_solo_plan(True)
+medir_en_copia()
+print("\nLISTO. Ahora:  python ingeniero.py pit ingeniero")
