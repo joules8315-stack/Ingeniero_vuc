@@ -49,8 +49,15 @@ def main():
         salida = (r.stdout or "") + (r.stderr or "")
         resumen = [l for l in salida.splitlines() if l.strip()][-1:] or [""]
         print("tardo %d segundos | %s" % (seg, resumen[0].strip()))
+        _resumen = ["LINEA BASE medida %s en este PC" % time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "toda la bateria tardo %d segundos | %s" % (seg, resumen[0].strip())]
         if "grupo cortado por tiempo" in salida or "grupo reventado" in salida:
             print("NO SE ESCRIBIO NADA: algun grupo no termino, la lista saldria incompleta.")
+            try:
+                with open(os.path.join(RAIZ, "memoria", ".ultima_linea_base.txt"), "w", encoding="utf-8") as f_:
+                    f_.write("\n".join(_resumen) + "\nALGUN GRUPO NO TERMINO EN %d s\n" % TOPE_GRUPO)
+            except OSError:
+                pass
             for l in salida.splitlines():
                 if l.startswith("bateria en paralelo: grupo"):
                     print("  ", l[:200])
@@ -68,6 +75,12 @@ def main():
                 if a.startswith("vigias/") and a not in rojas:
                     rojas.append(a)
         rojas.sort()
+        _resumen.append("vigias rojas hoy: %d | vigias en total: %d" % (len(rojas), len([f for f in os.listdir(os.path.join(copia, "vigias")) if f.startswith("test_")])))
+        try:
+            with open(os.path.join(RAIZ, "memoria", ".ultima_linea_base.txt"), "w", encoding="utf-8") as f_:
+                f_.write("\n".join(_resumen) + "\n")
+        except OSError:
+            pass
         print("VIGIAS ROJAS HOY: %d" % len(rojas))
         for a in rojas:
             print("   ", a)

@@ -62,6 +62,8 @@ def armar():
         L.append("\nLINEA BASE: %d vigias rojas conocidas" % len(rc))
     except Exception:
         L.append("\nLINEA BASE: NO EXISTE memoria/.rojas_conocidas.json")
+    L.append("\n== ULTIMA MEDIDA DE LA BATERIA EN ESTE PC ==")
+    L.append(cola(os.path.join(RAIZ, "memoria", ".ultima_linea_base.txt"), 10))
     L.append("\n== ULTIMA VUELTA DEL BUCLE (final de la ventana) ==")
     L.append(cola(os.path.join(RAIZ, "memoria", ".ultima_vuelta.txt"), 60))
     salidas = sorted(glob.glob(os.path.join(RAIZ, "memoria", ".salida_tarea_*.txt")), key=os.path.getmtime, reverse=True)[:4]
