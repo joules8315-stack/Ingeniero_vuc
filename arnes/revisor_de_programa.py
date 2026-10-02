@@ -456,6 +456,61 @@ def revisar(propuesta, tarea=""):
         # que estaba roto. Medido el 2026-09-20. Si el nombre SI existe, no se dice nada. Si el
         # modulo no se puede leer, no se dice nada: cuando no se puede comprobar, se calla.
         try:
+            _ruta_imp = str(p.get("archivo") or "")
+            if (_ruta_imp.lower().endswith(".py") and os.path.isfile(_ruta_imp)
+                    and viejo.strip()):
+                with open(_ruta_imp, encoding="utf-8-sig", errors="replace") as _fi:
+                    _antes_imp = _fi.read()
+                if viejo in _antes_imp:
+                    _despues_imp = _antes_imp.replace(viejo, nuevo, 1)
+                    try:
+                        _arbol_imp = ast.parse(_despues_imp)
+                    except Exception:
+                        _arbol_imp = None
+                    if _arbol_imp is not None:
+                        _dir_imp = os.path.dirname(_ruta_imp)
+                        for _nodo_imp in ast.walk(_arbol_imp):
+                            if not isinstance(_nodo_imp, ast.ImportFrom):
+                                continue
+                            if _nodo_imp.level and _nodo_imp.level > 0:
+                                continue
+                            _mod_imp = _nodo_imp.module or ""
+                            if not _mod_imp:
+                                continue
+                            _ruta_mod = os.path.join(_dir_imp, *_mod_imp.split(".")) + ".py"
+                            if not os.path.isfile(_ruta_mod):
+                                continue
+                            try:
+                                with open(_ruta_mod, encoding="utf-8-sig", errors="replace") as _fm:
+                                    _arbol_mod = ast.parse(_fm.read())
+                            except Exception:
+                                continue
+                            _nombres_mod = set()
+                            for _n in ast.walk(_arbol_mod):
+                                if isinstance(_n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                                    _nombres_mod.add(_n.name)
+                                elif isinstance(_n, ast.Assign):
+                                    for _t in _n.targets:
+                                        if isinstance(_t, ast.Name):
+                                            _nombres_mod.add(_t.id)
+                                elif isinstance(_n, ast.AnnAssign) and isinstance(_n.target, ast.Name):
+                                    _nombres_mod.add(_n.target.id)
+                                elif isinstance(_n, (ast.Import, ast.ImportFrom)):
+                                    for _a in _n.names:
+                                        _nombres_mod.add(_a.asname or _a.name.split(".")[0])
+                            for _alias in _nodo_imp.names:
+                                if _alias.name == "*":
+                                    continue
+                                if _alias.name not in _nombres_mod:
+                                    fallos.append(
+                                        "IMPORTA ALGO QUE NO EXISTE: '%s' no esta en '%s'. "
+                                        "Eso para la recogida de pytest y deja ciega a toda la "
+                                        "bateria: hay que importarlo dentro de cada prueba."
+                                        % (_alias.name, _mod_imp))
+        except Exception:
+            pass
+        # modulo no se puede leer, no se dice nada: cuando no se puede comprobar, se calla.
+        try:
             _ruta_mp = str(p.get("archivo") or "")
             if _ruta_mp.lower().endswith(".py") and os.path.isfile(_ruta_mp) and viejo.strip():
                 with open(_ruta_mp, encoding="utf-8-sig", errors="replace") as _fmp:
