@@ -1,0 +1,18 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-01_210239_DUDOSO_capataz.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : el pasillo recorto el encargo de 31900 a 13830 letras para que le quepa a un cerebro gratis (tope medido: 19042)
+  aviso       : el pasillo recorto el encargo de 33519 a 14411 letras para que le quepa a un cerebro gratis (tope medido: 19042)
+  aviso       : el pasillo recorto el encargo de 33812 a 14511 letras para que le quepa a un cerebro gratis (tope medido: 19042)
+  diagnostico : El bucle devuelve PARADO al tercer fallo del mismo tipo en la misma pieza en vez de apartar esa orden, dejar fuera solo a sus dependientes y seguir con las demas, y no imprime resumen de apartadas.
+  toca        : cuerpo/capataz.py funcion bucle
+  confianza   : media
+  PREGUNTA_REQUERIDA: El estado 'apartada' debe filtrarlo listas_para_correr para que no vuelva a entrar en la tanda? (no tengo el codigo de listas_para_correr en el material); El resumen de apartadas debe imprimirse tambien cuando el bucle termina por tope de gasto?; Las ordenes dependientes que ya estaban 'hechas' deben quedar intactas o tambien apartarse?
+  VEREDICTO   : DUDOSO
+  fallo       : Bucle infinito si listas_para_correr() no excluye el estado nuevo 'apartada': la orden apartada se vuelve a elegir, el contador fallos_por_pieza_tipo sigue >=3, se repite la rama y hace continue sin avanzar. El propio worker lo admite como pregunta abierta y no lo resuelve; es el riesgo de mayor impacto.
+  fallo       : apartar_dependientes solo aparta dependientes DIRECTOS (compara orden_id contra la lista depende de cada otra). Si hay cadena A<-B<-C, C no se aparta, queda pendiente huerfana y puede acabar en NADA SE PUEDE CORRER en vez de terminar con el resumen.
+  fallo       : La causa de NADA SE PUEDE CORRER (una sola falla aislada detiene todo, segundo sintoma del POR QUE) solo se le pega el resumen al final; no se cambia la logica que la produce, asi que ese sintoma puede seguir igual.
+  fallo       : marcar_estado graba tipo como motivo, no la cadena completa '3 fallos del mismo tipo (...) en ...'. El motivo descriptivo solo vive en la lista apartadas en memoria y en el resumen impreso; no queda persistido en la orden. (menor)
+  resumen     : El cambio cumple el encargo en el papel (marca apartada, aparta dependientes, sigue con la siguiente y resume) y no inventa nada, pero deja abierto si el filtro de corrida reconoce 'apartada' (si no, bucle infinito), no aparta dependientes de forma transitiva y no toca la causa del NADA SE PUEDE CORRER; conviene verificar esos tres puntos antes de darlo por bueno.
+
+EL EQUIPO NO APROBO (DUDOSO): NO se guardo llave, no se puede tocar codigo.

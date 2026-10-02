@@ -1,0 +1,17 @@
+SE PIDE: escribe=deepseek  revisa=bigpickle
+TRABAJO ARCHIVADO (no se pierde): C:\Ingeniero_VUC\memoria\trabajos_del_equipo\2026-10-01_211656_RECHAZADO_obrero.py.json
+OBRERO deepseek -> AUDITOR bigpickle
+  aviso       : GPT-OSS 120B (Groq) no le cabe (36520 letras, aguanta 19042) -> se le salta
+  aviso       : el revisor de programa freno antes de pagar la revision: La propuesta no trae texto nuevo: no hay nada que aplicar.
+  aviso       : GPT-OSS 120B (Groq) no le cabe (37412 letras, aguanta 19042) -> se le salta
+  diagnostico : El aviso del rechazo no dice cuantos rechazos en falso se quitaron y el descarte por invento_algo no comprueba si el nombre aparece declarado en el codigo de la propuesta.
+  toca        : cuerpo/obrero.py funcion trabajar
+  confianza   : media
+  PREGUNTA_REQUERIDA: PREGUNTA_REQUERIDA: donde exactamente se imprime el aviso del rechazo en cuerpo/obrero.py para anadir ahi el numero de rechazos en falso quitados? El material no trae ese tramo.
+  VEREDICTO   : RECHAZADO
+  fallo       : El cambio NO cierra el diagnostico: se anade `falsos_quitadas = 0` en trabajar pero `_quitar_inventos_falsos` no se llama NINGUNA parte y el texto del aviso de rechazo (cuerpo/obrero.py ~1320-1321) no se toca. El contador queda como variable muerta: 'no dice cuantos rechazos en falso se quitaron' sigue exactamente igual.
+  fallo       : La deduplicacion casi nunca dispara en la practica: exige `nombre in declarados` con igualdad EXACTA de cadena. Los `que_invento` reales son descriptivos o con ruta/linea ('cuerpo/obrero.py:1320', 'usa X() que no existe'), no identificadores desnudos, asi que no hay forma de que un item de `que_invento` coincida literalmente con un `def <nombre>` extraido. Es decir: la reparacion pideida no se ejecuta jamas.
+  fallo       : El extractor de nombresDeclared es demasiado ingenuo y a la vez demasiado ancho: `if '=' in limpio` captura cualquier linea con `=`, incluidas keywords de llamada (`f(a=1)`), anotaciones y comparadores `>=`/`<=`, de modo que declara como 'declarado en la propuesta' cualquier cosa que aparezca a la izquierda de un `=`; combinado con lo anterior, el filtro es ruido mas que proteccion.
+  resumen     : No invento nada, pero el arreglo esta a medias y ademas inerte: anade el contador y las funciones sin llamarlas ni tocar el aviso, y el filtro exige coincidencia exacta de nombre con lo que el revisor escribe, asi que en la practica no quita nada.
+
+EL EQUIPO NO APROBO (RECHAZADO): NO se guardo llave, no se puede tocar codigo.
